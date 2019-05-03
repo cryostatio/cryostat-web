@@ -4,7 +4,7 @@
   </h1>
   <div *ngIf="connected; else disconnected">Connection Established</div>
   <ng-template #disconnected>
-    <div #disconnected>Not Connnected <button (click)="wsConnect()">Reconnect</button></div>
+    <div>Not Connnected <button (click)="wsConnect()">Reconnect</button></div>
   </ng-template>
   <hr />
   <span>JMX Commands</span>
