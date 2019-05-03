@@ -7,9 +7,10 @@ import { CommandMessage } from 'src/app/app.component';
 })
 export class ConnectButtonComponent {
   @Output() fired = new EventEmitter<CommandMessage>();
-  host: string;
+  host = '';
 
   fire(): void {
     this.fired.emit({ command: 'connect', args: [ this.host ] });
+    this.host = '';
   }
 }

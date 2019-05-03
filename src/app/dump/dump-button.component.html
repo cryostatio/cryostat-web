@@ -1,7 +1,7 @@
 <button (click)="fire()">Dump</button>
-<input [(ngModel)]="name" placeholder="recording name" />
+<input [(ngModel)]="name" placeholder="recording name" (keyup.enter)="fire()"/>
 <select [(ngModel)]="duration">
   <option value="5">5 seconds</option>
   <option value="30">30 seconds</option>
 </select>
-<input [(ngModel)]="events" placeholder="events" />
+<input [(ngModel)]="events" placeholder="events" (keyup.enter)="fire()"/>

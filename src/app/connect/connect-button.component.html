@@ -1,2 +1,2 @@
 <button (click)="fire()">Connect</button>
-<input [(ngModel)]="host" placeholder="host" />
+<input [(ngModel)]="host" placeholder="host" (keyup.enter)="fire()"/>

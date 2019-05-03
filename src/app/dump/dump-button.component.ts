@@ -13,5 +13,8 @@ export class DumpButtonComponent {
 
   fire(): void {
     this.fired.emit({ command: 'dump', args: [ this.name, String(this.duration), this.events ] });
+    this.name = '';
+    this.duration = 30;
+    this.events = '';
   }
 }
