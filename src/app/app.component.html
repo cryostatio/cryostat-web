@@ -2,20 +2,47 @@
   <h1>
     container-jmc web UI
   </h1>
-  <div *ngIf="connected; else disconnected">Connection Established</div>
+  <div *ngIf="connected; else disconnected">
+    <div>
+      Connection Established
+    </div>
+
+    <hr />
+
+    <span>JMX Commands</span>
+    <div>
+      <p><app-help-button (fired)="sendMessage($event)"></app-help-button></p>
+      <p><app-connect-button (fired)="sendMessage($event)"></app-connect-button></p>
+      <p><app-dump-button (fired)="sendMessage($event)"></app-dump-button></p>
+      <!-- <p><app-list-button (fired)="sendMessage($event)"></app-list-button></p> -->
+      <!-- <p><app-url-button (fired)="sendMessage($event)"></app-url-button></p> -->
+    </div>
+
+    <div>
+      <textarea #textarea readonly>{{texts.join('\n\n')}}</textarea>
+    </div>
+
+    <div>
+      <h2>Recordings</h2>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>State</th>
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let recording of recordings">
+          <td>{{recording.name}}</td>
+          <td>{{recording.state}}</td>
+          <td>
+            <a href="{{downloadBaseUrl}}/{{recording.name}}">Download</a>
+            |
+            <button (click)="delete(recording.name)">Delete</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
   <ng-template #disconnected>
     <div>Not Connnected <button (click)="wsConnect()">Reconnect</button></div>
   </ng-template>
-  <hr />
-  <span>JMX Commands</span>
-  <div>
-    <p><app-help-button (fired)="sendMessage($event)"></app-help-button></p>
-    <p><app-connect-button (fired)="sendMessage($event)"></app-connect-button></p>
-    <p><app-dump-button (fired)="sendMessage($event)"></app-dump-button></p>
-    <p><app-list-button (fired)="sendMessage($event)"></app-list-button></p>
-    <p><app-url-button (fired)="sendMessage($event)"></app-url-button></p>
-  </div>
-  <div>
-    <textarea #textarea readonly>{{texts.join('\n\n')}}</textarea>
-  </div>
 </div>
