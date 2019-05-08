@@ -8,6 +8,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 export class AppComponent implements OnInit, OnDestroy {
   ws: WebSocket;
   connected = false;
+  wsConnected = false;
   texts: string[] = [];
   recordings: Recording[] = [];
   downloadBaseUrl = '';
@@ -16,7 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild('textarea') textarea: ElementRef;
 
   ngOnInit(): void {
-    this.connected = false;
+    this.wsConnected = false;
     this.texts = [];
 
     this.wsConnect();
@@ -35,13 +36,10 @@ export class AppComponent implements OnInit, OnDestroy {
       this.recordings = [];
       this.texts = [];
       this.downloadBaseUrl = '';
-      this.connected = true;
-      this.sendMessage({ command: 'connect', args: [ 'jmx-client' ] });
-      this.sendMessage({ command: 'url' });
-      this.sendMessage({ command: 'help' });
-      this.updateList();
+      this.wsConnected = true;
+      this.sendMessage({ command: 'is-connected' });
       this.refreshTimer = window.setInterval(() => {
-        if (!this.connected) {
+        if (!this.wsConnected) {
           window.clearInterval(this.refreshTimer);
           return;
         }
@@ -54,9 +52,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.ws.onclose = () => {
       window.clearInterval(this.refreshTimer);
       window.clearInterval(this.pingTimer);
-      this.connected = false;
-      this.recordings = [];
-      this.downloadBaseUrl = '';
+      this.wsConnected = false;
+      this.clearState();
     };
     this.ws.onerror = () => this.onMessage(JSON.stringify({ message: 'WebSocket error' }));
     this.ws.onmessage = (ev: MessageEvent) => this.onMessage(ev.data);
@@ -66,35 +63,78 @@ export class AppComponent implements OnInit, OnDestroy {
     this.ws.send(JSON.stringify(message));
   }
 
+  clearState(): void {
+    this.connected = false;
+    this.recordings = [];
+    this.downloadBaseUrl = '';
+  }
+
   updateList(): void {
+    if (!this.connected) {
+      return;
+    }
     this.sendMessage({ command: 'list' });
+    this.updateUrl();
+  }
+
+  updateUrl(): void {
+    if (!this.connected) {
+      return;
+    }
+    this.sendMessage({ command: 'url' });
   }
 
   delete(recordingName: string): void {
     this.sendMessage({ command: 'delete', args: [ recordingName ] });
   }
 
+  stop(recordingName: string): void {
+    this.sendMessage({ command: 'stop', args: [ recordingName ] });
+  }
+
   onMessage(message: any): void {
     if (typeof message === 'string') {
       const rec: ResponseMessage<any> = JSON.parse(message);
 
-      if (rec.commandName === 'list') {
-        this.recordings = (rec as ResponseMessage<Recording[]>).payload;
-        return;
+      if (rec.status === 0) {
+        if (rec.commandName === 'list') {
+          this.recordings = (rec as ResponseMessage<Recording[]>).payload;
+          return;
+        }
+
+        if (rec.commandName === 'dump'
+          || rec.commandName === 'start'
+          || rec.commandName === 'snapshot'
+          || rec.commandName === 'delete'
+          || rec.commandName === 'stop') {
+          this.updateList();
+        }
+
+        if (rec.commandName === 'url') {
+          this.downloadBaseUrl = (rec as StringMessage).payload;
+          return;
+        }
+
+        if (rec.commandName === 'ping') {
+          return;
+        }
+
+        if (rec.commandName === 'is-connected') {
+          this.connected = (rec as StringMessage).payload === 'true';
+          this.updateList();
+          return;
+        }
+
+        if (rec.commandName === 'connect') {
+          this.connected = true;
+          this.updateList();
+        }
+
+        if (rec.commandName === 'disconnect') {
+          this.clearState();
+        }
       }
 
-      if (rec.commandName === 'dump' || rec.commandName === 'start' || rec.commandName === 'snapshot' || rec.commandName === 'delete') {
-        this.updateList();
-      }
-
-      if (rec.commandName === 'url') {
-        this.downloadBaseUrl = (rec as StringMessage).payload;
-        return;
-      }
-
-      if (rec.commandName === 'ping') {
-        return;
-      }
 
       let msg: string;
       if (isStringMessage(rec)) {

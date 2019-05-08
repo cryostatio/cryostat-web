@@ -1,2 +1,2 @@
-<button (click)="fire()">Connect</button>
+<button (click)="fire()">{{host.trim().length > 0 ? 'Connect' : 'Disconnect'}}</button>
 <input [(ngModel)]="host" placeholder="host" (keyup.enter)="fire()"/>
