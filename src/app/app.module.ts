@@ -7,8 +7,6 @@ import { AppComponent } from './app.component';
 import { HelpButtonModule } from './help/help-button.module';
 import { ConnectButtonModule } from './connect/connect-button.module';
 import { DumpButtonModule } from './dump/dump-button.module';
-import { ListButtonModule } from './list/list-button.module';
-import { UrlButtonModule } from './url/url-button.module';
 
 @NgModule({
   declarations: [
@@ -20,8 +18,6 @@ import { UrlButtonModule } from './url/url-button.module';
     HelpButtonModule,
     ConnectButtonModule,
     DumpButtonModule,
-    ListButtonModule,
-    UrlButtonModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
