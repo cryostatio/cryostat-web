@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 // import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { HelpButtonModule } from './help/help-button.module';
 import { ConnectButtonModule } from './connect/connect-button.module';
 import { DumpButtonModule } from './dump/dump-button.module';
 
@@ -15,7 +14,6 @@ import { DumpButtonModule } from './dump/dump-button.module';
   imports: [
     BrowserModule,
     // AppRoutingModule,
-    HelpButtonModule,
     ConnectButtonModule,
     DumpButtonModule,
   ],
