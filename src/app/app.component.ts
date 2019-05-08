@@ -92,6 +92,10 @@ export class AppComponent implements OnInit, OnDestroy {
         return;
       }
 
+      if (rec.commandName === 'ping') {
+        return;
+      }
+
       let msg: string;
       if (isStringMessage(rec)) {
         msg = rec.payload;
