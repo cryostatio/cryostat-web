@@ -8,11 +8,15 @@ import { CommandMessage } from 'src/app/app.component';
 export class DumpButtonComponent {
   @Output() fired = new EventEmitter<CommandMessage>();
   name = '';
-  duration = 30;
+  duration = -1;
   events = '';
 
   fire(): void {
-    this.fired.emit({ command: 'dump', args: [ this.name, String(this.duration), this.events ] });
+    if (this.duration > 0) {
+      this.fired.emit({ command: 'dump', args: [ this.name, String(this.duration), this.events ] });
+    } else {
+      this.fired.emit({ command: 'start', args: [ this.name, this.events ] });
+    }
     this.name = '';
     this.duration = 30;
     this.events = '';
