@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { JvmTarget } from './connect/connect-button.component';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,7 @@ export class AppComponent implements OnInit, OnDestroy {
   texts: string[] = [];
   recordings: Recording[] = [];
   downloadBaseUrl = '';
+  hosts: JvmTarget[] = [];
   refreshTimer: number;
   pingTimer: number;
   @ViewChild('textarea') textarea: ElementRef;
@@ -38,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.downloadBaseUrl = '';
       this.wsConnected = true;
       this.sendMessage({ command: 'is-connected' });
+      this.sendMessage({ command: 'port-scan' });
       this.refreshTimer = window.setInterval(() => {
         if (!this.wsConnected) {
           window.clearInterval(this.refreshTimer);
@@ -125,6 +128,11 @@ export class AppComponent implements OnInit, OnDestroy {
           return;
         }
 
+        if (rec.commandName === 'port-scan') {
+          this.hosts = (rec as ListMessage).payload;
+          return;
+        }
+
         if (rec.commandName === 'connect') {
           this.connected = true;
           this.updateList();
@@ -134,7 +142,6 @@ export class AppComponent implements OnInit, OnDestroy {
           this.clearState();
         }
       }
-
 
       let msg: string;
       if (isStringMessage(rec)) {

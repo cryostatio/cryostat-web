@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommandMessage } from 'src/app/app.component';
 
 @Component({
@@ -7,6 +7,7 @@ import { CommandMessage } from 'src/app/app.component';
 })
 export class ConnectButtonComponent {
   @Output() fired = new EventEmitter<CommandMessage>();
+  @Input() hosts: JvmTarget[] = [];
   host = '';
 
   fire(): void {
@@ -17,4 +18,9 @@ export class ConnectButtonComponent {
     }
     this.host = '';
   }
+}
+
+export interface JvmTarget {
+  ip: string;
+  hostname: string;
 }
