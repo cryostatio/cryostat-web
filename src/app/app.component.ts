@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   wsConnect(): void {
-    this.ws = new WebSocket('ws://jmx-client:9090/command');
+    this.ws = new WebSocket('ws://container-jmx-client:9090/command');
 
     this.ws.onopen = () => {
       this.recordings = [];
