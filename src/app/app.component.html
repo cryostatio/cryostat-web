@@ -51,6 +51,6 @@
     </div>
   </div>
   <ng-template #disconnected>
-    <div>Not Connnected <button (click)="wsConnect()">Reconnect</button></div>
+    <app-client-connect (clientSelected)="wsConnect($event)" [connected]="wsConnected"></app-client-connect>
   </ng-template>
 </div>

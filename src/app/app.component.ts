@@ -21,8 +21,6 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.wsConnected = false;
     this.texts = [];
-
-    this.wsConnect();
   }
 
   ngOnDestroy(): void {
@@ -31,8 +29,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.ws.close();
   }
 
-  wsConnect(): void {
-    this.ws = new WebSocket('ws://jmx-client:9090/command');
+  wsConnect(jmxClientUrl: string): void {
+    this.ws = new WebSocket(jmxClientUrl);
 
     this.ws.onopen = () => {
       this.recordings = [];
