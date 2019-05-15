@@ -11,7 +11,10 @@ export class ConnectButtonComponent {
   host = '';
 
   fire(): void {
-    if (this.host.trim().length > 0) {
+    if (this.host === 'rescan') {
+      this.hosts = [];
+      this.fired.emit({ command: 'port-scan' });
+    } else if (this.host.trim().length > 0) {
       this.fired.emit({ command: 'connect', args: [ this.host ] });
     } else {
       this.fired.emit({ command: 'disconnect' });
