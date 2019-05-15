@@ -112,7 +112,13 @@ export class AppComponent implements OnInit, OnDestroy {
         }
 
         if (rec.commandName === 'url') {
-          this.downloadBaseUrl = (rec as StringMessage).payload;
+          const url: URL = new URL((rec as StringMessage).payload);
+          url.protocol = 'http:';
+          // Port reported by container-jmx-client will be the port that it binds
+          // within its container, but we'll override that to port 80 for
+          // OpenShift/Minishift demo deployments
+          url.port = '80';
+          this.downloadBaseUrl = url.toString();
           return;
         }
 
