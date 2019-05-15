@@ -1,6 +1,6 @@
 <div *ngIf="connected; else disconnected">
 </div>
 <ng-template #disconnected>
-  <input [(ngModel)]="clientUrl" placeholder="JMX Client URL" (keyup.enter)="fire()" />
+  <input [(ngModel)]="clientUrl" placeholder="JMX Client URL" (keyup.enter)="fire()" autofocus/>
   <button (click)="fire()">Connect</button>
 </ng-template>
