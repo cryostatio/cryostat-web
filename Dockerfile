@@ -14,14 +14,12 @@ FROM nginx:stable
 
 RUN chmod g+rwx /var/cache/nginx /var/run /var/log/nginx
 
-RUN sed -i.bak 's/^user/#user/' /etc/nginx/nginx.conf
-
-RUN sed -i.bak 's/listen\(.*\)80;/listen 8080;/' /etc/nginx/conf.d/default.conf
-
-EXPOSE 8080
+COPY nginx.conf.template /etc/nginx/
 
 RUN rm -rf /usr/share/nginx/html
 
 COPY --from=node /app/dist/* /usr/share/nginx/html/
 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 8080
+
+CMD envsubst < /etc/nginx/nginx.conf.template > /tmp/nginx.conf && nginx -c /tmp/nginx.conf
