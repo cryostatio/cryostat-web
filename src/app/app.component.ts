@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { JvmTarget } from './connect/connect-button.component';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -19,15 +18,9 @@ export class AppComponent implements OnInit, OnDestroy {
   pingTimer: number;
   @ViewChild('textarea') textarea: ElementRef;
 
-  constructor(private http: HttpClient) { }
-
   ngOnInit(): void {
     this.wsConnected = false;
     this.texts = [];
-    this.http.get('/clienturl')
-      .subscribe((url: any) => {
-        this.wsConnect(url.clientUrl);
-      });
   }
 
   ngOnDestroy(): void {
