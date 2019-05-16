@@ -1,0 +1,7 @@
+{
+  "/clienturl": {
+    "target": "http://localhost:9999/",
+    "secure": false,
+    "logLevel": "debug"
+  }
+}
