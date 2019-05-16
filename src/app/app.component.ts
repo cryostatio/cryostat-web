@@ -25,15 +25,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.wsConnected = false;
     this.texts = [];
     this.http.get('/clienturl')
-      .subscribe(
-        (url: string) => {
-          console.log('Client URL', url);
-          this.wsConnect(url);
-        },
-        (err: any) => {
-          console.log(err);
-        }
-      );
+      .subscribe((url: any) => {
+        this.wsConnect(url.clientUrl);
+      });
   }
 
   ngOnDestroy(): void {
