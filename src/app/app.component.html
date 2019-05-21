@@ -2,7 +2,7 @@
   <h1>
     container-jmc web UI
   </h1>
-  <div *ngIf="wsConnected; else disconnected">
+  <div *ngIf="svc.isReady() | async">
     <div>
       Connection Established
     </div>
@@ -28,6 +28,6 @@
     ></app-recording-list>
   </div>
   <ng-template #disconnected>
-    <app-client-connect (clientSelected)="wsConnect($event)" [connected]="wsConnected"></app-client-connect>
+    <!-- <app-client-connect (clientSelected)="wsConnect($event)" [connected]="wsConnected"></app-client-connect> -->
   </ng-template>
 </div>

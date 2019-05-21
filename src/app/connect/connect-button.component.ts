@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
-import { CommandMessage } from 'src/app/app.component';
+import { CommandMessage } from '../command-channel.service';
 
 @Component({
   selector: 'app-connect-button',

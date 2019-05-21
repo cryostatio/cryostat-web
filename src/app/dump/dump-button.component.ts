@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { CommandMessage } from 'src/app/app.component';
+import { CommandMessage } from '../command-channel.service';
 
 @Component({
   selector: 'app-dump-button',
