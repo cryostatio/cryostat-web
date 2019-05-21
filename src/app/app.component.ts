@@ -7,11 +7,7 @@ import { CommandChannelService } from './command-channel.service';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent {
-  @ViewChild('textarea') textarea: ElementRef;
-  texts: string[] = [];
-
   constructor(
     public svc: CommandChannelService,
   ) { }
-
 }
