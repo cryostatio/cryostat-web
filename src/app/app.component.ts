@@ -13,7 +13,6 @@ export class AppComponent implements OnInit, OnDestroy {
   connected = false;
   texts: string[] = [];
   recordings: Recording[] = [];
-  downloadBaseUrl = '';
   hosts: JvmTarget[] = [];
   refreshTimer: number;
   @ViewChild('textarea') textarea: ElementRef;
@@ -51,17 +50,6 @@ export class AppComponent implements OnInit, OnDestroy {
           .subscribe(() => this.updateList()));
       });
 
-    this.svc.onResponse('url')
-      .subscribe(r => {
-        const url: URL = new URL((r as StringMessage).payload);
-        url.protocol = 'http:';
-        // Port reported by container-jmx-client will be the port that it binds
-        // within its container, but we'll override that to port 80 for
-        // OpenShift/Minishift demo deployments
-        url.port = '80';
-        this.downloadBaseUrl = url.toString();
-      });
-
     this.svc.onResponse('is-connected')
       .subscribe(r => {
         this.connected = (r as StringMessage).payload === 'true';
@@ -88,7 +76,6 @@ export class AppComponent implements OnInit, OnDestroy {
   clearState(): void {
     this.connected = false;
     this.recordings = [];
-    this.downloadBaseUrl = '';
   }
 
   updateList(): void {
@@ -96,14 +83,6 @@ export class AppComponent implements OnInit, OnDestroy {
       return;
     }
     this.svc.sendMessage('list');
-    this.updateUrl();
-  }
-
-  updateUrl(): void {
-    if (!this.connected) {
-      return;
-    }
-    this.svc.sendMessage('url');
   }
 
   delete(recordingName: string): void {
