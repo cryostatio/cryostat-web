@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { filter, first } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage, StringMessage } from '../command-channel.service';
 
 @Component({
@@ -9,8 +9,8 @@ import { CommandChannelService, ResponseMessage, StringMessage } from '../comman
   styleUrls: ['./recording-list.component.less']
 })
 export class RecordingListComponent implements OnInit, OnDestroy {
-  @Input() recordings: Recording[];
 
+  recordings: Recording[] = [];
   downloadBaseUrl: string;
 
   private refresh: number;
