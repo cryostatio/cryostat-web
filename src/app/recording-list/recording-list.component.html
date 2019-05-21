@@ -18,10 +18,10 @@
       <td>
         <a href="{{downloadBaseUrl}}{{recording.name}}.jfr">Download</a>
         |
-        <button (click)="onDelete(recording.name)">Delete</button>
+        <button (click)="delete(recording.name)">Delete</button>
         <span *ngIf="recording.state != 'STOPPED'">
           |
-          <button (click)="onStop(recording.name)">Stop</button>
+          <button (click)="stop(recording.name)">Stop</button>
         </span>
       </td>
     </tr>

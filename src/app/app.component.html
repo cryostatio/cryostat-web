@@ -11,19 +11,15 @@
 
     <span>JMX Commands</span>
     <div>
-      <p><app-connect-button [hosts]="hosts" (fired)="sendMessage($event)"></app-connect-button></p>
-      <p><app-dump-button (fired)="sendMessage($event)"></app-dump-button></p>
+      <p><app-connect-button></app-connect-button></p>
+      <p><app-dump-button></app-dump-button></p>
     </div>
 
     <div>
       <textarea #textarea readonly>{{texts.join('\n\n')}}</textarea>
     </div>
 
-    <app-recording-list
-      [recordings]="recordings"
-      (delete)="delete($event)"
-      (stop)="stop($event)"
-    ></app-recording-list>
+    <app-recording-list></app-recording-list>
   </div>
   <ng-template #disconnected>
     <app-client-connect></app-client-connect>

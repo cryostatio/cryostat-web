@@ -66,7 +66,9 @@ export class CommandChannelService implements OnDestroy {
   }
 
   sendMessage(command: string, args: string[] = []): void {
-    this.ws.send(JSON.stringify({ command, args } as CommandMessage));
+    if (this.ws) {
+      this.ws.send(JSON.stringify({ command, args } as CommandMessage));
+    }
   }
 
   onResponse(command: string): Observable<ResponseMessage<any>> {

@@ -1,21 +1,24 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { CommandMessage } from '../command-channel.service';
+import { Component } from '@angular/core';
+import { CommandChannelService } from '../command-channel.service';
 
 @Component({
   selector: 'app-dump-button',
   templateUrl: './dump-button.component.html'
 })
 export class DumpButtonComponent {
-  @Output() fired = new EventEmitter<CommandMessage>();
   name = '';
   duration = -1;
   events = '';
 
-  fire(): void {
+  constructor(
+    public svc: CommandChannelService,
+  ) { }
+
+  dump(): void {
     if (this.duration > 0) {
-      this.fired.emit({ command: 'dump', args: [ this.name, String(this.duration), this.events ] });
+      this.svc.sendMessage('dump', [ this.name.trim(), String(this.duration), this.events ]);
     } else {
-      this.fired.emit({ command: 'start', args: [ this.name, this.events ] });
+      this.svc.sendMessage('start', [ this.name.trim(), this.events ]);
     }
     this.name = '';
     this.duration = 30;
