@@ -10,6 +10,7 @@ import { CommandChannelService, ResponseMessage, StringMessage } from '../comman
 })
 export class RecordingListComponent implements OnInit, OnDestroy {
 
+  connected = false;
   recordings: Recording[] = [];
   downloadBaseUrl: string;
 
@@ -39,7 +40,8 @@ export class RecordingListComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.svc.onResponse('is-connected')
         .subscribe(r => {
-          if (r.status === 0 && r.payload === 'true') {
+          this.connected = r.payload === 'true';
+          if (this.connected && r.status === 0) {
             this.svc.sendMessage('list');
             this.refresh = window.setInterval(() => this.svc.sendMessage('list'), 10000);
             this.svc.sendMessage('url');
@@ -54,7 +56,10 @@ export class RecordingListComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.svc.onResponse('disconnect')
-        .subscribe(r => this.recordings = [])
+        .subscribe(r => {
+          this.recordings = [];
+          this.connected = false;
+        })
     );
 
     [
@@ -68,6 +73,11 @@ export class RecordingListComponent implements OnInit, OnDestroy {
       this.svc.onResponse(cmd)
         .subscribe(() => this.svc.sendMessage('list'))
     ));
+
+    this.subscriptions.push(
+      this.svc.onResponse('connect')
+        .subscribe(() => this.connected = true)
+    );
 
     this.svc.isReady()
       .pipe(
