@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { JvmTarget } from './connect/connect-button.component';
+import { Recording } from './recording-list/recording-list.component';
 
 @Component({
   selector: 'app-root',
@@ -210,16 +211,4 @@ export function isExceptionMessage(m: ResponseMessage<any>): m is ExceptionMessa
 export interface CommandMessage {
   command: string;
   args?: string[];
-}
-
-interface Recording {
-  id: number;
-  name: string;
-  state: string;
-  duration: number;
-  startTime: Date;
-  continuous: boolean;
-  toDisk: boolean;
-  maxSize: number;
-  maxAge: number;
 }

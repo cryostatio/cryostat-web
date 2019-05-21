@@ -20,35 +20,12 @@
       <textarea #textarea readonly>{{texts.join('\n\n')}}</textarea>
     </div>
 
-    <div>
-      <h2>Recordings</h2>
-      <table>
-        <tr>
-          <th>Name</th>
-          <th>Start Date</th>
-          <th>State</th>
-          <th>Duration</th>
-          <th>Continuous</th>
-          <th>Actions</th>
-        </tr>
-        <tr *ngFor="let recording of recordings">
-          <td>{{recording.name}}</td>
-          <td>{{recording.startTime | date:'medium'}}</td>
-          <td>{{recording.state | titlecase}}</td>
-          <td>{{recording.duration / 1000}}s</td>
-          <td>{{recording.continuous}}</td>
-          <td>
-            <a href="{{downloadBaseUrl}}{{recording.name}}.jfr">Download</a>
-            |
-            <button (click)="delete(recording.name)">Delete</button>
-            <span *ngIf="recording.state != 'STOPPED'">
-              |
-              <button (click)="stop(recording.name)">Stop</button>
-            </span>
-          </td>
-        </tr>
-      </table>
-    </div>
+    <app-recording-list
+      [recordings]="recordings"
+      [downloadBaseUrl]="downloadBaseUrl"
+      (delete)="delete($event)"
+      (stop)="stop($event)"
+    ></app-recording-list>
   </div>
   <ng-template #disconnected>
     <app-client-connect (clientSelected)="wsConnect($event)" [connected]="wsConnected"></app-client-connect>
