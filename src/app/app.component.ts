@@ -3,6 +3,7 @@ import { JvmTarget } from './connect/connect-button.component';
 import { Recording } from './recording-list/recording-list.component';
 import { CommandChannelService, ResponseMessage, StringMessage, ListMessage } from './command-channel.service';
 import { filter, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -10,67 +11,84 @@ import { filter, tap } from 'rxjs/operators';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent implements OnInit, OnDestroy {
+  @ViewChild('textarea') textarea: ElementRef;
   connected = false;
   texts: string[] = [];
   recordings: Recording[] = [];
   hosts: JvmTarget[] = [];
   refreshTimer: number;
-  @ViewChild('textarea') textarea: ElementRef;
+
+  private readonly subscriptions: Subscription[] = [];
 
   constructor(
     public svc: CommandChannelService,
   ) { }
 
   ngOnInit(): void {
-    this.svc.isReady()
-      .pipe(
-        filter(s => !!s)
-      )
-      .subscribe(() => {
-        this.refreshTimer = window.setInterval(() => {
+    this.subscriptions.push(
+      this.svc.onResponse('list')
+        .subscribe(r => this.recordings = (r as ResponseMessage<Recording[]>).payload)
+    );
+
+    [
+      'dump',
+      'start',
+      'snapshot',
+      'delete',
+      'stop',
+    ].forEach(cmd => this.subscriptions.push(
+      this.svc.onResponse(cmd)
+        .subscribe(() => this.updateList())
+    ));
+
+    this.subscriptions.push(
+      this.svc.onResponse('is-connected')
+        .subscribe(r => {
+          this.connected = (r as StringMessage).payload === 'true';
           this.updateList();
-        }, 10000);
-        this.svc.addCloseHandler(() => {
-          window.clearInterval(this.refreshTimer);
-          this.clearState();
-        });
-        this.svc.sendMessage('is-connected');
-        this.svc.sendMessage('port-scan');
+        })
+    );
 
-        this.svc.onResponse('list')
-          .subscribe(r => this.recordings = (r as ResponseMessage<Recording[]>).payload);
+    this.subscriptions.push(
+      this.svc.onResponse('port-scan')
+        .subscribe(r => this.hosts = (r as ListMessage).payload)
+    );
 
-        [
-          'dump',
-          'start',
-          'snapshot',
-          'delete',
-          'stop',
-        ].forEach(cmd => this.svc.onResponse(cmd)
-          .subscribe(() => this.updateList()));
-      });
+    this.subscriptions.push(
+      this.svc.onResponse('connect')
+        .subscribe(() => {
+          this.connected = true;
+          this.updateList();
+        })
+    );
 
-    this.svc.onResponse('is-connected')
-      .subscribe(r => {
-        this.connected = (r as StringMessage).payload === 'true';
-        this.updateList();
-      });
+    this.subscriptions.push(
+      this.svc.onResponse('disconnect')
+        .subscribe(() => this.clearState())
+    );
 
-    this.svc.onResponse('port-scan')
-      .subscribe(r => this.hosts = (r as ListMessage).payload);
-
-    this.svc.onResponse('connect')
-      .subscribe(() => {
-        this.connected = true;
-        this.updateList();
-      });
-
-    this.svc.onResponse('disconnect')
-      .subscribe(() => this.clearState());
+    this.subscriptions.push(
+      this.svc.isReady()
+        .pipe(
+          filter(s => !!s)
+        )
+        .subscribe(() => {
+          this.refreshTimer = window.setInterval(() => {
+            this.updateList();
+          }, 10000);
+          this.svc.addCloseHandler(() => {
+            window.clearInterval(this.refreshTimer);
+            this.clearState();
+          });
+          this.svc.sendMessage('is-connected');
+          this.svc.sendMessage('port-scan');
+        })
+    );
   }
 
   ngOnDestroy(): void {
     window.clearInterval(this.refreshTimer);
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   clearState(): void {
