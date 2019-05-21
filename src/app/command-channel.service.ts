@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 @Injectable()
 export class CommandChannelService implements OnDestroy {
   private ws: WebSocket;
-  private readonly messages = new Subject<any>();
+  private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private closeHandlers: (() => void)[] = [];
   private pingTimer: number;
@@ -14,34 +14,9 @@ export class CommandChannelService implements OnDestroy {
   constructor(
     private http: HttpClient
   ) {
-    this.init();
-  }
-
-  private init(): void {
     this.http.get('/clienturl')
       .subscribe(
-        (url: any) => {
-          this.ws = new WebSocket(url.clientUrl);
-          this.ws.onopen = () => {
-            this.ws.onclose = () => this.onSocketClose();
-            // TODO this.ws.onerror = doSomethingWithErrors();
-
-            this.pingTimer = window.setInterval(() => {
-              this.sendMessage('ping');
-            }, 60000);
-
-            this.addCloseHandler(() => this.ready.next(false));
-            this.addCloseHandler(() => window.clearInterval(this.pingTimer));
-
-            this.ws.onmessage = (ev: MessageEvent) => {
-              if (typeof ev.data === 'string') {
-                this.messages.next(JSON.parse(ev.data));
-              }
-            };
-
-            this.ready.next(true);
-          };
-        },
+        (url: ({ clientUrl: string })) => this.connect(url.clientUrl),
         (err: any) => {
           alert(err);
           console.log(err);
@@ -49,8 +24,37 @@ export class CommandChannelService implements OnDestroy {
       );
   }
 
+  connect(clientUrl: string): void {
+    this.ws = new WebSocket(clientUrl);
+    // TODO this.ws.onerror = doSomethingWithErrors();
+    this.ws.onclose = () => this.onSocketClose();
+    this.ws.onopen = () => {
+
+      this.pingTimer = window.setInterval(() => {
+        this.sendMessage('ping');
+      }, 60000);
+
+      this.addCloseHandler(() => this.ready.next(false));
+      this.addCloseHandler(() => window.clearInterval(this.pingTimer));
+
+      this.ready.next(true);
+    };
+    this.ws.onmessage = (ev: MessageEvent) => {
+      if (typeof ev.data === 'string') {
+        this.messages.next(JSON.parse(ev.data));
+      }
+    };
+  }
+
+  disconnect(): void {
+    if (this.ws) {
+      this.ws.close();
+      delete this.ws;
+    }
+  }
+
   ngOnDestroy(): void {
-    this.ws.close();
+    this.disconnect();
   }
 
   isReady(): Observable<boolean> {
@@ -65,7 +69,7 @@ export class CommandChannelService implements OnDestroy {
     this.ws.send(JSON.stringify({ command, args } as CommandMessage));
   }
 
-  onResponse(command: string): Observable<any> {
+  onResponse(command: string): Observable<ResponseMessage<any>> {
     return this.messages
       .asObservable()
       .pipe(

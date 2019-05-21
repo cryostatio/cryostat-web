@@ -2,14 +2,13 @@
   <h1>
     container-jmc web UI
   </h1>
-  <div *ngIf="svc.isReady() | async">
+  <div *ngIf="svc.isReady() | async; else disconnected">
     <div>
       Connection Established
     </div>
 
     <hr />
 
-    <div>Client connection: {{connected}}</div>
     <span>JMX Commands</span>
     <div>
       <p><app-connect-button [hosts]="hosts" (fired)="sendMessage($event)"></app-connect-button></p>
@@ -27,6 +26,6 @@
     ></app-recording-list>
   </div>
   <ng-template #disconnected>
-    <!-- <app-client-connect (clientSelected)="wsConnect($event)" [connected]="wsConnected"></app-client-connect> -->
+    <app-client-connect></app-client-connect>
   </ng-template>
 </div>

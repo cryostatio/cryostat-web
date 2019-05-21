@@ -1,9 +1,9 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { CommandChannelService, ListMessage, ResponseMessage, StringMessage } from './command-channel.service';
 import { JvmTarget } from './connect/connect-button.component';
 import { Recording } from './recording-list/recording-list.component';
-import { CommandChannelService, ResponseMessage, StringMessage, ListMessage } from './command-channel.service';
-import { filter, tap } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',

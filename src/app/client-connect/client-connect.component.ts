@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommandChannelService } from '../command-channel.service';
 
 @Component({
@@ -6,14 +6,13 @@ import { CommandChannelService } from '../command-channel.service';
   templateUrl: './client-connect.component.html'
 })
 export class ClientConnectComponent {
-  @Output() clientSelected = new EventEmitter<string>();
-  @Input() connected = false;
   clientUrl = '';
 
   constructor(
     public svc: CommandChannelService,
   ) { }
 
-  fire(): void {
+  connect(): void {
+    this.svc.connect(this.clientUrl);
   }
 }

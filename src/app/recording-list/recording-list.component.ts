@@ -1,6 +1,6 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
-import { CommandChannelService, StringMessage } from '../command-channel.service';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { CommandChannelService, StringMessage } from '../command-channel.service';
 
 @Component({
   selector: 'app-recording-list',
