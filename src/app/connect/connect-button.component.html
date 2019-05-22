@@ -1,9 +1,9 @@
 <div>
   <span>Target JVM&mdash;</span>
-  <select [(ngModel)]="host" (change)="fire()">
-    <option value="">Disconnect</option>
-    <option *ngFor="let h of hosts" [value]="h.ip">{{h.ip}} ({{h.hostname}})</option>
-    <option value="rescan">Rescan</option>
+  <select class="pf-c-options-menu pf-m-text" [(ngModel)]="host" (change)="fire()">
+    <option class="pf-c-options-menu__menu-item" value="">Disconnect</option>
+    <option class="pf-c-options-menu__menu-item" *ngFor="let h of hosts" [value]="h.ip">{{h.ip}} ({{h.hostname}})</option>
+    <option class="pf-c-options-menu__menu-item" value="rescan">Rescan</option>
   </select>
   <div>
     <span>{{hosts.length}} found</span>
