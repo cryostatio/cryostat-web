@@ -41,6 +41,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
       this.hosts = [];
       this.svc.sendMessage('port-scan');
     } else if (this.host.trim().length > 0) {
+      this.svc.sendMessage('disconnect');
       this.svc.sendMessage('connect', [ this.host.trim() ]);
     } else {
       this.svc.sendMessage('disconnect');
