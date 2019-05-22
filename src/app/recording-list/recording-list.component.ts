@@ -42,8 +42,8 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         .subscribe(r => {
           this.connected = r.payload === 'true';
           if (this.connected && r.status === 0) {
-            this.svc.sendMessage('list');
-            this.refresh = window.setInterval(() => this.svc.sendMessage('list'), 10000);
+            this.refreshList();
+            this.refresh = window.setInterval(() => this.refreshList(), 10000);
             this.svc.sendMessage('url');
           }
         })
@@ -71,7 +71,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
       'stop',
     ].forEach(cmd => this.subscriptions.push(
       this.svc.onResponse(cmd)
-        .subscribe(() => this.svc.sendMessage('list'))
+        .subscribe(() => this.refreshList())
     ));
 
     this.subscriptions.push(
@@ -95,6 +95,10 @@ export class RecordingListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     window.clearInterval(this.refresh);
+  }
+
+  refreshList(): void {
+    this.svc.sendMessage('list');
   }
 
   delete(name: string): void {
