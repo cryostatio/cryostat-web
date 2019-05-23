@@ -1,32 +1,33 @@
 <div *ngIf="connected" class="col-sm-12 col-md-10 col-lg-8">
   <h2>
-    <span>Recordings</span>
-    <button (click)="refreshList()">Refresh</button>
+    <span>Recordings&nbsp;&nbsp;
+      <button class="btn btn-default" (click)="refreshList()"><span class="fa fa-refresh"></span></button>
+    </span>
   </h2>
-  <table style="width:100%">
-    <tr>
-      <th>Name</th>
-      <th>Start Date</th>
-      <th>State</th>
-      <th>Duration</th>
-      <th>Continuous</th>
-      <th>Actions</th>
-    </tr>
-    <tr *ngFor="let recording of recordings">
-      <td>{{recording.name}}</td>
-      <td>{{recording.startTime | date:'medium'}}</td>
-      <td>{{recording.state | titlecase}}</td>
-      <td>{{recording.duration / 1000}}s</td>
-      <td>{{recording.continuous}}</td>
-      <td>
-        <a href="{{downloadBaseUrl}}{{recording.name}}.jfr">Download</a>
-        |
-        <button (click)="delete(recording.name)">Delete</button>
-        <span *ngIf="recording.state != 'STOPPED'">
-          |
-          <button (click)="stop(recording.name)">Stop</button>
-        </span>
-      </td>
-    </tr>
-  </table>
+  <pfng-list
+    [config]="listConfig"
+    [items]="recordings"
+    [itemTemplate]="recordingTemplate"
+    [actionTemplate]="actionTemplate"
+    [expandTemplate]="expandTemplate"
+  ></pfng-list>
+  <ng-template #recordingTemplate let-item="item">
+    <div class="list-pf-left">
+      <span class="fa pficon-volume list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
+    </div>
+    <div class="list-pf-content-wrapper">
+      <div class="list-pf-main-content">
+        <div class="list-pf-title">{{item.name}}</div>
+        <div class="list-pf-description text-overflow-pf">{{item.startTime | date:'medium'}}</div>
+      </div>
+      <span>{{item.state | titlecase}} <span *ngIf="!item.continuous">({{item.duration / 1000}}s)</span></span>
+    </div>
+  </ng-template>
+  <ng-template #actionTemplate let-item="item">
+    <button class="btn btn-default"><a href="{{downloadBaseUrl}}{{item.name}}.jfr">Download</a></button>
+  </ng-template>
+  <ng-template #expandTemplate let-item="item">
+    <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
+    <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
+  </ng-template>
 </div>

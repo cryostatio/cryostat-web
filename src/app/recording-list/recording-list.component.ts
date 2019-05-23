@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage, StringMessage } from '../command-channel.service';
+import { ListConfig } from 'patternfly-ng/list';
 
 @Component({
   selector: 'app-recording-list',
@@ -13,13 +14,18 @@ export class RecordingListComponent implements OnInit, OnDestroy {
   connected = false;
   recordings: Recording[] = [];
   downloadBaseUrl: string;
+  listConfig: ListConfig;
 
   private refresh: number;
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
     private svc: CommandChannelService,
-  ) { }
+  ) {
+    this.listConfig = {
+      useExpandItems: true
+    };
+  }
 
   ngOnInit(): void {
     this.subscriptions.push(
