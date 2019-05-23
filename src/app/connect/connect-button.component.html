@@ -5,10 +5,10 @@
       Target JVM<span class="caret"></span>
     </button>
     <ul class="dropdown-menu" *dropdownMenu role="menu">
-      <li role="presentation"><a role="menuitem" (click)="setHost('')">Disconnect</a></li>
-      <li role="presentation"><a role="menuitem" (click)="setHost('rescan')">Rescan</a></li>
+      <li class="clickable" role="presentation"><a role="menuitem" (click)="setHost('')">Disconnect</a></li>
+      <li class="clickable" role="presentation"><a role="menuitem" (click)="setHost('rescan')">Rescan</a></li>
       <li role="presentation" class="divider"></li>
-      <li *ngFor="let h of hosts" role="presentation">
+      <li class="clickable" *ngFor="let h of hosts" role="presentation">
         <a role="menuitem" (click)="setHost(h.ip)">
           <div *ngIf="h.ip !== h.hostname; then displayIpAndHost else displayIp"></div>
           <ng-template #displayIpAndHost>{{h.ip}} ({{h.hostname}})</ng-template>
