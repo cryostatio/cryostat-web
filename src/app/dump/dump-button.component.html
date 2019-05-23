@@ -3,11 +3,11 @@
   <form id="recordingForm">
     <div class="form-group">
       <label for="recordingName">Name</label>
-      <input id="recordingName" type="text" class="form-control" [(ngModel)]="name" placeholder="Name" (keyup.enter)="submit()"/>
+      <input id="recordingName" type="text" class="form-control" [(ngModel)]="name" name="recordingName" placeholder="Name" (keyup.enter)="submit()"/>
     </div>
     <div class="form-group">
       <label for="recordingDuration">Duration</label>
-      <select id="recordingDuration" [(ngModel)]="duration" class="form-control">
+      <select id="recordingDuration" [(ngModel)]="duration" name="recordingDuration" class="form-control">
         <option value="-1">Unlimited</option>
         <option value="5">5 seconds</option>
         <option value="30">30 seconds</option>
@@ -16,7 +16,7 @@
     </div>
     <div class="form-group">
       <label for="recordingEvents">Events <span class="pficon-info clickable" (click)="showEventsHelp()"></span></label>
-      <input id="recordingEvents" type="text" class="form-control" [(ngModel)]="events" placeholder="events" (keyup.enter)="submit()"/>
+      <input id="recordingEvents" type="text" class="form-control" [(ngModel)]="events" name="recordingEvents" placeholder="events" (keyup.enter)="submit()"/>
     </div>
     <button type="submit" class="btn btn-primary" (click)="submit()">Submit</button>
   </form>
