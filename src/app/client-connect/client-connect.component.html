@@ -1,6 +1,4 @@
-<div *ngIf="svc.isReady() | async; else disconnected">
-</div>
-<ng-template #disconnected>
-  <input [(ngModel)]="clientUrl" placeholder="JMX Client URL" (keyup.enter)="connect()" autofocus/>
+<div class="col-sm-12 col-lg-4">
+  <input type="text" class="form-control" [(ngModel)]="clientUrl" placeholder="JMX Client URL" (keyup.enter)="connect()" autofocus/>
   <button (click)="connect()">Connect</button>
-</ng-template>
+</div>

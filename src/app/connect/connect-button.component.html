@@ -1,18 +1,20 @@
-<span *ngIf="host.length > 0">Connected {{host}}&mdash;</span>
-<div class="btn-group" dropdown>
-  <button class="btn btn-default dropdown-toggle" dropdownToggle type="button" data-toggle="dropdown">
-    Target JVM<span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" *dropdownMenu role="menu">
-    <li role="presentation"><a role="menuitem" (click)="setHost('')">Disconnect</a></li>
-    <li role="presentation"><a role="menuitem" (click)="setHost('rescan')">Rescan</a></li>
-    <li role="presentation" class="divider"></li>
-    <li *ngFor="let h of hosts" role="presentation">
-      <a role="menuitem" (click)="setHost(h.ip)">
-        <div *ngIf="h.ip !== h.hostname; then displayIpAndHost else displayIp"></div>
-        <ng-template #displayIpAndHost>{{h.ip}} ({{h.hostname}})</ng-template>
-        <ng-template #displayIp>{{h.ip}}</ng-template>
-      </a>
-    </li>
-  </ul>
+<div class="col-sm-12 col-md-8 col-lg-4">
+  <span *ngIf="host.length > 0">Connected {{host}}&mdash;</span>
+  <div class="btn-group" dropdown>
+    <button class="btn btn-default dropdown-toggle" dropdownToggle type="button" data-toggle="dropdown">
+      Target JVM<span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" *dropdownMenu role="menu">
+      <li role="presentation"><a role="menuitem" (click)="setHost('')">Disconnect</a></li>
+      <li role="presentation"><a role="menuitem" (click)="setHost('rescan')">Rescan</a></li>
+      <li role="presentation" class="divider"></li>
+      <li *ngFor="let h of hosts" role="presentation">
+        <a role="menuitem" (click)="setHost(h.ip)">
+          <div *ngIf="h.ip !== h.hostname; then displayIpAndHost else displayIp"></div>
+          <ng-template #displayIpAndHost>{{h.ip}} ({{h.hostname}})</ng-template>
+          <ng-template #displayIp>{{h.ip}}</ng-template>
+        </a>
+      </li>
+    </ul>
+  </div>
 </div>

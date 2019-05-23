@@ -1,23 +1,37 @@
-<div style="text-align:center">
-  <h1>
-    container-jmc web UI
-  </h1>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12 col-md-6">
+      <h1>
+        container-jmc web UI
+      </h1>
+    </div>
+  </div>
   <div *ngIf="svc.isReady() | async; else disconnected">
-    <div>
-      Connection Established
+    <div class="row">
+      <div class="col-sm-12">
+        Connection Established
+      </div>
+      <hr />
     </div>
 
-    <hr />
-
-    <span>JMX Commands</span>
     <div>
-      <p><app-connect-button></app-connect-button></p>
-      <p><app-dump-button></app-dump-button></p>
+      <span>JMX Commands</span>
+      <div class="row">
+        <app-connect-button></app-connect-button>
+      </div>
+      <div class="row">
+        <app-dump-button></app-dump-button>
+      </div>
+      <hr />
     </div>
 
-    <app-recording-list></app-recording-list>
+    <div class="row">
+      <app-recording-list></app-recording-list>
+    </div>
   </div>
   <ng-template #disconnected>
-    <app-client-connect></app-client-connect>
+    <div class="row">
+      <app-client-connect></app-client-connect>
+    </div>
   </ng-template>
 </div>
