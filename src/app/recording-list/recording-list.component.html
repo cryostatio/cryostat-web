@@ -1,9 +1,9 @@
 <div *ngIf="connected">
   <h2>
     <span>Recordings</span>
-    <button class="pf-c-button pf-m-tertiary" (click)="refreshList()">Refresh</button>
+    <button (click)="refreshList()">Refresh</button>
   </h2>
-  <table class="pf-c-table">
+  <table>
     <tr>
       <th>Name</th>
       <th>Start Date</th>
@@ -19,12 +19,12 @@
       <td>{{recording.duration / 1000}}s</td>
       <td>{{recording.continuous}}</td>
       <td>
-        <a class="pf-c-button pf-m-link" href="{{downloadBaseUrl}}{{recording.name}}.jfr">Download</a>
+        <a href="{{downloadBaseUrl}}{{recording.name}}.jfr">Download</a>
         |
-        <button class="pf-c-button pf-m-primary" (click)="delete(recording.name)">Delete</button>
+        <button (click)="delete(recording.name)">Delete</button>
         <span *ngIf="recording.state != 'STOPPED'">
           |
-          <button class="pf-c-button pf-m-secondary" (click)="stop(recording.name)">Stop</button>
+          <button (click)="stop(recording.name)">Stop</button>
         </span>
       </td>
     </tr>
