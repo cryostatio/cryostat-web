@@ -10,6 +10,7 @@ import { CommandChannelService, ListMessage } from '../command-channel.service';
 export class ConnectButtonComponent implements OnInit, OnDestroy {
   hosts = [];
   host = '';
+  hostname = '';
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -23,8 +24,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
         .subscribe(r => {
           this.hosts = (r as ListMessage).payload;
           if (this.hosts.length === 1) {
-            this.host = this.hosts[0].ip;
-            this.fire();
+            this.setHost(this.hosts[0].ip);
           }
         })
     );
@@ -42,14 +42,15 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  fire(): void {
-    if (this.host === 'rescan') {
+  setHost(host: string): void {
+    if (host === 'rescan') {
       this.hosts = [];
       this.host = '';
       this.svc.sendMessage('port-scan');
-    } else if (this.host.trim().length > 0) {
+    } else if (host.trim().length > 0) {
       this.svc.sendMessage('disconnect');
-      this.svc.sendMessage('connect', [ this.host.trim() ]);
+      this.svc.sendMessage('connect', [ host.trim() ]);
+      this.host = host;
     } else {
       this.svc.sendMessage('disconnect');
       this.host = '';
