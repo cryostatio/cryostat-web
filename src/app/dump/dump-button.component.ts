@@ -39,14 +39,14 @@ export class DumpButtonComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  dump(): void {
+  submit(): void {
     if (this.duration > 0) {
       this.svc.sendMessage('dump', [ this.name.trim(), String(this.duration), this.events ]);
     } else {
       this.svc.sendMessage('start', [ this.name.trim(), this.events ]);
     }
     this.name = '';
-    this.duration = 30;
+    this.duration = -1;
     this.events = '';
   }
 }
