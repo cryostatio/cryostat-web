@@ -15,7 +15,7 @@
       </select>
     </div>
     <div class="form-group">
-      <label for="recordingEvents">Events</label>
+      <label for="recordingEvents">Events <span class="pficon-info clickable" (click)="showEventsHelp()"></span></label>
       <input id="recordingEvents" type="text" class="form-control" [(ngModel)]="events" placeholder="events" (keyup.enter)="submit()"/>
     </div>
     <button type="submit" class="btn btn-primary" (click)="submit()">Submit</button>

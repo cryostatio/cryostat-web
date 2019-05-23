@@ -49,4 +49,8 @@ export class DumpButtonComponent implements OnInit, OnDestroy {
     this.duration = -1;
     this.events = '';
   }
+
+  showEventsHelp(): void {
+    alert('ex. jdk.CPULoad:enabled=true,jdk.PhysicalMemory:enabled=true');
+  }
 }
