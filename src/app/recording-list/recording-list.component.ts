@@ -49,6 +49,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
           this.connected = r.payload === 'true';
           if (this.connected && r.status === 0) {
             this.refreshList();
+            window.clearInterval(this.refresh);
             this.refresh = window.setInterval(() => this.refreshList(), 10000);
             this.svc.sendMessage('url');
           }
@@ -82,7 +83,11 @@ export class RecordingListComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.svc.onResponse('connect')
-        .subscribe(() => this.connected = true)
+        .subscribe(() => {
+          this.connected = true;
+          window.clearInterval(this.refresh);
+          this.refresh = window.setInterval(() => this.refreshList(), 10000);
+        })
     );
 
     this.svc.isReady()
