@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { NotificationService, ToastNotificationModule, ToastNotificationListModule } from 'patternfly-ng/notification';
 
 // import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,6 +19,8 @@ import { CommandChannelService } from './command-channel.service';
   imports: [
     BrowserModule,
     HttpClientModule,
+    ToastNotificationModule,
+    ToastNotificationListModule,
     // AppRoutingModule,
     ClientConnectModule,
     ConnectButtonModule,
@@ -26,6 +29,7 @@ import { CommandChannelService } from './command-channel.service';
   ],
   providers: [
     CommandChannelService,
+    NotificationService,
   ],
   bootstrap: [AppComponent]
 })

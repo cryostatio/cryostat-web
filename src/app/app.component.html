@@ -4,6 +4,7 @@
       <h1>
         container-jmc web UI
       </h1>
+      <pfng-toast-notification-list [notifications]="notifications | async"></pfng-toast-notification-list>
     </div>
   </div>
   <div *ngIf="svc.isReady() | async; else disconnected">

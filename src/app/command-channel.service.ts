@@ -2,6 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
+import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 
 @Injectable()
 export class CommandChannelService implements OnDestroy {
@@ -12,7 +13,8 @@ export class CommandChannelService implements OnDestroy {
   private pingTimer: number;
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private notifications: NotificationService,
   ) {
     this.http.get('/clienturl')
       .subscribe(
@@ -22,6 +24,7 @@ export class CommandChannelService implements OnDestroy {
           console.log(err);
         }
       );
+    this.notifications.setDelay(15000);
   }
 
   connect(clientUrl: string): void {
@@ -41,7 +44,13 @@ export class CommandChannelService implements OnDestroy {
     };
     this.ws.onmessage = (ev: MessageEvent) => {
       if (typeof ev.data === 'string') {
-        this.messages.next(JSON.parse(ev.data));
+        const msg: ResponseMessage<any> = JSON.parse(ev.data);
+        this.messages.next(msg);
+        if (msg.status !== 0) {
+          this.notifications.message(
+            NotificationType.WARNING, msg.commandName, msg.payload, false, null, null
+          );
+        }
       }
     };
   }
