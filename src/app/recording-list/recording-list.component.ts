@@ -134,7 +134,7 @@ export interface Recording {
   name: string;
   state: string;
   duration: number;
-  startTime: Date;
+  startTime: number;
   continuous: boolean;
   toDisk: boolean;
   maxSize: number;
