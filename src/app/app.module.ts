@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 
 import { ClientConnectModule } from './client-connect/client-connect.module';
 import { ConnectButtonModule } from './connect/connect-button.module';
-import { DumpButtonModule } from './dump/dump-button.module';
+import { CreateRecordingModule } from './create-recording/create-recording.module';
 import { RecordingListModule } from './recording-list/recording-list.module';
 import { CommandChannelService } from './command-channel.service';
 
@@ -24,7 +24,7 @@ import { CommandChannelService } from './command-channel.service';
     // AppRoutingModule,
     ClientConnectModule,
     ConnectButtonModule,
-    DumpButtonModule,
+    CreateRecordingModule,
     RecordingListModule,
   ],
   providers: [

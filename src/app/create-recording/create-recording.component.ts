@@ -4,10 +4,10 @@ import { Subscription } from 'rxjs';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
-  selector: 'app-dump-button',
-  templateUrl: './dump-button.component.html'
+  selector: 'app-create-recording-form',
+  templateUrl: './create-recording.component.html'
 })
-export class DumpButtonComponent implements OnInit, OnDestroy {
+export class CreateRecordingComponent implements OnInit, OnDestroy {
   name = '';
   duration = -1;
   events = '';

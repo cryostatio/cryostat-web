@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import { DumpButtonComponent } from './dump-button.component';
+import { CreateRecordingComponent } from './create-recording.component';
 
 @NgModule({
   imports: [
@@ -11,10 +11,10 @@ import { DumpButtonComponent } from './dump-button.component';
     ModalModule.forRoot(),
   ],
   declarations: [
-    DumpButtonComponent
+    CreateRecordingComponent
   ],
   exports: [
-    DumpButtonComponent
+    CreateRecordingComponent
   ]
 })
-export class DumpButtonModule { }
+export class CreateRecordingModule { }
