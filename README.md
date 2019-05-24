@@ -6,7 +6,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Run a `container-jmc` instance with WebSocket communication enabled, listening on port 9090. For example,
 
-`docker run --name container-jmc -d --rm -p 9090:9090 andrewazores/container-jmx-client`
+`docker run --name container-jmc -d --rm -p 9090:9090 -p 9091:9091 andrewazores/container-jmx-client`
 
 will run a suitable instance using Docker.
 
