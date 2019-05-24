@@ -1,8 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage, StringMessage } from '../command-channel.service';
 import { ListConfig } from 'patternfly-ng/list';
+import { CreateRecordingComponent } from '../create-recording/create-recording.component';
+import { BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-recording-list',
@@ -21,6 +23,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
 
   constructor(
     private svc: CommandChannelService,
+    private modalSvc: BsModalService,
   ) {
     this.listConfig = {
       useExpandItems: true
@@ -126,6 +129,17 @@ export class RecordingListComponent implements OnInit, OnDestroy {
 
   stop(name: string): void {
     this.svc.sendMessage('stop', [ name ]);
+  }
+
+  openRecordingForm(): void {
+    this.modalSvc.show(CreateRecordingComponent, {
+      initialState: {
+        svc: this.svc,
+        name: '',
+        events: '',
+        duration: -1
+      }
+    });
   }
 }
 
