@@ -60,9 +60,10 @@ export class RecordingListComponent implements OnInit, OnDestroy {
       this.svc.onResponse('list')
         .subscribe(r => {
           const msg = (r as ResponseMessage<Recording[]>);
-          console.log(msg);
           if (msg.status === 0) {
             this.recordings = (r as ResponseMessage<Recording[]>).payload;
+          } else {
+            window.clearInterval(this.refresh);
           }
         })
     );
