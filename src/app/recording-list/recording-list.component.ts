@@ -61,7 +61,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         .subscribe(r => {
           const msg = (r as ResponseMessage<Recording[]>);
           if (msg.status === 0) {
-            this.recordings = (r as ResponseMessage<Recording[]>).payload;
+            this.recordings = (r as ResponseMessage<Recording[]>).payload.sort((a, b) => Math.min(a.startTime, b.startTime));
           } else {
             window.clearInterval(this.refresh);
           }
