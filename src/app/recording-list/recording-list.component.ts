@@ -46,8 +46,8 @@ export class RecordingListComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.svc.onResponse('is-connected')
         .subscribe(r => {
-          this.connected = r.payload === 'true';
-          if (this.connected && r.status === 0) {
+          this.connected = r.status === 0 && r.payload === 'true';
+          if (this.connected) {
             this.refreshList();
             window.clearInterval(this.refresh);
             this.refresh = window.setInterval(() => this.refreshList(), 10000);
