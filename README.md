@@ -4,7 +4,15 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run a `container-jmc` instance with WebSocket communication enabled, listening on port 9090. For example,
+
+`docker run --name container-jmc -d --rm -p 9090:9090 andrewazores/container-jmx-client`
+
+will run a suitable instance using Docker.
+
+Then, run the `mockapi.server.js` in this project using Node, ie `node mockapi.server.js &`
+
+Finally, run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -13,6 +21,12 @@ Run `ng generate component component-name` to generate a new component. You can 
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+
+A Docker image can be produced with ex. `docker build -t container-jmc-web .` . The URL used for automatic connection to the
+
+background `container-jmc` instance can be configured at Docker container startup time by setting the environment variable
+
+`CONTAINER_JMX_CLIENT_URL` to the desired URL (be sure to include any paths if required, and that the protocol is `ws://`).
 
 ## Running unit tests
 
