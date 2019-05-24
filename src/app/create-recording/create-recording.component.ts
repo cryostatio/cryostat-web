@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, TemplateRef } from '@angular/core';
 import { CommandChannelService } from '../command-channel.service';
 import { Subscription } from 'rxjs';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-create-recording-form',
@@ -17,7 +16,6 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
 
   constructor(
     public svc: CommandChannelService,
-    public modalSvc: BsModalService,
   ) { }
 
   ngOnInit(): void {
@@ -50,9 +48,5 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
     this.name = '';
     this.duration = -1;
     this.events = '';
-  }
-
-  openModal(modalTemplate: TemplateRef<any>): void {
-    const modalRef: BsModalRef = this.modalSvc.show(modalTemplate);
   }
 }
