@@ -15,9 +15,13 @@
       </select>
     </div>
     <div class="form-group">
-      <label for="recordingEvents">Events <span class="pficon-info clickable" (click)="showEventsHelp()"></span></label>
+      <label for="recordingEvents">Events <span class="pficon-info clickable" (click)="openModal(modalTemplate)"></span></label>
       <input id="recordingEvents" type="text" class="form-control" [(ngModel)]="events" name="recordingEvents" placeholder="events" (keyup.enter)="submit()"/>
     </div>
     <button type="submit" class="btn btn-primary" (click)="submit()">Submit</button>
   </form>
 </div>
+
+<ng-template #modalTemplate>
+  ex. jdk.CPULoad:enabled=true,jdk.PhysicalMemory:enabled=true
+</ng-template>

@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, TemplateRef } from '@angular/core';
 import { CommandChannelService } from '../command-channel.service';
 import { Subscription } from 'rxjs';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-dump-button',
@@ -16,6 +17,7 @@ export class DumpButtonComponent implements OnInit, OnDestroy {
 
   constructor(
     public svc: CommandChannelService,
+    public modalSvc: BsModalService,
   ) { }
 
   ngOnInit(): void {
@@ -50,7 +52,7 @@ export class DumpButtonComponent implements OnInit, OnDestroy {
     this.events = '';
   }
 
-  showEventsHelp(): void {
-    alert('ex. jdk.CPULoad:enabled=true,jdk.PhysicalMemory:enabled=true');
+  openModal(modalTemplate: TemplateRef<any>): void {
+    const modalRef: BsModalRef = this.modalSvc.show(modalTemplate);
   }
 }
