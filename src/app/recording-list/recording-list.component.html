@@ -6,14 +6,16 @@
       </span>
     </div>
     <div *ngIf="connected === State.CONNECTED">
-      <h2>
-        <span>
-          Recordings&nbsp;&nbsp;
+      <div class="card-pf-heading-kebab">
+        <div class="pull-right">
           <button class="btn btn-default" (click)="openRecordingForm()"><span class="fa pficon-add-circle-o"></span></button>
-          &nbsp;&nbsp;
           <button class="btn btn-default" (click)="refreshList()"><span class="fa fa-refresh"></span></button>
-        </span>
+        </div>
+      </div>
+      <h2 class="card-pf-title">
+        Recordings
       </h2>
+      <hr />
       <pfng-list
         [config]="listConfig"
         [items]="recordings"
