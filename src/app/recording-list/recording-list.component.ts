@@ -106,6 +106,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         filter(ready => !!ready)
       )
       .subscribe(ready => {
+        this.svc.sendMessage('url');
         if (ready) {
           this.svc.sendMessage('is-connected');
         } else {
