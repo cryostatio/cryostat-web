@@ -1,5 +1,5 @@
-<div class="container-fluid">
-  <div class="row">
+<div class="container-fluid container-cards-pf">
+  <div class="row row-cards-pf">
     <div class="col-sm-12 col-md-6">
       <h1>
         container-jmc web UI
@@ -8,23 +8,27 @@
     </div>
   </div>
   <div *ngIf="svc.isReady() | async; else disconnected">
-    <div class="row">
+    <div class="row row-cards-pf">
       <div class="col-sm-12">
         Connection Established
       </div>
       <hr />
     </div>
 
-    <div class="row">
-      <app-connect-button></app-connect-button>
+    <div class="row row-cards-pf">
+      <div class="col-sm-12 col-md-2">
+        <app-connect-button></app-connect-button>
+      </div>
     </div>
 
-    <div class="row">
-      <app-recording-list></app-recording-list>
+    <div class="row row-cards-pf">
+      <div class="col-sm-12 col-md-10 col-lg-8">
+        <app-recording-list></app-recording-list>
+      </div>
     </div>
   </div>
   <ng-template #disconnected>
-    <div class="row">
+    <div class="row row-cards-pf">
       <app-client-connect></app-client-connect>
     </div>
   </ng-template>
