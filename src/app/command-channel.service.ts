@@ -46,7 +46,7 @@ export class CommandChannelService implements OnDestroy {
       if (typeof ev.data === 'string') {
         const msg: ResponseMessage<any> = JSON.parse(ev.data);
         this.messages.next(msg);
-        if (msg.status !== 0) {
+        if (msg.status !== 0 && msg.commandName !== 'disconnect') {
           this.notifications.message(
             NotificationType.WARNING, msg.commandName, msg.payload, false, null, null
           );
