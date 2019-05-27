@@ -38,7 +38,9 @@ export class CommandChannelService implements OnDestroy {
 
   connect(clientUrl: string): void {
     this.ws = new WebSocket(clientUrl);
-    // TODO this.ws.onerror = doSomethingWithErrors();
+    this.ws.onerror = (evt: Event) => this.notifications.message(
+      NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), true, null, null
+    );
     this.ws.onclose = () => this.onSocketClose();
     this.ws.onopen = () => {
       this.pingTimer = window.setInterval(() => {
