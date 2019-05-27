@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
@@ -9,6 +9,7 @@ export class CommandChannelService implements OnDestroy {
   private ws: WebSocket;
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
+  private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private closeHandlers: (() => void)[] = [];
   private pingTimer: number;
 
@@ -18,13 +19,20 @@ export class CommandChannelService implements OnDestroy {
   ) {
     this.http.get('/clienturl')
       .subscribe(
-        (url: ({ clientUrl: string })) => this.connect(url.clientUrl),
+        (url: ({ clientUrl: string })) => {
+          this.connect(url.clientUrl);
+          this.clientUrlSubject.next(url.clientUrl);
+        },
         (err: any) => {
           alert(err);
           console.log(err);
         }
       );
     this.notifications.setDelay(15000);
+  }
+
+  clientUrl(): Observable<string> {
+    return this.clientUrlSubject.asObservable();
   }
 
   connect(clientUrl: string): void {
