@@ -6,10 +6,11 @@ import { NotificationService, ToastNotificationModule, ToastNotificationListModu
 // import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
+import { CommandChannelService } from './command-channel.service';
 import { ClientConnectModule } from './client-connect/client-connect.module';
 import { ConnectButtonModule } from './connect/connect-button.module';
 import { RecordingListModule } from './recording-list/recording-list.module';
-import { CommandChannelService } from './command-channel.service';
+import { EventTypesModule } from './event-types/event-types.module';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { CommandChannelService } from './command-channel.service';
     ClientConnectModule,
     ConnectButtonModule,
     RecordingListModule,
+    EventTypesModule,
   ],
   providers: [
     CommandChannelService,
