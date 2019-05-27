@@ -73,7 +73,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.svc.onResponse('disconnect')
-        .subscribe(r => {
+        .subscribe(() => {
           window.clearInterval(this.refresh);
           this.recordings = [];
           this.connected = false;
@@ -89,15 +89,21 @@ export class RecordingListComponent implements OnInit, OnDestroy {
       'stop',
     ].forEach(cmd => this.subscriptions.push(
       this.svc.onResponse(cmd)
-        .subscribe(() => this.refreshList())
+        .subscribe((resp) => {
+          if (resp.status === 0) {
+            this.refreshList();
+          }
+        })
     ));
 
     this.subscriptions.push(
       this.svc.onResponse('connect')
-        .subscribe(() => {
-          this.connected = true;
+        .subscribe((resp) => {
           window.clearInterval(this.refresh);
-          this.refresh = window.setInterval(() => this.refreshList(), 10000);
+          if (resp.status === 0) {
+            this.connected = true;
+            this.refresh = window.setInterval(() => this.refreshList(), 10000);
+          }
         })
     );
 
