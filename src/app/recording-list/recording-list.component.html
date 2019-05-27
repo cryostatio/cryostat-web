@@ -1,36 +1,48 @@
-<div *ngIf="connected" class="col-sm-12 col-md-10 col-lg-8">
-  <h2>
+<div class="col-sm-12 col-md-10 col-lg-8">
+  <div *ngIf="connected === State.UNKNOWN">
     <span>
-      Recordings&nbsp;&nbsp;
-      <button class="btn btn-default" (click)="openRecordingForm()"><span class="fa pficon-add-circle-o"></span></button>
-      &nbsp;&nbsp;
-      <button class="btn btn-default" (click)="refreshList()"><span class="fa fa-refresh"></span></button>
+      Checking JVM Target connection...
     </span>
-  </h2>
-  <pfng-list
-    [config]="listConfig"
-    [items]="recordings"
-    [itemTemplate]="recordingTemplate"
-    [actionTemplate]="actionTemplate"
-    [expandTemplate]="expandTemplate"
-  ></pfng-list>
-  <ng-template #recordingTemplate let-item="item">
-    <div class="list-pf-left">
-      <span class="fa pficon-volume list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
-    </div>
-    <div class="list-pf-content-wrapper">
-      <div class="list-pf-main-content">
-        <div class="list-pf-title">{{item.name}}</div>
-        <div class="list-pf-description text-overflow-pf">{{item.startTime | date:'medium'}}</div>
+  </div>
+  <div *ngIf="connected === State.CONNECTED">
+    <h2>
+      <span>
+        Recordings&nbsp;&nbsp;
+        <button class="btn btn-default" (click)="openRecordingForm()"><span class="fa pficon-add-circle-o"></span></button>
+        &nbsp;&nbsp;
+        <button class="btn btn-default" (click)="refreshList()"><span class="fa fa-refresh"></span></button>
+      </span>
+    </h2>
+    <pfng-list
+      [config]="listConfig"
+      [items]="recordings"
+      [itemTemplate]="recordingTemplate"
+      [actionTemplate]="actionTemplate"
+      [expandTemplate]="expandTemplate"
+    ></pfng-list>
+    <ng-template #recordingTemplate let-item="item">
+      <div class="list-pf-left">
+        <span class="fa pficon-volume list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
       </div>
-      <span>{{item.state | titlecase}} <span *ngIf="!item.continuous">({{item.duration / 1000}}s)</span></span>
-    </div>
-  </ng-template>
-  <ng-template #actionTemplate let-item="item">
-    <button class="btn btn-default"><a href="{{downloadBaseUrl}}{{item.name}}.jfr">Download</a></button>
-  </ng-template>
-  <ng-template #expandTemplate let-item="item">
-    <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
-    <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
-  </ng-template>
+      <div class="list-pf-content-wrapper">
+        <div class="list-pf-main-content">
+          <div class="list-pf-title">{{item.name}}</div>
+          <div class="list-pf-description text-overflow-pf">{{item.startTime | date:'medium'}}</div>
+        </div>
+        <span>{{item.state | titlecase}} <span *ngIf="!item.continuous">({{item.duration / 1000}}s)</span></span>
+      </div>
+    </ng-template>
+    <ng-template #actionTemplate let-item="item">
+      <button class="btn btn-default"><a href="{{downloadBaseUrl}}{{item.name}}.jfr">Download</a></button>
+    </ng-template>
+    <ng-template #expandTemplate let-item="item">
+      <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
+      <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
+    </ng-template>
+  </div>
+  <div *ngIf="connected === State.DISCONNECTED">
+    <span>
+      No JVM Target connection
+    </span>
+  </div>
 </div>

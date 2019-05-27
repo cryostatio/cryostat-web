@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { ListConfig } from 'patternfly-ng/list';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage, StringMessage } from '../command-channel.service';
-import { ListConfig } from 'patternfly-ng/list';
 import { CreateRecordingComponent } from '../create-recording/create-recording.component';
-import { BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-recording-list',
@@ -13,7 +13,8 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 })
 export class RecordingListComponent implements OnInit, OnDestroy {
 
-  connected = false;
+  State = ConnectionState;
+  connected: ConnectionState = ConnectionState.UNKNOWN;
   recordings: Recording[] = [];
   downloadBaseUrl: string;
   listConfig: ListConfig;
@@ -49,8 +50,12 @@ export class RecordingListComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.svc.onResponse('is-connected')
         .subscribe(r => {
-          this.connected = r.status === 0 && r.payload === 'true';
-          if (this.connected) {
+          if (r.status !== 0) {
+            this.connected = ConnectionState.UNKNOWN;
+          } else {
+            this.connected = r.payload === 'true' ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
+          }
+          if (this.connected === ConnectionState.CONNECTED) {
             this.refreshList();
             window.clearInterval(this.refresh);
             this.refresh = window.setInterval(() => this.refreshList(), 10000);
@@ -76,7 +81,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         .subscribe(() => {
           window.clearInterval(this.refresh);
           this.recordings = [];
-          this.connected = false;
+          this.connected = ConnectionState.DISCONNECTED;
         })
     );
 
@@ -101,8 +106,11 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         .subscribe((resp) => {
           window.clearInterval(this.refresh);
           if (resp.status === 0) {
-            this.connected = true;
+            this.svc.sendMessage('url');
+            this.connected = ConnectionState.CONNECTED;
             this.refresh = window.setInterval(() => this.refreshList(), 10000);
+          } else {
+            this.connected = ConnectionState.UNKNOWN;
           }
         })
     );
@@ -112,7 +120,6 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         filter(ready => !!ready)
       )
       .subscribe(ready => {
-        this.svc.sendMessage('url');
         if (ready) {
           this.svc.sendMessage('is-connected');
         } else {
@@ -160,4 +167,10 @@ export interface Recording {
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
+}
+
+enum ConnectionState {
+  UNKNOWN,
+  CONNECTED,
+  DISCONNECTED,
 }
