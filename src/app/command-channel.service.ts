@@ -20,10 +20,9 @@ export class CommandChannelService implements OnDestroy {
     this.http.get('/clienturl')
       .subscribe(
         (url: ({ clientUrl: string })) => this.clientUrlSubject.next(url.clientUrl),
-        (err: any) => {
-          alert(err);
-          console.log(err);
-        }
+        (err: any) => this.notifications.message(
+          NotificationType.WARNING, 'Client URL Request Error', JSON.stringify(err), false, null, null
+        )
       );
 
     this.clientUrl().pipe(
@@ -67,7 +66,7 @@ export class CommandChannelService implements OnDestroy {
     });
 
     this.ws.addEventListener('error', (evt: Event) => this.notifications.message(
-      NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), true, null, null
+      NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), false, null, null
     ));
   }
 
