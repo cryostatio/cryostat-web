@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subject, BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Subject, BehaviorSubject, Observable, ReplaySubject, Subscription } from 'rxjs';
+import { filter, first } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 
@@ -12,17 +12,18 @@ export class CommandChannelService implements OnDestroy {
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private closeHandlers: (() => void)[] = [];
   private pingTimer: number;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private http: HttpClient,
     private notifications: NotificationService,
   ) {
+    this.clientUrl().pipe(
+      first()
+    ).subscribe(url => this.connect(url));
     this.http.get('/clienturl')
       .subscribe(
-        (url: ({ clientUrl: string })) => {
-          this.connect(url.clientUrl);
-          this.clientUrlSubject.next(url.clientUrl);
-        },
+        (url: ({ clientUrl: string })) => this.clientUrlSubject.next(url.clientUrl),
         (err: any) => {
           alert(err);
           console.log(err);
@@ -40,27 +41,32 @@ export class CommandChannelService implements OnDestroy {
     // TODO this.ws.onerror = doSomethingWithErrors();
     this.ws.onclose = () => this.onSocketClose();
     this.ws.onopen = () => {
-
       this.pingTimer = window.setInterval(() => {
         this.sendMessage('ping');
       }, 60000);
 
       this.addCloseHandler(() => this.ready.next(false));
       this.addCloseHandler(() => window.clearInterval(this.pingTimer));
+      this.addCloseHandler(() => {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
+        this.subscriptions = [];
+      });
 
       this.ready.next(true);
     };
     this.ws.onmessage = (ev: MessageEvent) => {
       if (typeof ev.data === 'string') {
-        const msg: ResponseMessage<any> = JSON.parse(ev.data);
-        this.messages.next(msg);
-        if (msg.status !== 0 && msg.commandName !== 'disconnect') {
-          this.notifications.message(
-            NotificationType.WARNING, msg.commandName, msg.payload, false, null, null
-          );
-        }
+        this.messages.next(JSON.parse(ev.data));
       }
     };
+    this.subscriptions.push(
+      this.messages.pipe(
+        filter(msg => msg.status !== 0),
+        filter(msg => msg.commandName !== 'disconnect')
+      ).subscribe(msg => this.notifications.message(
+        NotificationType.WARNING, msg.commandName, msg.payload, false, null, null
+      ))
+    );
   }
 
   disconnect(): void {
