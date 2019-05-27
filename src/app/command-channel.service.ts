@@ -6,21 +6,17 @@ import { NotificationService, NotificationType } from 'patternfly-ng/notificatio
 
 @Injectable()
 export class CommandChannelService implements OnDestroy {
+
   private ws: WebSocket;
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
-  private closeHandlers: (() => void)[] = [];
   private pingTimer: number;
-  private subscriptions: Subscription[] = [];
 
   constructor(
     private http: HttpClient,
     private notifications: NotificationService,
   ) {
-    this.clientUrl().pipe(
-      first()
-    ).subscribe(url => this.connect(url));
     this.http.get('/clienturl')
       .subscribe(
         (url: ({ clientUrl: string })) => this.clientUrlSubject.next(url.clientUrl),
@@ -29,6 +25,18 @@ export class CommandChannelService implements OnDestroy {
           console.log(err);
         }
       );
+
+    this.clientUrl().pipe(
+      first()
+    ).subscribe(url => this.connect(url));
+
+    this.messages.pipe(
+      filter(msg => msg.status !== 0),
+      filter(msg => msg.commandName !== 'disconnect')
+    ).subscribe(msg => this.notifications.message(
+      NotificationType.WARNING, msg.commandName, msg.payload, false, null, null
+    ));
+
     this.notifications.setDelay(15000);
   }
 
@@ -38,37 +46,29 @@ export class CommandChannelService implements OnDestroy {
 
   connect(clientUrl: string): void {
     this.ws = new WebSocket(clientUrl);
-    this.ws.onerror = (evt: Event) => this.notifications.message(
-      NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), true, null, null
-    );
-    this.ws.onclose = () => this.onSocketClose();
-    this.ws.onopen = () => {
-      this.pingTimer = window.setInterval(() => {
-        this.sendMessage('ping');
-      }, 60000);
 
-      this.addCloseHandler(() => this.ready.next(false));
-      this.addCloseHandler(() => window.clearInterval(this.pingTimer));
-      this.addCloseHandler(() => {
-        this.subscriptions.forEach(sub => sub.unsubscribe());
-        this.subscriptions = [];
-      });
+    this.ws.addEventListener('open', () => this.ready.next(true));
 
-      this.ready.next(true);
-    };
-    this.ws.onmessage = (ev: MessageEvent) => {
+    this.ws.addEventListener('message', (ev: MessageEvent) => {
       if (typeof ev.data === 'string') {
         this.messages.next(JSON.parse(ev.data));
       }
-    };
-    this.subscriptions.push(
-      this.messages.pipe(
-        filter(msg => msg.status !== 0),
-        filter(msg => msg.commandName !== 'disconnect')
-      ).subscribe(msg => this.notifications.message(
-        NotificationType.WARNING, msg.commandName, msg.payload, false, null, null
-      ))
-    );
+    });
+
+    this.ws.addEventListener('close', () => {
+      this.ready.next(false);
+      window.clearInterval(this.pingTimer);
+    });
+
+    this.ws.addEventListener('open', () => {
+      this.pingTimer = window.setInterval(() => {
+        this.sendMessage('ping');
+      }, 60000);
+    });
+
+    this.ws.addEventListener('error', (evt: Event) => this.notifications.message(
+      NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), true, null, null
+    ));
   }
 
   disconnect(): void {
@@ -87,7 +87,7 @@ export class CommandChannelService implements OnDestroy {
   }
 
   addCloseHandler(handler: () => void): void {
-    this.closeHandlers.push(handler);
+    this.ws.addEventListener('close', handler);
   }
 
   sendMessage(command: string, args: string[] = []): void {
@@ -102,11 +102,6 @@ export class CommandChannelService implements OnDestroy {
       .pipe(
         filter(m => m.commandName === command)
       );
-  }
-
-  private onSocketClose(): void {
-    this.closeHandlers.forEach(h => h.call(this));
-    this.closeHandlers = [];
   }
 }
 
