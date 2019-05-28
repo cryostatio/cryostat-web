@@ -70,6 +70,13 @@ export class EventTypesComponent implements OnInit {
       filter(r => r.payload === 'true'),
       first()
     ).subscribe(() => this.svc.sendMessage('list-event-types'));
+
+    this.svc.onResponse('connect').pipe(
+      filter(r => r.status === 0)
+    ).subscribe(() => this.svc.sendMessage('list-event-types'));
+
+    this.svc.onResponse('disconnect')
+      .subscribe(() => this.events = []);
   }
 
   getOptions(row: object): OptionDescriptor[] {
