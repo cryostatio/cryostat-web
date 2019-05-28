@@ -9,13 +9,6 @@
   </div>
   <div *ngIf="svc.isReady() | async; else disconnected">
     <div class="row row-cards-pf">
-      <div class="col-xs-12">
-        Connection Established
-      </div>
-      <hr />
-    </div>
-
-    <div class="row row-cards-pf">
       <div class="col-xs-12 col-sm-4 col-md-2">
         <app-connect-button></app-connect-button>
       </div>

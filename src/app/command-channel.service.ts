@@ -57,6 +57,9 @@ export class CommandChannelService implements OnDestroy {
     this.ws.addEventListener('close', () => {
       this.ready.next(false);
       window.clearInterval(this.pingTimer);
+      this.notifications.message(
+        NotificationType.INFO, 'WebSocket connection lost', null, false, null, null
+      );
     });
 
     this.ws.addEventListener('open', () => {
