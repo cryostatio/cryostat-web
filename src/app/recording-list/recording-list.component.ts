@@ -53,7 +53,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
           if (r.status !== 0) {
             this.connected = ConnectionState.UNKNOWN;
           } else {
-            this.connected = r.payload === 'true' ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
+            this.connected = r.payload === 'false' ? ConnectionState.DISCONNECTED : ConnectionState.CONNECTED;
           }
           if (this.connected === ConnectionState.CONNECTED) {
             this.refreshList();

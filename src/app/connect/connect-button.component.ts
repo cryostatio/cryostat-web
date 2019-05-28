@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { filter, first } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
 import { CommandChannelService, ListMessage } from '../command-channel.service';
 
 @Component({
@@ -36,6 +36,14 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.svc.sendMessage('port-scan');
       });
+    this.svc.onResponse('is-connected')
+      .pipe(
+        first(),
+        filter(msg => msg.status === 0),
+        map(msg => msg.payload as string),
+        filter(payload => payload !== 'false'),
+        map(v => v.split(':')[0])
+      ).subscribe(host => this.host = host);
   }
 
   ngOnDestroy(): void {

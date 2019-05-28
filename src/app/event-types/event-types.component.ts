@@ -67,7 +67,7 @@ export class EventTypesComponent implements OnInit {
 
     this.svc.onResponse('is-connected').pipe(
       filter(r => r.status === 0),
-      filter(r => r.payload === 'true'),
+      filter(r => r.payload !== 'false'),
       first()
     ).subscribe(() => this.svc.sendMessage('list-event-types'));
 
