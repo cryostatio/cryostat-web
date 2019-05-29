@@ -4,7 +4,8 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-snapshot-recording',
-  templateUrl: './snapshot-recording.component.html'
+  templateUrl: './snapshot-recording.component.html',
+  styleUrls: ['./snapshot-recording.component.less']
 })
 export class SnapshotRecordingComponent {
 
