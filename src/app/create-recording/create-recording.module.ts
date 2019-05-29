@@ -1,14 +1,14 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { CustomRecordingModule } from './custom-recording/custom-recording.module';
 import { CreateRecordingComponent } from './create-recording.component';
 
 @NgModule({
   imports: [
     BrowserModule,
-    FormsModule,
-    TooltipModule.forRoot(),
+    TabsModule.forRoot(),
+    CustomRecordingModule,
   ],
   declarations: [
     CreateRecordingComponent
