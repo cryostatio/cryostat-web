@@ -6,8 +6,10 @@
     <hr />
     <div class="table-wrapper">
       <pfng-table
+        [config]="config"
         [columns]="columns"
-        [rows]="events"
+        [rows]="filteredEvents"
+        (onFilterChange)="onFilterChange($event)"
         >
       </pfng-table>
       <ng-template #nameTemplate let-row="row">

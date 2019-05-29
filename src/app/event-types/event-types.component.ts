@@ -1,6 +1,9 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FilterConfig, FilterType, FilterEvent } from 'patternfly-ng/filter';
+import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { filter, first } from 'rxjs/operators';
 import { CommandChannelService } from '../command-channel.service';
+import { TableConfig } from 'patternfly-ng/table';
 
 @Component({
   selector: 'app-event-types',
@@ -15,8 +18,12 @@ export class EventTypesComponent implements OnInit {
   @ViewChild('categoryTemplate') categoryTemplate: TemplateRef<any>;
   @ViewChild('optionsTemplate') optionsTemplate: TemplateRef<any>;
 
+  filteredEvents: JfrEventType[];
   events: JfrEventType[];
   columns: any[];
+  config: TableConfig;
+  toolbarConfig: ToolbarConfig;
+  private filterConfig: FilterConfig;
 
   constructor(
     private svc: CommandChannelService,
@@ -58,10 +65,38 @@ export class EventTypesComponent implements OnInit {
       }
     ];
 
+    this.filterConfig = {
+      fields: [
+        {
+          id: 'searchTerm',
+          title: 'Search Term',
+          placeholder: 'Filter by search term...',
+          type: FilterType.TEXT
+        }
+      ],
+      appliedFilters: [],
+      resultsCount: 0,
+      totalCount: 0
+    };
+
+    this.toolbarConfig = {
+      filterConfig: this.filterConfig
+    } as ToolbarConfig;
+
+    this.config = {
+      dragEnabled: true,
+      showCheckbox: false,
+      toolbarConfig: this.toolbarConfig,
+      useExpandRows: false
+    };
+
     this.svc.onResponse('list-event-types')
       .subscribe(resp => {
         if (resp.status === 0) {
           this.events = resp.payload;
+          this.filteredEvents = [...this.events];
+          this.filterConfig.resultsCount = this.events.length;
+          this.filterConfig.totalCount = this.events.length;
         }
       });
 
@@ -85,6 +120,36 @@ export class EventTypesComponent implements OnInit {
     return ret;
   }
 
+  onFilterChange(event: FilterEvent): void {
+    if (event.appliedFilters.length === 0) {
+      this.filteredEvents = [...this.events];
+      this.filterConfig.resultsCount = this.filterConfig.totalCount;
+      return;
+    }
+    this.filteredEvents = this.events.filter(e => eventMatchesSearchTerms(e, event.appliedFilters.map(f => f.value)));
+    this.filterConfig.resultsCount = this.filteredEvents.length;
+  }
+}
+
+function eventMatchesSearchTerms(event: JfrEventType, searchTerms: string[]): boolean {
+  return searchTerms.some(term => eventMatchesSearchTerm(event, term));
+}
+
+function eventMatchesSearchTerm(event: JfrEventType, searchTerm: string): boolean {
+  if (!!event.name && event.name.toLowerCase().includes(searchTerm)) {
+    return true;
+  }
+  if (!!event.typeId && event.typeId.toLowerCase().includes(searchTerm)) {
+    return true;
+  }
+  if (!!event.description && event.description.toLowerCase().includes(searchTerm)) {
+    return true;
+  }
+  if (!!event.category && event.category.map(e => e.toLowerCase()).some(e => e.includes(searchTerm))) {
+    return true;
+  }
+
+  return false;
 }
 
 interface JfrEventType {
