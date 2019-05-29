@@ -1,6 +1,6 @@
 <div class="card-pf card-pf-view">
   <div class="card-pf-body">
-    <span *ngIf="host.length > 0">Connected {{host}}&mdash;</span>
+    <div *ngIf="host.length > 0">Connected {{host}}<hr /></div>
     <div class="btn-group" dropdown>
       <button class="btn btn-default dropdown-toggle" dropdownToggle type="button" data-toggle="dropdown">
         Target JVM<span class="caret"></span>
