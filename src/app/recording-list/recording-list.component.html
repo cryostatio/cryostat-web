@@ -7,7 +7,7 @@
     </div>
     <div *ngIf="connected === State.CONNECTED">
       <div class="card-pf-heading-kebab">
-        <div class="pull-right">
+        <div class="pull-right recording-list-toolbar">
           <label class="checkbox-inline">
             <input type="checkbox" [(ngModel)]="autoRefreshEnabled">
             Auto Refresh
@@ -43,8 +43,10 @@
         <button class="btn btn-default"><a href="{{downloadBaseUrl}}{{item.name}}.jfr">Download</a></button>
       </ng-template>
       <ng-template #expandTemplate let-item="item">
-        <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
-        <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
+        <div class="recording-actions">
+          <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
+          <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
+        </div>
       </ng-template>
     </div>
     <div *ngIf="connected === State.DISCONNECTED">
