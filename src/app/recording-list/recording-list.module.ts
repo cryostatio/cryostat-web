@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 import { ListModule } from 'patternfly-ng/list';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CreateRecordingModule } from '../create-recording/create-recording.module';
@@ -10,6 +11,7 @@ import { CreateRecordingComponent } from '../create-recording/create-recording.c
   imports: [
     BrowserModule,
     ListModule,
+    FormsModule,
     ModalModule.forRoot(),
     CreateRecordingModule,
   ],

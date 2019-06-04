@@ -32,6 +32,17 @@ export class RecordingListComponent implements OnInit, OnDestroy {
     };
   }
 
+  set autoRefreshEnabled(enabled: boolean) {
+    window.clearInterval(this.refresh);
+    if (enabled) {
+      this.refresh = window.setInterval(() => this.refreshList(), 10000);
+    }
+  }
+
+  get autoRefreshEnabled(): boolean {
+    return this.refresh != null;
+  }
+
   ngOnInit(): void {
     this.subscriptions.push(
       this.svc.onResponse('url')
@@ -58,8 +69,6 @@ export class RecordingListComponent implements OnInit, OnDestroy {
           }
           if (this.connected === ConnectionState.CONNECTED) {
             this.refreshList();
-            window.clearInterval(this.refresh);
-            this.refresh = window.setInterval(() => this.refreshList(), 10000);
             this.svc.sendMessage('url');
           }
         })
@@ -75,7 +84,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
               this.recordings = newRecordings;
             }
           } else {
-            window.clearInterval(this.refresh);
+            this.autoRefreshEnabled = false;
           }
         })
     );
@@ -83,7 +92,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.svc.onResponse('disconnect')
         .subscribe(() => {
-          window.clearInterval(this.refresh);
+          this.autoRefreshEnabled = false;
           this.recordings = [];
           this.connected = ConnectionState.DISCONNECTED;
         })
@@ -108,11 +117,9 @@ export class RecordingListComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.svc.onResponse('connect')
         .subscribe((resp) => {
-          window.clearInterval(this.refresh);
           if (resp.status === 0) {
             this.svc.sendMessage('url');
             this.connected = ConnectionState.CONNECTED;
-            this.refresh = window.setInterval(() => this.refreshList(), 10000);
           } else {
             this.connected = ConnectionState.UNKNOWN;
           }
@@ -126,8 +133,6 @@ export class RecordingListComponent implements OnInit, OnDestroy {
       .subscribe(ready => {
         if (ready) {
           this.svc.sendMessage('is-connected');
-        } else {
-          window.clearInterval(this.refresh);
         }
       });
   }

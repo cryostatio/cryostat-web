@@ -8,6 +8,10 @@
     <div *ngIf="connected === State.CONNECTED">
       <div class="card-pf-heading-kebab">
         <div class="pull-right">
+          <label class="checkbox-inline">
+            <input type="checkbox" [(ngModel)]="autoRefreshEnabled">
+            Auto Refresh
+          </label>
           <button class="btn btn-default" title="Create Recording..." (click)="openRecordingForm()"><span class="fa pficon-add-circle-o"></span></button>
           <button class="btn btn-default" title="Refresh" (click)="refreshList()"><span class="fa fa-refresh"></span></button>
         </div>
