@@ -111,7 +111,10 @@ export class EventTypesComponent implements OnInit {
     ).subscribe(() => this.svc.sendMessage('list-event-types'));
 
     this.svc.onResponse('disconnect')
-      .subscribe(() => this.events = []);
+      .subscribe(() => {
+        this.events = [];
+        this.filteredEvents = this.events;
+      });
   }
 
   getOptions(row: object): OptionDescriptor[] {
