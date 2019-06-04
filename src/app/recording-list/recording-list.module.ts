@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ListModule } from 'patternfly-ng/list';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { CreateRecordingModule } from '../create-recording/create-recording.module';
+import { ConfirmationDialogModule } from '../confirmation-dialog/confirmation-dialog.module';
 import { RecordingListComponent } from './recording-list.component';
 import { CreateRecordingComponent } from '../create-recording/create-recording.component';
 
@@ -14,6 +15,7 @@ import { CreateRecordingComponent } from '../create-recording/create-recording.c
     FormsModule,
     ModalModule.forRoot(),
     CreateRecordingModule,
+    ConfirmationDialogModule,
   ],
   declarations: [
     RecordingListComponent,

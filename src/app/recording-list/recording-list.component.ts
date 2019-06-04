@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage, StringMessage } from '../command-channel.service';
 import { CreateRecordingComponent } from '../create-recording/create-recording.component';
 import { isEqual } from 'lodash';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-recording-list',
@@ -147,11 +148,24 @@ export class RecordingListComponent implements OnInit, OnDestroy {
   }
 
   delete(name: string): void {
-    this.svc.sendMessage('delete', [ name ]);
+    this.modalSvc.show(ConfirmationDialogComponent, {
+      initialState: {
+        destructive: true,
+        title: 'Confirm Deletion',
+        message: 'Are you sure you would like to delete this recording? ' +
+        'Once deleted, recordings can not be retrieved and the data is lost.'
+      }
+    }).content.onAccept().subscribe(() => this.svc.sendMessage('delete', [ name ]));
   }
 
   stop(name: string): void {
-    this.svc.sendMessage('stop', [ name ]);
+    this.modalSvc.show(ConfirmationDialogComponent, {
+      initialState: {
+        destructive: true,
+        title: 'Confirm Stoppage',
+        message: 'Are you sure you would like to stop this recording?'
+      }
+    }).content.onAccept().subscribe(() => this.svc.sendMessage('stop', [ name ]));
   }
 
   openRecordingForm(): void {

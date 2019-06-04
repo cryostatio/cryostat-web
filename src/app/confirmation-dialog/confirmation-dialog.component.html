@@ -1,0 +1,13 @@
+<div class="container-fluid">
+  <h3 class="dialog-title">
+    {{title}}
+  </h3>
+  <hr />
+  <div class="dialog-content">
+    {{message}}
+  </div>
+  <div class="pull-right">
+    <button class="btn" [ngClass]="destructive ? 'btn-danger' : 'btn-primary'" (click)="doAccept()">Ok</button>
+    <button class="btn btn-default" (click)="doReject()">Cancel</button>
+  </div>
+</div>
