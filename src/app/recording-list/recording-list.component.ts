@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage, StringMessage } from '../command-channel.service';
 import { CreateRecordingComponent } from '../create-recording/create-recording.component';
+import { isEqual } from 'lodash';
 
 @Component({
   selector: 'app-recording-list',
@@ -69,7 +70,10 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         .subscribe(r => {
           const msg = (r as ResponseMessage<Recording[]>);
           if (msg.status === 0) {
-            this.recordings = (r as ResponseMessage<Recording[]>).payload.sort((a, b) => Math.min(a.startTime, b.startTime));
+            const newRecordings = (r as ResponseMessage<Recording[]>).payload.sort((a, b) => Math.min(a.startTime, b.startTime));
+            if (!isEqual(this.recordings, newRecordings)) {
+              this.recordings = newRecordings;
+            }
           } else {
             window.clearInterval(this.refresh);
           }
