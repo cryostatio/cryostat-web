@@ -129,7 +129,8 @@ export class EventTypesComponent implements OnInit {
       this.filterConfig.resultsCount = this.filterConfig.totalCount;
       return;
     }
-    this.filteredEvents = this.events.filter(e => eventMatchesSearchTerms(e, event.appliedFilters.map(f => f.value)));
+    const searchTerms = event.appliedFilters.map(f => f.value);
+    this.filteredEvents = this.events.filter(e => eventMatchesSearchTerms(e, searchTerms));
     this.filterConfig.resultsCount = this.filteredEvents.length;
   }
 }
