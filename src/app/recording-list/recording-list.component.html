@@ -44,8 +44,8 @@
       </ng-template>
       <ng-template #expandTemplate let-item="item">
         <div class="recording-actions">
-          <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
           <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
+          <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
         </div>
       </ng-template>
     </div>
