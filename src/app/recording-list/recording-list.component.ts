@@ -23,6 +23,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
 
   private refresh: number;
   private readonly subscriptions: Subscription[] = [];
+  private readonly refreshInterval: number = 30 * 1000;
 
   constructor(
     private svc: CommandChannelService,
@@ -36,7 +37,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
   set autoRefreshEnabled(enabled: boolean) {
     window.clearInterval(this.refresh);
     if (enabled) {
-      this.refresh = window.setInterval(() => this.refreshList(), 10000);
+      this.refresh = window.setInterval(() => this.refreshList(), this.refreshInterval);
     }
   }
 
