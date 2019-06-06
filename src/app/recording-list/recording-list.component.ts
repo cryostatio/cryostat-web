@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { isEqual } from 'lodash';
+import { DomSanitizer } from '@angular/platform-browser';
+import { differenceBy } from 'lodash';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
 import { Subscription } from 'rxjs';
@@ -84,10 +84,13 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         .subscribe(r => {
           const msg = (r as ResponseMessage<Recording[]>);
           if (msg.status === 0) {
-            const newRecordings = (r as ResponseMessage<Recording[]>).payload.sort((a, b) => Math.min(a.startTime, b.startTime));
-            if (!isEqual(this.recordings, newRecordings)) {
-              this.recordings = newRecordings;
-            }
+            const newRecordings = (r as ResponseMessage<Recording[]>).payload;
+            this.recordings
+              .filter(i => (i as any).expanded)
+              .map(i => i.id)
+              .forEach(i => newRecordings.filter(nr => nr.id === i).forEach(nr => (nr as any).expanded = true));
+
+            this.recordings = newRecordings.sort((a, b) => Math.min(a.startTime, b.startTime));
           } else {
             this.autoRefreshEnabled = false;
           }
