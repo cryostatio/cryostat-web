@@ -7,6 +7,7 @@ import { CreateRecordingModule } from '../create-recording/create-recording.modu
 import { ConfirmationDialogModule } from '../confirmation-dialog/confirmation-dialog.module';
 import { RecordingListComponent } from './recording-list.component';
 import { CreateRecordingComponent } from '../create-recording/create-recording.component';
+import { SafeUrlPipe } from './safe-url.pipe';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { CreateRecordingComponent } from '../create-recording/create-recording.c
   ],
   declarations: [
     RecordingListComponent,
+    SafeUrlPipe,
   ],
   exports: [
     RecordingListComponent,

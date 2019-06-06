@@ -1,6 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { differenceBy } from 'lodash';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
 import { Subscription } from 'rxjs';
@@ -29,7 +27,6 @@ export class RecordingListComponent implements OnInit, OnDestroy {
   constructor(
     private svc: CommandChannelService,
     private modalSvc: BsModalService,
-    private domSanitizer: DomSanitizer,
   ) {
     this.listConfig = {
       useExpandItems: true
@@ -85,10 +82,17 @@ export class RecordingListComponent implements OnInit, OnDestroy {
           const msg = (r as ResponseMessage<Recording[]>);
           if (msg.status === 0) {
             const newRecordings = (r as ResponseMessage<Recording[]>).payload;
+
             this.recordings
               .filter(i => (i as any).expanded)
               .map(i => i.id)
               .forEach(i => newRecordings.filter(nr => nr.id === i).forEach(nr => (nr as any).expanded = true));
+
+            newRecordings.forEach(nr => {
+              if (!nr.reportUrl) {
+                nr.reportUrl = `${this.reportsBaseUrl}/${nr.name}`;
+              }
+            });
 
             this.recordings = newRecordings.sort((a, b) => Math.min(a.startTime, b.startTime));
           } else {
@@ -185,15 +189,6 @@ export class RecordingListComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  setReportUrl(recordingName: string, frame: HTMLIFrameElement): void {
-    frame.width = '100%';
-    frame.height = '400';
-    frame.style.border = '';
-    const url = `${this.reportsBaseUrl}/${recordingName}`;
-    const sanitized = this.domSanitizer.bypassSecurityTrustResourceUrl(url);
-    frame.src = (sanitized as any).changingThisBreaksApplicationSecurity;
-  }
 }
 
 export interface Recording {
@@ -206,6 +201,7 @@ export interface Recording {
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
+  reportUrl: string;
 }
 
 enum ConnectionState {
