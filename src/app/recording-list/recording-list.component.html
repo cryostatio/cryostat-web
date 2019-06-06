@@ -40,14 +40,14 @@
         </div>
       </ng-template>
       <ng-template #actionTemplate let-item="item">
-        <button class="btn btn-default"><a href="{{downloadBaseUrl}}{{item.name}}.jfr">Download</a></button>
+        <button class="btn btn-default"><a href="{{item.downloadUrl}}.jfr">Download</a></button>
       </ng-template>
       <ng-template #expandTemplate let-item="item">
         <div class="recording-actions">
           <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
           <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
         </div>
-        <iframe width="100%" height="400" [src]="item.reportUrl | safeUrl"></iframe>
+        <iframe *ngIf="!!item.reportUrl" width="100%" height="400" [src]="item.reportUrl | safeUrl"></iframe>
       </ng-template>
     </div>
     <div *ngIf="connected === State.DISCONNECTED">

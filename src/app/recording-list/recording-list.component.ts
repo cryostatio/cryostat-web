@@ -47,22 +47,6 @@ export class RecordingListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.svc.onResponse('url')
-        .subscribe(r => {
-          if (r.status === 0) {
-            const url: URL = new URL((r as StringMessage).payload);
-            url.protocol = 'http:';
-            // Port reported by container-jmx-client will be the port that it binds
-            // within its container, but we'll override that to port 80 for
-            // OpenShift/Minishift demo deployments
-            // url.port = '80';
-            this.downloadBaseUrl = url.toString();
-            this.reportsBaseUrl = this.downloadBaseUrl + 'reports';
-          }
-        })
-    );
-
-    this.subscriptions.push(
       this.svc.onResponse('is-connected')
         .subscribe(r => {
           if (r.status !== 0) {
@@ -72,7 +56,6 @@ export class RecordingListComponent implements OnInit, OnDestroy {
           }
           if (this.connected === ConnectionState.CONNECTED) {
             this.refreshList();
-            this.svc.sendMessage('url');
           }
         })
     );
@@ -84,16 +67,23 @@ export class RecordingListComponent implements OnInit, OnDestroy {
           if (msg.status === 0) {
             const newRecordings = (r as ResponseMessage<Recording[]>).payload;
 
+            newRecordings.forEach(nr => {
+              // Ports reported by container-jmx-client will be the ports that it binds
+              // within its container, but we'll override that to port 80 for
+              // OpenShift/Minishift demo deployments
+              const downloadUrl: URL = new URL(nr.downloadUrl);
+              downloadUrl.port = '80';
+              nr.downloadUrl = downloadUrl.toString();
+
+              const reportUrl: URL = new URL(nr.reportUrl);
+              reportUrl.port = '80';
+              nr.reportUrl = reportUrl.toString();
+            });
+
             this.recordings
               .filter(i => (i as any).expanded)
               .map(i => i.id)
               .forEach(i => newRecordings.filter(nr => nr.id === i).forEach(nr => (nr as any).expanded = true));
-
-            newRecordings.forEach(nr => {
-              if (!nr.reportUrl) {
-                nr.reportUrl = `${this.reportsBaseUrl}/${nr.name}`;
-              }
-            });
 
             this.recordings = newRecordings.sort((a, b) => Math.min(a.startTime, b.startTime));
           } else {
@@ -131,7 +121,6 @@ export class RecordingListComponent implements OnInit, OnDestroy {
       this.svc.onResponse('connect')
         .subscribe((resp) => {
           if (resp.status === 0) {
-            this.svc.sendMessage('url');
             this.connected = ConnectionState.CONNECTED;
           } else {
             this.connected = ConnectionState.UNKNOWN;
@@ -202,6 +191,7 @@ export interface Recording {
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
+  downloadUrl: string;
   reportUrl: string;
 }
 
