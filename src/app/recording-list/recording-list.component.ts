@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { isEqual } from 'lodash';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage, StringMessage } from '../command-channel.service';
-import { CreateRecordingComponent } from '../create-recording/create-recording.component';
-import { isEqual } from 'lodash';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { CreateRecordingComponent } from '../create-recording/create-recording.component';
 
 @Component({
   selector: 'app-recording-list',
@@ -18,6 +19,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
   State = ConnectionState;
   connected: ConnectionState = ConnectionState.UNKNOWN;
   recordings: Recording[] = [];
+  reportsBaseUrl: string;
   downloadBaseUrl: string;
   listConfig: ListConfig;
 
@@ -27,6 +29,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
   constructor(
     private svc: CommandChannelService,
     private modalSvc: BsModalService,
+    private domSanitizer: DomSanitizer,
   ) {
     this.listConfig = {
       useExpandItems: true
@@ -54,8 +57,9 @@ export class RecordingListComponent implements OnInit, OnDestroy {
             // Port reported by container-jmx-client will be the port that it binds
             // within its container, but we'll override that to port 80 for
             // OpenShift/Minishift demo deployments
-            url.port = '80';
+            // url.port = '80';
             this.downloadBaseUrl = url.toString();
+            this.reportsBaseUrl = this.downloadBaseUrl + 'reports';
           }
         })
     );
@@ -177,6 +181,15 @@ export class RecordingListComponent implements OnInit, OnDestroy {
         duration: -1
       }
     });
+  }
+
+  setReportUrl(recordingName: string, frame: HTMLIFrameElement): void {
+    frame.width = '100%';
+    frame.height = '400';
+    frame.style.border = '';
+    const url = `${this.reportsBaseUrl}/${recordingName}`;
+    const sanitized = this.domSanitizer.bypassSecurityTrustResourceUrl(url);
+    frame.src = (sanitized as any).changingThisBreaksApplicationSecurity;
   }
 }
 

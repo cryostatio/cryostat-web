@@ -46,7 +46,9 @@
         <div class="recording-actions">
           <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
           <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
+          <button class="btn btn-primary" (click)="setReportUrl(item.name, reportFrame)" #reportButton>Generate Report</button>
         </div>
+        <iframe style="border: none;" width="0" height="0" #reportFrame></iframe>
       </ng-template>
     </div>
     <div *ngIf="connected === State.DISCONNECTED">
