@@ -37,6 +37,7 @@ export class RecordingListComponent implements OnInit, OnDestroy {
   set autoRefreshEnabled(enabled: boolean) {
     window.clearInterval(this.refresh);
     if (enabled) {
+      this.refreshList();
       this.refresh = window.setInterval(() => this.refreshList(), this.refreshInterval);
     }
   }
