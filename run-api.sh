@@ -2,9 +2,15 @@
 
 set -x
 
-docker kill container-jmc
+function stop_docker() {
+  docker kill container-jmc
+}
+
+stop_docker
 
 set -e
+
+trap stop_docker EXIT
 
 docker run \
   -d --rm \
