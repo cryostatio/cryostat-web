@@ -65,7 +65,7 @@ export class CommandChannelService implements OnDestroy {
     this.ws.addEventListener('open', () => {
       this.pingTimer = window.setInterval(() => {
         this.sendMessage('ping');
-      }, 1 * 1000);
+      }, 10 * 1000);
     });
 
     this.ws.addEventListener('error', (evt: Event) => this.notifications.message(
