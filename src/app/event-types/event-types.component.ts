@@ -114,6 +114,8 @@ export class EventTypesComponent implements OnInit {
       .subscribe(() => {
         this.events = [];
         this.filteredEvents = this.events;
+        this.filterConfig.resultsCount = 0;
+        this.filterConfig.totalCount = 0;
       });
   }
 
