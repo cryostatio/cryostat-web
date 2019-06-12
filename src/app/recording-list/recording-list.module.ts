@@ -1,32 +1,18 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-import { ListModule } from 'patternfly-ng/list';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import { CreateRecordingModule } from '../create-recording/create-recording.module';
-import { ConfirmationDialogModule } from '../confirmation-dialog/confirmation-dialog.module';
+import { CurrentRecordingListModule } from './current/current-recording-list.module';
 import { RecordingListComponent } from './recording-list.component';
-import { CreateRecordingComponent } from '../create-recording/create-recording.component';
-import { SafeUrlPipe } from './safe-url.pipe';
 
 @NgModule({
   imports: [
     BrowserModule,
-    ListModule,
-    FormsModule,
-    ModalModule.forRoot(),
-    CreateRecordingModule,
-    ConfirmationDialogModule,
-  ],
-  declarations: [
-    RecordingListComponent,
-    SafeUrlPipe,
+    CurrentRecordingListModule,
   ],
   exports: [
     RecordingListComponent,
   ],
-  bootstrap: [
-    CreateRecordingComponent,
-  ]
+  declarations: [
+    RecordingListComponent,
+  ],
 })
 export class RecordingListModule { }
