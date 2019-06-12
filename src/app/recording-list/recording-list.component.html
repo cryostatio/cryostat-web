@@ -49,7 +49,7 @@
         </div>
         <hr />
         <h3>Summary</h3>
-        <iframe *ngIf="!!item.reportUrl" width="100%" height="400" [src]="item.reportUrl | safeUrl"></iframe>
+        <iframe *ngIf="!!item.reportUrl" width="100%" height="640" [src]="item.reportUrl | safeUrl"></iframe>
       </ng-template>
     </div>
     <div *ngIf="connected === State.DISCONNECTED">
