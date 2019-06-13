@@ -16,7 +16,7 @@ docker run \
   -d --rm \
   --name container-jmc \
   --hostname jmx-client \
-  --mount source=flightrecordings,target=/flightrecordings \
+  --mount source="container-jmc",target=/flightrecordings \
   -p 9090:9090 -p 9091:9091 -p 80:8080 \
   -e CONTAINER_DOWNLOAD_HOST=localhost \
   -e CONTAINER_DOWNLOAD_PORT=8080 \
