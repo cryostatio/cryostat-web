@@ -1,5 +1,12 @@
 <div class="card-pf card-pf-view">
   <div class="card-pf-body">
-    <app-current-recording-list></app-current-recording-list>
+    <tabset>
+      <tab heading="Current">
+        <app-current-recording-list></app-current-recording-list>
+      </tab>
+      <tab heading="Archived">
+        <app-archived-recording-list></app-archived-recording-list>
+      </tab>
+    </tabset>
   </div>
 </div>

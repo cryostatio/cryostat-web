@@ -1,0 +1,34 @@
+<div class="card-pf-heading-kebab">
+  <div class="pull-right recording-list-toolbar">
+    <button class="btn btn-default" title="Refresh" (click)="refreshList()"><span class="fa fa-refresh"></span></button>
+  </div>
+</div>
+<h2 class="card-pf-title">
+  On-Disk Recordings
+</h2>
+<hr />
+<pfng-list
+  [config]="listConfig"
+  [items]="recordings"
+  [itemTemplate]="recordingTemplate"
+  [actionTemplate]="actionTemplate"
+  [expandTemplate]="expandTemplate"
+></pfng-list>
+<ng-template #recordingTemplate let-item="item">
+  <div class="list-pf-left">
+    <span class="fa pficon-volume list-pf-icon list-pf-icon-bordered list-pf-icon-small"></span>
+  </div>
+  <div class="list-pf-content-wrapper">
+    <div class="list-pf-main-content">
+      <div class="list-pf-title">{{item.name}}</div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #actionTemplate let-item="item">
+  <button class="btn btn-default"><a href="{{item.downloadUrl}}">Download</a></button>
+</ng-template>
+<ng-template #expandTemplate let-item="item">
+  <div class="recording-actions">
+    <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
+  </div>
+</ng-template>

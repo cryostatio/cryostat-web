@@ -15,7 +15,7 @@
     </div>
   </div>
   <h2 class="card-pf-title">
-    Recordings
+    In-Memory Recordings
   </h2>
   <hr />
   <pfng-list
@@ -42,6 +42,7 @@
   </ng-template>
   <ng-template #expandTemplate let-item="item">
     <div class="recording-actions">
+      <button class="btn btn-default" (click)="save(item.name)">Save</button>
       <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
       <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
     </div>

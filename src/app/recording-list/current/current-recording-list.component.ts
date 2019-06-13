@@ -17,8 +17,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   State = ConnectionState;
   connected: ConnectionState = ConnectionState.UNKNOWN;
   recordings: Recording[] = [];
-  reportsBaseUrl: string;
-  downloadBaseUrl: string;
   listConfig: ListConfig;
 
   private refresh: number;
@@ -120,7 +118,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.svc.onResponse('connect')
-        .subscribe((resp) => {
+        .subscribe(resp => {
           if (resp.status === 0) {
             this.connected = ConnectionState.CONNECTED;
           } else {
@@ -147,6 +145,10 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
 
   refreshList(): void {
     this.svc.sendMessage('list');
+  }
+
+  save(name: string): void {
+    this.svc.sendMessage('save', [name]);
   }
 
   delete(name: string): void {
@@ -196,7 +198,7 @@ export interface Recording {
   reportUrl: string;
 }
 
-enum ConnectionState {
+export enum ConnectionState {
   UNKNOWN,
   CONNECTED,
   DISCONNECTED,
