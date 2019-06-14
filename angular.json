@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "container-jmc-web": {
+    "container-jfr-web": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/container-jmc-web",
+            "outputPath": "dist/container-jfr-web",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -66,19 +66,19 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "container-jmc-web:build",
+            "browserTarget": "container-jfr-web:build",
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
-              "browserTarget": "container-jmc-web:build:production"
+              "browserTarget": "container-jfr-web:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "container-jmc-web:build"
+            "browserTarget": "container-jfr-web:build"
           }
         },
         "test": {
@@ -112,7 +112,7 @@
         }
       }
     },
-    "container-jmc-web-e2e": {
+    "container-jfr-web-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -121,11 +121,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "container-jmc-web:serve"
+            "devServerTarget": "container-jfr-web:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "container-jmc-web:serve:production"
+              "devServerTarget": "container-jfr-web:serve:production"
             }
           }
         },
@@ -141,5 +141,5 @@
       }
     }
   },
-  "defaultProject": "container-jmc-web"
+  "defaultProject": "container-jfr-web"
 }

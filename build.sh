@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build . -t container-jmc-web
+docker build . -t container-jfr-web

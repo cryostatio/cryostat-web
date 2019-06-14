@@ -33,7 +33,7 @@ export class ArchivedRecordingListComponent implements OnInit {
             const newRecordings = r.payload;
 
             newRecordings.forEach(nr => {
-              // Ports reported by container-jmx-client will be the ports that it binds
+              // Ports reported by container-jfr will be the ports that it binds
               // within its container, but we'll override that to port 80 for
               // OpenShift/Minishift demo deployments
               const downloadUrl: URL = new URL(nr.downloadUrl);

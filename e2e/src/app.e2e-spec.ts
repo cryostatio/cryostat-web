@@ -10,7 +10,7 @@ describe('workspace-project App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('Welcome to container-jmc-web!');
+    expect(page.getTitleText()).toEqual('Welcome to container-jfr-web!');
   });
 
   afterEach(async () => {

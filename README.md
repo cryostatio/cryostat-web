@@ -1,12 +1,12 @@
-# ContainerJmcWeb
+# ContainerJFRWeb
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.8.
 
 ## Development server
 
-Run a `container-jmc` instance with WebSocket communication enabled, listening on port 9090. For example,
+Run a `container-jfr` instance with WebSocket communication enabled, listening on port 9090. For example,
 
-`docker run --name container-jmc --hostname jmx-client -d --rm -p 9090:9090 -p 9091:9091 andrewazores/container-jmx-client`
+`docker run --name container-jfr --hostname container-jfr -d --rm -p 9090:9090 -p 9091:9091 quay.io/rh-jmc-team/container-jfr`
 
 will run a suitable instance using Docker.
 
@@ -22,9 +22,9 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-A Docker image can be produced with ex. `docker build -t container-jmc-web .` . The URL used for automatic connection to the
+A Docker image can be produced with ex. `docker build -t container-jfr-web .` . The URL used for automatic connection to the
 
-background `container-jmc` instance can be configured at Docker container startup time by setting the environment variable
+background `container-jfr` instance can be configured at Docker container startup time by setting the environment variable
 
 `CONTAINER_JMX_CLIENT_URL` to the desired URL (be sure to include any paths if required, and that the protocol is `ws://`).
 
