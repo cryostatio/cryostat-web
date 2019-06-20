@@ -3,6 +3,7 @@ const app = express();
 const port = 9999;
 
 app.get('/clienturl', (req, res) => {
+  console.log('GET /clienturl');
   res
     .status(200)
     .type('application/json')
@@ -12,6 +13,7 @@ app.get('/clienturl', (req, res) => {
 });
 
 app.get('/uploadurl', (req, res) => {
+  console.log('GET /uploadurl');
   res
     .status(200)
     .type('application/json')
@@ -21,6 +23,7 @@ app.get('/uploadurl', (req, res) => {
 });
 
 app.post('/upload', (req, res) => {
+  console.log('POST /upload');
   res
     .status(200)
     .send('OK');
