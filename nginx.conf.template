@@ -51,6 +51,10 @@ http {
         add_header Content-Type application/json;
       }
 
+      location /uploadurl {
+        return 200 "{ \"uploadUrl\" : \"${GRAFANA_URL}\" }";
+        add_header Content-Type application/json;
+      }
 
       location / {
         root  /usr/share/nginx/html;
