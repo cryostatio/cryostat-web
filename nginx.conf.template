@@ -47,7 +47,7 @@ http {
 
 
       location /clienturl {
-        return 200 "{ \"clientUrl\": \"${CONTAINER_JMX_CLIENT_URL}\" }";
+        return 200 "{ \"clientUrl\": \"${CONTAINER_JFR_URL}\" }";
         add_header Content-Type application/json;
       }
 

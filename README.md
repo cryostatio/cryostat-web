@@ -26,7 +26,7 @@ A Docker image can be produced with ex. `docker build -t container-jfr-web .` . 
 
 background `container-jfr` instance can be configured at Docker container startup time by setting the environment variable
 
-`CONTAINER_JMX_CLIENT_URL` to the desired URL (be sure to include any paths if required, and that the protocol is `ws://`).
+`CONTAINER_JFR_URL` to the desired URL (be sure to include any paths if required, and that the protocol is `ws://`).
 
 ## Running unit tests
 
