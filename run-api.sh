@@ -22,4 +22,4 @@ docker run \
   -e CONTAINER_JFR_DOWNLOAD_PORT=8080 \
   quay.io/rh-jmc-team/container-jfr
 
-node mockapi.server.js
+node mockapi.server.js "$(hostname -I | cut -d' ' -f1)"

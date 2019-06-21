@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
 import { Subscription } from 'rxjs';
-import { CommandChannelService } from 'src/app/command-channel.service';
+import { CommandChannelService, ResponseMessage } from 'src/app/command-channel.service';
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
+import { first } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-archived-recording-list',
@@ -18,6 +20,7 @@ export class ArchivedRecordingListComponent implements OnInit {
 
   constructor(
     private svc: CommandChannelService,
+    private http: HttpClient,
     private modalSvc: BsModalService,
   ) {
     this.listConfig = {
@@ -64,6 +67,18 @@ export class ArchivedRecordingListComponent implements OnInit {
         })
     );
 
+    this.subscriptions.push(
+      this.svc.onResponse('upload-saved')
+        .subscribe((r: ResponseMessage<UploadResponse>) => {
+          this.svc.uploadUrl().pipe(
+            first()
+          ).subscribe(uploadUrl => {
+            const message = /Uploaded: file-uploads\/(\S+)/.exec(r.payload.body)[1];
+            this.http.post(uploadUrl, message);
+          });
+        })
+    );
+
     this.refreshList();
   }
 
@@ -82,9 +97,28 @@ export class ArchivedRecordingListComponent implements OnInit {
     }).content.onAccept().subscribe(() => this.svc.sendMessage('delete-saved', [ name ]));
   }
 
+  grafanaUpload(name: string): void {
+    this.svc.uploadUrl().pipe(
+      first()
+    ).subscribe(uploadUrl => this.svc.sendMessage('upload-saved', [ name, uploadUrl ]));
+  }
+
 }
 
 interface SavedRecording {
   name: string;
   downloadUrl: string;
+}
+
+interface UploadResponse {
+  body: string;
+  status: {
+    reasonphrase: string;
+    statusCode: number;
+    protoVersion: {
+      protocol: string;
+      major: number;
+      minor: number;
+    }
+  };
 }

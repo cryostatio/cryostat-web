@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -8,6 +9,7 @@ import { ArchivedRecordingListComponent } from './archived-recording-list.compon
 @NgModule({
   imports: [
     BrowserModule,
+    HttpClientModule,
     ListModule,
     ModalModule,
     ConfirmationDialogModule,

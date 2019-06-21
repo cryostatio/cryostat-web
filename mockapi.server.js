@@ -18,7 +18,7 @@ app.get('/uploadurl', (req, res) => {
     .status(200)
     .type('application/json')
     .send(JSON.stringify({
-      uploadUrl: `http://localhost:${port}/upload`
+      uploadUrl: `http://${process.argv.slice(2)[0]}:${port}/upload`
     }));
 });
 
@@ -26,7 +26,8 @@ app.post('/upload', (req, res) => {
   console.log('POST /upload');
   res
     .status(200)
-    .send('OK');
+    .type('text/plain')
+    .send('Uploaded: file-uploads/9a521eaf-cfdb-4c12-9a17-863acd4f8871');
 });
 
 app.listen(port, () => {

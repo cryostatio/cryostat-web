@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subject, BehaviorSubject, Observable, ReplaySubject, Subscription } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { filter, first } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
@@ -11,6 +11,7 @@ export class CommandChannelService implements OnDestroy {
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
+  private readonly uploadUrlSubject = new ReplaySubject<string>(1);
   private pingTimer: number;
 
   constructor(
@@ -22,6 +23,14 @@ export class CommandChannelService implements OnDestroy {
         (url: ({ clientUrl: string })) => this.clientUrlSubject.next(url.clientUrl),
         (err: any) => this.notifications.message(
           NotificationType.WARNING, 'Client URL Request Error', JSON.stringify(err), false, null, null
+        )
+      );
+
+    this.http.get('/uploadurl')
+      .subscribe(
+        (url: ({ uploadUrl: string})) => this.uploadUrlSubject.next(url.uploadUrl),
+        (err: any) => this.notifications.message(
+          NotificationType.WARNING, 'Upload URL Request Error', JSON.stringify(err), false, null, null
         )
       );
 
@@ -41,6 +50,10 @@ export class CommandChannelService implements OnDestroy {
 
   clientUrl(): Observable<string> {
     return this.clientUrlSubject.asObservable();
+  }
+
+  uploadUrl(): Observable<string> {
+    return this.uploadUrlSubject.asObservable();
   }
 
   connect(clientUrl: string): void {

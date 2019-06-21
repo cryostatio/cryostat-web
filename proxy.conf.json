@@ -3,5 +3,15 @@
     "target": "http://localhost:9999/",
     "secure": false,
     "logLevel": "debug"
+  },
+  "/uploadurl": {
+    "target": "http://localhost:9999/",
+    "secure": false,
+    "logLevel": "debug"
+  },
+  "/upload": {
+    "target": "http://localhost:9999/",
+    "secure": false,
+    "logLevel": "debug"
   }
 }
