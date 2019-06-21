@@ -30,6 +30,6 @@
 <ng-template #expandTemplate let-item="item">
   <div class="recording-actions">
     <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
-    <button class="btn btn-default" (click)="grafanaUpload(item.name)">Grafana Upload</button>
+    <button *ngIf="grafanaEnabled" class="btn btn-default" (click)="grafanaUpload(item.name)">Grafana Upload</button>
   </div>
 </ng-template>

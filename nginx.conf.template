@@ -51,8 +51,13 @@ http {
         add_header Content-Type application/json;
       }
 
-      location /uploadurl {
-        return 200 "{ \"uploadUrl\" : \"${GRAFANA_URL}\" }";
+      location /grafana/upload {
+        return 200 "{ \"uploadUrl\" : \"${GRAFANA_UPLOAD_URL}\" }";
+        add_header Content-Type application/json;
+      }
+
+      location /grafana/load {
+        return 200 "{ \"uploadUrl\" : \"${GRAFANA_LOAD_URL}\" }";
         add_header Content-Type application/json;
       }
 

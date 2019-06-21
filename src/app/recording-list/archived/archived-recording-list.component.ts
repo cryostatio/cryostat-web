@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import { CommandChannelService, ResponseMessage } from 'src/app/command-channel.service';
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
 import { first } from 'rxjs/operators';
@@ -15,6 +15,7 @@ export class ArchivedRecordingListComponent implements OnInit {
 
   recordings: SavedRecording[] = [];
   listConfig: ListConfig;
+  grafanaEnabled = false;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -68,14 +69,18 @@ export class ArchivedRecordingListComponent implements OnInit {
     );
 
     this.subscriptions.push(
-      this.svc.onResponse('upload-saved')
-        .subscribe((r: ResponseMessage<UploadResponse>) => {
-          this.svc.uploadUrl().pipe(
-            first()
-          ).subscribe(uploadUrl => {
-            const message = /Uploaded: file-uploads\/(\S+)/.exec(r.payload.body)[1];
-            this.http.post(uploadUrl, message);
-          });
+      combineLatest(this.svc.uploadUrl(), this.svc.loadUrl()).pipe(
+        first()
+      ).subscribe(() => this.grafanaEnabled = true)
+    );
+
+    this.subscriptions.push(
+      combineLatest(this.svc.onResponse('upload-saved'), this.svc.loadUrl())
+        .subscribe((r: [ResponseMessage<UploadResponse>, string]) => {
+          if (r[0].status === 0) {
+            const message = /Uploaded: file-uploads\/(\S+)/.exec(r[0].payload.body)[1];
+            this.http.post(r[1], message, { responseType: 'text' }).subscribe(() => {});
+          }
         })
     );
 

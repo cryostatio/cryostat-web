@@ -12,8 +12,8 @@ app.get('/clienturl', (req, res) => {
     }));
 });
 
-app.get('/uploadurl', (req, res) => {
-  console.log('GET /uploadurl');
+app.get('/grafana/upload', (req, res) => {
+  console.log('GET /grafana/upload');
   res
     .status(200)
     .type('application/json')
@@ -22,12 +22,32 @@ app.get('/uploadurl', (req, res) => {
     }));
 });
 
+app.get('/grafana/load', (req, res) => {
+  console.log('GET /grafana/load');
+  res
+    .status(200)
+    .type('application/json')
+    .send(JSON.stringify({
+      loadUrl: `http://${process.argv.slice(2)[0]}:${port}/load`
+    }));
+});
+
 app.post('/upload', (req, res) => {
   console.log('POST /upload');
   res
     .status(200)
     .type('text/plain')
+    .header('Access-Control-Allow-Origin', '*')
     .send('Uploaded: file-uploads/9a521eaf-cfdb-4c12-9a17-863acd4f8871');
+});
+
+app.post('/load', (req, res) => {
+  console.log('POST /load');
+  res
+    .status(200)
+    .type('text/plain')
+    .header('Access-Control-Allow-Origin', '*')
+    .send('Updated selection');
 });
 
 app.listen(port, () => {
