@@ -20,7 +20,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.svc.onResponse('port-scan')
+      this.svc.onResponse('scan-targets')
         .subscribe(r => {
           this.hosts = (r as ListMessage).payload;
           if (this.hosts.length === 1) {
@@ -34,7 +34,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
         first()
       )
       .subscribe(() => {
-        this.svc.sendMessage('port-scan');
+        this.svc.sendMessage('scan-targets');
       });
     this.svc.onResponse('is-connected')
       .pipe(
@@ -54,7 +54,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
     if (host === 'rescan') {
       this.hosts = [];
       this.host = '';
-      this.svc.sendMessage('port-scan');
+      this.svc.sendMessage('scan-targets');
     } else if (host.trim().length > 0) {
       this.svc.sendMessage('disconnect');
       this.svc.sendMessage('connect', [ host.trim() ]);
