@@ -2,8 +2,12 @@ const express = require('express');
 const app = express();
 const port = 9999;
 
+app.use(function (req, res, next) {
+    console.info(`${req.method} ${req.originalUrl}`);
+    next();
+});
+
 app.get('/clienturl', (req, res) => {
-  console.log('GET /clienturl');
   res
     .status(200)
     .type('application/json')
@@ -31,7 +35,6 @@ app.get('/grafana_dashboard_url', (req, res) => {
 });
 
 app.post('/load', (req, res) => {
-  console.log('POST /load');
   res
     .status(200)
     .type('text/plain')
