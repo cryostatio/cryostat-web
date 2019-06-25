@@ -52,7 +52,7 @@ http {
       }
 
       location /grafanaurl {
-        return 200 "{ \"uploadUrl\" : \"${GRAFANA_URL}\" }";
+        return 200 "{ \"grafanaUrl\" : \"${GRAFANA_URL}\" }";
         add_header Content-Type application/json;
       }
 
