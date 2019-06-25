@@ -8,7 +8,7 @@ app.get('/clienturl', (req, res) => {
     .status(200)
     .type('application/json')
     .send(JSON.stringify({
-      clientUrl: 'ws://localhost:9090/command'
+      clientUrl: process.env.CONTAINER_JFR_URL
     }));
 });
 
@@ -18,7 +18,7 @@ app.get('/grafanaurl', (req, res) => {
     .status(200)
     .type('application/json')
     .send(JSON.stringify({
-      grafanaUrl: `http://${process.argv.slice(2)[0]}:${port}`
+      grafanaUrl: process.env.GRAFANA_URL
     }));
 });
 
