@@ -12,13 +12,21 @@ app.get('/clienturl', (req, res) => {
     }));
 });
 
-app.get('/grafanaurl', (req, res) => {
-  console.log('GET /grafanaurl');
+app.get('/grafana_datasource_url', (req, res) => {
   res
     .status(200)
     .type('application/json')
     .send(JSON.stringify({
-      grafanaUrl: process.env.GRAFANA_URL
+      grafanaDatasourceUrl: process.env.GRAFANA_DATASOURCE_URL
+    }));
+});
+
+app.get('/grafana_dashboard_url', (req, res) => {
+  res
+    .status(200)
+    .type('application/json')
+    .send(JSON.stringify({
+      grafanaDashboardUrl: process.env.GRAFANA_DASHBOARD_URL
     }));
 });
 

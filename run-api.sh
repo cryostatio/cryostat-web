@@ -22,12 +22,16 @@ docker run \
   -e CONTAINER_JFR_DOWNLOAD_PORT=8080 \
   quay.io/rh-jmc-team/container-jfr
 
-if [ -z "$GRAFANA_URL"]; then
-  GRAFANA_URL="http://$(hostname -I | cut -d' ' -f1)"
+if [ -z "$GRAFANA_DATASOURCE_URL" ]; then
+  export GRAFANA_DATASOURCE_URL="http://$(hostname -I | cut -d' ' -f1)"
+fi
+
+if [ -z "$GRAFANA_DASHBOARD_URL" ]; then
+  export GRAFANA_DASHBOARD_URL="http://example.com"
 fi
 
 if [ -z "$CONTAINER_JFR_URL" ]; then
-  CONTAINER_JFR_URL="ws://localhost:9090/command"
+  export CONTAINER_JFR_URL="ws://localhost:9090/command"
 fi
 
-GRAFANA_URL="$GRAFANA_URL" CONTAINER_JFR_URL="$CONTAINER_JFR_URL" node mockapi.server.js
+node mockapi.server.js

@@ -26,9 +26,9 @@ export class CommandChannelService implements OnDestroy {
         )
       );
 
-    this.http.get('/grafanaurl')
+    this.http.get('/grafana_datasource_url')
       .subscribe(
-        (url: ({ grafanaUrl: string})) => this.grafanaUrlSubject.next(url.grafanaUrl),
+        (url: ({ grafanaDatasourceUrl: string})) => this.grafanaUrlSubject.next(url.grafanaDatasourceUrl),
         (err: any) => this.notifications.message(
           NotificationType.WARNING, 'Grafana URL Request Error', JSON.stringify(err), false, null, null
         )

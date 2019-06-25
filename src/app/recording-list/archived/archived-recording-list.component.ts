@@ -6,6 +6,7 @@ import { CommandChannelService, ResponseMessage } from 'src/app/command-channel.
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
 import { first } from 'rxjs/operators';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-archived-recording-list',
@@ -23,6 +24,7 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
     private svc: CommandChannelService,
     private modalSvc: BsModalService,
     private notifications: NotificationService,
+    private http: HttpClient,
   ) {
     this.listConfig = {
       useExpandItems: true
@@ -78,14 +80,11 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
       this.svc.onResponse('upload-saved')
         .subscribe((r: ResponseMessage<UploadResponse>) => {
           if (r.status === 0) {
-            // TODO open Grafana dashboard in new window/tab
             this.notifications.message(
               NotificationType.SUCCESS, 'Upload success', null, false, null, null
             );
-          } else {
-            this.notifications.message(
-              NotificationType.WARNING, 'Upload failed', JSON.stringify(r), false, null, null
-            );
+            this.http.get('/grafana_dashboard_url')
+              .subscribe((url: { grafanaDashboardUrl: string }) => window.open(url.grafanaDashboardUrl, '_blank'));
           }
         })
     );

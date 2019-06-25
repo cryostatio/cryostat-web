@@ -4,7 +4,12 @@
     "secure": false,
     "logLevel": "debug"
   },
-  "/grafanaurl": {
+  "/grafana_datasource_url": {
+    "target": "http://localhost:9999/",
+    "secure": false,
+    "logLevel": "debug"
+  },
+  "/grafana_dashboard_url": {
     "target": "http://localhost:9999/",
     "secure": false,
     "logLevel": "debug"

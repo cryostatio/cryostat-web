@@ -51,8 +51,13 @@ http {
         add_header Content-Type application/json;
       }
 
-      location /grafanaurl {
-        return 200 "{ \"grafanaUrl\" : \"${GRAFANA_URL}\" }";
+      location /grafana_dashboard_url {
+        return 200 "{ \"grafanaDashboardUrl\" : \"${GRAFANA_DASHBOARD_URL}\" }";
+        add_header Content-Type application/json;
+      }
+
+      location /grafana_datasource_url {
+        return 200 "{ \"grafanaDatasourceUrl\" : \"${GRAFANA_DATASOURCE_URL}\" }";
         add_header Content-Type application/json;
       }
 
