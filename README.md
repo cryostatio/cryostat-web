@@ -26,7 +26,11 @@ A Docker image can be produced with ex. `docker build -t container-jfr-web .` . 
 
 background `container-jfr` instance can be configured at Docker container startup time by setting the environment variable
 
-`CONTAINER_JFR_URL` to the desired URL (be sure to include any paths if required, and that the protocol is `ws://`).
+`CONTAINER_JFR_URL` to the desired URL (be sure to include any paths if required, and that the protocol is `ws://`). Additionally,
+
+upload of Flight Recordings to a Grafana jfr-datasource can be enabled in the Archived recordings component by setting the environment
+
+variable `GRAFANA_URL`, set to the base URL of the jfr-datasource instance (including `http(s)://`).
 
 ## Running unit tests
 

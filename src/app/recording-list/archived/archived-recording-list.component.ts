@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
 import { Subscription, combineLatest } from 'rxjs';
 import { CommandChannelService, ResponseMessage } from 'src/app/command-channel.service';
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
 import { first } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 
 @Component({
   selector: 'app-archived-recording-list',
   templateUrl: './archived-recording-list.component.html'
 })
-export class ArchivedRecordingListComponent implements OnInit {
+export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
 
   recordings: SavedRecording[] = [];
   listConfig: ListConfig;
@@ -21,8 +21,8 @@ export class ArchivedRecordingListComponent implements OnInit {
 
   constructor(
     private svc: CommandChannelService,
-    private http: HttpClient,
     private modalSvc: BsModalService,
+    private notifications: NotificationService,
   ) {
     this.listConfig = {
       useExpandItems: true
@@ -69,22 +69,32 @@ export class ArchivedRecordingListComponent implements OnInit {
     );
 
     this.subscriptions.push(
-      combineLatest(this.svc.uploadUrl(), this.svc.loadUrl()).pipe(
+      this.svc.grafanaUrl().pipe(
         first()
       ).subscribe(() => this.grafanaEnabled = true)
     );
 
     this.subscriptions.push(
-      combineLatest(this.svc.onResponse('upload-saved'), this.svc.loadUrl())
-        .subscribe((r: [ResponseMessage<UploadResponse>, string]) => {
-          if (r[0].status === 0) {
-            const message = /Uploaded: file-uploads\/(\S+)/.exec(r[0].payload.body)[1];
-            this.http.post(r[1], message, { responseType: 'text' }).subscribe(() => {});
+      this.svc.onResponse('upload-saved')
+        .subscribe((r: ResponseMessage<UploadResponse>) => {
+          if (r.status === 0) {
+            // TODO open Grafana dashboard in new window/tab
+            this.notifications.message(
+              NotificationType.SUCCESS, 'Upload success', null, false, null, null
+            );
+          } else {
+            this.notifications.message(
+              NotificationType.WARNING, 'Upload failed', JSON.stringify(r), false, null, null
+            );
           }
         })
     );
 
     this.refreshList();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   refreshList(): void {
@@ -103,9 +113,14 @@ export class ArchivedRecordingListComponent implements OnInit {
   }
 
   grafanaUpload(name: string): void {
-    this.svc.uploadUrl().pipe(
+    this.svc.grafanaUrl().pipe(
       first()
-    ).subscribe(uploadUrl => this.svc.sendMessage('upload-saved', [ name, uploadUrl ]));
+    ).subscribe(grafana => {
+      this.notifications.message(
+        NotificationType.INFO, 'Upload started', null, false, null, null
+      );
+      this.svc.sendMessage('upload-saved', [ name, `${grafana}/load` ]);
+    });
   }
 
 }

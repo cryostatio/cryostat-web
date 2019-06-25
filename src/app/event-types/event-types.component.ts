@@ -1,16 +1,17 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, OnDestroy } from '@angular/core';
 import { FilterConfig, FilterType, FilterEvent } from 'patternfly-ng/filter';
 import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { filter, first } from 'rxjs/operators';
 import { CommandChannelService } from '../command-channel.service';
 import { TableConfig } from 'patternfly-ng/table';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-event-types',
   templateUrl: './event-types.component.html',
   styleUrls: ['./event-types.component.less']
 })
-export class EventTypesComponent implements OnInit {
+export class EventTypesComponent implements OnInit, OnDestroy {
 
   @ViewChild('nameTemplate') nameTemplate: TemplateRef<any>;
   @ViewChild('typeIdTemplate') typeIdTemplate: TemplateRef<any>;
@@ -23,6 +24,7 @@ export class EventTypesComponent implements OnInit {
   columns: any[];
   config: TableConfig;
   toolbarConfig: ToolbarConfig;
+  private readonly subscriptions: Subscription[] = [];
   private filterConfig: FilterConfig;
 
   constructor(
@@ -90,33 +92,45 @@ export class EventTypesComponent implements OnInit {
       useExpandRows: false
     };
 
-    this.svc.onResponse('list-event-types')
-      .subscribe(resp => {
-        if (resp.status === 0) {
-          this.events = resp.payload;
-          this.filteredEvents = [...this.events];
-          this.filterConfig.resultsCount = this.events.length;
-          this.filterConfig.totalCount = this.events.length;
-        }
-      });
+    this.subscriptions.push(
+      this.svc.onResponse('list-event-types')
+        .subscribe(resp => {
+          if (resp.status === 0) {
+            this.events = resp.payload;
+            this.filteredEvents = [...this.events];
+            this.filterConfig.resultsCount = this.events.length;
+            this.filterConfig.totalCount = this.events.length;
+          }
+        })
+    );
 
-    this.svc.onResponse('is-connected').pipe(
-      filter(r => r.status === 0),
-      filter(r => r.payload !== 'false'),
-      first()
-    ).subscribe(() => this.svc.sendMessage('list-event-types'));
+    this.subscriptions.push(
+      this.svc.onResponse('is-connected').pipe(
+        filter(r => r.status === 0),
+        filter(r => r.payload !== 'false'),
+        first()
+      ).subscribe(() => this.svc.sendMessage('list-event-types'))
+    );
 
-    this.svc.onResponse('connect').pipe(
-      filter(r => r.status === 0)
-    ).subscribe(() => this.svc.sendMessage('list-event-types'));
+    this.subscriptions.push(
+      this.svc.onResponse('connect').pipe(
+        filter(r => r.status === 0)
+      ).subscribe(() => this.svc.sendMessage('list-event-types'))
+    );
 
-    this.svc.onResponse('disconnect')
-      .subscribe(() => {
-        this.events = [];
-        this.filteredEvents = this.events;
-        this.filterConfig.resultsCount = 0;
-        this.filterConfig.totalCount = 0;
-      });
+    this.subscriptions.push(
+      this.svc.onResponse('disconnect')
+        .subscribe(() => {
+          this.events = [];
+          this.filteredEvents = this.events;
+          this.filterConfig.resultsCount = 0;
+          this.filterConfig.totalCount = 0;
+        })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   getOptions(row: object): OptionDescriptor[] {

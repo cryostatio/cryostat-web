@@ -11,8 +11,7 @@ export class CommandChannelService implements OnDestroy {
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
-  private readonly uploadUrlSubject = new ReplaySubject<string>(1);
-  private readonly loadUrlSubject = new ReplaySubject<string>(1);
+  private readonly grafanaUrlSubject = new ReplaySubject<string>(1);
   private pingTimer: number;
 
   constructor(
@@ -27,19 +26,11 @@ export class CommandChannelService implements OnDestroy {
         )
       );
 
-    this.http.get('/grafana/upload')
+    this.http.get('/grafanaurl')
       .subscribe(
-        (url: ({ uploadUrl: string})) => this.uploadUrlSubject.next(url.uploadUrl),
+        (url: ({ grafanaUrl: string})) => this.grafanaUrlSubject.next(url.grafanaUrl),
         (err: any) => this.notifications.message(
-          NotificationType.WARNING, 'Upload URL Request Error', JSON.stringify(err), false, null, null
-        )
-      );
-
-    this.http.get('/grafana/load')
-      .subscribe(
-        (url: ({ loadUrl: string})) => this.loadUrlSubject.next(url.loadUrl),
-        (err: any) => this.notifications.message(
-          NotificationType.WARNING, 'Load URL Request Error', JSON.stringify(err), false, null, null
+          NotificationType.WARNING, 'Grafana URL Request Error', JSON.stringify(err), false, null, null
         )
       );
 
@@ -61,12 +52,8 @@ export class CommandChannelService implements OnDestroy {
     return this.clientUrlSubject.asObservable();
   }
 
-  uploadUrl(): Observable<string> {
-    return this.uploadUrlSubject.asObservable();
-  }
-
-  loadUrl(): Observable<string> {
-    return this.loadUrlSubject.asObservable();
+  grafanaUrl(): Observable<string> {
+    return this.grafanaUrlSubject.asObservable();
   }
 
   connect(clientUrl: string): void {

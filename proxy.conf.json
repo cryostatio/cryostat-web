@@ -4,17 +4,12 @@
     "secure": false,
     "logLevel": "debug"
   },
-  "/grafana/upload": {
+  "/grafanaurl": {
     "target": "http://localhost:9999/",
     "secure": false,
     "logLevel": "debug"
   },
-  "/grafana/load": {
-    "target": "http://localhost:9999/",
-    "secure": false,
-    "logLevel": "debug"
-  },
-  "/upload": {
+  "/load": {
     "target": "http://localhost:9999/",
     "secure": false,
     "logLevel": "debug"
