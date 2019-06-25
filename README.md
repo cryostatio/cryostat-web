@@ -30,7 +30,11 @@ background `container-jfr` instance can be configured at Docker container startu
 
 upload of Flight Recordings to a Grafana jfr-datasource can be enabled in the Archived recordings component by setting the environment
 
-variable `GRAFANA_URL`, set to the base URL of the jfr-datasource instance (including `http(s)://`).
+variable `GRAFANA_DATASOURCE_URL`, set to the base URL of the jfr-datasource instance (including `http(s)://`). If this is set then
+
+the corresponding `GRAFANA_DASHBOARD_URL` environment variable should be set, which points to the location of a Grafana instance to which
+
+the datasource is attached.
 
 ## Running unit tests
 
