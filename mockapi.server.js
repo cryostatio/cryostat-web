@@ -16,31 +16,35 @@ app.get('/clienturl', (req, res) => {
     }));
 });
 
-app.get('/grafana_datasource_url', (req, res) => {
-  res
-    .status(200)
-    .type('application/json')
-    .send(JSON.stringify({
-      grafanaDatasourceUrl: process.env.GRAFANA_DATASOURCE_URL
-    }));
-});
+if (!!process.env.GRAFANA_DATASOURCE_URL) {
+  app.get('/grafana_datasource_url', (req, res) => {
+    res
+      .status(200)
+      .type('application/json')
+      .send(JSON.stringify({
+        grafanaDatasourceUrl: process.env.GRAFANA_DATASOURCE_URL
+      }));
+  });
 
-app.get('/grafana_dashboard_url', (req, res) => {
-  res
-    .status(200)
-    .type('application/json')
-    .send(JSON.stringify({
-      grafanaDashboardUrl: process.env.GRAFANA_DASHBOARD_URL
-    }));
-});
+  app.post('/load', (req, res) => {
+    res
+      .status(200)
+      .type('text/plain')
+      .header('Access-Control-Allow-Origin', '*')
+      .send('Updated selection');
+  });
+}
 
-app.post('/load', (req, res) => {
-  res
-    .status(200)
-    .type('text/plain')
-    .header('Access-Control-Allow-Origin', '*')
-    .send('Updated selection');
-});
+if (!!process.env.GRAFANA_DASHBOARD_URL) {
+  app.get('/grafana_dashboard_url', (req, res) => {
+    res
+      .status(200)
+      .type('application/json')
+      .send(JSON.stringify({
+        grafanaDashboardUrl: process.env.GRAFANA_DASHBOARD_URL
+      }));
+  });
+}
 
 app.listen(port, () => {
   console.log(`MockAPI server listening on port ${port}`);
