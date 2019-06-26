@@ -11,7 +11,7 @@ export class CommandChannelService implements OnDestroy {
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
-  private readonly grafanaUrlSubject = new ReplaySubject<string>(1);
+  private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private pingTimer: number;
 
   constructor(
@@ -28,7 +28,7 @@ export class CommandChannelService implements OnDestroy {
 
     this.http.get('/grafana_datasource_url')
       .subscribe(
-        (url: ({ grafanaDatasourceUrl: string})) => this.grafanaUrlSubject.next(url.grafanaDatasourceUrl),
+        (url: ({ grafanaDatasourceUrl: string})) => this.grafanaDatasourceUrlSubject.next(url.grafanaDatasourceUrl),
         (err: any) => this.notifications.message(
           NotificationType.WARNING, 'Grafana URL Request Error', JSON.stringify(err), false, null, null
         )
@@ -52,8 +52,8 @@ export class CommandChannelService implements OnDestroy {
     return this.clientUrlSubject.asObservable();
   }
 
-  grafanaUrl(): Observable<string> {
-    return this.grafanaUrlSubject.asObservable();
+  grafanaDatasourceUrl(): Observable<string> {
+    return this.grafanaDatasourceUrlSubject.asObservable();
   }
 
   connect(clientUrl: string): void {

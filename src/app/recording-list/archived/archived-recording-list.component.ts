@@ -71,7 +71,7 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.svc.grafanaUrl().pipe(
+      this.svc.grafanaDatasourceUrl().pipe(
         first()
       ).subscribe(() => this.grafanaEnabled = true)
     );
@@ -112,7 +112,7 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
   }
 
   grafanaUpload(name: string): void {
-    this.svc.grafanaUrl().pipe(
+    this.svc.grafanaDatasourceUrl().pipe(
       first()
     ).subscribe(grafana => {
       this.notifications.message(
