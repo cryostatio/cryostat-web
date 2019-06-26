@@ -2,8 +2,12 @@
 
 set -x
 
+NETWORK_ID="$(cat /proc/sys/kernel/random/uuid)"
+
 function stop_docker() {
+  set +e
   docker kill container-jfr
+  docker network rm "${NETWORK_ID}"
 }
 
 stop_docker
@@ -12,8 +16,11 @@ set -e
 
 trap stop_docker EXIT
 
+docker network create --attachable "${NETWORK_ID}"
+
 docker run \
   -d --rm \
+  --net "${NETWORK_ID}" \
   --name container-jfr \
   --hostname container-jfr \
   --mount source="container-jfr",target=/flightrecordings \
