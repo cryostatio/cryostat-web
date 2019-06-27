@@ -32,4 +32,11 @@
     <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
     <button *ngIf="grafanaEnabled" class="btn btn-default" (click)="grafanaUpload(item.name)">View in Grafana</button>
   </div>
+  <hr />
+  <h3>Summary</h3>
+  <div #loadingSpinner class="spinner spinner-lg"></div>
+  <iframe #reportFrame *ngIf="!!item.reportUrl" width="100%" height="640"
+    [src]="item.reportUrl | safeUrl" [hidden]="true"
+    (load)="reportLoaded(loadingSpinner, reportFrame)">
+  </iframe>
 </ng-template>

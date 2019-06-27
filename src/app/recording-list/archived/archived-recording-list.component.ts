@@ -45,6 +45,10 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
               const downloadUrl: URL = new URL(nr.downloadUrl);
               downloadUrl.port = '80';
               nr.downloadUrl = downloadUrl.toString();
+
+              const reportUrl: URL = new URL(nr.reportUrl);
+              reportUrl.port = '80';
+              nr.reportUrl = reportUrl.toString();
             });
 
             this.recordings = newRecordings;
@@ -122,11 +126,17 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
     });
   }
 
+  reportLoaded(spinner: HTMLDivElement, frame: HTMLIFrameElement): void {
+    spinner.hidden = true;
+    frame.hidden = false;
+  }
+
 }
 
 interface SavedRecording {
   name: string;
   downloadUrl: string;
+  reportUrl: string;
 }
 
 interface UploadResponse {
