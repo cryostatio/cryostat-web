@@ -19,6 +19,7 @@ export class EventTypesComponent implements OnInit, OnDestroy {
   @ViewChild('categoryTemplate') categoryTemplate: TemplateRef<any>;
   @ViewChild('optionsTemplate') optionsTemplate: TemplateRef<any>;
 
+  collapsed = true;
   filteredEvents: JfrEventType[];
   events: JfrEventType[];
   columns: any[];
