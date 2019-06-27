@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ElementRef } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
 import { Subscription } from 'rxjs';
@@ -181,6 +181,11 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
         duration: -1
       }
     });
+  }
+
+  reportLoaded(spinner: HTMLDivElement, frame: HTMLIFrameElement): void {
+    spinner.hidden = true;
+    frame.hidden = false;
   }
 }
 
