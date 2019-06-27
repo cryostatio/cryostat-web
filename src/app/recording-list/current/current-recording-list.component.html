@@ -48,7 +48,7 @@
     </div>
     <hr />
     <h3>Summary</h3>
-    <div #loadingSpinner>Loading...</div>
+    <div #loadingSpinner class="spinner spinner-lg"></div>
     <iframe #reportFrame *ngIf="!!item.reportUrl" width="100%" height="640"
       [src]="item.reportUrl | safeUrl" [hidden]="true"
       (load)="reportLoaded(loadingSpinner, reportFrame)">
