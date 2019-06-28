@@ -20,6 +20,8 @@ docker network create --attachable "${NETWORK_ID}"
 
 docker run \
   -d --rm \
+  --cpus 0.5 \
+  --memory 200M \
   --net "${NETWORK_ID}" \
   --name container-jfr \
   --hostname container-jfr \
