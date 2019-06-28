@@ -19,7 +19,7 @@ trap stop_docker EXIT
 docker network create --attachable "${NETWORK_ID}"
 
 docker run \
-  -d --rm \
+  -d --restart unless-stopped \
   --cpus 0.5 \
   --memory 200M \
   --net "${NETWORK_ID}" \
