@@ -1,7 +1,7 @@
 <div class="card-pf card-pf-view">
   <div class="card-pf-body">
     <h2 class="card-pf-title">
-      <span (click)="collapsed = !collapsed" style="cursor: pointer;">
+      <span class="clickable" (click)="collapsed = !collapsed">
         <span *ngIf="collapsed" class="expand-indicator fa fa-angle-right"></span>
         <span *ngIf="!collapsed" class="expand-indicator fa fa-angle-down"></span>
         &nbsp;

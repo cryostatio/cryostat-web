@@ -33,10 +33,15 @@
     <button *ngIf="grafanaEnabled" class="btn btn-default" (click)="grafanaUpload(item.name)">View in Grafana</button>
   </div>
   <hr />
-  <h3>Summary</h3>
-  <div #loadingSpinner class="spinner spinner-lg"></div>
-  <iframe #reportFrame *ngIf="!!item.reportUrl" width="100%" height="640"
-    [src]="item.reportUrl | safeUrl" [hidden]="true"
-    (load)="reportLoaded(loadingSpinner, reportFrame)">
-  </iframe>
+  <h3 class="clickable" (click)="reportExpanded = !reportExpanded">
+    <span *ngIf="reportExpanded" class="fa fa-angle-down"></span>
+    <span *ngIf="!reportExpanded" class="fa fa-angle-right"></span>
+    Summary
+  </h3>
+  <div *ngIf="reportExpanded">
+    <div #loadingSpinner class="spinner spinner-lg"></div>
+    <iframe #reportFrame *ngIf="!!item.reportUrl" width="100%" height="640"
+      [src]="item.reportUrl | safeUrl" [hidden]="true"
+      (load)="reportLoaded(loadingSpinner, reportFrame)"></iframe>
+  </div>
 </ng-template>
