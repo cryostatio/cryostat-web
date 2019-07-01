@@ -13,6 +13,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
   host = '';
   hostname = '';
   connected = false;
+  scanning = false;
   @ViewChild('dropdown') dropdown: BsDropdownDirective;
 
   private readonly subscriptions: Subscription[] = [];
@@ -26,6 +27,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.svc.onResponse('scan-targets')
         .subscribe(r => {
+          this.scanning = false;
           this.hosts = (r as ListMessage).payload;
           if (this.hosts.length === 1) {
             this.setHost(this.hosts[0].ip);
@@ -56,6 +58,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
         first()
       )
       .subscribe(() => {
+        this.scanning = true;
         this.svc.sendMessage('scan-targets');
       });
     this.svc.onResponse('is-connected')
@@ -77,6 +80,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
 
   setHost(host: string): void {
     if (host === 'rescan') {
+      this.scanning = true;
       this.svc.sendMessage('scan-targets');
     } else if (host.trim().length > 0) {
       this.svc.sendMessage('disconnect');
