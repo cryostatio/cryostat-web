@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { filter, first, map } from 'rxjs/operators';
 import { CommandChannelService, ListMessage } from '../command-channel.service';
+import { BsDropdownDirective } from 'ngx-bootstrap/dropdown';
 
 @Component({
   selector: 'app-connect-button',
@@ -11,6 +12,8 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
   hosts = [];
   host = '';
   hostname = '';
+  connected = false;
+  @ViewChild('dropdown') dropdown: BsDropdownDirective;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -19,6 +22,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.dropdown.autoClose = false;
     this.subscriptions.push(
       this.svc.onResponse('scan-targets')
         .subscribe(r => {
@@ -26,6 +30,24 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
           if (this.hosts.length === 1) {
             this.setHost(this.hosts[0].ip);
           }
+        })
+    );
+    this.subscriptions.push(
+      this.svc.onResponse('connect')
+        .subscribe(r => {
+          this.connected = r.status === 0;
+          this.dropdown.hide();
+          if (this.connected) {
+            this.host = r.payload;
+          }
+        })
+    );
+    this.subscriptions.push(
+      this.svc.onResponse('disconnect')
+        .subscribe(() => {
+          this.connected = false;
+          this.dropdown.hide();
+          this.host = '';
         })
     );
     this.svc.isReady()
@@ -43,7 +65,10 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
         map(msg => msg.payload as string),
         filter(payload => payload !== 'false'),
         map(v => v.split(':')[0])
-      ).subscribe(host => this.host = host);
+      ).subscribe(host => {
+        this.connected = true;
+        this.host = host;
+      });
   }
 
   ngOnDestroy(): void {
@@ -52,16 +77,12 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
 
   setHost(host: string): void {
     if (host === 'rescan') {
-      this.hosts = [];
-      this.host = '';
       this.svc.sendMessage('scan-targets');
     } else if (host.trim().length > 0) {
       this.svc.sendMessage('disconnect');
       this.svc.sendMessage('connect', [ host.trim() ]);
-      this.host = host;
     } else {
       this.svc.sendMessage('disconnect');
-      this.host = '';
     }
   }
 }

@@ -1,13 +1,15 @@
 <div class="card-pf card-pf-view">
   <div class="card-pf-body">
-    <div *ngIf="host.length > 0">Connected {{host}}<hr /></div>
-    <div class="btn-group" dropdown>
+    <div *ngIf="connected">Connected {{host}}<hr /></div>
+    <div class="btn-group" dropdown #dropdown="bs-dropdown">
       <button class="btn btn-default dropdown-toggle" dropdownToggle type="button" data-toggle="dropdown">
         Target JVM<span class="caret"></span>
       </button>
       <ul class="dropdown-menu" *dropdownMenu role="menu">
         <li class="clickable" role="presentation"><a role="menuitem" (click)="setHost('')">Disconnect</a></li>
         <li class="clickable" role="presentation"><a role="menuitem" (click)="setHost('rescan')">Rescan</a></li>
+        <li role="presentation" class="divider"></li>
+        <li role="presentation"><input #customTarget type="text" placeholder="host:port" (click)="$event.stopPropagation()" (keyup.enter)="setHost(customTarget.value)"></li>
         <li role="presentation" class="divider"></li>
         <li class="clickable" *ngFor="let h of hosts" role="presentation">
           <a role="menuitem" (click)="setHost(h.ip)">
