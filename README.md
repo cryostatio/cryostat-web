@@ -2,6 +2,10 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.8.
 
+## See Also
+
+[Trello](https://trello.com/b/zoQx1GxV/jmc-cloud) for project planning.
+
 ## Development server
 
 Run a `container-jfr` instance with WebSocket communication enabled, listening on port 9090. For example,
