@@ -94,4 +94,5 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
 export interface JvmTarget {
   ip: string;
   hostname: string;
+  port: number;
 }
