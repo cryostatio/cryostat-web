@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build . -t container-jfr-web
+docker build . -t quay.io/rh-jmc-team/container-jfr-web
