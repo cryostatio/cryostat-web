@@ -66,19 +66,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
           if (msg.status === 0) {
             const newRecordings = (r as ResponseMessage<Recording[]>).payload;
 
-            newRecordings.forEach(nr => {
-              // Ports reported by container-jfr will be the ports that it binds
-              // within its container, but we'll override that to port 80 for
-              // OpenShift/Minishift demo deployments
-              const downloadUrl: URL = new URL(nr.downloadUrl);
-              downloadUrl.port = '80';
-              nr.downloadUrl = downloadUrl.toString();
-
-              const reportUrl: URL = new URL(nr.reportUrl);
-              reportUrl.port = '80';
-              nr.reportUrl = reportUrl.toString();
-            });
-
             this.recordings
               .filter(i => (i as any).expanded)
               .map(i => i.id)

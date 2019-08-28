@@ -36,22 +36,7 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
       this.svc.onResponse('list-saved')
         .subscribe(r => {
           if (r.status === 0) {
-            const newRecordings = r.payload;
-
-            newRecordings.forEach(nr => {
-              // Ports reported by container-jfr will be the ports that it binds
-              // within its container, but we'll override that to port 80 for
-              // OpenShift/Minishift demo deployments
-              const downloadUrl: URL = new URL(nr.downloadUrl);
-              downloadUrl.port = '80';
-              nr.downloadUrl = downloadUrl.toString();
-
-              const reportUrl: URL = new URL(nr.reportUrl);
-              reportUrl.port = '80';
-              nr.reportUrl = reportUrl.toString();
-            });
-
-            this.recordings = newRecordings;
+            this.recordings = r.payload;
           }
         })
     );
