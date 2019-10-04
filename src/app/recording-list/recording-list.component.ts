@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { first } from 'rxjs/operators';
+import { CommandChannelService } from '../command-channel.service';
 
 @Component({
   selector: 'app-recording-list',
@@ -6,6 +9,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./recording-list.component.less']
 })
 export class RecordingListComponent {
+
+  archiveEnabled = this.svc.isArchiveEnabled();
+  private readonly subscriptions: Subscription[] = [];
+
+  constructor(
+    private svc: CommandChannelService,
+  ) {}
 
 }
 

@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subject, BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
-import { filter, first } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 
@@ -10,6 +10,7 @@ export class CommandChannelService implements OnDestroy {
   private ws: WebSocket;
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
+  private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private pingTimer: number;
@@ -44,6 +45,12 @@ export class CommandChannelService implements OnDestroy {
     ).subscribe(msg => this.notifications.message(
       NotificationType.WARNING, msg.commandName, msg.payload, false, null, null
     ));
+
+    this.messages.pipe(
+      filter(msg => msg.commandName === 'list-saved'),
+      first(),
+      map(msg => msg.status === 0)
+    ).subscribe(listSavedEnabled => this.archiveEnabled.next(listSavedEnabled));
 
     this.notifications.setDelay(15000);
   }
@@ -81,6 +88,10 @@ export class CommandChannelService implements OnDestroy {
       }, 10 * 1000);
     });
 
+    this.ws.addEventListener('open', () => {
+      this.sendMessage('list-saved');
+    });
+
     this.ws.addEventListener('error', (evt: Event) => this.notifications.message(
       NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), false, null, null
     ));
@@ -99,6 +110,10 @@ export class CommandChannelService implements OnDestroy {
 
   isReady(): Observable<boolean> {
     return this.ready.asObservable();
+  }
+
+  isArchiveEnabled(): Observable<boolean> {
+    return this.archiveEnabled.asObservable();
   }
 
   addCloseHandler(handler: () => void): void {
