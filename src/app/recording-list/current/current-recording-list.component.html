@@ -45,6 +45,7 @@
       <button class="btn btn-default" (click)="save(item.name)">Save</button>
       <button *ngIf="item.state != 'STOPPED'" class="btn btn-default" (click)="stop(item.name)">Stop</button>
       <button class="btn btn-default" (click)="delete(item.name)">Delete</button>
+      <button *ngIf="grafanaEnabled" class="btn btn-default" (click)="grafanaUpload(item.name)">View in Grafana</button>
     </div>
     <hr />
     <h3 class="clickable" (click)="reportExpanded = !reportExpanded">

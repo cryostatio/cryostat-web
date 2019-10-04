@@ -1,8 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ElementRef } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
+import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, first } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage } from '../../command-channel.service';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { CreateRecordingComponent } from '../../create-recording/create-recording.component';
@@ -18,6 +20,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   connected: ConnectionState = ConnectionState.UNKNOWN;
   recordings: Recording[] = [];
   listConfig: ListConfig;
+  grafanaEnabled = false;
 
   private refresh: number;
   private readonly subscriptions: Subscription[] = [];
@@ -26,6 +29,8 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   constructor(
     private svc: CommandChannelService,
     private modalSvc: BsModalService,
+    private notifications: NotificationService,
+    private http: HttpClient,
   ) {
     this.listConfig = {
       useExpandItems: true
@@ -114,6 +119,25 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
         })
     );
 
+    this.subscriptions.push(
+      this.svc.grafanaDatasourceUrl().pipe(
+        first()
+      ).subscribe(() => this.grafanaEnabled = true)
+    );
+
+    this.subscriptions.push(
+      this.svc.onResponse('upload-saved')
+        .subscribe((r: ResponseMessage<UploadResponse>) => {
+          if (r.status === 0) {
+            this.notifications.message(
+              NotificationType.SUCCESS, 'Upload success', null, false, null, null
+            );
+            this.http.get('/grafana_dashboard_url')
+              .subscribe((url: { grafanaDashboardUrl: string }) => window.open(url.grafanaDashboardUrl, '_blank'));
+          }
+        })
+    );
+
     this.svc.isReady()
       .pipe(
         filter(ready => !!ready)
@@ -147,6 +171,17 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
         'Once deleted, recordings can not be retrieved and the data is lost.'
       }
     }).content.onAccept().subscribe(() => this.svc.sendMessage('delete', [ name ]));
+  }
+
+  grafanaUpload(name: string): void {
+    this.svc.grafanaDatasourceUrl().pipe(
+      first()
+    ).subscribe(grafana => {
+      this.notifications.message(
+        NotificationType.INFO, 'Upload started', null, false, null, null
+      );
+      this.svc.sendMessage('upload-saved', [ name, `${grafana}/load` ]);
+    });
   }
 
   stop(name: string): void {
@@ -194,4 +229,23 @@ export enum ConnectionState {
   UNKNOWN,
   CONNECTED,
   DISCONNECTED,
+}
+
+interface SavedRecording {
+  name: string;
+  downloadUrl: string;
+  reportUrl: string;
+}
+
+interface UploadResponse {
+  body: string;
+  status: {
+    reasonphrase: string;
+    statusCode: number;
+    protoVersion: {
+      protocol: string;
+      major: number;
+      minor: number;
+    }
+  };
 }
