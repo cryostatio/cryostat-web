@@ -1,12 +1,17 @@
 <div class="card-pf card-pf-view">
   <div class="card-pf-body">
-    <tabset>
-      <tab heading="Current">
-        <app-current-recording-list></app-current-recording-list>
-      </tab>
-      <tab heading="Archived">
-        <app-archived-recording-list></app-archived-recording-list>
-      </tab>
-    </tabset>
+    <div *ngIf="archiveEnabled | async; else activeOnly">
+      <tabset>
+        <tab heading="Current">
+          <app-current-recording-list></app-current-recording-list>
+        </tab>
+        <tab heading="Archived">
+          <app-archived-recording-list></app-archived-recording-list>
+        </tab>
+      </tabset>
+    </div>
+    <ng-template #activeOnly>
+      <app-current-recording-list></app-current-recording-list>
+    </ng-template>
   </div>
 </div>
