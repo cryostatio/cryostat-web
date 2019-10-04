@@ -7,6 +7,7 @@ import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirm
 import { first } from 'rxjs/operators';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 import { HttpClient } from '@angular/common/http';
+import { SavedRecording, UploadResponse } from '../recording-list.component';
 
 @Component({
   selector: 'app-archived-recording-list',
@@ -116,23 +117,4 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
     frame.hidden = false;
   }
 
-}
-
-interface SavedRecording {
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-}
-
-interface UploadResponse {
-  body: string;
-  status: {
-    reasonphrase: string;
-    statusCode: number;
-    protoVersion: {
-      protocol: string;
-      major: number;
-      minor: number;
-    }
-  };
 }

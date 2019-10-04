@@ -8,6 +8,7 @@ import { filter, first } from 'rxjs/operators';
 import { CommandChannelService, ResponseMessage } from '../../command-channel.service';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { CreateRecordingComponent } from '../../create-recording/create-recording.component';
+import { UploadResponse } from '../recording-list.component';
 
 @Component({
   selector: 'app-current-recording-list',
@@ -229,23 +230,4 @@ export enum ConnectionState {
   UNKNOWN,
   CONNECTED,
   DISCONNECTED,
-}
-
-interface SavedRecording {
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-}
-
-interface UploadResponse {
-  body: string;
-  status: {
-    reasonphrase: string;
-    statusCode: number;
-    protoVersion: {
-      protocol: string;
-      major: number;
-      minor: number;
-    }
-  };
 }
