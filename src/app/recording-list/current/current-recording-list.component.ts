@@ -127,7 +127,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.svc.onResponse('upload-saved')
+      this.svc.onResponse('upload-recording')
         .subscribe((r: ResponseMessage<UploadResponse>) => {
           if (r.status === 0) {
             this.notifications.message(
@@ -181,7 +181,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
       this.notifications.message(
         NotificationType.INFO, 'Upload started', null, false, null, null
       );
-      this.svc.sendMessage('upload-saved', [ name, `${grafana}/load` ]);
+      this.svc.sendMessage('upload-recording', [ name, `${grafana}/load` ]);
     });
   }
 
