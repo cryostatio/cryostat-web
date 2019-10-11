@@ -29,8 +29,18 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
         .subscribe(r => {
           this.scanning = false;
           this.hosts = (r as ListMessage).payload;
-          if (this.hosts.length === 1) {
-            this.setHost(this.hosts[0].ip);
+          console.log(this.hosts);
+          if (this.hosts.length === 2) {
+            for (let h of this.hosts) {
+              if (h.ip === "localhost" && h.port === 0) {
+                continue;
+              }
+              if (h.port !== 0) {
+                this.setHost(h.ip + ":" + h.port);
+              } else {
+                this.setHost(h.ip);
+              }
+            }
           }
         })
     );
