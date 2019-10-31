@@ -9,7 +9,7 @@ import { BsDropdownDirective } from 'ngx-bootstrap/dropdown';
   templateUrl: './connect-button.component.html'
 })
 export class ConnectButtonComponent implements OnInit, OnDestroy {
-  hosts = [];
+  hosts: JvmTarget[] = [];
   host = '';
   hostname = '';
   connected = false;
@@ -29,19 +29,6 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
         .subscribe(r => {
           this.scanning = false;
           this.hosts = (r as ListMessage).payload;
-          console.log(this.hosts);
-          if (this.hosts.length === 2) {
-            for (let h of this.hosts) {
-              if (h.ip === "localhost" && h.port === 0) {
-                continue;
-              }
-              if (h.port !== 0) {
-                this.setHost(h.ip + ":" + h.port);
-              } else {
-                this.setHost(h.ip);
-              }
-            }
-          }
         })
     );
     this.subscriptions.push(
@@ -88,21 +75,27 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  setHost(host: string): void {
-    if (host === 'rescan') {
-      this.scanning = true;
-      this.svc.sendMessage('scan-targets');
-    } else if (host.trim().length > 0) {
-      this.svc.sendMessage('disconnect');
-      this.svc.sendMessage('connect', [ host.trim() ]);
-    } else {
-      this.svc.sendMessage('disconnect');
-    }
+  setTarget(target: JvmTarget): void {
+    this.disconnect()
+    this.connectUrl(target.connectUrl + ':' + target.port);
+  }
+
+  connectUrl(url: string): void {
+    this.svc.sendMessage('connect', [ url ]);
+  }
+
+  disconnect() {
+    this.svc.sendMessage('disconnect');
+  }
+
+  rescan() {
+    this.scanning = true;
+    this.svc.sendMessage('scan-targets');
   }
 }
 
 export interface JvmTarget {
-  ip: string;
-  hostname: string;
+  connectUrl: string;
+  alias: string;
   port: number;
 }
