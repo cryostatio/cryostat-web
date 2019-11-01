@@ -127,6 +127,21 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
+      this.svc.onResponse('save')
+        .subscribe(resp => {
+          if (resp.status === 0) {
+            this.notifications.message(
+              NotificationType.SUCCESS, 'Recording saved as ' + resp.payload, null, false, null, null
+            );
+          } else {
+            this.notifications.message(
+              NotificationType.WARNING, resp.payload, null, false, null, null
+            );
+          }
+        })
+    );
+
+    this.subscriptions.push(
       this.svc.onResponse('upload-recording')
         .subscribe((r: ResponseMessage<UploadResponse>) => {
           if (r.status === 0) {
@@ -160,7 +175,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   }
 
   save(name: string): void {
-    this.svc.sendMessage('save', [name]);
+    this.svc.sendMessage('save', [ name ]);
   }
 
   delete(name: string): void {
