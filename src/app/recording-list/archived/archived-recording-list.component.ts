@@ -66,19 +66,6 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
       ).subscribe(() => this.grafanaEnabled = true)
     );
 
-    this.subscriptions.push(
-      this.svc.onResponse('upload-recording')
-        .subscribe((r: ResponseMessage<UploadResponse>) => {
-          if (r.status === 0) {
-            this.notifications.message(
-              NotificationType.SUCCESS, 'Upload success', null, false, null, null
-            );
-            this.http.get('/grafana_dashboard_url')
-              .subscribe((url: { grafanaDashboardUrl: string }) => window.open(url.grafanaDashboardUrl, '_blank'));
-          }
-        })
-    );
-
     this.refreshList();
   }
 
