@@ -1,8 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subject, BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
 import { filter, first, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class CommandChannelService implements OnDestroy {
@@ -17,6 +18,7 @@ export class CommandChannelService implements OnDestroy {
 
   constructor(
     private http: HttpClient,
+    private api: ApiService,
     private notifications: NotificationService,
   ) {
     this.http.get('/clienturl')
@@ -56,7 +58,12 @@ export class CommandChannelService implements OnDestroy {
   }
 
   clientUrl(): Observable<string> {
-    return this.clientUrlSubject.asObservable();
+    return combineLatest(
+      this.clientUrlSubject.asObservable(),
+      this.api.getToken()
+    ).pipe(
+      map(v => `${v[0]}?token=${v[1]}`)
+    );
   }
 
   grafanaDatasourceUrl(): Observable<string> {
