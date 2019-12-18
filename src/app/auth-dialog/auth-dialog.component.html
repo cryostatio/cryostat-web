@@ -7,7 +7,7 @@
     <label for="tokeninput">
       {{message}}
     </label>
-    <input id="tokeninput" type="text" [(ngModel)]="token" (keyup.enter)="doSave()">
+    <input id="tokeninput" type="text" [(ngModel)]="token" (keyup.enter)="doSave()" autofocus>
   </div>
   <div class="pull-right dialog-actions">
     <button class="btn btn-primary" (click)="doSave()">Save</button>

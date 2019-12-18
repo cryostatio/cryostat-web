@@ -1,15 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, ElementRef } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 import { Subscription } from 'rxjs';
 import { filter, first } from 'rxjs/operators';
+import { ApiService, Recording } from 'src/app/api.service';
 import { CommandChannelService, ResponseMessage } from '../../command-channel.service';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { CreateRecordingComponent } from '../../create-recording/create-recording.component';
 import { UploadResponse } from '../recording-list.component';
-import { ApiService, Recording } from 'src/app/api.service';
 
 @Component({
   selector: 'app-current-recording-list',
@@ -27,6 +27,8 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   private refresh: number;
   private readonly subscriptions: Subscription[] = [];
   private readonly refreshInterval: number = 30 * 1000;
+  private readonly reportExpansions = new Map<Recording, boolean>();
+  private readonly reportUrls = new Map<string, string>();
 
   constructor(
     private svc: CommandChannelService,
@@ -73,12 +75,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
           const msg = (r as ResponseMessage<Recording[]>);
           if (msg.status === 0) {
             const newRecordings = (r as ResponseMessage<Recording[]>).payload;
-
-            this.recordings
-              .filter(i => (i as any).expanded)
-              .map(i => i.id)
-              .forEach(i => newRecordings.filter(nr => nr.id === i).forEach(nr => (nr as any).expanded = true));
-
             this.recordings = newRecordings.sort((a, b) => Math.min(a.startTime, b.startTime));
           } else {
             this.autoRefreshEnabled = false;
@@ -176,6 +172,36 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
     this.svc.sendMessage('list');
   }
 
+  reportExpanded(recording: Recording): boolean {
+    return this.reportExpansions.get(recording);
+  }
+
+  toggleReport(frame: HTMLIFrameElement, spinner: HTMLDivElement, recording: Recording): void {
+    if (!this.reportExpansions.has(recording)) {
+      this.reportExpansions.set(recording, false);
+    }
+
+    this.reportExpansions.set(recording, !this.reportExpansions.get(recording));
+    if (this.reportExpansions.get(recording)) {
+      this.apiSvc.getReport(recording).subscribe(report => {
+        const blob = new Blob([ report ], { type: 'text/html' });
+        const url = window.URL.createObjectURL(blob);
+        if (this.reportUrls.has(recording.name)) {
+          window.URL.revokeObjectURL(this.reportUrls.get(recording.name));
+        }
+        this.reportUrls.set(recording.name, url);
+        frame.src = url;
+        spinner.hidden = true;
+        frame.hidden = false;
+      });
+    } else {
+      window.URL.revokeObjectURL(this.reportUrls.get(recording.name));
+      this.reportUrls.delete(recording.name);
+      spinner.hidden = false;
+      frame.hidden = true;
+    }
+  }
+
   save(name: string): void {
     this.svc.sendMessage('save', [ name ]);
   }
@@ -192,7 +218,11 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
         message: 'Are you sure you would like to delete this recording? ' +
         'Once deleted, recordings can not be retrieved and the data is lost.'
       }
-    }).content.onAccept().subscribe(() => this.svc.sendMessage('delete', [ name ]));
+    }).content.onAccept().subscribe(() => {
+      this.svc.sendMessage('delete', [ name ]);
+      window.URL.revokeObjectURL(this.reportUrls.get(name));
+      this.reportUrls.delete(name);
+    });
   }
 
   grafanaUpload(name: string): void {
@@ -227,10 +257,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
     });
   }
 
-  reportLoaded(spinner: HTMLDivElement, frame: HTMLIFrameElement): void {
-    spinner.hidden = true;
-    frame.hidden = false;
-  }
 }
 
 export enum ConnectionState {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, of } from 'rxjs';
-import { filter, first, map, catchError, tap } from 'rxjs/operators';
+import { filter, first, map, catchError, tap, concatMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable()
@@ -43,6 +43,16 @@ export class ApiService {
     });
   }
 
+  getReport(recording: SavedRecording): Observable<string> {
+    return this.token.asObservable().pipe(
+      first(),
+      concatMap(token => this.http.get(recording.reportUrl, {
+        responseType: 'text',
+        headers: this.getHeaders(token),
+      })),
+    );
+  }
+
   private getHeaders(token?: string): HttpHeaders {
     let headers = new HttpHeaders();
     if (!!token) {
@@ -58,6 +68,7 @@ export class ApiService {
     anchor.download = filename;
     anchor.href = url;
     anchor.click();
+    setTimeout(() => window.URL.revokeObjectURL(url));
   }
 
 }
