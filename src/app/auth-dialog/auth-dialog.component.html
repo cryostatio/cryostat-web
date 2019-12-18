@@ -1,0 +1,15 @@
+<div class="container-fluid">
+  <h3 class="dialog-title">
+    {{title}}
+  </h3>
+  <hr />
+  <div class="dialog-content">
+    <label for="tokeninput">
+      {{message}}
+    </label>
+    <input id="tokeninput" type="text" [(ngModel)]="token" (keyup.enter)="doSave()">
+  </div>
+  <div class="pull-right dialog-actions">
+    <button class="btn btn-primary" (click)="doSave()">Save</button>
+  </div>
+</div>

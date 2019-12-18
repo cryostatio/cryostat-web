@@ -13,11 +13,11 @@ export class ApiService {
   ) {  }
 
   checkAuth(token: string): Observable<boolean> {
-    return this.http.post('/auth', null, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
+    let headers = {};
+    if (!!token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return this.http.post('/auth', null, { headers })
     .pipe(
       map(v => true),
       catchError((e: any): ObservableInput<boolean> => {
@@ -27,7 +27,6 @@ export class ApiService {
       first(),
       tap(v => {
         if (v) {
-          console.log('Remembering auth token');
           this.token.next(token);
         }
       })

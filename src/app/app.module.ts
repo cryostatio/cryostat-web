@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 
 import { CommandChannelService } from './command-channel.service';
 import { ApiService } from './api.service';
+import { AuthDialogModule } from './auth-dialog/auth-dialog.module';
 import { ClientConnectModule } from './client-connect/client-connect.module';
 import { ConnectButtonModule } from './connect/connect-button.module';
 import { RecordingListModule } from './recording-list/recording-list.module';
@@ -25,6 +26,7 @@ import { EventTypesModule } from './event-types/event-types.module';
     ToastNotificationListModule,
     ModalModule,
     // AppRoutingModule,
+    AuthDialogModule,
     ClientConnectModule,
     ConnectButtonModule,
     RecordingListModule,
