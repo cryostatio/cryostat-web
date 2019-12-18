@@ -25,7 +25,7 @@
   </div>
 </ng-template>
 <ng-template #actionTemplate let-item="item">
-  <button class="btn btn-default"><a href="{{item.downloadUrl}}">Download</a></button>
+  <button class="btn btn-default" (click)="download(item)">Download</button>
 </ng-template>
 <ng-template #expandTemplate let-item="item">
   <div class="recording-actions">

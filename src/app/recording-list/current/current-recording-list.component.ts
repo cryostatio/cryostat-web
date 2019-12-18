@@ -9,6 +9,7 @@ import { CommandChannelService, ResponseMessage } from '../../command-channel.se
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { CreateRecordingComponent } from '../../create-recording/create-recording.component';
 import { UploadResponse } from '../recording-list.component';
+import { ApiService, Recording } from 'src/app/api.service';
 
 @Component({
   selector: 'app-current-recording-list',
@@ -29,6 +30,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
 
   constructor(
     private svc: CommandChannelService,
+    private apiSvc: ApiService,
     private modalSvc: BsModalService,
     private notifications: NotificationService,
     private http: HttpClient,
@@ -178,6 +180,10 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
     this.svc.sendMessage('save', [ name ]);
   }
 
+  download(recording: Recording): void {
+    this.apiSvc.downloadRecording(recording);
+  }
+
   delete(name: string): void {
     this.modalSvc.show(ConfirmationDialogComponent, {
       initialState: {
@@ -225,20 +231,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
     spinner.hidden = true;
     frame.hidden = false;
   }
-}
-
-export interface Recording {
-  id: number;
-  name: string;
-  state: string;
-  duration: number;
-  startTime: number;
-  continuous: boolean;
-  toDisk: boolean;
-  maxSize: number;
-  maxAge: number;
-  downloadUrl: string;
-  reportUrl: string;
 }
 
 export enum ConnectionState {

@@ -7,7 +7,8 @@ import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirm
 import { first } from 'rxjs/operators';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 import { HttpClient } from '@angular/common/http';
-import { SavedRecording, UploadResponse } from '../recording-list.component';
+import { UploadResponse } from '../recording-list.component';
+import { SavedRecording, ApiService } from 'src/app/api.service';
 
 @Component({
   selector: 'app-archived-recording-list',
@@ -23,6 +24,7 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
 
   constructor(
     private svc: CommandChannelService,
+    private apiSvc: ApiService,
     private modalSvc: BsModalService,
     private notifications: NotificationService,
     private http: HttpClient,
@@ -75,6 +77,10 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
 
   refreshList(): void {
     this.svc.sendMessage('list-saved');
+  }
+
+  download(recording: SavedRecording): void {
+    this.apiSvc.downloadRecording(recording);
   }
 
   delete(name: string): void {
