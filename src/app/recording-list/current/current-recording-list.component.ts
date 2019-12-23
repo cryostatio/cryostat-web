@@ -174,6 +174,29 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
     this.svc.sendMessage('list');
   }
 
+  uploadRecording(): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.jfr';
+    input.onchange = () => {
+      if (!input.files[0]) {
+        return;
+      }
+
+      const payload = new FormData(); // as multipart/form-data
+      payload.append('recording', input.files[0]);
+
+      this.http.post(
+        '/recordings',
+        payload).subscribe(
+        () => this.notifications.message(NotificationType.INFO, 'Upload started', null, false, null, null),
+        (err: Error) => this.notifications.message(NotificationType.WARNING, 'Upload failed', err.message, false, null, null),
+        () => this.notifications.message(NotificationType.INFO, 'Upload completed', null, false, null, null)
+      );
+    };
+    input.click();
+  }
+
   save(name: string): void {
     this.svc.sendMessage('save', [ name ]);
   }
