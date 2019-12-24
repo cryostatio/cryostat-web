@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, ElementRef } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
@@ -189,10 +189,15 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
       this.http.post(
         '/recordings',
         payload).subscribe(
-        () => this.notifications.message(NotificationType.INFO, 'Upload started', null, false, null, null),
-        (err: Error) => this.notifications.message(NotificationType.WARNING, 'Upload failed', err.message, false, null, null),
-        () => this.notifications.message(NotificationType.INFO, 'Upload completed', null, false, null, null)
+        (res: any) => {
+          this.notifications.message(NotificationType.SUCCESS, 'Upload successes', `Recording saved as ${res.name}`, false, null, null);
+        },
+        (res: HttpErrorResponse) => {
+          this.notifications.message(NotificationType.WARNING, 'Upload failed', res.error.message, false, null, null);
+        }
       );
+
+      this.notifications.message(NotificationType.INFO, 'Upload started', null, false, null, null);
     };
     input.click();
   }
