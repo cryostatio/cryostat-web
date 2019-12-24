@@ -7,7 +7,8 @@ import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirm
 import { first } from 'rxjs/operators';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 import { HttpClient } from '@angular/common/http';
-import { SavedRecording, UploadResponse } from '../recording-list.component';
+import { UploadResponse } from '../recording-list.component';
+import { SavedRecording, ApiService } from 'src/app/api.service';
 
 @Component({
   selector: 'app-archived-recording-list',
@@ -19,10 +20,13 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
   listConfig: ListConfig;
   grafanaEnabled = false;
 
+  private readonly reportExpansions = new Map<SavedRecording, boolean>();
+  private readonly reportUrls = new Map<string, string>();
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
     private svc: CommandChannelService,
+    private apiSvc: ApiService,
     private modalSvc: BsModalService,
     private notifications: NotificationService,
     private http: HttpClient,
@@ -77,6 +81,40 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
     this.svc.sendMessage('list-saved');
   }
 
+  reportExpanded(recording: SavedRecording): boolean {
+    return this.reportExpansions.get(recording);
+  }
+
+  toggleReport(frame: HTMLIFrameElement, spinner: HTMLDivElement, recording: SavedRecording): void {
+    if (!this.reportExpansions.has(recording)) {
+      this.reportExpansions.set(recording, false);
+    }
+
+    this.reportExpansions.set(recording, !this.reportExpansions.get(recording));
+    if (this.reportExpansions.get(recording)) {
+      this.apiSvc.getReport(recording).subscribe(report => {
+        const blob = new Blob([ report ], { type: 'text/html' });
+        const url = window.URL.createObjectURL(blob);
+        if (this.reportUrls.has(recording.name)) {
+          window.URL.revokeObjectURL(this.reportUrls.get(recording.name));
+        }
+        this.reportUrls.set(recording.name, url);
+        frame.src = url;
+        spinner.hidden = true;
+        frame.hidden = false;
+      });
+    } else {
+      window.URL.revokeObjectURL(this.reportUrls.get(recording.name));
+      this.reportUrls.delete(recording.name);
+      spinner.hidden = false;
+      frame.hidden = true;
+    }
+  }
+
+  download(recording: SavedRecording): void {
+    this.apiSvc.downloadRecording(recording);
+  }
+
   delete(name: string): void {
     this.modalSvc.show(ConfirmationDialogComponent, {
       initialState: {
@@ -97,11 +135,6 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
       );
       this.svc.sendMessage('upload-recording', [ name, `${grafana}/load` ]);
     });
-  }
-
-  reportLoaded(spinner: HTMLDivElement, frame: HTMLIFrameElement): void {
-    spinner.hidden = true;
-    frame.hidden = false;
   }
 
 }

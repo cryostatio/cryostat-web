@@ -19,12 +19,6 @@ export class RecordingListComponent {
 
 }
 
-export interface SavedRecording {
-  name: string;
-  downloadUrl: string;
-  reportUrl: string;
-}
-
 export interface UploadResponse {
   body: string;
   status: {
