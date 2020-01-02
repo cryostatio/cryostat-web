@@ -6,7 +6,7 @@ import { CommandChannelService, ResponseMessage } from 'src/app/command-channel.
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
 import { first } from 'rxjs/operators';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { UploadResponse } from '../recording-list.component';
 import { SavedRecording, ApiService } from 'src/app/api.service';
 
@@ -137,4 +137,32 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
     });
   }
 
+  recordingUpload(): void {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.jfr';
+    input.onchange = () => {
+      if (!input.files[0]) {
+        return;
+      }
+
+      const payload = new FormData(); // as multipart/form-data
+      payload.append('recording', input.files[0]);
+
+      this.http.post(
+        '/recordings',
+        payload).subscribe(
+        (res: any) => {
+          this.notifications.message(NotificationType.SUCCESS, 'Upload successes', `Recording saved as ${res.name}`, false, null, null);
+          this.refreshList();
+        },
+        (res: HttpErrorResponse) => {
+          this.notifications.message(NotificationType.WARNING, 'Upload failed', res.error.message, false, null, null);
+        }
+      );
+
+      this.notifications.message(NotificationType.INFO, 'Upload started', null, false, null, null);
+    };
+    input.click();
+  }
 }
