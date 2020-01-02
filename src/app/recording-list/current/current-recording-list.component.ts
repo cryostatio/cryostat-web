@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ListConfig } from 'patternfly-ng/list';
@@ -170,34 +170,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
 
   refreshList(): void {
     this.svc.sendMessage('list');
-  }
-
-  uploadRecording(): void {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.jfr';
-    input.onchange = () => {
-      if (!input.files[0]) {
-        return;
-      }
-
-      const payload = new FormData(); // as multipart/form-data
-      payload.append('recording', input.files[0]);
-
-      this.http.post(
-        '/recordings',
-        payload).subscribe(
-        (res: any) => {
-          this.notifications.message(NotificationType.SUCCESS, 'Upload successes', `Recording saved as ${res.name}`, false, null, null);
-        },
-        (res: HttpErrorResponse) => {
-          this.notifications.message(NotificationType.WARNING, 'Upload failed', res.error.message, false, null, null);
-        }
-      );
-
-      this.notifications.message(NotificationType.INFO, 'Upload started', null, false, null, null);
-    };
-    input.click();
   }
 
   reportExpanded(recording: Recording): boolean {
