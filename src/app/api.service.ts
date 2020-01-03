@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, of, OperatorFunction} from 'rxjs';
+import {Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, of } from 'rxjs';
 import {filter, first, map, catchError, tap, concatMap, flatMap} from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
