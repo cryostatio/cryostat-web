@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, of } from 'rxjs';
-import { filter, first, map, catchError, tap, concatMap } from 'rxjs/operators';
+import {Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, of, OperatorFunction} from 'rxjs';
+import {filter, first, map, catchError, tap, concatMap, flatMap} from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable()
@@ -41,6 +41,15 @@ export class ApiService {
       })
       .subscribe(resp => this.downloadFile(recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'), resp, 'application/octet-stream'))
     });
+  }
+
+  uploadRecording(file: File): Observable<any> {
+    const payload = new FormData(); // as multipart/form-data
+    payload.append('recording', file);
+
+    return this.token.asObservable().pipe(first(), flatMap(token => this.http.post('/recordings', payload, {
+      headers: this.getHeaders(token),
+    })));
   }
 
   getReport(recording: SavedRecording): Observable<string> {
