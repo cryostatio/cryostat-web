@@ -146,20 +146,14 @@ export class ArchivedRecordingListComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const payload = new FormData(); // as multipart/form-data
-      payload.append('recording', input.files[0]);
-
-      this.http.post(
-        '/recordings',
-        payload).subscribe(
+      this.apiSvc.uploadRecording(input.files[0]).subscribe(
         (res: any) => {
           this.notifications.message(NotificationType.SUCCESS, 'Upload successes', `Recording saved as ${res.name}`, false, null, null);
           this.refreshList();
         },
         (res: HttpErrorResponse) => {
           this.notifications.message(NotificationType.WARNING, 'Upload failed', res.error.message, false, null, null);
-        }
-      );
+        });
 
       this.notifications.message(NotificationType.INFO, 'Upload started', null, false, null, null);
     };
