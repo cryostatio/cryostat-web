@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ApiService } from './api.service';
 import { AuthDialogComponent } from './auth-dialog/auth-dialog.component';
+import { DocumentationMessagesService } from './documentation-messages.service';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,7 @@ export class AppComponent implements OnInit {
     private apiService: ApiService,
     public notificationSvc: NotificationService,
     public modalSvc: BsModalService,
+    private documentationMessages: DocumentationMessagesService
   ) { }
 
   ngOnInit(): void {
@@ -34,15 +36,14 @@ export class AppComponent implements OnInit {
         if (v) {
           // auth passed
         } else {
-          this.modalSvc.show(AuthDialogComponent, {
-            initialState: {
-              title: 'Auth Token',
-              message: 'ContainerJFR connection requires a platform auth token to validate user authorization. '
-              + 'Please enter a valid access token for your user account. For example, if this is an OpenShift '
-              + 'deployment, you can enter the token given by "oc whoami --show-token".'
-            }
-          })
-            .content.onSave().subscribe(token => this.checkAuth(token));
+          this.documentationMessages.getMessage('AUTH_DIALOG_MESSAGE').subscribe(message => {
+            this.modalSvc.show(AuthDialogComponent, {
+              initialState: {
+                title: 'Auth Token',
+                message,
+              }
+            }).content.onSave().subscribe(this.checkAuth.bind(this));
+          });
         }
       },
       e => console.log(`Got failure /auth response ${e}`)
