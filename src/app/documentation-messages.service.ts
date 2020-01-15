@@ -56,15 +56,15 @@ export class DocumentationMessagesService {
     return locales
       .filter((v, i) => locales.indexOf(v) === i) // remove duplicates
       .map((l, i) => {
-      const q = 1 - i * 0.1;
-      if (q === 1) {
-        return l; // ';q=1' can be omitted
-      } else if (q <= 0) {
-        return l + ';q=0';
-      } else {
-        return l + `;q=` + q;
-      }
-    }).join(',');
+        const q = 1 - i * 0.1;
+        if (q === 1) {
+          return l; // ';q=1' can be omitted
+        } else if (q <= 0) {
+          return l + ';q=0';
+        } else {
+          return l + `;q=` + q;
+        }
+      }).join(',');
   }
 
   isReady(): Observable<boolean> {
