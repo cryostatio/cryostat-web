@@ -58,50 +58,53 @@ export class CommandChannelService implements OnDestroy {
   }
 
   clientUrl(): Observable<string> {
-    return combineLatest(
-      this.clientUrlSubject.asObservable(),
-      this.api.getToken()
-    ).pipe(
-      map(v => `${v[0]}?token=${v[1]}`)
-    );
+    return this.clientUrlSubject.asObservable();
   }
 
   grafanaDatasourceUrl(): Observable<string> {
     return this.grafanaDatasourceUrlSubject.asObservable();
   }
 
-  connect(clientUrl: string): void {
-    this.ws = new WebSocket(clientUrl);
+  connect(clientUrl: string): Observable<void> {
+    const ret = new Subject<void>();
+    this.api.getToken()
+      .pipe(first())
+      .subscribe(token => {
+        this.ws = new WebSocket(clientUrl, `base64url.bearer.authorization.containerjfr.${token}`);
 
-    this.ws.addEventListener('open', () => this.ready.next(true));
+        this.ws.addEventListener('open', () => this.ready.next(true));
 
-    this.ws.addEventListener('message', (ev: MessageEvent) => {
-      if (typeof ev.data === 'string') {
-        this.messages.next(JSON.parse(ev.data));
-      }
-    });
+        this.ws.addEventListener('message', (ev: MessageEvent) => {
+          if (typeof ev.data === 'string') {
+            this.messages.next(JSON.parse(ev.data));
+          }
+        });
 
-    this.ws.addEventListener('close', () => {
-      this.ready.next(false);
-      window.clearInterval(this.pingTimer);
-      this.notifications.message(
-        NotificationType.INFO, 'WebSocket connection lost', null, false, null, null
-      );
-    });
+        this.ws.addEventListener('close', () => {
+          this.ready.next(false);
+          window.clearInterval(this.pingTimer);
+          this.notifications.message(
+            NotificationType.INFO, 'WebSocket connection lost', null, false, null, null
+          );
+        });
 
-    this.ws.addEventListener('open', () => {
-      this.pingTimer = window.setInterval(() => {
-        this.sendMessage('ping');
-      }, 10 * 1000);
-    });
+        this.ws.addEventListener('open', () => {
+          this.pingTimer = window.setInterval(() => {
+            this.sendMessage('ping');
+          }, 10 * 1000);
+        });
 
-    this.ws.addEventListener('open', () => {
-      this.sendMessage('list-saved');
-    });
+        this.ws.addEventListener('open', () => {
+          this.sendMessage('list-saved');
+        });
 
-    this.ws.addEventListener('error', (evt: Event) => this.notifications.message(
-      NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), false, null, null
-    ));
+        this.ws.addEventListener('error', (evt: Event) => this.notifications.message(
+          NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), false, null, null
+        ));
+
+        ret.complete();
+      });
+    return ret;
   }
 
   disconnect(): void {
