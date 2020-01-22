@@ -1,10 +1,6 @@
-# ContainerJFRWeb
+# Container-JFR-Web
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.8.
-
-## See Also
-
-[Trello](https://trello.com/b/zoQx1GxV/jmc-cloud) for project planning.
 
 ## Development server
 
