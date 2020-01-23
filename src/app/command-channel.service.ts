@@ -70,7 +70,7 @@ export class CommandChannelService implements OnDestroy {
     this.api.getToken()
       .pipe(first())
       .subscribe(token => {
-        this.ws = new WebSocket(clientUrl, `base64url.bearer.authorization.containerjfr.${token}`);
+        this.ws = new WebSocket(clientUrl, `base64url.bearer.authorization.containerjfr.${btoa(token)}`);
 
         this.ws.addEventListener('open', () => this.ready.next(true));
 
