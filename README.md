@@ -1,6 +1,6 @@
 # Container-JFR-Web
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.8.
+Web front-end for container-jfr, providing a graphical user interface for managing JFR on remote JVMs
 
 ## Development server
 
