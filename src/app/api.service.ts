@@ -34,13 +34,18 @@ export class ApiService {
   }
 
   downloadRecording(recording: SavedRecording): void {
-    this.token.asObservable().pipe(first()).subscribe(token => {
+    this.token.asObservable().pipe(first()).subscribe(token =>
       this.http.get(recording.downloadUrl, {
         responseType: 'blob',
         headers: this.getHeaders(token),
       })
-      .subscribe(resp => this.downloadFile(recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'), resp, 'application/octet-stream'))
-    });
+      .subscribe(resp =>
+        this.downloadFile(
+          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
+          , resp,
+          'application/octet-stream')
+      )
+    );
   }
 
   uploadRecording(file: File): Observable<any> {
@@ -65,13 +70,13 @@ export class ApiService {
   private getHeaders(token?: string): HttpHeaders {
     let headers = new HttpHeaders();
     if (!!token) {
-      headers = headers.append('Authorization', `Bearer ${token}`)
+      headers = headers.append('Authorization', `Bearer ${token}`);
     }
     return headers;
   }
 
-  private downloadFile(filename: string, data: any, filetype: string): void {
-    const blob = new Blob([ data ], { 'type': filetype } );
+  private downloadFile(filename: string, data: any, type: string): void {
+    const blob = new Blob([ data ], { type } );
     const url = window.URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.download = filename;
