@@ -76,7 +76,7 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
   }
 
   setTarget(target: JvmTarget): void {
-    this.disconnect()
+    this.disconnect();
     this.connectUrl(target.connectUrl + (target.port > 0 ? ':' + target.port : ''));
   }
 

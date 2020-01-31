@@ -11,6 +11,12 @@ import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmat
 import { CreateRecordingComponent } from '../../create-recording/create-recording.component';
 import { UploadResponse } from '../recording-list.component';
 
+export enum ConnectionState {
+  UNKNOWN,
+  CONNECTED,
+  DISCONNECTED,
+}
+
 @Component({
   selector: 'app-current-recording-list',
   templateUrl: './current-recording-list.component.html',
@@ -257,10 +263,4 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
     });
   }
 
-}
-
-export enum ConnectionState {
-  UNKNOWN,
-  CONNECTED,
-  DISCONNECTED,
 }

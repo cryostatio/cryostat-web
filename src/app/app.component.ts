@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
               + 'deployment, you can enter the token given by "oc whoami --show-token".'
             }
           })
-            .content.onSave().subscribe(token => this.checkAuth(token));
+            .content.onSave().subscribe(t => this.checkAuth(t));
         }
       },
       e => console.log(`Got failure /auth response ${e}`)
