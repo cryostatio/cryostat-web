@@ -7,7 +7,7 @@ import { filter, map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class DocumentationMessagesService {
+export class LocalizationService {
 
   private messages: Map<string, string>;
   private readonly ready = new BehaviorSubject<boolean>(false);
@@ -21,7 +21,7 @@ export class DocumentationMessagesService {
 
   setLocale(locale: string) {
     this.ready.next(false);
-    this.http.get('/documentation_messages', {
+    this.http.get('/localization', {
       headers: {
         'Accepted-Language': this.buildAcceptedLanguage(locale)
       }
@@ -32,7 +32,7 @@ export class DocumentationMessagesService {
       },
       (res: HttpErrorResponse) => {
         this.notifications.message(NotificationType.WARNING,
-          'Failed to fetch documentation messages', res.error.message, false, null, null);
+          'Failed to fetch localization messages', res.error.message, false, null, null);
       }
     );
   }

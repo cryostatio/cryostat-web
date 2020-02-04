@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ApiService } from './api.service';
 import { AuthDialogComponent } from './auth-dialog/auth-dialog.component';
-import { DocumentationMessagesService } from './documentation-messages.service';
+import { LocalizationService } from './localization.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     private apiService: ApiService,
     public notificationSvc: NotificationService,
     public modalSvc: BsModalService,
-    private documentationMessages: DocumentationMessagesService
+    private localizationService: LocalizationService
   ) { }
 
   ngOnInit(): void {
@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
         if (v) {
           // auth passed
         } else {
-          this.documentationMessages.getMessage('AUTH_DIALOG_MESSAGE').subscribe(message => {
+          this.localizationService.getMessage('AUTH_DIALOG_MESSAGE').subscribe(message => {
             this.modalSvc.show(AuthDialogComponent, {
               initialState: {
                 title: 'Auth Token',
