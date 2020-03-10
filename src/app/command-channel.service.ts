@@ -130,9 +130,9 @@ export class CommandChannelService implements OnDestroy {
     this.ws.addEventListener('close', handler);
   }
 
-  sendMessage(command: string, args: string[] = []): void {
+  sendMessage(command: string, args: string[] = [], id: string = null): void {
     if (this.ws) {
-      this.ws.send(JSON.stringify({ command, args } as CommandMessage));
+      this.ws.send(JSON.stringify({ id, command, args } as CommandMessage));
     }
   }
 
@@ -146,11 +146,13 @@ export class CommandChannelService implements OnDestroy {
 }
 
 export interface CommandMessage {
+  id?: string;
   command: string;
   args?: string[];
 }
 
 export interface ResponseMessage<T> {
+  id: string;
   status: number;
   commandName: string;
   payload: T;
