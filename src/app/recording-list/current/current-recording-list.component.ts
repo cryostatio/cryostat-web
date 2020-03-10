@@ -10,6 +10,7 @@ import { CommandChannelService, ResponseMessage } from '../../command-channel.se
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { CreateRecordingComponent } from '../../create-recording/create-recording.component';
 import { UploadResponse } from '../recording-list.component';
+import * as uuid from 'uuid';
 
 export enum ConnectionState {
   UNKNOWN,
@@ -35,6 +36,8 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   private readonly refreshInterval: number = 30 * 1000;
   private readonly reportExpansions = new Map<Recording, boolean>();
   private readonly reportUrls = new Map<string, string>();
+
+  private readonly awaitingMsgIds = new Set<string>();
 
   constructor(
     private svc: CommandChannelService,
@@ -132,7 +135,11 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.svc.onResponse('save')
+        .pipe(
+          filter(m => this.awaitingMsgIds.has(m.id))
+        )
         .subscribe(resp => {
+          this.awaitingMsgIds.delete(resp.id);
           if (resp.status === 0) {
             this.notifications.message(
               NotificationType.SUCCESS, 'Recording saved as ' + resp.payload, null, false, null, null
@@ -147,15 +154,19 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.svc.onResponse('upload-recording')
-        .subscribe((r: ResponseMessage<UploadResponse>) => {
-          if (r.status === 0) {
-            this.notifications.message(
-              NotificationType.SUCCESS, 'Upload success', null, false, null, null
-            );
-            this.http.get('/grafana_dashboard_url')
-              .subscribe((url: { grafanaDashboardUrl: string }) => window.open(url.grafanaDashboardUrl, '_blank'));
-          }
-        })
+      .pipe(
+        filter(m => this.awaitingMsgIds.has(m.id))
+      )
+      .subscribe(resp => {
+        this.awaitingMsgIds.delete(resp.id);
+        if (resp.status === 0) {
+          this.notifications.message(
+            NotificationType.SUCCESS, 'Upload success', null, false, null, null
+          );
+          this.http.get('/grafana_dashboard_url')
+            .subscribe((url: { grafanaDashboardUrl: string }) => window.open(url.grafanaDashboardUrl, '_blank'));
+        }
+      })
     );
 
     this.svc.isReady()
@@ -209,7 +220,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   }
 
   save(name: string): void {
-    this.svc.sendMessage('save', [ name ]);
+    this.svc.sendMessage('save', [ name ], this.createMessageUuid());
   }
 
   download(recording: Recording): void {
@@ -238,7 +249,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
       this.notifications.message(
         NotificationType.INFO, 'Upload started', null, false, null, null
       );
-      this.svc.sendMessage('upload-recording', [ name, `${grafana}/load` ]);
+      this.svc.sendMessage('upload-recording', [ name, `${grafana}/load` ], this.createMessageUuid());
     });
   }
 
@@ -261,6 +272,12 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
         duration: -1
       }
     });
+  }
+
+  private createMessageUuid(): string {
+    const id = uuid.v4();
+    this.awaitingMsgIds.add(id);
+    return id;
   }
 
 }
