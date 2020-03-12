@@ -148,8 +148,8 @@ export class CommandChannelService implements OnDestroy {
   }
 }
 
-export interface CommandMessage {
-  id?: string;
+interface CommandMessage {
+  id: string;
   command: string;
   args?: string[];
 }
