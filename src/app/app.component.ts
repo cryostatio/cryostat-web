@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ApiService } from './api.service';
 import { AuthDialogComponent } from './auth-dialog/auth-dialog.component';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -25,24 +26,41 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.notifications = this.notificationSvc.getNotificationsObserver;
     // check if blank token is accepted, ie no auth required for this deployment
-    this.checkAuth('');
+    this.checkAuth('', 'Basic');
   }
 
-  private checkAuth(token: string): void {
-    this.apiService.checkAuth(token).subscribe(
+  private checkAuth(token: string, method: string): void {
+    this.apiService.checkAuth(token, method).subscribe(
       v => {
         if (v) {
           // auth passed
         } else {
-          this.modalSvc.show(AuthDialogComponent, {
-            initialState: {
-              title: 'Auth Token',
-              message: 'ContainerJFR connection requires a platform auth token to validate user authorization. '
-              + 'Please enter a valid access token for your user account. For example, if this is an OpenShift '
-              + 'deployment, you can enter the token given by "oc whoami --show-token".'
-            }
-          })
-            .content.onSave().subscribe(t => this.checkAuth(t));
+          this.apiService.getAuthMethod()
+            .pipe(first())
+            .subscribe(method => {
+              if (method === 'Bearer') {
+                this.modalSvc.show(AuthDialogComponent, {
+                  initialState: {
+                    title: 'Authorization',
+                    message: 'ContainerJFR connection requires a platform auth token to validate user authorization. '
+                    + 'Please enter a valid access token for your user account. For example, if this is an OpenShift '
+                    + 'deployment, you can enter the token given by "oc whoami --show-token".'
+                  }
+                })
+                  .content.onSave().subscribe(token => this.checkAuth(token, method));
+              } else if (method === 'Basic') {
+                this.modalSvc.show(AuthDialogComponent, {
+                  initialState: {
+                    title: 'Authorization',
+                    message: 'ContainerJFR connection requires HTTP Basic to validate user authorization. '
+                    + 'Please enter your credentials in the format "username:password".'
+                  }
+                })
+                  .content.onSave().subscribe(token => this.checkAuth(btoa(token), method));
+              } else {
+                window.alert(`Unknown authorization method ${method}`);
+              }
+            });
         }
       },
       e => console.log(`Got failure /auth response ${e}`)
