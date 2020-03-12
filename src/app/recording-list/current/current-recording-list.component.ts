@@ -10,7 +10,6 @@ import { CommandChannelService, ResponseMessage } from '../../command-channel.se
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { CreateRecordingComponent } from '../../create-recording/create-recording.component';
 import { UploadResponse } from '../recording-list.component';
-import * as uuid from 'uuid';
 
 export enum ConnectionState {
   UNKNOWN,
@@ -220,7 +219,9 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   }
 
   save(name: string): void {
-    this.svc.sendMessage('save', [ name ], this.createMessageUuid());
+    this.awaitingMsgIds.add(
+      this.svc.sendMessage('save', [ name ])
+    );
   }
 
   download(recording: Recording): void {
@@ -249,7 +250,9 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
       this.notifications.message(
         NotificationType.INFO, 'Upload started', null, false, null, null
       );
-      this.svc.sendMessage('upload-recording', [ name, `${grafana}/load` ], this.createMessageUuid());
+      this.awaitingMsgIds.add(
+        this.svc.sendMessage('upload-recording', [ name, `${grafana}/load` ])
+      );
     });
   }
 
@@ -272,12 +275,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
         duration: -1
       }
     });
-  }
-
-  private createMessageUuid(): string {
-    const id = uuid.v4();
-    this.awaitingMsgIds.add(id);
-    return id;
   }
 
 }
