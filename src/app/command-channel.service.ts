@@ -4,6 +4,7 @@ import { filter, first, map, combineLatest } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 import { ApiService } from './api.service';
+import * as uuid from 'uuid';
 
 @Injectable()
 export class CommandChannelService implements OnDestroy {
@@ -139,10 +140,12 @@ export class CommandChannelService implements OnDestroy {
     this.ws.addEventListener('close', handler);
   }
 
-  sendMessage(command: string, args: string[] = []): void {
+  sendMessage(command: string, args: string[] = []): string {
+    const id = uuid.v4();
     if (this.ws) {
-      this.ws.send(JSON.stringify({ command, args } as CommandMessage));
+      this.ws.send(JSON.stringify({ id, command, args } as CommandMessage));
     }
+    return id;
   }
 
   onResponse(command: string): Observable<ResponseMessage<any>> {
@@ -154,12 +157,14 @@ export class CommandChannelService implements OnDestroy {
   }
 }
 
-export interface CommandMessage {
+interface CommandMessage {
+  id: string;
   command: string;
   args?: string[];
 }
 
 export interface ResponseMessage<T> {
+  id: string;
   status: number;
   commandName: string;
   payload: T;
