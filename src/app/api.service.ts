@@ -1,23 +1,34 @@
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, of } from 'rxjs';
-import { filter, first, map, catchError, tap, concatMap, flatMap } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { filter, first, map, catchError, tap, concatMap, flatMap, combineLatest } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class ApiService {
 
-  private readonly token = new ReplaySubject<string>();
+  private readonly token = new ReplaySubject<string>(1);
+  private readonly authMethod = new ReplaySubject<string>(1);
 
   constructor(
     private http: HttpClient,
   ) {  }
 
-  checkAuth(token: string): Observable<boolean> {
-    return this.http.post('/auth', null, { headers: this.getHeaders(token) })
+  checkAuth(token: string, method: string): Observable<boolean> {
+    return this.http.post('/auth', null, { headers: this.getHeaders(token, method) })
     .pipe(
-      map(v => true),
+      map(v => {
+        if (!this.authMethod.isStopped) {
+          this.authMethod.next('');
+          this.authMethod.complete();
+        }
+        return true;
+      }),
       catchError((e: any): ObservableInput<boolean> => {
         console.error(e);
+        if (e instanceof HttpErrorResponse) {
+          this.authMethod.next(e.headers.get('X-WWW-Authenticate'));
+          this.authMethod.complete();
+        }
         return of(false);
       }),
       first(),
@@ -29,15 +40,22 @@ export class ApiService {
     );
   }
 
+  getAuthMethod(): Observable<string> {
+    return this.authMethod.asObservable();
+  }
+
   getToken(): Observable<string> {
     return this.token.asObservable();
   }
 
   downloadRecording(recording: SavedRecording): void {
-    this.token.asObservable().pipe(first()).subscribe(token =>
+    this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first()
+    ).subscribe(auths =>
       this.http.get(recording.downloadUrl, {
         responseType: 'blob',
-        headers: this.getHeaders(token),
+        headers: this.getHeaders(auths[0], auths[1]),
       })
       .subscribe(resp =>
         this.downloadFile(
@@ -52,25 +70,31 @@ export class ApiService {
     const payload = new FormData(); // as multipart/form-data
     payload.append('recording', file);
 
-    return this.token.asObservable().pipe(first(), flatMap(token => this.http.post('/recordings', payload, {
-      headers: this.getHeaders(token),
-    })));
+    return this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first(),
+      flatMap(auths =>
+        this.http.post('/recordings', payload, {
+          headers: this.getHeaders(auths[0], auths[1]),
+        }))
+    );
   }
 
   getReport(recording: SavedRecording): Observable<string> {
-    return this.token.asObservable().pipe(
+    return this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
       first(),
-      concatMap(token => this.http.get(recording.reportUrl, {
+      concatMap(auths => this.http.get(recording.reportUrl, {
         responseType: 'text',
-        headers: this.getHeaders(token),
+        headers: this.getHeaders(auths[0], auths[1]),
       })),
     );
   }
 
-  private getHeaders(token?: string): HttpHeaders {
+  private getHeaders(token: string, method: string): HttpHeaders {
     let headers = new HttpHeaders();
-    if (!!token) {
-      headers = headers.append('Authorization', `Bearer ${token}`);
+    if (!!token && !!method) {
+      headers = headers.append('Authorization', `${method} ${token}`);
     }
     return headers;
   }

@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
-import { filter, first, map } from 'rxjs/operators';
+import { Subject, BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { filter, first, map, combineLatest } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService, NotificationType } from 'patternfly-ng/notification';
 import { ApiService } from './api.service';
@@ -68,9 +68,18 @@ export class CommandChannelService implements OnDestroy {
   connect(clientUrl: string): Observable<void> {
     const ret = new Subject<void>();
     this.api.getToken()
-      .pipe(first())
-      .subscribe(token => {
-        this.ws = new WebSocket(clientUrl, `base64url.bearer.authorization.containerjfr.${btoa(token)}`);
+      .pipe(
+        combineLatest(this.api.getAuthMethod()),
+        first()
+      )
+      .subscribe(auths => {
+        let subprotocol = undefined;
+        if (auths[1] === 'Bearer') {
+          subprotocol = `base64url.bearer.authorization.containerjfr.${btoa(auths[0])}`;
+        } else if (auths[1] === 'Basic') {
+          subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
+        }
+        this.ws = new WebSocket(clientUrl, subprotocol);
 
         this.ws.addEventListener('open', () => this.ready.next(true));
 
