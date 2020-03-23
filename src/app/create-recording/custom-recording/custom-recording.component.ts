@@ -24,7 +24,7 @@ export class CustomRecordingComponent {
       return;
     }
     if (this.duration > 0) {
-      this.svc.sendMessage('dump', [ this.name.trim(), String(this.duration * this.unitMultiplier), this.events ]);
+      this.svc.sendMessage('dump', [ this.name.trim(), String(Math.round(this.duration * this.unitMultiplier)), this.events ]);
     } else {
       this.svc.sendMessage('start', [ this.name.trim(), this.events ]);
     }
