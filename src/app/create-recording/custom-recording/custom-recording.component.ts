@@ -11,7 +11,8 @@ export class CustomRecordingComponent {
   @Input() modalRef: BsModalRef;
 
   name = '';
-  duration = -1;
+  duration = 0;
+  unitMultiplier = 1;
   events = '';
 
   constructor(
@@ -23,12 +24,12 @@ export class CustomRecordingComponent {
       return;
     }
     if (this.duration > 0) {
-      this.svc.sendMessage('dump', [ this.name.trim(), String(this.duration), this.events ]);
+      this.svc.sendMessage('dump', [ this.name.trim(), String(this.duration * this.unitMultiplier), this.events ]);
     } else {
       this.svc.sendMessage('start', [ this.name.trim(), this.events ]);
     }
     this.name = '';
-    this.duration = -1;
+    this.duration = 0;
     this.events = '';
     this.modalRef.hide();
   }
