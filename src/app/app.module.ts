@@ -13,7 +13,7 @@ import { AuthDialogModule } from './auth-dialog/auth-dialog.module';
 import { ClientConnectModule } from './client-connect/client-connect.module';
 import { ConnectButtonModule } from './connect/connect-button.module';
 import { RecordingListModule } from './recording-list/recording-list.module';
-import { EventTypesModule } from './event-types/event-types.module';
+import { EventsModule } from './events/events.module';
 
 @NgModule({
   declarations: [
@@ -30,7 +30,7 @@ import { EventTypesModule } from './event-types/event-types.module';
     ClientConnectModule,
     ConnectButtonModule,
     RecordingListModule,
-    EventTypesModule,
+    EventsModule,
   ],
   providers: [
     CommandChannelService,

@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild, OnDestroy } from '@angular/c
 import { FilterConfig, FilterType, FilterEvent } from 'patternfly-ng/filter';
 import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { filter, first } from 'rxjs/operators';
-import { CommandChannelService } from '../command-channel.service';
+import { CommandChannelService } from '../../command-channel.service';
 import { TableConfig } from 'patternfly-ng/table';
 import { Subscription } from 'rxjs';
 

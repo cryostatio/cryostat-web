@@ -1,0 +1,33 @@
+<div class="card-pf card-pf-view">
+  <div class="card-pf-body">
+    <h2 class="card-pf-title">
+      <span class="clickable" (click)="collapsed = !collapsed">
+        <span *ngIf="collapsed" class="expand-indicator fa fa-angle-right"></span>
+        <span *ngIf="!collapsed" class="expand-indicator fa fa-angle-down"></span>
+        &nbsp;
+        Supported Event Templates
+      </span>
+    </h2>
+    <div [hidden]="collapsed">
+      <hr />
+      <div class="table-wrapper">
+        <pfng-table
+          [config]="config"
+          [columns]="columns"
+          [rows]="filteredTemplates"
+          (onFilterChange)="onFilterChange($event)"
+          >
+        </pfng-table>
+        <ng-template #nameTemplate let-row="row">
+          <span>{{row.name}}</span>
+        </ng-template>
+        <ng-template #descriptionTemplate let-row="row">
+          <span>{{row.description}}</span>
+        </ng-template>
+        <ng-template #providerTemplate let-row="row">
+          <span>{{row.provider}}</span>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
