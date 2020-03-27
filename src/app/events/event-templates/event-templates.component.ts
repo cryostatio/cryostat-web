@@ -17,7 +17,7 @@ export class EventTemplatesComponent implements OnInit, OnDestroy {
   @ViewChild('descriptionTemplate') descriptionTemplate: TemplateRef<any>;
   @ViewChild('providerTemplate') providerTemplate: TemplateRef<any>;
 
-  collapsed = true;
+  collapsed = false;
   filteredTemplates: Template[];
   templates: Template[];
   columns: any[];
@@ -91,20 +91,6 @@ export class EventTemplatesComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.svc.onResponse('is-connected').pipe(
-        filter(r => r.status === 0),
-        filter(r => r.payload !== 'false'),
-        first()
-      ).subscribe(() => this.svc.sendMessage('list-event-templates'))
-    );
-
-    this.subscriptions.push(
-      this.svc.onResponse('connect').pipe(
-        filter(r => r.status === 0)
-      ).subscribe(() => this.svc.sendMessage('list-event-templates'))
-    );
-
-    this.subscriptions.push(
       this.svc.onResponse('disconnect')
         .subscribe(() => {
           this.templates = [];
@@ -112,6 +98,10 @@ export class EventTemplatesComponent implements OnInit, OnDestroy {
           this.filterConfig.resultsCount = 0;
           this.filterConfig.totalCount = 0;
         })
+    );
+
+    this.subscriptions.push(
+      this.svc.isConnected().pipe(filter(v => v)).subscribe(() => this.svc.sendMessage('list-event-templates'))
     );
   }
 

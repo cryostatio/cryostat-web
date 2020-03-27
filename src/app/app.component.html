@@ -7,26 +7,33 @@
       <pfng-toast-notification-list [notifications]="notifications | async"></pfng-toast-notification-list>
     </div>
   </div>
-  <div *ngIf="svc.isReady() | async; else disconnected">
+  <div *ngIf="svc.isReady() | async; else noconnection">
     <div class="row row-cards-pf">
       <div class="col-xs-12 col-sm-4 col-md-2">
         <app-connect-button></app-connect-button>
       </div>
     </div>
 
-    <div class="row row-cards-pf">
-      <div class="col-xs-12">
-        <app-recording-list></app-recording-list>
-      </div>
+    <div *ngIf="connectionState === State.UNKNOWN; else connected">
+      <span>
+        Checking JVM Target connection...
+      </span>
     </div>
+    <ng-template #connected>
+      <div class="row row-cards-pf">
+        <div class="col-xs-12">
+          <app-recording-list></app-recording-list>
+        </div>
+      </div>
 
-    <div class="row row-cards-pf">
-      <div class="col-xs-12">
-        <app-events></app-events>
+      <div class="row row-cards-pf">
+        <div class="col-xs-12">
+          <app-events></app-events>
+        </div>
       </div>
-    </div>
+    </ng-template>
   </div>
-  <ng-template #disconnected>
+  <ng-template #noconnection>
     <div class="row row-cards-pf">
       <app-client-connect></app-client-connect>
     </div>

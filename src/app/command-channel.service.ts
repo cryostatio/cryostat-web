@@ -12,6 +12,7 @@ export class CommandChannelService implements OnDestroy {
   private ws: WebSocket;
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
+  private readonly connected = new BehaviorSubject<boolean>(false);
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
@@ -112,6 +113,15 @@ export class CommandChannelService implements OnDestroy {
           NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), false, null, null
         ));
 
+        // FIXME handle the case of a failed 'connect' command
+        this.onResponse('is-connected').subscribe(c => this.connected.next(c.status === 0 && c.payload === 'true'));
+        this.onResponse('disconnect').pipe(filter(m => m.status === 0)).subscribe(() => this.connected.next(false));
+        this.onResponse('connect').pipe(filter(m => m.status === 0)).subscribe(() => this.connected.next(true));
+
+        this.isReady()
+          .pipe(filter(ready => !!ready))
+          .subscribe(ready => this.sendMessage('is-connected'));
+
         ret.complete();
       });
     return ret;
@@ -130,6 +140,10 @@ export class CommandChannelService implements OnDestroy {
 
   isReady(): Observable<boolean> {
     return this.ready.asObservable();
+  }
+
+  isConnected(): Observable<boolean> {
+    return this.connected.asObservable();
   }
 
   isArchiveEnabled(): Observable<boolean> {

@@ -11,12 +11,6 @@ import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmat
 import { CreateRecordingComponent } from '../../create-recording/create-recording.component';
 import { UploadResponse } from '../recording-list.component';
 
-export enum ConnectionState {
-  UNKNOWN,
-  CONNECTED,
-  DISCONNECTED,
-}
-
 @Component({
   selector: 'app-current-recording-list',
   templateUrl: './current-recording-list.component.html',
@@ -24,8 +18,6 @@ export enum ConnectionState {
 })
 export class CurrentRecordingListComponent implements OnInit, OnDestroy {
 
-  State = ConnectionState;
-  connected: ConnectionState = ConnectionState.UNKNOWN;
   recordings: Recording[] = [];
   listConfig: ListConfig;
   grafanaEnabled = false;
@@ -64,17 +56,7 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.svc.onResponse('is-connected')
-        .subscribe(r => {
-          if (r.status !== 0) {
-            this.connected = ConnectionState.UNKNOWN;
-          } else {
-            this.connected = r.payload === 'false' ? ConnectionState.DISCONNECTED : ConnectionState.CONNECTED;
-          }
-          if (this.connected === ConnectionState.CONNECTED) {
-            this.refreshList();
-          }
-        })
+      this.svc.isConnected().pipe(filter(v => v)).subscribe(() => this.refreshList())
     );
 
     this.subscriptions.push(
@@ -95,7 +77,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
         .subscribe(() => {
           this.autoRefreshEnabled = false;
           this.recordings = [];
-          this.connected = ConnectionState.DISCONNECTED;
         })
     );
 
@@ -114,17 +95,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
           }
         })
     ));
-
-    this.subscriptions.push(
-      this.svc.onResponse('connect')
-        .subscribe(resp => {
-          if (resp.status === 0) {
-            this.connected = ConnectionState.CONNECTED;
-          } else {
-            this.connected = ConnectionState.UNKNOWN;
-          }
-        })
-    );
 
     this.subscriptions.push(
       this.svc.grafanaDatasourceUrl().pipe(
@@ -167,16 +137,6 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
         }
       })
     );
-
-    this.svc.isReady()
-      .pipe(
-        filter(ready => !!ready)
-      )
-      .subscribe(ready => {
-        if (ready) {
-          this.svc.sendMessage('is-connected');
-        }
-      });
   }
 
   ngOnDestroy(): void {
@@ -185,7 +145,11 @@ export class CurrentRecordingListComponent implements OnInit, OnDestroy {
   }
 
   refreshList(): void {
-    this.svc.sendMessage('list');
+    this.svc.isConnected().pipe(first()).subscribe(v => {
+      if (v) {
+        this.svc.sendMessage('list');
+      }
+    })
   }
 
   reportExpanded(recording: Recording): boolean {
