@@ -34,22 +34,22 @@ export class EventTemplatesComponent implements OnInit, OnDestroy {
     this.columns = [
       {
         cellTemplate: this.nameTemplate,
-        draggable: true,
+        draggable: false,
         prop: 'name',
         name: 'Name',
-        resizeable: true
+        resizeable: true,
       }, {
         cellTemplate: this.descriptionTemplate,
-        draggable: true,
+        draggable: false,
         prop: 'description',
         name: 'Description',
-        resizeable: true
+        resizeable: true,
       }, {
         cellTemplate: this.providerTemplate,
-        draggable: true,
+        draggable: false,
         prop: 'provider',
         name: 'Provider',
-        resizeable: true
+        resizeable: true,
       },
     ];
 
@@ -59,23 +59,23 @@ export class EventTemplatesComponent implements OnInit, OnDestroy {
           id: 'searchTerm',
           title: 'Search Term',
           placeholder: 'Filter by search term...',
-          type: FilterType.TEXT
-        }
+          type: FilterType.TEXT,
+        },
       ],
       appliedFilters: [],
       resultsCount: 0,
-      totalCount: 0
+      totalCount: 0,
     };
 
     this.toolbarConfig = {
-      filterConfig: this.filterConfig
+      filterConfig: this.filterConfig,
     } as ToolbarConfig;
 
     this.config = {
-      dragEnabled: true,
+      dragEnabled: false,
       showCheckbox: false,
+      useExpandRows: false,
       toolbarConfig: this.toolbarConfig,
-      useExpandRows: false
     };
 
     this.subscriptions.push(
