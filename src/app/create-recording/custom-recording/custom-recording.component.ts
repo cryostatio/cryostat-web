@@ -10,10 +10,10 @@ export class CustomRecordingComponent {
 
   @Input() modalRef: BsModalRef;
 
-  name = '';
-  duration = 0;
-  unitMultiplier = 1;
-  events = '';
+  @Input() name = '';
+  @Input() duration = 0;
+  @Input() unitMultiplier = 1;
+  @Input() events = '';
 
   constructor(
     public svc: CommandChannelService,
