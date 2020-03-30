@@ -19,6 +19,10 @@
           >
         </pfng-table>
         <ng-template #nameTemplate let-row="row">
+          <button class="btn btn-default" title="Create a new recording using this template" (click)="createRecording(row.name)">
+            <span class="fa pficon-add-circle-o"></span>
+          </button>
+          &nbsp;
           <span>{{row.name}}</span>
         </ng-template>
         <ng-template #descriptionTemplate let-row="row">

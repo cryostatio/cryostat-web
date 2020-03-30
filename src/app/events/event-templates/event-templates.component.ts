@@ -1,10 +1,12 @@
 import { Component, OnInit, TemplateRef, ViewChild, OnDestroy } from '@angular/core';
+import { BsModalService } from 'ngx-bootstrap/modal';
 import { FilterConfig, FilterType, FilterEvent } from 'patternfly-ng/filter';
 import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { filter, first } from 'rxjs/operators';
 import { CommandChannelService } from '../../command-channel.service';
 import { TableConfig } from 'patternfly-ng/table';
 import { Subscription } from 'rxjs';
+import { CreateRecordingComponent } from 'src/app/create-recording/create-recording.component';
 
 @Component({
   selector: 'app-event-templates',
@@ -28,6 +30,7 @@ export class EventTemplatesComponent implements OnInit, OnDestroy {
 
   constructor(
     private svc: CommandChannelService,
+    private modalSvc: BsModalService,
   ) { }
 
   ngOnInit(): void {
@@ -118,6 +121,16 @@ export class EventTemplatesComponent implements OnInit, OnDestroy {
     const searchTerms = event.appliedFilters.map(f => f.value);
     this.filteredTemplates = this.templates.filter(e => eventMatchesSearchTerms(e, searchTerms));
     this.filterConfig.resultsCount = this.filteredTemplates.length;
+  }
+
+  createRecording(templateName: string): void {
+    this.modalSvc.show(CreateRecordingComponent, {
+      initialState: {
+        svc: this.svc,
+        events: `template=${templateName}`,
+        recordingType: 'custom',
+      }
+    });
   }
 }
 
