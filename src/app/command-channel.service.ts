@@ -114,7 +114,7 @@ export class CommandChannelService implements OnDestroy {
         ));
 
         // FIXME handle the case of a failed 'connect' command
-        this.onResponse('is-connected').subscribe(c => this.connected.next(c.status === 0 && c.payload === 'true'));
+        this.onResponse('is-connected').subscribe(c => this.connected.next(c.status === 0 && c.payload !== 'false'));
         this.onResponse('disconnect').pipe(filter(m => m.status === 0)).subscribe(() => this.connected.next(false));
         this.onResponse('connect').pipe(filter(m => m.status === 0)).subscribe(() => this.connected.next(true));
 
