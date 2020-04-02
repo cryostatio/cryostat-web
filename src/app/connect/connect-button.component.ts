@@ -76,8 +76,14 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
   }
 
   setTarget(target: JvmTarget): void {
-    this.disconnect();
-    this.connectUrl(target.connectUrl + (target.port > 0 ? ':' + target.port : ''));
+    this.svc.isConnected().pipe(
+      first()
+    ).subscribe(connected => {
+      if (connected) {
+        this.svc.sendMessage('disconnect');
+      }
+      this.connectUrl(target.connectUrl + (target.port > 0 ? ':' + target.port : ''));
+    });
   }
 
   connectUrl(url: string): void {
@@ -85,7 +91,10 @@ export class ConnectButtonComponent implements OnInit, OnDestroy {
   }
 
   disconnect() {
-    this.svc.sendMessage('disconnect');
+    this.svc.isConnected().pipe(
+      filter(c => !!c),
+      first()
+    ).subscribe(() => this.svc.sendMessage('disconnect'));
   }
 
   rescan() {
