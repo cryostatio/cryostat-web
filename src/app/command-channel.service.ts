@@ -12,6 +12,7 @@ export class CommandChannelService implements OnDestroy {
   private ws: WebSocket;
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
+  private readonly connected = new ReplaySubject<boolean>(1);
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
@@ -22,6 +23,8 @@ export class CommandChannelService implements OnDestroy {
     private api: ApiService,
     private notifications: NotificationService,
   ) {
+    this.notifications.setDelay(15000);
+
     this.http.get('/clienturl')
       .subscribe(
         (url: ({ clientUrl: string })) => this.clientUrlSubject.next(url.clientUrl),
@@ -38,24 +41,32 @@ export class CommandChannelService implements OnDestroy {
         )
       );
 
-    this.clientUrl().pipe(
-      first()
-    ).subscribe(url => this.connect(url));
-
-    this.messages.pipe(
+    this.onResponse('disconnect').pipe(
       filter(msg => msg.status !== 0),
-      filter(msg => msg.commandName !== 'disconnect')
     ).subscribe(msg => this.notifications.message(
       NotificationType.WARNING, msg.commandName, msg.payload, false, null, null
     ));
 
-    this.messages.pipe(
-      filter(msg => msg.commandName === 'list-saved'),
+    this.onResponse('list-saved').pipe(
       first(),
       map(msg => msg.status === 0)
     ).subscribe(listSavedEnabled => this.archiveEnabled.next(listSavedEnabled));
 
-    this.notifications.setDelay(15000);
+    // FIXME handle the case of a failed 'connect' command
+    this.onResponse('is-connected').subscribe(c => this.connected.next(c.status === 0 && c.payload !== 'false'));
+    this.onResponse('disconnect').pipe(filter(m => m.status === 0)).subscribe(() => this.connected.next(false));
+    this.onResponse('connect').pipe(filter(m => m.status === 0)).subscribe(() => this.connected.next(true));
+
+    this.isReady().pipe(
+      filter(ready => !!ready)
+    ).subscribe(ready => {
+      this.sendMessage('is-connected');
+      this.sendMessage('list-saved');
+    });
+
+    this.clientUrl().pipe(
+      first()
+    ).subscribe(url => this.connect(url));
   }
 
   clientUrl(): Observable<string> {
@@ -82,13 +93,15 @@ export class CommandChannelService implements OnDestroy {
         }
         this.ws = new WebSocket(clientUrl, subprotocol);
 
-        this.ws.addEventListener('open', () => this.ready.next(true));
-
         this.ws.addEventListener('message', (ev: MessageEvent) => {
           if (typeof ev.data === 'string') {
             this.messages.next(JSON.parse(ev.data));
           }
         });
+
+        this.ws.addEventListener('error', (evt: Event) => this.notifications.message(
+          NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), false, null, null
+        ));
 
         this.ws.addEventListener('close', () => {
           this.ready.next(false);
@@ -102,15 +115,8 @@ export class CommandChannelService implements OnDestroy {
           this.pingTimer = window.setInterval(() => {
             this.sendMessage('ping');
           }, 10 * 1000);
+          this.ready.next(true);
         });
-
-        this.ws.addEventListener('open', () => {
-          this.sendMessage('list-saved');
-        });
-
-        this.ws.addEventListener('error', (evt: Event) => this.notifications.message(
-          NotificationType.WARNING, 'WebSocket Error', JSON.stringify(evt), false, null, null
-        ));
 
         ret.complete();
       });
@@ -130,6 +136,10 @@ export class CommandChannelService implements OnDestroy {
 
   isReady(): Observable<boolean> {
     return this.ready.asObservable();
+  }
+
+  isConnected(): Observable<boolean> {
+    return this.connected.asObservable();
   }
 
   isArchiveEnabled(): Observable<boolean> {

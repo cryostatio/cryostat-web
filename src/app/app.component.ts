@@ -14,6 +14,9 @@ import { first } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
 
+  State = ConnectionStatus;
+  connectionState = ConnectionStatus.UNKNOWN;
+
   notifications: Observable<Notification[]>;
 
   constructor(
@@ -27,6 +30,14 @@ export class AppComponent implements OnInit {
     this.notifications = this.notificationSvc.getNotificationsObserver;
     // check if blank token is accepted, ie no auth required for this deployment
     this.checkAuth('', 'Basic');
+
+    this.svc.isConnected().subscribe(v => {
+      if (v) {
+        this.connectionState = ConnectionStatus.CONNECTED;
+      } else {
+        this.connectionState = ConnectionStatus.DISCONNECTED;
+      }
+    });
   }
 
   private checkAuth(token: string, method: string): void {
@@ -66,4 +77,10 @@ export class AppComponent implements OnInit {
       e => console.log(`Got failure /auth response ${e}`)
     );
   }
+}
+
+export enum ConnectionStatus {
+  UNKNOWN,
+  CONNECTED,
+  DISCONNECTED,
 }

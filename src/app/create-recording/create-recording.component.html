@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" *ngIf="!recordingType; else specified">
   <tabset>
     <tab heading="Custom Recording">
       <app-custom-recording [modalRef]="modalRef"></app-custom-recording>
@@ -8,3 +8,21 @@
     </tab>
   </tabset>
 </div>
+<ng-template #specified>
+  <div class="container-fluid">
+    <tabset>
+      <tab heading="Create Recording">
+        <app-custom-recording *ngIf="recordingType === 'custom'"
+               [modalRef]="modalRef"
+               [name]="name"
+               [duration]="duration"
+               [unitMultiplier]="unitMultiplier"
+               [events]="events"
+          ></app-custom-recording>
+        <app-snapshot-recording *ngIf="recordingType === 'snapshot'"
+               [modalRef]="modalRef"
+          ></app-snapshot-recording>
+      </tab>
+    </tabset>
+  </div>
+</ng-template>

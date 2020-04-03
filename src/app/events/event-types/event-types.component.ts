@@ -2,7 +2,7 @@ import { Component, OnInit, TemplateRef, ViewChild, OnDestroy } from '@angular/c
 import { FilterConfig, FilterType, FilterEvent } from 'patternfly-ng/filter';
 import { ToolbarConfig } from 'patternfly-ng/toolbar/toolbar-config';
 import { filter, first } from 'rxjs/operators';
-import { CommandChannelService } from '../command-channel.service';
+import { CommandChannelService } from '../../command-channel.service';
 import { TableConfig } from 'patternfly-ng/table';
 import { Subscription } from 'rxjs';
 
@@ -106,20 +106,6 @@ export class EventTypesComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(
-      this.svc.onResponse('is-connected').pipe(
-        filter(r => r.status === 0),
-        filter(r => r.payload !== 'false'),
-        first()
-      ).subscribe(() => this.svc.sendMessage('list-event-types'))
-    );
-
-    this.subscriptions.push(
-      this.svc.onResponse('connect').pipe(
-        filter(r => r.status === 0)
-      ).subscribe(() => this.svc.sendMessage('list-event-types'))
-    );
-
-    this.subscriptions.push(
       this.svc.onResponse('disconnect')
         .subscribe(() => {
           this.events = [];
@@ -127,6 +113,10 @@ export class EventTypesComponent implements OnInit, OnDestroy {
           this.filterConfig.resultsCount = 0;
           this.filterConfig.totalCount = 0;
         })
+    );
+
+    this.subscriptions.push(
+      this.svc.isConnected().pipe(filter(v => v)).subscribe(() => this.svc.sendMessage('list-event-types'))
     );
   }
 

@@ -1,9 +1,4 @@
-<div *ngIf="connected === State.UNKNOWN">
-  <span>
-    Checking JVM Target connection...
-  </span>
-</div>
-<div *ngIf="connected === State.CONNECTED">
+<div *ngIf="svc.isConnected() | async">
   <div class="card-pf-heading-kebab">
     <div class="pull-right recording-list-toolbar">
       <label class="checkbox-inline">
@@ -59,7 +54,7 @@
     </div>
   </ng-template>
 </div>
-<div *ngIf="connected === State.DISCONNECTED">
+<div *ngIf="!(svc.isConnected() | async)">
   <span>
     No JVM Target connection
   </span>
