@@ -1,12 +1,13 @@
-import * as React from 'react';
 import { Axios } from 'axios-observable';
 import { Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
 import { filter, first, map } from 'rxjs/operators';
+import { ApiService } from './Api.service';
 import { nanoid } from 'nanoid';
 
 export class CommandChannel {
 
   private ws: WebSocket | null = null;
+  private readonly apiSvc: ApiService;
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private readonly connected = new ReplaySubject<boolean>(1);
@@ -20,6 +21,8 @@ export class CommandChannel {
     if (!!apiAuthority) {
       console.log(`Using API authority ${apiAuthority}`);
     }
+
+    this.apiSvc = new ApiService();
 
     Axios.get(`${apiAuthority}/clienturl`)
       .subscribe(
@@ -69,31 +72,42 @@ export class CommandChannel {
 
   connect(clientUrl: string): Observable<void> {
     const ret = new Subject<void>();
-    this.ws = new WebSocket(clientUrl);
+    combineLatest(this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
+      .pipe(
+        first(),
+      )
+      .subscribe(auths => {
+        let subprotocol: string | undefined = undefined;
+        if (auths[1] === 'Bearer') {
+          subprotocol = `base64url.bearer.authorization.containerjfr.${btoa(auths[0])}`;
+        } else if (auths[1] === 'Basic') {
+          subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
+        }
+        this.ws = new WebSocket(clientUrl, subprotocol);
 
-    this.ws.addEventListener('message', (ev: MessageEvent) => {
-      if (typeof ev.data === 'string') {
-        this.messages.next(JSON.parse(ev.data));
-      }
-    });
+        this.ws.addEventListener('message', (ev: MessageEvent) => {
+          if (typeof ev.data === 'string') {
+            this.messages.next(JSON.parse(ev.data));
+          }
+        });
 
-    this.ws.addEventListener('close', () => {
-      this.ready.next(false);
-      window.clearInterval(this.pingTimer);
-      console.log('WebSocket connection lost');
-    });
+        this.ws.addEventListener('error', (evt: Event) => console.error('WebSocket error', evt));
 
-    this.ws.addEventListener('open', () => {
-      this.ready.next(true);
-      this.sendMessage('list-saved');
-      this.pingTimer = window.setInterval(() => {
-        this.sendMessage('ping');
-      }, 10 * 1000);
-      ret.complete();
-    });
+        this.ws.addEventListener('close', () => {
+          this.ready.next(false);
+          window.clearInterval(this.pingTimer);
+          console.log('WebSocket connection lost');
+        });
 
-    this.ws.addEventListener('error', (evt: Event) => console.error(evt));
+        this.ws.addEventListener('open', () => {
+          this.pingTimer = window.setInterval(() => {
+            this.sendMessage('ping');
+          }, 10 * 1000);
+          this.ready.next(true);
+        });
 
+        ret.complete();
+      });
     return ret;
   }
 
