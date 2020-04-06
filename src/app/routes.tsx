@@ -54,7 +54,7 @@ const routes: IAppRoute[] = [
     exact: true,
     label: 'Dashboard',
     path: '/',
-    title: 'Main Dashboard Title'
+    title: 'ContainerJFR Web Dashboard'
   },
   {
     component: Support,

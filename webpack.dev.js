@@ -1,6 +1,7 @@
 const path = require('path');
-const merge = require("webpack-merge");
-const common = require("./webpack.common.js");
+const merge = require('webpack-merge');
+const common = require('./webpack.common.js');
+const DotenvPlugin = require('dotenv-webpack');
 
 const HOST = process.env.HOST || "localhost";
 const PORT = process.env.PORT || "9000";
@@ -19,6 +20,9 @@ module.exports = merge(common, {
     overlay: true,
     open: true
   },
+  plugins: [
+    new DotenvPlugin(),
+  ],
   module: {
     rules: [
       {
