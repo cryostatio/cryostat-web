@@ -1,6 +1,6 @@
-import { Axios } from 'axios-observable';
-import { Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
-import { filter, first, map } from 'rxjs/operators';
+import { from, Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
+import { concatMap, filter, first, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { nanoid } from 'nanoid';
 
@@ -16,23 +16,20 @@ export class CommandChannel {
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private pingTimer: number = -1;
 
-  constructor() {
-    const apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
-    if (!!apiAuthority) {
-      console.log(`Using API authority ${apiAuthority}`);
-    }
+  constructor(apiSvc: ApiService) {
+    this.apiSvc = apiSvc;
 
-    this.apiSvc = new ApiService();
-
-    Axios.get(`${apiAuthority}/clienturl`)
+    fromFetch(`${this.apiSvc.authority}/clienturl`)
+      .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
-        (url: any) => this.clientUrlSubject.next(url.data.clientUrl),
+        (url: any) => this.clientUrlSubject.next(url.clientUrl),
         (err: any) => console.error('Client URL configuration', err) // TODO add toast notification
       );
 
-    Axios.get(`${apiAuthority}/grafana_datasource_url`)
+    fromFetch(`${this.apiSvc.authority}/grafana_datasource_url`)
+      .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
-        (url: any) => this.grafanaDatasourceUrlSubject.next(url.data.grafanaDatasourceUrl),
+        (url: any) => this.grafanaDatasourceUrlSubject.next(url.grafanaDatasourceUrl),
         (err: any) => console.error('Grafana Datasource configuration', err) // TODO add toast notification
       );
 
@@ -83,6 +80,7 @@ export class CommandChannel {
         } else if (auths[1] === 'Basic') {
           subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
         }
+        console.log(clientUrl, subprotocol);
         this.ws = new WebSocket(clientUrl, subprotocol);
 
         this.ws.addEventListener('message', (ev: MessageEvent) => {

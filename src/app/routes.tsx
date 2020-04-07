@@ -7,6 +7,8 @@ import { Dashboard } from '@app/Dashboard/Dashboard';
 import { NotFound } from '@app/NotFound/NotFound';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Login } from '@app/Login/Login';
 
 let routeFocusTimer: number;
 
@@ -97,22 +99,37 @@ const PageNotFound = ({ title }: { title: string }) => {
   return <Route component={NotFound} />;
 };
 
-const AppRoutes = () => (
-  <LastLocationProvider>
-    <Switch>
-      {routes.map(({ path, exact, component, title, isAsync }, idx) => (
-        <RouteWithTitleUpdates
-          path={path}
-          exact={exact}
-          component={component}
-          key={idx}
-          title={title}
-          isAsync={isAsync}
-        />
-      ))}
-      <PageNotFound title="404 Page Not Found" />
-    </Switch>
-  </LastLocationProvider>
-);
+class AppRoutes extends React.Component {
+
+  static contextType = ServiceContext;
+
+  state = { authenticated: false };
+
+  loginSuccess = () => this.setState({ authenticated: true });
+
+  render() {
+    return (
+      <LastLocationProvider>
+        <Switch>
+          {
+          this.state.authenticated ?
+            routes.map(({ path, exact, component, title, isAsync }, idx) => (
+              <RouteWithTitleUpdates
+                path={path}
+                exact={exact}
+                component={component}
+                key={idx}
+                title={title}
+                isAsync={isAsync}
+              />
+            ))
+            : <Login onLoginSuccess={this.loginSuccess}/>
+          }
+          <PageNotFound title="404 Page Not Found" />
+        </Switch>
+      </LastLocationProvider>
+    );
+  }
+}
 
 export { AppRoutes, routes };

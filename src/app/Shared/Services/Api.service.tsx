@@ -1,32 +1,47 @@
-import { Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, of } from 'rxjs';
+import { Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, from, of } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
 import { filter, first, map, catchError, tap, concatMap, flatMap, combineLatest } from 'rxjs/operators';
-import { Axios } from 'axios-observable';
-import { AxiosResponse } from 'axios';
 
 export class ApiService {
 
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
+  readonly authority: string;
+
+   constructor() {
+      let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
+      if (!apiAuthority) {
+        apiAuthority = '';
+      }
+      console.log(`Using API authority ${apiAuthority}`);
+      this.authority = apiAuthority;
+   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
-    return Axios.post('/auth', null, { headers: this.getHeaders(token, method) })
+    return fromFetch(`${this.authority}/auth`, {
+      credentials: 'include',
+      mode: 'cors',
+      method: 'POST',
+      body: null,
+      headers: this.getHeaders(token, method)
+    })
     .pipe(
-      map((v: AxiosResponse<string>) => {
+      map(response => {
         if (!this.authMethod.isStopped) {
-          this.authMethod.next('');
-          this.authMethod.complete();
+          this.authMethod.next(response.ok ? method : (response.headers.get('X-WWW-Authenticate') || ''));
         }
-        return true;
+        return response.ok;
       }),
       catchError((e: any): ObservableInput<boolean> => {
-        console.error(e);
-        this.authMethod.next(e.headers.get('X-WWW-Authenticate'));
+        console.error(JSON.stringify(e));
         this.authMethod.complete();
         return of(false);
       }),
       first(),
       tap(v => {
         if (v) {
+          this.authMethod.next(method);
+          this.authMethod.complete();
           this.token.next(token);
         }
       })
@@ -34,11 +49,11 @@ export class ApiService {
   }
 
   getAuthMethod(): Observable<string> {
-    return this.authMethod.asObservable().pipe(tap(v => console.log('authmethod', v)));
+    return this.authMethod.asObservable();
   }
 
   getToken(): Observable<string> {
-    return this.token.asObservable().pipe(tap(v => console.log('authtoken', v)));
+    return this.token.asObservable();
   }
 
   downloadRecording(recording: SavedRecording): void {
@@ -46,14 +61,15 @@ export class ApiService {
       combineLatest(this.getAuthMethod()),
       first()
     ).subscribe(auths =>
-      Axios.get(recording.downloadUrl, {
-        responseType: 'blob',
+      fromFetch(recording.downloadUrl, {
+        credentials: 'include',
+        mode: 'cors',
         headers: this.getHeaders(auths[0], auths[1]),
       })
       .subscribe(resp =>
         this.downloadFile(
-          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
-          , resp,
+          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
+          resp,
           'application/octet-stream')
       )
     );
@@ -67,10 +83,13 @@ export class ApiService {
       combineLatest(this.getAuthMethod()),
       first(),
       flatMap(auths =>
-        Axios.post('/recordings', payload, {
+        fromFetch(`/recordings`, {
+          credentials: 'include',
+          mode: 'cors',
+          body: payload,
           headers: this.getHeaders(auths[0], auths[1]),
         })),
-      map((v: AxiosResponse<any>) => v.data)
+      concatMap(resp => from(resp.text()))
     );
   }
 
@@ -78,18 +97,19 @@ export class ApiService {
     return this.getToken().pipe(
       combineLatest(this.getAuthMethod()),
       first(),
-      concatMap(auths => Axios.get(recording.reportUrl, {
-        responseType: 'text',
+      concatMap(auths => fromFetch(recording.reportUrl, {
+        credentials: 'include',
+        mode: 'cors',
         headers: this.getHeaders(auths[0], auths[1]),
       })),
-      map((v: AxiosResponse<string>) => v.data),
+      concatMap(resp => from(resp.text())),
     );
   }
 
-  private getHeaders(token: string, method: string): Map<string, string> {
-    let headers = new Map();
+  private getHeaders(token: string, method: string): Headers {
+    let headers = new Headers();
     if (!!token && !!method) {
-      headers.set('Authorization', `${method} ${token}`)
+      headers.append('Authorization', `${method} ${token}`)
     }
     return headers;
   }
