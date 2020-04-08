@@ -1,67 +1,59 @@
 import * as React from 'react';
-import { first } from 'rxjs/operators';
 import { PageSection, Title } from '@patternfly/react-core';
-import { ApiService } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
-export class Login extends React.Component<any, any> {
+export const Login = (props) => {
+  const context = React.useContext(ServiceContext);
 
-  static contextType = ServiceContext;
-  state = {
-    token: '',
-    authMethod: '',
-  };
+  const [token, setToken] = React.useState('');
+  const [authMethod, setAuthMethod] = React.useState('Basic');
 
-  componentDidMount() {
-    this.checkAuth(this.state.token, this.state.authMethod);
-    this.context.api.getAuthMethod().pipe(first()).subscribe(authMethod => this.setState({ authMethod }));
-  }
-
-  checkAuth(token: string, authMethod: string): void {
-    this.setState({ token, authMethod });
+  const checkAuth = (token: string, authMethod: string): void => {
     if (authMethod === 'Basic') {
       token = btoa(token);
     } // else this is Bearer auth and the token is sent as-is
-    return this.context.api.checkAuth(token, authMethod).subscribe(v => {
+    context.api.checkAuth(token, authMethod).subscribe(v => {
       if (v) {
-        this.props.onLoginSuccess();
-      } else {
-        this.setState({ token: '' });
+        props.onLoginSuccess();
       }
-    });
+    })
   }
 
-  handleInputChange = (evt) => {
+  const handleInputChange = (evt) => {
     const target = evt.target;
     if (target.name === 'token') {
-      this.setState({ token: target.value });
+      setToken(target.value);
     }
   };
 
-  handleSubmit = (evt) => {
-    this.checkAuth(this.state.token, this.state.authMethod);
+  const handleSubmit = (evt) => {
+    checkAuth(token, authMethod);
     evt.preventDefault();
   };
 
-  render() {
-    return (
-      <PageSection>
-        <Title size="lg">Login</Title>
-        <div>{
-          this.state.authMethod === 'Basic' ?
-          <span>Descriptive text of Basic auth</span> :
-          <span>Descriptive text of Bearer auth</span>
-        }</div>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Token
-            <input name="token" type="text" value={this.state.token} onChange={this.handleInputChange} />
-          </label>
-          <div>Method: {this.state.authMethod}</div>
-          <input type="submit" value="Login" />
-        </form>
-      </PageSection>
-    );
-  }
+  React.useEffect(() => {
+    checkAuth(token, authMethod);
+    const sub = context.api.getAuthMethod().subscribe(authMethod => setAuthMethod(authMethod));
+    return () => sub.unsubscribe();
+  }, []);
+
+  return (
+    <PageSection>
+      <Title size="lg">Login</Title>
+      <div>{
+        authMethod === 'Basic' ?
+        <span>Descriptive text of Basic auth</span> :
+        <span>Descriptive text of Bearer auth</span>
+      }</div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Token
+          <input name="token" type="text" value={token} onChange={handleInputChange} />
+        </label>
+        <div>Method: {authMethod}</div>
+        <input type="submit" value="Login" />
+      </form>
+    </PageSection>
+  );
 
 }

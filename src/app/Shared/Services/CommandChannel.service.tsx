@@ -80,7 +80,6 @@ export class CommandChannel {
         } else if (auths[1] === 'Basic') {
           subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
         }
-        console.log(clientUrl, subprotocol);
         this.ws = new WebSocket(clientUrl, subprotocol);
 
         this.ws.addEventListener('message', (ev: MessageEvent) => {
