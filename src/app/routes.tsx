@@ -99,37 +99,31 @@ const PageNotFound = ({ title }: { title: string }) => {
   return <Route component={NotFound} />;
 };
 
-class AppRoutes extends React.Component {
 
-  static contextType = ServiceContext;
+const AppRoutes = () => {
+  const [authenticated, setAuthenticated] = React.useState(false);
 
-  state = { authenticated: false };
-
-  loginSuccess = () => this.setState({ authenticated: true });
-
-  render() {
-    return (
-      <LastLocationProvider>
-        <Switch>
-          {
-          this.state.authenticated ?
-            routes.map(({ path, exact, component, title, isAsync }, idx) => (
-              <RouteWithTitleUpdates
-                path={path}
-                exact={exact}
-                component={component}
-                key={idx}
-                title={title}
-                isAsync={isAsync}
-              />
-            ))
-            : <Login onLoginSuccess={this.loginSuccess}/>
-          }
-          <PageNotFound title="404 Page Not Found" />
-        </Switch>
-      </LastLocationProvider>
-    );
-  }
+  return (
+    <LastLocationProvider>
+      <Switch>
+        {
+        authenticated ?
+          routes.map(({ path, exact, component, title, isAsync }, idx) => (
+            <RouteWithTitleUpdates
+              path={path}
+              exact={exact}
+              component={component}
+              key={idx}
+              title={title}
+              isAsync={isAsync}
+            />
+          ))
+          : <Login onLoginSuccess={() => setAuthenticated(true)}/>
+        }
+        <PageNotFound title="404 Page Not Found" />
+      </Switch>
+    </LastLocationProvider>
+  );
 }
 
 export { AppRoutes, routes };
