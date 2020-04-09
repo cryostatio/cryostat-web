@@ -55,6 +55,7 @@ export const TargetSelect = (props) => {
 
   return (
     <div>
+      <h1 id="targetSelectTitle">Select a JVM Target</h1>
       <div>Active Connection: {selected}</div>
       <Select
         toggleIcon={<ContainerNodeIcon />}
@@ -63,6 +64,8 @@ export const TargetSelect = (props) => {
         onSelect={onSelect}
         onToggle={setExpanded}
         isExpanded={expanded}
+        aria-label="Select Input"
+        ariaLabelledBy="targetSelectTitle"
       >
       {
         [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />]
