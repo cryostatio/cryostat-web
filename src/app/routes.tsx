@@ -9,6 +9,7 @@ import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Login } from '@app/Login/Login';
+import { RecordingList } from '@app/RecordingList/RecordingList';
 
 let routeFocusTimer: number;
 
@@ -50,7 +51,7 @@ export interface IAppRoute {
   isAsync?: boolean;
 }
 
-const routes: IAppRoute[] = [
+const staticRoutes: IAppRoute[] = [
   {
     component: Dashboard,
     exact: true,
@@ -64,9 +65,23 @@ const routes: IAppRoute[] = [
     isAsync: true,
     label: 'Support',
     path: '/support',
-    title: 'Support Page Title'
+    title: 'Support'
   }
 ];
+
+const dynamicRoutes: IAppRoute[] = [
+  {
+    component: RecordingList,
+    exact: true,
+    label: 'Recordings',
+    path: '/recordings',
+    title: 'JDK Flight Recordings'
+  },
+];
+
+const getAvailableRoutes = isConnected => isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes;
+
+const routes: IAppRoute[] = staticRoutes.concat(dynamicRoutes);
 
 // a custom hook for sending focus to the primary content container
 // after a view has loaded so that subsequent press of tab key
@@ -101,14 +116,23 @@ const PageNotFound = ({ title }: { title: string }) => {
 
 
 const AppRoutes = () => {
+  const context = React.useContext(ServiceContext);
   const [authenticated, setAuthenticated] = React.useState(false);
+  const [availableRoutes, setAvailableRoutes] = React.useState(staticRoutes);
+
+  React.useEffect(() => {
+    const sub = context.commandChannel.isConnected().subscribe(isConnected =>
+        setAvailableRoutes(getAvailableRoutes(isConnected))
+    );
+    return () => sub.unsubscribe();
+  }, []);
 
   return (
     <LastLocationProvider>
       <Switch>
         {
         authenticated ?
-          routes.map(({ path, exact, component, title, isAsync }, idx) => (
+          availableRoutes.map(({ path, exact, component, title, isAsync }, idx) => (
             <RouteWithTitleUpdates
               path={path}
               exact={exact}
@@ -126,4 +150,4 @@ const AppRoutes = () => {
   );
 }
 
-export { AppRoutes, routes };
+export { AppRoutes, routes, getAvailableRoutes, staticRoutes, dynamicRoutes };

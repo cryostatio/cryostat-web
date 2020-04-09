@@ -1,6 +1,6 @@
 import { from, Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { concatMap, filter, first, map, tap } from 'rxjs/operators';
+import { concatMap, distinctUntilChanged, filter, first, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { nanoid } from 'nanoid';
 
@@ -116,15 +116,15 @@ export class CommandChannel {
   }
 
   isReady(): Observable<boolean> {
-    return this.ready.asObservable();
+    return this.ready.asObservable().pipe(distinctUntilChanged());
   }
 
   isConnected(): Observable<boolean> {
-    return this.connected.asObservable();
+    return this.connected.asObservable().pipe(distinctUntilChanged());
   }
 
   isArchiveEnabled(): Observable<boolean> {
-    return this.archiveEnabled.asObservable();
+    return this.archiveEnabled.asObservable().pipe(distinctUntilChanged());
   }
 
   addCloseHandler(handler: () => void): void {
