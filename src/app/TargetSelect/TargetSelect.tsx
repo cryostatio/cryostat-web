@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { filter, first } from 'rxjs/operators';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { Grid, GridItem, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
@@ -54,33 +54,35 @@ export const TargetSelect = (props) => {
   };
 
   return (
-    <div>
-      <h1 id="targetSelectTitle">Select a JVM Target</h1>
-      <div>Active Connection: {selected}</div>
-      <Select
-        toggleIcon={<ContainerNodeIcon />}
-        variant={SelectVariant.single}
-        selections={selected}
-        onSelect={onSelect}
-        onToggle={setExpanded}
-        isExpanded={expanded}
-        aria-label="Select Input"
-        ariaLabelledBy="targetSelectTitle"
-      >
-      {
-        [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />]
-          .concat(
-            targets.map((t: Target) => (
-              <SelectOption
-                key={t.connectUrl}
-                value={t}
-                isPlaceholder={false}
-              >{`${t.alias} (${t.connectUrl})`}</SelectOption>
-            ))
-        )
-      }
-      </Select>
-    </div>
+    <Grid gutter="md">
+      <GridItem span={6}>
+        <h1 id="targetSelectTitle">Select a JVM Target</h1>
+        <div>Active Connection: {selected}</div>
+        <Select
+          toggleIcon={<ContainerNodeIcon />}
+          variant={SelectVariant.single}
+          selections={selected}
+          onSelect={onSelect}
+          onToggle={setExpanded}
+          isExpanded={expanded}
+          aria-label="Select Input"
+          ariaLabelledBy="targetSelectTitle"
+        >
+        {
+          [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />]
+            .concat(
+              targets.map((t: Target) => (
+                <SelectOption
+                  key={t.connectUrl}
+                  value={t}
+                  isPlaceholder={false}
+                >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+              ))
+          )
+        }
+        </Select>
+      </GridItem>
+    </Grid>
   );
 
 }
