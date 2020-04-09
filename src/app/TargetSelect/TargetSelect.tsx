@@ -70,7 +70,7 @@ export const TargetSelect = (props) => {
                 key={t.connectUrl}
                 value={t}
                 isPlaceholder={false}
-              >{t.alias}</SelectOption>
+              >{`${t.alias} (${t.connectUrl})`}</SelectOption>
             ))
         )
       }
