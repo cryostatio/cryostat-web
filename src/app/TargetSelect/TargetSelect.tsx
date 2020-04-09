@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { filter, first } from 'rxjs/operators';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 interface Target {
@@ -56,6 +57,7 @@ export const TargetSelect = (props) => {
     <div>
       <div>Active Connection: {selected}</div>
       <Select
+        toggleIcon={<ContainerNodeIcon />}
         variant={SelectVariant.single}
         selections={selected}
         onSelect={onSelect}
