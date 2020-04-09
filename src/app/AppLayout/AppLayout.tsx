@@ -10,13 +10,15 @@ import {
   PageSidebar,
   SkipToContent
 } from '@patternfly/react-core';
-import { routes } from '@app/routes';
+import { staticRoutes, getAvailableRoutes } from '@app/routes';
+import { ServiceContext } from '@app/Shared/Services/Services';
 
 interface IAppLayout {
   children: React.ReactNode;
 }
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
+  const context = React.useContext(ServiceContext);
   const logoProps = {
     href: '/',
     target: '_blank'
@@ -24,6 +26,13 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
+  const [availableRoutes, setAvailableRoutes] = React.useState(staticRoutes);
+
+  React.useEffect(() => {
+    const sub = context.commandChannel.isConnected().subscribe(isConnected => setAvailableRoutes(getAvailableRoutes(isConnected)));
+    return () => sub.unsubscribe();
+  }, []);
+
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);
   };
@@ -47,7 +56,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const Navigation = (
     <Nav id="nav-primary-simple" theme="dark">
       <NavList id="nav-list-simple" variant={NavVariants.default}>
-        {routes.map((route, idx) => route.label && (
+        {availableRoutes.map((route, idx) => route.label && (
             <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`}>
               <NavLink exact to={route.path} activeClassName="pf-m-current">{route.label}</NavLink>
             </NavItem>
