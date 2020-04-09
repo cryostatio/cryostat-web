@@ -57,6 +57,7 @@ export const TargetSelect = (props) => {
       <div>Active Connection: {selected}</div>
       <Select
         variant={SelectVariant.single}
+        selections={selected}
         onSelect={onSelect}
         onToggle={setExpanded}
         isExpanded={expanded}
