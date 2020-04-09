@@ -9,7 +9,7 @@ export const Dashboard = (props) => {
       <Title size="lg">Dashboard</Title>
       <Grid gutter="md">
         <GridItem span={8}>
-          <TargetSelect />
+          <TargetSelect allowDisconnect={true} />
         </GridItem>
       </Grid>
     </PageSection>

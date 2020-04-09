@@ -4,13 +4,17 @@ import { PageSection, Select, SelectOption, SelectVariant, Title } from '@patter
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
+export interface TargetSelectProps {
+  allowDisconnect: boolean;
+}
+
 interface Target {
   connectUrl: string;
   alias: string;
   port: number;
 }
 
-export const TargetSelect = (props) => {
+export const TargetSelect = (props: TargetSelectProps) => {
   const context = React.useContext(ServiceContext);
   const [selected, setSelected] = React.useState('');
   const [targets, setTargets] = React.useState([]);
@@ -82,7 +86,7 @@ export const TargetSelect = (props) => {
         aria-label="Select Input"
       >
       {
-        [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />]
+        (props.allowDisconnect ? [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />] : [])
           .concat(
             targets.map((t: Target) => (
               <SelectOption
