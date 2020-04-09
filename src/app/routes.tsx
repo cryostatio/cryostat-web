@@ -3,42 +3,15 @@ import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { Alert, PageSection } from '@patternfly/react-core';
 import { DynamicImport } from '@app/DynamicImport';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
-import { Dashboard } from '@app/Dashboard/Dashboard';
 import { NotFound } from '@app/NotFound/NotFound';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { Login } from '@app/Login/Login';
 import { RecordingList } from '@app/RecordingList/RecordingList';
 
 let routeFocusTimer: number;
-
-const getSupportModuleAsync = () => () => import(/* webpackChunkName: 'support' */ '@app/Support/Support');
-
-const Support = (routeProps: RouteComponentProps) => {
-  const lastNavigation = useLastLocation();
-  return (
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    <DynamicImport load={getSupportModuleAsync()} focusContentAfterMount={lastNavigation !== null}>
-      {(Component: any) => {
-        let loadedComponent: any;
-        /* eslint-enable @typescript-eslint/no-explicit-any */
-        if (Component === null) {
-          loadedComponent = (
-            <PageSection aria-label="Loading Content Container">
-              <div className="pf-l-bullseye">
-                <Alert title="Loading" className="pf-l-bullseye__item" />
-              </div>
-            </PageSection>
-          );
-        } else {
-          loadedComponent = <Component.Support {...routeProps} />;
-        }
-        return loadedComponent;
-      }}
-    </DynamicImport>
-  );
-};
 
 export interface IAppRoute {
   label?: string;
@@ -53,20 +26,12 @@ export interface IAppRoute {
 
 const staticRoutes: IAppRoute[] = [
   {
-    component: Dashboard,
+    component: TargetSelect,
     exact: true,
-    label: 'Dashboard',
+    label: 'Target Selection',
     path: '/',
-    title: 'ContainerJFR Web Dashboard'
+    title: 'ContainerJFR Target Selection'
   },
-  {
-    component: Support,
-    exact: true,
-    isAsync: true,
-    label: 'Support',
-    path: '/support',
-    title: 'Support'
-  }
 ];
 
 const dynamicRoutes: IAppRoute[] = [
