@@ -7,8 +7,8 @@ import { NotFound } from '@app/NotFound/NotFound';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { Login } from '@app/Login/Login';
+import { Dashboard } from '@app/Dashboard/Dashboard';
 import { RecordingList } from '@app/RecordingList/RecordingList';
 
 let routeFocusTimer: number;
@@ -26,11 +26,11 @@ export interface IAppRoute {
 
 const staticRoutes: IAppRoute[] = [
   {
-    component: TargetSelect,
+    component: Dashboard,
     exact: true,
-    label: 'Target Selection',
+    label: 'Dashboard',
     path: '/',
-    title: 'ContainerJFR Target Selection'
+    title: 'ContainerJFR Dashboard'
   },
 ];
 

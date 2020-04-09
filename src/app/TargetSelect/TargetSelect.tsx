@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { filter, first } from 'rxjs/operators';
-import { Grid, GridItem, PageSection, Select, SelectOption, SelectVariant, Title } from '@patternfly/react-core';
+import { distinctUntilChanged, filter, first } from 'rxjs/operators';
+import { PageSection, Select, SelectOption, SelectVariant, Title } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
@@ -34,7 +34,7 @@ export const TargetSelect = (props) => {
   }, []);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('is-connected').subscribe(connection => {
+    const sub = context.commandChannel.onResponse('is-connected').pipe(distinctUntilChanged()).subscribe(connection => {
       const msg = connection.payload;
       if (msg == 'false') {
         setSelected('');
@@ -44,6 +44,10 @@ export const TargetSelect = (props) => {
     });
     return () => sub.unsubscribe();
   }, []);
+
+  React.useEffect(() => {
+    context.commandChannel.sendMessage('is-connected');
+  });
 
   const connect = (target: Target) => {
     context.commandChannel.sendMessage('connect', [ target.connectUrl ]);
@@ -66,37 +70,31 @@ export const TargetSelect = (props) => {
   };
 
   return (
-    <PageSection>
-      <Grid gutter="md">
-        <GridItem span={6}>
-          <Title size="lg" id="targetSelectTitle">Select a JVM Target</Title>
-          <div>Active Connection: {selected}</div>
-          <Select
-            toggleIcon={<ContainerNodeIcon />}
-            variant={SelectVariant.single}
-            selections={selected}
-            onSelect={onSelect}
-            onToggle={setExpanded}
-            isExpanded={expanded}
-            aria-label="Select Input"
-            ariaLabelledBy="targetSelectTitle"
-          >
-          {
-            [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />]
-              .concat(
-                targets.map((t: Target) => (
-                  <SelectOption
-                    key={t.connectUrl}
-                    value={t}
-                    isPlaceholder={false}
-                  >{`${t.alias} (${t.connectUrl})`}</SelectOption>
-                ))
-            )
-          }
-          </Select>
-        </GridItem>
-      </Grid>
-    </PageSection>
+    <>
+      <div>Active Connection: {selected}</div>
+      <Select
+        toggleIcon={<ContainerNodeIcon />}
+        variant={SelectVariant.single}
+        selections={selected}
+        onSelect={onSelect}
+        onToggle={setExpanded}
+        isExpanded={expanded}
+        aria-label="Select Input"
+      >
+      {
+        [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />]
+          .concat(
+            targets.map((t: Target) => (
+              <SelectOption
+                key={t.connectUrl}
+                value={t}
+                isPlaceholder={false}
+              >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+            ))
+        )
+      }
+      </Select>
+    </>
   );
 
 }
