@@ -133,9 +133,8 @@ export class CommandChannel {
     }
   }
 
-  sendMessage(command: string, args: string[] = []): string {
+  sendMessage(command: string, args: string[] = [], id: string = nanoid()): string {
     if (this.ws) {
-      const id = nanoid();
       this.ws.send(JSON.stringify({ id, command, args } as CommandMessage));
       return id;
     }
