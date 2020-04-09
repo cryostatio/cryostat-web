@@ -33,6 +33,18 @@ export const TargetSelect = (props) => {
     return () => sub.unsubscribe();
   }, []);
 
+  React.useEffect(() => {
+    const sub = context.commandChannel.onResponse('is-connected').subscribe(connection => {
+      const msg = connection.payload;
+      if (msg == 'false') {
+        setSelected('');
+      } else {
+        setSelected(msg);
+      }
+    });
+    return () => sub.unsubscribe();
+  }, []);
+
   const connect = (target: Target) => {
     context.commandChannel.sendMessage('connect', [ target.connectUrl ]);
   };
