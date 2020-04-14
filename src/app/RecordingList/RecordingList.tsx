@@ -68,7 +68,7 @@ export const RecordingList = (props) => {
   }, []);
 
   return (
-    <TargetView pageTitle="Flight Recordings" allowDisconnect={false}>
+    <TargetView pageTitle="Flight Recordings">
       <Table aria-label="Recordings Table" cells={tableColumns} rows={getRecordingRows()}>
         <TableHeader />
         <TableBody />
