@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { distinctUntilChanged, filter, first } from 'rxjs/operators';
-import { Grid, GridItem, PageSection, Select, SelectOption, SelectVariant, Text, TextVariants, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, Grid, GridItem, PageSection, Select, SelectOption, SelectVariant, Text, TextVariants, Title } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
@@ -79,34 +79,38 @@ export const TargetSelect = (props: TargetSelectProps) => {
 
   return (<>
       <Grid>
-        <GridItem>
-          <Text component={TextVariants.p}>
-            Target JVM
-          </Text>
-        </GridItem>
         <GridItem span={props.isCompact ? 2 : 8}>
-          <Select
-            toggleIcon={<ContainerNodeIcon />}
-            variant={SelectVariant.single}
-            selections={selected}
-            onSelect={onSelect}
-            onToggle={setExpanded}
-            isExpanded={expanded}
-            aria-label="Select Input"
-          >
-          {
-            (props.allowDisconnect ? [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />] : [])
-              .concat(
-                targets.map((t: Target) => (
-                  <SelectOption
-                    key={t.connectUrl}
-                    value={t}
-                    isPlaceholder={false}
-                  >{`${t.alias} (${t.connectUrl})`}</SelectOption>
-                ))
-            )
-          }
-          </Select>
+          <Card>
+            <CardHeader>
+              <Text component={TextVariants.h4}>
+                Target JVM
+              </Text>
+            </CardHeader>
+            <CardBody>
+              <Select
+                toggleIcon={<ContainerNodeIcon />}
+                variant={SelectVariant.single}
+                selections={selected}
+                onSelect={onSelect}
+                onToggle={setExpanded}
+                isExpanded={expanded}
+                aria-label="Select Input"
+              >
+              {
+                (props.allowDisconnect ? [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />] : [])
+                  .concat(
+                    targets.map((t: Target) => (
+                      <SelectOption
+                        key={t.connectUrl}
+                        value={t}
+                        isPlaceholder={false}
+                      >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+                    ))
+                )
+              }
+              </Select>
+            </CardBody>
+          </Card>
         </GridItem>
       </Grid>
   </>);
