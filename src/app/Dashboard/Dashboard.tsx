@@ -5,7 +5,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 export const Dashboard = (props) => {
 
   return (
-    <TargetView pageTitle="Dashboard" allowDisconnect={true} targetSelectWidth={8} />
+    <TargetView pageTitle="Dashboard" allowDisconnect={true} compactSelect={false} />
   );
 
 }

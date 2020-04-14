@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { distinctUntilChanged, filter, first } from 'rxjs/operators';
-import { PageSection, Select, SelectOption, SelectVariant, Title } from '@patternfly/react-core';
+import { Grid, GridItem, PageSection, Select, SelectOption, SelectVariant, Text, TextVariants, Title } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface TargetSelectProps {
-  allowDisconnect: boolean;
+  isCompact?: boolean;
+  allowDisconnect?: boolean;
 }
 
 interface Target {
@@ -76,32 +77,38 @@ export const TargetSelect = (props: TargetSelectProps) => {
     setExpanded(false);
   };
 
-  return (
-    <>
-      <div>Active Connection: {selected}</div>
-      <Select
-        toggleIcon={<ContainerNodeIcon />}
-        variant={SelectVariant.single}
-        selections={selected}
-        onSelect={onSelect}
-        onToggle={setExpanded}
-        isExpanded={expanded}
-        aria-label="Select Input"
-      >
-      {
-        (props.allowDisconnect ? [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />] : [])
-          .concat(
-            targets.map((t: Target) => (
-              <SelectOption
-                key={t.connectUrl}
-                value={t}
-                isPlaceholder={false}
-              >{`${t.alias} (${t.connectUrl})`}</SelectOption>
-            ))
-        )
-      }
-      </Select>
-    </>
-  );
+  return (<>
+      <Grid>
+        <GridItem>
+          <Text component={TextVariants.p}>
+            Target JVM
+          </Text>
+        </GridItem>
+        <GridItem span={props.isCompact ? 2 : 8}>
+          <Select
+            toggleIcon={<ContainerNodeIcon />}
+            variant={SelectVariant.single}
+            selections={selected}
+            onSelect={onSelect}
+            onToggle={setExpanded}
+            isExpanded={expanded}
+            aria-label="Select Input"
+          >
+          {
+            (props.allowDisconnect ? [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />] : [])
+              .concat(
+                targets.map((t: Target) => (
+                  <SelectOption
+                    key={t.connectUrl}
+                    value={t}
+                    isPlaceholder={false}
+                  >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+                ))
+            )
+          }
+          </Select>
+        </GridItem>
+      </Grid>
+  </>);
 
 }

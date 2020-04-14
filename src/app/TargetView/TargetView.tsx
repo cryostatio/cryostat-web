@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Grid, GridItem, PageSection, Title } from '@patternfly/react-core';
+import { PageSection, Stack, StackItem, Title } from '@patternfly/react-core';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 
 interface TargetViewProps {
-  children: any;
+  children?: any;
   pageTitle: string;
   targetSelectWidth?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+  compactSelect: boolean;
   allowDisconnect?: boolean;
 }
 
@@ -14,18 +15,18 @@ export const TargetView = (props: TargetViewProps) => {
   return (<>
     <PageSection>
       <Title size="lg">{props.pageTitle}</Title>
-      <Grid gutter="md">
-        <GridItem span={props.targetSelectWidth || 4}>
-          <TargetSelect allowDisconnect={props.allowDisconnect || false} />
-        </GridItem>
+      <Stack gutter="md">
+        <StackItem>
+          <TargetSelect isCompact={props.compactSelect == null ? true : props.compactSelect} allowDisconnect={props.allowDisconnect || false} />
+        </StackItem>
         {
           React.Children.map(props.children, child => (
-            <GridItem span={12}>
+            <StackItem isFilled>
               {child}
-            </GridItem>
+            </StackItem>
           ))
         }
-      </Grid>
+      </Stack>
     </PageSection>
   </>);
 
