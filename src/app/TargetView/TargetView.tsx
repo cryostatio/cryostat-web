@@ -17,9 +17,13 @@ export const TargetView = (props: TargetViewProps) => {
         <GridItem span={4}>
           <TargetSelect allowDisconnect={props.allowDisconnect || false} />
         </GridItem>
-        <GridItem span={12}>
-          {props.children}
-        </GridItem>
+        {
+          React.Children.map(props.children, child => (
+            <GridItem span={12}>
+              {child}
+            </GridItem>
+          ))
+        }
       </Grid>
     </PageSection>
   </>);
