@@ -133,12 +133,22 @@ export class CommandChannel {
     }
   }
 
-  sendMessage(command: string, args: string[] = [], id: string = nanoid()): string {
-    if (this.ws) {
-      this.ws.send(JSON.stringify({ id, command, args } as CommandMessage));
-      return id;
-    }
-    return '';
+  sendMessage(command: string, args: string[] = [], id: string = nanoid()): Observable<string> {
+    const subj = new Subject<string>();
+    this.ready.pipe(
+      first(),
+      map(ready => ready ? id : '')
+    ).subscribe(i => {
+      if (!!i && this.ws) {
+        this.ws.send(JSON.stringify({ id, command, args }));
+      } else if (this.ws) {
+        console.warn('Attempted to send message when command channel was not ready', { id, command, args });
+      } else {
+        console.error('Attempted to send message when command channel was not initialized', { id, command, args });
+      }
+      subj.next(i);
+    });
+    return subj.asObservable();
   }
 
   onResponse(command: string): Observable<ResponseMessage<any>> {
