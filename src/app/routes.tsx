@@ -30,7 +30,7 @@ const staticRoutes: IAppRoute[] = [
     exact: true,
     label: 'Dashboard',
     path: '/',
-    title: 'ContainerJFR Dashboard'
+    title: 'Dashboard'
   },
 ];
 
@@ -40,7 +40,7 @@ const dynamicRoutes: IAppRoute[] = [
     exact: true,
     label: 'Recordings',
     path: '/recordings',
-    title: 'JDK Flight Recordings'
+    title: 'Flight Recordings'
   },
 ];
 
