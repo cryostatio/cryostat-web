@@ -6,7 +6,7 @@ interface TargetViewProps {
   children?: any;
   pageTitle: string;
   targetSelectWidth?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
-  compactSelect: boolean;
+  compactSelect?: boolean;
   allowDisconnect?: boolean;
 }
 

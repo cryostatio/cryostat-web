@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
-import { Grid, GridItem, PageSection, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, PageSection, Text, TextVariants, Title } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, textCenter } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
@@ -69,10 +69,15 @@ export const RecordingList = (props) => {
 
   return (
     <TargetView pageTitle="Flight Recordings">
-      <Table aria-label="Recordings Table" cells={tableColumns} rows={getRecordingRows()}>
-        <TableHeader />
-        <TableBody />
-      </Table>
+      <Card>
+        <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
+        <CardBody>
+          <Table aria-label="Recordings Table" cells={tableColumns} rows={getRecordingRows()}>
+            <TableHeader />
+            <TableBody />
+          </Table>
+        </CardBody>
+      </Card>
     </TargetView>
   );
 };
