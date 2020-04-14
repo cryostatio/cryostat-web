@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { Alert, PageSection } from '@patternfly/react-core';
+import { filter } from 'rxjs/operators';
 import { DynamicImport } from '@app/DynamicImport';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { NotFound } from '@app/NotFound/NotFound';
@@ -88,6 +89,13 @@ const AppRoutes = () => {
   React.useEffect(() => {
     const sub = context.commandChannel.isConnected().subscribe(isConnected =>
         setAvailableRoutes(getAvailableRoutes(isConnected))
+    );
+    return () => sub.unsubscribe();
+  }, []);
+
+  React.useEffect(() => {
+    const sub = context.commandChannel.isReady().pipe(filter(v => !v)).subscribe(() =>
+      setAuthenticated(false)
     );
     return () => sub.unsubscribe();
   }, []);
