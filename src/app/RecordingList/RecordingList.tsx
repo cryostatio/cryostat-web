@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
-import { Grid, GridItem, PageSection, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, PageSection, Text, TextVariants, Title } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, textCenter } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { TargetView } from '@app/TargetView/TargetView';
 
 interface Recording {
   id: number;
@@ -67,16 +68,16 @@ export const RecordingList = (props) => {
   }, []);
 
   return (
-    <PageSection>
-      <Grid>
-        <GridItem span={12}>
-          <Title size="lg">JDK Flight Recordings</Title>
+    <TargetView pageTitle="Flight Recordings">
+      <Card>
+        <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
+        <CardBody>
           <Table aria-label="Recordings Table" cells={tableColumns} rows={getRecordingRows()}>
             <TableHeader />
             <TableBody />
           </Table>
-        </GridItem>
-      </Grid>
-    </PageSection>
+        </CardBody>
+      </Card>
+    </TargetView>
   );
 };
