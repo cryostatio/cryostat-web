@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { PageSection, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, CardFooter, PageSection, Text, TextInput, TextVariants, Title } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { BasicAuthForm, BasicAuthDescriptionText } from './BasicAuthForm';
+import { BearerAuthForm, BearerAuthDescriptionText } from './BearerAuthForm';
 
 export const Login = (props) => {
   const context = React.useContext(ServiceContext);
 
-  const [token, setToken] = React.useState('');
   const [authMethod, setAuthMethod] = React.useState('Basic');
 
   const checkAuth = (token: string, authMethod: string): void => {
@@ -19,40 +20,36 @@ export const Login = (props) => {
     })
   }
 
-  const handleInputChange = (evt) => {
-    const target = evt.target;
-    if (target.name === 'token') {
-      setToken(target.value);
-    }
-  };
-
-  const handleSubmit = (evt) => {
+  const handleSubmit = (evt, token, authMethod) => {
     checkAuth(token, authMethod);
     evt.preventDefault();
   };
 
   React.useEffect(() => {
-    checkAuth(token, authMethod);
+    checkAuth('', 'Basic');
     const sub = context.api.getAuthMethod().subscribe(authMethod => setAuthMethod(authMethod));
     return () => sub.unsubscribe();
   }, []);
 
   return (
     <PageSection>
-      <Title size="lg">Login</Title>
-      <div>{
-        authMethod === 'Basic' ?
-        <span>Descriptive text of Basic auth</span> :
-        <span>Descriptive text of Bearer auth</span>
-      }</div>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Token
-          <input name="token" type="text" value={token} onChange={handleInputChange} />
-        </label>
-        <div>Method: {authMethod}</div>
-        <input type="submit" value="Login" />
-      </form>
+      <Card>
+        <CardHeader>
+          <Title size="lg">Login</Title>
+        </CardHeader>
+        <CardBody>
+          {
+            authMethod === 'Basic' ?
+            <BasicAuthForm onSubmit={handleSubmit} />
+            : <BearerAuthForm onSubmit={handleSubmit} />
+          }
+        </CardBody>
+        <CardFooter>
+          {
+            authMethod === 'Basic' ? <BasicAuthDescriptionText /> : <BearerAuthDescriptionText />
+          }
+        </CardFooter>
+      </Card>
     </PageSection>
   );
 
