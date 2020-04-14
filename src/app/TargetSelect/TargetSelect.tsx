@@ -58,7 +58,7 @@ export const TargetSelect = (props: TargetSelectProps) => {
   }, []);
 
   const connect = (target: Target) => {
-    context.commandChannel.sendMessage('connect', [ target.connectUrl ]);
+    context.commandChannel.sendMessage('connect', [ `${target.connectUrl}:${target.port}` ]);
   };
 
   const disconnect = () => {
@@ -104,7 +104,7 @@ export const TargetSelect = (props: TargetSelectProps) => {
                         key={t.connectUrl}
                         value={t}
                         isPlaceholder={false}
-                      >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+                      >{`${t.alias} (${t.connectUrl}:${t.port})`}</SelectOption>
                     ))
                 )
               }
