@@ -3,7 +3,7 @@ import { filter, map } from 'rxjs/operators';
 import { Grid, GridItem, PageSection, Title } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, textCenter } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { TargetView } from '@app/TargetView/TargetView';
 
 interface Recording {
   id: number;
@@ -68,19 +68,11 @@ export const RecordingList = (props) => {
   }, []);
 
   return (
-    <PageSection>
-      <Title size="lg">JDK Flight Recordings</Title>
-      <Grid gutter="md">
-        <GridItem span={6}>
-          <TargetSelect />
-        </GridItem>
-        <GridItem span={12}>
-          <Table aria-label="Recordings Table" cells={tableColumns} rows={getRecordingRows()}>
-            <TableHeader />
-            <TableBody />
-          </Table>
-        </GridItem>
-      </Grid>
-    </PageSection>
+    <TargetView pageTitle="Flight Recordings" allowDisconnect={false}>
+      <Table aria-label="Recordings Table" cells={tableColumns} rows={getRecordingRows()}>
+        <TableHeader />
+        <TableBody />
+      </Table>
+    </TargetView>
   );
 };
