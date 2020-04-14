@@ -1,18 +1,11 @@
 import * as React from 'react';
 import { Grid, GridItem, PageSection, Title } from '@patternfly/react-core';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { TargetView } from '@app/TargetView/TargetView';
 
 export const Dashboard = (props) => {
 
   return (
-    <PageSection>
-      <Title size="lg">Dashboard</Title>
-      <Grid gutter="md">
-        <GridItem span={8}>
-          <TargetSelect allowDisconnect={true} />
-        </GridItem>
-      </Grid>
-    </PageSection>
+    <TargetView pageTitle="Dashboard" allowDisconnect={true} targetSelectWidth={8} />
   );
 
 }
