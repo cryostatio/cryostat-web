@@ -50,8 +50,11 @@ export const TargetSelect = (props: TargetSelectProps) => {
   }, []);
 
   React.useEffect(() => {
-    context.commandChannel.sendMessage('is-connected');
-  });
+    const sub = context.commandChannel.isReady().pipe(filter(v => v!!), first()).subscribe(() => {
+      context.commandChannel.sendMessage('is-connected');
+    });
+    return () => sub.unsubscribe();
+  }, []);
 
   const connect = (target: Target) => {
     context.commandChannel.sendMessage('connect', [ target.connectUrl ]);
