@@ -12,6 +12,7 @@ import { Login } from '@app/Login/Login';
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { RecordingList } from '@app/RecordingList/RecordingList';
 import { CreateRecording } from '@app/CreateRecording/CreateRecording';
+import { Events } from '@app/Events/Events';
 
 let routeFocusTimer: number;
 
@@ -43,7 +44,7 @@ const dynamicRoutes: IAppRoute[] = [
     exact: true,
     label: 'Recordings',
     path: '/recordings',
-    title: 'Flight Recordings',
+    title: 'Recordings',
     children: [
       {
         component: CreateRecording,
@@ -52,6 +53,13 @@ const dynamicRoutes: IAppRoute[] = [
         title: 'Create Recording'
       },
     ],
+  },
+  {
+    component: Events,
+    exact: true,
+    label: 'Events',
+    path: '/events',
+    title: 'Events',
   },
 ];
 
