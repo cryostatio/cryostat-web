@@ -47,7 +47,7 @@ export const RecordingList = (props) => {
     return recordings.map((recording: Recording) => [
       recording.name,
       new Date(recording.startTime).toISOString(),
-      `${recording.duration / 1000} s`,
+      recording.duration === 0 ? 'Continuous' : `${recording.duration / 1000} s`,
       recording.downloadUrl,
       recording.reportUrl,
       recording.state,
