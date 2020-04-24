@@ -11,6 +11,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Login } from '@app/Login/Login';
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { RecordingList } from '@app/RecordingList/RecordingList';
+import { CreateRecording } from '@app/CreateRecording/CreateRecording';
 
 let routeFocusTimer: number;
 
@@ -43,6 +44,12 @@ const dynamicRoutes: IAppRoute[] = [
     path: '/recordings',
     title: 'Flight Recordings'
   },
+  {
+    component: CreateRecording,
+    exact: true,
+    path: '/recordings/create',
+    title: 'Create Recording'
+  },
 ];
 
 const getAvailableRoutes = isConnected => isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes;
@@ -64,7 +71,7 @@ const useA11yRouteChange = (isAsync: boolean) => {
   }, [isAsync, lastNavigation]);
 };
 
-const RouteWithTitleUpdates = ({ component: Component, isAsync = false, title, ...rest }: IAppRoute) => {
+const RouteWithTitleUpdates = ({ component: Component, isAsync = false, path, title, ...rest }: IAppRoute) => {
   useA11yRouteChange(isAsync);
   useDocumentTitle(title);
 
@@ -72,7 +79,7 @@ const RouteWithTitleUpdates = ({ component: Component, isAsync = false, title, .
     return <Component {...rest} {...routeProps} />;
   }
 
-  return <Route render={routeWithTitle} />;
+  return <Route render={routeWithTitle} path={path} />;
 };
 
 const PageNotFound = ({ title }: { title: string }) => {

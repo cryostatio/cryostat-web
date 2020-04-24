@@ -1,6 +1,7 @@
 import * as React from 'react';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
-import { Card, CardBody, CardHeader, PageSection, Text, TextVariants, Title } from '@patternfly/react-core';
+import { Button, Card, CardBody, CardHeader, PageSection, Text, TextVariants, Title } from '@patternfly/react-core';
 import { Table, TableHeader, TableBody, textCenter } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
@@ -28,8 +29,10 @@ enum RecordingState {
 
 export const RecordingList = (props) => {
   const context = React.useContext(ServiceContext);
+  const routerHistory = useHistory();
 
   const [recordings, setRecordings] = React.useState([]);
+  const { path, url } = useRouteMatch();
 
   const tableColumns: string[] = [
     'Name',
@@ -49,6 +52,10 @@ export const RecordingList = (props) => {
       recording.reportUrl,
       recording.state,
     ]);
+  };
+
+  const handleCreateRecording = () => {
+    routerHistory.push(`${url}/create`);
   };
 
   React.useEffect(() => {
@@ -72,6 +79,7 @@ export const RecordingList = (props) => {
       <Card>
         <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
         <CardBody>
+          <Button onClick={handleCreateRecording} >Create</Button>
           <Table aria-label="Recordings Table" cells={tableColumns} rows={getRecordingRows()}>
             <TableHeader />
             <TableBody />
