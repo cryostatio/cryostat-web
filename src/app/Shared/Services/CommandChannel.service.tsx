@@ -133,7 +133,7 @@ export class CommandChannel {
     }
   }
 
-  sendMessage(command: string, args: string[] = [], id: string = nanoid()): Observable<string> {
+  sendMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
     const subj = new Subject<string>();
     this.ready.pipe(
       first(),
@@ -151,6 +151,10 @@ export class CommandChannel {
     return subj.asObservable();
   }
 
+  createMessageId(): string {
+    return nanoid();
+  }
+
   onResponse(command: string): Observable<ResponseMessage<any>> {
     return this.messages
       .asObservable()
@@ -161,11 +165,13 @@ export class CommandChannel {
 }
 
 export interface CommandMessage {
+  id: string;
   command: string;
   args?: string[];
 }
 
 export interface ResponseMessage<T> {
+  id?: string;
   status: number;
   commandName: string;
   payload: T;
