@@ -75,7 +75,7 @@ export const RecordingList = (props) => {
   }, []);
 
   return (
-    <TargetView pageTitle="Flight Recordings">
+    <TargetView pageTitle="Recordings">
       <Card>
         <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
         <CardBody>

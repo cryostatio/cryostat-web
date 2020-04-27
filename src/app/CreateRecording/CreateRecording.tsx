@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { filter, first, map } from 'rxjs/operators';
-import { ActionGroup, Button, Card, CardBody, CardHeader, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, PageSection, Split, SplitItem, Text, TextVariants, Title } from '@patternfly/react-core';
+import { ActionGroup, Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Button, Card, CardBody, CardHeader, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, PageSection, Split, SplitItem, Text, TextVariants, Title } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface CreateRecordingProps {
@@ -83,7 +83,10 @@ export const CreateRecording = (props: CreateRecordingProps) => {
 
   return (
     <PageSection>
-      <Title size="lg">Create Recording</Title>
+      <Breadcrumb>
+        <BreadcrumbItem to="/recordings">Recordings</BreadcrumbItem>
+        <BreadcrumbHeading>Create</BreadcrumbHeading>
+      </Breadcrumb>
       <Card>
         <CardBody>
           <Text component={TextVariants.p}>Create Flight Recording</Text>
