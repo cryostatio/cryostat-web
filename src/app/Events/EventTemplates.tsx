@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
 import { TextInput, Toolbar, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
-import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface EventTemplate {
@@ -56,7 +56,7 @@ export const EventTemplates = (props) => {
         </ToolbarItem>
       </ToolbarGroup>
     </Toolbar>
-    <Table aria-label="Event Templates table" cells={tableColumns} rows={getTemplates()}>
+    <Table aria-label="Event Templates table" cells={tableColumns} rows={getTemplates()} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />
     </Table>

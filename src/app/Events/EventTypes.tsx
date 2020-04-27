@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
 import { Pagination } from '@patternfly/react-core';
-import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { Table, TableBody, TableHeader, TableVariant, expandable } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface EventType {
@@ -9,7 +9,7 @@ export interface EventType {
   typeId: string;
   description: string;
   category: string[];
-  options: Map<string, OptionDescriptor>;
+  options: { [key: string]: OptionDescriptor }[];
 }
 
 export interface OptionDescriptor {
@@ -22,16 +22,19 @@ export const EventTypes = (props) => {
   const context = React.useContext(ServiceContext);
 
   const [types, setTypes] = React.useState([]);
-  const [displayedTypes, setDisplayedTypes] = React.useState([]);
+  const [displayedTypes, setDisplayedTypes] = React.useState([] as any[]);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [perPage, setPerPage] = React.useState(4);
+  const [perPage, setPerPage] = React.useState(10);
+  const [openRow, setOpenRow] = React.useState(-1);
 
   const tableColumns = [
-    'Name',
+    {
+      title: 'Name',
+      cellFormatters: [expandable]
+    },
     'Type ID',
     'Description',
-    'Categories',
-    'Options',
+    'Categories'
   ];
 
   React.useEffect(() => {
@@ -51,20 +54,42 @@ export const EventTypes = (props) => {
   React.useEffect(() => {
     const offset = (currentPage - 1) * perPage;
     const page = types.slice(offset, offset + perPage);
-    setDisplayedTypes(page);
-  }, [currentPage, perPage, types]);
 
-  const getEventTypes = () => {
-    return displayedTypes.map((t: EventType) => {
-      return [ t.name, t.typeId, t.description, t.category.join(', ').trim(), JSON.stringify(t.options) ];
-    })
+    const rows: any[] = [];
+    page.forEach((t: EventType, idx: number) => {
+      rows.push({ cells: [ t.name, t.typeId, t.description, t.category.join(', ').trim() ], isOpen: (idx === openRow) });
+      if (idx === openRow) {
+        let child = '';
+        for (const opt in t.options) {
+          child += `${opt}=[${t.options[opt].defaultValue}]\t`;
+        }
+        rows.push({ parent: idx, fullWidth: true, cells: [ child ] });
+      }
+    });
+
+    setDisplayedTypes(rows);
+  }, [currentPage, perPage, types, openRow]);
+
+  const onCurrentPage = (evt, currentPage) => {
+    setOpenRow(-1);
+    setCurrentPage(currentPage);
   };
-
-  const onCurrentPage = (evt, currentPage) => setCurrentPage(currentPage);
 
   const onPerPage = (evt, perPage) => setPerPage(perPage);
 
-  // TODO paginate or make scrollable, and put Options into collapsible rows
+  const onCollapse = (event, rowKey, isOpen) => {
+    if (isOpen) {
+      if (openRow === -1) {
+        setOpenRow(rowKey);
+      } else {
+        setOpenRow(rowKey > openRow ? rowKey - 1 : rowKey);
+      }
+    } else {
+      setOpenRow(-1);
+    }
+  };
+
+  // TODO replace table with data list so collapsed event options can be custom formatted
   return(<>
     <Pagination
       itemCount={types.length}
@@ -73,10 +98,9 @@ export const EventTypes = (props) => {
       onSetPage={onCurrentPage}
       widgetId="event-types-pagination"
       onPerPageSelect={onPerPage}
-      perPageOptions={[ { title: '4', value: 4 }, { title: '10', value: 10 }, { title: '20', value: 20 } ]}
       isCompact
     />
-    <Table aria-label="Event Types table" cells={tableColumns} rows={getEventTypes()}>
+    <Table aria-label="Event Types table" cells={tableColumns} rows={displayedTypes} onCollapse={onCollapse} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />
     </Table>
