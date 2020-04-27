@@ -24,6 +24,7 @@ export interface IAppRoute {
   path: string;
   title: string;
   isAsync?: boolean;
+  children?: IAppRoute[];
 }
 
 const staticRoutes: IAppRoute[] = [
@@ -42,17 +43,30 @@ const dynamicRoutes: IAppRoute[] = [
     exact: true,
     label: 'Recordings',
     path: '/recordings',
-    title: 'Flight Recordings'
-  },
-  {
-    component: CreateRecording,
-    exact: true,
-    path: '/recordings/create',
-    title: 'Create Recording'
+    title: 'Flight Recordings',
+    children: [
+      {
+        component: CreateRecording,
+        exact: true,
+        path: '/recordings/create',
+        title: 'Create Recording'
+      },
+    ],
   },
 ];
 
-const getAvailableRoutes = isConnected => isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes;
+const flatten = (routes: IAppRoute[]): IAppRoute[] => {
+  const ret: IAppRoute[] = [];
+  for (const r of routes) {
+    ret.push(r);
+    if (r.children) {
+      ret.push(...flatten(r.children));
+    }
+  }
+  return ret;
+};
+
+const getAvailableRoutes = isConnected => flatten(isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes);
 
 const routes: IAppRoute[] = staticRoutes.concat(dynamicRoutes);
 
