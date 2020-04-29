@@ -143,6 +143,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
                     aria-describedby="recording-duration-helper"
                     onChange={handleDurationChange}
                     isDisabled={continuous}
+                    min="0"
                   />
                 </SplitItem>
                 <SplitItem>
