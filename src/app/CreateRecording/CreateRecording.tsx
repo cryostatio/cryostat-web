@@ -10,11 +10,14 @@ export interface CreateRecordingProps {
   eventSpecifiers?: string[];
 }
 
+export const RecordingNamePattern = /^[a-zA-Z0-9_-]+$/;
+
 export const CreateRecording = (props: CreateRecordingProps) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
 
-  const [recordingName, setRecordingName] = React.useState(props.recordingName);
+  const [recordingName, setRecordingName] = React.useState(props.recordingName || '');
+  const [nameValid, setNameValid] = React.useState(false);
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1);
@@ -43,9 +46,14 @@ export const CreateRecording = (props: CreateRecordingProps) => {
 
   const getEventString = () => !!template ? template : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
 
+  const handleRecordingNameChange = (name) => {
+    setNameValid(RecordingNamePattern.test(name));
+    setRecordingName(name);
+  };
+
   const handleSubmit = () => {
     const eventString = getEventString();
-    if (!recordingName || !eventString) {
+    if (!nameValid || !eventString) {
       // TODO tell user what's invalid
       // TODO validate eventString properly
       return;
@@ -100,6 +108,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
               isRequired
               fieldId="recording-name"
               helperText="Please enter a recording name. This will be unique within the target JVM."
+              isValid={nameValid}
             >
               <TextInput
                 value={recordingName}
@@ -107,7 +116,8 @@ export const CreateRecording = (props: CreateRecordingProps) => {
                 type="text"
                 id="recording-name"
                 aria-describedby="recording-name-helper"
-                onChange={setRecordingName}
+                onChange={handleRecordingNameChange}
+                isValid={nameValid}
               />
             </FormGroup>
             <FormGroup
