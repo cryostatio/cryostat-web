@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { filter, first, map } from 'rxjs/operators';
-import { ActionGroup, Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Button, Card, CardBody, CardHeader, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, PageSection, Split, SplitItem, Text, TextVariants, Title } from '@patternfly/react-core';
+import { ActionGroup, Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Button, Card, CardBody, CardHeader, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, PageSection, Split, SplitItem, Text, TextVariants, Title, Tooltip, TooltipPosition } from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface CreateRecordingProps {
@@ -193,6 +194,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
               isRequired
               fieldId="recording-events"
               isValid={eventsValid}
+              helperText="Select a template from the dropdown, or enter a template name or event specifier string in the text area."
             >
               <Split gutter="md">
                 <SplitItem>
@@ -208,6 +210,20 @@ export const CreateRecording = (props: CreateRecordingProps) => {
                       }
                     </FormSelectOptionGroup>
                   </FormSelect>
+                </SplitItem>
+                <SplitItem>
+                  <Tooltip
+                    position={TooltipPosition.auto}
+                    content={
+                      <Text component={TextVariants.p}>
+                        Templates are selected with the syntax <i>template=Foo</i>. Event names and options are specified with the syntax
+                        <i>namespace.EventName:optionName=optionValue</i> &mdash; ex. <i>jdk.SocketRead:enabled=true</i>. Multiple event
+                        option specifiers should be separated by whitespace.
+                      </Text>
+                    }
+                  >
+                    <OutlinedQuestionCircleIcon />
+                  </Tooltip>
                 </SplitItem>
                 <SplitItem isFilled>
                   <TextArea value={getEventSpecifiers()} onChange={handleEventSpecifiersChange} aria-label="Custom Event Specifiers Area" isValid={eventsValid} />
