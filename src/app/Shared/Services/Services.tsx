@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { ApiService } from './Api.service';
 import { CommandChannel } from './CommandChannel.service';
+import { NotificationsInstance } from '@app/Notifications/Notifications';
 
 interface Services {
   api: ApiService;
@@ -8,7 +9,7 @@ interface Services {
 }
 
 const api = new ApiService();
-const commandChannel = new CommandChannel(api);
+const commandChannel = new CommandChannel(api, NotificationsInstance);
 
 const defaultServices: Services = { api, commandChannel };
 

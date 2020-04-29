@@ -49,6 +49,8 @@ class Notifications {
 
 }
 
-const NotificationsContext = React.createContext(new Notifications());
+const NotificationsInstance = new Notifications();
 
-export { Notification, DefaultNotificationTimeout, Notifications, NotificationsContext };
+const NotificationsContext = React.createContext(NotificationsInstance);
+
+export { Notification, DefaultNotificationTimeout, Notifications, NotificationsContext, NotificationsInstance };
