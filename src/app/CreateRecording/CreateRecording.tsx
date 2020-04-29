@@ -10,6 +10,12 @@ export interface CreateRecordingProps {
   eventSpecifiers?: string[];
 }
 
+export interface EventTemplate {
+  name: string;
+  description: string;
+  provider: string;
+}
+
 export const RecordingNamePattern = /^[\w_]+$/;
 export const TemplatePattern = /^template=([\w]+)$/;
 export const EventSpecifierPattern = /([\w\\.\$]+):([\w]+)=([\w\\d\.]+)/;
@@ -23,7 +29,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1);
-  const [templates, setTemplates] = React.useState([]);
+  const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState('');
   const [eventSpecifiers, setEventSpecifiers] = React.useState('');
   const [eventsValid, setEventsValid] = React.useState(false);
@@ -52,9 +58,9 @@ export const CreateRecording = (props: CreateRecordingProps) => {
     setEventSpecifiers(evt);
   };
 
-  const getEventSpecifiers = () => !!template ? template : eventSpecifiers;
+  const getEventSpecifiers = () => !!template ? `template=${template}` : eventSpecifiers;
 
-  const getEventString = () => !!template ? template : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
+  const getEventString = () => !!template ? `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
 
   const handleRecordingNameChange = (name) => {
     setNameValid(RecordingNamePattern.test(name));
@@ -97,6 +103,19 @@ export const CreateRecording = (props: CreateRecordingProps) => {
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-templates');
   }, []);
+
+  React.useEffect(() => {
+    if (TemplatePattern.test(eventSpecifiers)) {
+      const regexMatches = TemplatePattern.exec(eventSpecifiers);
+      if (!regexMatches || !regexMatches[1]) {
+        return;
+      }
+      const template = regexMatches[1];
+      if (!!templates.find(t => t.name === template)) {
+        handleTemplateChange(template);
+      }
+    }
+  }, [eventSpecifiers, templates]);
 
   return (
     <PageSection>
@@ -185,7 +204,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
                     <FormSelectOption key="0" value="" label="Custom Event Definition" />
                     <FormSelectOptionGroup key="1" label="Remote Templates">
                       {
-                        templates.map(({ name }: { name: string }, idx: number) => (<FormSelectOption key={idx+2} value={`template=${name}`} label={name} />))
+                        templates.map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx+2} value={t.name} label={t.name} />))
                       }
                     </FormSelectOptionGroup>
                   </FormSelect>
