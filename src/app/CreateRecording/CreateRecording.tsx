@@ -10,7 +10,9 @@ export interface CreateRecordingProps {
   eventSpecifiers?: string[];
 }
 
-export const RecordingNamePattern = /^[a-zA-Z0-9_-]+$/;
+export const RecordingNamePattern = /^[\w_]+$/;
+export const TemplatePattern = /^template=([\w]+)$/;
+export const EventSpecifierPattern = /([\w\\.\$]+):([\w]+)=([\w\\d\.]+)/;
 
 export const CreateRecording = (props: CreateRecordingProps) => {
   const context = React.useContext(ServiceContext);
@@ -24,6 +26,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
   const [templates, setTemplates] = React.useState([]);
   const [template, setTemplate] = React.useState('');
   const [eventSpecifiers, setEventSpecifiers] = React.useState('');
+  const [eventsValid, setEventsValid] = React.useState(false);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -37,7 +40,14 @@ export const CreateRecording = (props: CreateRecordingProps) => {
     setDurationUnit(Number(evt));
   };
 
+  const handleTemplateChange = (name) => {
+    setEventsValid(!!name);
+    setEventSpecifiers('');
+    setTemplate(name);
+  };
+
   const handleEventSpecifiersChange = (evt) => {
+    setEventsValid(TemplatePattern.test(evt) || EventSpecifierPattern.test(evt));
     setTemplate('');
     setEventSpecifiers(evt);
   };
@@ -53,9 +63,8 @@ export const CreateRecording = (props: CreateRecordingProps) => {
 
   const handleSubmit = () => {
     const eventString = getEventString();
-    if (!nameValid || !eventString) {
+    if (!nameValid || !eventsValid) {
       // TODO tell user what's invalid
-      // TODO validate eventString properly
       return;
     }
     const command = continuous ? 'start' : 'dump';
@@ -164,12 +173,13 @@ export const CreateRecording = (props: CreateRecordingProps) => {
               label="Events"
               isRequired
               fieldId="recording-events"
+              isValid={eventsValid}
             >
               <Split gutter="md">
                 <SplitItem>
                   <FormSelect
                     value={template}
-                    onChange={setTemplate}
+                    onChange={handleTemplateChange}
                     aria-label="Event Template Input"
                   >
                     <FormSelectOption key="0" value="" label="Custom Event Definition" />
@@ -181,7 +191,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
                   </FormSelect>
                 </SplitItem>
                 <SplitItem isFilled>
-                  <TextArea value={getEventSpecifiers()} onChange={handleEventSpecifiersChange} aria-label="Custom Event Specifiers Area" />
+                  <TextArea value={getEventSpecifiers()} onChange={handleEventSpecifiersChange} aria-label="Custom Event Specifiers Area" isValid={eventsValid} />
                 </SplitItem>
               </Split>
             </FormGroup>
