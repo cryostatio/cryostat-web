@@ -12,6 +12,7 @@ import {
 } from '@patternfly/react-core';
 import { IAppRoute, staticRoutes, getAvailableRoutes } from '@app/routes';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -89,7 +90,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       Skip to Content
     </SkipToContent>
   );
-  return (
+  return (<>
     <Page
       mainContainerId="primary-app-container"
       header={Header}
@@ -98,7 +99,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       skipToContent={PageSkipToContent}>
       {children}
     </Page>
-  );
+    <NotificationCenter />
+  </>);
 }
 
 export { AppLayout };

@@ -4,6 +4,8 @@ import { filter, first, map } from 'rxjs/operators';
 import { ActionGroup, Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Button, Card, CardBody, CardHeader, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, PageSection, Split, SplitItem, Text, TextVariants, Title, Tooltip, TooltipPosition } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { AlertVariant } from '@patternfly/react-core';
 
 export interface CreateRecordingProps {
   recordingName?: string;
@@ -23,6 +25,7 @@ export const EventSpecifierPattern = /([\w\\.\$]+):([\w]+)=([\w\\d\.]+)/;
 
 export const CreateRecording = (props: CreateRecordingProps) => {
   const context = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
 
   const [recordingName, setRecordingName] = React.useState(props.recordingName || '');
@@ -70,18 +73,34 @@ export const CreateRecording = (props: CreateRecordingProps) => {
 
   const handleSubmit = () => {
     const eventString = getEventString();
-    if (!nameValid || !eventsValid) {
-      // TODO tell user what's invalid
+
+    let notificationMessages: string[] = [];
+    if (!nameValid) {
+      notificationMessages.push(`Recording name ${recordingName} is invalid`);
+    }
+    if (!eventsValid) {
+      notificationMessages.push(`Event specifiers are invalid`);
+    }
+    if (notificationMessages.length > 0) {
+      const message = notificationMessages.join('. ').trim() + '.';
+      notifications.warning('Invalid form data', message);
       return;
     }
+
     const command = continuous ? 'start' : 'dump';
     const id = context.commandChannel.createMessageId();
     context.commandChannel.onResponse(command).pipe(
       filter(m => m.id === id),
-      filter(m => m.status === 0), // TODO inform the user if the request fails
       first(),
       )
-      .subscribe(() => history.push('/recordings'));
+      .subscribe((msg) => {
+          if (msg.status === 0) {
+            notifications.success('Recording created');
+            history.push('/recordings');
+          } else {
+            notifications.danger(`Request failed (Status ${msg.status})`, msg.payload)
+          }
+      });
     const args = [recordingName];
     if (!continuous) {
       const eventDuration = continuous ? 0 : duration * durationUnit;
