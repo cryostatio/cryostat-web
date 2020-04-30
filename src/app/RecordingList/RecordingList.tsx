@@ -55,16 +55,10 @@ export const RecordingList = (props) => {
 
   const handleRowCheck = (checked, index) => {
     if (checked) {
-      setCheckedIndices([...checkedIndices, index]);
+      setCheckedIndices(ci => ([...ci, index]));
     } else {
       setHeaderChecked(false);
-      const idx = checkedIndices.indexOf(index);
-      if (idx < 0) {
-        return;
-      }
-      const before = checkedIndices.slice(0, idx);
-      const after = checkedIndices.slice(idx + 1, checkedIndices.length);
-      setCheckedIndices([...before, ...after]);
+      setCheckedIndices(ci => ci.filter(v => v !== index));
     }
   };
 
@@ -82,7 +76,9 @@ export const RecordingList = (props) => {
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        context.commandChannel.sendMessage('stop', [ r.name ]);
+        if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
+          context.commandChannel.sendMessage('stop', [ r.name ]);
+        }
       }
     });
     context.commandChannel.sendMessage('list');
@@ -149,6 +145,15 @@ export const RecordingList = (props) => {
     return (<a href={props.url} target="_blank">{props.display || props.url}</a>);
   };
 
+  const isStopDisabled = () => {
+    if (!checkedIndices.length) {
+      return true;
+    }
+    const filtered = recordings.filter((r: Recording, idx: number) => checkedIndices.includes(idx));
+    const anyRunning = filtered.some((r: Recording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
+    return !anyRunning;
+  };
+
   const RecordingsToolbar = (props) => {
     return (
       <Toolbar>
@@ -159,7 +164,7 @@ export const RecordingList = (props) => {
         </ToolbarGroup>
         <ToolbarGroup>
           <ToolbarItem>
-            <Button variant="secondary" onClick={handleStopRecordings} isDisabled={!checkedIndices.length}>Stop</Button>
+            <Button variant="secondary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarGroup>
