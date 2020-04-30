@@ -2,6 +2,7 @@ import { from, Subject, BehaviorSubject, Observable, ReplaySubject, combineLates
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, distinctUntilChanged, filter, first, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
+import { Notifications } from '@app/Notifications/Notifications';
 import { nanoid } from 'nanoid';
 
 export class CommandChannel {
@@ -16,26 +17,26 @@ export class CommandChannel {
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private pingTimer: number = -1;
 
-  constructor(apiSvc: ApiService) {
+  constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
     this.apiSvc = apiSvc;
 
     fromFetch(`${this.apiSvc.authority}/clienturl`)
       .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
         (url: any) => this.clientUrlSubject.next(url.clientUrl),
-        (err: any) => console.error('Client URL configuration', err) // TODO add toast notification
+        (err: any) => this.logError('Client URL configuration', err)
       );
 
     fromFetch(`${this.apiSvc.authority}/grafana_datasource_url`)
       .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
         (url: any) => this.grafanaDatasourceUrlSubject.next(url.grafanaDatasourceUrl),
-        (err: any) => console.error('Grafana Datasource configuration', err) // TODO add toast notification
+        (err: any) => this.logError('Grafana Datasource configuration', err)
       );
 
     this.onResponse('disconnect').pipe(
       filter(msg => msg.status !== 0),
-    ).subscribe(msg => console.warn('Command failure', JSON.stringify(msg)));
+    ).subscribe(msg => this.logError('Command failure', msg));
 
     this.onResponse('list-saved').pipe(
       first(),
@@ -88,12 +89,12 @@ export class CommandChannel {
           }
         });
 
-        this.ws.addEventListener('error', (evt: Event) => console.error('WebSocket error', evt));
+        this.ws.addEventListener('error', (evt: Event) => this.logError('WebSocket error', evt));
 
         this.ws.addEventListener('close', () => {
           this.ready.next(false);
           window.clearInterval(this.pingTimer);
-          console.log('WebSocket connection lost');
+          this.notifications.info('WebSocket connection lost');
         });
 
         this.ws.addEventListener('open', () => {
@@ -133,7 +134,7 @@ export class CommandChannel {
     }
   }
 
-  sendMessage(command: string, args: string[] = [], id: string = nanoid()): Observable<string> {
+  sendMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
     const subj = new Subject<string>();
     this.ready.pipe(
       first(),
@@ -142,13 +143,17 @@ export class CommandChannel {
       if (!!i && this.ws) {
         this.ws.send(JSON.stringify({ id, command, args }));
       } else if (this.ws) {
-        console.warn('Attempted to send message when command channel was not ready', { id, command, args });
+        this.logError('Attempted to send message when command channel was not ready', { id, command, args });
       } else {
-        console.error('Attempted to send message when command channel was not initialized', { id, command, args });
+        this.logError('Attempted to send message when command channel was not initialized', { id, command, args });
       }
       subj.next(i);
     });
     return subj.asObservable();
+  }
+
+  createMessageId(): string {
+    return nanoid();
   }
 
   onResponse(command: string): Observable<ResponseMessage<any>> {
@@ -158,14 +163,21 @@ export class CommandChannel {
         filter(m => m.commandName === command)
       );
   }
+
+  private logError(title: string, err: any): void {
+    console.error(err);
+    this.notifications.danger(title, JSON.stringify(err));
+  }
 }
 
 export interface CommandMessage {
+  id: string;
   command: string;
   args?: string[];
 }
 
 export interface ResponseMessage<T> {
+  id?: string;
   status: number;
   commandName: string;
   payload: T;

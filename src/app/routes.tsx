@@ -11,6 +11,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Login } from '@app/Login/Login';
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { RecordingList } from '@app/RecordingList/RecordingList';
+import { CreateRecording } from '@app/CreateRecording/CreateRecording';
 
 let routeFocusTimer: number;
 
@@ -23,6 +24,7 @@ export interface IAppRoute {
   path: string;
   title: string;
   isAsync?: boolean;
+  children?: IAppRoute[];
 }
 
 const staticRoutes: IAppRoute[] = [
@@ -41,11 +43,30 @@ const dynamicRoutes: IAppRoute[] = [
     exact: true,
     label: 'Recordings',
     path: '/recordings',
-    title: 'Flight Recordings'
+    title: 'Flight Recordings',
+    children: [
+      {
+        component: CreateRecording,
+        exact: true,
+        path: '/recordings/create',
+        title: 'Create Recording'
+      },
+    ],
   },
 ];
 
-const getAvailableRoutes = isConnected => isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes;
+const flatten = (routes: IAppRoute[]): IAppRoute[] => {
+  const ret: IAppRoute[] = [];
+  for (const r of routes) {
+    ret.push(r);
+    if (r.children) {
+      ret.push(...flatten(r.children));
+    }
+  }
+  return ret;
+};
+
+const getAvailableRoutes = isConnected => flatten(isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes);
 
 const routes: IAppRoute[] = staticRoutes.concat(dynamicRoutes);
 
@@ -64,7 +85,7 @@ const useA11yRouteChange = (isAsync: boolean) => {
   }, [isAsync, lastNavigation]);
 };
 
-const RouteWithTitleUpdates = ({ component: Component, isAsync = false, title, ...rest }: IAppRoute) => {
+const RouteWithTitleUpdates = ({ component: Component, isAsync = false, path, title, ...rest }: IAppRoute) => {
   useA11yRouteChange(isAsync);
   useDocumentTitle(title);
 
@@ -72,7 +93,7 @@ const RouteWithTitleUpdates = ({ component: Component, isAsync = false, title, .
     return <Component {...rest} {...routeProps} />;
   }
 
-  return <Route render={routeWithTitle} />;
+  return <Route render={routeWithTitle} path={path} />;
 };
 
 const PageNotFound = ({ title }: { title: string }) => {
