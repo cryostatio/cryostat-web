@@ -46,7 +46,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <PageHeader
       logo="ContainerJFR"
       logoProps={logoProps}
-      toolbar="Toolbar"
       showNavToggle
       isNavOpen={isNavOpen}
       onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
