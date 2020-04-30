@@ -24,10 +24,11 @@ export const EventTemplates = (props) => {
 
   const getTemplates = () => {
     let filtered;
-    if (!filter) {
+    if (!filterText) {
       filtered = templates;
     } else {
-      filtered = templates.filter((t: EventTemplate) => t.name.toLowerCase().includes(filterText) || t.description.toLowerCase().includes(filterText) || t.provider.toLowerCase().includes(filterText));
+      const ft = filterText.trim().toLowerCase();
+      filtered = templates.filter((t: EventTemplate) => t.name.toLowerCase().includes(ft) || t.description.toLowerCase().includes(ft) || t.provider.toLowerCase().includes(ft));
     }
     return filtered.map((t: EventTemplate) =>
       [ t.name, t.description, t.provider ]
