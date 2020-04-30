@@ -51,8 +51,8 @@ const dynamicRoutes: IAppRoute[] = [
         exact: true,
         path: '/recordings/create',
         title: 'Create Recording'
-      },
-    ],
+      }
+    ]
   },
   {
     component: Events,
