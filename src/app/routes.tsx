@@ -35,7 +35,7 @@ const staticRoutes: IAppRoute[] = [
     label: 'Dashboard',
     path: '/',
     title: 'Dashboard'
-  },
+  }
 ];
 
 const dynamicRoutes: IAppRoute[] = [
@@ -59,8 +59,8 @@ const dynamicRoutes: IAppRoute[] = [
     exact: true,
     label: 'Events',
     path: '/events',
-    title: 'Events',
-  },
+    title: 'Events'
+  }
 ];
 
 const flatten = (routes: IAppRoute[]): IAppRoute[] => {
@@ -109,31 +109,30 @@ const PageNotFound = ({ title }: { title: string }) => {
   return <Route component={NotFound} />;
 };
 
-
 const AppRoutes = () => {
   const context = React.useContext(ServiceContext);
   const [authenticated, setAuthenticated] = React.useState(false);
   const [availableRoutes, setAvailableRoutes] = React.useState(staticRoutes);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.isConnected().subscribe(isConnected =>
-        setAvailableRoutes(getAvailableRoutes(isConnected))
-    );
+    const sub = context.commandChannel
+      .isConnected()
+      .subscribe(isConnected => setAvailableRoutes(getAvailableRoutes(isConnected)));
     return () => sub.unsubscribe();
   }, []);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.isReady().pipe(filter(v => !v)).subscribe(() =>
-      setAuthenticated(false)
-    );
+    const sub = context.commandChannel
+      .isReady()
+      .pipe(filter(v => !v))
+      .subscribe(() => setAuthenticated(false));
     return () => sub.unsubscribe();
   }, []);
 
   return (
     <LastLocationProvider>
       <Switch>
-        {
-        authenticated ?
+        {authenticated ? (
           availableRoutes.map(({ path, exact, component, title, isAsync }, idx) => (
             <RouteWithTitleUpdates
               path={path}
@@ -144,12 +143,13 @@ const AppRoutes = () => {
               isAsync={isAsync}
             />
           ))
-          : <Login onLoginSuccess={() => setAuthenticated(true)}/>
-        }
+        ) : (
+          <Login onLoginSuccess={() => setAuthenticated(true)} />
+        )}
         <PageNotFound title="404 Page Not Found" />
       </Switch>
     </LastLocationProvider>
   );
-}
+};
 
 export { AppRoutes, routes, getAvailableRoutes, staticRoutes, dynamicRoutes };
