@@ -25,6 +25,7 @@ export const EventTypes = (props) => {
   const [displayedTypes, setDisplayedTypes] = React.useState([] as any[]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
+  const prevPerPage = React.useRef(10);
   const [openRow, setOpenRow] = React.useState(-1);
   const [filterText, setFilterText] = React.useState('');
 
@@ -102,7 +103,13 @@ export const EventTypes = (props) => {
     setCurrentPage(currentPage);
   };
 
-  const onPerPage = (evt, perPage) => setPerPage(perPage);
+  const onPerPage = (evt, perPage) => {
+    const offset = (currentPage - 1) * prevPerPage.current;
+    prevPerPage.current = perPage;
+    setOpenRow(-1);
+    setPerPage(perPage);
+    setCurrentPage(1 + Math.floor(offset/perPage));
+  };
 
   const onCollapse = (event, rowKey, isOpen) => {
     if (isOpen) {
