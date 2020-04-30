@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
-import { Button, Card, CardBody, CardHeader, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, PageSection, Text, TextVariants, Title } from '@patternfly/react-core';
+import { Button, Card, CardBody, CardHeader, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, PageSection, Text, TextVariants, Title, Toolbar, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 
@@ -66,6 +66,16 @@ export const RecordingList = (props) => {
       const after = checkedIndices.slice(idx + 1, checkedIndices.length);
       setCheckedIndices([...before, ...after]);
     }
+  };
+
+  const handleDeleteRecordings = () => {
+    recordings.forEach((r: Recording, idx) => {
+      if (checkedIndices.includes(idx)) {
+        handleRowCheck(false, idx);
+        context.commandChannel.sendMessage('delete', [ r.name ]);
+      }
+    });
+    context.commandChannel.sendMessage('list');
   };
 
   React.useEffect(() => {
@@ -134,7 +144,18 @@ export const RecordingList = (props) => {
       <Card>
         <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
         <CardBody>
-          <Button onClick={handleCreateRecording}>Create</Button>
+          <Toolbar>
+            <ToolbarGroup>
+              <ToolbarItem>
+                <Button onClick={handleCreateRecording}>Create</Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarGroup>
+              <ToolbarItem>
+                <Button variant="danger" onClick={handleDeleteRecordings}>Delete</Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+          </Toolbar>
           <DataList aria-label="Recording List">
             <DataListItem aria-labelledby="table-header-1">
               <DataListItemRow>
