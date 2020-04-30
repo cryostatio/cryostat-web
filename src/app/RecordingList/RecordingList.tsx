@@ -149,28 +149,34 @@ export const RecordingList = (props) => {
     return (<a href={props.url} download={!!props.download} target="_blank">{props.display || props.url}</a>);
   };
 
+  const RecordingsToolbar = (props) => {
+    return (
+      <Toolbar>
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Button variant="secondary" onClick={handleStopRecordings} isDisabled={!checkedIndices.length}>Stop</Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+      </Toolbar>
+    );
+  };
+
   return (
     <TargetView pageTitle="Recordings">
       <Card>
         <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
         <CardBody>
-          <Toolbar>
-            <ToolbarGroup>
-              <ToolbarItem>
-                <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
-              </ToolbarItem>
-            </ToolbarGroup>
-            <ToolbarGroup>
-              <ToolbarItem>
-                <Button variant="secondary" onClick={handleStopRecordings}>Stop</Button>
-              </ToolbarItem>
-            </ToolbarGroup>
-            <ToolbarGroup>
-              <ToolbarItem>
-                <Button variant="danger" onClick={handleDeleteRecordings}>Delete</Button>
-              </ToolbarItem>
-            </ToolbarGroup>
-          </Toolbar>
+          <RecordingsToolbar />
           <DataList aria-label="Recording List">
             <DataListItem aria-labelledby="table-header-1">
               <DataListItemRow>
