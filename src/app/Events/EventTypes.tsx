@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
-import { Pagination } from '@patternfly/react-core';
+import { Pagination, Split, SplitItem, TextInput } from '@patternfly/react-core';
 import { Table, TableBody, TableHeader, TableVariant, expandable } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
@@ -21,11 +21,12 @@ export interface OptionDescriptor {
 export const EventTypes = (props) => {
   const context = React.useContext(ServiceContext);
 
-  const [types, setTypes] = React.useState([]);
+  const [types, setTypes] = React.useState([] as EventType[]);
   const [displayedTypes, setDisplayedTypes] = React.useState([] as any[]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
   const [openRow, setOpenRow] = React.useState(-1);
+  const [filterText, setFilterText] = React.useState('');
 
   const tableColumns = [
     {
@@ -53,7 +54,7 @@ export const EventTypes = (props) => {
 
   React.useEffect(() => {
     const offset = (currentPage - 1) * perPage;
-    const page = types.slice(offset, offset + perPage);
+    const page = filterTypesByText(types, filterText).slice(offset, offset + perPage);
 
     const rows: any[] = [];
     page.forEach((t: EventType, idx: number) => {
@@ -68,7 +69,29 @@ export const EventTypes = (props) => {
     });
 
     setDisplayedTypes(rows);
-  }, [currentPage, perPage, types, openRow]);
+  }, [currentPage, perPage, types, openRow, filterText]);
+
+  const filterTypesByText = (types, filter) => {
+    if (!filter) {
+      return types;
+    }
+    const includesSubstr = (a, b) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
+    return types.filter(t => {
+      if (includesSubstr(t.name, filter)) {
+        return true;
+      }
+      if (includesSubstr(t.typeId, filter)) {
+        return true;
+      }
+      if (includesSubstr(t.description, filter)) {
+        return true;
+      }
+      if (t.category.some(c => includesSubstr(c, filter))) {
+        return true;
+      }
+      return false
+    });
+  };
 
   const onCurrentPage = (evt, currentPage) => {
     setOpenRow(-1);
@@ -91,15 +114,23 @@ export const EventTypes = (props) => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   return(<>
-    <Pagination
-      itemCount={types.length}
-      page={currentPage}
-      perPage={perPage}
-      onSetPage={onCurrentPage}
-      widgetId="event-types-pagination"
-      onPerPageSelect={onPerPage}
-      isCompact
-    />
+    <Split>
+      <SplitItem>
+        <TextInput name="eventFilter" id="eventFilter" type="search" placeholder="Filter..." aria-label="Event filter" onChange={setFilterText}/>
+      </SplitItem>
+      <SplitItem isFilled />
+      <SplitItem>
+        <Pagination
+          itemCount={!!filterText ? displayedTypes.length : types.length}
+          page={currentPage}
+          perPage={perPage}
+          onSetPage={onCurrentPage}
+          widgetId="event-types-pagination"
+          onPerPageSelect={onPerPage}
+          isCompact
+        />
+      </SplitItem>
+    </Split>
     <Table aria-label="Event Types table" cells={tableColumns} rows={displayedTypes} onCollapse={onCollapse} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />
