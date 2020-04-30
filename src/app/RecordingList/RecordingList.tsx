@@ -120,7 +120,7 @@ export const RecordingList = (props) => {
               <RecordingDuration duration={props.recording.duration} />
             </DataListCell>,
             <DataListCell key={`table-row-${props.index}-4`}>
-              <Link download url={props.recording.downloadUrl} />
+              <Link url={`${props.recording.downloadUrl}.jfr`} />
             </DataListCell>,
             // TODO make row expandable and render report in collapsed iframe
             <DataListCell key={`table-row-${props.index}-5`}>
@@ -146,7 +146,7 @@ export const RecordingList = (props) => {
   };
 
   const Link = (props) => {
-    return (<a href={props.url} download={!!props.download} target="_blank">{props.display || props.url}</a>);
+    return (<a href={props.url} target="_blank">{props.display || props.url}</a>);
   };
 
   const RecordingsToolbar = (props) => {
