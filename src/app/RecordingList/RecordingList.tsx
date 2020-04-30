@@ -78,6 +78,16 @@ export const RecordingList = (props) => {
     context.commandChannel.sendMessage('list');
   };
 
+  const handleStopRecordings = () => {
+    recordings.forEach((r: Recording, idx) => {
+      if (checkedIndices.includes(idx)) {
+        handleRowCheck(false, idx);
+        context.commandChannel.sendMessage('stop', [ r.name ]);
+      }
+    });
+    context.commandChannel.sendMessage('list');
+  };
+
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('list')
       .pipe(
@@ -147,7 +157,12 @@ export const RecordingList = (props) => {
           <Toolbar>
             <ToolbarGroup>
               <ToolbarItem>
-                <Button onClick={handleCreateRecording}>Create</Button>
+                <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarGroup>
+              <ToolbarItem>
+                <Button variant="secondary" onClick={handleStopRecordings}>Stop</Button>
               </ToolbarItem>
             </ToolbarGroup>
             <ToolbarGroup>
