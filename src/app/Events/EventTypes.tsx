@@ -58,7 +58,7 @@ export const EventTypes = (props) => {
 
     const rows: any[] = [];
     page.forEach((t: EventType, idx: number) => {
-      rows.push({ cells: [ t.name, t.typeId, t.description, t.category.join(', ').trim() ], isOpen: (idx === openRow) });
+      rows.push({ cells: [ t.name, t.typeId, t.description, getCategoryString(t) ], isOpen: (idx === openRow) });
       if (idx === openRow) {
         let child = '';
         for (const opt in t.options) {
@@ -70,6 +70,10 @@ export const EventTypes = (props) => {
 
     setDisplayedTypes(rows);
   }, [currentPage, perPage, types, openRow, filterText]);
+
+  const getCategoryString = (eventType: EventType): string => {
+    return eventType.category.join(', ').trim();
+  };
 
   const filterTypesByText = (types, filter) => {
     if (!filter) {
@@ -86,7 +90,7 @@ export const EventTypes = (props) => {
       if (includesSubstr(t.description, filter)) {
         return true;
       }
-      if (t.category.some(c => includesSubstr(c, filter))) {
+      if (includesSubstr(getCategoryString(t), filter)) {
         return true;
       }
       return false
