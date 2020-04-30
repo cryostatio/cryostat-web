@@ -232,12 +232,16 @@ export const CreateRecording = (props: CreateRecordingProps) => {
                 </SplitItem>
                 <SplitItem>
                   <Tooltip
+                    isContentLeftAligned
                     position={TooltipPosition.auto}
                     content={
                       <Text component={TextVariants.p}>
-                        Templates are selected with the syntax <i>template=Foo</i>. Event names and options are specified with the syntax
-                        <i>namespace.EventName:optionName=optionValue</i> &mdash; ex. <i>jdk.SocketRead:enabled=true</i>. Multiple event
-                        option specifiers should be separated by whitespace.
+                        Templates are selected with the syntax <i>template=Foo</i>.<br /><br />
+
+                        Event names and options are specified with the syntax <i>ns.Event:option=Value</i>
+                        &mdash; ex. <i>jdk.SocketRead:enabled=true</i>.<br /><br />
+
+                      Multiple event option specifiers should be separated by whitespace.
                       </Text>
                     }
                   >
