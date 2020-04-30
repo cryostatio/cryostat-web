@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
-import { Button, Card, CardBody, CardHeader, DataList, DataListItem, DataListItemRow, DataListItemCells, DataListCell, PageSection, Text, TextVariants, Title } from '@patternfly/react-core';
+import { Button, Card, CardBody, CardHeader, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, PageSection, Text, TextVariants, Title } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 
@@ -31,6 +31,8 @@ export const RecordingList = (props) => {
   const routerHistory = useHistory();
 
   const [recordings, setRecordings] = React.useState([]);
+  const [headerChecked, setHeaderChecked] = React.useState(false);
+  const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const { path, url } = useRouteMatch();
 
   const tableColumns: string[] = [
@@ -42,19 +44,28 @@ export const RecordingList = (props) => {
     'State',
   ];
 
-  const getRecordingRows = () => {
-    return recordings.map((recording: Recording) => [
-      recording.name,
-      new Date(recording.startTime).toISOString(),
-      recording.duration === 0 ? 'Continuous' : `${recording.duration / 1000} s`,
-      recording.downloadUrl,
-      recording.reportUrl,
-      recording.state,
-    ]);
-  };
-
   const handleCreateRecording = () => {
     routerHistory.push(`${url}/create`);
+  };
+
+  const handleHeaderCheck = (checked) => {
+    setHeaderChecked(checked);
+    setCheckedIndices(checked ? recordings.map((r, idx) => idx) : []);
+  };
+
+  const handleRowCheck = (checked, index) => {
+    if (checked) {
+      setCheckedIndices([...checkedIndices, index]);
+    } else {
+      setHeaderChecked(false);
+      const idx = checkedIndices.indexOf(index);
+      if (idx < 0) {
+        return;
+      }
+      const before = checkedIndices.slice(0, idx);
+      const after = checkedIndices.slice(idx + 1, checkedIndices.length);
+      setCheckedIndices([...before, ...after]);
+    }
   };
 
   React.useEffect(() => {
@@ -76,6 +87,7 @@ export const RecordingList = (props) => {
   const RecordingRow = (props) => {
     return (
       <DataListItemRow>
+        <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
         <DataListItemCells
           dataListCells={[
             <DataListCell key={`table-row-${props.index}-1`}>
@@ -126,6 +138,7 @@ export const RecordingList = (props) => {
           <DataList aria-label="Recording List">
             <DataListItem aria-labelledby="table-header-1">
               <DataListItemRow>
+                <DataListCheck aria-labelledby="table-header-1" name="header-check" onChange={handleHeaderCheck} isChecked={headerChecked} />
                 <DataListItemCells
                   dataListCells={tableColumns.map((key , idx) => (
                     <DataListCell key={key}>
