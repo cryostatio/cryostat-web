@@ -118,7 +118,6 @@ export const CustomRecordingForm = (props) => {
   }, [eventSpecifiers, templates]);
 
   return (<>
-    <Text component={TextVariants.p}>Create Flight Recording</Text>
     <Text component={TextVariants.small}>
       JDK Flight Recordings are compact records of events which have occurred within the target JVM.
       Many event types are built-in to the JVM itself, while others are user-defined.

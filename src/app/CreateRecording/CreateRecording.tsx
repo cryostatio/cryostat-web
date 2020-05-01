@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { filter, first } from 'rxjs/operators';
-import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Card, CardBody, PageSection } from '@patternfly/react-core';
+import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Card, CardBody, PageSection, Tabs, Tab } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CustomRecordingForm } from './CustomRecordingForm';
@@ -22,6 +22,8 @@ export const CreateRecording = (props: CreateRecordingProps) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
+
+  const [activeTab, setActiveTab] = React.useState(0);
 
   const handleSubmit = (command: string, args: string[]): void => {
     const id = context.commandChannel.createMessageId();
@@ -48,7 +50,11 @@ export const CreateRecording = (props: CreateRecordingProps) => {
       </Breadcrumb>
       <Card>
         <CardBody>
-          <CustomRecordingForm onSubmit={handleSubmit} />
+          <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(idx)}>
+            <Tab eventKey={0} title="Custom Flight Recording">
+              <CustomRecordingForm onSubmit={handleSubmit} />
+            </Tab>
+          </Tabs>
         </CardBody>
       </Card>
     </PageSection>
