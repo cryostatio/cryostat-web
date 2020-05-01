@@ -44,7 +44,7 @@ export const RecordingList = (props) => {
             archiveEnabled ? (
               <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
                 <Tab eventKey={0} title="Active Recordings">
-                  <ActiveRecordingsList />
+                  <ActiveRecordingsList archiveEnabled={true}/>
                 </Tab>
                 <Tab eventKey={1} title="Archived Recordings">
                   <ArchivedRecordingsList />
@@ -53,7 +53,7 @@ export const RecordingList = (props) => {
             ) : (
               <>
                 <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
-                <ActiveRecordingsList />
+                <ActiveRecordingsList archiveEnabled={false}/>
               </>
             )
           }

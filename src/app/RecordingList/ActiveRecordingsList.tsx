@@ -6,7 +6,11 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Recording, RecordingState } from './RecordingList';
 
-export const ActiveRecordingsList = (props) => {
+export interface ActiveRecordingsListProps {
+  archiveEnabled: boolean;
+}
+
+export const ActiveRecordingsList = (props: ActiveRecordingsListProps) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
 
@@ -42,14 +46,13 @@ export const ActiveRecordingsList = (props) => {
     }
   };
 
-  const handleDeleteRecordings = () => {
+  const handleArchiveRecordings = () => {
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        context.commandChannel.sendMessage('delete', [ r.name ]);
+        context.commandChannel.sendMessage('save', [ r.name ]);
       }
     });
-    context.commandChannel.sendMessage('list');
   };
 
   const handleStopRecordings = () => {
@@ -59,6 +62,16 @@ export const ActiveRecordingsList = (props) => {
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
           context.commandChannel.sendMessage('stop', [ r.name ]);
         }
+      }
+    });
+    context.commandChannel.sendMessage('list');
+  };
+
+  const handleDeleteRecordings = () => {
+    recordings.forEach((r: Recording, idx) => {
+      if (checkedIndices.includes(idx)) {
+        handleRowCheck(false, idx);
+        context.commandChannel.sendMessage('delete', [ r.name ]);
       }
     });
     context.commandChannel.sendMessage('list');
@@ -134,24 +147,49 @@ export const ActiveRecordingsList = (props) => {
     return !anyRunning;
   };
 
-  const RecordingsToolbar = (props) => {
+  const RecordingsToolbar = () => {
+    const buttons = [
+      <ToolbarGroup>
+        <ToolbarItem>
+          <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
+        </ToolbarItem>
+      </ToolbarGroup>
+    ];
+    if (props.archiveEnabled) {
+      buttons.push((
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Button variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+      ));
+    }
+    buttons.push((
+      <ToolbarGroup>
+        <ToolbarItem>
+          <Button variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
+        </ToolbarItem>
+      </ToolbarGroup>
+    ));
+    buttons.push((
+      <ToolbarGroup>
+        <ToolbarItem>
+          <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+        </ToolbarItem>
+      </ToolbarGroup>
+    ));
+
     return (
       <Toolbar>
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Button variant="secondary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
-          </ToolbarItem>
-        </ToolbarGroup>
+        {
+          buttons.map(btn => (
+            <ToolbarGroup>
+              <ToolbarItem>
+                { btn }
+              </ToolbarItem>
+            </ToolbarGroup>
+          ))
+        }
       </Toolbar>
     );
   };
