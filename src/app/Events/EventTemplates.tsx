@@ -2,6 +2,7 @@ import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
 import { TextInput, Toolbar, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
+import { useHistory } from 'react-router-dom';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface EventTemplate {
@@ -12,6 +13,7 @@ export interface EventTemplate {
 
 export const EventTemplates = (props) => {
   const context = React.useContext(ServiceContext);
+  const history = useHistory();
 
   const [templates, setTemplates] = React.useState([]);
   const [filterText, setFilterText] = React.useState('');
@@ -35,6 +37,13 @@ export const EventTemplates = (props) => {
     );
   };
 
+  const actions = [
+    {
+      title: 'Create Recording from Template',
+      onClick: (event, rowId, rowData, extra) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } })
+    }
+  ];
+
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('list-event-templates')
       .pipe(
@@ -57,7 +66,7 @@ export const EventTemplates = (props) => {
         </ToolbarItem>
       </ToolbarGroup>
     </Toolbar>
-    <Table aria-label="Event Templates table" cells={tableColumns} rows={getTemplates()} variant={TableVariant.compact}>
+    <Table aria-label="Event Templates table" cells={tableColumns} rows={getTemplates()} actions={actions} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />
     </Table>

@@ -11,6 +11,7 @@ export interface CreateRecordingProps {
   recordingName?: string;
   template?: string;
   eventSpecifiers?: string[];
+  location?: any;
 }
 
 export interface EventTemplate {
@@ -43,6 +44,10 @@ export const CreateRecording = (props: CreateRecordingProps) => {
     context.commandChannel.sendMessage(command, args, id);
   };
 
+  React.useEffect(() => {
+    console.log('CreateRecording', { props });
+  }, []);
+
   return (
     <PageSection>
       <Breadcrumb>
@@ -53,7 +58,11 @@ export const CreateRecording = (props: CreateRecordingProps) => {
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
             <Tab eventKey={0} title="Custom Flight Recording">
-              <CustomRecordingForm onSubmit={handleSubmit} />
+              <CustomRecordingForm onSubmit={handleSubmit}
+                recordingName={props?.location?.state?.recordingName}
+                template={props?.location?.state?.template}
+                eventSpecifiers={props?.location?.state?.eventSpecifiers}
+              />
             </Tab>
             <Tab eventKey={1} title="Snapshot Recording">
               <SnapshotRecordingForm onSubmit={handleSubmit} />
