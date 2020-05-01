@@ -132,7 +132,7 @@ export const EventTypes = (props) => {
       <SplitItem isFilled />
       <SplitItem>
         <Pagination
-          itemCount={!!filterText ? displayedTypes.length : types.length}
+          itemCount={!!filterText ? filterTypesByText(types, filterText).length : types.length}
           page={currentPage}
           perPage={perPage}
           onSetPage={onCurrentPage}
