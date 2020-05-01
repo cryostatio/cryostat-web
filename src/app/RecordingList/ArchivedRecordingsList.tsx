@@ -43,6 +43,11 @@ export const ArchivedRecordingsList = (props) => {
   };
 
   React.useEffect(() => {
+    const sub = context.commandChannel.onResponse('save').subscribe(() => context.commandChannel.sendMessage('list-saved'));
+    return () => sub.unsubscribe();
+  });
+
+  React.useEffect(() => {
     const sub = context.commandChannel.onResponse('list-saved')
       .pipe(
         filter(m => m.status === 0),
