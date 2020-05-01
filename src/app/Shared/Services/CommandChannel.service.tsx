@@ -20,14 +20,14 @@ export class CommandChannel {
   constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
     this.apiSvc = apiSvc;
 
-    fromFetch(`${this.apiSvc.authority}/clienturl`)
+    fromFetch(`${this.apiSvc.authority}/api/v1/clienturl`)
       .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
         (url: any) => this.clientUrlSubject.next(url.clientUrl),
         (err: any) => this.logError('Client URL configuration', err)
       );
 
-    fromFetch(`${this.apiSvc.authority}/grafana_datasource_url`)
+    fromFetch(`${this.apiSvc.authority}/api/v1/grafana_datasource_url`)
       .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
         (url: any) => this.grafanaDatasourceUrlSubject.next(url.grafanaDatasourceUrl),
