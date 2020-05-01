@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { Card, CardBody, CardHeader, Text, TextVariants  } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, Tabs, Tab, Text, TextVariants } from '@patternfly/react-core';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { ActiveRecordingsList } from './ActiveRecordingsList';
+import { ArchivedRecordingsList } from './ArchivedRecordingsList';
 
 export interface Recording {
   id: number;
@@ -25,12 +27,36 @@ export enum RecordingState {
 }
 
 export const RecordingList = (props) => {
+  const context = React.useContext(ServiceContext);
+  const [activeTab, setActiveTab] = React.useState(0);
+  const [archiveEnabled, setArchiveEnabled] = React.useState(false);
+
+  React.useEffect(() => {
+    const sub = context.commandChannel.isArchiveEnabled().subscribe(enabled => setArchiveEnabled(enabled));
+    return () => sub.unsubscribe();
+  }, []);
+
   return (
     <TargetView pageTitle="Recordings">
       <Card>
-        <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
         <CardBody>
-          <ActiveRecordingsList />
+          {
+            archiveEnabled ? (
+              <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+                <Tab eventKey={0} title="Active Recordings">
+                  <ActiveRecordingsList />
+                </Tab>
+                <Tab eventKey={1} title="Archived Recordings">
+                  <ArchivedRecordingsList />
+                </Tab>
+              </Tabs>
+            ) : (
+              <>
+                <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
+                <ActiveRecordingsList />
+              </>
+            )
+          }
         </CardBody>
       </Card>
     </TargetView>
