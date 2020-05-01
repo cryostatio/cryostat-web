@@ -8,7 +8,7 @@ const DotenvPlugin = require('dotenv-webpack');
 
 module.exports = merge(common, {
   mode: 'production',
-  devtool: 'source-map',
+  devtool: 'eval-source-map',
   optimization: {
     minimizer: [
       new TerserJSPlugin({}),
