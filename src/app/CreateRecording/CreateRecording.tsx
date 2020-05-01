@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { filter, first } from 'rxjs/operators';
-import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Card, CardBody, PageSection, Tabs, Tab } from '@patternfly/react-core';
+import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Card, CardBody, PageSection, Tabs, Tab, Text, TextVariants } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CustomRecordingForm } from './CustomRecordingForm';
+import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
 export interface CreateRecordingProps {
   recordingName?: string;
@@ -50,9 +51,12 @@ export const CreateRecording = (props: CreateRecordingProps) => {
       </Breadcrumb>
       <Card>
         <CardBody>
-          <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(idx)}>
+          <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
             <Tab eventKey={0} title="Custom Flight Recording">
               <CustomRecordingForm onSubmit={handleSubmit} />
+            </Tab>
+            <Tab eventKey={1} title="Snapshot Recording">
+              <SnapshotRecordingForm onSubmit={handleSubmit} />
             </Tab>
           </Tabs>
         </CardBody>
