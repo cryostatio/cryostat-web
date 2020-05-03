@@ -5,12 +5,13 @@ import { Button, DataList, DataListCheck, DataListItem, DataListItemRow, DataLis
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Recording, RecordingState } from './RecordingList';
+import { RecordingsDataTable } from './RecordingsDataTable';
 
 export interface ActiveRecordingsListProps {
   archiveEnabled: boolean;
 }
 
-export const ActiveRecordingsList = (props: ActiveRecordingsListProps) => {
+export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
 
@@ -28,15 +29,6 @@ export const ActiveRecordingsList = (props: ActiveRecordingsListProps) => {
     'State',
   ];
 
-  const handleCreateRecording = () => {
-    routerHistory.push(`${url}/create`);
-  };
-
-  const handleHeaderCheck = (checked) => {
-    setHeaderChecked(checked);
-    setCheckedIndices(checked ? recordings.map((r, idx) => idx) : []);
-  };
-
   const handleRowCheck = (checked, index) => {
     if (checked) {
       setCheckedIndices(ci => ([...ci, index]));
@@ -44,6 +36,15 @@ export const ActiveRecordingsList = (props: ActiveRecordingsListProps) => {
       setHeaderChecked(false);
       setCheckedIndices(ci => ci.filter(v => v !== index));
     }
+  };
+
+  const handleHeaderCheck = (checked) => {
+    setHeaderChecked(checked);
+    setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
+  };
+
+  const handleCreateRecording = () => {
+    routerHistory.push(`${url}/create`);
   };
 
   const handleArchiveRecordings = () => {
@@ -149,41 +150,25 @@ export const ActiveRecordingsList = (props: ActiveRecordingsListProps) => {
 
   const RecordingsToolbar = () => {
     const buttons = [
-      <ToolbarGroup>
-        <ToolbarItem>
-          <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
-        </ToolbarItem>
-      </ToolbarGroup>
+      <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
     ];
     if (props.archiveEnabled) {
       buttons.push((
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Button variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
-          </ToolbarItem>
-        </ToolbarGroup>
+        <Button variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
       ));
     }
     buttons.push((
-      <ToolbarGroup>
-        <ToolbarItem>
-          <Button variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
-        </ToolbarItem>
-      </ToolbarGroup>
+      <Button variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
     ));
     buttons.push((
-      <ToolbarGroup>
-        <ToolbarItem>
-          <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
-        </ToolbarItem>
-      </ToolbarGroup>
+      <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
     ));
 
     return (
       <Toolbar>
         {
-          buttons.map(btn => (
-            <ToolbarGroup>
+          buttons.map((btn, idx) => (
+            <ToolbarGroup key={idx}>
               <ToolbarItem>
                 { btn }
               </ToolbarItem>
@@ -195,25 +180,16 @@ export const ActiveRecordingsList = (props: ActiveRecordingsListProps) => {
   };
 
   return (<>
-    <RecordingsToolbar />
-    <DataList aria-label="Active Recording List">
-      <DataListItem aria-labelledby="table-header-1">
-        <DataListItemRow>
-          <DataListCheck aria-labelledby="table-header-1" name="header-check" onChange={handleHeaderCheck} isChecked={headerChecked} />
-          <DataListItemCells
-            dataListCells={tableColumns.map((key , idx) => (
-              <DataListCell key={key}>
-                <span id={`table-header-${idx}`}>{key}</span>
-              </DataListCell>
-            ))}
-          />
-        </DataListItemRow>
-      </DataListItem>
-      <DataListItem aria-labelledby="table-row-1-1">
+    <RecordingsDataTable
+        listTitle="Active Flight Recordings"
+        toolbar={<RecordingsToolbar />}
+        tableColumns={tableColumns}
+        isHeaderChecked={headerChecked}
+        onHeaderCheck={handleHeaderCheck}
+    >
       {
         recordings.map((r, idx) => <RecordingRow recording={r} index={idx}/>)
       }
-      </DataListItem>
-    </DataList>
+    </RecordingsDataTable>
   </>);
 };

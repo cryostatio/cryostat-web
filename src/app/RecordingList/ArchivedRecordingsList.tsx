@@ -4,6 +4,7 @@ import { Button, DataList, DataListCheck, DataListItem, DataListItemRow, DataLis
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Recording, RecordingState } from './RecordingList';
+import { RecordingsDataTable } from './RecordingsDataTable';
 
 export const ArchivedRecordingsList = (props) => {
   const context = React.useContext(ServiceContext);
@@ -20,7 +21,7 @@ export const ArchivedRecordingsList = (props) => {
 
   const handleHeaderCheck = (checked) => {
     setHeaderChecked(checked);
-    setCheckedIndices(checked ? recordings.map((r, idx) => idx) : []);
+    setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
   };
 
   const handleRowCheck = (checked, index) => {
@@ -102,25 +103,16 @@ export const ArchivedRecordingsList = (props) => {
   };
 
   return (<>
-    <RecordingsToolbar />
-    <DataList aria-label="Archived Recording List">
-      <DataListItem aria-labelledby="table-header-1">
-        <DataListItemRow>
-          <DataListCheck aria-labelledby="table-header-1" name="header-check" onChange={handleHeaderCheck} isChecked={headerChecked} />
-          <DataListItemCells
-            dataListCells={tableColumns.map((key , idx) => (
-              <DataListCell key={key}>
-                <span id={`table-header-${idx}`}>{key}</span>
-              </DataListCell>
-            ))}
-          />
-        </DataListItemRow>
-      </DataListItem>
-      <DataListItem aria-labelledby="table-row-1-1">
+    <RecordingsDataTable
+        listTitle="Archived Flight Recordings"
+        toolbar={<RecordingsToolbar />}
+        tableColumns={tableColumns}
+        isHeaderChecked={headerChecked}
+        onHeaderCheck={handleHeaderCheck}
+    >
       {
         recordings.map((r, idx) => <RecordingRow recording={r} index={idx}/>)
       }
-      </DataListItem>
-    </DataList>
+    </RecordingsDataTable>
   </>);
 };
