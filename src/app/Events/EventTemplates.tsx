@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
-import { TextInput, Toolbar, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { DataToolbar, DataToolbarContent, DataToolbarItem, TextInput } from '@patternfly/react-core';
 import { Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -59,13 +59,13 @@ export const EventTemplates = (props) => {
   }, []);
 
   return(<>
-    <Toolbar>
-      <ToolbarGroup>
-        <ToolbarItem>
+    <DataToolbar id="event-templates-toolbar">
+      <DataToolbarContent>
+        <DataToolbarItem>
           <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
-        </ToolbarItem>
-      </ToolbarGroup>
-    </Toolbar>
+        </DataToolbarItem>
+      </DataToolbarContent>
+    </DataToolbar>
     <Table aria-label="Event Templates table" cells={tableColumns} rows={getTemplates()} actions={actions} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />

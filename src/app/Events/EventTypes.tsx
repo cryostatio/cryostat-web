@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
-import { Pagination, Split, SplitItem, TextInput } from '@patternfly/react-core';
+import { DataToolbar, DataToolbarContent, DataToolbarItem, DataToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { Table, TableBody, TableHeader, TableVariant, expandable } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
@@ -125,23 +125,24 @@ export const EventTypes = (props) => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   return(<>
-    <Split>
-      <SplitItem>
-        <TextInput name="eventFilter" id="eventFilter" type="search" placeholder="Filter..." aria-label="Event filter" onChange={setFilterText}/>
-      </SplitItem>
-      <SplitItem isFilled />
-      <SplitItem>
-        <Pagination
-          itemCount={!!filterText ? filterTypesByText(types, filterText).length : types.length}
-          page={currentPage}
-          perPage={perPage}
-          onSetPage={onCurrentPage}
-          widgetId="event-types-pagination"
-          onPerPageSelect={onPerPage}
-          isCompact
-        />
-      </SplitItem>
-    </Split>
+    <DataToolbar id="event-types-toolbar">
+      <DataToolbarContent>
+        <DataToolbarItem>
+          <TextInput name="eventFilter" id="eventFilter" type="search" placeholder="Filter..." aria-label="Event filter" onChange={setFilterText}/>
+        </DataToolbarItem>
+        <DataToolbarItem variant={DataToolbarItemVariant.pagination}>
+          <Pagination
+            itemCount={!!filterText ? filterTypesByText(types, filterText).length : types.length}
+            page={currentPage}
+            perPage={perPage}
+            onSetPage={onCurrentPage}
+            widgetId="event-types-pagination"
+            onPerPageSelect={onPerPage}
+            isCompact
+          />
+        </DataToolbarItem>
+      </DataToolbarContent>
+    </DataToolbar>
     <Table aria-label="Event Types table" cells={tableColumns} rows={displayedTypes} onCollapse={onCollapse} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />
