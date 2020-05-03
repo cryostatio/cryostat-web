@@ -58,7 +58,7 @@ export const EventTemplates = (props) => {
     context.commandChannel.sendMessage('list-event-templates');
   }, []);
 
-  return(<>
+  return (<>
     <DataToolbar id="event-templates-toolbar">
       <DataToolbarContent>
         <DataToolbarItem>

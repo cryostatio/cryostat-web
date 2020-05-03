@@ -124,7 +124,7 @@ export const EventTypes = (props) => {
   };
 
   // TODO replace table with data list so collapsed event options can be custom formatted
-  return(<>
+  return (<>
     <DataToolbar id="event-types-toolbar">
       <DataToolbarContent>
         <DataToolbarItem>

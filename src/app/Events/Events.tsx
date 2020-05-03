@@ -16,7 +16,7 @@ export const Events = (props) => {
       <Card>
         <CardHeader><Text component={TextVariants.h4}>Events</Text></CardHeader>
         <CardBody>
-          <Tabs isFilled mountOnEnter unmountOnExit activeKey={activeTab} onSelect={handleTabSelect}>
+          <Tabs isFilled activeKey={activeTab} onSelect={handleTabSelect}>
             <Tab eventKey={0} title="Event Templates">
               <EventTemplates />
             </Tab>
