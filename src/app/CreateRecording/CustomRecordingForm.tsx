@@ -31,10 +31,6 @@ export const CustomRecordingForm = (props) => {
   const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
   const [eventsValid, setEventsValid] = React.useState(!!props.template || !!props?.location?.state?.template);
 
-  React.useEffect(() => {
-    console.log('CustomRecordingForm', { props });
-  }, []);
-
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
   };
