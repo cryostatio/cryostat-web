@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Button, DataListAction, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, Toolbar, ToolbarContent, ToolbarItem, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text } from '@patternfly/react-core';
+import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Spinner, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, first, map } from 'rxjs/operators';
 import { Recording, RecordingState } from './RecordingList';
@@ -18,6 +18,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [recordings, setRecordings] = React.useState([]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
+  const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [openAction, setOpenAction] = React.useState(-1);
   const { url } = useRouteMatch();
 
@@ -89,33 +90,53 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list');
-    const id = window.setInterval(() => context.commandChannel.sendMessage('list'), 5000);
-    return () => window.clearInterval(id);
+    const id = setInterval(() => context.commandChannel.sendMessage('list'), 30_000);
+    return () => clearInterval(id);
   }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
+    const [reportLoaded, setReportLoaded] = React.useState(false);
+
+    const expandedRowId =`active-table-row-${props.index}-exp`;
+    const handleToggle = () => {
+      setReportLoaded(false);
+      toggleExpanded(expandedRowId);
+    };
+
     return (
-      <DataListItemRow>
-        <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
-        <DataListItemCells
-          dataListCells={[
-            <DataListCell key={`table-row-${props.index}-1`}>
-              {props.recording.name}
-            </DataListCell>,
-            <DataListCell key={`table-row-${props.index}-2`}>
-              <ISOTime timeStr={props.recording.startTime} />
-            </DataListCell>,
-            <DataListCell key={`table-row-${props.index}-3`}>
-              <RecordingDuration duration={props.recording.duration} />
-            </DataListCell>,
-            // TODO make row expandable and render report in collapsed iframe
-            <DataListCell key={`table-row-${props.index}-4`}>
-              {props.recording.state}
-            </DataListCell>
-          ]}
-        />
-        <RecordingActions index={props.index} recording={props.recording} isOpen={props.index === openAction} setOpen={o => setOpenAction(o ? props.index : -1)} />
-      </DataListItemRow>
+      <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={expandedRows.includes(expandedRowId)} >
+        <DataListItemRow>
+          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
+          <DataListToggle onClick={handleToggle} isExpanded={expandedRows.includes(expandedRowId)} id={`ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
+          <DataListItemCells
+            dataListCells={[
+              <DataListCell key={`table-row-${props.index}-1`}>
+                {props.recording.name}
+              </DataListCell>,
+              <DataListCell key={`table-row-${props.index}-2`}>
+                <ISOTime timeStr={props.recording.startTime} />
+              </DataListCell>,
+              <DataListCell key={`table-row-${props.index}-3`}>
+                <RecordingDuration duration={props.recording.duration} />
+              </DataListCell>,
+              <DataListCell key={`table-row-${props.index}-4`}>
+                {props.recording.state}
+              </DataListCell>
+            ]}
+          />
+          <RecordingActions index={props.index} recording={props.recording} isOpen={props.index === openAction} setOpen={o => setOpenAction(o ? props.index : -1)} />
+        </DataListItemRow>
+        <DataListContent
+          aria-label="Content Details"
+          id={`ex-expand-${props.index}`}
+          isHidden={!expandedRows.includes(expandedRowId)}
+        >
+          <div>{
+            reportLoaded ? null : <Spinner />
+          }</div>
+          <iframe src={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} ></iframe>
+        </DataListContent>
+      </DataListItem>
     );
   };
 
@@ -136,6 +157,11 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     const filtered = recordings.filter((r: Recording, idx: number) => checkedIndices.includes(idx));
     const anyRunning = filtered.some((r: Recording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
     return !anyRunning;
+  };
+
+  const toggleExpanded = (id) => {
+    const idx = expandedRows.indexOf(id);
+    setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
   const RecordingsToolbar = () => {
