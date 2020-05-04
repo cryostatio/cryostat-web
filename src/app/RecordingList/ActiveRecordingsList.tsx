@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Button, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, DataToolbar, DataToolbarContent, DataToolbarItem } from '@patternfly/react-core';
+import { Button, DataListAction, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, DataToolbar, DataToolbarContent, DataToolbarItem, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
 import { Recording, RecordingState } from './RecordingList';
@@ -17,14 +17,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [recordings, setRecordings] = React.useState([]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
+  const [openAction, setOpenAction] = React.useState(-1);
   const { url } = useRouteMatch();
 
   const tableColumns: string[] = [
     'Name',
     'Start Time',
     'Duration',
-    'Download',
-    'Report',
     'State',
   ];
 
@@ -108,18 +107,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
             <DataListCell key={`table-row-${props.index}-3`}>
               <RecordingDuration duration={props.recording.duration} />
             </DataListCell>,
-            <DataListCell key={`table-row-${props.index}-4`}>
-              <Link url={`${props.recording.downloadUrl}.jfr`} />
-            </DataListCell>,
             // TODO make row expandable and render report in collapsed iframe
-            <DataListCell key={`table-row-${props.index}-5`}>
-              <Link url={props.recording.reportUrl} />
-            </DataListCell>,
-            <DataListCell key={`table-row-${props.index}-6`}>
+            <DataListCell key={`table-row-${props.index}-4`}>
               {props.recording.state}
             </DataListCell>
           ]}
         />
+        <RecordingActions index={props.index} recording={props.recording} isOpen={props.index === openAction} setOpen={o => setOpenAction(o ? props.index : -1)} />
       </DataListItemRow>
     );
   };
@@ -132,10 +126,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const RecordingDuration = (props) => {
     const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`
     return (<span>{str}</span>);
-  };
-
-  const Link = (props) => {
-    return (<a href={props.url} target="_blank" rel="noopener noreferrer">{props.display || props.url}</a>);
   };
 
   const isStopDisabled = () => {
@@ -191,4 +181,41 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       }
     </RecordingsDataTable>
   </>);
+};
+
+export interface RecordingActionsProps {
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+  index: number;
+  recording: Recording;
+}
+
+export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
+  const DownloadLink = (props) => {
+    return <a href={props.url} target="_blank" download={props.as}>Download</a>;
+  };
+
+  return (
+    <DataListAction
+      aria-labelledby={`dropdown-actions-item-${props.index} dropdown-actions-action-${props.index}`}
+      id={`dropdown-actions-action-${props.index}`}
+      aria-label="Actions"
+    >
+      <Dropdown
+        isPlain
+        position={DropdownPosition.right}
+        isOpen={props.isOpen}
+        onSelect={() => props.setOpen(!props.isOpen)}
+        toggle={<KebabToggle onToggle={props.setOpen} />}
+        dropdownItems={[
+          <DropdownItem key="download" component={
+              <Text>
+                <DownloadLink url={props.recording.downloadUrl} as={`${props.recording.name}.jfr`} />
+              </Text>
+            }>
+          </DropdownItem>
+        ]}
+      />
+    </DataListAction>
+  );
 };
