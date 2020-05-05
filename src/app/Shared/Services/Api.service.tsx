@@ -1,6 +1,6 @@
-import { Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, from, of } from 'rxjs';
+import { Observable, ReplaySubject, ObservableInput, from, of } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { filter, first, map, catchError, tap, concatMap, flatMap, combineLatest } from 'rxjs/operators';
+import { first, map, catchError, tap, concatMap, flatMap, combineLatest } from 'rxjs/operators';
 
 export class ApiService {
 
@@ -13,7 +13,7 @@ export class ApiService {
       if (!apiAuthority) {
         apiAuthority = '';
       }
-      console.log(`Using API authority ${apiAuthority}`);
+      window.console.log(`Using API authority ${apiAuthority}`);
       this.authority = apiAuthority;
    }
 
@@ -32,8 +32,8 @@ export class ApiService {
         }
         return response.ok;
       }),
-      catchError((e: any): ObservableInput<boolean> => {
-        console.error(JSON.stringify(e));
+      catchError((e: {}): ObservableInput<boolean> => {
+        window.console.error(JSON.stringify(e));
         this.authMethod.complete();
         return of(false);
       }),
@@ -56,27 +56,8 @@ export class ApiService {
     return this.token.asObservable();
   }
 
-  downloadRecording(recording: SavedRecording): void {
-    this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).subscribe(auths =>
-      fromFetch(recording.downloadUrl, {
-        credentials: 'include',
-        mode: 'cors',
-        headers: this.getHeaders(auths[0], auths[1]),
-      })
-      .subscribe(resp =>
-        this.downloadFile(
-          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
-          resp,
-          'application/octet-stream')
-      )
-    );
-  }
-
-  uploadRecording(file: File): Observable<any> {
-    const payload = new FormData(); // as multipart/form-data
+  uploadRecording(file: File): Observable<string> {
+    const payload = new window.FormData(); // as multipart/form-data
     payload.append('recording', file);
 
     return this.getToken().pipe(
@@ -107,21 +88,11 @@ export class ApiService {
   }
 
   private getHeaders(token: string, method: string): Headers {
-    let headers = new Headers();
+    const headers = new window.Headers();
     if (!!token && !!method) {
       headers.append('Authorization', `${method} ${token}`)
     }
     return headers;
-  }
-
-  private downloadFile(filename: string, data: any, type: string): void {
-    const blob = new Blob([ data ], { type } );
-    const url = window.URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.download = filename;
-    anchor.href = url;
-    anchor.click();
-    setTimeout(() => window.URL.revokeObjectURL(url));
   }
 
 }

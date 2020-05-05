@@ -6,7 +6,7 @@ export const BearerAuthForm = (props: FormProps) => {
 
   const [token, setToken] = React.useState('');
 
-  const handleTokenChange = (evt, el) => {
+  const handleTokenChange = (evt) => {
     setToken(evt);
   }
 

@@ -18,11 +18,18 @@ export interface OptionDescriptor {
   defaultValue: string;
 }
 
-export const EventTypes = (props) => {
+interface RenderedRow {
+  parent?: number;
+  cells: string[];
+  isOpen?: boolean;
+  fullWidth?: boolean;
+}
+
+export const EventTypes = () => {
   const context = React.useContext(ServiceContext);
 
   const [types, setTypes] = React.useState([] as EventType[]);
-  const [displayedTypes, setDisplayedTypes] = React.useState([] as any[]);
+  const [displayedTypes, setDisplayedTypes] = React.useState([] as RenderedRow[]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
   const prevPerPage = React.useRef(10);
@@ -47,36 +54,17 @@ export const EventTypes = (props) => {
       )
       .subscribe(types => setTypes(types));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-types');
+  }, [context.commandChannel]);
+
+  const getCategoryString = React.useCallback((eventType: EventType): string => {
+    return eventType.category.join(', ').trim();
   }, []);
 
-  React.useEffect(() => {
-    const offset = (currentPage - 1) * perPage;
-    const page = filterTypesByText(types, filterText).slice(offset, offset + perPage);
-
-    const rows: any[] = [];
-    page.forEach((t: EventType, idx: number) => {
-      rows.push({ cells: [ t.name, t.typeId, t.description, getCategoryString(t) ], isOpen: (idx === openRow) });
-      if (idx === openRow) {
-        let child = '';
-        for (const opt in t.options) {
-          child += `${opt}=[${t.options[opt].defaultValue}]\t`;
-        }
-        rows.push({ parent: idx, fullWidth: true, cells: [ child ] });
-      }
-    });
-
-    setDisplayedTypes(rows);
-  }, [currentPage, perPage, types, openRow, filterText]);
-
-  const getCategoryString = (eventType: EventType): string => {
-    return eventType.category.join(', ').trim();
-  };
-
-  const filterTypesByText = (types, filter) => {
+  const filterTypesByText = React.useCallback((types, filter) => {
     if (!filter) {
       return types;
     }
@@ -96,7 +84,26 @@ export const EventTypes = (props) => {
       }
       return false
     });
-  };
+  }, [getCategoryString]);
+
+  React.useEffect(() => {
+    const offset = (currentPage - 1) * perPage;
+    const page = filterTypesByText(types, filterText).slice(offset, offset + perPage);
+
+    const rows: RenderedRow[] = [];
+    page.forEach((t: EventType, idx: number) => {
+      rows.push({ cells: [ t.name, t.typeId, t.description, getCategoryString(t) ], isOpen: (idx === openRow) });
+      if (idx === openRow) {
+        let child = '';
+        for (const opt in t.options) {
+          child += `${opt}=[${t.options[opt].defaultValue}]\t`;
+        }
+        rows.push({ parent: idx, fullWidth: true, cells: [ child ] });
+      }
+    });
+
+    setDisplayedTypes(rows);
+  }, [currentPage, perPage, types, openRow, filterText, getCategoryString, filterTypesByText]);
 
   const onCurrentPage = (evt, currentPage) => {
     setOpenRow(-1);
@@ -132,7 +139,7 @@ export const EventTypes = (props) => {
       <SplitItem isFilled />
       <SplitItem>
         <Pagination
-          itemCount={!!filterText ? filterTypesByText(types, filterText).length : types.length}
+          itemCount={filterText ? filterTypesByText(types, filterText).length : types.length}
           page={currentPage}
           perPage={perPage}
           onSetPage={onCurrentPage}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { distinctUntilChanged, filter, first } from 'rxjs/operators';
-import { Card, CardBody, CardHeader, Grid, GridItem, PageSection, Select, SelectOption, SelectVariant, Text, TextVariants, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
@@ -15,7 +15,7 @@ interface Target {
   port: number;
 }
 
-export const TargetSelect = (props: TargetSelectProps) => {
+export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [selected, setSelected] = React.useState('');
   const [targets, setTargets] = React.useState([]);
@@ -24,19 +24,19 @@ export const TargetSelect = (props: TargetSelectProps) => {
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('scan-targets').subscribe(msg => setTargets(msg.payload));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('connect').pipe(filter(m => m.status === 0)).subscribe(m => setSelected(m.payload));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.isReady()
       .pipe(filter(v => !!v), first())
       .subscribe(() => context.commandChannel.sendMessage('scan-targets', []));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('is-connected').pipe(distinctUntilChanged()).subscribe(connection => {
@@ -48,14 +48,14 @@ export const TargetSelect = (props: TargetSelectProps) => {
       }
     });
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.isReady().pipe(filter(v => v!!), first()).subscribe(() => {
+    const sub = context.commandChannel.isReady().pipe(filter(v => !!v), first()).subscribe(() => {
       context.commandChannel.sendMessage('is-connected');
     });
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   const connect = (target: Target) => {
     context.commandChannel.sendMessage('connect', [ `${target.connectUrl}:${target.port}` ]);

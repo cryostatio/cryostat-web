@@ -3,7 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
 
-interface Notification {
+export interface Notification {
   key?: string;
   title: string;
   message?: string;
@@ -11,9 +11,9 @@ interface Notification {
   timeout?: number;
 }
 
-const DefaultNotificationTimeout = 15_000;
+export const DefaultNotificationTimeout = 15_000;
 
-class Notifications {
+export class Notifications {
 
   private readonly notifications = new Subject<Notification>();
 
@@ -49,8 +49,6 @@ class Notifications {
 
 }
 
-const NotificationsInstance = new Notifications();
+export const NotificationsInstance = new Notifications();
 
-const NotificationsContext = React.createContext(NotificationsInstance);
-
-export { Notification, DefaultNotificationTimeout, Notifications, NotificationsContext, NotificationsInstance };
+export const NotificationsContext = React.createContext(NotificationsInstance);

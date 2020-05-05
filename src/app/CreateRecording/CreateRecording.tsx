@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { filter, first, map } from 'rxjs/operators';
-import { ActionGroup, Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Button, Card, CardBody, CardHeader, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, PageSection, Split, SplitItem, Text, TextVariants, Title, Tooltip, TooltipPosition } from '@patternfly/react-core';
+import { ActionGroup, Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Button, Card, CardBody, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, PageSection, Split, SplitItem, Text, TextVariants, Tooltip, TooltipPosition } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { AlertVariant } from '@patternfly/react-core';
 
 export interface CreateRecordingProps {
   recordingName?: string;
@@ -21,7 +20,7 @@ export interface EventTemplate {
 
 export const RecordingNamePattern = /^[\w_]+$/;
 export const TemplatePattern = /^template=([\w]+)$/;
-export const EventSpecifierPattern = /([\w\\.\$]+):([\w]+)=([\w\\d\.]+)/;
+export const EventSpecifierPattern = /([\w.$]+):([\w]+)=([\w\d.]+)/;
 
 export const CreateRecording = (props: CreateRecordingProps) => {
   const context = React.useContext(ServiceContext);
@@ -62,9 +61,9 @@ export const CreateRecording = (props: CreateRecordingProps) => {
     setEventSpecifiers(evt);
   };
 
-  const getEventSpecifiers = () => !!template ? `template=${template}` : eventSpecifiers;
+  const getEventSpecifiers = () => template ? `template=${template}` : eventSpecifiers;
 
-  const getEventString = () => !!template ? `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
+  const getEventString = () => template ? `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
 
   const handleRecordingNameChange = (name) => {
     setNameValid(RecordingNamePattern.test(name));
@@ -74,7 +73,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
   const handleSubmit = () => {
     const eventString = getEventString();
 
-    let notificationMessages: string[] = [];
+    const notificationMessages: string[] = [];
     if (!nameValid) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
     }
@@ -118,11 +117,11 @@ export const CreateRecording = (props: CreateRecordingProps) => {
       )
       .subscribe(m => setTemplates(m));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-templates');
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     if (TemplatePattern.test(eventSpecifiers)) {
@@ -131,7 +130,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
         return;
       }
       const template = regexMatches[1];
-      if (!!templates.find(t => t.name === template)) {
+      if (templates.find(t => t.name === template)) {
         handleTemplateChange(template);
       }
     }

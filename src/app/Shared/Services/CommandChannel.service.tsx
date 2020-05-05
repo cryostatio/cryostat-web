@@ -1,6 +1,6 @@
 import { from, Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { concatMap, distinctUntilChanged, filter, first, map, tap } from 'rxjs/operators';
+import { concatMap, distinctUntilChanged, filter, first, map } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { nanoid } from 'nanoid';
@@ -15,7 +15,7 @@ export class CommandChannel {
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
-  private pingTimer: number = -1;
+  private pingTimer = -1;
 
   constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
     this.apiSvc = apiSvc;
@@ -23,15 +23,15 @@ export class CommandChannel {
     fromFetch(`${this.apiSvc.authority}/api/v1/clienturl`)
       .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
-        (url: any) => this.clientUrlSubject.next(url.clientUrl),
-        (err: any) => this.logError('Client URL configuration', err)
+        (url: { clientUrl: string }) => this.clientUrlSubject.next(url.clientUrl),
+        (err) => this.logError('Client URL configuration', err)
       );
 
     fromFetch(`${this.apiSvc.authority}/api/v1/grafana_datasource_url`)
       .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
-        (url: any) => this.grafanaDatasourceUrlSubject.next(url.grafanaDatasourceUrl),
-        (err: any) => this.logError('Grafana Datasource configuration', err)
+        (url: { grafanaDatasourceUrl: string }) => this.grafanaDatasourceUrlSubject.next(url.grafanaDatasourceUrl),
+        (err) => this.logError('Grafana Datasource configuration', err)
       );
 
     this.onResponse('disconnect').pipe(
@@ -50,7 +50,7 @@ export class CommandChannel {
 
     this.isReady().pipe(
       filter(ready => !!ready)
-    ).subscribe(ready => {
+    ).subscribe(() => {
       this.sendMessage('is-connected');
       this.sendMessage('list-saved');
     });
@@ -77,11 +77,11 @@ export class CommandChannel {
       .subscribe(auths => {
         let subprotocol: string | undefined = undefined;
         if (auths[1] === 'Bearer') {
-          subprotocol = `base64url.bearer.authorization.containerjfr.${btoa(auths[0])}`;
+          subprotocol = `base64url.bearer.authorization.containerjfr.${window.btoa(auths[0])}`;
         } else if (auths[1] === 'Basic') {
           subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
         }
-        this.ws = new WebSocket(clientUrl, subprotocol);
+        this.ws = new window.WebSocket(clientUrl, subprotocol);
 
         this.ws.addEventListener('message', (ev: MessageEvent) => {
           if (typeof ev.data === 'string') {
@@ -164,8 +164,8 @@ export class CommandChannel {
       );
   }
 
-  private logError(title: string, err: any): void {
-    console.error(err);
+  private logError(title: string, err: {}): void {
+    window.console.error(err);
     this.notifications.danger(title, JSON.stringify(err));
   }
 }
@@ -207,7 +207,7 @@ export function isFailureMessage(m: ResponseMessage<any>): m is FailureMessage {
   return m.status < 0 && typeof m.payload === 'string';
 }
 
-export interface ExceptionMessage extends ResponseMessage<{ commandName: string, exception: string }> { }
+export interface ExceptionMessage extends ResponseMessage<{ commandName: string; exception: string }> { }
 
 export function isExceptionMessage(m: ResponseMessage<any>): m is ExceptionMessage {
   return m.status < 0

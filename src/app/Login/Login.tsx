@@ -1,24 +1,29 @@
 import * as React from 'react';
-import { Card, CardBody, CardHeader, CardFooter, PageSection, Text, TextInput, TextVariants, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, CardFooter, PageSection, Title } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { BasicAuthForm, BasicAuthDescriptionText } from './BasicAuthForm';
 import { BearerAuthForm, BearerAuthDescriptionText } from './BearerAuthForm';
 
-export const Login = (props) => {
+export interface LoginProps {
+  onLoginSuccess: () => void;
+}
+
+export const Login: React.FunctionComponent<LoginProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
   const [authMethod, setAuthMethod] = React.useState('Basic');
+  const onLoginSuccess = props.onLoginSuccess;
 
-  const checkAuth = (token: string, authMethod: string): void => {
+  const checkAuth = React.useCallback((token: string, authMethod: string): void => {
     if (authMethod === 'Basic') {
-      token = btoa(token);
+      token = window.btoa(token);
     } // else this is Bearer auth and the token is sent as-is
     context.api.checkAuth(token, authMethod).subscribe(v => {
       if (v) {
-        props.onLoginSuccess();
+        onLoginSuccess();
       }
     })
-  }
+  }, [onLoginSuccess, context.api]);
 
   const handleSubmit = (evt, token, authMethod) => {
     checkAuth(token, authMethod);
@@ -29,7 +34,7 @@ export const Login = (props) => {
     checkAuth('', 'Basic');
     const sub = context.api.getAuthMethod().subscribe(authMethod => setAuthMethod(authMethod));
     return () => sub.unsubscribe();
-  }, []);
+  }, [checkAuth, context.api]);
 
   return (
     <PageSection>

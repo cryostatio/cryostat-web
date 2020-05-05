@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
-import { Button, Card, CardBody, CardHeader, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, PageSection, Text, TextVariants, Title, Toolbar, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Button, Card, CardBody, CardHeader, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, Text, TextVariants, Toolbar, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 
 interface Recording {
   id: number;
   name: string;
-  state: RecordingState;
+  state: 'STOPPED' | 'STARTING' | 'RUNNING' | 'STOPPING';
   startTime: number;
   duration: number;
   continuous: boolean;
@@ -19,21 +19,14 @@ interface Recording {
   reportUrl: string;
 }
 
-enum RecordingState {
-  STOPPED = 'STOPPED',
-  STARTING = 'STARTING',
-  RUNNING = 'RUNNING',
-  STOPPING = 'STOPPING',
-}
-
-export const RecordingList = (props) => {
+export const RecordingList = () => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
 
-  const [recordings, setRecordings] = React.useState([]);
+  const [recordings, setRecordings] = React.useState([] as Recording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const { path, url } = useRouteMatch();
+  const { url } = useRouteMatch();
 
   const tableColumns: string[] = [
     'Name',
@@ -76,7 +69,7 @@ export const RecordingList = (props) => {
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
+        if (r.state === 'RUNNING' || r.state === 'STARTING') {
           context.commandChannel.sendMessage('stop', [ r.name ]);
         }
       }
@@ -92,13 +85,13 @@ export const RecordingList = (props) => {
       )
       .subscribe(recordings => setRecordings(recordings));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list');
-    const id = setInterval(() => context.commandChannel.sendMessage('list'), 5000);
-    return () => clearInterval(id);
-  }, []);
+    const id = window.setInterval(() => context.commandChannel.sendMessage('list'), 5000);
+    return () => window.clearInterval(id);
+  }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
     return (
@@ -142,7 +135,7 @@ export const RecordingList = (props) => {
   };
 
   const Link = (props) => {
-    return (<a href={props.url} target="_blank">{props.display || props.url}</a>);
+    return (<a href={props.url} target="_blank" rel="noopener noreferrer">{props.display || props.url}</a>);
   };
 
   const isStopDisabled = () => {
@@ -150,11 +143,11 @@ export const RecordingList = (props) => {
       return true;
     }
     const filtered = recordings.filter((r: Recording, idx: number) => checkedIndices.includes(idx));
-    const anyRunning = filtered.some((r: Recording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
+    const anyRunning = filtered.some((r: Recording) => r.state === 'RUNNING' || r.state == 'STARTING');
     return !anyRunning;
   };
 
-  const RecordingsToolbar = (props) => {
+  const RecordingsToolbar = () => {
     return (
       <Toolbar>
         <ToolbarGroup>
@@ -197,7 +190,7 @@ export const RecordingList = (props) => {
             </DataListItem>
             <DataListItem aria-labelledby="table-row-1-1">
             {
-              recordings.map((r, idx) => <RecordingRow recording={r} index={idx}/>)
+              recordings.map((r, idx) => <RecordingRow recording={r} index={idx} key={idx} />)
             }
             </DataListItem>
           </DataList>

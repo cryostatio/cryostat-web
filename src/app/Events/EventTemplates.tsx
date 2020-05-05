@@ -10,7 +10,7 @@ export interface EventTemplate {
   provider: string;
 }
 
-export const EventTemplates = (props) => {
+export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
 
   const [templates, setTemplates] = React.useState([]);
@@ -43,11 +43,11 @@ export const EventTemplates = (props) => {
       )
       .subscribe(templates => setTemplates(templates));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-templates');
-  }, []);
+  }, [context.commandChannel]);
 
   return(<>
     <Toolbar>
