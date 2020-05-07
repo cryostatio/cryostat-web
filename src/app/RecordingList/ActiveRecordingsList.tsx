@@ -6,6 +6,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Recording, RecordingState } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
+import { ReportFrame } from './ReportFrame';
 
 export interface ActiveRecordingsListProps {
   archiveEnabled: boolean;
@@ -103,11 +104,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       toggleExpanded(expandedRowId);
     };
 
+    const isExpanded = expandedRows.includes(expandedRowId);
+
     return (
-      <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={expandedRows.includes(expandedRowId)} >
+      <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
         <DataListItemRow>
           <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
-          <DataListToggle onClick={handleToggle} isExpanded={expandedRows.includes(expandedRowId)} id={`ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
+          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
           <DataListItemCells
             dataListCells={[
               <DataListCell key={`table-row-${props.index}-1`}>
@@ -132,9 +135,11 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           isHidden={!expandedRows.includes(expandedRowId)}
         >
           <div>{
-            reportLoaded ? null : <Spinner />
+            isExpanded ? (reportLoaded ? null : <Spinner />) : null
           }</div>
-          <iframe src={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} ></iframe>
+          <div>{
+            isExpanded ? (<ReportFrame src={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} />) : null
+          }</div>
         </DataListContent>
       </DataListItem>
     );
