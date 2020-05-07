@@ -18,7 +18,7 @@ export class ApiService {
    }
 
   checkAuth(token: string, method: string): Observable<boolean> {
-    return fromFetch(`${this.authority}/auth`, {
+    return fromFetch(`${this.authority}/api/v1/auth`, {
       credentials: 'include',
       mode: 'cors',
       method: 'POST',
@@ -83,7 +83,7 @@ export class ApiService {
       combineLatest(this.getAuthMethod()),
       first(),
       flatMap(auths =>
-        fromFetch(`/recordings`, {
+        fromFetch(`/api/v1/recordings`, {
           credentials: 'include',
           mode: 'cors',
           body: payload,
