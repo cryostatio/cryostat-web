@@ -66,6 +66,10 @@ export class CommandChannel {
     return this.grafanaDatasourceUrlSubject.asObservable();
   }
 
+  grafanaDashboardUrl(): Observable<string> {
+    return this.grafanaDashboardUrlSubject.asObservable();
+  }
+
   connect(clientUrl: string): Observable<void> {
     const ret = new Subject<void>();
     combineLatest(this.apiSvc.getToken(), this.apiSvc.getAuthMethod())

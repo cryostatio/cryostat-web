@@ -1,8 +1,9 @@
 import * as React from 'react';
+import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, DataListAction, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, DataToolbar, DataToolbarContent, DataToolbarItem, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { filter, map } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
 import { Recording, RecordingState } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 
@@ -192,6 +193,73 @@ export interface RecordingActionsProps {
 
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
+  const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
+  const [uploadIds, setUploadIds] = React.useState([] as string[]);
+
+  React.useEffect(() => {
+    const sub = context.commandChannel.grafanaDatasourceUrl()
+      .pipe(first())
+      .subscribe(() => setGrafanaEnabled(true));
+    return () => sub.unsubscribe();
+  }, [context.commandChannel]);
+
+  React.useEffect(() => {
+    const sub = context.commandChannel.onResponse('upload-recording')
+      .pipe(
+        filter(m => !!m.id && uploadIds.includes(m.id)),
+        first()
+      )
+      .subscribe(resp => {
+        const id = resp.id || '';
+        setUploadIds(ids => [...ids.slice(0, ids.indexOf(id)), ...ids.slice(ids.indexOf(id) + 1, ids.length)]);
+        if (resp.status === 0) {
+          notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
+          context.commandChannel.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
+        } else {
+          notifications.danger('Upload Failed', `Recording "${props.recording.name}" could not be uploaded`);
+        }
+      });
+    return () => sub.unsubscribe();
+  }, [context.commandChannel, notifications, uploadIds]);
+
+  const grafanaUpload = () => {
+    context.commandChannel.grafanaDatasourceUrl().pipe(first()).subscribe(url => {
+      notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
+      const id = context.commandChannel.createMessageId();
+      setUploadIds(ids => [...ids, id]);
+      context.commandChannel.sendMessage('upload-recording', [ props.recording.name, `${url}/load` ], id);
+    });
+  };
+
+  const getActionItems = () => {
+    const actionItems = [
+      <DropdownItem key="download" component={
+        <Text onClick={() => context.api.downloadRecording(props.recording)} >
+          Download Recording
+        </Text>
+        }>
+      </DropdownItem>,
+      <DropdownItem key="report" component={
+        <Text onClick={() => context.api.downloadReport(props.recording)} >
+          Download Report
+        </Text>
+        }>
+      </DropdownItem>
+    ];
+    if (grafanaEnabled) {
+      actionItems.push(
+        <DropdownItem key="grafana" component={
+          <Text onClick={grafanaUpload} >
+            View in Grafana ...
+          </Text>
+          }>
+        </DropdownItem>
+      );
+    }
+    return actionItems;
+  };
+
   return (
     <DataListAction
       aria-labelledby={`dropdown-actions-item-${props.index} dropdown-actions-action-${props.index}`}
@@ -204,20 +272,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         isOpen={props.isOpen}
         onSelect={() => props.setOpen(!props.isOpen)}
         toggle={<KebabToggle onToggle={props.setOpen} />}
-        dropdownItems={[
-          <DropdownItem key="download" component={
-            <Text onClick={() => context.api.downloadRecording(props.recording)} >
-              Download Recording
-            </Text>
-            }>
-          </DropdownItem>,
-          <DropdownItem key="report" component={
-            <Text onClick={() => context.api.downloadReport(props.recording)} >
-              Download Report
-            </Text>
-            }>
-          </DropdownItem>
-        ]}
+        dropdownItems={getActionItems()}
       />
     </DataListAction>
   );
