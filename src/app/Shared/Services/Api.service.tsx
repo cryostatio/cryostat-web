@@ -56,6 +56,26 @@ export class ApiService {
     return this.token.asObservable();
   }
 
+  downloadReport(recording: SavedRecording): void {
+    this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first()
+    ).subscribe(auths =>
+      fromFetch(recording.reportUrl, {
+        credentials: 'include',
+        mode: 'cors',
+        headers: this.getHeaders(auths[0], auths[1]),
+      })
+      .pipe(concatMap(resp => resp.blob()))
+      .subscribe(resp =>
+        this.downloadFile(
+          `${recording.name}.report.html`,
+          resp,
+          'text/html')
+      )
+    );
+  }
+
   downloadRecording(recording: SavedRecording): void {
     this.getToken().pipe(
       combineLatest(this.getAuthMethod()),
@@ -66,6 +86,7 @@ export class ApiService {
         mode: 'cors',
         headers: this.getHeaders(auths[0], auths[1]),
       })
+      .pipe(concatMap(resp => resp.blob()))
       .subscribe(resp =>
         this.downloadFile(
           recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
@@ -121,11 +142,18 @@ export interface SavedRecording {
 
 export interface Recording extends SavedRecording {
   id: number;
-  state: string;
+  state: RecordingState;
   duration: number;
   startTime: number;
   continuous: boolean;
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
+}
+
+export enum RecordingState {
+  STOPPED = 'STOPPED',
+  STARTING = 'STARTING',
+  RUNNING = 'RUNNING',
+  STOPPING = 'STOPPING',
 }

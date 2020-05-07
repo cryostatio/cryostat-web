@@ -3,8 +3,8 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
 import { Button, DataList, DataListAction, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataListContent, DataListToggle, DataToolbar, DataToolbarContent, DataToolbarItem, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Spinner, Text, TextVariants, Title } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Recording, RecordingState } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
 
@@ -223,10 +223,7 @@ export interface RecordingActionsProps {
 }
 
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
-  const DownloadLink = (props) => {
-    return <a href={props.url} target="_blank" download={props.as}>Download</a>;
-  };
-
+  const context = React.useContext(ServiceContext);
   return (
     <DataListAction
       aria-labelledby={`dropdown-actions-item-${props.index} dropdown-actions-action-${props.index}`}
@@ -241,15 +238,15 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         toggle={<KebabToggle onToggle={props.setOpen} />}
         dropdownItems={[
           <DropdownItem key="download" component={
-              <Text>
-                <DownloadLink url={props.recording.downloadUrl} as={`${props.recording.name}.jfr`} />
-              </Text>
+            <Text onClick={() => context.api.downloadRecording(props.recording)} >
+              Download Recording
+            </Text>
             }>
           </DropdownItem>,
           <DropdownItem key="report" component={
-              <Text>
-                <a href={props.recording.reportUrl} target="_blank">View report ...</a>
-              </Text>
+            <Text onClick={() => context.api.downloadReport(props.recording)} >
+              Download Report
+            </Text>
             }>
           </DropdownItem>
         ]}

@@ -5,27 +5,6 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { ActiveRecordingsList } from './ActiveRecordingsList';
 import { ArchivedRecordingsList } from './ArchivedRecordingsList';
 
-export interface Recording {
-  id: number;
-  name: string;
-  state: RecordingState;
-  startTime: number;
-  duration: number;
-  continuous: boolean;
-  toDisk: boolean;
-  maxSize: number;
-  maxAge: number;
-  downloadUrl: string;
-  reportUrl: string;
-}
-
-export enum RecordingState {
-  STOPPED = 'STOPPED',
-  STARTING = 'STARTING',
-  RUNNING = 'RUNNING',
-  STOPPING = 'STOPPING',
-}
-
 export const RecordingList = (props) => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
