@@ -15,6 +15,7 @@ export class CommandChannel {
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
+  private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
   private pingTimer: number = -1;
 
   constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
@@ -32,6 +33,13 @@ export class CommandChannel {
       .subscribe(
         (url: any) => this.grafanaDatasourceUrlSubject.next(url.grafanaDatasourceUrl),
         (err: any) => this.logError('Grafana Datasource configuration', err)
+      );
+
+    fromFetch(`${this.apiSvc.authority}/api/v1/grafana_dashboard_url`)
+      .pipe(concatMap(resp => from(resp.json())))
+      .subscribe(
+        (url: any) => this.grafanaDashboardUrlSubject.next(url.grafanaDashboardUrl),
+        (err: any) => this.logError('Grafana Dashboard configuration', err)
       );
 
     this.onResponse('disconnect').pipe(
@@ -66,6 +74,10 @@ export class CommandChannel {
 
   grafanaDatasourceUrl(): Observable<string> {
     return this.grafanaDatasourceUrlSubject.asObservable();
+  }
+
+  grafanaDashboardUrl(): Observable<string> {
+    return this.grafanaDashboardUrlSubject.asObservable();
   }
 
   connect(clientUrl: string): Observable<void> {
