@@ -191,10 +191,7 @@ export interface RecordingActionsProps {
 }
 
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
-  const DownloadLink = (props) => {
-    return <a href={props.url} target="_blank" download={props.as}>Download</a>;
-  };
-
+  const context = React.useContext(ServiceContext);
   return (
     <DataListAction
       aria-labelledby={`dropdown-actions-item-${props.index} dropdown-actions-action-${props.index}`}
@@ -209,9 +206,15 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         toggle={<KebabToggle onToggle={props.setOpen} />}
         dropdownItems={[
           <DropdownItem key="download" component={
-              <Text>
-                <DownloadLink url={props.recording.downloadUrl} as={`${props.recording.name}.jfr`} />
-              </Text>
+            <Text onClick={() => context.api.downloadRecording(props.recording)} >
+              Download Recording
+            </Text>
+            }>
+          </DropdownItem>,
+          <DropdownItem key="report" component={
+            <Text onClick={() => context.api.downloadReport(props.recording)} >
+              Download Report
+            </Text>
             }>
           </DropdownItem>
         ]}
