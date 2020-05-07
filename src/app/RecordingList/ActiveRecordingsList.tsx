@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Spinner, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, first, map } from 'rxjs/operators';
-import { Recording, RecordingState } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
 
