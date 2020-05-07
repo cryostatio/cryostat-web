@@ -21,15 +21,19 @@ export const CustomRecordingForm = (props) => {
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
 
-  const [recordingName, setRecordingName] = React.useState(props.recordingName || '');
+  const [recordingName, setRecordingName] = React.useState(props.recordingName || props?.location?.state?.recordingName || '');
   const [nameValid, setNameValid] = React.useState(false);
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [template, setTemplate] = React.useState('');
-  const [eventSpecifiers, setEventSpecifiers] = React.useState('');
-  const [eventsValid, setEventsValid] = React.useState(false);
+  const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  '');
+  const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
+  const [eventsValid, setEventsValid] = React.useState(!!props.template || !!props?.location?.state?.template);
+
+  React.useEffect(() => {
+    console.log('CustomRecordingForm', { props });
+  }, []);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
