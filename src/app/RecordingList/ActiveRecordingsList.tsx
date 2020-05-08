@@ -138,7 +138,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
             isExpanded ? (reportLoaded ? null : <Spinner />) : null
           }</div>
           <div>{
-            isExpanded ? (<ReportFrame src={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} />) : null
+            isExpanded ? (<ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} />) : null
           }</div>
         </DataListContent>
       </DataListItem>

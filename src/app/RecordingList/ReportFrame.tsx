@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { of } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { combineLatest, concatMap, first } from 'rxjs/operators';
+import { combineLatest, concatMap, first, mergeMap } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface ReportFrameProps {
-  src: string;
+  reportUrl: string;
   type?: string;
   width: string;
   height: string;
@@ -23,28 +23,27 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) =>
     const sub = context.api.getToken()
       .pipe(
         combineLatest(context.api.getAuthMethod()),
-        concatMap(([token, authMethod]) =>
-          fromFetch(props.src, {
-            headers: new window.Headers({ 'Authorization': `${authMethod} ${token}`, 'Content-Type': type }),
+        mergeMap(([token, authMethod]) => {
+          return fromFetch(props.reportUrl, {
+            headers: new window.Headers({ 'Authorization': `${authMethod} ${token}` }),
             method: 'GET',
             mode: 'cors',
             credentials: 'include'
-          })
-        ),
+          });
+        }),
         concatMap(resp => {
           if (resp.ok) {
             return resp.blob();
           } else {
-            return new window.Promise<Blob>((resolve, reject) => resolve());
+            // TODO log this or something
+            throw new Error('Response not OK');
           }
         })
       )
       .subscribe(report => {
-        if (!!report) {
-          const blob = new Blob([report], { type });
-          objUrl = window.URL.createObjectURL(blob);
-          setContent(objUrl);
-        }
+        const blob = new Blob([report], { type });
+        objUrl = window.URL.createObjectURL(blob);
+        setContent(objUrl);
       });
     return () => {
       sub.unsubscribe();
@@ -54,7 +53,8 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) =>
     };
   }, [props.type, context.api]);
 
+  const { reportUrl, ...rest } = props;
   return (<>
-    <iframe src={content} {...props} />
+    <iframe src={content} {...rest} />
   </>);
 };
