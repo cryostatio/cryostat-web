@@ -5,13 +5,8 @@ import { combineLatest, concatMap, first, mergeMap } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 
-export interface ReportFrameProps {
+export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
   reportUrl: string;
-  type?: string;
-  width: string;
-  height: string;
-  onLoad: () => void;
-  hidden: boolean;
 }
 
 export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) => {
@@ -20,7 +15,6 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) =>
   const [content, setContent] = React.useState('');
 
   React.useEffect(() => {
-    const type = props.type || 'text/html';
     let objUrl;
     const sub = context.api.getToken()
       .pipe(
@@ -43,7 +37,7 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) =>
       )
       .subscribe(
         report => {
-          const blob = new Blob([report], { type });
+          const blob = new Blob([report], { type: 'text/html' });
           objUrl = window.URL.createObjectURL(blob);
           setContent(objUrl);
         },
@@ -58,7 +52,7 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) =>
         window.URL.revokeObjectURL(objUrl);
       }
     };
-  }, [props.type, context.api]);
+  }, [context.api]);
 
   const { reportUrl, ...rest } = props;
   return (<>
