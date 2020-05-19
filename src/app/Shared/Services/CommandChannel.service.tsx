@@ -1,6 +1,6 @@
 import { from, Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { concatMap, distinctUntilChanged, filter, first, map, tap } from 'rxjs/operators';
+import { concatMap, filter, first, map, tap } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { nanoid } from 'nanoid';
@@ -11,11 +11,11 @@ export class CommandChannel {
   private readonly apiSvc: ApiService;
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
-  private readonly connected = new ReplaySubject<boolean>(1);
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
+  private readonly targetSubject = new ReplaySubject<string>(1);
   private pingTimer: number = -1;
 
   constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
@@ -42,25 +42,15 @@ export class CommandChannel {
         (err: any) => this.logError('Grafana Dashboard configuration', err)
       );
 
-    this.onResponse('disconnect').pipe(
-      filter(msg => msg.status !== 0),
-    ).subscribe(msg => this.logError('Command failure', msg));
-
     this.onResponse('list-saved').pipe(
       first(),
       map(msg => msg.status === 0)
     ).subscribe(listSavedEnabled => this.archiveEnabled.next(listSavedEnabled));
 
-    // FIXME handle the case of a failed 'connect' command
-    this.onResponse('is-connected').subscribe(c => this.connected.next(c.status === 0 && c.payload !== 'false'));
-    this.onResponse('disconnect').pipe(filter(m => m.status === 0)).subscribe(() => this.connected.next(false));
-    this.onResponse('connect').pipe(filter(m => m.status === 0)).subscribe(() => this.connected.next(true));
-
     this.isReady().pipe(
       filter(ready => !!ready)
     ).subscribe(ready => {
-      this.sendMessage('is-connected');
-      this.sendMessage('list-saved');
+      this.sendControlMessage('list-saved');
     });
 
     this.clientUrl().pipe(
@@ -111,7 +101,7 @@ export class CommandChannel {
 
         this.ws.addEventListener('open', () => {
           this.pingTimer = window.setInterval(() => {
-            this.sendMessage('ping');
+            this.sendControlMessage('ping');
           }, 10 * 1000);
           this.ready.next(true);
         });
@@ -129,15 +119,15 @@ export class CommandChannel {
   }
 
   isReady(): Observable<boolean> {
-    return this.ready.asObservable().pipe(distinctUntilChanged());
+    return this.ready.asObservable();
   }
 
   isConnected(): Observable<boolean> {
-    return this.connected.asObservable().pipe(distinctUntilChanged());
+    return this.target().pipe(map(t => !!t));
   }
 
   isArchiveEnabled(): Observable<boolean> {
-    return this.archiveEnabled.asObservable().pipe(distinctUntilChanged());
+    return this.archiveEnabled.asObservable();
   }
 
   addCloseHandler(handler: () => void): void {
@@ -146,7 +136,16 @@ export class CommandChannel {
     }
   }
 
-  sendMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
+  setTarget(targetId: string): void {
+    this.targetSubject.next(targetId);
+  }
+
+  target(): Observable<string> {
+    return this.targetSubject.asObservable();
+  }
+
+  // "control" messages, which do not operate upon a Target JVM
+  sendControlMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
     const subj = new Subject<string>();
     this.ready.pipe(
       first(),
@@ -155,11 +154,30 @@ export class CommandChannel {
       if (!!i && this.ws) {
         this.ws.send(JSON.stringify({ id, command, args }));
       } else if (this.ws) {
+        this.logError('Attempted to send control message when command channel was not ready', { id, command, args });
+      } else {
+        this.logError('Attempted to send control message when command channel was not initialized', { id, command, args });
+      }
+      subj.next(i);
+    });
+    return subj.asObservable();
+  }
+
+  // "targeted" messages, ie those which operate upon a specific Target JVM
+  sendMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
+    const subj = new Subject<string>();
+    combineLatest(this.target(), this.ready.pipe(
+      first(),
+      map(ready => ready ? id : '')
+    )).subscribe(([target, id]) => {
+      if (!!id && this.ws) {
+        this.ws.send(JSON.stringify({ id, command, args: [target, ...args] }));
+      } else if (this.ws) {
         this.logError('Attempted to send message when command channel was not ready', { id, command, args });
       } else {
         this.logError('Attempted to send message when command channel was not initialized', { id, command, args });
       }
-      subj.next(i);
+      subj.next(id);
     });
     return subj.asObservable();
   }

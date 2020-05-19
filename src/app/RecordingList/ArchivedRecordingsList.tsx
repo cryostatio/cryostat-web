@@ -2,8 +2,8 @@ import * as React from 'react';
 import { filter, map } from 'rxjs/operators';
 import { Button, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataListContent, DataListToggle, DataToolbar, DataToolbarContent, DataToolbarItem, Spinner, Text, TextVariants, Title } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Recording, RecordingState } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { RecordingActions } from './ActiveRecordingsList';
 
@@ -38,10 +38,10 @@ export const ArchivedRecordingsList = (props) => {
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        context.commandChannel.sendMessage('delete-saved', [ r.name ]);
+        context.commandChannel.sendControlMessage('delete-saved', [ r.name ]);
       }
     });
-    context.commandChannel.sendMessage('list-saved');
+    context.commandChannel.sendControlMessage('list-saved');
   };
 
   const toggleExpanded = (id) => {
@@ -50,7 +50,7 @@ export const ArchivedRecordingsList = (props) => {
   };
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('save').subscribe(() => context.commandChannel.sendMessage('list-saved'));
+    const sub = context.commandChannel.onResponse('save').subscribe(() => context.commandChannel.sendControlMessage('list-saved'));
     return () => sub.unsubscribe();
   });
 
@@ -65,8 +65,8 @@ export const ArchivedRecordingsList = (props) => {
   }, []);
 
   React.useEffect(() => {
-    context.commandChannel.sendMessage('list-saved');
-    const id = setInterval(() => context.commandChannel.sendMessage('list-saved'), 30_000);
+    context.commandChannel.sendControlMessage('list-saved');
+    const id = setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 30_000);
     return () => clearInterval(id);
   }, []);
 
