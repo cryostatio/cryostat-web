@@ -24,53 +24,25 @@ export const TargetSelect = (props: TargetSelectProps) => {
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('scan-targets').subscribe(msg => setTargets(msg.payload));
     return () => sub.unsubscribe();
-  }, []);
-
-  React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('connect').pipe(filter(m => m.status === 0)).subscribe(m => setSelected(m.payload));
-    return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.isReady()
       .pipe(filter(v => !!v), first())
-      .subscribe(() => context.commandChannel.sendMessage('scan-targets', []));
+      .subscribe(() => context.commandChannel.sendControlMessage('scan-targets'));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('is-connected').pipe(distinctUntilChanged()).subscribe(connection => {
-      const msg = connection.payload;
-      if (msg == 'false') {
-        setSelected('');
-      } else {
-        setSelected(msg);
-      }
-    });
+    const sub = context.commandChannel.target().subscribe(t => setSelected(t));
     return () => sub.unsubscribe();
-  }, []);
-
-  React.useEffect(() => {
-    const sub = context.commandChannel.isReady().pipe(filter(v => v!!), first()).subscribe(() => {
-      context.commandChannel.sendMessage('is-connected');
-    });
-    return () => sub.unsubscribe();
-  }, []);
-
-  const connect = (target: Target) => {
-    context.commandChannel.sendMessage('connect', [ `${target.connectUrl}:${target.port}` ]);
-  };
-
-  const disconnect = () => {
-    setSelected('');
-    context.commandChannel.sendMessage('disconnect');
-  };
+  }, [context.commandChannel]);
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
-      disconnect();
+      context.commandChannel.setTarget('');
     } else {
-      connect(selection);
+      context.commandChannel.setTarget(selection.connectUrl);
     }
     // FIXME setting the expanded state to false seems to cause an "unmounted component" error
     // in the browser console
