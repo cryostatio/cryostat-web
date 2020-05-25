@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
-import { filter, first, map } from 'rxjs/operators';
-import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, Split, SplitItem, Text, TextVariants, Tooltip, TooltipPosition } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { AlertVariant } from '@patternfly/react-core';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition } from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { useHistory } from 'react-router-dom';
+import { filter, map } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
 
 export interface CustomRecordingFormProps {

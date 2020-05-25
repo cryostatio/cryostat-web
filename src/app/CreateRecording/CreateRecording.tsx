@@ -1,9 +1,9 @@
 import * as React from 'react';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Card, CardBody, PageSection, Tab, Tabs } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 import { filter, first } from 'rxjs/operators';
-import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Card, CardBody, PageSection, Tabs, Tab, Text, TextVariants } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 

@@ -1,6 +1,6 @@
-import { Subject, BehaviorSubject, Observable, ReplaySubject, ObservableInput, from, of } from 'rxjs';
+import { from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { filter, first, map, catchError, tap, concatMap, flatMap, combineLatest } from 'rxjs/operators';
+import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
 
 export class ApiService {
 

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { filter, map } from 'rxjs/operators';
-import { DataToolbar, DataToolbarContent, DataToolbarItem, DataToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
-import { Table, TableBody, TableHeader, TableVariant, expandable } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { DataToolbar, DataToolbarContent, DataToolbarItem, DataToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
+import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
+import { filter, map } from 'rxjs/operators';
 
 export interface EventType {
   name: string;

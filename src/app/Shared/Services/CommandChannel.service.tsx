@@ -1,9 +1,9 @@
-import { from, Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-import { concatMap, filter, first, map, tap } from 'rxjs/operators';
-import { ApiService } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { nanoid } from 'nanoid';
+import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
+import { concatMap, filter, first, map } from 'rxjs/operators';
+import { ApiService } from './Api.service';
 
 export class CommandChannel {
 

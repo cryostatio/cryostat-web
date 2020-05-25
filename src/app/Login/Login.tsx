@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Card, CardBody, CardHeader, CardFooter, PageSection, Text, TextInput, TextVariants, Title } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { BasicAuthForm, BasicAuthDescriptionText } from './BasicAuthForm';
-import { BearerAuthForm, BearerAuthDescriptionText } from './BearerAuthForm';
+import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
+import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
+import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 
 export const Login = (props) => {
   const context = React.useContext(ServiceContext);

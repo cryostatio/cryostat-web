@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, PageSection, Stack, StackItem, } from '@patternfly/react-core';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, PageSection, Stack, StackItem } from '@patternfly/react-core';
 
 interface BreadcrumbPageProps {
   children?: { isFilled?: boolean };

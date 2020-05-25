@@ -1,18 +1,9 @@
 import * as React from 'react';
-import { NavLink, useRouteMatch } from 'react-router-dom';
-import {
-  Nav,
-  NavList,
-  NavItem,
-  NavVariants,
-  Page,
-  PageHeader,
-  PageSidebar,
-  SkipToContent
-} from '@patternfly/react-core';
-import { IAppRoute, staticRoutes, getAvailableRoutes } from '@app/routes';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
+import { getAvailableRoutes, IAppRoute, staticRoutes } from '@app/routes';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Nav, NavItem, NavList, NavVariants, Page, PageHeader, PageSidebar, SkipToContent } from '@patternfly/react-core';
+import { NavLink, useRouteMatch } from 'react-router-dom';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -103,3 +94,4 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
 }
 
 export { AppLayout };
+

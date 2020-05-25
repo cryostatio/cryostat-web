@@ -1,9 +1,8 @@
 import * as React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Button, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, DataToolbar, DataToolbarContent, DataToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
-import { Button, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataToolbar, DataToolbarContent, DataToolbarItem, Text, TextVariants, Title } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
 import { Recording, RecordingState } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 

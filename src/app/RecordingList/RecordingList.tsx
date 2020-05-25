@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Card, CardBody, CardHeader, Tabs, Tab, Text, TextVariants } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
+import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { ActiveRecordingsList } from './ActiveRecordingsList';
 import { ArchivedRecordingsList } from './ArchivedRecordingsList';
 

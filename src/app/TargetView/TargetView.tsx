@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 
 interface TargetViewProps {
   children?: any;

@@ -1,18 +1,16 @@
 import * as React from 'react';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { Alert, PageSection } from '@patternfly/react-core';
-import { filter } from 'rxjs/operators';
-import { DynamicImport } from '@app/DynamicImport';
-import { accessibleRouteChangeHandler } from '@app/utils/utils';
-import { NotFound } from '@app/NotFound/NotFound';
-import { useDocumentTitle } from '@app/utils/useDocumentTitle';
-import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { Login } from '@app/Login/Login';
-import { Dashboard } from '@app/Dashboard/Dashboard';
-import { RecordingList } from '@app/RecordingList/RecordingList';
 import { CreateRecording } from '@app/CreateRecording/CreateRecording';
+import { Dashboard } from '@app/Dashboard/Dashboard';
 import { Events } from '@app/Events/Events';
+import { Login } from '@app/Login/Login';
+import { NotFound } from '@app/NotFound/NotFound';
+import { RecordingList } from '@app/RecordingList/RecordingList';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useDocumentTitle } from '@app/utils/useDocumentTitle';
+import { accessibleRouteChangeHandler } from '@app/utils/utils';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
+import { filter } from 'rxjs/operators';
 
 let routeFocusTimer: number;
 
@@ -153,3 +151,4 @@ const AppRoutes = () => {
 };
 
 export { AppRoutes, routes, getAvailableRoutes, staticRoutes, dynamicRoutes };
+

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { distinctUntilChanged, filter, first } from 'rxjs/operators';
-import { Card, CardBody, CardHeader, Grid, GridItem, PageSection, Select, SelectOption, SelectVariant, Text, TextVariants, Title } from '@patternfly/react-core';
-import { ContainerNodeIcon } from '@patternfly/react-icons';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { Card, CardBody, CardHeader, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
+import { ContainerNodeIcon } from '@patternfly/react-icons';
+import { filter, first } from 'rxjs/operators';
 
 export interface TargetSelectProps {
   isCompact?: boolean;

@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { filter, map } from 'rxjs/operators';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { DataToolbar, DataToolbarContent, DataToolbarItem, TextInput } from '@patternfly/react-core';
 import { Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { filter, map } from 'rxjs/operators';
 
 export interface EventTemplate {
   name: string;
