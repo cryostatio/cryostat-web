@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ActionGroup, Button, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
 import { FormProps } from './FormProps';
 
-export const BearerAuthForm = (props: FormProps) => {
+export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
 
   const [token, setToken] = React.useState('');
 

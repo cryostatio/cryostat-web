@@ -15,7 +15,7 @@ interface Target {
   port: number;
 }
 
-export const TargetSelect = (props: TargetSelectProps) => {
+export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [selected, setSelected] = React.useState('');
   const [targets, setTargets] = React.useState([]);
