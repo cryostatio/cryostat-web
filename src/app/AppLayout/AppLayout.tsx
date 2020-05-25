@@ -3,7 +3,7 @@ import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { getAvailableRoutes, IAppRoute, staticRoutes } from '@app/routes';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Nav, NavItem, NavList, NavVariants, Page, PageHeader, PageSidebar, SkipToContent } from '@patternfly/react-core';
-import { NavLink, useRouteMatch } from 'react-router-dom';
+import { NavLink, matchPath, useLocation } from 'react-router-dom';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -19,6 +19,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
   const [availableRoutes, setAvailableRoutes] = React.useState(staticRoutes);
+  const location = useLocation();
 
   React.useEffect(() => {
     const sub = context.commandChannel.isConnected().subscribe(isConnected => setAvailableRoutes(getAvailableRoutes(isConnected)));
@@ -45,7 +46,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   );
 
   const isActiveRoute = (route: IAppRoute): boolean => {
-    const match = useRouteMatch(route);
+    const match = matchPath(location.pathname, route.path);
     if (!!match && match.isExact) {
       return true;
     } else if (!!route.children) {
