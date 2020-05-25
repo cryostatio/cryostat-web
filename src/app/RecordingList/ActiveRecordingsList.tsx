@@ -135,7 +135,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   };
 
   const Link = (props) => {
-    return (<a href={props.url} target="_blank">{props.display || props.url}</a>);
+    return (<a href={props.url} target="_blank" rel="noopener noreferrer">{props.display || props.url}</a>);
   };
 
   const isStopDisabled = () => {
