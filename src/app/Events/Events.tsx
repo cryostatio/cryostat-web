@@ -4,7 +4,7 @@ import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patt
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';
 
-export const Events = (props) => {
+export const Events = () => {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const handleTabSelect = (evt, idx) => {

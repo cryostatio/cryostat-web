@@ -5,7 +5,7 @@ import { filter, map } from 'rxjs/operators';
 import { Recording } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 
-export const ArchivedRecordingsList = (props) => {
+export const ArchivedRecordingsList = () => {
   const context = React.useContext(ServiceContext);
 
   const [recordings, setRecordings] = React.useState([]);
@@ -89,7 +89,7 @@ export const ArchivedRecordingsList = (props) => {
     return (<a href={props.url} target="_blank">{props.display || props.url}</a>);
   };
 
-  const RecordingsToolbar = (props) => {
+  const RecordingsToolbar = () => {
     return (
       <DataToolbar id="archived-recordings-toolbar">
         <DataToolbarContent>

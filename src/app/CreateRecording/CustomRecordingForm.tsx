@@ -9,11 +9,11 @@ import { EventTemplate } from './CreateRecording';
 
 export interface CustomRecordingFormProps {
   onSubmit: (command: string, args: string[]) => void;
-};
+}
 
 export const RecordingNamePattern = /^[\w_]+$/;
 export const TemplatePattern = /^template=([\w]+)$/;
-export const EventSpecifierPattern = /([\w\\.\$]+):([\w]+)=([\w\\d\.]+)/;
+export const EventSpecifierPattern = /([\w\\.$]+):([\w]+)=([\w\d\\.]+)/;
 
 export const CustomRecordingForm = (props) => {
   const context = React.useContext(ServiceContext);
@@ -29,10 +29,6 @@ export const CustomRecordingForm = (props) => {
   const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  '');
   const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
   const [eventsValid, setEventsValid] = React.useState(!!props.template || !!props?.location?.state?.template);
-
-  React.useEffect(() => {
-    console.log('CustomRecordingForm', { props });
-  }, [props]);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -58,9 +54,9 @@ export const CustomRecordingForm = (props) => {
     setEventSpecifiers(evt);
   };
 
-  const getEventSpecifiers = () => !!template ? `template=${template}` : eventSpecifiers;
+  const getEventSpecifiers = () => template ? `template=${template}` : eventSpecifiers;
 
-  const getEventString = () => !!template ? `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
+  const getEventString = () => template ? `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
 
   const handleRecordingNameChange = (name) => {
     setNameValid(RecordingNamePattern.test(name));
@@ -70,7 +66,7 @@ export const CustomRecordingForm = (props) => {
   const handleSubmit = () => {
     const eventString = getEventString();
 
-    let notificationMessages: string[] = [];
+    const notificationMessages: string[] = [];
     if (!nameValid) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
     }
@@ -114,7 +110,7 @@ export const CustomRecordingForm = (props) => {
         return;
       }
       const template = regexMatches[1];
-      if (!!templates.find(t => t.name === template)) {
+      if (templates.find(t => t.name === template)) {
         handleTemplateChange(template);
       }
     }

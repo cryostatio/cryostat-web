@@ -11,7 +11,7 @@ export interface EventTemplate {
   provider: string;
 }
 
-export const EventTemplates = (props) => {
+export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
 
@@ -40,7 +40,7 @@ export const EventTemplates = (props) => {
   const actions = [
     {
       title: 'Create Recording from Template',
-      onClick: (event, rowId, rowData, extra) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } })
+      onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } })
     }
   ];
 

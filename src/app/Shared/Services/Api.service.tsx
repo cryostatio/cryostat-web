@@ -107,7 +107,7 @@ export class ApiService {
   }
 
   private getHeaders(token: string, method: string): Headers {
-    let headers = new Headers();
+    const headers = new Headers();
     if (!!token && !!method) {
       headers.append('Authorization', `${method} ${token}`)
     }

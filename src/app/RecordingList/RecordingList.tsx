@@ -26,7 +26,7 @@ export enum RecordingState {
   STOPPING = 'STOPPING',
 }
 
-export const RecordingList = (props) => {
+export const RecordingList = () => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);

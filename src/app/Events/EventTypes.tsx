@@ -18,7 +18,7 @@ export interface OptionDescriptor {
   defaultValue: string;
 }
 
-export const EventTypes = (props) => {
+export const EventTypes = () => {
   const context = React.useContext(ServiceContext);
 
   const [types, setTypes] = React.useState([] as EventType[]);
@@ -52,6 +52,10 @@ export const EventTypes = (props) => {
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-types');
   }, [context.commandChannel]);
+
+  const getCategoryString = (eventType: EventType): string => {
+    return eventType.category.join(', ').trim();
+  };
 
   const filterTypesByText = React.useCallback(() => {
     if (!filterText) {
@@ -94,10 +98,6 @@ export const EventTypes = (props) => {
     setDisplayedTypes(rows);
   }, [context.commandChannel, currentPage, perPage, filterTypesByText, openRow]);
 
-  const getCategoryString = (eventType: EventType): string => {
-    return eventType.category.join(', ').trim();
-  };
-
   const onCurrentPage = (evt, currentPage) => {
     setOpenRow(-1);
     setCurrentPage(currentPage);
@@ -132,7 +132,7 @@ export const EventTypes = (props) => {
         </DataToolbarItem>
         <DataToolbarItem variant={DataToolbarItemVariant.pagination}>
           <Pagination
-            itemCount={!!filterText ? filterTypesByText().length : types.length}
+            itemCount={filterText ? filterTypesByText().length : types.length}
             page={currentPage}
             perPage={perPage}
             onSetPage={onCurrentPage}

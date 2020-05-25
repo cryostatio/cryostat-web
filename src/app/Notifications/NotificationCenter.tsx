@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Alert, AlertActionCloseButton, AlertGroup, AlertVariant, Text, TextVariants } from '@patternfly/react-core';
 import { Notification, NotificationsContext } from './Notifications';
 
-export const NotificationCenter = (props) => {
+export const NotificationCenter = () => {
   const context = React.useContext(NotificationsContext);
 
   const [notifications, setNotifications] = React.useState([] as Notification[]);

@@ -7,11 +7,11 @@ export const BasicAuthForm = (props: FormProps) => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  const handleUserChange = (evt, el) => {
+  const handleUserChange = (evt) => {
     setUsername(evt);
   }
 
-  const handlePasswordChange = (evt, el) => {
+  const handlePasswordChange = (evt) => {
     setPassword(evt);
   }
 

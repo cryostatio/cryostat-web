@@ -16,7 +16,7 @@ export class CommandChannel {
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
   private readonly targetSubject = new ReplaySubject<string>(1);
-  private pingTimer: number = -1;
+  private pingTimer = -1;
 
   constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
     this.apiSvc = apiSvc;
@@ -49,7 +49,7 @@ export class CommandChannel {
 
     this.isReady().pipe(
       filter(ready => !!ready)
-    ).subscribe(ready => {
+    ).subscribe(() => {
       this.sendControlMessage('list-saved');
     });
 
@@ -233,7 +233,7 @@ export function isFailureMessage(m: ResponseMessage<any>): m is FailureMessage {
   return m.status < 0 && typeof m.payload === 'string';
 }
 
-export interface ExceptionMessage extends ResponseMessage<{ commandName: string, exception: string }> { }
+export interface ExceptionMessage extends ResponseMessage<{ commandName: string; exception: string }> { }
 
 export function isExceptionMessage(m: ResponseMessage<any>): m is ExceptionMessage {
   return m.status < 0

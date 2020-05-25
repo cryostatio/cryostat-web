@@ -44,10 +44,6 @@ export const CreateRecording = (props: CreateRecordingProps) => {
     context.commandChannel.sendMessage(command, args, id);
   };
 
-  React.useEffect(() => {
-    console.log('CreateRecording', { props });
-  }, [props]);
-
   return (
     <PageSection>
       <Breadcrumb>

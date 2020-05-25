@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 export interface SnapshotRecordingFormProps {
   onSubmit: (command: string, args: string[]) => void;
-};
+}
 
 export const SnapshotRecordingForm = (props) => {
   const history = useHistory();
