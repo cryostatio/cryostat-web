@@ -16,7 +16,7 @@ export const BreadcrumbPage = (props: BreadcrumbPageProps) => {
   return (<>
     <PageSection>
       <Breadcrumb>
-        {(props.breadcrumbs || []).map(({ title, path }) => (<BreadcrumbItem to={path}>{title}</BreadcrumbItem>))}
+        {(props.breadcrumbs || []).map(({ title, path }) => (<BreadcrumbItem key={path} to={path}>{title}</BreadcrumbItem>))}
         <BreadcrumbHeading>{props.pageTitle}</BreadcrumbHeading>
       </Breadcrumb>
       <Stack gutter="md">

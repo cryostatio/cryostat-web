@@ -110,7 +110,7 @@ export const ArchivedRecordingsList = () => {
         onHeaderCheck={handleHeaderCheck}
     >
       {
-        recordings.map((r, idx) => <RecordingRow recording={r} index={idx}/>)
+        recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
       }
     </RecordingsDataTable>
   </>);

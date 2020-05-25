@@ -149,18 +149,18 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
   const RecordingsToolbar = () => {
     const buttons = [
-      <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
+      <Button key="create" variant="primary" onClick={handleCreateRecording}>Create</Button>
     ];
     if (props.archiveEnabled) {
       buttons.push((
-        <Button variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
+        <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
       ));
     }
     buttons.push((
-      <Button variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
+      <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
     ));
     buttons.push((
-      <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+      <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
     ));
 
     return (
@@ -187,7 +187,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         onHeaderCheck={handleHeaderCheck}
     >
       {
-        recordings.map((r, idx) => <RecordingRow recording={r} index={idx}/>)
+        recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
       }
     </RecordingsDataTable>
   </>);
