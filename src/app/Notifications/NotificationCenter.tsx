@@ -20,7 +20,7 @@ export const NotificationCenter = () => {
   const addNotification = (notification: Notification) => {
     setNotifications([...notifications, notification]);
     if (notification.timeout > 0) {
-      setTimeout(() => setNotifications(removeNotificationByKey(notifications, notification.key)), notification.timeout);
+      window.setTimeout(() => setNotifications(removeNotificationByKey(notifications, notification.key)), notification.timeout);
     }
   };
 

@@ -13,7 +13,7 @@ export class ApiService {
       if (!apiAuthority) {
         apiAuthority = '';
       }
-      console.log(`Using API authority ${apiAuthority}`);
+      window.console.log(`Using API authority ${apiAuthority}`);
       this.authority = apiAuthority;
    }
 
@@ -33,7 +33,7 @@ export class ApiService {
         return response.ok;
       }),
       catchError((e: any): ObservableInput<boolean> => {
-        console.error(JSON.stringify(e));
+        window.console.error(JSON.stringify(e));
         this.authMethod.complete();
         return of(false);
       }),
@@ -76,7 +76,7 @@ export class ApiService {
   }
 
   uploadRecording(file: File): Observable<any> {
-    const payload = new FormData(); // as multipart/form-data
+    const payload = new window.FormData(); // as multipart/form-data
     payload.append('recording', file);
 
     return this.getToken().pipe(
@@ -107,7 +107,7 @@ export class ApiService {
   }
 
   private getHeaders(token: string, method: string): Headers {
-    const headers = new Headers();
+    const headers = new window.Headers();
     if (!!token && !!method) {
       headers.append('Authorization', `${method} ${token}`)
     }
@@ -115,13 +115,13 @@ export class ApiService {
   }
 
   private downloadFile(filename: string, data: any, type: string): void {
-    const blob = new Blob([ data ], { type } );
+    const blob = new window.Blob([ data ], { type } );
     const url = window.URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.download = filename;
     anchor.href = url;
     anchor.click();
-    setTimeout(() => window.URL.revokeObjectURL(url));
+    window.setTimeout(() => window.URL.revokeObjectURL(url));
   }
 
 }

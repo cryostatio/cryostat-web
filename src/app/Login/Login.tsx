@@ -14,7 +14,7 @@ export const Login = (props) => {
   const checkAuth = React.useCallback(() => {
     let tok = token;
     if (authMethod === 'Basic') {
-      tok = btoa(token);
+      tok = window.btoa(token);
     } // else this is Bearer auth and the token is sent as-is
     context.api.checkAuth(tok, authMethod).subscribe(v => {
       if (v) {

@@ -75,11 +75,11 @@ export class CommandChannel {
       .subscribe(auths => {
         let subprotocol: string | undefined = undefined;
         if (auths[1] === 'Bearer') {
-          subprotocol = `base64url.bearer.authorization.containerjfr.${btoa(auths[0])}`;
+          subprotocol = `base64url.bearer.authorization.containerjfr.${window.btoa(auths[0])}`;
         } else if (auths[1] === 'Basic') {
           subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
         }
-        this.ws = new WebSocket(clientUrl, subprotocol);
+        this.ws = new window.WebSocket(clientUrl, subprotocol);
 
         this.ws.addEventListener('message', (ev: MessageEvent) => {
           if (typeof ev.data === 'string') {
@@ -191,7 +191,7 @@ export class CommandChannel {
   }
 
   private logError(title: string, err: any): void {
-    console.error(err);
+    window.console.error(err);
     this.notifications.danger(title, JSON.stringify(err));
   }
 }
