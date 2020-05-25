@@ -9,6 +9,7 @@ export const Login = (props) => {
 
   const [token, setToken] = React.useState('');
   const [authMethod, setAuthMethod] = React.useState('Basic');
+  const onLoginSuccess = props.onLoginSuccess;
 
   const checkAuth = React.useCallback(() => {
     let tok = token;
@@ -17,10 +18,10 @@ export const Login = (props) => {
     } // else this is Bearer auth and the token is sent as-is
     context.api.checkAuth(tok, authMethod).subscribe(v => {
       if (v) {
-        props.onLoginSuccess();
+        onLoginSuccess();
       }
     })
-  }, [token, authMethod]);
+  }, [context.api, token, authMethod, onLoginSuccess]);
 
   const handleSubmit = (evt, token, authMethod) => {
     setToken(token);
