@@ -37,14 +37,14 @@ export const ArchivedRecordingsList = (props) => {
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        context.commandChannel.sendMessage('delete-saved', [ r.name ]);
+        context.commandChannel.sendControlMessage('delete-saved', [ r.name ]);
       }
     });
-    context.commandChannel.sendMessage('list-saved');
+    context.commandChannel.sendControlMessage('list-saved');
   };
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('save').subscribe(() => context.commandChannel.sendMessage('list-saved'));
+    const sub = context.commandChannel.onResponse('save').subscribe(() => context.commandChannel.sendControlMessage('list-saved'));
     return () => sub.unsubscribe();
   });
 
@@ -59,8 +59,8 @@ export const ArchivedRecordingsList = (props) => {
   }, []);
 
   React.useEffect(() => {
-    context.commandChannel.sendMessage('list-saved');
-    const id = setInterval(() => context.commandChannel.sendMessage('list-saved'), 5000);
+    context.commandChannel.sendControlMessage('list-saved');
+    const id = setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 5000);
     return () => clearInterval(id);
   }, []);
 
