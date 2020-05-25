@@ -52,11 +52,11 @@ export const EventTemplates = (props) => {
       )
       .subscribe(templates => setTemplates(templates));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-templates');
-  }, []);
+  }, [context.commandChannel]);
 
   return (<>
     <DataToolbar id="event-templates-toolbar">

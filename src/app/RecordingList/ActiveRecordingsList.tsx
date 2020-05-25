@@ -85,13 +85,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       )
       .subscribe(recordings => setRecordings(recordings));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list');
     const id = setInterval(() => context.commandChannel.sendMessage('list'), 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
     return (

@@ -34,7 +34,7 @@ export const RecordingList = (props) => {
   React.useEffect(() => {
     const sub = context.commandChannel.isArchiveEnabled().subscribe(enabled => setArchiveEnabled(enabled));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   return (
     <TargetView pageTitle="Recordings">

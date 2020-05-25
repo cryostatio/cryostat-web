@@ -47,15 +47,37 @@ export const EventTypes = (props) => {
       )
       .subscribe(types => setTypes(types));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-types');
-  }, []);
+  }, [context.commandChannel]);
+
+  const filterTypesByText = React.useCallback(() => {
+    if (!filterText) {
+      return types;
+    }
+    const includesSubstr = (a, b) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
+    return types.filter(t => {
+      if (includesSubstr(t.name, filterText)) {
+        return true;
+      }
+      if (includesSubstr(t.typeId, filterText)) {
+        return true;
+      }
+      if (includesSubstr(t.description, filterText)) {
+        return true;
+      }
+      if (includesSubstr(getCategoryString(t), filterText)) {
+        return true;
+      }
+      return false
+    });
+  }, [types, filterText]);
 
   React.useEffect(() => {
     const offset = (currentPage - 1) * perPage;
-    const page = filterTypesByText(types, filterText).slice(offset, offset + perPage);
+    const page = filterTypesByText().slice(offset, offset + perPage);
 
     const rows: any[] = [];
     page.forEach((t: EventType, idx: number) => {
@@ -70,32 +92,10 @@ export const EventTypes = (props) => {
     });
 
     setDisplayedTypes(rows);
-  }, [currentPage, perPage, types, openRow, filterText]);
+  }, [context.commandChannel, currentPage, perPage, filterTypesByText, openRow]);
 
   const getCategoryString = (eventType: EventType): string => {
     return eventType.category.join(', ').trim();
-  };
-
-  const filterTypesByText = (types, filter) => {
-    if (!filter) {
-      return types;
-    }
-    const includesSubstr = (a, b) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
-    return types.filter(t => {
-      if (includesSubstr(t.name, filter)) {
-        return true;
-      }
-      if (includesSubstr(t.typeId, filter)) {
-        return true;
-      }
-      if (includesSubstr(t.description, filter)) {
-        return true;
-      }
-      if (includesSubstr(getCategoryString(t), filter)) {
-        return true;
-      }
-      return false
-    });
   };
 
   const onCurrentPage = (evt, currentPage) => {
@@ -132,7 +132,7 @@ export const EventTypes = (props) => {
         </DataToolbarItem>
         <DataToolbarItem variant={DataToolbarItemVariant.pagination}>
           <Pagination
-            itemCount={!!filterText ? filterTypesByText(types, filterText).length : types.length}
+            itemCount={!!filterText ? filterTypesByText().length : types.length}
             page={currentPage}
             perPage={perPage}
             onSetPage={onCurrentPage}

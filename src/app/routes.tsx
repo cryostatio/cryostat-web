@@ -117,7 +117,7 @@ const AppRoutes = () => {
       .isConnected()
       .subscribe(isConnected => setAvailableRoutes(getAvailableRoutes(isConnected)));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel
@@ -125,7 +125,7 @@ const AppRoutes = () => {
       .pipe(filter(v => !v))
       .subscribe(() => setAuthenticated(false));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   return (
     <LastLocationProvider>

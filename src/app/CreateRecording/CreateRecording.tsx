@@ -46,7 +46,7 @@ export const CreateRecording = (props: CreateRecordingProps) => {
 
   React.useEffect(() => {
     console.log('CreateRecording', { props });
-  }, []);
+  }, [props]);
 
   return (
     <PageSection>

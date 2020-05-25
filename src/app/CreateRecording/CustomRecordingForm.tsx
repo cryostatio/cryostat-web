@@ -32,7 +32,7 @@ export const CustomRecordingForm = (props) => {
 
   React.useEffect(() => {
     console.log('CustomRecordingForm', { props });
-  }, []);
+  }, [props]);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -101,11 +101,11 @@ export const CustomRecordingForm = (props) => {
       )
       .subscribe(m => setTemplates(m));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-templates');
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     if (TemplatePattern.test(eventSpecifiers)) {

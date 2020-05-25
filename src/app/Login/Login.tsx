@@ -7,29 +7,32 @@ import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 export const Login = (props) => {
   const context = React.useContext(ServiceContext);
 
+  const [token, setToken] = React.useState('');
   const [authMethod, setAuthMethod] = React.useState('Basic');
 
-  const checkAuth = (token: string, authMethod: string): void => {
+  const checkAuth = React.useCallback(() => {
+    let tok = token;
     if (authMethod === 'Basic') {
-      token = btoa(token);
+      tok = btoa(token);
     } // else this is Bearer auth and the token is sent as-is
-    context.api.checkAuth(token, authMethod).subscribe(v => {
+    context.api.checkAuth(tok, authMethod).subscribe(v => {
       if (v) {
         props.onLoginSuccess();
       }
     })
-  }
+  }, [token, authMethod]);
 
   const handleSubmit = (evt, token, authMethod) => {
-    checkAuth(token, authMethod);
+    setToken(token);
+    setAuthMethod(authMethod);
     evt.preventDefault();
   };
 
   React.useEffect(() => {
-    checkAuth('', 'Basic');
+    checkAuth();
     const sub = context.api.getAuthMethod().subscribe(authMethod => setAuthMethod(authMethod));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.api, checkAuth]);
 
   return (
     <PageSection>

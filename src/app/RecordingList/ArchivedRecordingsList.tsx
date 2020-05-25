@@ -45,7 +45,7 @@ export const ArchivedRecordingsList = (props) => {
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('save').subscribe(() => context.commandChannel.sendControlMessage('list-saved'));
     return () => sub.unsubscribe();
-  });
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('list-saved')
@@ -55,13 +55,13 @@ export const ArchivedRecordingsList = (props) => {
       )
       .subscribe(recordings => setRecordings(recordings));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendControlMessage('list-saved');
     const id = setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
     return (

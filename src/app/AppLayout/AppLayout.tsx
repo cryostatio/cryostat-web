@@ -23,7 +23,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   React.useEffect(() => {
     const sub = context.commandChannel.isConnected().subscribe(isConnected => setAvailableRoutes(getAvailableRoutes(isConnected)));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);
