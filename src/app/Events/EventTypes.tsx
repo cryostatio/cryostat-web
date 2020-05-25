@@ -18,11 +18,18 @@ export interface OptionDescriptor {
   defaultValue: string;
 }
 
+type Row = {
+  cells: string[];
+  parent?: number;
+  isOpen?: boolean;
+  fullWidth?: boolean;
+}
+
 export const EventTypes = () => {
   const context = React.useContext(ServiceContext);
 
   const [types, setTypes] = React.useState([] as EventType[]);
-  const [displayedTypes, setDisplayedTypes] = React.useState([] as any[]);
+  const [displayedTypes, setDisplayedTypes] = React.useState([] as Row[]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
   const prevPerPage = React.useRef(10);
@@ -83,7 +90,7 @@ export const EventTypes = () => {
     const offset = (currentPage - 1) * perPage;
     const page = filterTypesByText().slice(offset, offset + perPage);
 
-    const rows: any[] = [];
+    const rows: Row[] = [];
     page.forEach((t: EventType, idx: number) => {
       rows.push({ cells: [ t.name, t.typeId, t.description, getCategoryString(t) ], isOpen: (idx === openRow) });
       if (idx === openRow) {

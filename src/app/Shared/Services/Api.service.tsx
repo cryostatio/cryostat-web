@@ -32,7 +32,7 @@ export class ApiService {
         }
         return response.ok;
       }),
-      catchError((e: any): ObservableInput<boolean> => {
+      catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e));
         this.authMethod.complete();
         return of(false);
@@ -66,6 +66,7 @@ export class ApiService {
         mode: 'cors',
         headers: this.getHeaders(auths[0], auths[1]),
       })
+      .pipe(concatMap(resp => resp.blob()))
       .subscribe(resp =>
         this.downloadFile(
           recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
@@ -75,7 +76,7 @@ export class ApiService {
     );
   }
 
-  uploadRecording(file: File): Observable<any> {
+  uploadRecording(file: File): Observable<string> {
     const payload = new window.FormData(); // as multipart/form-data
     payload.append('recording', file);
 
@@ -114,7 +115,7 @@ export class ApiService {
     return headers;
   }
 
-  private downloadFile(filename: string, data: any, type: string): void {
+  private downloadFile(filename: string, data: BlobPart, type: string): void {
     const blob = new window.Blob([ data ], { type } );
     const url = window.URL.createObjectURL(blob);
     const anchor = document.createElement('a');

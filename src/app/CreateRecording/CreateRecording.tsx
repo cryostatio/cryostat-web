@@ -2,7 +2,8 @@ import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Card, CardBody, PageSection, Tab, Tabs } from '@patternfly/react-core';
-import { useHistory } from 'react-router-dom';
+import { StaticContext } from 'react-router';
+import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { filter, first } from 'rxjs/operators';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
@@ -11,7 +12,6 @@ export interface CreateRecordingProps {
   recordingName?: string;
   template?: string;
   eventSpecifiers?: string[];
-  location?: any;
 }
 
 export interface EventTemplate {
@@ -20,7 +20,7 @@ export interface EventTemplate {
   provider: string;
 }
 
-export const CreateRecording = (props: CreateRecordingProps) => {
+const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
@@ -70,3 +70,5 @@ export const CreateRecording = (props: CreateRecordingProps) => {
   );
 
 };
+
+export const CreateRecording = withRouter(Comp);

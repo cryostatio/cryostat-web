@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, PageSection, Stack, StackItem } from '@patternfly/react-core';
 
 interface BreadcrumbPageProps {
-  children?: { isFilled?: boolean };
   pageTitle: string;
   breadcrumbs?: BreadcrumbTrail[];
 }
@@ -12,7 +11,7 @@ export interface BreadcrumbTrail {
   path: string;
 }
 
-export const BreadcrumbPage = (props: BreadcrumbPageProps) => {
+export const BreadcrumbPage: React.FunctionComponent<BreadcrumbPageProps> = (props) => {
   return (<>
     <PageSection>
       <Breadcrumb>
@@ -22,7 +21,7 @@ export const BreadcrumbPage = (props: BreadcrumbPageProps) => {
       <Stack gutter="md">
         {
           React.Children.map(props.children, child => (
-            <StackItem isFilled={!!child && child.isFilled}>
+            <StackItem isFilled={child && child['isFilled']}>
               {child}
             </StackItem>
           ))

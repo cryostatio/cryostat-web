@@ -1,3 +1,3 @@
 export interface FormProps {
-  onSubmit(evt: any, token: string, authMethod: string): void;
+  onSubmit(evt: Event, token: string, authMethod: string): void;
 }
