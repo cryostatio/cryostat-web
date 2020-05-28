@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Alert, AlertActionCloseButton, AlertGroup, AlertVariant, Text, TextVariants } from '@patternfly/react-core';
 import { Notification, NotificationsContext } from './Notifications';
 
-export const NotificationCenter = (props) => {
+export const NotificationCenter = () => {
   const context = React.useContext(NotificationsContext);
 
   const [notifications, setNotifications] = React.useState([] as Notification[]);
@@ -20,7 +20,7 @@ export const NotificationCenter = (props) => {
   const addNotification = (notification: Notification) => {
     setNotifications([...notifications, notification]);
     if (notification.timeout > 0) {
-      setTimeout(() => setNotifications(removeNotificationByKey(notifications, notification.key)), notification.timeout);
+      window.setTimeout(() => setNotifications(removeNotificationByKey(notifications, notification.key)), notification.timeout);
     }
   };
 

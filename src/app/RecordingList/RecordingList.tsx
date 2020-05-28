@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Card, CardBody, CardHeader, Tabs, Tab, Text, TextVariants } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
+import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { ActiveRecordingsList } from './ActiveRecordingsList';
 import { ArchivedRecordingsList } from './ArchivedRecordingsList';
 
@@ -26,7 +26,7 @@ export enum RecordingState {
   STOPPING = 'STOPPING',
 }
 
-export const RecordingList = (props) => {
+export const RecordingList = () => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
@@ -34,7 +34,7 @@ export const RecordingList = (props) => {
   React.useEffect(() => {
     const sub = context.commandChannel.isArchiveEnabled().subscribe(enabled => setArchiveEnabled(enabled));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   return (
     <TargetView pageTitle="Recordings">

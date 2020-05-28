@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, Toolbar } from '@patternfly/react-core';
+import { DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow } from '@patternfly/react-core';
 
 export interface RecordingsDataTableProps {
   toolbar: React.ReactElement;

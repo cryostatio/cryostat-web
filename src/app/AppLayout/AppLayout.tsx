@@ -1,18 +1,9 @@
 import * as React from 'react';
-import { NavLink, useRouteMatch } from 'react-router-dom';
-import {
-  Nav,
-  NavList,
-  NavItem,
-  NavVariants,
-  Page,
-  PageHeader,
-  PageSidebar,
-  SkipToContent
-} from '@patternfly/react-core';
-import { IAppRoute, staticRoutes, getAvailableRoutes } from '@app/routes';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
+import { getAvailableRoutes, IAppRoute, staticRoutes } from '@app/routes';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Nav, NavItem, NavList, NavVariants, Page, PageHeader, PageSidebar, SkipToContent } from '@patternfly/react-core';
+import { NavLink, matchPath, useLocation } from 'react-router-dom';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -28,11 +19,12 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
   const [availableRoutes, setAvailableRoutes] = React.useState(staticRoutes);
+  const location = useLocation();
 
   React.useEffect(() => {
     const sub = context.commandChannel.isConnected().subscribe(isConnected => setAvailableRoutes(getAvailableRoutes(isConnected)));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);
@@ -54,10 +46,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   );
 
   const isActiveRoute = (route: IAppRoute): boolean => {
-    const match = useRouteMatch(route);
-    if (!!match && match.isExact) {
+    const match = matchPath(location.pathname, route.path);
+    if (match && match.isExact) {
       return true;
-    } else if (!!route.children) {
+    } else if (route.children) {
       let childMatch = false;
       for (const r of route.children) {
         childMatch = childMatch || isActiveRoute(r);
@@ -103,3 +95,4 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
 }
 
 export { AppLayout };
+

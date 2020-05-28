@@ -1,9 +1,8 @@
 import * as React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Button, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, DataToolbar, DataToolbarContent, DataToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
-import { Button, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataToolbar, DataToolbarContent, DataToolbarItem, Text, TextVariants, Title } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
 import { Recording, RecordingState } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 
@@ -86,13 +85,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       )
       .subscribe(recordings => setRecordings(recordings));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list');
-    const id = setInterval(() => context.commandChannel.sendMessage('list'), 5000);
-    return () => clearInterval(id);
-  }, []);
+    const id = window.setInterval(() => context.commandChannel.sendMessage('list'), 5000);
+    return () => window.clearInterval(id);
+  }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
     return (
@@ -136,7 +135,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   };
 
   const Link = (props) => {
-    return (<a href={props.url} target="_blank">{props.display || props.url}</a>);
+    return (<a href={props.url} target="_blank" rel="noopener noreferrer">{props.display || props.url}</a>);
   };
 
   const isStopDisabled = () => {
@@ -150,18 +149,18 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
   const RecordingsToolbar = () => {
     const buttons = [
-      <Button variant="primary" onClick={handleCreateRecording}>Create</Button>
+      <Button key="create" variant="primary" onClick={handleCreateRecording}>Create</Button>
     ];
     if (props.archiveEnabled) {
       buttons.push((
-        <Button variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
+        <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
       ));
     }
     buttons.push((
-      <Button variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
+      <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
     ));
     buttons.push((
-      <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+      <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
     ));
 
     return (
@@ -188,7 +187,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         onHeaderCheck={handleHeaderCheck}
     >
       {
-        recordings.map((r, idx) => <RecordingRow recording={r} index={idx}/>)
+        recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
       }
     </RecordingsDataTable>
   </>);

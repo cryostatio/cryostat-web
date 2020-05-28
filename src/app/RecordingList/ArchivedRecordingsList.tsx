@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { filter, map } from 'rxjs/operators';
-import { Button, DataList, DataListCheck, DataListItem, DataListItemRow, DataListItemCells, DataListCell, DataToolbar, DataToolbarContent, DataToolbarItem, Text, TextVariants, Title } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
-import { Recording, RecordingState } from './RecordingList';
+import { Button, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, DataToolbar, DataToolbarContent, DataToolbarItem } from '@patternfly/react-core';
+import { filter, map } from 'rxjs/operators';
+import { Recording } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 
-export const ArchivedRecordingsList = (props) => {
+export const ArchivedRecordingsList = () => {
   const context = React.useContext(ServiceContext);
 
   const [recordings, setRecordings] = React.useState([]);
@@ -46,7 +45,7 @@ export const ArchivedRecordingsList = (props) => {
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('save').subscribe(() => context.commandChannel.sendControlMessage('list-saved'));
     return () => sub.unsubscribe();
-  });
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('list-saved')
@@ -56,13 +55,13 @@ export const ArchivedRecordingsList = (props) => {
       )
       .subscribe(recordings => setRecordings(recordings));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendControlMessage('list-saved');
-    const id = setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 5000);
-    return () => clearInterval(id);
-  }, []);
+    const id = window.setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 5000);
+    return () => window.clearInterval(id);
+  }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
     return (
@@ -87,10 +86,10 @@ export const ArchivedRecordingsList = (props) => {
   };
 
   const Link = (props) => {
-    return (<a href={props.url} target="_blank">{props.display || props.url}</a>);
+    return (<a href={props.url} target="_blank" rel="noopener noreferrer">{props.display || props.url}</a>);
   };
 
-  const RecordingsToolbar = (props) => {
+  const RecordingsToolbar = () => {
     return (
       <DataToolbar id="archived-recordings-toolbar">
         <DataToolbarContent>
@@ -111,7 +110,7 @@ export const ArchivedRecordingsList = (props) => {
         onHeaderCheck={handleHeaderCheck}
     >
       {
-        recordings.map((r, idx) => <RecordingRow recording={r} index={idx}/>)
+        recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
       }
     </RecordingsDataTable>
   </>);

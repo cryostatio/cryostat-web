@@ -1,9 +1,9 @@
 import * as React from 'react';
+import { NotificationsInstance } from '@app/Notifications/Notifications';
 import { ApiService } from './Api.service';
 import { CommandChannel } from './CommandChannel.service';
-import { NotificationsInstance } from '@app/Notifications/Notifications';
 
-interface Services {
+export interface Services {
   api: ApiService;
   commandChannel: CommandChannel;
 }
@@ -15,4 +15,5 @@ const defaultServices: Services = { api, commandChannel };
 
 const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
 
-export { Services, ServiceContext, defaultServices };
+export { ServiceContext, defaultServices };
+

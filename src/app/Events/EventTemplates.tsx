@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { filter, map } from 'rxjs/operators';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { DataToolbar, DataToolbarContent, DataToolbarItem, TextInput } from '@patternfly/react-core';
 import { Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { filter, map } from 'rxjs/operators';
 
 export interface EventTemplate {
   name: string;
@@ -11,7 +11,7 @@ export interface EventTemplate {
   provider: string;
 }
 
-export const EventTemplates = (props) => {
+export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
 
@@ -40,7 +40,7 @@ export const EventTemplates = (props) => {
   const actions = [
     {
       title: 'Create Recording from Template',
-      onClick: (event, rowId, rowData, extra) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } })
+      onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } })
     }
   ];
 
@@ -52,11 +52,11 @@ export const EventTemplates = (props) => {
       )
       .subscribe(templates => setTemplates(templates));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-templates');
-  }, []);
+  }, [context.commandChannel]);
 
   return (<>
     <DataToolbar id="event-templates-toolbar">

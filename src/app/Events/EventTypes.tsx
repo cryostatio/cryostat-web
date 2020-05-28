@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { filter, map } from 'rxjs/operators';
-import { DataToolbar, DataToolbarContent, DataToolbarItem, DataToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
-import { Table, TableBody, TableHeader, TableVariant, expandable } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { DataToolbar, DataToolbarContent, DataToolbarItem, DataToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
+import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
+import { filter, map } from 'rxjs/operators';
 
 export interface EventType {
   name: string;
@@ -18,11 +18,18 @@ export interface OptionDescriptor {
   defaultValue: string;
 }
 
-export const EventTypes = (props) => {
+type Row = {
+  cells: string[];
+  parent?: number;
+  isOpen?: boolean;
+  fullWidth?: boolean;
+}
+
+export const EventTypes = () => {
   const context = React.useContext(ServiceContext);
 
   const [types, setTypes] = React.useState([] as EventType[]);
-  const [displayedTypes, setDisplayedTypes] = React.useState([] as any[]);
+  const [displayedTypes, setDisplayedTypes] = React.useState([] as Row[]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
   const prevPerPage = React.useRef(10);
@@ -47,17 +54,43 @@ export const EventTypes = (props) => {
       )
       .subscribe(types => setTypes(types));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-types');
-  }, []);
+  }, [context.commandChannel]);
+
+  const getCategoryString = (eventType: EventType): string => {
+    return eventType.category.join(', ').trim();
+  };
+
+  const filterTypesByText = React.useCallback(() => {
+    if (!filterText) {
+      return types;
+    }
+    const includesSubstr = (a, b) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
+    return types.filter(t => {
+      if (includesSubstr(t.name, filterText)) {
+        return true;
+      }
+      if (includesSubstr(t.typeId, filterText)) {
+        return true;
+      }
+      if (includesSubstr(t.description, filterText)) {
+        return true;
+      }
+      if (includesSubstr(getCategoryString(t), filterText)) {
+        return true;
+      }
+      return false
+    });
+  }, [types, filterText]);
 
   React.useEffect(() => {
     const offset = (currentPage - 1) * perPage;
-    const page = filterTypesByText(types, filterText).slice(offset, offset + perPage);
+    const page = filterTypesByText().slice(offset, offset + perPage);
 
-    const rows: any[] = [];
+    const rows: Row[] = [];
     page.forEach((t: EventType, idx: number) => {
       rows.push({ cells: [ t.name, t.typeId, t.description, getCategoryString(t) ], isOpen: (idx === openRow) });
       if (idx === openRow) {
@@ -70,33 +103,7 @@ export const EventTypes = (props) => {
     });
 
     setDisplayedTypes(rows);
-  }, [currentPage, perPage, types, openRow, filterText]);
-
-  const getCategoryString = (eventType: EventType): string => {
-    return eventType.category.join(', ').trim();
-  };
-
-  const filterTypesByText = (types, filter) => {
-    if (!filter) {
-      return types;
-    }
-    const includesSubstr = (a, b) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
-    return types.filter(t => {
-      if (includesSubstr(t.name, filter)) {
-        return true;
-      }
-      if (includesSubstr(t.typeId, filter)) {
-        return true;
-      }
-      if (includesSubstr(t.description, filter)) {
-        return true;
-      }
-      if (includesSubstr(getCategoryString(t), filter)) {
-        return true;
-      }
-      return false
-    });
-  };
+  }, [context.commandChannel, currentPage, perPage, filterTypesByText, openRow]);
 
   const onCurrentPage = (evt, currentPage) => {
     setOpenRow(-1);
@@ -132,7 +139,7 @@ export const EventTypes = (props) => {
         </DataToolbarItem>
         <DataToolbarItem variant={DataToolbarItemVariant.pagination}>
           <Pagination
-            itemCount={!!filterText ? filterTypesByText(types, filterText).length : types.length}
+            itemCount={filterText ? filterTypesByText().length : types.length}
             page={currentPage}
             perPage={perPage}
             onSetPage={onCurrentPage}

@@ -1,9 +1,9 @@
-import { from, Subject, BehaviorSubject, Observable, ReplaySubject, combineLatest } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-import { concatMap, filter, first, map, tap } from 'rxjs/operators';
-import { ApiService } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { nanoid } from 'nanoid';
+import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
+import { concatMap, filter, first, map } from 'rxjs/operators';
+import { ApiService } from './Api.service';
 
 export class CommandChannel {
 
@@ -16,7 +16,7 @@ export class CommandChannel {
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
   private readonly targetSubject = new ReplaySubject<string>(1);
-  private pingTimer: number = -1;
+  private pingTimer = -1;
 
   constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
     this.apiSvc = apiSvc;
@@ -49,7 +49,7 @@ export class CommandChannel {
 
     this.isReady().pipe(
       filter(ready => !!ready)
-    ).subscribe(ready => {
+    ).subscribe(() => {
       this.sendControlMessage('list-saved');
     });
 
@@ -75,11 +75,11 @@ export class CommandChannel {
       .subscribe(auths => {
         let subprotocol: string | undefined = undefined;
         if (auths[1] === 'Bearer') {
-          subprotocol = `base64url.bearer.authorization.containerjfr.${btoa(auths[0])}`;
+          subprotocol = `base64url.bearer.authorization.containerjfr.${window.btoa(auths[0])}`;
         } else if (auths[1] === 'Basic') {
           subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
         }
-        this.ws = new WebSocket(clientUrl, subprotocol);
+        this.ws = new window.WebSocket(clientUrl, subprotocol);
 
         this.ws.addEventListener('message', (ev: MessageEvent) => {
           if (typeof ev.data === 'string') {
@@ -191,7 +191,7 @@ export class CommandChannel {
   }
 
   private logError(title: string, err: any): void {
-    console.error(err);
+    window.console.error(err);
     this.notifications.danger(title, JSON.stringify(err));
   }
 }
@@ -233,7 +233,7 @@ export function isFailureMessage(m: ResponseMessage<any>): m is FailureMessage {
   return m.status < 0 && typeof m.payload === 'string';
 }
 
-export interface ExceptionMessage extends ResponseMessage<{ commandName: string, exception: string }> { }
+export interface ExceptionMessage extends ResponseMessage<{ commandName: string; exception: string }> { }
 
 export function isExceptionMessage(m: ResponseMessage<any>): m is ExceptionMessage {
   return m.status < 0

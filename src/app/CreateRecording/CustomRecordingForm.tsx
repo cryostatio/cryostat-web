@@ -1,20 +1,19 @@
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
-import { filter, first, map } from 'rxjs/operators';
-import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, TextArea, TextInput, Split, SplitItem, Text, TextVariants, Tooltip, TooltipPosition } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { AlertVariant } from '@patternfly/react-core';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition } from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { useHistory } from 'react-router-dom';
+import { filter, map } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
 
 export interface CustomRecordingFormProps {
   onSubmit: (command: string, args: string[]) => void;
-};
+}
 
 export const RecordingNamePattern = /^[\w_]+$/;
 export const TemplatePattern = /^template=([\w]+)$/;
-export const EventSpecifierPattern = /([\w\\.\$]+):([\w]+)=([\w\\d\.]+)/;
+export const EventSpecifierPattern = /([\w\\.$]+):([\w]+)=([\w\d\\.]+)/;
 
 export const CustomRecordingForm = (props) => {
   const context = React.useContext(ServiceContext);
@@ -30,10 +29,6 @@ export const CustomRecordingForm = (props) => {
   const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  '');
   const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
   const [eventsValid, setEventsValid] = React.useState(!!props.template || !!props?.location?.state?.template);
-
-  React.useEffect(() => {
-    console.log('CustomRecordingForm', { props });
-  }, []);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -59,9 +54,9 @@ export const CustomRecordingForm = (props) => {
     setEventSpecifiers(evt);
   };
 
-  const getEventSpecifiers = () => !!template ? `template=${template}` : eventSpecifiers;
+  const getEventSpecifiers = () => template ? `template=${template}` : eventSpecifiers;
 
-  const getEventString = () => !!template ? `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
+  const getEventString = () => template ? `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
 
   const handleRecordingNameChange = (name) => {
     setNameValid(RecordingNamePattern.test(name));
@@ -71,7 +66,7 @@ export const CustomRecordingForm = (props) => {
   const handleSubmit = () => {
     const eventString = getEventString();
 
-    let notificationMessages: string[] = [];
+    const notificationMessages: string[] = [];
     if (!nameValid) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
     }
@@ -102,11 +97,11 @@ export const CustomRecordingForm = (props) => {
       )
       .subscribe(m => setTemplates(m));
     return () => sub.unsubscribe();
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list-event-templates');
-  }, []);
+  }, [context.commandChannel]);
 
   React.useEffect(() => {
     if (TemplatePattern.test(eventSpecifiers)) {
@@ -115,7 +110,7 @@ export const CustomRecordingForm = (props) => {
         return;
       }
       const template = regexMatches[1];
-      if (!!templates.find(t => t.name === template)) {
+      if (templates.find(t => t.name === template)) {
         handleTemplateChange(template);
       }
     }

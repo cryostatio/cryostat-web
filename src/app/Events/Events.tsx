@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { Card, CardBody, CardHeader, Tabs, Tab, TabsVariant, TabContent, Text, TextVariants } from '@patternfly/react-core';
+import * as React from 'react';
 import { TargetView } from '@app/TargetView/TargetView';
+import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';
 
-export const Events = (props) => {
+export const Events = () => {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const handleTabSelect = (evt, idx) => {

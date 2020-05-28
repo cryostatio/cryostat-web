@@ -1,10 +1,10 @@
 import * as React from 'react';
+import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
-import { ActionGroup, Button, Form, FormGroup, Text, TextVariants } from '@patternfly/react-core';
 
 export interface SnapshotRecordingFormProps {
   onSubmit: (command: string, args: string[]) => void;
-};
+}
 
 export const SnapshotRecordingForm = (props) => {
   const history = useHistory();

@@ -2,16 +2,16 @@ import * as React from 'react';
 import { ActionGroup, Button, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
 import { FormProps } from './FormProps';
 
-export const BasicAuthForm = (props: FormProps) => {
+export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
 
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  const handleUserChange = (evt, el) => {
+  const handleUserChange = (evt) => {
     setUsername(evt);
   }
 
-  const handlePasswordChange = (evt, el) => {
+  const handlePasswordChange = (evt) => {
     setPassword(evt);
   }
 
