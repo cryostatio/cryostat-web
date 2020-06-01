@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as _ from 'lodash';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -85,9 +86,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         filter(m => m.status === 0),
         map(m => m.payload),
       )
-      .subscribe(recordings => setRecordings(recordings));
+      .subscribe(newRecordings => {
+        if (!_.isEqual(newRecordings, recordings)) {
+          setRecordings(newRecordings);
+        }
+      });
     return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+  }, [context.commandChannel, recordings]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list');
@@ -105,6 +110,10 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     };
 
     const isExpanded = expandedRows.includes(expandedRowId);
+
+    const showReport = React.useMemo(() => {
+      return <ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} />;
+    }, [props.recording.reportUrl, reportLoaded]);
 
     return (
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
@@ -138,7 +147,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
             isExpanded ? (reportLoaded ? null : <Spinner />) : null
           }</div>
           <div>{
-            isExpanded ? (<ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} />) : null
+            isExpanded ? showReport : null
           }</div>
         </DataListContent>
       </DataListItem>

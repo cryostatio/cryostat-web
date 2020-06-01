@@ -9,10 +9,11 @@ export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
   reportUrl: string;
 }
 
-export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) => {
+export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo((props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [content, setContent] = React.useState('');
+  const { reportUrl, ...rest } = props;
 
   React.useEffect(() => {
     let objUrl;
@@ -20,7 +21,7 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) =>
       .pipe(
         combineLatest(context.api.getAuthMethod()),
         mergeMap(([token, authMethod]) => {
-          return fromFetch(props.reportUrl, {
+          return fromFetch(reportUrl, {
             headers: new window.Headers({ 'Authorization': `${authMethod} ${token}` }),
             method: 'GET',
             mode: 'cors',
@@ -54,8 +55,7 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) =>
     };
   }, [context.api]);
 
-  const { reportUrl, ...rest } = props;
   return (<>
     <iframe src={content} {...rest} />
   </>);
-};
+});
