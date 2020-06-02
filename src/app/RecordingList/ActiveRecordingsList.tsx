@@ -21,7 +21,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [openAction, setOpenAction] = React.useState(-1);
   const { url } = useRouteMatch();
 
   const tableColumns: string[] = [
@@ -111,14 +110,22 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
     const isExpanded = expandedRows.includes(expandedRowId);
 
+    const onLoad = () => {
+      setReportLoaded(true);
+    };
+
     const showReport = React.useMemo(() => {
-      return <ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} />;
-    }, [props.recording.reportUrl, reportLoaded]);
+      return <ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={onLoad} hidden={!reportLoaded} />;
+    }, [props.recording.reportUrl, reportLoaded, onLoad]);
+
+    const handleCheck = (checked) => {
+      handleRowCheck(checked, props.index);
+    };
 
     return (
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
         <DataListItemRow>
-          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
+          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
           <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
           <DataListItemCells
             dataListCells={[
@@ -136,7 +143,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
               </DataListCell>
             ]}
           />
-          <RecordingActions index={props.index} recording={props.recording} isOpen={props.index === openAction} setOpen={o => setOpenAction(o ? props.index : -1)} />
+          <RecordingActions index={props.index} recording={props.recording} />
         </DataListItemRow>
         <DataListContent
           aria-label="Content Details"
@@ -225,8 +232,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 };
 
 export interface RecordingActionsProps {
-  isOpen: boolean;
-  setOpen: (open: boolean) => void;
   index: number;
   recording: Recording;
 }
@@ -234,6 +239,7 @@ export interface RecordingActionsProps {
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
+  const [open, setOpen] = React.useState(false);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
   const [uploadIds, setUploadIds] = React.useState([] as string[]);
 
@@ -272,16 +278,24 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     });
   };
 
+  const handleDownloadRecording = () => {
+    context.api.downloadRecording(props.recording);
+  };
+
+  const handleDownloadReport = () => {
+    context.api.downloadReport(props.recording);
+  };
+
   const getActionItems = () => {
     const actionItems = [
       <DropdownItem key="download" component={
-        <Text onClick={() => context.api.downloadRecording(props.recording)} >
+        <Text onClick={handleDownloadRecording}>
           Download Recording
         </Text>
         }>
       </DropdownItem>,
       <DropdownItem key="report" component={
-        <Text onClick={() => context.api.downloadReport(props.recording)} >
+        <Text onClick={handleDownloadReport} >
           Download Report
         </Text>
         }>
@@ -300,6 +314,10 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     return actionItems;
   };
 
+  const onSelect = () => {
+    setOpen(o => !o);
+  };
+
   return (
     <DataListAction
       aria-labelledby={`dropdown-actions-item-${props.index} dropdown-actions-action-${props.index}`}
@@ -309,9 +327,9 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       <Dropdown
         isPlain
         position={DropdownPosition.right}
-        isOpen={props.isOpen}
-        onSelect={() => props.setOpen(!props.isOpen)}
-        toggle={<KebabToggle onToggle={props.setOpen} />}
+        isOpen={open}
+        onSelect={onSelect}
+        toggle={<KebabToggle onToggle={setOpen} />}
         dropdownItems={getActionItems()}
       />
     </DataListAction>

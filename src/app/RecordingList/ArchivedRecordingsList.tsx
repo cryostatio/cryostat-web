@@ -1,9 +1,9 @@
 import * as React from 'react';
+import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Spinner, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { filter, map } from 'rxjs/operators';
 import { RecordingActions } from './ActiveRecordingsList';
-import { Recording } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 
 export const ArchivedRecordingsList = () => {
@@ -90,7 +90,7 @@ export const ArchivedRecordingsList = () => {
               </DataListCell>
             ]}
           />
-          <RecordingActions index={props.index} recording={props.recording} isOpen={props.index === openAction} setOpen={o => setOpenAction(o ? props.index : -1)} />
+          <RecordingActions recording={props.recording} />
         </DataListItemRow>
         <DataListContent
           aria-label="Content Details"
