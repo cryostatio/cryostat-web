@@ -64,8 +64,8 @@ export const ArchivedRecordingsList = () => {
   }, [context.commandChannel]);
 
   React.useEffect(() => {
-    context.commandChannel.sendMessage('list-saved');
-    const id = setInterval(() => context.commandChannel.sendMessage('list-saved'), 30_000);
+    context.commandChannel.sendControlMessage('list-saved');
+    const id = setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 30_000);
     return () => clearInterval(id);
   }, [context.commandChannel]);
 
