@@ -126,7 +126,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
         <DataListItemRow>
           <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
-          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
+          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`active-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
           <DataListItemCells
             dataListCells={[
               <DataListCell key={`table-row-${props.index}-1`}>
@@ -147,8 +147,8 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         </DataListItemRow>
         <DataListContent
           aria-label="Content Details"
-          id={`ex-expand-${props.index}`}
-          isHidden={!expandedRows.includes(expandedRowId)}
+          id={`active-ex-expand-${props.index}`}
+          isHidden={!isExpanded}
         >
           <div>{
             isExpanded ? (reportLoaded ? null : <Spinner />) : null

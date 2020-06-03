@@ -1,10 +1,12 @@
 import * as React from 'react';
+import * as _ from 'lodash';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Spinner, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { filter, map } from 'rxjs/operators';
 import { RecordingActions } from './ActiveRecordingsList';
 import { RecordingsDataTable } from './RecordingsDataTable';
+import { ReportFrame } from './ReportFrame';
 
 export const ArchivedRecordingsList = () => {
   const context = React.useContext(ServiceContext);
@@ -59,9 +61,14 @@ export const ArchivedRecordingsList = () => {
         filter(m => m.status === 0),
         map(m => m.payload),
       )
-      .subscribe(recordings => setRecordings(recordings));
+      .subscribe(newRecordings => {
+        console.log({ newRecordings, recordings });
+        if (!_.isEqual(newRecordings, recordings)) {
+          setRecordings(newRecordings);
+        }
+      });
     return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+  }, [context.commandChannel, recordings]);
 
   React.useEffect(() => {
     context.commandChannel.sendControlMessage('list-saved');
@@ -78,11 +85,17 @@ export const ArchivedRecordingsList = () => {
       toggleExpanded(expandedRowId);
     };
 
+    const isExpanded = expandedRows.includes(expandedRowId);
+
+    const showReport = React.useMemo(() => {
+      return <ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} />;
+    }, [props.recording.reportUrl, reportLoaded]);
+
     return (<>
-      <DataListItem aria-labelledby={`table-row-${props.index}-1`} name={`row-${props.index}-check`} isExpanded={expandedRows.includes(expandedRowId)} >
+      <DataListItem aria-labelledby={`table-row-${props.index}-1`} name={`row-${props.index}-check`} isExpanded={isExpanded} >
         <DataListItemRow>
           <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
-          <DataListToggle onClick={handleToggle} isExpanded={expandedRows.includes(expandedRowId)} id={`ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
+          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`archived-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
           <DataListItemCells
             dataListCells={[
               <DataListCell key={`table-row-${props.index}-1`}>
@@ -90,17 +103,19 @@ export const ArchivedRecordingsList = () => {
               </DataListCell>
             ]}
           />
-          <RecordingActions recording={props.recording} />
+          <RecordingActions recording={props.recording} index={props.index} />
         </DataListItemRow>
         <DataListContent
           aria-label="Content Details"
-          id={`ex-expand-${props.index}`}
-          isHidden={!expandedRows.includes(expandedRowId)}
+          id={`archived-ex-expand-${props.index}`}
+          isHidden={!isExpanded}
         >
           <div>{
-            reportLoaded ? null : <Spinner />
+            isExpanded ? (reportLoaded ? null : <Spinner />) : null
           }</div>
-          <iframe src={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} ></iframe>
+          <div>{
+            isExpanded ? showReport : null
+          }</div>
         </DataListContent>
       </DataListItem>
     </>);
