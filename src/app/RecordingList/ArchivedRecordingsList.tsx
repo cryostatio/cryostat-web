@@ -87,14 +87,22 @@ export const ArchivedRecordingsList = () => {
 
     const isExpanded = expandedRows.includes(expandedRowId);
 
+    const onLoad = () => {
+      setReportLoaded(true);
+    };
+
     const showReport = React.useMemo(() => {
-      return <ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={() => setReportLoaded(true)} hidden={!reportLoaded} />;
-    }, [props.recording.reportUrl, reportLoaded]);
+      return <ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={onLoad} hidden={!reportLoaded} />;
+    }, [props.recording.reportUrl, reportLoaded, onLoad]);
+
+    const handleCheck = (checked) => {
+      handleRowCheck(checked, props.index);
+    };
 
     return (<>
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} name={`row-${props.index}-check`} isExpanded={isExpanded} >
         <DataListItemRow>
-          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
+          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
           <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`archived-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
           <DataListItemCells
             dataListCells={[
