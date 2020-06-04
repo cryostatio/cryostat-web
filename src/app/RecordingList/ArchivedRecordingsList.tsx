@@ -4,6 +4,7 @@ import { Button, DataListCell, DataListCheck, DataListItemCells, DataListItemRow
 import { filter, map } from 'rxjs/operators';
 import { Recording } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
+import { RecordingActions } from './ActiveRecordingsList';
 
 export const ArchivedRecordingsList = () => {
   const context = React.useContext(ServiceContext);
@@ -11,11 +12,10 @@ export const ArchivedRecordingsList = () => {
   const [recordings, setRecordings] = React.useState([]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
+  const [openAction, setOpenAction] = React.useState(-1);
 
   const tableColumns: string[] = [
     'Name',
-    'Download',
-    'Report'
   ];
 
   const handleHeaderCheck = (checked) => {
@@ -72,15 +72,9 @@ export const ArchivedRecordingsList = () => {
             <DataListCell key={`table-row-${props.index}-1`}>
               {props.recording.name}
             </DataListCell>,
-            <DataListCell key={`table-row-${props.index}-2`}>
-              <Link url={`${props.recording.downloadUrl}.jfr`} />
-            </DataListCell>,
-            // TODO make row expandable and render report in collapsed iframe
-            <DataListCell key={`table-row-${props.index}-3`}>
-              <Link url={props.recording.reportUrl} />
-            </DataListCell>
           ]}
         />
+        <RecordingActions index={props.index} recording={props.recording} isOpen={props.index === openAction} setOpen={o => setOpenAction(o ? props.index : -1)} />
       </DataListItemRow>
     );
   };
