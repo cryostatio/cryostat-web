@@ -92,7 +92,7 @@ export const ArchivedRecordingsList = () => {
     };
 
     const showReport = React.useMemo(() => {
-      return <ReportFrame reportUrl={props.recording.reportUrl} width="100%" height="640" onLoad={onLoad} hidden={!reportLoaded} />;
+      return <ReportFrame recording={props.recording} width="100%" height="640" onLoad={onLoad} hidden={!reportLoaded} />;
     }, [props.recording.reportUrl, reportLoaded, onLoad]);
 
     const handleCheck = (checked) => {

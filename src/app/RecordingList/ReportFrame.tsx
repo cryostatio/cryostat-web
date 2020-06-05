@@ -2,58 +2,31 @@ import * as React from 'react';
 import { of } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { combineLatest, concatMap, first, mergeMap } from 'rxjs/operators';
+import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 
 export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
-  reportUrl: string;
+  recording: Recording;
 }
 
 export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo((props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [content, setContent] = React.useState('');
-  const { reportUrl, ...rest } = props;
+  const { recording, ...rest } = props;
 
   React.useEffect(() => {
-    let objUrl;
-    const sub = context.api.getToken()
-      .pipe(
-        combineLatest(context.api.getAuthMethod()),
-        mergeMap(([token, authMethod]) => {
-          return fromFetch(reportUrl, {
-            headers: new window.Headers({ 'Authorization': `${authMethod} ${token}` }),
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'include'
-          });
-        }),
-        concatMap(resp => {
-          if (resp.ok) {
-            return resp.blob();
-          } else {
-            throw new Error('Response not OK');
-          }
-        })
-      )
-      .subscribe(
-        report => {
-          const blob = new Blob([report], { type: 'text/html' });
-          objUrl = window.URL.createObjectURL(blob);
-          setContent(objUrl);
-        },
-        err => {
-          notifications.danger('Report loading failed', String(err));
-          console.error(err);
-        }
-      );
+    const sub = context.reports.report(recording).pipe(first()).subscribe(objUrl => {
+      setContent(objUrl);
+    }, err => {
+      notifications.danger(err);
+    });
     return () => {
       sub.unsubscribe();
-      if (objUrl) {
-        window.URL.revokeObjectURL(objUrl);
-      }
+      window.URL.revokeObjectURL(content);
     };
-  }, [context.api]);
+  }, [context.reports]);
 
   return (<>
     <iframe src={content} {...rest} />
