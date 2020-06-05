@@ -62,7 +62,6 @@ export const ArchivedRecordingsList = () => {
         map(m => m.payload),
       )
       .subscribe(newRecordings => {
-        console.log({ newRecordings, recordings });
         if (!_.isEqual(newRecordings, recordings)) {
           setRecordings(newRecordings);
         }

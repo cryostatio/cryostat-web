@@ -157,3 +157,7 @@ export enum RecordingState {
   RUNNING = 'RUNNING',
   STOPPING = 'STOPPING',
 }
+
+export const isActiveRecording = (toCheck: SavedRecording): toCheck is Recording => {
+  return (toCheck as Recording).state !== undefined;
+}

@@ -1,15 +1,20 @@
-import { Observable, throwError } from 'rxjs';
-import { combineLatest, concatMap, map, mergeMap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { ApiService, Recording } from './Api.service';
+import { combineLatest, concatMap, map, mergeMap, tap } from 'rxjs/operators';
+import { ApiService, isActiveRecording, RecordingState, SavedRecording } from './Api.service';
 
 export class ReportService {
 
+  private readonly reports: Map<SavedRecording, string> = new Map();
+
   constructor(private api: ApiService) { }
 
-  report(recording: Recording): Observable<string> {
+  report(recording: SavedRecording): Observable<string> {
     if (!recording?.reportUrl) {
       return throwError('No recording report URL');
+    }
+    if (this.reports.has(recording)) {
+      return of(this.reports.get(recording));
     }
     return this.api.getToken()
       .pipe(
@@ -33,6 +38,13 @@ export class ReportService {
           const blob = new Blob([report], { type: 'text/html' });
           const objUrl = window.URL.createObjectURL(blob);
           return objUrl;
+        }),
+        tap(objUrl => {
+          const isArchived = !isActiveRecording(recording);
+          const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
+          if (isArchived || isActivedStopped) {
+            this.reports.set(recording, objUrl);
+          }
         })
       );
   }
