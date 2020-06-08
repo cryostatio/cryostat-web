@@ -92,13 +92,13 @@ export const ArchivedRecordingsList = () => {
       setReportLoaded(true);
     };
 
-    const showReport = React.useMemo(() => {
-      return <ReportFrame recording={props.recording} width="100%" height="640" onLoad={onLoad} hidden={!reportLoaded} />;
-    }, [props.recording.reportUrl, reportLoaded, onLoad]);
-
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);
     };
+
+    const showReport = React.useMemo(() => {
+      return <ReportFrame recording={props.recording} width="100%" height="640" onLoad={onLoad} hidden={!reportLoaded} />;
+    }, [props.recording.reportUrl, reportLoaded, onLoad]);
 
     return (<>
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} name={`row-${props.index}-check`} isExpanded={isExpanded} >

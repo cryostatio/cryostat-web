@@ -14,12 +14,11 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
   const [objUrl, setObjUrl] = React.useState('');
   const { recording, ...rest } = props;
 
-  React.useEffect(() => {
-    const sub = context.reports.report(recording).pipe(first()).subscribe(objUrl => {
-      setObjUrl(objUrl);
-    }, err => {
-      notifications.danger(err);
-    });
+  React.useLayoutEffect(() => {
+    const sub = context.reports.report(recording).pipe(first()).subscribe(
+      setObjUrl,
+      notifications.danger
+    );
     return () =>  sub.unsubscribe();
   }, [context.reports, notifications, recording, props, props.recording]);
 
