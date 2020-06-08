@@ -122,26 +122,40 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       handleRowCheck(checked, props.index);
     };
 
+    const listColumns = React.useMemo(() => {
+      const ISOTime = (props) => {
+        const fmt = new Date(props.timeStr).toISOString();
+        return (<span>{fmt}</span>);
+      };
+
+      const RecordingDuration = (props) => {
+        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`
+        return (<span>{str}</span>);
+      };
+
+      return <>
+        <DataListCell key={`table-row-${props.index}-1`}>
+          {props.recording.name}
+        </DataListCell>,
+        <DataListCell key={`table-row-${props.index}-2`}>
+          <ISOTime timeStr={props.recording.startTime} />
+        </DataListCell>,
+        <DataListCell key={`table-row-${props.index}-3`}>
+          <RecordingDuration duration={props.recording.duration} />
+        </DataListCell>,
+        <DataListCell key={`table-row-${props.index}-4`}>
+          {props.recording.state}
+        </DataListCell>
+      </>
+    }, [props.recording]);
+
     return (
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
         <DataListItemRow>
           <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
           <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`active-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
           <DataListItemCells
-            dataListCells={[
-              <DataListCell key={`table-row-${props.index}-1`}>
-                {props.recording.name}
-              </DataListCell>,
-              <DataListCell key={`table-row-${props.index}-2`}>
-                <ISOTime timeStr={props.recording.startTime} />
-              </DataListCell>,
-              <DataListCell key={`table-row-${props.index}-3`}>
-                <RecordingDuration duration={props.recording.duration} />
-              </DataListCell>,
-              <DataListCell key={`table-row-${props.index}-4`}>
-                {props.recording.state}
-              </DataListCell>
-            ]}
+            dataListCells={listColumns}
           />
           <RecordingActions index={props.index} recording={props.recording} />
         </DataListItemRow>
@@ -161,45 +175,38 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     );
   };
 
-  const ISOTime = (props) => {
-    const fmt = new Date(props.timeStr).toISOString();
-    return (<span>{fmt}</span>);
-  };
-
-  const RecordingDuration = (props) => {
-    const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`
-    return (<span>{str}</span>);
-  };
-
-  const isStopDisabled = () => {
-    if (!checkedIndices.length) {
-      return true;
-    }
-    const filtered = recordings.filter((r: Recording, idx: number) => checkedIndices.includes(idx));
-    const anyRunning = filtered.some((r: Recording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
-    return !anyRunning;
-  };
-
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
   const RecordingsToolbar = () => {
-    const buttons = [
-      <Button key="create" variant="primary" onClick={handleCreateRecording}>Create</Button>
-    ];
-    if (props.archiveEnabled) {
-      buttons.push((
-        <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
+    const isStopDisabled = React.useMemo(() => {
+      if (!checkedIndices.length) {
+        return true;
+      }
+      const filtered = recordings.filter((r: Recording, idx: number) => checkedIndices.includes(idx));
+      const anyRunning = filtered.some((r: Recording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
+      return !anyRunning;
+    }, [checkedIndices, recordings]);
+
+    const buttons = React.useMemo(() => {
+      const arr = [
+        <Button key="create" variant="primary" onClick={handleCreateRecording}>Create</Button>
+      ];
+      if (props.archiveEnabled) {
+        arr.push((
+          <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
+        ));
+      }
+      arr.push((
+        <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
       ));
-    }
-    buttons.push((
-      <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
-    ));
-    buttons.push((
-      <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
-    ));
+      arr.push((
+        <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+      ));
+      return arr;
+    }, [checkedIndices]);
 
     return (
       <Toolbar id="active-recordings-toolbar">
