@@ -84,7 +84,9 @@ export const ArchivedRecordingsList = () => {
       toggleExpanded(expandedRowId);
     };
 
-    const isExpanded = expandedRows.includes(expandedRowId);
+    const isExpanded = React.useMemo(() => {
+      return expandedRows.includes(expandedRowId);
+    }, [expandedRows, expandedRowId]);
 
     const onLoad = () => {
       setReportLoaded(true);
@@ -140,6 +142,10 @@ export const ArchivedRecordingsList = () => {
     );
   };
 
+  const recordingRows = React.useMemo(() => {
+    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+  }, [recordings, expandedRows, checkedIndices]);
+
   return (<>
     <RecordingsDataTable
         listTitle="Archived Flight Recordings"
@@ -149,7 +155,7 @@ export const ArchivedRecordingsList = () => {
         onHeaderCheck={handleHeaderCheck}
     >
       {
-        recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+        recordingRows
       }
     </RecordingsDataTable>
   </>);

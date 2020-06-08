@@ -108,7 +108,9 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       toggleExpanded(expandedRowId);
     };
 
-    const isExpanded = expandedRows.includes(expandedRowId);
+    const isExpanded = React.useMemo(() => {
+      return expandedRows.includes(expandedRowId)
+    }, [expandedRows, expandedRowId]);
 
     const onLoad = () => {
       setReportLoaded(true);
@@ -136,13 +138,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       return <>
         <DataListCell key={`table-row-${props.index}-1`}>
           {props.recording.name}
-        </DataListCell>,
+        </DataListCell>
         <DataListCell key={`table-row-${props.index}-2`}>
           <ISOTime timeStr={props.recording.startTime} />
-        </DataListCell>,
+        </DataListCell>
         <DataListCell key={`table-row-${props.index}-3`}>
           <RecordingDuration duration={props.recording.duration} />
-        </DataListCell>,
+        </DataListCell>
         <DataListCell key={`table-row-${props.index}-4`}>
           {props.recording.state}
         </DataListCell>
@@ -205,23 +207,29 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       arr.push((
         <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
       ));
-      return arr;
+      return <>
+        {
+          arr.map((btn, idx) => (
+            <ToolbarItem key={idx}>
+              { btn }
+            </ToolbarItem>
+          ))
+        }
+      </>;
     }, [checkedIndices]);
 
     return (
       <Toolbar id="active-recordings-toolbar">
         <ToolbarContent>
-        {
-          buttons.map((btn, idx) => (
-              <ToolbarItem key={idx}>
-                { btn }
-              </ToolbarItem>
-          ))
-        }
+        { buttons }
         </ToolbarContent>
       </Toolbar>
     );
   };
+
+  const recordingRows = React.useMemo(() => {
+    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+  }, [recordings, expandedRows, checkedIndices]);
 
   return (<>
     <RecordingsDataTable
@@ -231,9 +239,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
     >
-      {
-        recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
-      }
+      {recordingRows}
     </RecordingsDataTable>
   </>);
 };
@@ -293,7 +299,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     context.api.downloadReport(props.recording);
   };
 
-  const getActionItems = () => {
+  const actionItems = React.useMemo(() => {
     const actionItems = [
       <DropdownItem key="download" component={
         <Text onClick={handleDownloadRecording}>
@@ -319,7 +325,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       );
     }
     return actionItems;
-  };
+  }, [handleDownloadRecording, handleDownloadReport, grafanaEnabled, grafanaUpload]);
 
   const onSelect = () => {
     setOpen(o => !o);
@@ -337,7 +343,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         isOpen={open}
         onSelect={onSelect}
         toggle={<KebabToggle onToggle={setOpen} />}
-        dropdownItems={getActionItems()}
+        dropdownItems={actionItems}
       />
     </DataListAction>
   );
