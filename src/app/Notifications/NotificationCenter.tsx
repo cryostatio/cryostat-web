@@ -18,9 +18,9 @@ export const NotificationCenter = () => {
   };
 
   const addNotification = (notification: Notification) => {
-    setNotifications([...notifications, notification]);
+    setNotifications(notifications => [...notifications, notification]);
     if (notification.timeout) {
-      window.setTimeout(() => setNotifications(removeNotificationByKey(notifications, notification.key)), notification.timeout);
+      window.setTimeout(() => setNotifications(notifications => removeNotificationByKey(notifications, notification.key)), notification.timeout);
     }
   };
 
