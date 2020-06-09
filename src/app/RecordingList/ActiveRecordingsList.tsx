@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Button, DataListAction, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, DataToolbar, DataToolbarContent, DataToolbarItem, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text } from '@patternfly/react-core';
+import { Button, DataListAction, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, Toolbar, ToolbarContent, ToolbarItem, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, first, map } from 'rxjs/operators';
 import { Recording, RecordingState } from './RecordingList';
@@ -155,17 +155,17 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     ));
 
     return (
-      <DataToolbar id="active-recordings-toolbar">
-        <DataToolbarContent>
+      <Toolbar id="active-recordings-toolbar">
+        <ToolbarContent>
         {
           buttons.map((btn, idx) => (
-              <DataToolbarItem key={idx}>
+              <ToolbarItem key={idx}>
                 { btn }
-              </DataToolbarItem>
+              </ToolbarItem>
           ))
         }
-        </DataToolbarContent>
-      </DataToolbar>
+        </ToolbarContent>
+      </Toolbar>
     );
   };
 

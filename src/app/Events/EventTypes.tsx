@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { DataToolbar, DataToolbarContent, DataToolbarItem, DataToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
+import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { filter, map } from 'rxjs/operators';
 
@@ -132,12 +132,12 @@ export const EventTypes = () => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   return (<>
-    <DataToolbar id="event-types-toolbar">
-      <DataToolbarContent>
-        <DataToolbarItem>
+    <Toolbar id="event-types-toolbar">
+      <ToolbarContent>
+        <ToolbarItem>
           <TextInput name="eventFilter" id="eventFilter" type="search" placeholder="Filter..." aria-label="Event filter" onChange={setFilterText}/>
-        </DataToolbarItem>
-        <DataToolbarItem variant={DataToolbarItemVariant.pagination}>
+        </ToolbarItem>
+        <ToolbarItem variant={ToolbarItemVariant.pagination}>
           <Pagination
             itemCount={filterText ? filterTypesByText().length : types.length}
             page={currentPage}
@@ -147,9 +147,9 @@ export const EventTypes = () => {
             onPerPageSelect={onPerPage}
             isCompact
           />
-        </DataToolbarItem>
-      </DataToolbarContent>
-    </DataToolbar>
+        </ToolbarItem>
+      </ToolbarContent>
+    </Toolbar>
     <Table aria-label="Event Types table" cells={tableColumns} rows={displayedTypes} onCollapse={onCollapse} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />

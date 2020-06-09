@@ -65,7 +65,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 selections={selected}
                 onSelect={onSelect}
                 onToggle={setExpanded}
-                isExpanded={expanded}
+                isOpen={expanded}
                 aria-label="Select Input"
               >
               {

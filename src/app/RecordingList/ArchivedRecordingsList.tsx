@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Button, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, DataToolbar, DataToolbarContent, DataToolbarItem } from '@patternfly/react-core';
+import { Button, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { filter, map } from 'rxjs/operators';
 import { Recording } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
@@ -85,13 +85,13 @@ export const ArchivedRecordingsList = () => {
 
   const RecordingsToolbar = () => {
     return (
-      <DataToolbar id="archived-recordings-toolbar">
-        <DataToolbarContent>
-          <DataToolbarItem>
+      <Toolbar id="archived-recordings-toolbar">
+        <ToolbarContent>
+          <ToolbarItem>
             <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
-          </DataToolbarItem>
-        </DataToolbarContent>
-      </DataToolbar>
+          </ToolbarItem>
+        </ToolbarContent>
+      </Toolbar>
     );
   };
 

@@ -18,7 +18,7 @@ export const BreadcrumbPage: React.FunctionComponent<BreadcrumbPageProps> = (pro
         {(props.breadcrumbs || []).map(({ title, path }) => (<BreadcrumbItem key={path} to={path}>{title}</BreadcrumbItem>))}
         <BreadcrumbHeading>{props.pageTitle}</BreadcrumbHeading>
       </Breadcrumb>
-      <Stack gutter="md">
+      <Stack hasGutter={true}>
         {
           React.Children.map(props.children, child => (
             <StackItem isFilled={child && child['isFilled']}>
