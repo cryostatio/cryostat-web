@@ -79,10 +79,6 @@ export const ArchivedRecordingsList = () => {
     );
   };
 
-  const Link = (props) => {
-    return (<a href={props.url} target="_blank" rel="noopener noreferrer">{props.display || props.url}</a>);
-  };
-
   const RecordingsToolbar = () => {
     return (
       <Toolbar id="archived-recordings-toolbar">
