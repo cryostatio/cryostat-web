@@ -2,12 +2,13 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 
 export class CommandChannel {
 
-  private ws: WebSocket | null = null;
+  private ws: WebSocketSubject<any> | null = null;
   private readonly apiSvc: ApiService;
   private readonly messages = new Subject<ResponseMessage<any>>();
   private readonly ready = new BehaviorSubject<boolean>(false);
@@ -83,39 +84,35 @@ export class CommandChannel {
         } else if (auths[1] === 'Basic') {
           subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
         }
-        this.ws = new window.WebSocket(clientUrl, subprotocol);
 
-        this.ws.addEventListener('message', (ev: MessageEvent) => {
-          if (typeof ev.data === 'string') {
-            this.messages.next(JSON.parse(ev.data));
+        this.ws = webSocket({
+          url: clientUrl,
+          protocol: subprotocol,
+          openObserver: {
+            next: () => {
+              this.pingTimer = window.setInterval(() => {
+                this.sendControlMessage('ping');
+              }, 10 * 1000);
+              this.ready.next(true);
+            }
+          },
+          closeObserver: {
+            next: () => {
+              this.ready.next(false);
+              window.clearInterval(this.pingTimer);
+              this.notifications.info('WebSocket connection lost');
+            }
           }
         });
 
-        this.ws.addEventListener('error', (evt: Event) => this.logError('WebSocket error', evt));
-
-        this.ws.addEventListener('close', () => {
-          this.ready.next(false);
-          window.clearInterval(this.pingTimer);
-          this.notifications.info('WebSocket connection lost');
-        });
-
-        this.ws.addEventListener('open', () => {
-          this.pingTimer = window.setInterval(() => {
-            this.sendControlMessage('ping');
-          }, 10 * 1000);
-          this.ready.next(true);
-        });
+        this.ws.subscribe(
+          v => this.messages.next(v),
+          err => this.logError('WebSocket error', err)
+        );
 
         ret.complete();
       });
     return ret;
-  }
-
-  disconnect(): void {
-    if (this.ws) {
-      this.ws.close();
-      delete this.ws;
-    }
   }
 
   isReady(): Observable<boolean> {
@@ -128,12 +125,6 @@ export class CommandChannel {
 
   isArchiveEnabled(): Observable<boolean> {
     return this.archiveEnabled.asObservable();
-  }
-
-  addCloseHandler(handler: () => void): void {
-    if (this.ws) {
-      this.ws.addEventListener('close', handler);
-    }
   }
 
   setTarget(targetId: string): void {
@@ -152,7 +143,7 @@ export class CommandChannel {
       map(ready => ready ? id : '')
     ).subscribe(i => {
       if (!!i && this.ws) {
-        this.ws.send(JSON.stringify({ id, command, args }));
+        this.ws.next({ id, command, args });
       } else if (this.ws) {
         this.logError('Attempted to send control message when command channel was not ready', { id, command, args });
       } else {
@@ -171,7 +162,7 @@ export class CommandChannel {
       map(ready => ready ? id : '')
     )).subscribe(([target, id]) => {
       if (!!id && this.ws) {
-        this.ws.send(JSON.stringify({ id, command, args: [target, ...args] }));
+        this.ws.next({ id, command, args: [target, ...args] });
       } else if (this.ws) {
         this.logError('Attempted to send message when command channel was not ready', { id, command, args });
       } else {
