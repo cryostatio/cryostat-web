@@ -32,8 +32,8 @@ const staticRoutes: IAppRoute[] = [
     exact: true,
     label: 'Dashboard',
     path: '/',
-    title: 'Dashboard'
-  }
+    title: 'Dashboard',
+  },
 ];
 
 const dynamicRoutes: IAppRoute[] = [
@@ -48,17 +48,17 @@ const dynamicRoutes: IAppRoute[] = [
         component: CreateRecording,
         exact: true,
         path: '/recordings/create',
-        title: 'Create Recording'
-      }
-    ]
+        title: 'Create Recording',
+      },
+    ],
   },
   {
     component: Events,
     exact: true,
     label: 'Events',
     path: '/events',
-    title: 'Events'
-  }
+    title: 'Events',
+  },
 ];
 
 const flatten = (routes: IAppRoute[]): IAppRoute[] => {
@@ -72,7 +72,7 @@ const flatten = (routes: IAppRoute[]): IAppRoute[] => {
   return ret;
 };
 
-const getAvailableRoutes = isConnected => flatten(isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes);
+const getAvailableRoutes = (isConnected) => flatten(isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes);
 
 const routes: IAppRoute[] = staticRoutes.concat(dynamicRoutes);
 
@@ -115,14 +115,14 @@ const AppRoutes = () => {
   React.useEffect(() => {
     const sub = context.commandChannel
       .isConnected()
-      .subscribe(isConnected => setAvailableRoutes(getAvailableRoutes(isConnected)));
+      .subscribe((isConnected) => setAvailableRoutes(getAvailableRoutes(isConnected)));
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel
       .isReady()
-      .pipe(filter(v => !v))
+      .pipe(filter((v) => !v))
       .subscribe(() => setAuthenticated(false));
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
@@ -151,4 +151,3 @@ const AppRoutes = () => {
 };
 
 export { AppRoutes, routes, getAvailableRoutes, staticRoutes, dynamicRoutes };
-
