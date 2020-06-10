@@ -11,18 +11,18 @@ export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
 export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo((props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const [objUrl, setObjUrl] = React.useState('');
+  const [report, setReport] = React.useState();
   const { recording, ...rest } = props;
 
   React.useLayoutEffect(() => {
     const sub = context.reports.report(recording).pipe(first()).subscribe(
-      setObjUrl,
+      setReport,
       notifications.danger
     );
     return () =>  sub.unsubscribe();
   }, [context.reports, notifications, recording, props, props.recording]);
 
   return (<>
-    <iframe src={objUrl} {...rest} />
+    <iframe srcDoc={report} {...rest} />
   </>);
 });

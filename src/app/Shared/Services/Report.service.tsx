@@ -29,21 +29,16 @@ export class ReportService {
         }),
         concatMap(resp => {
           if (resp.ok) {
-            return resp.blob();
+            return resp.text();
           } else {
             throw new Error('Response not OK');
           }
         }),
-        map(report => {
-          const blob = new Blob([report], { type: 'text/html' });
-          const objUrl = window.URL.createObjectURL(blob);
-          return objUrl;
-        }),
-        tap(objUrl => {
+        tap(report => {
           const isArchived = !isActiveRecording(recording);
           const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
           if (isArchived || isActivedStopped) {
-            this.reports.set(recording, objUrl);
+            this.reports.set(recording, report);
           }
         })
       );
