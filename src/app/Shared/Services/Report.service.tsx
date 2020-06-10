@@ -14,7 +14,7 @@ export class ReportService {
       return throwError('No recording report URL');
     }
     if (this.reports.has(recording)) {
-      return of(this.reports.get(recording) || '');
+      return of(this.reports.get(recording) || '<p>Invalid report cache entry</p>');
     }
     return this.api.getToken()
       .pipe(
