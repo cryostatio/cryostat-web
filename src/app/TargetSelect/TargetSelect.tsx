@@ -6,7 +6,6 @@ import { filter, first } from 'rxjs/operators';
 
 export interface TargetSelectProps {
   isCompact?: boolean;
-  allowDisconnect?: boolean;
 }
 
 interface Target {
@@ -69,7 +68,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 aria-label="Select Input"
               >
               {
-                (props.allowDisconnect ? [<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />] : [])
+                ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />])
                   .concat(
                     targets.map((t: Target) => (
                       <SelectOption

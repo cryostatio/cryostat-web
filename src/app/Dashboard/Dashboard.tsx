@@ -4,7 +4,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 export const Dashboard = () => {
 
   return (
-    <TargetView pageTitle="Dashboard" allowDisconnect={true} compactSelect={false} />
+    <TargetView pageTitle="Dashboard" compactSelect={false} />
   );
 
 }
