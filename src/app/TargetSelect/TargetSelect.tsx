@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Card, CardBody, CardHeader, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
 import { ContainerNodeIcon } from '@patternfly/react-icons';
-import { filter, first } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
 
 export interface TargetSelectProps {
   isCompact?: boolean;
@@ -21,7 +21,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [expanded, setExpanded] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('scan-targets').subscribe(msg => setTargets(msg.payload));
+    const sub = context.commandChannel.onResponse('scan-targets').pipe(map(msg => msg.payload)).subscribe(setTargets);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
@@ -32,8 +32,8 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
-  React.useEffect(() => {
-    const sub = context.commandChannel.target().subscribe(t => setSelected(t));
+  React.useLayoutEffect(() => {
+    const sub = context.commandChannel.target().subscribe(setSelected);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
