@@ -116,7 +116,7 @@ const AppRoutes = () => {
     <LastLocationProvider>
       <Switch>
         {authenticated ? (
-          routes.map(({ path, exact, component, title, isAsync }, idx) => (
+          flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
             <RouteWithTitleUpdates
               path={path}
               exact={exact}
