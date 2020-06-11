@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, Card, CardBody, PageSection, Tab, Tabs } from '@patternfly/react-core';
+import { TargetView } from '@app/TargetView/TargetView';
+import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
 import { StaticContext } from 'react-router';
 import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
 import { filter, first } from 'rxjs/operators';
@@ -45,11 +46,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   };
 
   return (
-    <PageSection>
-      <Breadcrumb>
-        <BreadcrumbItem to="/recordings">Recordings</BreadcrumbItem>
-        <BreadcrumbHeading>Create</BreadcrumbHeading>
-      </Breadcrumb>
+    <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: '/recordings' }]}>
       <Card>
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
@@ -66,7 +63,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
           </Tabs>
         </CardBody>
       </Card>
-    </PageSection>
+    </TargetView>
   );
 
 };

@@ -20,6 +20,7 @@ export const CustomRecordingForm = (props) => {
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
 
+  const [target, setTarget] = React.useState('');
   const [recordingName, setRecordingName] = React.useState(props.recordingName || props?.location?.state?.recordingName || '');
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [continuous, setContinuous] = React.useState(false);
@@ -95,12 +96,16 @@ export const CustomRecordingForm = (props) => {
         filter(m => m.status === 0),
         map(m => m.payload),
       )
-      .subscribe(m => setTemplates(m));
+      .subscribe(setTemplates);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
   React.useEffect(() => {
-    context.commandChannel.sendMessage('list-event-templates');
+    const sub = context.commandChannel.target().subscribe(target => {
+      setTarget(target);
+      context.commandChannel.sendMessage('list-event-templates');
+    });
+    return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
   React.useEffect(() => {
@@ -225,7 +230,7 @@ export const CustomRecordingForm = (props) => {
         </Split>
       </FormGroup>
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit}>Create</Button>
+        <Button variant="primary" isDisabled={!target} onClick={handleSubmit}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
