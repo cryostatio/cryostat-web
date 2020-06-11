@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 
@@ -8,14 +7,7 @@ export interface SnapshotRecordingFormProps {
 }
 
 export const SnapshotRecordingForm = (props) => {
-  const context = React.useContext(ServiceContext);
   const history = useHistory();
-  const [target, setTarget] = React.useState('');
-
-  React.useEffect(() => {
-    const sub = context.commandChannel.target().subscribe(setTarget);
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
 
   const handleSubmit = () => {
     props.onSubmit('snapshot', []);
@@ -31,7 +23,7 @@ export const SnapshotRecordingForm = (props) => {
         is only ever in the STOPPED state from the moment it is created.
       </Text>
       <ActionGroup>
-        <Button variant="primary" isDisabled={!target} onClick={handleSubmit}>Create</Button>
+        <Button variant="primary" onClick={handleSubmit}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>

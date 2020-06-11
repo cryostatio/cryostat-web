@@ -4,7 +4,6 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { ActiveRecordingsList } from './ActiveRecordingsList';
 import { ArchivedRecordingsList } from './ArchivedRecordingsList';
-import { NoTargetSelected } from '@app/NoTargetSelected/NoTargetSelected';
 
 export interface Recording {
   id: number;
@@ -31,15 +30,9 @@ export const RecordingList = () => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
-  const [connected, setConnected] = React.useState(false);
 
   React.useEffect(() => {
     const sub = context.commandChannel.isArchiveEnabled().subscribe(setArchiveEnabled);
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
-
-  React.useEffect(() => {
-    const sub = context.commandChannel.isConnected().subscribe(setConnected);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
@@ -63,14 +56,11 @@ export const RecordingList = () => {
 
   return (
     <TargetView pageTitle="Recordings">
-      { connected ?
-          <Card>
-            <CardBody>
-              { cardBody }
-            </CardBody>
-          </Card>
-        : <NoTargetSelected />
-      }
+      <Card>
+        <CardBody>
+          { cardBody }
+        </CardBody>
+      </Card>
     </TargetView>
   );
 };
