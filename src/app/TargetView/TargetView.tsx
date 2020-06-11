@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { ServiceContext } from '@app/Shared/Services/Services'
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { NoTargetSelected } from '@app/NoTargetSelected/NoTargetSelected';
 import { map } from 'rxjs/operators';
+import { NoTargetSelected } from './NoTargetSelected';
 
 interface TargetViewProps {
   pageTitle: string;
