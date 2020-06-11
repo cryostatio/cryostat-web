@@ -59,7 +59,7 @@ export const RecordingList = () => {
         <ActiveRecordingsList archiveEnabled={false}/>
       </>
     );
-  }, [archiveEnabled]);
+  }, [archiveEnabled, activeTab]);
 
   return (
     <TargetView pageTitle="Recordings">
