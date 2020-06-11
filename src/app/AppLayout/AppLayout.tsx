@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
-import { getAvailableRoutes, IAppRoute, staticRoutes } from '@app/routes';
+import { IAppRoute, routes } from '@app/routes';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Nav, NavItem, NavList, Page, PageHeader, PageSidebar, SkipToContent } from '@patternfly/react-core';
 import { NavLink, matchPath, useLocation } from 'react-router-dom';
@@ -18,13 +18,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
-  const [availableRoutes, setAvailableRoutes] = React.useState(staticRoutes);
   const location = useLocation();
-
-  React.useEffect(() => {
-    const sub = context.commandChannel.isConnected().subscribe(isConnected => setAvailableRoutes(getAvailableRoutes(isConnected)));
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
 
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);
@@ -62,7 +56,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const Navigation = (
     <Nav id="nav-primary-simple" theme="dark" variant="default">
       <NavList id="nav-list-simple">
-        {availableRoutes.map((route, idx) => route.label && (
+        {routes.map((route, idx) => route.label && (
             <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
               <NavLink exact to={route.path} activeClassName="pf-m-current">{route.label}</NavLink>
             </NavItem>

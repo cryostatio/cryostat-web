@@ -26,7 +26,7 @@ export interface IAppRoute {
   children?: IAppRoute[];
 }
 
-const staticRoutes: IAppRoute[] = [
+const routes: IAppRoute[] = [
   {
     component: Dashboard,
     exact: true,
@@ -34,9 +34,6 @@ const staticRoutes: IAppRoute[] = [
     path: '/',
     title: 'Dashboard',
   },
-];
-
-const dynamicRoutes: IAppRoute[] = [
   {
     component: RecordingList,
     exact: true,
@@ -72,10 +69,6 @@ const flatten = (routes: IAppRoute[]): IAppRoute[] => {
   return ret;
 };
 
-const getAvailableRoutes = (isConnected) => flatten(isConnected ? staticRoutes.concat(dynamicRoutes) : staticRoutes);
-
-const routes: IAppRoute[] = staticRoutes.concat(dynamicRoutes);
-
 // a custom hook for sending focus to the primary content container
 // after a view has loaded so that subsequent press of tab key
 // sends focus directly to relevant content
@@ -110,14 +103,6 @@ const PageNotFound = ({ title }: { title: string }) => {
 const AppRoutes = () => {
   const context = React.useContext(ServiceContext);
   const [authenticated, setAuthenticated] = React.useState(false);
-  const [availableRoutes, setAvailableRoutes] = React.useState(staticRoutes);
-
-  React.useEffect(() => {
-    const sub = context.commandChannel
-      .isConnected()
-      .subscribe((isConnected) => setAvailableRoutes(getAvailableRoutes(isConnected)));
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel
@@ -131,7 +116,7 @@ const AppRoutes = () => {
     <LastLocationProvider>
       <Switch>
         {authenticated ? (
-          availableRoutes.map(({ path, exact, component, title, isAsync }, idx) => (
+          routes.map(({ path, exact, component, title, isAsync }, idx) => (
             <RouteWithTitleUpdates
               path={path}
               exact={exact}
@@ -150,4 +135,4 @@ const AppRoutes = () => {
   );
 };
 
-export { AppRoutes, routes, getAvailableRoutes, staticRoutes, dynamicRoutes };
+export { AppRoutes, routes };
