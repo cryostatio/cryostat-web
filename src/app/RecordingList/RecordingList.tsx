@@ -4,6 +4,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { ActiveRecordingsList } from './ActiveRecordingsList';
 import { ArchivedRecordingsList } from './ArchivedRecordingsList';
+import { NoTargetSelected } from '@app/NoTargetSelected/NoTargetSelected';
 
 export interface Recording {
   id: number;
@@ -60,7 +61,6 @@ export const RecordingList = () => {
     );
   }, [archiveEnabled]);
 
-  // TODO implement an "empty state" when no target selected
   return (
     <TargetView pageTitle="Recordings">
       { connected ?
@@ -69,7 +69,7 @@ export const RecordingList = () => {
               { cardBody }
             </CardBody>
           </Card>
-        : null
+        : <NoTargetSelected />
       }
     </TargetView>
   );

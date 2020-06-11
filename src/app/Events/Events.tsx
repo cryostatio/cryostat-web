@@ -4,6 +4,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';
+import { NoTargetSelected } from '@app/NoTargetSelected/NoTargetSelected';
 
 export const Events = () => {
   const context = React.useContext(ServiceContext);
@@ -36,7 +37,7 @@ export const Events = () => {
               </Tabs>
             </CardBody>
           </Card>
-        : null
+        : <NoTargetSelected />
       }
     </TargetView>
   </>);
