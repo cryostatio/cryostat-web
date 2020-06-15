@@ -19,9 +19,13 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [selected, setSelected] = React.useState('');
   const [targets, setTargets] = React.useState([]);
   const [expanded, setExpanded] = React.useState(false);
+  const [isLoading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('scan-targets').pipe(map(msg => msg.payload)).subscribe(setTargets);
+    const sub = context.commandChannel.onResponse('scan-targets').pipe(map(msg => msg.payload)).subscribe(targets => {
+      setTargets(targets);
+      setLoading(false);
+    });
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
@@ -38,6 +42,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   }, [context.commandChannel]);
 
   const refreshTargetList = () => {
+    setLoading(true);
     context.commandChannel.sendControlMessage('scan-targets')
   };
 
@@ -63,7 +68,12 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 </Text>
               </CardHeaderMain>
               <CardActions>
-                <Button onClick={refreshTargetList} variant="control" icon={<Spinner2Icon />} />
+                <Button
+                  isDisabled={isLoading}
+                  onClick={refreshTargetList}
+                  variant="control"
+                  icon={<Spinner2Icon />}
+                />
               </CardActions>
             </CardHeader>
             <CardBody>
@@ -73,6 +83,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 selections={selected}
                 onSelect={onSelect}
                 onToggle={setExpanded}
+                isDisabled={isLoading}
                 isOpen={expanded}
                 aria-label="Select Input"
               >
