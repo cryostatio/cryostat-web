@@ -12,7 +12,7 @@ interface TargetViewProps {
 export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   return (<>
     <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
-      <TargetSelect isCompact={props.compactSelect == null ? true : props.compactSelect} allowDisconnect={props.allowDisconnect || false} isFilled={false} />
+      <TargetSelect isCompact={props.compactSelect == null ? true : props.compactSelect} allowDisconnect={props.allowDisconnect || false} />
       { props.children }
     </BreadcrumbPage>
   </>);

@@ -51,7 +51,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   return (<>
       <Grid>
-        <GridItem span={props.isCompact ? 2 : 8}>
+        <GridItem span={props.isCompact ? 4 : 8}>
           <Card>
             <CardHeader>
               <Text component={TextVariants.h4}>
@@ -65,7 +65,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 selections={selected}
                 onSelect={onSelect}
                 onToggle={setExpanded}
-                isExpanded={expanded}
+                isOpen={expanded}
                 aria-label="Select Input"
               >
               {

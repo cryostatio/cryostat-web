@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
@@ -21,14 +21,14 @@ export const CustomRecordingForm = (props) => {
   const history = useHistory();
 
   const [recordingName, setRecordingName] = React.useState(props.recordingName || props?.location?.state?.recordingName || '');
-  const [nameValid, setNameValid] = React.useState(false);
+  const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  '');
   const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
-  const [eventsValid, setEventsValid] = React.useState(!!props.template || !!props?.location?.state?.template);
+  const [eventsValid, setEventsValid] = React.useState((!!props.template || !!props?.location?.state?.template) ? ValidatedOptions.success : ValidatedOptions.default);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -43,13 +43,13 @@ export const CustomRecordingForm = (props) => {
   };
 
   const handleTemplateChange = (name) => {
-    setEventsValid(!!name);
+    setEventsValid(name ? ValidatedOptions.success : ValidatedOptions.error);
     setEventSpecifiers('');
     setTemplate(name);
   };
 
   const handleEventSpecifiersChange = (evt) => {
-    setEventsValid(TemplatePattern.test(evt) || EventSpecifierPattern.test(evt));
+    setEventsValid((TemplatePattern.test(evt) || EventSpecifierPattern.test(evt)) ? ValidatedOptions.success : ValidatedOptions.error);
     setTemplate('');
     setEventSpecifiers(evt);
   };
@@ -59,7 +59,7 @@ export const CustomRecordingForm = (props) => {
   const getEventString = () => template ? `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
 
   const handleRecordingNameChange = (name) => {
-    setNameValid(RecordingNamePattern.test(name));
+    setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
     setRecordingName(name);
   };
 
@@ -67,10 +67,10 @@ export const CustomRecordingForm = (props) => {
     const eventString = getEventString();
 
     const notificationMessages: string[] = [];
-    if (!nameValid) {
+    if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
     }
-    if (!eventsValid) {
+    if (eventsValid !== ValidatedOptions.success) {
       notificationMessages.push(`Event specifiers are invalid`);
     }
     if (notificationMessages.length > 0) {
@@ -127,7 +127,7 @@ export const CustomRecordingForm = (props) => {
         isRequired
         fieldId="recording-name"
         helperText="Please enter a recording name. This will be unique within the target JVM."
-        isValid={nameValid}
+        validated={nameValid}
       >
         <TextInput
           value={recordingName}
@@ -136,7 +136,7 @@ export const CustomRecordingForm = (props) => {
           id="recording-name"
           aria-describedby="recording-name-helper"
           onChange={handleRecordingNameChange}
-          isValid={nameValid}
+          validated={nameValid}
         />
       </FormGroup>
       <FormGroup
@@ -152,7 +152,7 @@ export const CustomRecordingForm = (props) => {
           id="recording-continuous"
           name="recording-continuous"
         />
-        <Split gutter="md">
+        <Split hasGutter={true}>
           <SplitItem isFilled>
             <TextInput
               value={duration}
@@ -183,10 +183,10 @@ export const CustomRecordingForm = (props) => {
         label="Events"
         isRequired
         fieldId="recording-events"
-        isValid={eventsValid}
+        validated={eventsValid}
         helperText="Select a template from the dropdown, or enter a template name or event specifier string in the text area."
       >
-        <Split gutter="md">
+        <Split hasGutter={true}>
           <SplitItem>
             <FormSelect
               value={template}
@@ -220,7 +220,7 @@ export const CustomRecordingForm = (props) => {
             </Tooltip>
           </SplitItem>
           <SplitItem isFilled>
-            <TextArea value={getEventSpecifiers()} onChange={handleEventSpecifiersChange} aria-label="Custom Event Specifiers Area" isValid={eventsValid} />
+            <TextArea value={getEventSpecifiers()} onChange={handleEventSpecifiersChange} aria-label="Custom Event Specifiers Area" validated={eventsValid} />
           </SplitItem>
         </Split>
       </FormGroup>

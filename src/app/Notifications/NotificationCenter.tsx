@@ -18,9 +18,9 @@ export const NotificationCenter = () => {
   };
 
   const addNotification = (notification: Notification) => {
-    setNotifications([...notifications, notification]);
-    if (notification.timeout > 0) {
-      window.setTimeout(() => setNotifications(removeNotificationByKey(notifications, notification.key)), notification.timeout);
+    setNotifications(notifications => [...notifications, notification]);
+    if (notification.timeout) {
+      window.setTimeout(() => setNotifications(notifications => removeNotificationByKey(notifications, notification.key)), notification.timeout);
     }
   };
 
@@ -38,7 +38,7 @@ export const NotificationCenter = () => {
           variant={AlertVariant[variant]}
           title={title}
           key={key}
-          action={
+          actionClose={
             <AlertActionCloseButton
               title={title}
               variantLabel={`${variant} alert`}

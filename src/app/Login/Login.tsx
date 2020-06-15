@@ -39,7 +39,7 @@ export const Login = (props) => {
     <PageSection>
       <Card>
         <CardHeader>
-          <Title size="lg">Login</Title>
+          <Title headingLevel="h1" size="lg">Login</Title>
         </CardHeader>
         <CardBody>
           {
