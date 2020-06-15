@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Card, CardBody, CardHeader, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
-import { ContainerNodeIcon } from '@patternfly/react-icons';
+import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
+import { ContainerNodeIcon, Spinner2Icon } from '@patternfly/react-icons';
 import { filter, first, map } from 'rxjs/operators';
 
 export interface TargetSelectProps {
@@ -28,7 +28,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   React.useEffect(() => {
     const sub = context.commandChannel.isReady()
       .pipe(filter(v => !!v), first())
-      .subscribe(() => context.commandChannel.sendControlMessage('scan-targets'));
+      .subscribe(refreshTargetList);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
@@ -36,6 +36,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     const sub = context.commandChannel.target().subscribe(setSelected);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
+
+  const refreshTargetList = () => {
+    context.commandChannel.sendControlMessage('scan-targets')
+  };
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
@@ -53,9 +57,14 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         <GridItem span={props.isCompact ? 4 : 8}>
           <Card>
             <CardHeader>
-              <Text component={TextVariants.h4}>
-                Target JVM
-              </Text>
+              <CardHeaderMain>
+                <Text component={TextVariants.h4}>
+                  Target JVM
+                </Text>
+              </CardHeaderMain>
+              <CardActions>
+                <Button onClick={refreshTargetList} variant="control" icon={<Spinner2Icon />} />
+              </CardActions>
             </CardHeader>
             <CardBody>
               <Select
