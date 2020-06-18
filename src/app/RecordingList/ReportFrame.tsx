@@ -2,6 +2,7 @@ import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { Spinner } from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
 
 export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
@@ -12,6 +13,7 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [report, setReport] = React.useState();
+  const [loaded, setLoaded] = React.useState(false);
   const { recording, ...rest } = props;
 
   React.useLayoutEffect(() => {
@@ -22,7 +24,10 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
     return () =>  sub.unsubscribe();
   }, [context.reports, notifications, recording, props, props.recording]);
 
+  const onLoad = () => setLoaded(true);
+
   return (<>
-    <iframe srcDoc={report} {...rest} />
+    { !loaded && <Spinner /> }
+    <iframe srcDoc={report} {...rest} onLoad={onLoad} hidden={!loaded} />
   </>);
 });

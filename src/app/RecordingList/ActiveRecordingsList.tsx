@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Spinner, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, first, map } from 'rxjs/operators';
 import { RecordingsDataTable } from './RecordingsDataTable';
@@ -100,21 +100,14 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
-    const [reportLoaded, setReportLoaded] = React.useState(false);
-
     const expandedRowId =`active-table-row-${props.index}-exp`;
     const handleToggle = () => {
-      setReportLoaded(false);
       toggleExpanded(expandedRowId);
     };
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId)
     }, [expandedRows, expandedRowId]);
-
-    const onLoad = () => {
-      setReportLoaded(true);
-    };
 
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);
@@ -147,10 +140,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       </>
     }, [props.recording]);
 
-    const showReport = React.useMemo(() => {
-      return <ReportFrame recording={props.recording} width="100%" height="640" onLoad={onLoad} hidden={!reportLoaded} />;
-    }, [props.recording.reportUrl, reportLoaded, onLoad]);
-
     return (
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
         <DataListItemRow>
@@ -167,10 +156,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           isHidden={!isExpanded}
         >
           <div>{
-            isExpanded ? (reportLoaded ? null : <Spinner />) : null
-          }</div>
-          <div>{
-            isExpanded ? showReport : null
+            isExpanded && <ReportFrame recording={props.recording} width="100%" height="640" />
           }</div>
         </DataListContent>
       </DataListItem>

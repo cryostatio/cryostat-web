@@ -96,10 +96,6 @@ export const ArchivedRecordingsList = () => {
       handleRowCheck(checked, props.index);
     };
 
-    const showReport = React.useMemo(() => {
-      return <ReportFrame recording={props.recording} width="100%" height="640" onLoad={onLoad} hidden={!reportLoaded} />;
-    }, [props.recording.reportUrl, reportLoaded, onLoad]);
-
     return (<>
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} name={`row-${props.index}-check`} isExpanded={isExpanded} >
         <DataListItemRow>
@@ -120,10 +116,7 @@ export const ArchivedRecordingsList = () => {
           isHidden={!isExpanded}
         >
           <div>{
-            isExpanded ? (reportLoaded ? null : <Spinner />) : null
-          }</div>
-          <div>{
-            isExpanded ? showReport : null
+            isExpanded && <ReportFrame recording={props.recording} width="100%" height="640" />
           }</div>
         </DataListContent>
       </DataListItem>
