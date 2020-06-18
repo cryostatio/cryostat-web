@@ -95,12 +95,15 @@ export const CustomRecordingForm = (props) => {
         filter(m => m.status === 0),
         map(m => m.payload),
       )
-      .subscribe(m => setTemplates(m));
+      .subscribe(setTemplates);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
   React.useEffect(() => {
-    context.commandChannel.sendMessage('list-event-templates');
+    const sub = context.commandChannel.target().subscribe(target =>
+      context.commandChannel.sendMessage('list-event-templates')
+    );
+    return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
   React.useEffect(() => {

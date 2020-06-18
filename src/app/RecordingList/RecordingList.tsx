@@ -32,31 +32,33 @@ export const RecordingList = () => {
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.isArchiveEnabled().subscribe(enabled => setArchiveEnabled(enabled));
+    const sub = context.commandChannel.isArchiveEnabled().subscribe(setArchiveEnabled);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
+
+  const cardBody = React.useMemo(() => {
+    return archiveEnabled ? (
+      <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+        <Tab eventKey={0} title="Active Recordings">
+          <ActiveRecordingsList archiveEnabled={true}/>
+        </Tab>
+        <Tab eventKey={1} title="Archived Recordings">
+          <ArchivedRecordingsList />
+        </Tab>
+      </Tabs>
+    ) : (
+      <>
+        <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
+        <ActiveRecordingsList archiveEnabled={false}/>
+      </>
+    );
+  }, [archiveEnabled, activeTab]);
 
   return (
     <TargetView pageTitle="Recordings">
       <Card>
         <CardBody>
-          {
-            archiveEnabled ? (
-              <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-                <Tab eventKey={0} title="Active Recordings">
-                  <ActiveRecordingsList archiveEnabled={true}/>
-                </Tab>
-                <Tab eventKey={1} title="Archived Recordings">
-                  <ArchivedRecordingsList />
-                </Tab>
-              </Tabs>
-            ) : (
-              <>
-                <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
-                <ActiveRecordingsList archiveEnabled={false}/>
-              </>
-            )
-          }
+          { cardBody }
         </CardBody>
       </Card>
     </TargetView>

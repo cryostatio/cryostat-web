@@ -221,7 +221,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         }
       });
     return () => sub.unsubscribe();
-  }, [context.commandChannel, notifications, uploadIds, props.recording.name]);
+  }, [context.commandChannel, props.recording.name, notifications, uploadIds]);
 
   const grafanaUpload = () => {
     context.commandChannel.grafanaDatasourceUrl().pipe(first()).subscribe(url => {
