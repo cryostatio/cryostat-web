@@ -115,9 +115,7 @@ export const ArchivedRecordingsList = () => {
           id={`archived-ex-expand-${props.index}`}
           isHidden={!isExpanded}
         >
-          <div>{
-            isExpanded && <ReportFrame recording={props.recording} width="100%" height="640" />
-          }</div>
+          <ReportFrame recording={props.recording} width="100%" height="640" />
         </DataListContent>
       </DataListItem>
     </>);
