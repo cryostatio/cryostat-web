@@ -17,7 +17,6 @@ export class CommandChannel {
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
   private readonly targetSubject = new ReplaySubject<string>(1);
-  private pingTimer = -1;
 
   constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
     this.apiSvc = apiSvc;
@@ -90,16 +89,12 @@ export class CommandChannel {
           protocol: subprotocol,
           openObserver: {
             next: () => {
-              this.pingTimer = window.setInterval(() => {
-                this.sendControlMessage('ping');
-              }, 10 * 1000);
               this.ready.next(true);
             }
           },
           closeObserver: {
             next: () => {
               this.ready.next(false);
-              window.clearInterval(this.pingTimer);
               this.notifications.info('WebSocket connection lost');
             }
           }
