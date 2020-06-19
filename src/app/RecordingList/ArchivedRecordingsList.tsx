@@ -1,10 +1,12 @@
 import * as React from 'react';
+import * as _ from 'lodash';
+import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Button, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Spinner, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { filter, map } from 'rxjs/operators';
-import { Recording } from './RecordingList';
-import { RecordingsDataTable } from './RecordingsDataTable';
 import { RecordingActions } from './ActiveRecordingsList';
+import { RecordingsDataTable } from './RecordingsDataTable';
+import { ReportFrame } from './ReportFrame';
 
 export const ArchivedRecordingsList = () => {
   const context = React.useContext(ServiceContext);
@@ -12,10 +14,11 @@ export const ArchivedRecordingsList = () => {
   const [recordings, setRecordings] = React.useState([]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
+  const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [openAction, setOpenAction] = React.useState(-1);
 
   const tableColumns: string[] = [
-    'Name',
+    'Name'
   ];
 
   const handleHeaderCheck = (checked) => {
@@ -42,6 +45,11 @@ export const ArchivedRecordingsList = () => {
     context.commandChannel.sendControlMessage('list-saved');
   };
 
+  const toggleExpanded = (id) => {
+    const idx = expandedRows.indexOf(id);
+    setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
+  };
+
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('save').subscribe(() => context.commandChannel.sendControlMessage('list-saved'));
     return () => sub.unsubscribe();
@@ -53,30 +61,64 @@ export const ArchivedRecordingsList = () => {
         filter(m => m.status === 0),
         map(m => m.payload),
       )
-      .subscribe(recordings => setRecordings(recordings));
+      .subscribe(newRecordings => {
+        if (!_.isEqual(newRecordings, recordings)) {
+          setRecordings(newRecordings);
+        }
+      });
     return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+  }, [context.commandChannel, recordings]);
 
   React.useEffect(() => {
     context.commandChannel.sendControlMessage('list-saved');
-    const id = window.setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 5000);
-    return () => window.clearInterval(id);
+    const id = setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 30_000);
+    return () => clearInterval(id);
   }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
-    return (
-      <DataListItemRow>
-        <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
-        <DataListItemCells
-          dataListCells={[
-            <DataListCell key={`table-row-${props.index}-1`}>
-              {props.recording.name}
-            </DataListCell>,
-          ]}
-        />
-        <RecordingActions index={props.index} recording={props.recording} isOpen={props.index === openAction} setOpen={o => setOpenAction(o ? props.index : -1)} />
-      </DataListItemRow>
-    );
+    const [reportLoaded, setReportLoaded] = React.useState(false);
+
+    const expandedRowId =`archived-table-row-${props.index}-exp`;
+    const handleToggle = () => {
+      setReportLoaded(false);
+      toggleExpanded(expandedRowId);
+    };
+
+    const isExpanded = React.useMemo(() => {
+      return expandedRows.includes(expandedRowId);
+    }, [expandedRows, expandedRowId]);
+
+    const onLoad = () => {
+      setReportLoaded(true);
+    };
+
+    const handleCheck = (checked) => {
+      handleRowCheck(checked, props.index);
+    };
+
+    return (<>
+      <DataListItem aria-labelledby={`table-row-${props.index}-1`} name={`row-${props.index}-check`} isExpanded={isExpanded} >
+        <DataListItemRow>
+          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
+          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`archived-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
+          <DataListItemCells
+            dataListCells={[
+              <DataListCell key={`table-row-${props.index}-1`}>
+                {props.recording.name}
+              </DataListCell>
+            ]}
+          />
+          <RecordingActions recording={props.recording} index={props.index} />
+        </DataListItemRow>
+        <DataListContent
+          aria-label="Content Details"
+          id={`archived-ex-expand-${props.index}`}
+          isHidden={!isExpanded}
+        >
+          <ReportFrame recording={props.recording} width="100%" height="640" />
+        </DataListContent>
+      </DataListItem>
+    </>);
   };
 
   const RecordingsToolbar = () => {
@@ -91,6 +133,10 @@ export const ArchivedRecordingsList = () => {
     );
   };
 
+  const recordingRows = React.useMemo(() => {
+    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+  }, [recordings, expandedRows, checkedIndices]);
+
   return (<>
     <RecordingsDataTable
         listTitle="Archived Flight Recordings"
@@ -100,7 +146,7 @@ export const ArchivedRecordingsList = () => {
         onHeaderCheck={handleHeaderCheck}
     >
       {
-        recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+        recordingRows
       }
     </RecordingsDataTable>
   </>);

@@ -1,11 +1,13 @@
 import * as React from 'react';
+import * as _ from 'lodash';
 import { NotificationsContext } from '@app/Notifications/Notifications';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Button, DataListAction, DataListCell, DataListCheck, DataListItemCells, DataListItemRow, Toolbar, ToolbarContent, ToolbarItem, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text } from '@patternfly/react-core';
+import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { filter, first, map } from 'rxjs/operators';
-import { Recording, RecordingState } from './RecordingList';
 import { RecordingsDataTable } from './RecordingsDataTable';
+import { ReportFrame } from './ReportFrame';
 
 export interface ActiveRecordingsListProps {
   archiveEnabled: boolean;
@@ -18,7 +20,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [recordings, setRecordings] = React.useState([]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const [openAction, setOpenAction] = React.useState(-1);
+  const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const { url } = useRouteMatch();
 
   const tableColumns: string[] = [
@@ -83,91 +85,135 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         filter(m => m.status === 0),
         map(m => m.payload),
       )
-      .subscribe(recordings => setRecordings(recordings));
+      .subscribe(newRecordings => {
+        if (!_.isEqual(newRecordings, recordings)) {
+          setRecordings(newRecordings);
+        }
+      });
     return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+  }, [context.commandChannel, recordings]);
 
   React.useEffect(() => {
     context.commandChannel.sendMessage('list');
-    const id = window.setInterval(() => context.commandChannel.sendMessage('list'), 5000);
-    return () => window.clearInterval(id);
+    const id = setInterval(() => context.commandChannel.sendMessage('list'), 30_000);
+    return () => clearInterval(id);
   }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
+    const expandedRowId =`active-table-row-${props.index}-exp`;
+    const handleToggle = () => {
+      toggleExpanded(expandedRowId);
+    };
+
+    const isExpanded = React.useMemo(() => {
+      return expandedRows.includes(expandedRowId)
+    }, [expandedRows, expandedRowId]);
+
+    const handleCheck = (checked) => {
+      handleRowCheck(checked, props.index);
+    };
+
+    const listColumns = React.useMemo(() => {
+      const ISOTime = (props) => {
+        const fmt = new Date(props.timeStr).toISOString();
+        return (<span>{fmt}</span>);
+      };
+
+      const RecordingDuration = (props) => {
+        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`
+        return (<span>{str}</span>);
+      };
+
+      return <>
+        <DataListCell key={`table-row-${props.index}-1`}>
+          {props.recording.name}
+        </DataListCell>
+        <DataListCell key={`table-row-${props.index}-2`}>
+          <ISOTime timeStr={props.recording.startTime} />
+        </DataListCell>
+        <DataListCell key={`table-row-${props.index}-3`}>
+          <RecordingDuration duration={props.recording.duration} />
+        </DataListCell>
+        <DataListCell key={`table-row-${props.index}-4`}>
+          {props.recording.state}
+        </DataListCell>
+      </>
+    }, [props.recording]);
+
     return (
-      <DataListItemRow>
-        <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={(checked) => handleRowCheck(checked, props.index)} isChecked={checkedIndices.includes(props.index)} />
-        <DataListItemCells
-          dataListCells={[
-            <DataListCell key={`table-row-${props.index}-1`}>
-              {props.recording.name}
-            </DataListCell>,
-            <DataListCell key={`table-row-${props.index}-2`}>
-              <ISOTime timeStr={props.recording.startTime} />
-            </DataListCell>,
-            <DataListCell key={`table-row-${props.index}-3`}>
-              <RecordingDuration duration={props.recording.duration} />
-            </DataListCell>,
-            // TODO make row expandable and render report in collapsed iframe
-            <DataListCell key={`table-row-${props.index}-4`}>
-              {props.recording.state}
-            </DataListCell>
-          ]}
-        />
-        <RecordingActions index={props.index} recording={props.recording} isOpen={props.index === openAction} setOpen={o => setOpenAction(o ? props.index : -1)} />
-      </DataListItemRow>
+      <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
+        <DataListItemRow>
+          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
+          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`active-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
+          <DataListItemCells
+            dataListCells={listColumns}
+          />
+          <RecordingActions index={props.index} recording={props.recording} />
+        </DataListItemRow>
+        <DataListContent
+          aria-label="Content Details"
+          id={`active-ex-expand-${props.index}`}
+          isHidden={!isExpanded}
+        >
+          <ReportFrame recording={props.recording} width="100%" height="640" />
+        </DataListContent>
+      </DataListItem>
     );
   };
 
-  const ISOTime = (props) => {
-    const fmt = new Date(props.timeStr).toISOString();
-    return (<span>{fmt}</span>);
-  };
-
-  const RecordingDuration = (props) => {
-    const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`
-    return (<span>{str}</span>);
-  };
-
-  const isStopDisabled = () => {
-    if (!checkedIndices.length) {
-      return true;
-    }
-    const filtered = recordings.filter((r: Recording, idx: number) => checkedIndices.includes(idx));
-    const anyRunning = filtered.some((r: Recording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
-    return !anyRunning;
+  const toggleExpanded = (id) => {
+    const idx = expandedRows.indexOf(id);
+    setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
   const RecordingsToolbar = () => {
-    const buttons = [
-      <Button key="create" variant="primary" onClick={handleCreateRecording}>Create</Button>
-    ];
-    if (props.archiveEnabled) {
-      buttons.push((
-        <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
+    const isStopDisabled = React.useMemo(() => {
+      if (!checkedIndices.length) {
+        return true;
+      }
+      const filtered = recordings.filter((r: Recording, idx: number) => checkedIndices.includes(idx));
+      const anyRunning = filtered.some((r: Recording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
+      return !anyRunning;
+    }, [checkedIndices, recordings]);
+
+    const buttons = React.useMemo(() => {
+      const arr = [
+        <Button key="create" variant="primary" onClick={handleCreateRecording}>Create</Button>
+      ];
+      if (props.archiveEnabled) {
+        arr.push((
+          <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
+        ));
+      }
+      arr.push((
+        <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
       ));
-    }
-    buttons.push((
-      <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled()}>Stop</Button>
-    ));
-    buttons.push((
-      <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
-    ));
+      arr.push((
+        <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+      ));
+      return <>
+        {
+          arr.map((btn, idx) => (
+            <ToolbarItem key={idx}>
+              { btn }
+            </ToolbarItem>
+          ))
+        }
+      </>;
+    }, [checkedIndices]);
 
     return (
       <Toolbar id="active-recordings-toolbar">
         <ToolbarContent>
-        {
-          buttons.map((btn, idx) => (
-              <ToolbarItem key={idx}>
-                { btn }
-              </ToolbarItem>
-          ))
-        }
+        { buttons }
         </ToolbarContent>
       </Toolbar>
     );
   };
+
+  const recordingRows = React.useMemo(() => {
+    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+  }, [recordings, expandedRows, checkedIndices]);
 
   return (<>
     <RecordingsDataTable
@@ -177,16 +223,12 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
     >
-      {
-        recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
-      }
+      {recordingRows}
     </RecordingsDataTable>
   </>);
 };
 
 export interface RecordingActionsProps {
-  isOpen: boolean;
-  setOpen: (open: boolean) => void;
   index: number;
   recording: Recording;
 }
@@ -194,6 +236,7 @@ export interface RecordingActionsProps {
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
+  const [open, setOpen] = React.useState(false);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
   const [uploadIds, setUploadIds] = React.useState([] as string[]);
 
@@ -232,16 +275,24 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     });
   };
 
-  const getActionItems = () => {
+  const handleDownloadRecording = () => {
+    context.api.downloadRecording(props.recording);
+  };
+
+  const handleDownloadReport = () => {
+    context.api.downloadReport(props.recording);
+  };
+
+  const actionItems = React.useMemo(() => {
     const actionItems = [
       <DropdownItem key="download" component={
-        <Text onClick={() => context.api.downloadRecording(props.recording)} >
+        <Text onClick={handleDownloadRecording}>
           Download Recording
         </Text>
         }>
       </DropdownItem>,
       <DropdownItem key="report" component={
-        <Text onClick={() => context.api.downloadReport(props.recording)} >
+        <Text onClick={handleDownloadReport} >
           Download Report
         </Text>
         }>
@@ -258,6 +309,10 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       );
     }
     return actionItems;
+  }, [handleDownloadRecording, handleDownloadReport, grafanaEnabled, grafanaUpload]);
+
+  const onSelect = () => {
+    setOpen(o => !o);
   };
 
   return (
@@ -269,10 +324,10 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       <Dropdown
         isPlain
         position={DropdownPosition.right}
-        isOpen={props.isOpen}
-        onSelect={() => props.setOpen(!props.isOpen)}
-        toggle={<KebabToggle onToggle={props.setOpen} />}
-        dropdownItems={getActionItems()}
+        isOpen={open}
+        onSelect={onSelect}
+        toggle={<KebabToggle onToggle={setOpen} />}
+        dropdownItems={actionItems}
       />
     </DataListAction>
   );

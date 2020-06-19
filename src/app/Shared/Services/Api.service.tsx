@@ -114,19 +114,6 @@ export class ApiService {
     );
   }
 
-  getReport(recording: SavedRecording): Observable<string> {
-    return this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first(),
-      concatMap(auths => fromFetch(recording.reportUrl, {
-        credentials: 'include',
-        mode: 'cors',
-        headers: this.getHeaders(auths[0], auths[1]),
-      })),
-      concatMap(resp => from(resp.text())),
-    );
-  }
-
   private getHeaders(token: string, method: string): Headers {
     const headers = new window.Headers();
     if (!!token && !!method) {
@@ -169,4 +156,8 @@ export enum RecordingState {
   STARTING = 'STARTING',
   RUNNING = 'RUNNING',
   STOPPING = 'STOPPING',
+}
+
+export const isActiveRecording = (toCheck: SavedRecording): toCheck is Recording => {
+  return (toCheck as Recording).state !== undefined;
 }
