@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Card, CardBody, CardHeader, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
-import { ContainerNodeIcon } from '@patternfly/react-icons';
+import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
+import { ContainerNodeIcon, Spinner2Icon } from '@patternfly/react-icons';
 import { filter, first, map } from 'rxjs/operators';
 
 export interface TargetSelectProps {
@@ -19,16 +19,20 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [selected, setSelected] = React.useState('');
   const [targets, setTargets] = React.useState([]);
   const [expanded, setExpanded] = React.useState(false);
+  const [isLoading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('scan-targets').pipe(map(msg => msg.payload)).subscribe(setTargets);
+    const sub = context.commandChannel.onResponse('scan-targets').pipe(map(msg => msg.payload)).subscribe(targets => {
+      setTargets(targets);
+      setLoading(false);
+    });
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.isReady()
       .pipe(filter(v => !!v), first())
-      .subscribe(() => context.commandChannel.sendControlMessage('scan-targets'));
+      .subscribe(refreshTargetList);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
@@ -36,6 +40,11 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     const sub = context.commandChannel.target().subscribe(setSelected);
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
+
+  const refreshTargetList = () => {
+    setLoading(true);
+    context.commandChannel.sendControlMessage('scan-targets')
+  };
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
@@ -53,9 +62,19 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         <GridItem span={props.isCompact ? 4 : 8}>
           <Card>
             <CardHeader>
-              <Text component={TextVariants.h4}>
-                Target JVM
-              </Text>
+              <CardHeaderMain>
+                <Text component={TextVariants.h4}>
+                  Target JVM
+                </Text>
+              </CardHeaderMain>
+              <CardActions>
+                <Button
+                  isDisabled={isLoading}
+                  onClick={refreshTargetList}
+                  variant="control"
+                  icon={<Spinner2Icon />}
+                />
+              </CardActions>
             </CardHeader>
             <CardBody>
               <Select
@@ -64,6 +83,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 selections={selected}
                 onSelect={onSelect}
                 onToggle={setExpanded}
+                isDisabled={isLoading}
                 isOpen={expanded}
                 aria-label="Select Input"
               >
