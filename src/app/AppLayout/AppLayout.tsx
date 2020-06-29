@@ -54,7 +54,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   };
 
   const Navigation = (
-    <Nav id="nav-primary-simple" theme="dark" variant="default">
+    <Nav id="nav-primary-simple" theme="dark" variant="default" 
+        onSelect={(selected) => {if(isMobileView) setIsNavOpenMobile(false)}}>
       <NavList id="nav-list-simple">
         {routes.map((route, idx) => route.label && (
             <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
