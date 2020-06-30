@@ -29,6 +29,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const onPageResize = (props: { mobileView: boolean; windowSize: number }) => {
     setIsMobileView(props.mobileView);
   };
+  const mobileOnSelect = (selected) => {
+    if(isMobileView) setIsNavOpenMobile(false)
+  };
   const Header = (
     <PageHeader
       logo="ContainerJFR"
@@ -54,7 +57,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   };
 
   const Navigation = (
-    <Nav id="nav-primary-simple" theme="dark" variant="default">
+    <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect}>
       <NavList id="nav-list-simple">
         {routes.map((route, idx) => route.label && (
             <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
