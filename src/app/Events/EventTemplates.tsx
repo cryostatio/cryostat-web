@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Toolbar, ToolbarContent, ToolbarItem, TextInput } from '@patternfly/react-core';
-import { Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
+import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
 
@@ -46,6 +46,7 @@ export interface EventTemplate {
   name: string;
   description: string;
   provider: string;
+  type: 'CUSTOM' | 'TARGET';
 }
 
 export const EventTemplates = () => {
@@ -53,6 +54,7 @@ export const EventTemplates = () => {
   const history = useHistory();
 
   const [templates, setTemplates] = React.useState([]);
+  const [filteredTemplates, setFilteredTemplates] = React.useState([]);
   const [filterText, setFilterText] = React.useState('');
 
   const tableColumns = [
@@ -61,7 +63,7 @@ export const EventTemplates = () => {
     'Provider',
   ];
 
-  const getTemplates = () => {
+  React.useEffect(() => {
     let filtered;
     if (!filterText) {
       filtered = templates;
@@ -69,17 +71,8 @@ export const EventTemplates = () => {
       const ft = filterText.trim().toLowerCase();
       filtered = templates.filter((t: EventTemplate) => t.name.toLowerCase().includes(ft) || t.description.toLowerCase().includes(ft) || t.provider.toLowerCase().includes(ft));
     }
-    return filtered.map((t: EventTemplate) =>
-      [ t.name, t.description, t.provider ]
-    );
-  };
-
-  const actions = [
-    {
-      title: 'Create Recording from Template',
-      onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } })
-    }
-  ];
+    setFilteredTemplates(filtered);
+  }, [filterText, templates]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('list-event-templates')
@@ -87,13 +80,55 @@ export const EventTemplates = () => {
         filter(m => m.status === 0),
         map(m => m.payload),
       )
-      .subscribe(templates => setTemplates(templates));
+      .subscribe(templates => {
+        setTemplates(templates);
+        setFilteredTemplates(templates);
+      });
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
   React.useEffect(() => {
-    context.commandChannel.sendMessage('list-event-templates');
+    refreshTemplates();
   }, [context.commandChannel]);
+
+  const refreshTemplates = () => {
+    context.commandChannel.sendMessage('list-event-templates');
+  };
+
+  const displayTemplates = React.useMemo(() => {
+    return filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider ]));
+  }, [filteredTemplates]);
+
+  const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
+    if (typeof extraData.rowIndex == 'undefined') {
+      return [];
+    }
+    let actions = [
+      {
+        title: 'Create Recording from Template',
+        onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } })
+      }
+    ] as IAction[];
+
+    const template: EventTemplate = filteredTemplates[extraData.rowIndex];
+    if (template.type === 'CUSTOM') {
+      actions = actions.concat([
+          {
+            isSeparator: true,
+          },
+          {
+            title: 'Delete Custom Template',
+            onClick: (event, rowId, rowData) => handleDelete(rowData)
+          }
+      ]);
+    }
+
+    return actions;
+  };
+
+  const handleDelete = (rowData) => {
+    context.api.deleteCustomEventTemplate(rowData[0]).subscribe(refreshTemplates);
+  };
 
   return (<>
     <Toolbar id="event-templates-toolbar">
@@ -103,7 +138,7 @@ export const EventTemplates = () => {
         </ToolbarItem>
       </ToolbarContent>
     </Toolbar>
-    <Table aria-label="Event Templates table" cells={tableColumns} rows={getTemplates()} actions={actions} variant={TableVariant.compact}>
+    <Table aria-label="Event Templates table" cells={tableColumns} rows={displayTemplates} actionResolver={actionResolver} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />
     </Table>
