@@ -159,12 +159,14 @@ export const EventTemplates = () => {
       return;
     }
     setUploading(true);
-    context.api.addCustomEventTemplate(uploadFile).subscribe(() => {
-      setUploadFile(undefined);
-      setUploadFilename('');
+    context.api.addCustomEventTemplate(uploadFile).subscribe(success => {
       setUploading(false);
-      refreshTemplates();
-      setModalOpen(false);
+      if (success) {
+        setUploadFile(undefined);
+        setUploadFilename('');
+        refreshTemplates();
+        setModalOpen(false);
+      }
     });
   };
 

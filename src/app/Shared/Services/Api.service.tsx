@@ -38,6 +38,7 @@
 import { from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
+import { Notifications } from '@app/Notifications/Notifications';
 
 export class ApiService {
 
@@ -45,7 +46,7 @@ export class ApiService {
   private readonly authMethod = new ReplaySubject<string>(1);
   readonly authority: string;
 
-   constructor() {
+   constructor(private readonly notifications: Notifications) {
       let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
       if (!apiAuthority) {
         apiAuthority = '';
@@ -112,7 +113,7 @@ export class ApiService {
     ));
   }
 
-  addCustomEventTemplate(file: File): Observable<void> {
+  addCustomEventTemplate(file: File): Observable<boolean> {
     const body = new window.FormData();
     body.append('template', file);
     return this.getToken().pipe(
@@ -132,10 +133,12 @@ export class ApiService {
             if (!response.ok) {
               throw response.statusText;
             }
+            return true;
           }),
-          catchError((e: Error): ObservableInput<void> => {
+          catchError((e: Error): ObservableInput<boolean> => {
             window.console.error(JSON.stringify(e));
-            return of();
+            this.notifications.danger('Template Upload Failed', JSON.stringify(e));
+            return of(false);
           })
         )
     ));
