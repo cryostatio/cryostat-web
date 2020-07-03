@@ -37,7 +37,8 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Toolbar, ToolbarContent, ToolbarItem, TextInput } from '@patternfly/react-core';
+import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
+import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
@@ -56,6 +57,11 @@ export const EventTemplates = () => {
   const [templates, setTemplates] = React.useState([]);
   const [filteredTemplates, setFilteredTemplates] = React.useState([]);
   const [filterText, setFilterText] = React.useState('');
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
+  const [uploadFilename, setUploadFilename] = React.useState('');
+  const [uploading, setUploading] = React.useState(false);
+  const [fileRejected, setFileRejected] = React.useState(false);
 
   const tableColumns = [
     'Name',
@@ -130,18 +136,102 @@ export const EventTemplates = () => {
     context.api.deleteCustomEventTemplate(rowData[0]).subscribe(refreshTemplates);
   };
 
+  const handleModalToggle = () => {
+    setModalOpen(v => {
+      if (v) {
+        setUploadFile(undefined);
+        setUploadFilename('');
+        setUploading(false);
+      }
+      return !v;
+    });
+  };
+
+  const handleFileChange = (value, filename, event) => {
+    setFileRejected(false);
+    setUploadFile(value);
+    setUploadFilename(filename);
+  };
+
+  const handleUploadSubmit = () => {
+    if (!uploadFile) {
+      window.console.error('Attempted to submit template upload without a file selected');
+      return;
+    }
+    setUploading(true);
+    context.api.addCustomEventTemplate(uploadFile).subscribe(() => {
+      setUploadFile(undefined);
+      setUploadFilename('');
+      setUploading(false);
+      refreshTemplates();
+      setModalOpen(false);
+    });
+  };
+
+  const handleUploadCancel = () => {
+    setUploadFile(undefined);
+    setUploadFilename('');
+    setModalOpen(false);
+  };
+
+  const handleFileRejected = () => {
+    setFileRejected(true);
+  };
+
   return (<>
     <Toolbar id="event-templates-toolbar">
       <ToolbarContent>
-        <ToolbarItem>
-          <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
-        </ToolbarItem>
+        <ToolbarGroup variant="filter-group">
+          <ToolbarItem>
+            <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
+          </ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarGroup variant="icon-button-group">
+          <ToolbarItem>
+            <Button variant="plain" aria-label="add" onClick={handleModalToggle}><PlusIcon /></Button>
+          </ToolbarItem>
+        </ToolbarGroup>
       </ToolbarContent>
     </Toolbar>
     <Table aria-label="Event Templates table" cells={tableColumns} rows={displayTemplates} actionResolver={actionResolver} variant={TableVariant.compact}>
       <TableHeader />
       <TableBody />
     </Table>
+
+    <Modal
+      isOpen={modalOpen}
+      variant={ModalVariant.large}
+      showClose={true}
+      onClose={handleModalToggle}
+      title="Create Custom Event Template"
+      description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets - a template may specify a custom application event type, which is only available in targets running the associated application."
+      >
+      <Form>
+        <FormGroup
+          label="Template XML"
+          isRequired
+          fieldId="template"
+          validated={fileRejected ? 'error' : 'default'}
+        >
+          <FileUpload
+            id="template-file-upload"
+            value={uploadFile}
+            filename={uploadFilename}
+            onChange={handleFileChange}
+            isLoading={uploading}
+            validated={fileRejected ? 'error' : 'default'}
+            dropzoneProps={{
+              accept: '.xml,.jfc',
+              onDropRejected: handleFileRejected
+            }}
+          />
+        </FormGroup>
+        <ActionGroup>
+          <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>Submit</Button>
+          <Button variant="link" onClick={handleUploadCancel}>Cancel</Button>
+        </ActionGroup>
+      </Form>
+    </Modal>
   </>);
 
 }

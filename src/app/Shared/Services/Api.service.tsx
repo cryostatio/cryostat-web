@@ -86,31 +86,59 @@ export class ApiService {
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<void> {
-    console.log('DELETE', { templateName });
     return this.getToken().pipe(
       combineLatest(this.getAuthMethod()),
       first()
     ).pipe(
-      concatMap(auths => {
-      return fromFetch(`${this.authority}/api/v1/templates/${templateName}`, {
-        credentials: 'include',
-        mode: 'cors',
-        method: 'DELETE',
-        body: null,
-        headers: this.getHeaders(auths[0], auths[1])
-      })
-      .pipe(
-        map(response => {
-          if (!response.ok) {
-            throw response.statusText;
-          }
-        }),
-        catchError((e: Error): ObservableInput<void> => {
-          window.console.error(JSON.stringify(e));
-          return of();
+      concatMap(auths =>
+        fromFetch(`${this.authority}/api/v1/templates/${templateName}`, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'DELETE',
+          body: null,
+          headers: this.getHeaders(auths[0], auths[1])
         })
-      )
-    }));
+        .pipe(
+          map(response => {
+            if (!response.ok) {
+              throw response.statusText;
+            }
+          }),
+          catchError((e: Error): ObservableInput<void> => {
+            window.console.error(JSON.stringify(e));
+            return of();
+          })
+        )
+    ));
+  }
+
+  addCustomEventTemplate(file: File): Observable<void> {
+    const body = new window.FormData();
+    body.append('template', file);
+    return this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first()
+    ).pipe(
+      concatMap(auths =>
+        fromFetch(`${this.authority}/api/v1/templates`, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'POST',
+          body,
+          headers: this.getHeaders(auths[0], auths[1])
+        })
+        .pipe(
+          map(response => {
+            if (!response.ok) {
+              throw response.statusText;
+            }
+          }),
+          catchError((e: Error): ObservableInput<void> => {
+            window.console.error(JSON.stringify(e));
+            return of();
+          })
+        )
+    ));
   }
 
   getAuthMethod(): Observable<string> {
