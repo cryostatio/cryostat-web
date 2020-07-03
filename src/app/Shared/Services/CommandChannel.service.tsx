@@ -1,6 +1,6 @@
 import { Notifications } from '@app/Notifications/Notifications';
 import { nanoid } from 'nanoid';
-import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, forkJoin } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, filter, first, map } from 'rxjs/operators';
@@ -27,21 +27,27 @@ export class CommandChannel {
         (url: any) => this.clientUrlSubject.next(url.clientUrl),
         (err: any) => this.logError('Client URL configuration', err)
       );
+    
+    const getDatasourceURL = fromFetch(`${this.apiSvc.authority}/api/v1/grafana_datasource_url`)
+    .pipe(concatMap(resp => from(resp.json())));
+    const getDashboardURL = fromFetch(`${this.apiSvc.authority}/api/v1/grafana_dashboard_url`)
+    .pipe(concatMap(resp => from(resp.json())));
 
-    fromFetch(`${this.apiSvc.authority}/api/v1/grafana_datasource_url`)
-      .pipe(concatMap(resp => from(resp.json())))
+    fromFetch(`${this.apiSvc.authority}/health`)
+      .pipe(
+        concatMap(resp => from(resp.json())))
+      .pipe(
+        concatMap(jsonResp => {
+            if((jsonResp.dashboardAvailable == true) && (jsonResp.datasourceAvailable == true)) 
+              {return forkJoin([getDatasourceURL, getDashboardURL])}
+            else {this.logError('Grafana configuration', 'URLs unavailable');
+                  return jsonResp}}))
       .subscribe(
-        (url: any) => this.grafanaDatasourceUrlSubject.next(url.grafanaDatasourceUrl),
-        (err: any) => this.logError('Grafana Datasource configuration', err)
+        (url: any) => 
+          {this.grafanaDatasourceUrlSubject.next(url[0].grafanaDatasourceUrl);
+            this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);}
       );
-
-    fromFetch(`${this.apiSvc.authority}/api/v1/grafana_dashboard_url`)
-      .pipe(concatMap(resp => from(resp.json())))
-      .subscribe(
-        (url: any) => this.grafanaDashboardUrlSubject.next(url.grafanaDashboardUrl),
-        (err: any) => this.logError('Grafana Dashboard configuration', err)
-      );
-
+    
     this.onResponse('list-saved').pipe(
       first(),
       map(msg => msg.status === 0)
