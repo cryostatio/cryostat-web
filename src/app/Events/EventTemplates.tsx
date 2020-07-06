@@ -67,6 +67,7 @@ export const EventTemplates = () => {
     'Name',
     'Description',
     'Provider',
+    'Type',
   ];
 
   React.useEffect(() => {
@@ -102,7 +103,10 @@ export const EventTemplates = () => {
   };
 
   const displayTemplates = React.useMemo(() => {
-    return filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider ]));
+    return filteredTemplates.map((t: EventTemplate) => {
+      const domain = t.type === 'TARGET' ? 'JVM Built-in' : 'Custom';
+      return [ t.name, t.description, t.provider, domain ];
+    });
   }, [filteredTemplates]);
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
