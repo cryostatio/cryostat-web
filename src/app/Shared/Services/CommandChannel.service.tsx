@@ -46,7 +46,7 @@ export class CommandChannel {
         (url: any) => 
           {this.grafanaDatasourceUrlSubject.next(url[0].grafanaDatasourceUrl);
             this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);},
-        err => this.logError('Grafana configuration', err)
+        err => this.logError('Grafana configuration not found', err)
       );
     
     this.onResponse('list-saved').pipe(
