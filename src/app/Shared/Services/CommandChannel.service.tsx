@@ -40,12 +40,21 @@ export class CommandChannel {
           if ((jsonResp.dashboardAvailable == true) && (jsonResp.datasourceAvailable == true)) {
             return forkJoin([getDatasourceURL, getDashboardURL])
           } else {
-              return throwError(new Error('ULRs unavailable'));
+            var errMessage = "";
+            if (jsonResp.dashboardAvailable == false) {
+              errMessage = "dashboard URL "
+            }
+            if (jsonResp.datasourceAvailable == false) {
+              errMessage = errMessage.concat(
+                (errMessage == "")? "datasource URL " : ", datasource URL ")
+            }
+            return throwError(errMessage.concat('missing'));
           }}))
       .subscribe(
-        (url: any) => 
-          {this.grafanaDatasourceUrlSubject.next(url[0].grafanaDatasourceUrl);
-            this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);},
+        (url: any) => {
+          this.grafanaDatasourceUrlSubject.next(url[0].grafanaDatasourceUrl);
+          this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);
+        },
         err => this.logError('Grafana configuration not found', err)
       );
     
