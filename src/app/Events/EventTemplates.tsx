@@ -39,7 +39,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
-import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData } from '@patternfly/react-table';
+import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { filter, map } from 'rxjs/operators';
 
@@ -54,20 +54,21 @@ export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
 
-  const [templates, setTemplates] = React.useState([]);
-  const [filteredTemplates, setFilteredTemplates] = React.useState([]);
+  const [templates, setTemplates] = React.useState([] as EventTemplate[]);
+  const [filteredTemplates, setFilteredTemplates] = React.useState([] as EventTemplate[]);
   const [filterText, setFilterText] = React.useState('');
   const [modalOpen, setModalOpen] = React.useState(false);
   const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
   const [uploadFilename, setUploadFilename] = React.useState('');
   const [uploading, setUploading] = React.useState(false);
   const [fileRejected, setFileRejected] = React.useState(false);
+  const [sortBy, setSortBy] = React.useState({} as ISortBy);
 
   const tableColumns = [
-    'Name',
+    { title: 'Name', transforms: [ sortable ] },
     'Description',
-    'Provider',
-    'Type',
+    { title: 'Provider', transforms: [ sortable ] },
+    { title: 'Type', transforms: [ sortable ] },
   ];
 
   React.useEffect(() => {
@@ -103,11 +104,18 @@ export const EventTemplates = () => {
   };
 
   const displayTemplates = React.useMemo(() => {
-    return filteredTemplates.map((t: EventTemplate) => {
+    let filtered = filteredTemplates.map((t: EventTemplate) => {
       const domain = t.type === 'TARGET' ? 'JVM Built-in' : 'Custom';
       return [ t.name, t.description, t.provider, domain ];
     });
-  }, [filteredTemplates]);
+    const { index, direction } = sortBy;
+    if (typeof index !== 'undefined') {
+      console.log(filtered[0][index]);
+      const sorted = filtered.sort((a, b) => (a[index] < b[index] ? -1 : a[index] > b[index] ? 1 : 0));
+      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
+    }
+    return filtered;
+  }, [filteredTemplates, sortBy]);
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
     if (typeof extraData.rowIndex == 'undefined') {
@@ -184,6 +192,10 @@ export const EventTemplates = () => {
     setFileRejected(true);
   };
 
+  const handleSort = (event, index, direction) => {
+    setSortBy({ index, direction });
+  };
+
   return (<>
     <Toolbar id="event-templates-toolbar">
       <ToolbarContent>
@@ -199,7 +211,14 @@ export const EventTemplates = () => {
         </ToolbarGroup>
       </ToolbarContent>
     </Toolbar>
-    <Table aria-label="Event Templates table" cells={tableColumns} rows={displayTemplates} actionResolver={actionResolver} variant={TableVariant.compact}>
+    <Table aria-label="Event Templates table"
+      variant={TableVariant.compact}
+      cells={tableColumns}
+      rows={displayTemplates}
+      actionResolver={actionResolver}
+      sortBy={sortBy}
+      onSort={handleSort}
+    >
       <TableHeader />
       <TableBody />
     </Table>
