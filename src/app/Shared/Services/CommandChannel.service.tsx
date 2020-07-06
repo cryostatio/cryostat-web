@@ -1,6 +1,6 @@
 import { Notifications } from '@app/Notifications/Notifications';
 import { nanoid } from 'nanoid';
-import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, forkJoin } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, forkJoin, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, filter, first, map } from 'rxjs/operators';
@@ -35,17 +35,18 @@ export class CommandChannel {
 
     fromFetch(`${this.apiSvc.authority}/health`)
       .pipe(
-        concatMap(resp => from(resp.json())))
-      .pipe(
-        concatMap(jsonResp => {
-            if((jsonResp.dashboardAvailable == true) && (jsonResp.datasourceAvailable == true)) 
-              {return forkJoin([getDatasourceURL, getDashboardURL])}
-            else {this.logError('Grafana configuration', 'URLs unavailable');
-                  return jsonResp}}))
+        concatMap(resp => from(resp.json())), 
+        concatMap((jsonResp: any) => {
+          if ((jsonResp.dashboardAvailable == true) && (jsonResp.datasourceAvailable == true)) {
+            return forkJoin([getDatasourceURL, getDashboardURL])
+          } else {
+              return throwError(new Error('ULRs unavailable'));
+          }}))
       .subscribe(
         (url: any) => 
           {this.grafanaDatasourceUrlSubject.next(url[0].grafanaDatasourceUrl);
-            this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);}
+            this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);},
+        err => this.logError('Grafana configuration', err)
       );
     
     this.onResponse('list-saved').pipe(
