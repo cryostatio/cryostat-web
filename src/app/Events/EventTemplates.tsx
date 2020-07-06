@@ -79,8 +79,15 @@ export const EventTemplates = () => {
       const ft = filterText.trim().toLowerCase();
       filtered = templates.filter((t: EventTemplate) => t.name.toLowerCase().includes(ft) || t.description.toLowerCase().includes(ft) || t.provider.toLowerCase().includes(ft));
     }
-    setFilteredTemplates(filtered);
-  }, [filterText, templates]);
+    const { index, direction } = sortBy;
+    if (typeof index === 'number') {
+      const keys = ['name', 'description', 'provider', 'type'];
+      const key = keys[index];
+      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
+    }
+    setFilteredTemplates([...filtered]);
+  }, [filterText, templates, sortBy]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.onResponse('list-event-templates')
@@ -103,19 +110,10 @@ export const EventTemplates = () => {
     context.commandChannel.sendMessage('list-event-templates');
   };
 
-  const displayTemplates = React.useMemo(() => {
-    let filtered = filteredTemplates.map((t: EventTemplate) => {
-      const domain = t.type === 'TARGET' ? 'JVM Built-in' : 'Custom';
-      return [ t.name, t.description, t.provider, domain ];
-    });
-    const { index, direction } = sortBy;
-    if (typeof index !== 'undefined') {
-      console.log(filtered[0][index]);
-      const sorted = filtered.sort((a, b) => (a[index] < b[index] ? -1 : a[index] > b[index] ? 1 : 0));
-      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    }
-    return filtered;
-  }, [filteredTemplates, sortBy]);
+  const displayTemplates = React.useMemo(
+    () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),
+    [filteredTemplates]
+  );
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
     if (typeof extraData.rowIndex == 'undefined') {
