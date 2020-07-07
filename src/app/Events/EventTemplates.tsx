@@ -115,11 +115,11 @@ export const EventTemplates = () => {
     }
     let actions = [
       {
-        title: 'Create Recording from Template',
+        title: 'Create Recording...',
         onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } }),
       },
       {
-        title: 'Download Template',
+        title: 'Download',
         onClick: (event, rowId, rowData) => context.commandChannel.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),
       },
     ] as IAction[];
@@ -131,7 +131,7 @@ export const EventTemplates = () => {
             isSeparator: true,
           },
           {
-            title: 'Delete Custom Template',
+            title: 'Delete',
             onClick: (event, rowId, rowData) => handleDelete(rowData)
           }
       ]);
