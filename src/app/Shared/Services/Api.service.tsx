@@ -192,6 +192,27 @@ export class ApiService {
     );
   }
 
+  downloadTemplate(targetId: string, template: EventTemplate): void {
+    const url = `${this.authority}/api/v1/targets/${targetId}/templates/${template.name}/type/${template.type}`;
+    this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first()
+    ).subscribe(auths =>
+      fromFetch(url, {
+        credentials: 'include',
+        mode: 'cors',
+        headers: this.getHeaders(auths[0], auths[1]),
+      })
+      .pipe(concatMap(resp => resp.text()))
+      .subscribe(resp =>
+        this.downloadFile(
+          `${template.name}.xml`,
+          resp,
+          'application/jfc+xml')
+      )
+    );
+  }
+
   uploadRecording(file: File): Observable<string> {
     const payload = new window.FormData(); // as multipart/form-data
     payload.append('recording', file);
@@ -256,4 +277,11 @@ export enum RecordingState {
 
 export const isActiveRecording = (toCheck: SavedRecording): toCheck is Recording => {
   return (toCheck as Recording).state !== undefined;
+}
+
+export interface EventTemplate {
+  name: string;
+  description: string;
+  provider: string;
+  type: 'CUSTOM' | 'TARGET';
 }

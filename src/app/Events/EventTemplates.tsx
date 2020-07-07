@@ -37,18 +37,12 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { filter, map } from 'rxjs/operators';
-
-export interface EventTemplate {
-  name: string;
-  description: string;
-  provider: string;
-  type: 'CUSTOM' | 'TARGET';
-}
+import { filter, first, map } from 'rxjs/operators';
 
 export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
@@ -122,8 +116,12 @@ export const EventTemplates = () => {
     let actions = [
       {
         title: 'Create Recording from Template',
-        onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } })
-      }
+        onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0] } }),
+      },
+      {
+        title: 'Download Template',
+        onClick: (event, rowId, rowData) => context.commandChannel.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),
+      },
     ] as IAction[];
 
     const template: EventTemplate = filteredTemplates[extraData.rowIndex];
