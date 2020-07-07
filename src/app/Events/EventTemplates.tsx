@@ -96,18 +96,22 @@ export const EventTemplates = () => {
     return () => sub.unsubscribe();
   }, [context.commandChannel]);
 
-  React.useEffect(() => {
-    refreshTemplates();
+  const refreshTemplates = React.useCallback(() => {
+    context.commandChannel.sendMessage('list-event-templates');
   }, [context.commandChannel]);
 
-  const refreshTemplates = () => {
-    context.commandChannel.sendMessage('list-event-templates');
-  };
+  React.useEffect(() => {
+    refreshTemplates();
+  }, [context.commandChannel, refreshTemplates]);
 
   const displayTemplates = React.useMemo(
     () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),
     [filteredTemplates]
   );
+
+  const handleDelete = (rowData) => {
+    context.api.deleteCustomEventTemplate(rowData[0]).subscribe(refreshTemplates);
+  };
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
     if (typeof extraData.rowIndex == 'undefined') {
@@ -120,7 +124,7 @@ export const EventTemplates = () => {
       },
       {
         title: 'Download',
-        onClick: (event, rowId, rowData) => context.commandChannel.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),
+        onClick: (event, rowId) => context.commandChannel.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),
       },
     ] as IAction[];
 
@@ -140,10 +144,6 @@ export const EventTemplates = () => {
     return actions;
   };
 
-  const handleDelete = (rowData) => {
-    context.api.deleteCustomEventTemplate(rowData[0]).subscribe(refreshTemplates);
-  };
-
   const handleModalToggle = () => {
     setModalOpen(v => {
       if (v) {
@@ -155,7 +155,7 @@ export const EventTemplates = () => {
     });
   };
 
-  const handleFileChange = (value, filename, event) => {
+  const handleFileChange = (value, filename) => {
     setFileRejected(false);
     setUploadFile(value);
     setUploadFilename(filename);
