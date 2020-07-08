@@ -37,18 +37,18 @@ export class CommandChannel {
       .pipe(
         concatMap(resp => from(resp.json())), 
         concatMap((jsonResp: any) => {
-          if ((jsonResp.dashboardAvailable == true) && (jsonResp.datasourceAvailable == true)) {
-            return forkJoin([getDatasourceURL, getDashboardURL])
+          if (jsonResp.dashboardAvailable && jsonResp.datasourceAvailable) {
+            return forkJoin([getDatasourceURL, getDashboardURL]);
           } else {
-            var errMessage = "";
-            if (jsonResp.dashboardAvailable == false) {
-              errMessage = "dashboard URL "
+            const missing: string[] = [];
+            if (!jsonResp.dashboardAvailable) {
+              missing.push('dashboard URL');
             }
-            if (jsonResp.datasourceAvailable == false) {
-              errMessage = errMessage.concat(
-                (errMessage == "")? "datasource URL " : ", datasource URL ")
+            if (!jsonResp.datasourceAvailable) {
+              missing.push('datasource URL');
             }
-            return throwError(errMessage.concat('missing'));
+            const message = missing.join(', ') + ' unavailable';
+            return throwError(message);
           }}))
       .subscribe(
         (url: any) => {
