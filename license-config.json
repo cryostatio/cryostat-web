@@ -1,0 +1,13 @@
+{
+	"license":"LICENSE",
+	"licenseFormats": {
+		"ts|tsx": {
+			"prepend": "/*",
+			"append": "*/",
+			"eachLine": {
+				"prepend": " * "
+			}
+		}
+	},
+	"ignore": ["coverage", "stories", "__mocks__"]
+}
