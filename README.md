@@ -32,9 +32,11 @@ Start the express server (run a production build first)
 
 ## Development server
 
-Run a `container-jfr` instance with WebSocket communication and CORS enabled. For example,
+Run a `container-jfr` instance with WebSocket communication and CORS enabled. 
+The environment variable `CONTAINER_JFR_CORS_ORIGIN` enables CORS and sets its origin to the value provided.
+For example,
 
-`cd $CONTAINER_JFR_DIR && CONTAINER_JFR_ENABLE_CORS=true mvn exec:java`
+`cd $CONTAINER_JFR_DIR && CONTAINER_JFR_CORS_ORIGIN=http://localhost:9000 mvn exec:java`
 
 will run a suitable instance using Podman/Docker.
 
