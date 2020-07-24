@@ -308,7 +308,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
       const id = context.commandChannel.createMessageId();
       setUploadIds(ids => [...ids, id]);
-      context.commandChannel.sendMessage('upload-recording', [ props.recording.name, `${url}/load` ], id);
+      context.commandChannel.sendMessage('upload-recording', [ props.recording.name ], id);
     });
   };
 
