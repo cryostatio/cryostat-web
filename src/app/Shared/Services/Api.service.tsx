@@ -38,6 +38,7 @@
 import { from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
+import { Notifications } from '@app/Notifications/Notifications';
 
 export class ApiService {
 
@@ -45,7 +46,7 @@ export class ApiService {
   private readonly authMethod = new ReplaySubject<string>(1);
   readonly authority: string;
 
-   constructor() {
+   constructor(private readonly notifications: Notifications) {
       let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
       if (!apiAuthority) {
         apiAuthority = '';
@@ -83,6 +84,64 @@ export class ApiService {
         }
       })
     );
+  }
+
+  deleteCustomEventTemplate(templateName: string): Observable<void> {
+    return this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first()
+    ).pipe(
+      concatMap(auths =>
+        fromFetch(`${this.authority}/api/v1/templates/${templateName}`, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'DELETE',
+          body: null,
+          headers: this.getHeaders(auths[0], auths[1])
+        })
+        .pipe(
+          map(response => {
+            if (!response.ok) {
+              throw response.statusText;
+            }
+          }),
+          catchError((e: Error): ObservableInput<void> => {
+            window.console.error(JSON.stringify(e));
+            return of();
+          })
+        )
+    ));
+  }
+
+  addCustomEventTemplate(file: File): Observable<boolean> {
+    const body = new window.FormData();
+    body.append('template', file);
+    return this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first()
+    ).pipe(
+      concatMap(auths =>
+        fromFetch(`${this.authority}/api/v1/templates`, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'POST',
+          body,
+          headers: this.getHeaders(auths[0], auths[1])
+        })
+        .pipe(
+          map(response => {
+            if (!response.ok) {
+              throw response.statusText;
+            }
+            return true;
+          }),
+          catchError((e: Error): ObservableInput<boolean> => {
+            window.console.error(JSON.stringify(e));
+            this.notifications.danger('Template Upload Failed', JSON.stringify(e));
+            return of(false);
+          })
+        )
+    ));
   }
 
   getAuthMethod(): Observable<string> {
@@ -129,6 +188,27 @@ export class ApiService {
           recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
           resp,
           'application/octet-stream')
+      )
+    );
+  }
+
+  downloadTemplate(targetId: string, template: EventTemplate): void {
+    const url = `${this.authority}/api/v1/targets/${targetId}/templates/${template.name}/type/${template.type}`;
+    this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first()
+    ).subscribe(auths =>
+      fromFetch(url, {
+        credentials: 'include',
+        mode: 'cors',
+        headers: this.getHeaders(auths[0], auths[1]),
+      })
+      .pipe(concatMap(resp => resp.text()))
+      .subscribe(resp =>
+        this.downloadFile(
+          `${template.name}.xml`,
+          resp,
+          'application/jfc+xml')
       )
     );
   }
@@ -197,4 +277,11 @@ export enum RecordingState {
 
 export const isActiveRecording = (toCheck: SavedRecording): toCheck is Recording => {
   return (toCheck as Recording).state !== undefined;
+}
+
+export interface EventTemplate {
+  name: string;
+  description: string;
+  provider: string;
+  type: 'CUSTOM' | 'TARGET';
 }

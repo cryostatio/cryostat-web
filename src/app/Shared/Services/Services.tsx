@@ -47,7 +47,7 @@ export interface Services {
   reports: ReportService;
 }
 
-const api = new ApiService();
+const api = new ApiService(NotificationsInstance);
 const commandChannel = new CommandChannel(api, NotificationsInstance);
 const reports = new ReportService(api);
 
