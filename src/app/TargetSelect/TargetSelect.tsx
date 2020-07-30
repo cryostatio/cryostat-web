@@ -53,17 +53,9 @@ interface Target {
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [selected, setSelected] = React.useState('');
-  const [targets, setTargets] = React.useState([]);
+  const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('scan-targets').pipe(map(msg => msg.payload)).subscribe(targets => {
-      setTargets(targets);
-      setLoading(false);
-    });
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
 
   React.useEffect(() => {
     const sub = context.commandChannel.isReady()
@@ -79,7 +71,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   const refreshTargetList = () => {
     setLoading(true);
-    context.commandChannel.sendControlMessage('scan-targets')
+    context.api.doGet<Target[]>(`targets`).subscribe(targets => {
+      setTargets(targets);
+      setLoading(false);
+    });
   };
 
   const onSelect = (evt, selection, isPlaceholder) => {
