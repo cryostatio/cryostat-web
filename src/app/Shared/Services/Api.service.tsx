@@ -144,7 +144,7 @@ export class ApiService {
     ));
   }
 
-  doGet<T>(path: string): Observable<T> {
+  sendRequest(path: string, config?: RequestInit): Observable<Response> {
     return this.getToken().pipe(
       combineLatest(this.getAuthMethod()),
       first(),
@@ -152,13 +152,15 @@ export class ApiService {
         fromFetch(`${this.authority}/api/v1/${path}`, {
           credentials: 'include',
           mode: 'cors',
-          method: 'GET',
-          headers: this.getHeaders(auths[0], auths[1])
+          headers: this.getHeaders(auths[0], auths[1]),
+          ...config,
         })
-      ),
-      map(resp => resp.json()),
-      concatMap(from)
+      )
     );
+  }
+
+  doGet<T>(path: string): Observable<T> {
+    return this.sendRequest(path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from));
   }
 
   getAuthMethod(): Observable<string> {
