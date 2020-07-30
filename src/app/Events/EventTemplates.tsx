@@ -42,7 +42,7 @@ import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, 
 import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { filter, first, map } from 'rxjs/operators';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 
 export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
@@ -83,26 +83,13 @@ export const EventTemplates = () => {
     setFilteredTemplates([...filtered]);
   }, [filterText, templates, sortBy]);
 
-  React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('list-event-templates')
-      .pipe(
-        filter(m => m.status === 0),
-        map(m => m.payload),
-      )
-      .subscribe(templates => {
-        setTemplates(templates);
-        setFilteredTemplates(templates);
-      });
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
-
-  const refreshTemplates = React.useCallback(() => {
-    context.commandChannel.sendMessage('list-event-templates');
-  }, [context.commandChannel]);
+  const refreshTemplates = () => {
+    context.commandChannel.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates);
+  };
 
   React.useEffect(() => {
     refreshTemplates();
-  }, [context.commandChannel, refreshTemplates]);
+  }, [context.commandChannel]);
 
   const displayTemplates = React.useMemo(
     () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),

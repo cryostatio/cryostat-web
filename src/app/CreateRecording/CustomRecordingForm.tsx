@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
-import { filter, map } from 'rxjs/operators';
+import { concatMap, filter, map } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
 
 export interface CustomRecordingFormProps {
@@ -128,21 +128,8 @@ export const CustomRecordingForm = (props) => {
   };
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('list-event-templates')
-      .pipe(
-        filter(m => m.status === 0),
-        map(m => m.payload),
-      )
-      .subscribe(setTemplates);
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
-
-  React.useEffect(() => {
-    const sub = context.commandChannel.target().subscribe(target =>
-      context.commandChannel.sendMessage('list-event-templates')
-    );
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+    context.commandChannel.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates);
+  }, []);
 
   React.useEffect(() => {
     if (TemplatePattern.test(eventSpecifiers)) {

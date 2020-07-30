@@ -39,7 +39,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
-import { filter, map } from 'rxjs/operators';
+import { concatMap, filter, map } from 'rxjs/operators';
 
 export interface EventType {
   name: string;
@@ -84,17 +84,7 @@ export const EventTypes = () => {
   ];
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('list-event-types')
-      .pipe(
-        filter(m => m.status === 0),
-        map(m => m.payload),
-      )
-      .subscribe(types => setTypes(types));
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
-
-  React.useEffect(() => {
-    context.commandChannel.sendMessage('list-event-types');
+    context.commandChannel.target().pipe(concatMap(target => context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target)}/events`))).subscribe(setTypes)
   }, [context.commandChannel]);
 
   const getCategoryString = (eventType: EventType): string => {
