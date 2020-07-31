@@ -45,7 +45,7 @@ import { concatMap, filter, map } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
 
 export interface CustomRecordingFormProps {
-  onSubmit: (command: string, args: string[]) => void;
+  onSubmit: (recordingName: string, events: string, duration?: number) => void;
 }
 
 export const RecordingNamePattern = /^[\w_]+$/;
@@ -102,8 +102,6 @@ export const CustomRecordingForm = (props) => {
   };
 
   const handleSubmit = () => {
-    const eventString = getEventString();
-
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
@@ -116,15 +114,7 @@ export const CustomRecordingForm = (props) => {
       notifications.warning('Invalid form data', message);
       return;
     }
-
-    const command = continuous ? 'start' : 'dump';
-    const args = [recordingName];
-    if (!continuous) {
-      const eventDuration = continuous ? 0 : duration * durationUnit;
-      args.push(String(eventDuration));
-    }
-    args.push(eventString);
-    props.onSubmit(command, args);
+    props.onSubmit(recordingName, getEventString(), continuous ? undefined : duration * durationUnit);
   };
 
   React.useEffect(() => {

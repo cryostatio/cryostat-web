@@ -40,15 +40,11 @@ import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react
 import { useHistory } from 'react-router-dom';
 
 export interface SnapshotRecordingFormProps {
-  onSubmit: (command: string, args: string[]) => void;
+  onSubmit: Function;
 }
 
 export const SnapshotRecordingForm = (props) => {
   const history = useHistory();
-
-  const handleSubmit = () => {
-    props.onSubmit('snapshot', []);
-  };
 
   return (<>
     <Form>
@@ -60,7 +56,7 @@ export const SnapshotRecordingForm = (props) => {
         is only ever in the STOPPED state from the moment it is created.
       </Text>
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit}>Create</Button>
+        <Button variant="primary" onClick={props.onSubmit}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>

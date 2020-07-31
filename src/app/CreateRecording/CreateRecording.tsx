@@ -42,7 +42,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
 import { StaticContext } from 'react-router';
 import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
-import { filter, first } from 'rxjs/operators';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
@@ -65,21 +65,45 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
 
   const [activeTab, setActiveTab] = React.useState(0);
 
-  const handleSubmit = (command: string, args: string[]): void => {
-    const id = context.commandChannel.createMessageId();
-    context.commandChannel.onResponse(command).pipe(
-      filter(m => m.id === id),
+  const handleCreateRecording = (recordingName: string, events: string, duration?: number): void => {
+    const form = new FormData();
+    form.append('recordingName', recordingName);
+    form.append('events', events);
+    if (!!duration && duration > 0) {
+      form.append('duration', String(duration));
+    }
+    context.commandChannel.target().pipe(
+      concatMap(target => context.api.sendRequest(`targets/${encodeURIComponent(target)}/recordings`, {
+        method: 'POST',
+        body: form,
+      })),
       first(),
-      )
-      .subscribe((msg) => {
-          if (msg.status === 0) {
-            notifications.success('Recording created');
-            history.push('/recordings');
-          } else {
-            notifications.danger(`Request failed (Status ${msg.status})`, msg.payload)
-          }
-      });
-    context.commandChannel.sendMessage(command, args, id);
+    ).subscribe(resp => {
+      console.log({ resp });
+      if (200 <= resp.status && resp.status < 300) {
+        notifications.success('Recording created');
+        history.push('/recordings');
+      } else {
+        notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+      }
+    });
+  };
+
+  const handleCreateSnapshot = (): void => {
+    context.commandChannel.target().pipe(
+      concatMap(target => context.api.sendRequest(`targets/${encodeURIComponent(target)}/snapshot`, {
+        method: 'POST',
+      })),
+      first(),
+    ).subscribe(resp => {
+      console.log({ resp });
+      if (200 <= resp.status && resp.status < 300) {
+        notifications.success('Recording created');
+        history.push('/recordings');
+      } else {
+        notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+      }
+    });
   };
 
   return (
@@ -88,7 +112,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
             <Tab eventKey={0} title="Custom Flight Recording">
-              <CustomRecordingForm onSubmit={handleSubmit}
+              <CustomRecordingForm onSubmit={handleCreateRecording}
                 recordingName={props?.location?.state?.recordingName}
                 template={props?.location?.state?.template}
                 templateType={props?.location?.state?.templateType}
@@ -96,7 +120,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
               />
             </Tab>
             <Tab eventKey={1} title="Snapshot Recording">
-              <SnapshotRecordingForm onSubmit={handleSubmit} />
+              <SnapshotRecordingForm onSubmit={handleCreateSnapshot} />
             </Tab>
           </Tabs>
         </CardBody>
