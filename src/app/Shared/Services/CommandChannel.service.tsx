@@ -94,16 +94,11 @@ export class CommandChannel {
         },
         err => this.logError('Grafana configuration not found', err)
       );
-    
-    this.onResponse('list-saved').pipe(
-      first(),
-      map(msg => msg.status === 0)
-    ).subscribe(listSavedEnabled => this.archiveEnabled.next(listSavedEnabled));
 
-    this.isReady().pipe(
-      filter(ready => !!ready)
-    ).subscribe(() => {
-      this.sendControlMessage('list-saved');
+    apiSvc.doGet('recordings').subscribe(() => {
+      this.archiveEnabled.next(true);
+    }, () => {
+      this.archiveEnabled.next(false);
     });
 
     this.clientUrl().pipe(
