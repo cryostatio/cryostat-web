@@ -64,7 +64,7 @@ export class CommandChannel {
         (url: any) => this.clientUrlSubject.next(url.clientUrl),
         (err: any) => this.logError('Client URL configuration', err)
       );
-    
+
     const getDatasourceURL = fromFetch(`${this.apiSvc.authority}/api/v1/grafana_datasource_url`)
     .pipe(concatMap(resp => from(resp.json())));
     const getDashboardURL = fromFetch(`${this.apiSvc.authority}/api/v1/grafana_dashboard_url`)
@@ -72,7 +72,7 @@ export class CommandChannel {
 
     fromFetch(`${this.apiSvc.authority}/health`)
       .pipe(
-        concatMap(resp => from(resp.json())), 
+        concatMap(resp => from(resp.json())),
         concatMap((jsonResp: any) => {
           if (jsonResp.dashboardAvailable && jsonResp.datasourceAvailable) {
             return forkJoin([getDatasourceURL, getDashboardURL]);
@@ -176,37 +176,6 @@ export class CommandChannel {
 
   target(): Observable<string> {
     return this.targetSubject.asObservable();
-  }
-
-  // "control" messages, which do not operate upon a Target JVM
-  sendControlMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
-    const subj = new Subject<string>();
-    this.ready.pipe(
-      first(),
-      map(ready => ready ? id : '')
-    ).subscribe(i => {
-      if (!!i && this.ws) {
-        this.ws.next({ id, command, args });
-      } else if (this.ws) {
-        this.logError('Attempted to send control message when command channel was not ready', { id, command, args });
-      } else {
-        this.logError('Attempted to send control message when command channel was not initialized', { id, command, args });
-      }
-      subj.next(i);
-    });
-    return subj.asObservable();
-  }
-
-  createMessageId(): string {
-    return nanoid();
-  }
-
-  onResponse(command: string): Observable<ResponseMessage<any>> {
-    return this.messages
-      .asObservable()
-      .pipe(
-        filter(m => m.commandName === command)
-      );
   }
 
   private logError(title: string, err: any): void {
