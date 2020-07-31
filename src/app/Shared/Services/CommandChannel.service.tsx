@@ -202,25 +202,6 @@ export class CommandChannel {
     return subj.asObservable();
   }
 
-  // "targeted" messages, ie those which operate upon a specific Target JVM
-  sendMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
-    const subj = new Subject<string>();
-    combineLatest(this.target(), this.ready.pipe(
-      first(),
-      map(ready => ready ? id : '')
-    )).subscribe(([target, id]) => {
-      if (!!id && this.ws) {
-        this.ws.next({ id, command, args: [target, ...args] });
-      } else if (this.ws) {
-        this.logError('Attempted to send message when command channel was not ready', { id, command, args });
-      } else {
-        this.logError('Attempted to send message when command channel was not initialized', { id, command, args });
-      }
-      subj.next(id);
-    });
-    return subj.asObservable();
-  }
-
   createMessageId(): string {
     return nanoid();
   }
