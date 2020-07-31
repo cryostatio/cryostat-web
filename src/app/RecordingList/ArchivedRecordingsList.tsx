@@ -40,11 +40,11 @@ import * as _ from 'lodash';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Spinner, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
-import { filter, map } from 'rxjs/operators';
 import { RecordingActions } from './ActiveRecordingsList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
-import { Subject } from 'rxjs';
+import { Observable, Subject, forkJoin, from } from 'rxjs';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 
 interface ArchivedRecordingsListProps {
   updater: Subject<void>;
@@ -53,7 +53,7 @@ interface ArchivedRecordingsListProps {
 export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsListProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
-  const [recordings, setRecordings] = React.useState([]);
+  const [recordings, setRecordings] = React.useState([] as Recording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
@@ -77,14 +77,27 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
     }
   };
 
+  const refreshRecordingList = () => {
+    context.api.doGet<Recording[]>(`recordings`).subscribe(newRecordings => {
+      if (!_.isEqual(newRecordings, recordings)) {
+        setRecordings(newRecordings);
+      }
+    });
+  };
+
   const handleDeleteRecordings = () => {
+    const tasks: Observable<any>[] = [];
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        context.commandChannel.sendControlMessage('delete-saved', [ r.name ]);
+        tasks.push(
+          context.api.sendRequest(`recordings/${encodeURIComponent(r.name)}`, {
+            method: 'DELETE'
+          }).pipe(first())
+        );
       }
     });
-    context.commandChannel.sendControlMessage('list-saved');
+    forkJoin(tasks).subscribe(refreshRecordingList);
   };
 
   const toggleExpanded = (id) => {
@@ -93,29 +106,13 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   };
 
   React.useEffect(() => {
-    const sub = props.updater.subscribe(() => {
-      context.commandChannel.sendControlMessage('list-saved');
-    });
+    const sub = props.updater.subscribe(refreshRecordingList);
     return () => sub.unsubscribe();
   }, [props.updater])
 
   React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('list-saved')
-      .pipe(
-        filter(m => m.status === 0),
-        map(m => m.payload),
-      )
-      .subscribe(newRecordings => {
-        if (!_.isEqual(newRecordings, recordings)) {
-          setRecordings(newRecordings);
-        }
-      });
-    return () => sub.unsubscribe();
-  }, [context.commandChannel, recordings]);
-
-  React.useEffect(() => {
-    context.commandChannel.sendControlMessage('list-saved');
-    const id = setInterval(() => context.commandChannel.sendControlMessage('list-saved'), 30_000);
+    refreshRecordingList();
+    const id = setInterval(refreshRecordingList, 30_000);
     return () => clearInterval(id);
   }, [context.commandChannel]);
 

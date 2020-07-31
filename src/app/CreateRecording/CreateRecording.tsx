@@ -79,7 +79,6 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
       })),
       first(),
     ).subscribe(resp => {
-      console.log({ resp });
       if (200 <= resp.status && resp.status < 300) {
         notifications.success('Recording created');
         history.push('/recordings');
@@ -96,7 +95,6 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
       })),
       first(),
     ).subscribe(resp => {
-      console.log({ resp });
       if (200 <= resp.status && resp.status < 300) {
         notifications.success('Recording created');
         history.push('/recordings');

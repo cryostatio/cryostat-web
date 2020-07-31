@@ -90,7 +90,11 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const refreshRecordingList = () => {
     context.commandChannel.target().pipe(
       concatMap(target => context.api.doGet<Recording[]>(`/targets/${encodeURIComponent(target)}/recordings`))
-    ).subscribe(setRecordings);
+    ).subscribe(newRecordings => {
+      if (!_.isEqual(newRecordings, recordings)) {
+        setRecordings(newRecordings);
+      }
+    });
   };
 
   const handleArchiveRecordings = () => {
@@ -107,8 +111,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
                   body: 'SAVE',
                 }
               )),
-            map(resp => resp.text()),
-            concatMap(from),
             first(),
           )
           .subscribe(() => {
@@ -137,8 +139,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
                       body: 'STOP',
                     }
                   )),
-                map(resp => resp.text()),
-                concatMap(from),
                 first(),
               )
           );
@@ -172,20 +172,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     });
     forkJoin(tasks).subscribe(refreshRecordingList);
   };
-
-  React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('list')
-      .pipe(
-        filter(m => m.status === 0),
-        map(m => m.payload),
-      )
-      .subscribe(newRecordings => {
-        if (!_.isEqual(newRecordings, recordings)) {
-          setRecordings(newRecordings);
-        }
-      });
-    return () => sub.unsubscribe();
-  }, [context.commandChannel, recordings]);
 
   React.useEffect(() => {
     refreshRecordingList();
