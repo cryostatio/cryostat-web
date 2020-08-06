@@ -66,7 +66,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   const [activeTab, setActiveTab] = React.useState(0);
 
   const handleCreateRecording = (recordingName: string, events: string, duration?: number): void => {
-    context.commandChannel.target().pipe(
+    context.target.target().pipe(
       concatMap(targetId => context.api.createRecording(targetId, { recordingName, events, duration }))
     ).subscribe(success => {
       if (success) {
@@ -76,7 +76,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   };
 
   const handleCreateSnapshot = (): void => {
-    context.commandChannel.target().pipe(
+    context.target.target().pipe(
       concatMap(targetId => context.api.createSnapshot(targetId))
     ).subscribe(success => {
       if (success) {

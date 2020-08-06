@@ -41,7 +41,6 @@ import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subjec
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, filter, first, map } from 'rxjs/operators';
-import { TargetService } from './Target.service';
 import { ApiService } from './Api.service';
 
 export class CommandChannel {
@@ -56,7 +55,6 @@ export class CommandChannel {
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
 
   constructor(
-    private readonly targetSvc: TargetService,
     apiSvc: ApiService,
     private readonly notifications: Notifications
   ) {
@@ -166,20 +164,8 @@ export class CommandChannel {
     return this.ready.asObservable();
   }
 
-  isConnected(): Observable<boolean> {
-    return this.target().pipe(map(t => !!t));
-  }
-
   isArchiveEnabled(): Observable<boolean> {
     return this.archiveEnabled.asObservable();
-  }
-
-  setTarget(targetId: string): void {
-    this.targetSvc.setTarget(targetId);
-  }
-
-  target(): Observable<string> {
-    return this.targetSvc.target();
   }
 
   private logError(title: string, err: any): void {

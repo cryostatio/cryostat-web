@@ -88,7 +88,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   };
 
   const refreshRecordingList = () => {
-    context.commandChannel.target().pipe(
+    context.target.target().pipe(
       concatMap(target => context.api.doGet<Recording[]>(`/targets/${encodeURIComponent(target)}/recordings`))
     ).subscribe(newRecordings => {
       if (!_.isEqual(newRecordings, recordings)) {
@@ -103,7 +103,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
-          context.commandChannel.target()
+          context.target.target()
             .pipe(
               concatMap(target => context.api.archiveRecording(target, r.name)),
               first()
@@ -125,7 +125,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         handleRowCheck(false, idx);
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
           tasks.push(
-            context.commandChannel.target()
+            context.target.target()
               .pipe(
                 concatMap(target => context.api.stopRecording(target, r.name)),
                 first()
@@ -143,7 +143,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
-          context.commandChannel.target()
+          context.target.target()
             .pipe(
               concatMap(target => context.api.deleteRecording(target, r.name)),
               first(),
@@ -309,7 +309,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
 
   const grafanaUpload = () => {
       notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
-      context.commandChannel.target()
+      context.target.target()
         .pipe(
           concatMap(
             target => context.api.uploadRecordingToGrafana(target, props.recording.name)),

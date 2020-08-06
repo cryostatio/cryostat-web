@@ -84,7 +84,7 @@ export const EventTemplates = () => {
   }, [filterText, templates, sortBy]);
 
   const refreshTemplates = () => {
-    context.commandChannel.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates);
+    context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates);
   };
 
   React.useEffect(() => {
@@ -116,7 +116,7 @@ export const EventTemplates = () => {
       actions = actions.concat([
           {
             title: 'Download',
-            onClick: (event, rowId) => context.commandChannel.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),          
+            onClick: (event, rowId) => context.target.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),
           }
       ]);
     };
