@@ -91,9 +91,8 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
-          context.api.sendRequest(`recordings/${encodeURIComponent(r.name)}`, {
-            method: 'DELETE'
-          }).pipe(first())
+          context.api.deleteArchivedRecording(r.name)
+          .pipe(first())
         );
       }
     });

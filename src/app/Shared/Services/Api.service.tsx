@@ -86,6 +86,131 @@ export class ApiService {
     );
   }
 
+  createRecording(targetId: string,
+    { recordingName, events, duration  } : { recordingName: string; events: string; duration?: number }
+    ): Observable<boolean> {
+      const form = new window.FormData();
+      form.append('recordingName', recordingName);
+      form.append('events', events);
+      if (!!duration && duration > 0) {
+        form.append('duration', String(duration));
+      }
+      return this.sendRequest(`targets/${encodeURIComponent(targetId)}/recordings`, {
+        method: 'POST',
+        body: form,
+      }).pipe(
+        tap(resp => {
+          if (isHttpOK(resp)) {
+            this.notifications.success('Recording created');
+          } else {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(isHttpOK),
+        first(),
+      );
+  }
+
+  createSnapshot(targetId: string): Observable<boolean> {
+      return this.sendRequest(`targets/${encodeURIComponent(targetId)}/snapshot`, {
+        method: 'POST',
+      }).pipe(
+        tap(resp => {
+          if (isHttpOK(resp)) {
+            this.notifications.success('Recording created');
+          } else {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(isHttpOK),
+        first(),
+      );
+  }
+
+  archiveRecording(targetId: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+      `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+      {
+        method: 'PATCH',
+        body: 'SAVE',
+      }
+    ).pipe(
+      tap(resp => {
+        if (!isHttpOK(resp)) {
+          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+        }
+      }),
+      map(isHttpOK),
+      first(),
+    );
+  }
+
+  stopRecording(targetId: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+      `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+      {
+        method: 'PATCH',
+        body: 'STOP',
+      }
+    ).pipe(
+      tap(resp => {
+        if (!isHttpOK(resp)) {
+          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+        }
+      }),
+      map(isHttpOK),
+      first(),
+    );
+  }
+
+  deleteRecording(targetId: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+      `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+      {
+        method: 'DELETE',
+      }
+    ).pipe(
+      tap(resp => {
+        if (!isHttpOK(resp)) {
+          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+        }
+      }),
+      map(isHttpOK),
+      first(),
+    );
+  }
+
+  deleteArchivedRecording(recordingName: string): Observable<boolean> {
+    return this.sendRequest(`recordings/${encodeURIComponent(recordingName)}`, {
+      method: 'DELETE'
+    }).pipe(
+      tap(resp => {
+        if (!isHttpOK(resp)) {
+          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+        }
+      }),
+      map(isHttpOK),
+      first(),
+    );
+  }
+
+  uploadRecordingToGrafana(targetId: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+      `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}/upload`,
+      {
+        method: 'POST',
+      }
+    ).pipe(
+      tap(resp => {
+        if (!isHttpOK(resp)) {
+          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+        }
+      }),
+      map(isHttpOK),
+      first()
+    );
+  }
+
   deleteCustomEventTemplate(templateName: string): Observable<void> {
     return this.getToken().pipe(
       combineLatest(this.getAuthMethod()),
@@ -142,21 +267,6 @@ export class ApiService {
           })
         )
     ));
-  }
-
-  sendRequest(path: string, config?: RequestInit): Observable<Response> {
-    return this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first(),
-      concatMap(auths =>
-        fromFetch(`${this.authority}/api/v1/${path}`, {
-          credentials: 'include',
-          mode: 'cors',
-          headers: this.getHeaders(auths[0], auths[1]),
-          ...config,
-        })
-      )
-    );
   }
 
   doGet<T>(path: string): Observable<T> {
@@ -250,6 +360,21 @@ export class ApiService {
     );
   }
 
+  private sendRequest(path: string, config?: RequestInit): Observable<Response> {
+    return this.getToken().pipe(
+      combineLatest(this.getAuthMethod()),
+      first(),
+      concatMap(auths =>
+        fromFetch(`${this.authority}/api/v1/${path}`, {
+          credentials: 'include',
+          mode: 'cors',
+          headers: this.getHeaders(auths[0], auths[1]),
+          ...config,
+        })
+      )
+    );
+  }
+
   private getHeaders(token: string, method: string): Headers {
     const headers = new window.Headers();
     if (!!token && !!method) {
@@ -269,6 +394,8 @@ export class ApiService {
   }
 
 }
+
+const isHttpOK = (resp: Response): boolean => 200 <= resp.status && resp.status < 300;
 
 export interface SavedRecording {
   name: string;

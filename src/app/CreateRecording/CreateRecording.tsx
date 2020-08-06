@@ -66,40 +66,21 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   const [activeTab, setActiveTab] = React.useState(0);
 
   const handleCreateRecording = (recordingName: string, events: string, duration?: number): void => {
-    const form = new FormData();
-    form.append('recordingName', recordingName);
-    form.append('events', events);
-    if (!!duration && duration > 0) {
-      form.append('duration', String(duration));
-    }
     context.commandChannel.target().pipe(
-      concatMap(target => context.api.sendRequest(`targets/${encodeURIComponent(target)}/recordings`, {
-        method: 'POST',
-        body: form,
-      })),
-      first(),
-    ).subscribe(resp => {
-      if (200 <= resp.status && resp.status < 300) {
-        notifications.success('Recording created');
+      concatMap(targetId => context.api.createRecording(targetId, { recordingName, events, duration }))
+    ).subscribe(success => {
+      if (success) {
         history.push('/recordings');
-      } else {
-        notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
       }
     });
   };
 
   const handleCreateSnapshot = (): void => {
     context.commandChannel.target().pipe(
-      concatMap(target => context.api.sendRequest(`targets/${encodeURIComponent(target)}/snapshot`, {
-        method: 'POST',
-      })),
-      first(),
-    ).subscribe(resp => {
-      if (200 <= resp.status && resp.status < 300) {
-        notifications.success('Recording created');
+      concatMap(targetId => context.api.createSnapshot(targetId))
+    ).subscribe(success => {
+      if (success) {
         history.push('/recordings');
-      } else {
-        notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
       }
     });
   };

@@ -98,32 +98,28 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   };
 
   const handleArchiveRecordings = () => {
+    const tasks: Observable<boolean>[] = [];
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        context.commandChannel.target()
-          .pipe(
-            concatMap(
-              target => context.api.sendRequest(
-                `targets/${encodeURIComponent(target)}/recordings/${encodeURIComponent(r.name)}`,
-                {
-                  method: 'PATCH',
-                  body: 'SAVE',
-                }
-              )),
-            first(),
-          )
-          .subscribe(() => {
-            if (props.onArchive) {
-              props.onArchive();
-            }
-          });
+        tasks.push(
+          context.commandChannel.target()
+            .pipe(
+              concatMap(target => context.api.archiveRecording(target, r.name)),
+              first()
+            )
+        );
       }
     });
+    forkJoin(tasks).subscribe(arr => {
+      if (props.onArchive && arr.some(v => !!v)) {
+        props.onArchive();
+      }
+    }, console.error);
   };
 
   const handleStopRecordings = () => {
-    const tasks: Observable<any>[] = [];
+    const tasks: Observable<boolean>[] = [];
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
@@ -131,21 +127,14 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           tasks.push(
             context.commandChannel.target()
               .pipe(
-                concatMap(
-                  target => context.api.sendRequest(
-                    `targets/${encodeURIComponent(target)}/recordings/${encodeURIComponent(r.name)}`,
-                    {
-                      method: 'PATCH',
-                      body: 'STOP',
-                    }
-                  )),
-                first(),
+                concatMap(target => context.api.stopRecording(target, r.name)),
+                first()
               )
           );
         }
       }
     });
-    forkJoin(tasks).subscribe(refreshRecordingList);
+    forkJoin(tasks).subscribe(refreshRecordingList, console.error);
   };
 
   const handleDeleteRecordings = () => {
@@ -156,21 +145,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         tasks.push(
           context.commandChannel.target()
             .pipe(
-              concatMap(
-                target => context.api.sendRequest(
-                  `targets/${encodeURIComponent(target)}/recordings/${encodeURIComponent(r.name)}`,
-                  {
-                    method: 'DELETE',
-                  }
-                )),
-              map(resp => resp.text()),
-              concatMap(from),
+              concatMap(target => context.api.deleteRecording(target, r.name)),
               first(),
             )
         );
       }
     });
-    forkJoin(tasks).subscribe(refreshRecordingList);
+    forkJoin(tasks).subscribe(refreshRecordingList, console.error);
   };
 
   React.useEffect(() => {
@@ -327,28 +308,18 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   }, [context.commandChannel]);
 
   const grafanaUpload = () => {
-    context.commandChannel.grafanaDatasourceUrl().pipe(first()).subscribe(url => {
       notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
       context.commandChannel.target()
         .pipe(
           concatMap(
-            target => context.api.sendRequest(
-              `targets/${encodeURIComponent(target)}/recordings/${encodeURIComponent(props.recording.name)}/upload`,
-              {
-                method: 'POST',
-              }
-            )),
-          first(),
+            target => context.api.uploadRecordingToGrafana(target, props.recording.name)),
         )
-        .subscribe(resp => {
-          if (resp.status === 0) {
+        .subscribe(success => {
+          if (success) {
             notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
             context.commandChannel.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
-          } else {
-            notifications.danger('Upload Failed', `Recording "${props.recording.name}" could not be uploaded`);
           }
         });
-    });
   };
 
   const handleDownloadRecording = () => {
