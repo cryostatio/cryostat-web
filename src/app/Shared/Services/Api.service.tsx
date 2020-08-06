@@ -322,42 +322,25 @@ export class ApiService {
   }
 
   downloadTemplate(targetId: string, template: EventTemplate): void {
-    const url = `${this.authority}/api/v1/targets/${targetId}/templates/${template.name}/type/${template.type}`;
-    this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).subscribe(auths =>
-      fromFetch(url, {
-        credentials: 'include',
-        mode: 'cors',
-        headers: this.getHeaders(auths[0], auths[1]),
-      })
+    const url = `targets/${encodeURIComponent(targetId)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
+    this.sendRequest(url)
       .pipe(concatMap(resp => resp.text()))
-      .subscribe(resp =>
+      .subscribe(resp => {
         this.downloadFile(
           `${template.name}.xml`,
           resp,
           'application/jfc+xml')
-      )
-    );
+      });
   }
 
   uploadRecording(file: File): Observable<string> {
-    const payload = new window.FormData(); // as multipart/form-data
-    payload.append('recording', file);
-
-    return this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first(),
-      flatMap(auths =>
-        fromFetch(`/api/v1/recordings`, {
-          credentials: 'include',
-          mode: 'cors',
-          body: payload,
-          headers: this.getHeaders(auths[0], auths[1]),
-        })),
-      concatMap(resp => from(resp.text()))
-    );
+    const body = new window.FormData(); // as multipart/form-data
+    body.append('recording', file);
+    return this.sendRequest('recordings', { body })
+      .pipe(
+        map(resp => resp.text()),
+        concatMap(from),
+      );
   }
 
   private sendRequest(path: string, config?: RequestInit): Observable<Response> {
