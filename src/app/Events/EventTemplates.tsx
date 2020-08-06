@@ -116,7 +116,7 @@ export const EventTemplates = () => {
       actions = actions.concat([
           {
             title: 'Download',
-            onClick: (event, rowId) => context.target.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),
+            onClick: (event, rowId) => context.api.downloadTemplate(filteredTemplates[rowId]),
           }
       ]);
     };

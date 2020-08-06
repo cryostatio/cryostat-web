@@ -38,6 +38,7 @@
 import { from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
+import { TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
 export class ApiService {
@@ -46,7 +47,10 @@ export class ApiService {
   private readonly authMethod = new ReplaySubject<string>(1);
   readonly authority: string;
 
-   constructor(private readonly notifications: Notifications) {
+   constructor(
+     private readonly target: TargetService,
+     private readonly notifications: Notifications
+   ) {
       let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
       if (!apiAuthority) {
         apiAuthority = '';
@@ -86,7 +90,7 @@ export class ApiService {
     );
   }
 
-  createRecording(targetId: string,
+  createRecording(
     { recordingName, events, duration  } : { recordingName: string; events: string; duration?: number }
     ): Observable<boolean> {
       const form = new window.FormData();
@@ -95,9 +99,27 @@ export class ApiService {
       if (!!duration && duration > 0) {
         form.append('duration', String(duration));
       }
-      return this.sendRequest(`targets/${encodeURIComponent(targetId)}/recordings`, {
+      return this.target.target().pipe(concatMap(targetId =>
+        this.sendRequest(`targets/${encodeURIComponent(targetId)}/recordings`, {
+          method: 'POST',
+          body: form,
+        }).pipe(
+          tap(resp => {
+            if (isHttpOK(resp)) {
+              this.notifications.success('Recording created');
+            } else {
+              this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+            }
+          }),
+          map(isHttpOK),
+          first(),
+        )));
+  }
+
+  createSnapshot(): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(`targets/${encodeURIComponent(targetId)}/snapshot`, {
         method: 'POST',
-        body: form,
       }).pipe(
         tap(resp => {
           if (isHttpOK(resp)) {
@@ -108,76 +130,67 @@ export class ApiService {
         }),
         map(isHttpOK),
         first(),
-      );
+      )
+    ));
   }
 
-  createSnapshot(targetId: string): Observable<boolean> {
-      return this.sendRequest(`targets/${encodeURIComponent(targetId)}/snapshot`, {
-        method: 'POST',
-      }).pipe(
+  archiveRecording(recordingName: string): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(
+        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        {
+          method: 'PATCH',
+          body: 'SAVE',
+        }
+      ).pipe(
         tap(resp => {
-          if (isHttpOK(resp)) {
-            this.notifications.success('Recording created');
-          } else {
+          if (!isHttpOK(resp)) {
             this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
           }
         }),
         map(isHttpOK),
         first(),
-      );
+      )
+    ));
   }
 
-  archiveRecording(targetId: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-      `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
-      {
-        method: 'PATCH',
-        body: 'SAVE',
-      }
-    ).pipe(
-      tap(resp => {
-        if (!isHttpOK(resp)) {
-          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+  stopRecording(recordingName: string): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(
+        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        {
+          method: 'PATCH',
+          body: 'STOP',
         }
-      }),
-      map(isHttpOK),
-      first(),
-    );
+      ).pipe(
+        tap(resp => {
+          if (!isHttpOK(resp)) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(isHttpOK),
+        first(),
+      )
+    ));
   }
 
-  stopRecording(targetId: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-      `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
-      {
-        method: 'PATCH',
-        body: 'STOP',
-      }
-    ).pipe(
-      tap(resp => {
-        if (!isHttpOK(resp)) {
-          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+  deleteRecording(recordingName: string): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(
+        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        {
+          method: 'DELETE',
         }
-      }),
-      map(isHttpOK),
-      first(),
-    );
-  }
-
-  deleteRecording(targetId: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-      `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
-      {
-        method: 'DELETE',
-      }
-    ).pipe(
-      tap(resp => {
-        if (!isHttpOK(resp)) {
-          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-        }
-      }),
-      map(isHttpOK),
-      first(),
-    );
+      ).pipe(
+        tap(resp => {
+          if (!isHttpOK(resp)) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(isHttpOK),
+        first(),
+      )
+    ));
   }
 
   deleteArchivedRecording(recordingName: string): Observable<boolean> {
@@ -194,21 +207,23 @@ export class ApiService {
     );
   }
 
-  uploadRecordingToGrafana(targetId: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-      `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}/upload`,
-      {
-        method: 'POST',
-      }
-    ).pipe(
-      tap(resp => {
-        if (!isHttpOK(resp)) {
-          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+  uploadRecordingToGrafana(recordingName: string): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(
+        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}/upload`,
+        {
+          method: 'POST',
         }
-      }),
-      map(isHttpOK),
-      first()
-    );
+      ).pipe(
+        tap(resp => {
+          if (!isHttpOK(resp)) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(isHttpOK),
+        first()
+      )
+    ));
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<void> {
@@ -321,16 +336,18 @@ export class ApiService {
     );
   }
 
-  downloadTemplate(targetId: string, template: EventTemplate): void {
-    const url = `targets/${encodeURIComponent(targetId)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
-    this.sendRequest(url)
-      .pipe(concatMap(resp => resp.text()))
-      .subscribe(resp => {
-        this.downloadFile(
-          `${template.name}.xml`,
-          resp,
-          'application/jfc+xml')
-      });
+  downloadTemplate(template: EventTemplate): void {
+    this.target.target().pipe(concatMap(targetId => {
+      const url = `targets/${encodeURIComponent(targetId)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
+      return this.sendRequest(url)
+        .pipe(concatMap(resp => resp.text()));
+    }))
+    .subscribe(resp => {
+      this.downloadFile(
+        `${template.name}.xml`,
+        resp,
+        'application/jfc+xml')
+    });
   }
 
   uploadRecording(file: File): Observable<string> {

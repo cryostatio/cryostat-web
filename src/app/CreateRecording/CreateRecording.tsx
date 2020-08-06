@@ -66,23 +66,21 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   const [activeTab, setActiveTab] = React.useState(0);
 
   const handleCreateRecording = (recordingName: string, events: string, duration?: number): void => {
-    context.target.target().pipe(
-      concatMap(targetId => context.api.createRecording(targetId, { recordingName, events, duration }))
-    ).subscribe(success => {
-      if (success) {
-        history.push('/recordings');
-      }
-    });
+    context.api.createRecording({ recordingName, events, duration })
+      .subscribe(success => {
+        if (success) {
+          history.push('/recordings');
+        }
+      });
   };
 
   const handleCreateSnapshot = (): void => {
-    context.target.target().pipe(
-      concatMap(targetId => context.api.createSnapshot(targetId))
-    ).subscribe(success => {
-      if (success) {
-        history.push('/recordings');
-      }
-    });
+    context.api.createSnapshot()
+      .subscribe(success => {
+        if (success) {
+          history.push('/recordings');
+        }
+      });
   };
 
   return (

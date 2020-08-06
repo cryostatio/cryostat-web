@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService } from './Target.service';
+import { TargetService, TargetInstance } from './Target.service';
 import { ApiService } from './Api.service';
 import { CommandChannel } from './CommandChannel.service';
 import { ReportService } from './Report.service';
@@ -49,12 +49,11 @@ export interface Services {
   reports: ReportService;
 }
 
-const target = new TargetService();
-const api = new ApiService(NotificationsInstance);
+const api = new ApiService(TargetInstance, NotificationsInstance);
 const commandChannel = new CommandChannel(api, NotificationsInstance);
 const reports = new ReportService(api);
 
-const defaultServices: Services = { target, api, commandChannel, reports };
+const defaultServices: Services = { target: TargetInstance, api, commandChannel, reports };
 
 const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
 

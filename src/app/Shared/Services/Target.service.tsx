@@ -1,6 +1,6 @@
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
-export class TargetService {
+class TargetService {
 
   private readonly subj: Subject<string> = new BehaviorSubject('');
 
@@ -13,3 +13,7 @@ export class TargetService {
   }
 
 }
+
+const TargetInstance = new TargetService();
+
+export { TargetService, TargetInstance }

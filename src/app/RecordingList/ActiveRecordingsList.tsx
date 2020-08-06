@@ -103,11 +103,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
-          context.target.target()
-            .pipe(
-              concatMap(target => context.api.archiveRecording(target, r.name)),
-              first()
-            )
+          context.api.archiveRecording(r.name).pipe(first())
         );
       }
     });
@@ -125,11 +121,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         handleRowCheck(false, idx);
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
           tasks.push(
-            context.target.target()
-              .pipe(
-                concatMap(target => context.api.stopRecording(target, r.name)),
-                first()
-              )
+            context.api.stopRecording(r.name).pipe(first())
           );
         }
       }
@@ -143,11 +135,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
-          context.target.target()
-            .pipe(
-              concatMap(target => context.api.deleteRecording(target, r.name)),
-              first(),
-            )
+          context.api.deleteRecording(r.name)
         );
       }
     });
@@ -309,11 +297,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
 
   const grafanaUpload = () => {
       notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
-      context.target.target()
-        .pipe(
-          concatMap(
-            target => context.api.uploadRecordingToGrafana(target, props.recording.name)),
-        )
+      context.api.uploadRecordingToGrafana(props.recording.name)
         .subscribe(success => {
           if (success) {
             notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
