@@ -87,9 +87,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.commandChannel.setTarget('');
     } else {
       let identifier = selection.connectUrl;
-      if (selection.port) {
-        identifier += `:${selection.port}`;
-      }
       context.commandChannel.setTarget(identifier);
     }
     // FIXME setting the expanded state to false seems to cause an "unmounted component" error
