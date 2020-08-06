@@ -48,7 +48,6 @@ export interface TargetSelectProps {
 interface Target {
   connectUrl: string;
   alias: string;
-  port: number;
 }
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
@@ -136,7 +135,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                         key={t.connectUrl}
                         value={t}
                         isPlaceholder={false}
-                      >{`${t.alias} (${t.connectUrl}:${t.port})`}</SelectOption>
+                      >{`${t.alias} (${t.connectUrl})`}</SelectOption>
                     ))
                 )
               }
