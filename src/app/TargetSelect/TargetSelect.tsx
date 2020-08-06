@@ -48,7 +48,6 @@ export interface TargetSelectProps {
 interface Target {
   connectUrl: string;
   alias: string;
-  port: number;
 }
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
@@ -88,9 +87,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.commandChannel.setTarget('');
     } else {
       let identifier = selection.connectUrl;
-      if (selection.port) {
-        identifier += `:${selection.port}`;
-      }
       context.commandChannel.setTarget(identifier);
     }
     // FIXME setting the expanded state to false seems to cause an "unmounted component" error
@@ -136,7 +132,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                         key={t.connectUrl}
                         value={t}
                         isPlaceholder={false}
-                      >{`${t.alias} (${t.connectUrl}:${t.port})`}</SelectOption>
+                      >{`${t.alias} (${t.connectUrl})`}</SelectOption>
                     ))
                 )
               }
