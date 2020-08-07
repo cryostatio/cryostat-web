@@ -135,7 +135,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
-          context.api.deleteRecording(r.name)
+          context.api.deleteRecording(r.name).pipe(first())
         );
       }
     });
