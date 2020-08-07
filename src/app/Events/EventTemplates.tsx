@@ -87,7 +87,11 @@ export const EventTemplates = () => {
 
   const refreshTemplates = () => {
     addSubscription(
-      context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates)
+      context.target.target()
+      .pipe(
+        concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`)),
+        first(),
+      ).subscribe(setTemplates)
     );
   };
 
@@ -102,7 +106,9 @@ export const EventTemplates = () => {
 
   const handleDelete = (rowData) => {
     addSubscription(
-      context.api.deleteCustomEventTemplate(rowData[0]).subscribe(refreshTemplates)
+      context.api.deleteCustomEventTemplate(rowData[0])
+      .pipe(first())
+      .subscribe(refreshTemplates)
     );
   };
 
@@ -164,7 +170,9 @@ export const EventTemplates = () => {
     }
     setUploading(true);
     addSubscription(
-      context.api.addCustomEventTemplate(uploadFile).subscribe(success => {
+      context.api.addCustomEventTemplate(uploadFile)
+      .pipe(first())
+      .subscribe(success => {
         setUploading(false);
         if (success) {
           setUploadFile(undefined);

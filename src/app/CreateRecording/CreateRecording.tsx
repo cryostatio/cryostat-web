@@ -70,6 +70,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   const handleCreateRecording = (recordingName: string, events: string, duration?: number): void => {
     addSubscription(
       context.api.createRecording({ recordingName, events, duration })
+      .pipe(first())
       .subscribe(success => {
         if (success) {
           history.push('/recordings');
@@ -81,6 +82,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   const handleCreateSnapshot = (): void => {
     addSubscription(
       context.api.createSnapshot()
+      .pipe(first())
       .subscribe(success => {
         if (success) {
           history.push('/recordings');

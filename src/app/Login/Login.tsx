@@ -39,6 +39,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
+import { first } from 'rxjs/operators';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 
@@ -56,7 +57,9 @@ export const Login = (props) => {
       tok = window.btoa(token);
     } // else this is Bearer auth and the token is sent as-is
     addSubscription(
-      context.api.checkAuth(tok, authMethod).subscribe(v => {
+      context.api.checkAuth(tok, authMethod)
+      .pipe(first())
+      .subscribe(v => {
         if (v) {
           onLoginSuccess();
         }

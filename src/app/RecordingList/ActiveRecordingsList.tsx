@@ -93,8 +93,10 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
   const refreshRecordingList = () => {
     addSubscription(
-      context.target.target().pipe(
-        concatMap(target => context.api.doGet<Recording[]>(`/targets/${encodeURIComponent(target)}/recordings`))
+      context.target.target()
+      .pipe(
+        concatMap(target => context.api.doGet<Recording[]>(`/targets/${encodeURIComponent(target)}/recordings`)),
+        first(),
       ).subscribe(newRecordings => {
         if (!_.isEqual(newRecordings, recordings)) {
           setRecordings(newRecordings);
@@ -313,12 +315,13 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
     addSubscription(
       context.api.uploadRecordingToGrafana(props.recording.name)
-        .subscribe(success => {
-          if (success) {
-            notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
-            context.commandChannel.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
-          }
-        })
+      .pipe(first())
+      .subscribe(success => {
+        if (success) {
+          notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
+          context.commandChannel.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
+        }
+      })
     );
   };
 

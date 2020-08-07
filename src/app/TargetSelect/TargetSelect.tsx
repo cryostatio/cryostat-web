@@ -74,7 +74,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const refreshTargetList = () => {
     setLoading(true);
     addSubscription(
-      context.api.doGet<Target[]>(`targets`).subscribe(targets => {
+      context.api.doGet<Target[]>(`targets`)
+      .pipe(first())
+      .subscribe(targets => {
         setTargets(targets);
         setLoading(false);
       })

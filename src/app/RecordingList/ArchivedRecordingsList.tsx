@@ -81,7 +81,9 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
 
   const refreshRecordingList = () => {
     addSubscription(
-      context.api.doGet<Recording[]>(`recordings`).subscribe(newRecordings => {
+      context.api.doGet<Recording[]>(`recordings`)
+      .pipe(first())
+      .subscribe(newRecordings => {
         if (!_.isEqual(newRecordings, recordings)) {
           setRecordings(newRecordings);
         }
@@ -95,8 +97,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
-          context.api.deleteArchivedRecording(r.name)
-          .pipe(first())
+          context.api.deleteArchivedRecording(r.name).pipe(first())
         );
       }
     });
