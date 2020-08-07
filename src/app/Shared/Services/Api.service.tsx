@@ -65,7 +65,7 @@ export class ApiService {
       mode: 'cors',
       method: 'POST',
       body: null,
-      headers: this.getHeaders(token, method)
+      headers: this.getHeaders(token, method),
     })
     .pipe(
       map(response => {
@@ -227,61 +227,43 @@ export class ApiService {
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<void> {
-    return this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).pipe(
-      concatMap(auths =>
-        fromFetch(`${this.authority}/api/v1/templates/${templateName}`, {
-          credentials: 'include',
-          mode: 'cors',
-          method: 'DELETE',
-          body: null,
-          headers: this.getHeaders(auths[0], auths[1])
-        })
-        .pipe(
-          map(response => {
-            if (!response.ok) {
-              throw response.statusText;
-            }
-          }),
-          catchError((e: Error): ObservableInput<void> => {
-            window.console.error(JSON.stringify(e));
-            return of();
-          })
-        )
-    ));
+    return this.sendRequest(`templates/${templateName}`, {
+      method: 'DELETE',
+      body: null,
+    })
+    .pipe(
+      map(response => {
+        if (!response.ok) {
+          throw response.statusText;
+        }
+      }),
+      catchError((e: Error): ObservableInput<void> => {
+        window.console.error(JSON.stringify(e));
+        return of();
+      })
+    );
   }
 
   addCustomEventTemplate(file: File): Observable<boolean> {
     const body = new window.FormData();
     body.append('template', file);
-    return this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).pipe(
-      concatMap(auths =>
-        fromFetch(`${this.authority}/api/v1/templates`, {
-          credentials: 'include',
-          mode: 'cors',
-          method: 'POST',
-          body,
-          headers: this.getHeaders(auths[0], auths[1])
-        })
-        .pipe(
-          map(response => {
-            if (!response.ok) {
-              throw response.statusText;
-            }
-            return true;
-          }),
-          catchError((e: Error): ObservableInput<boolean> => {
-            window.console.error(JSON.stringify(e));
-            this.notifications.danger('Template Upload Failed', JSON.stringify(e));
-            return of(false);
-          })
-        )
-    ));
+    return this.sendRequest(`templates`, {
+      method: 'POST',
+      body,
+    })
+    .pipe(
+      map(response => {
+        if (!response.ok) {
+          throw response.statusText;
+        }
+        return true;
+      }),
+      catchError((e: Error): ObservableInput<boolean> => {
+        window.console.error(JSON.stringify(e));
+        this.notifications.danger('Template Upload Failed', JSON.stringify(e));
+        return of(false);
+      })
+    );
   }
 
   doGet<T>(path: string): Observable<T> {
