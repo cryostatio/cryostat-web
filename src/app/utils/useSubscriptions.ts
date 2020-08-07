@@ -39,12 +39,17 @@ import * as React from 'react';
 import { Subscription } from 'rxjs';
 
 export function useSubscriptions() {
-  const [subscriptions, setSubscriptions] = React.useState([] as Subscription[]);
+  const subsRef = React.useRef([] as Subscription[]);
+  const [subscriptions, setSubscriptions] = React.useState(subsRef.current);
 
-  React.useEffect(() => () => subscriptions.forEach((s: Subscription): void => s.unsubscribe()), []);
+  React.useEffect(() => () => subsRef.current.forEach((s: Subscription): void => s.unsubscribe()), []);
 
   const addSubscription = (sub: Subscription): void => {
-    setSubscriptions((subs: Subscription[]): Subscription[] => subs.concat([sub]));
+    setSubscriptions((subs: Subscription[]): Subscription[] => {
+      const result = subs.concat([sub]);
+      subsRef.current = result;
+      return result;
+    });
   };
 
   return addSubscription;
