@@ -122,13 +122,17 @@ export const EventTemplates = () => {
         title: 'Create Recording...',
         onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0], templateType: String(rowData[3]).toUpperCase() } }),
       },
-      {
-        title: 'Download',
-        onClick: (event, rowId) => context.commandChannel.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),
-      },
     ] as IAction[];
 
     const template: EventTemplate = filteredTemplates[extraData.rowIndex];
+    if (template.name != 'ALL') {
+      actions = actions.concat([
+          {
+            title: 'Download',
+            onClick: (event, rowId) => context.commandChannel.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),          
+          }
+      ]);
+    };
     if (template.type === 'CUSTOM') {
       actions = actions.concat([
           {
@@ -140,7 +144,6 @@ export const EventTemplates = () => {
           }
       ]);
     }
-
     return actions;
   };
 
