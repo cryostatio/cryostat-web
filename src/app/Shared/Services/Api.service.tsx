@@ -227,7 +227,7 @@ export class ApiService {
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<void> {
-    return this.sendRequest(`templates/${templateName}`, {
+    return this.sendRequest(`templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
       body: null,
     })
