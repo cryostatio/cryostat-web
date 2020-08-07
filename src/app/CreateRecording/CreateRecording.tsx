@@ -39,6 +39,7 @@ import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
 import { StaticContext } from 'react-router';
 import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
@@ -62,25 +63,30 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
+  const addSubscription = useSubscriptions();
 
   const [activeTab, setActiveTab] = React.useState(0);
 
   const handleCreateRecording = (recordingName: string, events: string, duration?: number): void => {
-    context.api.createRecording({ recordingName, events, duration })
+    addSubscription(
+      context.api.createRecording({ recordingName, events, duration })
       .subscribe(success => {
         if (success) {
           history.push('/recordings');
         }
-      });
+      })
+    );
   };
 
   const handleCreateSnapshot = (): void => {
-    context.api.createSnapshot()
+    addSubscription(
+      context.api.createSnapshot()
       .subscribe(success => {
         if (success) {
           history.push('/recordings');
         }
-      });
+      })
+    );
   };
 
   return (

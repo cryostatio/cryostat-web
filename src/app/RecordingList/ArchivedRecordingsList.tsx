@@ -39,6 +39,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Spinner, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { RecordingActions } from './ActiveRecordingsList';
 import { RecordingsDataTable } from './RecordingsDataTable';
@@ -58,6 +59,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [openAction, setOpenAction] = React.useState(-1);
+  const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
     'Name'
@@ -78,11 +80,13 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   };
 
   const refreshRecordingList = () => {
-    context.api.doGet<Recording[]>(`recordings`).subscribe(newRecordings => {
-      if (!_.isEqual(newRecordings, recordings)) {
-        setRecordings(newRecordings);
-      }
-    });
+    addSubscription(
+      context.api.doGet<Recording[]>(`recordings`).subscribe(newRecordings => {
+        if (!_.isEqual(newRecordings, recordings)) {
+          setRecordings(newRecordings);
+        }
+      })
+    );
   };
 
   const handleDeleteRecordings = () => {
@@ -96,7 +100,9 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
         );
       }
     });
-    forkJoin(tasks).subscribe(refreshRecordingList);
+    addSubscription(
+      forkJoin(tasks).subscribe(refreshRecordingList)
+    );
   };
 
   const toggleExpanded = (id) => {

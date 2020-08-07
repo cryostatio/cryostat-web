@@ -35,14 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 import * as React from 'react';
 import * as _ from 'lodash';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { forkJoin, from, Observable } from 'rxjs';
+import { forkJoin, from, Observable, Subscription } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
@@ -69,6 +71,8 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     'State',
   ];
 
+  const addSubscription = useSubscriptions();
+
   const handleRowCheck = (checked, index) => {
     if (checked) {
       setCheckedIndices(ci => ([...ci, index]));
@@ -88,13 +92,15 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   };
 
   const refreshRecordingList = () => {
-    context.target.target().pipe(
-      concatMap(target => context.api.doGet<Recording[]>(`/targets/${encodeURIComponent(target)}/recordings`))
-    ).subscribe(newRecordings => {
-      if (!_.isEqual(newRecordings, recordings)) {
-        setRecordings(newRecordings);
-      }
-    });
+    addSubscription(
+      context.target.target().pipe(
+        concatMap(target => context.api.doGet<Recording[]>(`/targets/${encodeURIComponent(target)}/recordings`))
+      ).subscribe(newRecordings => {
+        if (!_.isEqual(newRecordings, recordings)) {
+          setRecordings(newRecordings);
+        }
+      })
+    );
   };
 
   const handleArchiveRecordings = () => {
@@ -107,11 +113,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         );
       }
     });
-    forkJoin(tasks).subscribe(arr => {
-      if (props.onArchive && arr.some(v => !!v)) {
-        props.onArchive();
-      }
-    }, console.error);
+    addSubscription(
+      forkJoin(tasks).subscribe(arr => {
+        if (props.onArchive && arr.some(v => !!v)) {
+          props.onArchive();
+        }
+      }, console.error)
+    );
   };
 
   const handleStopRecordings = () => {
@@ -126,7 +134,9 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         }
       }
     });
-    forkJoin(tasks).subscribe(refreshRecordingList, console.error);
+    addSubscription(
+      forkJoin(tasks).subscribe(refreshRecordingList, console.error)
+    );
   };
 
   const handleDeleteRecordings = () => {
@@ -139,7 +149,9 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         );
       }
     });
-    forkJoin(tasks).subscribe(refreshRecordingList, console.error);
+    addSubscription(
+      forkJoin(tasks).subscribe(refreshRecordingList, console.error)
+    );
   };
 
   React.useEffect(() => {
@@ -288,6 +300,8 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const [open, setOpen] = React.useState(false);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
 
+  const addSubscription = useSubscriptions();
+
   React.useEffect(() => {
     const sub = context.commandChannel.grafanaDatasourceUrl()
       .pipe(first())
@@ -296,14 +310,16 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   }, [context.commandChannel]);
 
   const grafanaUpload = () => {
-      notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
+    notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
+    addSubscription(
       context.api.uploadRecordingToGrafana(props.recording.name)
         .subscribe(success => {
           if (success) {
             notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
             context.commandChannel.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
           }
-        });
+        })
+    );
   };
 
   const handleDownloadRecording = () => {

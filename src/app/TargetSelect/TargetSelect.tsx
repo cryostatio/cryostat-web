@@ -37,6 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
 import { ContainerNodeIcon, Spinner2Icon } from '@patternfly/react-icons';
 import { filter, first, map } from 'rxjs/operators';
@@ -56,6 +57,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
+  const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
     const sub = context.commandChannel.isReady()
@@ -71,10 +73,12 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   const refreshTargetList = () => {
     setLoading(true);
-    context.api.doGet<Target[]>(`targets`).subscribe(targets => {
-      setTargets(targets);
-      setLoading(false);
-    });
+    addSubscription(
+      context.api.doGet<Target[]>(`targets`).subscribe(targets => {
+        setTargets(targets);
+        setLoading(false);
+      })
+    );
   };
 
   const onSelect = (evt, selection, isPlaceholder) => {

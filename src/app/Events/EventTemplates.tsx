@@ -38,6 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
@@ -57,6 +58,7 @@ export const EventTemplates = () => {
   const [uploading, setUploading] = React.useState(false);
   const [fileRejected, setFileRejected] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
+  const addSubscription = useSubscriptions();
 
   const tableColumns = [
     { title: 'Name', transforms: [ sortable ] },
@@ -84,7 +86,9 @@ export const EventTemplates = () => {
   }, [filterText, templates, sortBy]);
 
   const refreshTemplates = () => {
-    context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates);
+    addSubscription(
+      context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates)
+    );
   };
 
   React.useEffect(() => {
@@ -97,7 +101,9 @@ export const EventTemplates = () => {
   );
 
   const handleDelete = (rowData) => {
-    context.api.deleteCustomEventTemplate(rowData[0]).subscribe(refreshTemplates);
+    addSubscription(
+      context.api.deleteCustomEventTemplate(rowData[0]).subscribe(refreshTemplates)
+    );
   };
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
@@ -157,15 +163,17 @@ export const EventTemplates = () => {
       return;
     }
     setUploading(true);
-    context.api.addCustomEventTemplate(uploadFile).subscribe(success => {
-      setUploading(false);
-      if (success) {
-        setUploadFile(undefined);
-        setUploadFilename('');
-        refreshTemplates();
-        setModalOpen(false);
-      }
-    });
+    addSubscription(
+      context.api.addCustomEventTemplate(uploadFile).subscribe(success => {
+        setUploading(false);
+        if (success) {
+          setUploadFile(undefined);
+          setUploadFilename('');
+          refreshTemplates();
+          setModalOpen(false);
+        }
+      })
+    );
   };
 
   const handleUploadCancel = () => {
