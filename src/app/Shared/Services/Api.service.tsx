@@ -105,13 +105,13 @@ export class ApiService {
           body: form,
         }).pipe(
           tap(resp => {
-            if (isHttpOK(resp)) {
+            if (resp.ok) {
               this.notifications.success('Recording created');
             } else {
               this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
             }
           }),
-          map(isHttpOK),
+          map(resp => resp.ok),
           first(),
         )));
   }
@@ -122,13 +122,13 @@ export class ApiService {
         method: 'POST',
       }).pipe(
         tap(resp => {
-          if (isHttpOK(resp)) {
+          if (resp.ok) {
             this.notifications.success('Recording created');
           } else {
             this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
           }
         }),
-        map(isHttpOK),
+        map(resp => resp.ok),
         first(),
       )
     ));
@@ -144,11 +144,11 @@ export class ApiService {
         }
       ).pipe(
         tap(resp => {
-          if (!isHttpOK(resp)) {
+          if (!resp.ok) {
             this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
           }
         }),
-        map(isHttpOK),
+        map(resp => resp.ok),
         first(),
       )
     ));
@@ -164,11 +164,11 @@ export class ApiService {
         }
       ).pipe(
         tap(resp => {
-          if (!isHttpOK(resp)) {
+          if (!resp.ok) {
             this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
           }
         }),
-        map(isHttpOK),
+        map(resp => resp.ok),
         first(),
       )
     ));
@@ -183,11 +183,11 @@ export class ApiService {
         }
       ).pipe(
         tap(resp => {
-          if (!isHttpOK(resp)) {
+          if (!resp.ok) {
             this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
           }
         }),
-        map(isHttpOK),
+        map(resp => resp.ok),
         first(),
       )
     ));
@@ -198,11 +198,11 @@ export class ApiService {
       method: 'DELETE'
     }).pipe(
       tap(resp => {
-        if (!isHttpOK(resp)) {
+        if (!resp.ok) {
           this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
         }
       }),
-      map(isHttpOK),
+      map(resp => resp.ok),
       first(),
     );
   }
@@ -216,11 +216,11 @@ export class ApiService {
         }
       ).pipe(
         tap(resp => {
-          if (!isHttpOK(resp)) {
+          if (!resp.ok) {
             this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
           }
         }),
-        map(isHttpOK),
+        map(resp => resp.ok),
         first()
       )
     ));
@@ -376,8 +376,6 @@ export class ApiService {
   }
 
 }
-
-const isHttpOK = (resp: Response): boolean => 200 <= resp.status && resp.status < 300;
 
 export interface SavedRecording {
   name: string;
