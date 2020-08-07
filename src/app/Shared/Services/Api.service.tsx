@@ -221,10 +221,7 @@ export class ApiService {
           throw response.statusText;
         }
       }),
-      catchError((e: Error): ObservableInput<void> => {
-        window.console.error(JSON.stringify(e));
-        return of();
-      })
+      catchError((e: Error): ObservableInput<void> => of()),
     );
   }
 
@@ -242,11 +239,7 @@ export class ApiService {
         }
         return true;
       }),
-      catchError((e: Error): ObservableInput<boolean> => {
-        window.console.error(JSON.stringify(e));
-        this.notifications.danger('Template Upload Failed', JSON.stringify(e));
-        return of(false);
-      })
+      catchError((e: Error): ObservableInput<boolean> => of(false)),
     );
   }
 
@@ -273,11 +266,11 @@ export class ApiService {
         headers: this.getHeaders(auths[0], auths[1]),
       })
       .pipe(
-        tap(resp => {
-          if (!resp.ok) {
-            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-          }
+        map(resp => {
+          if (resp.ok) return resp
+          throw new HttpError(resp);
         }),
+        catchError((err, caught) => this.handleError<Response>(err, caught)),
         concatMap(resp => resp.blob()),
       )
       .subscribe(resp =>
@@ -300,11 +293,11 @@ export class ApiService {
         headers: this.getHeaders(auths[0], auths[1]),
       })
       .pipe(
-        tap(resp => {
-          if (!resp.ok) {
-            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-          }
+        map(resp => {
+          if (resp.ok) return resp;
+          throw new HttpError(resp);
         }),
+        catchError((err, caught) => this.handleError<Response>(err, caught)),
         concatMap(resp => resp.blob()),
       )
       .subscribe(resp =>
@@ -359,11 +352,11 @@ export class ApiService {
           ...config,
         })
       ),
-      tap(resp => {
-        if (!resp.ok) {
-          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-        }
+      map(resp => {
+        if (resp.ok) return resp;
+        throw new HttpError(resp);
       }),
+      catchError((err, caught) => this.handleError<Response>(err, caught)),
     );
   }
 
@@ -385,6 +378,30 @@ export class ApiService {
     window.setTimeout(() => window.URL.revokeObjectURL(url));
   }
 
+  private handleError<T>(error: Error, caught: Observable<T>): ObservableInput<T> {
+    // TODO prompt for credentials on 407 and retry
+    if (isHttpError(error)) {
+      this.notifications.danger(`Request failed (Status ${error.statusCode})`, error.message)
+    }
+    throw error;
+  }
+
+}
+
+class HttpError extends Error {
+  readonly statusCode: number;
+
+  constructor(httpResponse: Response) {
+    super(httpResponse.statusText);
+    this.statusCode = httpResponse.status;
+  }
+}
+
+const isHttpError = (toCheck: any): toCheck is HttpError => {
+  if (!(toCheck instanceof Error)) {
+    return false;
+  }
+  return (toCheck as HttpError).statusCode !== undefined;
 }
 
 export interface SavedRecording {
