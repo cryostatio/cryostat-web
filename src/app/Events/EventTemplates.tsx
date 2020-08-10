@@ -125,7 +125,7 @@ export const EventTemplates = () => {
     ] as IAction[];
 
     const template: EventTemplate = filteredTemplates[extraData.rowIndex];
-    if ((template.name !== 'ALL')||(template.provider !== 'ContainerJFR')) {
+    if ((template.name !== 'ALL')||(template.type !== 'TARGET')) {
       actions = actions.concat([
           {
             title: 'Download',
