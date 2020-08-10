@@ -53,32 +53,30 @@ export class ReportService {
     if (this.reports.has(recording)) {
       return of(this.reports.get(recording) || '<p>Invalid report cache entry</p>');
     }
-    return this.api.getToken()
-      .pipe(
-        combineLatest(this.api.getAuthMethod()),
-        mergeMap(([token, authMethod]) => {
-          return fromFetch(recording.reportUrl, {
-            headers: new window.Headers({ 'Authorization': `${authMethod} ${token}` }),
-            method: 'GET',
-            mode: 'cors',
-            credentials: 'include'
-          });
-        }),
-        concatMap(resp => {
-          if (resp.ok) {
-            return resp.text();
-          } else {
-            throw new Error('Response not OK');
-          }
-        }),
-        tap(report => {
-          const isArchived = !isActiveRecording(recording);
-          const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
-          if (isArchived || isActivedStopped) {
-            this.reports.set(recording, report);
-          }
+    return this.api.getHeaders().pipe(
+      concatMap(headers =>
+        fromFetch(recording.reportUrl, {
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'include',
+          headers,
         })
-      );
+      ),
+      concatMap(resp => {
+        if (resp.ok) {
+          return resp.text();
+        } else {
+          throw new Error('Response not OK');
+        }
+      }),
+      tap(report => {
+        const isArchived = !isActiveRecording(recording);
+        const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
+        if (isArchived || isActivedStopped) {
+          this.reports.set(recording, report);
+        }
+      })
+    );
   }
 
 }

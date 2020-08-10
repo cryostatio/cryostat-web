@@ -37,7 +37,7 @@
  */
 import { from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, combineLatest, concatMap, first, map, tap } from 'rxjs/operators';
+import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
 import { TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
@@ -65,7 +65,7 @@ export class ApiService {
       mode: 'cors',
       method: 'POST',
       body: null,
-      headers: this.getHeaders(token, method),
+      headers: this.getAuthHeaders(token, method),
     })
     .pipe(
       map(response => {
@@ -256,57 +256,52 @@ export class ApiService {
   }
 
   downloadReport(recording: SavedRecording): void {
-    this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).subscribe(auths =>
-      fromFetch(recording.reportUrl, {
-        credentials: 'include',
-        mode: 'cors',
-        headers: this.getHeaders(auths[0], auths[1]),
-      })
-      .pipe(
-        map(resp => {
-          if (resp.ok) return resp
-          throw new HttpError(resp);
-        }),
-        catchError((err, caught) => this.handleError<Response>(err, caught)),
-        concatMap(resp => resp.blob()),
-      )
-      .subscribe(resp =>
+    this.getHeaders().subscribe(headers => {
+      const req = () =>
+        fromFetch(recording.reportUrl, {
+          credentials: 'include',
+          mode: 'cors',
+          headers,
+        })
+          .pipe(
+            map(resp => {
+              if (resp.ok) return resp;
+              throw new HttpError(resp);
+            }),
+            catchError((err, caught) => this.handleError<Response>(err, req)),
+            concatMap(resp => resp.blob()),
+          );
+      req().subscribe(resp =>
         this.downloadFile(
           `${recording.name}.report.html`,
           resp,
           'text/html')
       )
-    );
+    });
   }
 
   downloadRecording(recording: SavedRecording): void {
-    this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).subscribe(auths =>
-      fromFetch(recording.downloadUrl, {
+    this.getHeaders().subscribe(headers => {
+      const req = () => fromFetch(recording.downloadUrl, {
         credentials: 'include',
         mode: 'cors',
-        headers: this.getHeaders(auths[0], auths[1]),
+        headers,
       })
-      .pipe(
-        map(resp => {
-          if (resp.ok) return resp;
-          throw new HttpError(resp);
-        }),
-        catchError((err, caught) => this.handleError<Response>(err, caught)),
-        concatMap(resp => resp.blob()),
-      )
-      .subscribe(resp =>
+        .pipe(
+          map(resp => {
+            if (resp.ok) return resp;
+            throw new HttpError(resp);
+          }),
+          catchError((err, caught) => this.handleError<Response>(err, req)),
+          concatMap(resp => resp.blob()),
+        );
+      req().subscribe(resp =>
         this.downloadFile(
           recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
           resp,
           'application/octet-stream')
       )
-    );
+    });
   }
 
   downloadTemplate(template: EventTemplate): void {
@@ -340,30 +335,49 @@ export class ApiService {
       );
   }
 
-  private sendRequest(path: string, config?: RequestInit): Observable<Response> {
+  getHeaders(): Observable<Headers> {
     return this.getToken().pipe(
       combineLatest(this.getAuthMethod()),
+      map(auths => this.getAuthHeaders(auths[0], auths[1])),
+      combineLatest(this.target.target()),
       first(),
-      concatMap(auths =>
+      concatMap(parts => {
+        const headers = parts[0];
+        const target = parts[1];
+        if (!!target && this.target.hasCredentials(target)) {
+          const credentials = this.target.getCredentials(target);
+          if (!!credentials) {
+            headers.set('X-JMX-Authorization', `Basic ${this.target.getCredentials(target)}`);
+          }
+        }
+        return of(headers);
+      })
+    );
+  }
+
+  private sendRequest(path: string, config?: RequestInit): Observable<Response> {
+    const req = () => this.getHeaders().pipe(
+      concatMap(headers =>
         fromFetch(`${this.authority}/api/v1/${path}`, {
           credentials: 'include',
           mode: 'cors',
-          headers: this.getHeaders(auths[0], auths[1]),
+          headers,
           ...config,
-        })
+        }),
       ),
       map(resp => {
         if (resp.ok) return resp;
         throw new HttpError(resp);
       }),
-      catchError((err, caught) => this.handleError<Response>(err, caught)),
+      catchError((err, caught) => this.handleError<Response>(err, req)),
     );
+    return req();
   }
 
-  private getHeaders(token: string, method: string): Headers {
+  private getAuthHeaders(token: string, method: string): Headers {
     const headers = new window.Headers();
     if (!!token && !!method) {
-      headers.append('Authorization', `${method} ${token}`)
+      headers.set('Authorization', `${method} ${token}`)
     }
     return headers;
   }
@@ -378,10 +392,16 @@ export class ApiService {
     window.setTimeout(() => window.URL.revokeObjectURL(url));
   }
 
-  private handleError<T>(error: Error, caught: Observable<T>): ObservableInput<T> {
-    // TODO prompt for credentials on 407 and retry
+  private handleError<T>(error: Error, retry: () => Observable<T>): ObservableInput<T> {
     if (isHttpError(error)) {
-      this.notifications.danger(`Request failed (Status ${error.statusCode})`, error.message)
+      if (error.statusCode === 407) {
+        this.target.setAuthFailure();
+        return this.target.authRetry().pipe(
+          flatMap(() => retry())
+        );
+      } else {
+        this.notifications.danger(`Request failed (Status ${error.statusCode})`, error.message)
+      }
     }
     throw error;
   }
