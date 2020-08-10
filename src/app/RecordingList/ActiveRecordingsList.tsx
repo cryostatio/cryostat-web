@@ -95,7 +95,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     addSubscription(
       context.target.target()
       .pipe(
-        concatMap(target => context.api.doGet<Recording[]>(`/targets/${encodeURIComponent(target)}/recordings`)),
+        concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target)}/recordings`)),
         first(),
       ).subscribe(newRecordings => {
         if (!_.isEqual(newRecordings, recordings)) {
