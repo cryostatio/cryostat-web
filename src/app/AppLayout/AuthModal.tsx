@@ -108,6 +108,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
             id="username"
             onChange={setUsername}
             onKeyUp={handleKeyUp}
+            autoFocus
           />
         </FormGroup>
         <FormGroup
