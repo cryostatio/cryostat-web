@@ -42,7 +42,7 @@ class TargetService {
   private readonly _target: Subject<string> = new BehaviorSubject('');
   private readonly _authFailure: Subject<void> = new Subject();
   private readonly _authRetry: Subject<void> = new Subject();
-  private readonly _credentials: Map<string, string> = new Map();
+  private readonly _credentials: Map<string, string> = new window.Map();
 
   setTarget(target: string): void {
     this._target.next(target);

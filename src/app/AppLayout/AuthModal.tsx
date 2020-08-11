@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { first } from 'rxjs/operators';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface AuthModalProps {
@@ -58,7 +58,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
 
   const handleSave = () => {
     context.target.target().pipe(first()).subscribe(target => {
-      context.target.setCredentials(target, btoa(`${username}:${password}`));
+      context.target.setCredentials(target, window.btoa(`${username}:${password}`));
       context.target.setAuthRetry();
       clear();
       props.onSave();

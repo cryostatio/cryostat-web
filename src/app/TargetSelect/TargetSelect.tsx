@@ -59,19 +59,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [isLoading, setLoading] = React.useState(true);
   const addSubscription = useSubscriptions();
 
-  React.useEffect(() => {
-    const sub = context.commandChannel.isReady()
-      .pipe(filter(v => !!v), first())
-      .subscribe(refreshTargetList);
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
-
-  React.useLayoutEffect(() => {
-    const sub = context.target.target().subscribe(setSelected);
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
-
-  const refreshTargetList = () => {
+  const refreshTargetList = React.useCallback(() => {
     setLoading(true);
     addSubscription(
       context.api.doGet<Target[]>(`targets`)
@@ -81,7 +69,19 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         setLoading(false);
       })
     );
-  };
+  }, [context.api]);
+
+  React.useEffect(() => {
+    const sub = context.commandChannel.isReady()
+      .pipe(filter(v => !!v), first())
+      .subscribe(refreshTargetList);
+    return () => sub.unsubscribe();
+  }, [context.commandChannel, refreshTargetList]);
+
+  React.useLayoutEffect(() => {
+    const sub = context.target.target().subscribe(setSelected);
+    return () => sub.unsubscribe();
+  }, [context.target]);
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {

@@ -37,7 +37,7 @@
  */
 import { Observable, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { combineLatest, concatMap, mergeMap, tap } from 'rxjs/operators';
+import { concatMap, tap } from 'rxjs/operators';
 import { ApiService, isActiveRecording, RecordingState, SavedRecording } from './Api.service';
 
 export class ReportService {

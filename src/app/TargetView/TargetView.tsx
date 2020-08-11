@@ -55,7 +55,7 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   React.useLayoutEffect(() => {
     const sub = context.target.target().pipe(map(t => !!t)).subscribe(setConnected);
     return () => sub.unsubscribe();
-  }, [context.commandChannel])
+  }, [context.target])
 
   return (<>
     <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
