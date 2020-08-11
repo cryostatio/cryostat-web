@@ -46,6 +46,8 @@ export interface AuthModalProps {
   onSave: () => void;
 }
 
+const EnterKeyCode = 13;
+
 export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
@@ -78,6 +80,12 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
     props.onDismiss();
   };
 
+  const handleKeyUp = (event: React.KeyboardEvent): void => {
+    if (event.keyCode === EnterKeyCode) {
+      handleSave();
+    }
+  };
+
   return (
     <Modal
       isOpen={props.visible}
@@ -99,6 +107,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
             type="text"
             id="username"
             onChange={setUsername}
+            onKeyUp={handleKeyUp}
           />
         </FormGroup>
         <FormGroup
@@ -112,6 +121,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
             type="password"
             id="password"
             onChange={setPassword}
+            onKeyUp={handleKeyUp}
           />
         </FormGroup>
         <ActionGroup>
