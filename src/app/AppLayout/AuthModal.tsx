@@ -91,7 +91,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}
-      onClose={props.onDismiss}
+      onClose={handleDismiss}
       title="Authentication Required"
       description="This target JVM requires authentication. The credentials you provide here will be passed from ContainerJFR to the target when establishing JMX connections."
     >
