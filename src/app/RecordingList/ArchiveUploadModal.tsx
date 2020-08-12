@@ -37,6 +37,7 @@
  */
 import * as React from 'react';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
+import { first, tap } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 
@@ -53,6 +54,13 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
   const [uploading, setUploading] = React.useState(false);
   const [rejected, setRejected] = React.useState(false);
 
+  const reset = () => {
+    setUploadFile(undefined);
+    setFilename('');
+    setUploading(false);
+    setRejected(true);
+  };
+
   const handleFileChange = (file, filename) => {
     setRejected(false);
     setUploadFile(file);
@@ -64,8 +72,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
   };
 
   const handleClose = () => {
-    setUploadFile(undefined);
-    setFilename('');
+    reset();
     props.onClose();
   };
 
@@ -75,12 +82,15 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
       return;
     }
     setUploading(true);
-    context.api.uploadRecording(uploadFile).subscribe(success => {
-      setUploading(false);
-      if (success) {
-        handleClose();
-      }
-    });
+    context.api.uploadRecording(uploadFile)
+      .pipe(
+        first(),
+        tap(() => setUploading(false)),
+      )
+      .subscribe(handleClose, err => {
+        notifications.warning('Upload Failed',  err);
+        reset();
+      });
   };
 
   return (

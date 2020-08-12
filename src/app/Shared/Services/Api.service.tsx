@@ -338,8 +338,12 @@ export class ApiService {
         body,
       })
       .pipe(
-        map(resp => resp.text()),
-        concatMap(from),
+        concatMap(resp => {
+          if (resp.ok) {
+            return from(resp.text());
+          }
+          throw resp.statusText;
+        }),
       );
   }
 
