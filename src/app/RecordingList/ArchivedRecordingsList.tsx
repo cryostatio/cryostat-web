@@ -40,12 +40,14 @@ import * as _ from 'lodash';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { RecordingActions } from './ActiveRecordingsList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
 import { Observable, Subject, forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { PlusIcon } from '@patternfly/react-icons';
+import { ArchiveUploadModal } from './ArchiveUploadModal';
 
 interface ArchivedRecordingsListProps {
   updater: Subject<void>;
@@ -59,6 +61,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const addSubscription = useSubscriptions();
+  const [showUploadModal, setShowUploadModal] = React.useState(false);
 
   const tableColumns: string[] = [
     'Name'
@@ -164,9 +167,16 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
     return (
       <Toolbar id="archived-recordings-toolbar">
         <ToolbarContent>
-          <ToolbarItem>
-            <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
-          </ToolbarItem>
+          <ToolbarGroup variant="button-group">
+            <ToolbarItem>
+              <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+            </ToolbarItem>
+          </ToolbarGroup>
+          <ToolbarGroup variant="icon-button-group">
+            <ToolbarItem>
+              <Button variant="plain" aria-label="add" onClick={() => setShowUploadModal(true)}><PlusIcon /></Button>
+            </ToolbarItem>
+          </ToolbarGroup>
         </ToolbarContent>
       </Toolbar>
     );
@@ -175,6 +185,11 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   const recordingRows = React.useMemo(() => {
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
+
+  const handleModalClose = () => {
+    setShowUploadModal(false);
+    refreshRecordingList();
+  };
 
   return (<>
     <RecordingsDataTable
@@ -188,5 +203,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
         recordingRows
       }
     </RecordingsDataTable>
+
+    <ArchiveUploadModal visible={showUploadModal} onClose={handleModalClose}/>
   </>);
 };
