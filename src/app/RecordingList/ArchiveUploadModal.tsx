@@ -38,6 +38,7 @@
 import * as React from 'react';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationsContext } from '@app/Notifications/Notifications';
 
 export interface ArchiveUploadModalProps {
   visible: boolean;
@@ -46,6 +47,7 @@ export interface ArchiveUploadModalProps {
 
 export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps> = props => {
   const context = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
   const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
   const [filename, setFilename] = React.useState('' as string | undefined);
   const [uploading, setUploading] = React.useState(false);
@@ -69,7 +71,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
 
   const handleSubmit = () => {
     if (!uploadFile) {
-      window.console.error('Attempted to submit JFR upload without a file selected');
+      notifications.warning('Attempted to submit JFR upload without a file selected');
       return;
     }
     setUploading(true);
