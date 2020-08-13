@@ -36,14 +36,13 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
 import { StaticContext } from 'react-router';
 import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
@@ -61,7 +60,6 @@ export interface EventTemplate {
 
 const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
   const context = React.useContext(ServiceContext);
-  const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
 

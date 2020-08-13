@@ -39,7 +39,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
-import { concatMap, filter, map } from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
 
 export interface EventType {
   name: string;

@@ -40,12 +40,12 @@ import * as _ from 'lodash';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Spinner, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { RecordingActions } from './ActiveRecordingsList';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, Subject, forkJoin, from } from 'rxjs';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { Observable, Subject, forkJoin } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 interface ArchivedRecordingsListProps {
   updater: Subject<void>;
@@ -58,7 +58,6 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [openAction, setOpenAction] = React.useState(-1);
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
@@ -118,26 +117,19 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
 
   React.useEffect(() => {
     refreshRecordingList();
-    const id = setInterval(refreshRecordingList, 30_000);
-    return () => clearInterval(id);
+    const id = window.setInterval(refreshRecordingList, 30_000);
+    return () => window.clearInterval(id);
   }, [context.commandChannel]);
 
   const RecordingRow = (props) => {
-    const [reportLoaded, setReportLoaded] = React.useState(false);
-
     const expandedRowId =`archived-table-row-${props.index}-exp`;
     const handleToggle = () => {
-      setReportLoaded(false);
       toggleExpanded(expandedRowId);
     };
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
     }, [expandedRows, expandedRowId]);
-
-    const onLoad = () => {
-      setReportLoaded(true);
-    };
 
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);

@@ -37,7 +37,7 @@
  */
 import { from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
+import { catchError, combineLatest, concatMap, first, map, tap } from 'rxjs/operators';
 import { TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
@@ -91,7 +91,7 @@ export class ApiService {
   }
 
   createRecording(
-    { recordingName, events, duration  } : { recordingName: string; events: string; duration?: number }
+    { recordingName, events, duration  }: { recordingName: string; events: string; duration?: number }
     ): Observable<boolean> {
       const form = new window.FormData();
       form.append('recordingName', recordingName);

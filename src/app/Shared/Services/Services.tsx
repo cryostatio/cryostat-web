@@ -43,7 +43,7 @@ import { CommandChannel } from './CommandChannel.service';
 import { ReportService } from './Report.service';
 
 export interface Services {
-  target: TargetService,
+  target: TargetService;
   api: ApiService;
   commandChannel: CommandChannel;
   reports: ReportService;

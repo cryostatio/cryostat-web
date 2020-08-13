@@ -40,7 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
 import { ContainerNodeIcon, Spinner2Icon } from '@patternfly/react-icons';
-import { filter, first, map } from 'rxjs/operators';
+import { filter, first } from 'rxjs/operators';
 
 export interface TargetSelectProps {
   isCompact?: boolean;
@@ -87,8 +87,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     if (isPlaceholder) {
       context.target.setTarget('');
     } else {
-      let identifier = selection.connectUrl;
-      context.target.setTarget(identifier);
+      context.target.setTarget(selection.connectUrl);
     }
     // FIXME setting the expanded state to false seems to cause an "unmounted component" error
     // in the browser console

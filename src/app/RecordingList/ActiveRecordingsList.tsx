@@ -44,8 +44,8 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { forkJoin, from, Observable, Subscription } from 'rxjs';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { concatMap, first } from 'rxjs/operators';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
 
@@ -120,7 +120,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         if (props.onArchive && arr.some(v => !!v)) {
           props.onArchive();
         }
-      }, console.error)
+      }, window.console.error)
     );
   };
 
@@ -137,12 +137,12 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(refreshRecordingList, console.error)
+      forkJoin(tasks).subscribe(refreshRecordingList, window.console.error)
     );
   };
 
   const handleDeleteRecordings = () => {
-    const tasks: Observable<any>[] = [];
+    const tasks: Observable<{}>[] = [];
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
@@ -152,14 +152,14 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(refreshRecordingList, console.error)
+      forkJoin(tasks).subscribe(refreshRecordingList, window.console.error)
     );
   };
 
   React.useEffect(() => {
     refreshRecordingList();
-    const id = setInterval(() => refreshRecordingList(), 30_000);
-    return () => clearInterval(id);
+    const id = window.setInterval(() => refreshRecordingList(), 30_000);
+    return () => window.clearInterval(id);
   }, [context.commandChannel]);
 
   const RecordingRow = (props) => {

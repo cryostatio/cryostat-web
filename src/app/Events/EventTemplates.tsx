@@ -43,7 +43,7 @@ import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, 
 import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 
 export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
@@ -131,7 +131,7 @@ export const EventTemplates = () => {
             onClick: (event, rowId) => context.api.downloadTemplate(filteredTemplates[rowId]),
           }
       ]);
-    };
+    }
     if (template.type === 'CUSTOM') {
       actions = actions.concat([
           {

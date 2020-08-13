@@ -36,11 +36,10 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { nanoid } from 'nanoid';
 import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, forkJoin, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 
 export class CommandChannel {
