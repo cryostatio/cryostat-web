@@ -88,7 +88,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
         tap(() => setUploading(false)),
       )
       .subscribe(handleClose, err => {
-        notifications.warning('Upload Failed',  err);
+        notifications.danger('Upload Failed',  err);
         reset();
       });
   };
