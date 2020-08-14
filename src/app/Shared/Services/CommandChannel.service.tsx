@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2020 Red Hat, Inc.
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,11 +36,10 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { nanoid } from 'nanoid';
 import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, forkJoin, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 
 export class CommandChannel {
@@ -53,9 +52,11 @@ export class CommandChannel {
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
-  private readonly targetSubject = new ReplaySubject<string>(1);
 
-  constructor(apiSvc: ApiService, private readonly notifications: Notifications) {
+  constructor(
+    apiSvc: ApiService,
+    private readonly notifications: Notifications
+  ) {
     this.apiSvc = apiSvc;
 
     fromFetch(`${this.apiSvc.authority}/api/v1/clienturl`)
@@ -64,7 +65,7 @@ export class CommandChannel {
         (url: any) => this.clientUrlSubject.next(url.clientUrl),
         (err: any) => this.logError('Client URL configuration', err)
       );
-    
+
     const getDatasourceURL = fromFetch(`${this.apiSvc.authority}/api/v1/grafana_datasource_url`)
     .pipe(concatMap(resp => from(resp.json())));
     const getDashboardURL = fromFetch(`${this.apiSvc.authority}/api/v1/grafana_dashboard_url`)
@@ -72,7 +73,7 @@ export class CommandChannel {
 
     fromFetch(`${this.apiSvc.authority}/health`)
       .pipe(
-        concatMap(resp => from(resp.json())), 
+        concatMap(resp => from(resp.json())),
         concatMap((jsonResp: any) => {
           if (jsonResp.dashboardAvailable && jsonResp.datasourceAvailable) {
             return forkJoin([getDatasourceURL, getDashboardURL]);
@@ -94,16 +95,11 @@ export class CommandChannel {
         },
         err => this.logError('Grafana configuration not found', err)
       );
-    
-    this.onResponse('list-saved').pipe(
-      first(),
-      map(msg => msg.status === 0)
-    ).subscribe(listSavedEnabled => this.archiveEnabled.next(listSavedEnabled));
 
-    this.isReady().pipe(
-      filter(ready => !!ready)
-    ).subscribe(() => {
-      this.sendControlMessage('list-saved');
+    apiSvc.doGet('recordings').subscribe(() => {
+      this.archiveEnabled.next(true);
+    }, () => {
+      this.archiveEnabled.next(false);
     });
 
     this.clientUrl().pipe(
@@ -167,70 +163,8 @@ export class CommandChannel {
     return this.ready.asObservable();
   }
 
-  isConnected(): Observable<boolean> {
-    return this.target().pipe(map(t => !!t));
-  }
-
   isArchiveEnabled(): Observable<boolean> {
     return this.archiveEnabled.asObservable();
-  }
-
-  setTarget(targetId: string): void {
-    this.targetSubject.next(targetId);
-  }
-
-  target(): Observable<string> {
-    return this.targetSubject.asObservable();
-  }
-
-  // "control" messages, which do not operate upon a Target JVM
-  sendControlMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
-    const subj = new Subject<string>();
-    this.ready.pipe(
-      first(),
-      map(ready => ready ? id : '')
-    ).subscribe(i => {
-      if (!!i && this.ws) {
-        this.ws.next({ id, command, args });
-      } else if (this.ws) {
-        this.logError('Attempted to send control message when command channel was not ready', { id, command, args });
-      } else {
-        this.logError('Attempted to send control message when command channel was not initialized', { id, command, args });
-      }
-      subj.next(i);
-    });
-    return subj.asObservable();
-  }
-
-  // "targeted" messages, ie those which operate upon a specific Target JVM
-  sendMessage(command: string, args: string[] = [], id: string = this.createMessageId()): Observable<string> {
-    const subj = new Subject<string>();
-    combineLatest(this.target(), this.ready.pipe(
-      first(),
-      map(ready => ready ? id : '')
-    )).subscribe(([target, id]) => {
-      if (!!id && this.ws) {
-        this.ws.next({ id, command, args: [target, ...args] });
-      } else if (this.ws) {
-        this.logError('Attempted to send message when command channel was not ready', { id, command, args });
-      } else {
-        this.logError('Attempted to send message when command channel was not initialized', { id, command, args });
-      }
-      subj.next(id);
-    });
-    return subj.asObservable();
-  }
-
-  createMessageId(): string {
-    return nanoid();
-  }
-
-  onResponse(command: string): Observable<ResponseMessage<any>> {
-    return this.messages
-      .asObservable()
-      .pipe(
-        filter(m => m.commandName === command)
-      );
   }
 
   private logError(title: string, err: any): void {

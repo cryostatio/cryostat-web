@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2020 Red Hat, Inc.
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,7 +37,8 @@
  */
 import { from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
+import { catchError, combineLatest, concatMap, first, map, tap } from 'rxjs/operators';
+import { TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
 export class ApiService {
@@ -46,7 +47,10 @@ export class ApiService {
   private readonly authMethod = new ReplaySubject<string>(1);
   readonly authority: string;
 
-   constructor(private readonly notifications: Notifications) {
+   constructor(
+     private readonly target: TargetService,
+     private readonly notifications: Notifications
+   ) {
       let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
       if (!apiAuthority) {
         apiAuthority = '';
@@ -61,7 +65,7 @@ export class ApiService {
       mode: 'cors',
       method: 'POST',
       body: null,
-      headers: this.getHeaders(token, method)
+      headers: this.getHeaders(token, method),
     })
     .pipe(
       map(response => {
@@ -86,62 +90,184 @@ export class ApiService {
     );
   }
 
-  deleteCustomEventTemplate(templateName: string): Observable<void> {
-    return this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).pipe(
-      concatMap(auths =>
-        fromFetch(`${this.authority}/api/v1/templates/${templateName}`, {
-          credentials: 'include',
-          mode: 'cors',
-          method: 'DELETE',
-          body: null,
-          headers: this.getHeaders(auths[0], auths[1])
-        })
-        .pipe(
-          map(response => {
-            if (!response.ok) {
-              throw response.statusText;
+  createRecording(
+    { recordingName, events, duration  }: { recordingName: string; events: string; duration?: number }
+    ): Observable<boolean> {
+      const form = new window.FormData();
+      form.append('recordingName', recordingName);
+      form.append('events', events);
+      if (!!duration && duration > 0) {
+        form.append('duration', String(duration));
+      }
+      return this.target.target().pipe(concatMap(targetId =>
+        this.sendRequest(`targets/${encodeURIComponent(targetId)}/recordings`, {
+          method: 'POST',
+          body: form,
+        }).pipe(
+          tap(resp => {
+            if (resp.ok) {
+              this.notifications.success('Recording created');
+            } else {
+              this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
             }
           }),
-          catchError((e: Error): ObservableInput<void> => {
-            window.console.error(JSON.stringify(e));
-            return of();
-          })
-        )
+          map(resp => resp.ok),
+          first(),
+        )));
+  }
+
+  createSnapshot(): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(`targets/${encodeURIComponent(targetId)}/snapshot`, {
+        method: 'POST',
+      }).pipe(
+        tap(resp => {
+          if (resp.ok) {
+            this.notifications.success('Recording created');
+          } else {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(resp => resp.ok),
+        first(),
+      )
     ));
+  }
+
+  archiveRecording(recordingName: string): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(
+        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        {
+          method: 'PATCH',
+          body: 'SAVE',
+        }
+      ).pipe(
+        tap(resp => {
+          if (!resp.ok) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(resp => resp.ok),
+        first(),
+      )
+    ));
+  }
+
+  stopRecording(recordingName: string): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(
+        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        {
+          method: 'PATCH',
+          body: 'STOP',
+        }
+      ).pipe(
+        tap(resp => {
+          if (!resp.ok) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(resp => resp.ok),
+        first(),
+      )
+    ));
+  }
+
+  deleteRecording(recordingName: string): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(
+        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        {
+          method: 'DELETE',
+        }
+      ).pipe(
+        tap(resp => {
+          if (!resp.ok) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(resp => resp.ok),
+        first(),
+      )
+    ));
+  }
+
+  deleteArchivedRecording(recordingName: string): Observable<boolean> {
+    return this.sendRequest(`recordings/${encodeURIComponent(recordingName)}`, {
+      method: 'DELETE'
+    }).pipe(
+      tap(resp => {
+        if (!resp.ok) {
+          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+        }
+      }),
+      map(resp => resp.ok),
+      first(),
+    );
+  }
+
+  uploadRecordingToGrafana(recordingName: string): Observable<boolean> {
+    return this.target.target().pipe(concatMap(targetId =>
+      this.sendRequest(
+        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}/upload`,
+        {
+          method: 'POST',
+        }
+      ).pipe(
+        tap(resp => {
+          if (!resp.ok) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        map(resp => resp.ok),
+        first()
+      )
+    ));
+  }
+
+  deleteCustomEventTemplate(templateName: string): Observable<void> {
+    return this.sendRequest(`templates/${encodeURIComponent(templateName)}`, {
+      method: 'DELETE',
+      body: null,
+    })
+    .pipe(
+      map(response => {
+        if (!response.ok) {
+          throw response.statusText;
+        }
+      }),
+      catchError((e: Error): ObservableInput<void> => {
+        window.console.error(JSON.stringify(e));
+        return of();
+      })
+    );
   }
 
   addCustomEventTemplate(file: File): Observable<boolean> {
     const body = new window.FormData();
     body.append('template', file);
-    return this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).pipe(
-      concatMap(auths =>
-        fromFetch(`${this.authority}/api/v1/templates`, {
-          credentials: 'include',
-          mode: 'cors',
-          method: 'POST',
-          body,
-          headers: this.getHeaders(auths[0], auths[1])
-        })
-        .pipe(
-          map(response => {
-            if (!response.ok) {
-              throw response.statusText;
-            }
-            return true;
-          }),
-          catchError((e: Error): ObservableInput<boolean> => {
-            window.console.error(JSON.stringify(e));
-            this.notifications.danger('Template Upload Failed', JSON.stringify(e));
-            return of(false);
-          })
-        )
-    ));
+    return this.sendRequest(`templates`, {
+      method: 'POST',
+      body,
+    })
+    .pipe(
+      map(response => {
+        if (!response.ok) {
+          throw response.statusText;
+        }
+        return true;
+      }),
+      catchError((e: Error): ObservableInput<boolean> => {
+        window.console.error(JSON.stringify(e));
+        this.notifications.danger('Template Upload Failed', JSON.stringify(e));
+        return of(false);
+      })
+    );
+  }
+
+  doGet<T>(path: string): Observable<T> {
+    return this.sendRequest(path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
   getAuthMethod(): Observable<string> {
@@ -192,42 +318,42 @@ export class ApiService {
     );
   }
 
-  downloadTemplate(targetId: string, template: EventTemplate): void {
-    const url = `${this.authority}/api/v1/targets/${targetId}/templates/${template.name}/type/${template.type}`;
-    this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      first()
-    ).subscribe(auths =>
-      fromFetch(url, {
-        credentials: 'include',
-        mode: 'cors',
-        headers: this.getHeaders(auths[0], auths[1]),
-      })
-      .pipe(concatMap(resp => resp.text()))
-      .subscribe(resp =>
-        this.downloadFile(
-          `${template.name}.xml`,
-          resp,
-          'application/jfc+xml')
-      )
-    );
+  downloadTemplate(template: EventTemplate): void {
+    this.target.target().pipe(concatMap(targetId => {
+      const url = `targets/${encodeURIComponent(targetId)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
+      return this.sendRequest(url)
+        .pipe(concatMap(resp => resp.text()));
+    }))
+    .subscribe(resp => {
+      this.downloadFile(
+        `${template.name}.xml`,
+        resp,
+        'application/jfc+xml')
+    });
   }
 
   uploadRecording(file: File): Observable<string> {
-    const payload = new window.FormData(); // as multipart/form-data
-    payload.append('recording', file);
+    const body = new window.FormData(); // as multipart/form-data
+    body.append('recording', file);
+    return this.sendRequest('recordings', { body })
+      .pipe(
+        map(resp => resp.text()),
+        concatMap(from),
+      );
+  }
 
+  private sendRequest(path: string, config?: RequestInit): Observable<Response> {
     return this.getToken().pipe(
       combineLatest(this.getAuthMethod()),
       first(),
-      flatMap(auths =>
-        fromFetch(`/api/v1/recordings`, {
+      concatMap(auths =>
+        fromFetch(`${this.authority}/api/v1/${path}`, {
           credentials: 'include',
           mode: 'cors',
-          body: payload,
           headers: this.getHeaders(auths[0], auths[1]),
-        })),
-      concatMap(resp => from(resp.text()))
+          ...config,
+        })
+      )
     );
   }
 

@@ -38,11 +38,12 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { filter, first, map } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 
 export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
@@ -57,6 +58,7 @@ export const EventTemplates = () => {
   const [uploading, setUploading] = React.useState(false);
   const [fileRejected, setFileRejected] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
+  const addSubscription = useSubscriptions();
 
   const tableColumns = [
     { title: 'Name', transforms: [ sortable ] },
@@ -83,26 +85,19 @@ export const EventTemplates = () => {
     setFilteredTemplates([...filtered]);
   }, [filterText, templates, sortBy]);
 
-  React.useEffect(() => {
-    const sub = context.commandChannel.onResponse('list-event-templates')
+  const refreshTemplates = () => {
+    addSubscription(
+      context.target.target()
       .pipe(
-        filter(m => m.status === 0),
-        map(m => m.payload),
-      )
-      .subscribe(templates => {
-        setTemplates(templates);
-        setFilteredTemplates(templates);
-      });
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
-
-  const refreshTemplates = React.useCallback(() => {
-    context.commandChannel.sendMessage('list-event-templates');
-  }, [context.commandChannel]);
+        concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`)),
+        first(),
+      ).subscribe(setTemplates)
+    );
+  };
 
   React.useEffect(() => {
     refreshTemplates();
-  }, [context.commandChannel, refreshTemplates]);
+  }, [context.commandChannel]);
 
   const displayTemplates = React.useMemo(
     () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),
@@ -110,7 +105,11 @@ export const EventTemplates = () => {
   );
 
   const handleDelete = (rowData) => {
-    context.api.deleteCustomEventTemplate(rowData[0]).subscribe(refreshTemplates);
+    addSubscription(
+      context.api.deleteCustomEventTemplate(rowData[0])
+      .pipe(first())
+      .subscribe(refreshTemplates)
+    );
   };
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
@@ -129,10 +128,10 @@ export const EventTemplates = () => {
       actions = actions.concat([
           {
             title: 'Download',
-            onClick: (event, rowId) => context.commandChannel.target().pipe(first()).subscribe(target => context.api.downloadTemplate(target, filteredTemplates[rowId])),          
+            onClick: (event, rowId) => context.api.downloadTemplate(filteredTemplates[rowId]),
           }
       ]);
-    };
+    }
     if (template.type === 'CUSTOM') {
       actions = actions.concat([
           {
@@ -170,15 +169,19 @@ export const EventTemplates = () => {
       return;
     }
     setUploading(true);
-    context.api.addCustomEventTemplate(uploadFile).subscribe(success => {
-      setUploading(false);
-      if (success) {
-        setUploadFile(undefined);
-        setUploadFilename('');
-        refreshTemplates();
-        setModalOpen(false);
-      }
-    });
+    addSubscription(
+      context.api.addCustomEventTemplate(uploadFile)
+      .pipe(first())
+      .subscribe(success => {
+        setUploading(false);
+        if (success) {
+          setUploadFile(undefined);
+          setUploadFilename('');
+          refreshTemplates();
+          setModalOpen(false);
+        }
+      })
+    );
   };
 
   const handleUploadCancel = () => {
