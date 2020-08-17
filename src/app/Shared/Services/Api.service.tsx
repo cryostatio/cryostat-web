@@ -207,7 +207,7 @@ export class ApiService {
     );
   }
 
-  uploadRecordingToGrafana(recordingName: string): Observable<boolean> {
+  uploadActiveRecordingToGrafana(recordingName: string): Observable<boolean> {
     return this.target.target().pipe(concatMap(targetId =>
       this.sendRequest(
         `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}/upload`,
@@ -224,6 +224,19 @@ export class ApiService {
         first()
       )
     ));
+  }
+
+  uploadArchivedRecordingToGrafana(recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+        `recordings/${encodeURIComponent(recordingName)}/upload`,
+        {
+          method: 'POST',
+        }
+      ).pipe(
+        map(resp => resp.ok),
+        first()
+      )
+    ;
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<void> {

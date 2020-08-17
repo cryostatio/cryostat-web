@@ -147,7 +147,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
               </DataListCell>
             ]}
           />
-          <RecordingActions recording={props.recording} index={props.index} />
+          <RecordingActions recording={props.recording} index={props.index} uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)} />
         </DataListItemRow>
         <DataListContent
           aria-label="Content Details"
