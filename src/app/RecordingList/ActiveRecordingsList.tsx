@@ -211,7 +211,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           <DataListItemCells
             dataListCells={listColumns}
           />
-          <RecordingActions index={props.index} recording={props.recording} />
+          <RecordingActions index={props.index} recording={props.recording} uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)} />
         </DataListItemRow>
         <DataListContent
           aria-label="Content Details"
@@ -294,6 +294,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 export interface RecordingActionsProps {
   index: number;
   recording: Recording;
+  uploadFn: () => Observable<boolean>;
 }
 
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
@@ -314,7 +315,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const grafanaUpload = () => {
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
     addSubscription(
-      context.api.uploadRecordingToGrafana(props.recording.name)
+      props.uploadFn()
       .pipe(first())
       .subscribe(success => {
         if (success) {
