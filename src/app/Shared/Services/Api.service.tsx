@@ -233,6 +233,11 @@ export class ApiService {
           method: 'POST',
         }
       ).pipe(
+        tap(resp => {
+          if (!resp.ok) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
         map(resp => resp.ok),
         first()
       )
