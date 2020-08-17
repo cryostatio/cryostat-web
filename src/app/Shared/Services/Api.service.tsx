@@ -333,10 +333,17 @@ export class ApiService {
   uploadRecording(file: File): Observable<string> {
     const body = new window.FormData(); // as multipart/form-data
     body.append('recording', file);
-    return this.sendRequest('recordings', { body })
+    return this.sendRequest('recordings', {
+        method: 'POST',
+        body,
+      })
       .pipe(
-        map(resp => resp.text()),
-        concatMap(from),
+        concatMap(resp => {
+          if (resp.ok) {
+            return from(resp.text());
+          }
+          throw resp.statusText;
+        }),
       );
   }
 
