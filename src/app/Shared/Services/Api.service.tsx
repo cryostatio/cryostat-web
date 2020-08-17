@@ -107,8 +107,6 @@ export class ApiService {
           tap(resp => {
             if (resp.ok) {
               this.notifications.success('Recording created');
-            } else {
-              this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
             }
           }),
           map(resp => resp.ok),
@@ -124,8 +122,6 @@ export class ApiService {
         tap(resp => {
           if (resp.ok) {
             this.notifications.success('Recording created');
-          } else {
-            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
           }
         }),
         map(resp => resp.ok),
@@ -143,11 +139,6 @@ export class ApiService {
           body: 'SAVE',
         }
       ).pipe(
-        tap(resp => {
-          if (!resp.ok) {
-            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-          }
-        }),
         map(resp => resp.ok),
         first(),
       )
@@ -163,11 +154,6 @@ export class ApiService {
           body: 'STOP',
         }
       ).pipe(
-        tap(resp => {
-          if (!resp.ok) {
-            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-          }
-        }),
         map(resp => resp.ok),
         first(),
       )
@@ -182,11 +168,6 @@ export class ApiService {
           method: 'DELETE',
         }
       ).pipe(
-        tap(resp => {
-          if (!resp.ok) {
-            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-          }
-        }),
         map(resp => resp.ok),
         first(),
       )
@@ -197,11 +178,6 @@ export class ApiService {
     return this.sendRequest(`recordings/${encodeURIComponent(recordingName)}`, {
       method: 'DELETE'
     }).pipe(
-      tap(resp => {
-        if (!resp.ok) {
-          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-        }
-      }),
       map(resp => resp.ok),
       first(),
     );
@@ -215,11 +191,6 @@ export class ApiService {
           method: 'POST',
         }
       ).pipe(
-        tap(resp => {
-          if (!resp.ok) {
-            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-          }
-        }),
         map(resp => resp.ok),
         first()
       )
@@ -233,11 +204,6 @@ export class ApiService {
           method: 'POST',
         }
       ).pipe(
-        tap(resp => {
-          if (!resp.ok) {
-            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
-          }
-        }),
         map(resp => resp.ok),
         first()
       )
@@ -306,7 +272,14 @@ export class ApiService {
         mode: 'cors',
         headers: this.getHeaders(auths[0], auths[1]),
       })
-      .pipe(concatMap(resp => resp.blob()))
+      .pipe(
+        tap(resp => {
+          if (!resp.ok) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        concatMap(resp => resp.blob()),
+      )
       .subscribe(resp =>
         this.downloadFile(
           `${recording.name}.report.html`,
@@ -326,7 +299,14 @@ export class ApiService {
         mode: 'cors',
         headers: this.getHeaders(auths[0], auths[1]),
       })
-      .pipe(concatMap(resp => resp.blob()))
+      .pipe(
+        tap(resp => {
+          if (!resp.ok) {
+            this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+          }
+        }),
+        concatMap(resp => resp.blob()),
+      )
       .subscribe(resp =>
         this.downloadFile(
           recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
@@ -371,7 +351,12 @@ export class ApiService {
           headers: this.getHeaders(auths[0], auths[1]),
           ...config,
         })
-      )
+      ),
+      tap(resp => {
+        if (!resp.ok) {
+          this.notifications.danger(`Request failed (Status ${resp.status})`, resp.statusText)
+        }
+      }),
     );
   }
 
