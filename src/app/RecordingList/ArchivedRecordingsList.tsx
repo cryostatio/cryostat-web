@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import * as _ from 'lodash';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -81,17 +80,19 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
     }
   };
 
-  const refreshRecordingList = () => {
+  const refreshRecordingList = React.useCallback(() => {
     addSubscription(
       context.api.doGet<Recording[]>(`recordings`)
       .pipe(first())
-      .subscribe(newRecordings => {
-        if (!_.isEqual(newRecordings, recordings)) {
-          setRecordings(newRecordings);
-        }
-      })
+      .subscribe(setRecordings)
     );
-  };
+  }, [addSubscription, context.api]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(refreshRecordingList)
+    );
+  }, []);
 
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
@@ -122,7 +123,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
     refreshRecordingList();
     const id = window.setInterval(refreshRecordingList, 30_000);
     return () => window.clearInterval(id);
-  }, [context.commandChannel]);
+  }, []);
 
   const RecordingRow = (props) => {
     const expandedRowId =`archived-table-row-${props.index}-exp`;
