@@ -42,11 +42,11 @@ import { TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
 class HttpError extends Error {
-  readonly statusCode: number;
+  readonly httpResponse: Response;
 
   constructor(httpResponse: Response) {
     super(httpResponse.statusText);
-    this.statusCode = httpResponse.status;
+    this.httpResponse = httpResponse;
   }
 }
 
@@ -54,7 +54,7 @@ const isHttpError = (toCheck: any): toCheck is HttpError => {
   if (!(toCheck instanceof Error)) {
     return false;
   }
-  return (toCheck as HttpError).statusCode !== undefined;
+  return (toCheck as HttpError).httpResponse !== undefined;
 }
 
 export class ApiService {
@@ -410,13 +410,18 @@ export class ApiService {
 
   private handleError<T>(error: Error, retry: () => Observable<T>): ObservableInput<T> {
     if (isHttpError(error)) {
-      if (error.statusCode === 407) {
-        this.target.setAuthFailure();
-        return this.target.authRetry().pipe(
-          flatMap(() => retry())
-        );
+      if (error.httpResponse.status === 407) {
+        const jmxAuthScheme = error.httpResponse.headers.get('X-JMX-Authenticate');
+        if (jmxAuthScheme === 'Basic') {
+          this.target.setAuthFailure();
+          return this.target.authRetry().pipe(
+            flatMap(() => retry())
+          );
+        } else {
+          throw error;
+        }
       } else {
-        this.notifications.danger(`Request failed (Status ${error.statusCode})`, error.message)
+        this.notifications.danger(`Request failed (Status ${error.httpResponse.status})`, error.message)
       }
     }
     throw error;
