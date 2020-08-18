@@ -417,13 +417,12 @@ export class ApiService {
           return this.target.authRetry().pipe(
             flatMap(() => retry())
           );
-        } else {
-          throw error;
         }
-      } else {
-        this.notifications.danger(`Request failed (Status ${error.httpResponse.status})`, error.message)
       }
+      this.notifications.danger(`Request failed (Status ${error.httpResponse.status})`, error.message)
+      throw error;
     }
+    this.notifications.danger(`Request failed`, error.message);
     throw error;
   }
 
