@@ -36,16 +36,19 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, routes } from '@app/routes';
 import { Nav, NavItem, NavList, Page, PageHeader, PageSidebar, SkipToContent } from '@patternfly/react-core';
 import { NavLink, matchPath, useLocation } from 'react-router-dom';
+import { AuthModal } from './AuthModal';
 
 interface IAppLayout {
   children: React.ReactNode;
 }
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
+  const context = React.useContext(ServiceContext);
   const logoProps = {
     href: '/',
     target: '_blank'
@@ -53,7 +56,19 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
+  const [showAuthModal, setShowAuthModal] = React.useState(false);
   const location = useLocation();
+
+  React.useEffect(() => {
+    const sub = context.target.authFailure().subscribe(() => {
+      setShowAuthModal(true);
+    });
+    return () => sub.unsubscribe();
+  }, [context.target]);
+
+  const dismissAuthModal = () => {
+    setShowAuthModal(false);
+  };
 
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);
@@ -122,6 +137,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       skipToContent={PageSkipToContent}>
       {children}
     </Page>
+    <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={dismissAuthModal}/>
     <NotificationCenter />
   </>);
 }
