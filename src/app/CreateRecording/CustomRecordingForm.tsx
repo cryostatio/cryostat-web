@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions, ExpandableSection } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
@@ -71,6 +71,7 @@ export const CustomRecordingForm = (props) => {
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(512);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
+  const [toDisk, setToDisk] = React.useState(false);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -120,6 +121,10 @@ export const CustomRecordingForm = (props) => {
   const handleMaxSizeUnitChange = (evt) => {
     setMaxSizeUnits(Number(evt));
   }
+
+  const handleToDiskChange = (checked, evt) => {
+    setToDisk(evt.target.checked);
+  } 
 
   const handleSubmit = () => {
     const notificationMessages: string[] = [];
@@ -213,7 +218,7 @@ export const CustomRecordingForm = (props) => {
             >
               <FormSelectOption key="1" value="1" label="Seconds" />
               <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60*60}label="Hours" />
+              <FormSelectOption key="3" value={60*60} label="Hours" />
             </FormSelect>
           </SplitItem>
         </Split>
@@ -318,7 +323,11 @@ export const CustomRecordingForm = (props) => {
             </Split>
           </FormGroup>
           <FormGroup fieldId="toDisk">
-            <Checkbox label="toDisk" id="toDisk-checkbox" />
+            <Checkbox 
+              label="toDisk" 
+              id="toDisk-checkbox"
+              isChecked={toDisk}
+              onChange={handleToDiskChange} />
           </FormGroup>
         </Form>
       </ExpandableSection>
