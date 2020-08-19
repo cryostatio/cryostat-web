@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions, ExpandableSection } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
@@ -67,6 +67,10 @@ export const CustomRecordingForm = (props) => {
   const [templateType] = React.useState(props.templateType || props?.location?.state?.templateType || '');
   const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
   const [eventsValid, setEventsValid] = React.useState((!!props.template || !!props?.location?.state?.template) ? ValidatedOptions.success : ValidatedOptions.default);
+  const [maxAge, setMaxAge] = React.useState(60);
+  const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
+  const [maxSize, setMaxSize] = React.useState(512);
+  const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -100,6 +104,22 @@ export const CustomRecordingForm = (props) => {
     setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
     setRecordingName(name);
   };
+
+  const handleMaxAgeChange = (evt) => {
+    setMaxAge(Number(evt));
+  }
+
+  const handleMaxAgeUnitChange = (evt) => {
+    setMaxAgeUnits(Number(evt));
+  }
+
+  const handleMaxSizeChange = (evt) => {
+    setMaxSize(Number(evt));
+  }
+
+  const handleMaxSizeUnitChange = (evt) => {
+    setMaxSizeUnits(Number(evt));
+  }
 
   const handleSubmit = () => {
     const notificationMessages: string[] = [];
@@ -243,6 +263,65 @@ export const CustomRecordingForm = (props) => {
           </SplitItem>
         </Split>
       </FormGroup>
+      <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
+        <Form>
+          <FormGroup label="Maximum age" fieldId="maxAge">
+            <Split hasGutter={true}>
+              <SplitItem isFilled>
+                <TextInput
+                  value={maxAge}
+                  isRequired
+                  type="number"
+                  id="maxAgeDuration"
+                  aria-describedby="maxAgeDuration-helper"
+                  onChange={handleMaxAgeChange}
+                  min="0"
+                />
+              </SplitItem>
+              <SplitItem>
+                <FormSelect
+                  value={maxAgeUnits}
+                  onChange={handleMaxAgeUnitChange}
+                  aria-label="maxAgeDuration Units Input"
+                >
+                  <FormSelectOption key="1" value="1" label="Seconds" />
+                  <FormSelectOption key="2" value={60} label="Minutes" />
+                  <FormSelectOption key="3" value={60*60}label="Hours" />
+                </FormSelect>
+              </SplitItem>
+            </Split>
+          </FormGroup>
+          <FormGroup label="Maximum size" fieldId="maxSize">
+            <Split hasGutter={true}>
+              <SplitItem isFilled>
+                  <TextInput
+                    value={maxSize}
+                    isRequired
+                    type="number"
+                    id="maxSize"
+                    aria-describedby="maxSize-helper"
+                    onChange={handleMaxSizeChange}
+                    min="0"
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <FormSelect
+                    value={maxSizeUnits}
+                    onChange={handleMaxSizeUnitChange}
+                    aria-label="maxSizeDuration Units Input"
+                  >
+                    <FormSelectOption key="1" value="1" label="B" />
+                    <FormSelectOption key="2" value={1000} label="KB" />
+                    <FormSelectOption key="3" value={1000*1000} label="MB" />
+                  </FormSelect>
+                </SplitItem>
+            </Split>
+          </FormGroup>
+          <FormGroup fieldId="toDisk">
+            <Checkbox label="toDisk" id="toDisk-checkbox" />
+          </FormGroup>
+        </Form>
+      </ExpandableSection>
       <ActionGroup>
         <Button variant="primary" onClick={handleSubmit}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
