@@ -278,7 +278,7 @@ export const CustomRecordingForm = (props) => {
                   isRequired
                   type="number"
                   id="maxAgeDuration"
-                  aria-describedby="maxAgeDuration-helper"
+                  aria-label="Max age duration"
                   onChange={handleMaxAgeChange}
                   min="0"
                 />
@@ -287,7 +287,7 @@ export const CustomRecordingForm = (props) => {
                 <FormSelect
                   value={maxAgeUnits}
                   onChange={handleMaxAgeUnitChange}
-                  aria-label="maxAgeDuration Units Input"
+                  aria-label="Max Age units Input"
                 >
                   <FormSelectOption key="1" value="1" label="Seconds" />
                   <FormSelectOption key="2" value={60} label="Minutes" />
@@ -304,7 +304,7 @@ export const CustomRecordingForm = (props) => {
                     isRequired
                     type="number"
                     id="maxSize"
-                    aria-describedby="maxSize-helper"
+                    aria-label="max size value"
                     onChange={handleMaxSizeChange}
                     min="0"
                   />
@@ -313,7 +313,7 @@ export const CustomRecordingForm = (props) => {
                   <FormSelect
                     value={maxSizeUnits}
                     onChange={handleMaxSizeUnitChange}
-                    aria-label="maxSizeDuration Units Input"
+                    aria-label="Max size units input"
                   >
                     <FormSelectOption key="1" value="1" label="B" />
                     <FormSelectOption key="2" value={1000} label="KB" />
