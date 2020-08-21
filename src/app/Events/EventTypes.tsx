@@ -37,9 +37,10 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
-import { concatMap } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 
 export interface EventType {
   name: string;
@@ -64,6 +65,7 @@ type Row = {
 
 export const EventTypes = () => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
   const [types, setTypes] = React.useState([] as EventType[]);
   const [displayedTypes, setDisplayedTypes] = React.useState([] as Row[]);
@@ -83,10 +85,26 @@ export const EventTypes = () => {
     'Categories'
   ];
 
+  const refreshEvents = React.useCallback(() => {
+    addSubscription(
+      context.target.target()
+        .pipe(
+          first(),
+          concatMap(target => context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target)}/events`)),
+        )
+        .subscribe(setTypes)
+    );
+  }, [addSubscription, context.target, context.api]);
+
   React.useEffect(() => {
-    const sub = context.target.target().pipe(concatMap(target => context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target)}/events`))).subscribe(setTypes)
-    return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+    addSubscription(
+      context.target.target().subscribe(refreshEvents)
+    );
+  }, []);
+
+  React.useEffect(() => {
+    refreshEvents();
+  }, []);
 
   const getCategoryString = (eventType: EventType): string => {
     return eventType.category.join(', ').trim();

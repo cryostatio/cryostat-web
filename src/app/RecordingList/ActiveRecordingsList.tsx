@@ -37,7 +37,6 @@
  */
 
 import * as React from 'react';
-import * as _ from 'lodash';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -45,7 +44,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { forkJoin, Observable } from 'rxjs';
-import { concatMap, first } from 'rxjs/operators';
+import { concatMap, first, tap } from 'rxjs/operators';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
 
@@ -91,19 +90,21 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     routerHistory.push(`${url}/create`);
   };
 
-  const refreshRecordingList = () => {
+  const refreshRecordingList = React.useCallback(() => {
     addSubscription(
       context.target.target()
       .pipe(
         concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target)}/recordings`)),
         first(),
-      ).subscribe(newRecordings => {
-        if (!_.isEqual(newRecordings, recordings)) {
-          setRecordings(newRecordings);
-        }
-      })
+      ).subscribe(setRecordings)
     );
-  };
+  }, [addSubscription, context.target, context.api]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(refreshRecordingList)
+    );
+  }, []);
 
   const handleArchiveRecordings = () => {
     const tasks: Observable<boolean>[] = [];
@@ -160,7 +161,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     refreshRecordingList();
     const id = window.setInterval(() => refreshRecordingList(), 30_000);
     return () => window.clearInterval(id);
-  }, [context.commandChannel]);
+  }, []);
 
   const RecordingRow = (props) => {
     const expandedRowId =`active-table-row-${props.index}-exp`;
@@ -201,7 +202,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           {props.recording.state}
         </DataListCell>
       </>
-    }, [props.recording]);
+    }, [props.recording, props.recording.name, props.duration, props.index]);
 
     return (
       <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
