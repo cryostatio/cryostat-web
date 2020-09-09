@@ -43,6 +43,7 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
+import { RecordingOptions } from '@app/Shared/Services/Api.service';
 
 export interface CustomRecordingFormProps {
   onSubmit: (recordingName: string, events: string, duration?: number) => void;
@@ -67,9 +68,9 @@ export const CustomRecordingForm = (props) => {
   const [templateType] = React.useState(props.templateType || props?.location?.state?.templateType || '');
   const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
   const [eventsValid, setEventsValid] = React.useState((!!props.template || !!props?.location?.state?.template) ? ValidatedOptions.success : ValidatedOptions.default);
-  const [maxAge, setMaxAge] = React.useState(60);
+  const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
-  const [maxSize, setMaxSize] = React.useState(512);
+  const [maxSize, setMaxSize] = React.useState(0);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [toDisk, setToDisk] = React.useState(false);
 
@@ -126,6 +127,14 @@ export const CustomRecordingForm = (props) => {
     setToDisk(evt.target.checked);
   } 
 
+  const setRecordingOptions = (options) => {
+    setToDisk(options.toDisk);
+    setMaxAge(options.maxAge);
+    setMaxAgeUnits(1);
+    setMaxSize(options.maxSize);
+    setMaxSizeUnits(1);
+  }
+
   const handleSubmit = () => {
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
@@ -139,11 +148,19 @@ export const CustomRecordingForm = (props) => {
       notifications.warning('Invalid form data', message);
       return;
     }
-    props.onSubmit(recordingName, getEventString(), continuous ? undefined : duration * durationUnit);
+    props.onSubmit(recordingName, getEventString(), continuous ? undefined : duration * durationUnit, 
+      toDisk ? undefined : toDisk, maxAge ? undefined : maxAge * maxAgeUnits, maxSize ? undefined : maxSize * maxSizeUnits);
   };
 
   React.useEffect(() => {
     const sub = context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates);
+    return () => sub.unsubscribe();
+  }, []);
+
+  React.useEffect(() => {
+    const sub = context.target.target()
+      .pipe(concatMap(target => context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target)}/recordingOptions`)))
+      .subscribe(options => setRecordingOptions(options));
     return () => sub.unsubscribe();
   }, []);
 

@@ -91,7 +91,8 @@ export class ApiService {
   }
 
   createRecording(
-    { recordingName, events, duration  }: { recordingName: string; events: string; duration?: number }
+    { recordingName, events, duration, toDisk, maxAge, maxSize }: { recordingName: string; events: string; 
+        duration?: number, toDisk?: boolean, maxAge?: number, maxSize?: number }
     ): Observable<boolean> {
       const form = new window.FormData();
       form.append('recordingName', recordingName);
@@ -99,6 +100,16 @@ export class ApiService {
       if (!!duration && duration > 0) {
         form.append('duration', String(duration));
       }
+      if (!!toDisk) {
+        form.append('toDisk', String(toDisk));
+      }
+      if (!!maxAge) {
+        form.append('maxAge', String(maxAge));
+      }
+      if (!!maxSize) {
+        form.append('maxSize', String(maxSize));
+      }
+      
       return this.target.target().pipe(concatMap(targetId =>
         this.sendRequest(`targets/${encodeURIComponent(targetId)}/recordings`, {
           method: 'POST',
@@ -410,4 +421,10 @@ export interface EventTemplate {
   description: string;
   provider: string;
   type: 'CUSTOM' | 'TARGET';
+}
+
+export interface RecordingOptions {
+  toDisk: boolean;
+  maxSize: number;
+  maxAge: number;
 }
