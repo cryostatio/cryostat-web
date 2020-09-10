@@ -109,23 +109,23 @@ export const CustomRecordingForm = (props) => {
 
   const handleMaxAgeChange = (evt) => {
     setMaxAge(Number(evt));
-  }
+  };
 
   const handleMaxAgeUnitChange = (evt) => {
     setMaxAgeUnits(Number(evt));
-  }
+  };
 
   const handleMaxSizeChange = (evt) => {
     setMaxSize(Number(evt));
-  }
+  };
 
   const handleMaxSizeUnitChange = (evt) => {
     setMaxSizeUnits(Number(evt));
-  }
+  };
 
   const handleToDiskChange = (checked, evt) => {
     setToDisk(evt.target.checked);
-  } 
+  };
 
   const setRecordingOptions = (options) => {
     setToDisk(options.toDisk);
@@ -133,7 +133,7 @@ export const CustomRecordingForm = (props) => {
     setMaxAgeUnits(1);
     setMaxSize(options.maxSize);
     setMaxSizeUnits(1);
-  }
+  };
 
   const handleSubmit = () => {
     const notificationMessages: string[] = [];
@@ -148,8 +148,7 @@ export const CustomRecordingForm = (props) => {
       notifications.warning('Invalid form data', message);
       return;
     }
-    props.onSubmit(recordingName, getEventString(), continuous ? undefined : duration * durationUnit, 
-      toDisk ? undefined : toDisk, maxAge ? undefined : maxAge * maxAgeUnits, maxSize ? undefined : maxSize * maxSizeUnits);
+    props.onSubmit(recordingName, getEventString(), toDisk, maxAge * maxAgeUnits, maxSize * maxSizeUnits, continuous ? undefined : duration * durationUnit);
   };
 
   React.useEffect(() => {

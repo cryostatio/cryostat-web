@@ -65,10 +65,10 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
 
   const [activeTab, setActiveTab] = React.useState(0);
 
-  const handleCreateRecording = (recordingName: string, events: string, duration?: number, 
-          toDisk?: boolean, maxAge?: number, maxSize?: number): void => {
+  const handleCreateRecording = (recordingName: string, events: string, toDisk: boolean, 
+    maxAge: number, maxSize: number, duration?: number): void => {
     addSubscription(
-      context.api.createRecording({ recordingName, events, duration, toDisk, maxAge, maxSize })
+      context.api.createRecording({ recordingName, events, toDisk, maxAge, maxSize, duration })
       .pipe(first())
       .subscribe(success => {
         if (success) {

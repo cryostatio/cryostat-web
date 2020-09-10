@@ -91,23 +91,17 @@ export class ApiService {
   }
 
   createRecording(
-    { recordingName, events, duration, toDisk, maxAge, maxSize }: { recordingName: string; events: string; 
-        duration?: number, toDisk?: boolean, maxAge?: number, maxSize?: number }
+    { recordingName, events, toDisk, maxAge, maxSize, duration }: { recordingName: string; events: string; 
+        toDisk: boolean; maxAge: number; maxSize: number; duration?: number }
     ): Observable<boolean> {
       const form = new window.FormData();
       form.append('recordingName', recordingName);
       form.append('events', events);
+      form.append('toDisk', String(toDisk));
+      form.append('maxAge', String(maxAge));
+      form.append('maxSize', String(maxSize));
       if (!!duration && duration > 0) {
         form.append('duration', String(duration));
-      }
-      if (!!toDisk) {
-        form.append('toDisk', String(toDisk));
-      }
-      if (!!maxAge) {
-        form.append('maxAge', String(maxAge));
-      }
-      if (!!maxSize) {
-        form.append('maxSize', String(maxSize));
       }
       
       return this.target.target().pipe(concatMap(targetId =>
