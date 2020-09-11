@@ -72,7 +72,7 @@ export const CustomRecordingForm = (props) => {
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
-  const [toDisk, setToDisk] = React.useState(false);
+  const [toDisk, setToDisk] = React.useState(true);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -128,11 +128,7 @@ export const CustomRecordingForm = (props) => {
   };
 
   const setRecordingOptions = (options) => {
-    if (options.toDisk === 'true') {
-      setToDisk(true);
-    } else if (options.toDisk === 'false') {
-      setToDisk(false);
-    }
+    // toDisk is not set, and defaults to true because of container-jfr issue #263
     setMaxAge(options.maxAge);
     setMaxAgeUnits(1);
     setMaxSize(options.maxSize);
@@ -290,6 +286,9 @@ export const CustomRecordingForm = (props) => {
       </FormGroup>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
+          <Text component={TextVariants.small}>
+            A value of 0 for maximum age or size means unbounded.
+          </Text>
           <FormGroup label="Maximum age" fieldId="maxAge">
             <Split hasGutter={true}>
               <SplitItem isFilled>
@@ -334,7 +333,7 @@ export const CustomRecordingForm = (props) => {
                     value={maxSizeUnits}
                     onChange={handleMaxSizeUnitChange}
                     aria-label="Max size units input"
-                  >
+                  > 
                     <FormSelectOption key="1" value="1" label="B" />
                     <FormSelectOption key="2" value={1000} label="KB" />
                     <FormSelectOption key="3" value={1000*1000} label="MB" />
