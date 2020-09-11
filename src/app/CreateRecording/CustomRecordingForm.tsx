@@ -128,7 +128,11 @@ export const CustomRecordingForm = (props) => {
   };
 
   const setRecordingOptions = (options) => {
-    setToDisk(options.toDisk);
+    if (options.toDisk === 'true') {
+      setToDisk(true);
+    } else if (options.toDisk === 'false') {
+      setToDisk(false);
+    }
     setMaxAge(options.maxAge);
     setMaxAgeUnits(1);
     setMaxSize(options.maxSize);
