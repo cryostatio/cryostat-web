@@ -127,7 +127,7 @@ export const CustomRecordingForm = (props) => {
     setToDisk(evt.target.checked);
   };
 
-  const setRecordingOptions = (options) => {
+  const setRecordingOptions = (options: RecordingOptions) => {
     // toDisk is not set, and defaults to true because of container-jfr issue #263
     setMaxAge(options.maxAge);
     setMaxAgeUnits(1);
@@ -310,7 +310,7 @@ export const CustomRecordingForm = (props) => {
                 >
                   <FormSelectOption key="1" value="1" label="Seconds" />
                   <FormSelectOption key="2" value={60} label="Minutes" />
-                  <FormSelectOption key="3" value={60*60}label="Hours" />
+                  <FormSelectOption key="3" value={60*60} label="Hours" />
                 </FormSelect>
               </SplitItem>
             </Split>
@@ -335,8 +335,8 @@ export const CustomRecordingForm = (props) => {
                     aria-label="Max size units input"
                   > 
                     <FormSelectOption key="1" value="1" label="B" />
-                    <FormSelectOption key="2" value={1000} label="KB" />
-                    <FormSelectOption key="3" value={1000*1000} label="MB" />
+                    <FormSelectOption key="2" value={1024} label="KB" />
+                    <FormSelectOption key="3" value={1024*1024} label="MB" />
                   </FormSelect>
                 </SplitItem>
             </Split>
