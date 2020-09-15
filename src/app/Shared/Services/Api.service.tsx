@@ -91,15 +91,15 @@ export class ApiService {
   }
 
   createRecording(
-    { recordingName, events, toDisk, maxAge, maxSize, duration }: { recordingName: string; events: string; 
-        toDisk: boolean; maxAge: number; maxSize: number; duration?: number }
+    { recordingName, events, options, duration }: { recordingName: string; events: string; 
+        options: RecordingOptions; duration?: number }
     ): Observable<boolean> {
       const form = new window.FormData();
       form.append('recordingName', recordingName);
       form.append('events', events);
-      form.append('toDisk', String(toDisk));
-      form.append('maxAge', String(maxAge));
-      form.append('maxSize', String(maxSize));
+      form.append('toDisk', String(options.toDisk));
+      form.append('maxAge', String(options.maxAge));
+      form.append('maxSize', String(options.maxSize));
       if (!!duration && duration > 0) {
         form.append('duration', String(duration));
       }

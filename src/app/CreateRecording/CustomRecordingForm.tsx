@@ -46,7 +46,7 @@ import { EventTemplate } from './CreateRecording';
 import { RecordingOptions } from '@app/Shared/Services/Api.service';
 
 export interface CustomRecordingFormProps {
-  onSubmit: (recordingName: string, events: string, duration?: number) => void;
+  onSubmit: (recordingName: string, events: string, options: RecordingOptions, duration?: number) => void;
 }
 
 export const RecordingNamePattern = /^[\w_]+$/;
@@ -148,7 +148,12 @@ export const CustomRecordingForm = (props) => {
       notifications.warning('Invalid form data', message);
       return;
     }
-    props.onSubmit(recordingName, getEventString(), toDisk, maxAge * maxAgeUnits, maxSize * maxSizeUnits, continuous ? undefined : duration * durationUnit);
+    const options: RecordingOptions = {
+      toDisk: toDisk,
+      maxAge: maxAge * maxAgeUnits,
+      maxSize: maxSize * maxSizeUnits 
+    }
+    props.onSubmit(recordingName, getEventString(), options, continuous ? undefined : duration * durationUnit);
   };
 
   React.useEffect(() => {
@@ -289,7 +294,11 @@ export const CustomRecordingForm = (props) => {
           <Text component={TextVariants.small}>
             A value of 0 for maximum age or size means unbounded.
           </Text>
-          <FormGroup label="Maximum age" fieldId="maxAge">
+          <FormGroup 
+            label="Maximum age" 
+            fieldId="maxAge"
+            helperText="The maximum age of recording data stored in the JFR repository buffer"
+          >
             <Split hasGutter={true}>
               <SplitItem isFilled>
                 <TextInput
@@ -315,7 +324,11 @@ export const CustomRecordingForm = (props) => {
               </SplitItem>
             </Split>
           </FormGroup>
-          <FormGroup label="Maximum size" fieldId="maxSize">
+          <FormGroup 
+            label="Maximum size" 
+            fieldId="maxSize"
+            helperText="The maximum size of recording data stored in the JFR repository buffer"
+          >
             <Split hasGutter={true}>
               <SplitItem isFilled>
                   <TextInput
