@@ -43,10 +43,10 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
-import { RecordingOptions } from '@app/Shared/Services/Api.service';
+import { RecordingOptions, RecordingAttributes, Recording } from '@app/Shared/Services/Api.service';
 
 export interface CustomRecordingFormProps {
-  onSubmit: (recordingName: string, events: string, options: RecordingOptions, duration?: number) => void;
+  onSubmit: (recordingAttributes: RecordingAttributes) => void;
 }
 
 export const RecordingNamePattern = /^[\w_]+$/;
@@ -153,7 +153,13 @@ export const CustomRecordingForm = (props) => {
       maxAge: maxAge * maxAgeUnits,
       maxSize: maxSize * maxSizeUnits 
     }
-    props.onSubmit(recordingName, getEventString(), options, continuous ? undefined : duration * durationUnit);
+    const recordingAttributes: RecordingAttributes = {
+      name: recordingName,
+      events: getEventString(),
+      duration: continuous ? undefined : duration * durationUnit,
+      options: options
+    }
+    props.onSubmit(recordingAttributes);
   };
 
   React.useEffect(() => {
@@ -208,6 +214,7 @@ export const CustomRecordingForm = (props) => {
         label="Duration"
         isRequired
         fieldId="recording-duration"
+        helperText="Time before the recording is automatically stopped"
       >
         <Checkbox
           label="Continuous"
