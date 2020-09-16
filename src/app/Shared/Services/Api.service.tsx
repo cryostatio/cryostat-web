@@ -90,16 +90,23 @@ export class ApiService {
     );
   }
 
-  createRecording({ recordingAttributes }: { recordingAttributes: RecordingAttributes }
-    ): Observable<boolean> {
+  createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {
       const form = new window.FormData();
       form.append('recordingName', recordingAttributes.name);
       form.append('events', recordingAttributes.events);
-      form.append('toDisk', String(recordingAttributes.options.toDisk));
-      form.append('maxAge', String(recordingAttributes.options.maxAge));
-      form.append('maxSize', String(recordingAttributes.options.maxSize));
       if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
         form.append('duration', String(recordingAttributes.duration));
+      }
+      if (!!recordingAttributes.options){
+        if (!!recordingAttributes.options.toDisk) {
+          form.append('toDisk', String(recordingAttributes.options.toDisk));
+        }
+        if (!!recordingAttributes.options.maxAge && recordingAttributes.options.maxAge >= 0) {
+          form.append('maxAge', String(recordingAttributes.options.maxAge));
+        }
+        if (!!recordingAttributes.options.maxSize && recordingAttributes.options.maxSize >= 0) {
+          form.append('maxSize', String(recordingAttributes.options.maxSize));
+        }
       }
       
       return this.target.target().pipe(concatMap(targetId =>
@@ -416,14 +423,14 @@ export interface EventTemplate {
 }
 
 export interface RecordingOptions {
-  toDisk: boolean;
-  maxSize: number;
-  maxAge: number;
+  toDisk?: boolean;
+  maxSize?: number;
+  maxAge?: number;
 }
 
 export interface RecordingAttributes {
   name: string;
   events: string;
   duration?: number;
-  options: RecordingOptions;
+  options?: RecordingOptions;
 }

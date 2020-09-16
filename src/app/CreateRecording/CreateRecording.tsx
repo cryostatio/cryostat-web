@@ -68,7 +68,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
 
   const handleCreateRecording = (recordingAttributes: RecordingAttributes): void => {
     addSubscription(
-      context.api.createRecording({ recordingAttributes })
+      context.api.createRecording(recordingAttributes)
       .pipe(first())
       .subscribe(success => {
         if (success) {
