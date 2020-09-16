@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -65,9 +66,9 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
 
   const [activeTab, setActiveTab] = React.useState(0);
 
-  const handleCreateRecording = (recordingName: string, events: string, duration?: number): void => {
+  const handleCreateRecording = (recordingAttributes: RecordingAttributes): void => {
     addSubscription(
-      context.api.createRecording({ recordingName, events, duration })
+      context.api.createRecording(recordingAttributes)
       .pipe(first())
       .subscribe(success => {
         if (success) {

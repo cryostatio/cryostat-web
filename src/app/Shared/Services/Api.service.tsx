@@ -106,15 +106,25 @@ export class ApiService {
     );
   }
 
-  createRecording(
-    { recordingName, events, duration  }: { recordingName: string; events: string; duration?: number }
-    ): Observable<boolean> {
+  createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {
       const form = new window.FormData();
-      form.append('recordingName', recordingName);
-      form.append('events', events);
-      if (!!duration && duration > 0) {
-        form.append('duration', String(duration));
+      form.append('recordingName', recordingAttributes.name);
+      form.append('events', recordingAttributes.events);
+      if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
+        form.append('duration', String(recordingAttributes.duration));
       }
+      if (!!recordingAttributes.options){
+        if (recordingAttributes.options.toDisk != null) {
+          form.append('toDisk', String(recordingAttributes.options.toDisk));
+        }
+        if (!!recordingAttributes.options.maxAge && recordingAttributes.options.maxAge >= 0) {
+          form.append('maxAge', String(recordingAttributes.options.maxAge));
+        }
+        if (!!recordingAttributes.options.maxSize && recordingAttributes.options.maxSize >= 0) {
+          form.append('maxSize', String(recordingAttributes.options.maxSize));
+        }
+      }
+      
       return this.target.target().pipe(concatMap(targetId =>
         this.sendRequest(`targets/${encodeURIComponent(targetId)}/recordings`, {
           method: 'POST',
@@ -461,4 +471,17 @@ export interface EventTemplate {
   description: string;
   provider: string;
   type: 'CUSTOM' | 'TARGET';
+}
+
+export interface RecordingOptions {
+  toDisk?: boolean;
+  maxSize?: number;
+  maxAge?: number;
+}
+
+export interface RecordingAttributes {
+  name: string;
+  events: string;
+  duration?: number;
+  options?: RecordingOptions;
 }

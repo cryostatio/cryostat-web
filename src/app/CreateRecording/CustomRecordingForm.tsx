@@ -38,14 +38,15 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
+import { RecordingOptions, RecordingAttributes, Recording } from '@app/Shared/Services/Api.service';
 
 export interface CustomRecordingFormProps {
-  onSubmit: (recordingName: string, events: string, duration?: number) => void;
+  onSubmit: (recordingAttributes: RecordingAttributes) => void;
 }
 
 export const RecordingNamePattern = /^[\w_]+$/;
@@ -67,6 +68,11 @@ export const CustomRecordingForm = (props) => {
   const [templateType] = React.useState(props.templateType || props?.location?.state?.templateType || '');
   const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
   const [eventsValid, setEventsValid] = React.useState((!!props.template || !!props?.location?.state?.template) ? ValidatedOptions.success : ValidatedOptions.default);
+  const [maxAge, setMaxAge] = React.useState(0);
+  const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
+  const [maxSize, setMaxSize] = React.useState(0);
+  const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
+  const [toDisk, setToDisk] = React.useState(true);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -101,6 +107,34 @@ export const CustomRecordingForm = (props) => {
     setRecordingName(name);
   };
 
+  const handleMaxAgeChange = (evt) => {
+    setMaxAge(Number(evt));
+  };
+
+  const handleMaxAgeUnitChange = (evt) => {
+    setMaxAgeUnits(Number(evt));
+  };
+
+  const handleMaxSizeChange = (evt) => {
+    setMaxSize(Number(evt));
+  };
+
+  const handleMaxSizeUnitChange = (evt) => {
+    setMaxSizeUnits(Number(evt));
+  };
+
+  const handleToDiskChange = (checked, evt) => {
+    setToDisk(evt.target.checked);
+  };
+
+  const setRecordingOptions = (options: RecordingOptions) => {
+    // toDisk is not set, and defaults to true because of container-jfr issue #263
+    setMaxAge(options.maxAge);
+    setMaxAgeUnits(1);
+    setMaxSize(options.maxSize);
+    setMaxSizeUnits(1);
+  };
+
   const handleSubmit = () => {
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
@@ -114,11 +148,29 @@ export const CustomRecordingForm = (props) => {
       notifications.warning('Invalid form data', message);
       return;
     }
-    props.onSubmit(recordingName, getEventString(), continuous ? undefined : duration * durationUnit);
+    const options: RecordingOptions = {
+      toDisk: toDisk,
+      maxAge: maxAge * maxAgeUnits,
+      maxSize: maxSize * maxSizeUnits 
+    }
+    const recordingAttributes: RecordingAttributes = {
+      name: recordingName,
+      events: getEventString(),
+      duration: continuous ? undefined : duration * durationUnit,
+      options: options
+    }
+    props.onSubmit(recordingAttributes);
   };
 
   React.useEffect(() => {
     const sub = context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates);
+    return () => sub.unsubscribe();
+  }, []);
+
+  React.useEffect(() => {
+    const sub = context.target.target()
+      .pipe(concatMap(target => context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target)}/recordingOptions`)))
+      .subscribe(options => setRecordingOptions(options));
     return () => sub.unsubscribe();
   }, []);
 
@@ -145,7 +197,7 @@ export const CustomRecordingForm = (props) => {
         label="Name"
         isRequired
         fieldId="recording-name"
-        helperText="Please enter a recording name. This will be unique within the target JVM."
+        helperText="Please enter a recording name, this will be unique within the target JVM"
         validated={nameValid}
       >
         <TextInput
@@ -162,6 +214,7 @@ export const CustomRecordingForm = (props) => {
         label="Duration"
         isRequired
         fieldId="recording-duration"
+        helperText="Time before the recording is automatically stopped"
       >
         <Checkbox
           label="Continuous"
@@ -193,7 +246,7 @@ export const CustomRecordingForm = (props) => {
             >
               <FormSelectOption key="1" value="1" label="Seconds" />
               <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60*60}label="Hours" />
+              <FormSelectOption key="3" value={60*60} label="Hours" />
             </FormSelect>
           </SplitItem>
         </Split>
@@ -203,7 +256,7 @@ export const CustomRecordingForm = (props) => {
         isRequired
         fieldId="recording-events"
         validated={eventsValid}
-        helperText="Select a template from the dropdown, or enter a template name or event specifier string in the text area."
+        helperText="Select a template from the dropdown, or enter a template name or event specifier string in the text area"
       >
         <Split hasGutter={true}>
           <SplitItem>
@@ -243,6 +296,87 @@ export const CustomRecordingForm = (props) => {
           </SplitItem>
         </Split>
       </FormGroup>
+      <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
+        <Form>
+          <Text component={TextVariants.small}>
+            A value of 0 for maximum age or size means unbounded.
+          </Text>
+          <FormGroup 
+            fieldId="To Disk"
+            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
+          >
+            <Checkbox 
+              label="To Disk" 
+              id="toDisk-checkbox"
+              isChecked={toDisk}
+              onChange={handleToDiskChange} />
+          </FormGroup>
+          <FormGroup 
+            label="Maximum size" 
+            fieldId="maxSize"
+            helperText="The maximum size of recording data saved to disk"
+          >
+            <Split hasGutter={true}>
+              <SplitItem isFilled>
+                  <TextInput
+                    value={maxSize}
+                    isRequired
+                    type="number"
+                    id="maxSize"
+                    aria-label="max size value"
+                    onChange={handleMaxSizeChange}
+                    min="0"
+                    isDisabled={!toDisk}
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <FormSelect
+                    value={maxSizeUnits}
+                    onChange={handleMaxSizeUnitChange}
+                    aria-label="Max size units input"
+                    isDisabled={!toDisk}
+                  > 
+                    <FormSelectOption key="1" value="1" label="B" />
+                    <FormSelectOption key="2" value={1024} label="KiB" />
+                    <FormSelectOption key="3" value={1024*1024} label="MiB" />
+                  </FormSelect>
+                </SplitItem>
+            </Split>
+          </FormGroup>
+          <FormGroup 
+            label="Maximum age" 
+            fieldId="maxAge"
+            helperText="The maximum age of recording data stored to disk"
+          >
+            <Split hasGutter={true}>
+              <SplitItem isFilled>
+                <TextInput
+                  value={maxAge}
+                  isRequired
+                  type="number"
+                  id="maxAgeDuration"
+                  aria-label="Max age duration"
+                  onChange={handleMaxAgeChange}
+                  min="0"
+                  isDisabled={!continuous || !toDisk}
+                />
+              </SplitItem>
+              <SplitItem>
+                <FormSelect
+                  value={maxAgeUnits}
+                  onChange={handleMaxAgeUnitChange}
+                  aria-label="Max Age units Input"
+                  isDisabled={!continuous || !toDisk}
+                >
+                  <FormSelectOption key="1" value="1" label="Seconds" />
+                  <FormSelectOption key="2" value={60} label="Minutes" />
+                  <FormSelectOption key="3" value={60*60} label="Hours" />
+                </FormSelect>
+              </SplitItem>
+            </Split>
+          </FormGroup>
+        </Form>
+      </ExpandableSection>
       <ActionGroup>
         <Button variant="primary" onClick={handleSubmit}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
