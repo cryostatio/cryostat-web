@@ -197,7 +197,7 @@ export const CustomRecordingForm = (props) => {
         label="Name"
         isRequired
         fieldId="recording-name"
-        helperText="Please enter a recording name. This will be unique within the target JVM."
+        helperText="Please enter a recording name, this will be unique within the target JVM"
         validated={nameValid}
       >
         <TextInput
@@ -256,7 +256,7 @@ export const CustomRecordingForm = (props) => {
         isRequired
         fieldId="recording-events"
         validated={eventsValid}
-        helperText="Select a template from the dropdown, or enter a template name or event specifier string in the text area."
+        helperText="Select a template from the dropdown, or enter a template name or event specifier string in the text area"
       >
         <Split hasGutter={true}>
           <SplitItem>
@@ -302,39 +302,19 @@ export const CustomRecordingForm = (props) => {
             A value of 0 for maximum age or size means unbounded.
           </Text>
           <FormGroup 
-            label="Maximum age" 
-            fieldId="maxAge"
-            helperText="The maximum age of recording data stored in the JFR repository buffer"
+            fieldId="To Disk"
+            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
           >
-            <Split hasGutter={true}>
-              <SplitItem isFilled>
-                <TextInput
-                  value={maxAge}
-                  isRequired
-                  type="number"
-                  id="maxAgeDuration"
-                  aria-label="Max age duration"
-                  onChange={handleMaxAgeChange}
-                  min="0"
-                />
-              </SplitItem>
-              <SplitItem>
-                <FormSelect
-                  value={maxAgeUnits}
-                  onChange={handleMaxAgeUnitChange}
-                  aria-label="Max Age units Input"
-                >
-                  <FormSelectOption key="1" value="1" label="Seconds" />
-                  <FormSelectOption key="2" value={60} label="Minutes" />
-                  <FormSelectOption key="3" value={60*60} label="Hours" />
-                </FormSelect>
-              </SplitItem>
-            </Split>
+            <Checkbox 
+              label="To Disk" 
+              id="toDisk-checkbox"
+              isChecked={toDisk}
+              onChange={handleToDiskChange} />
           </FormGroup>
           <FormGroup 
             label="Maximum size" 
             fieldId="maxSize"
-            helperText="The maximum size of recording data stored in the JFR repository buffer"
+            helperText="The maximum size of recording data saved to disk"
           >
             <Split hasGutter={true}>
               <SplitItem isFilled>
@@ -346,6 +326,7 @@ export const CustomRecordingForm = (props) => {
                     aria-label="max size value"
                     onChange={handleMaxSizeChange}
                     min="0"
+                    isDisabled={!toDisk}
                   />
                 </SplitItem>
                 <SplitItem>
@@ -353,6 +334,7 @@ export const CustomRecordingForm = (props) => {
                     value={maxSizeUnits}
                     onChange={handleMaxSizeUnitChange}
                     aria-label="Max size units input"
+                    isDisabled={!toDisk}
                   > 
                     <FormSelectOption key="1" value="1" label="B" />
                     <FormSelectOption key="2" value={1024} label="KiB" />
@@ -362,14 +344,36 @@ export const CustomRecordingForm = (props) => {
             </Split>
           </FormGroup>
           <FormGroup 
-            fieldId="To Disk"
-            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
+            label="Maximum age" 
+            fieldId="maxAge"
+            helperText="The maximum age of recording data stored to disk"
           >
-            <Checkbox 
-              label="To Disk" 
-              id="toDisk-checkbox"
-              isChecked={toDisk}
-              onChange={handleToDiskChange} />
+            <Split hasGutter={true}>
+              <SplitItem isFilled>
+                <TextInput
+                  value={maxAge}
+                  isRequired
+                  type="number"
+                  id="maxAgeDuration"
+                  aria-label="Max age duration"
+                  onChange={handleMaxAgeChange}
+                  min="0"
+                  isDisabled={!continuous || !toDisk}
+                />
+              </SplitItem>
+              <SplitItem>
+                <FormSelect
+                  value={maxAgeUnits}
+                  onChange={handleMaxAgeUnitChange}
+                  aria-label="Max Age units Input"
+                  isDisabled={!continuous || !toDisk}
+                >
+                  <FormSelectOption key="1" value="1" label="Seconds" />
+                  <FormSelectOption key="2" value={60} label="Minutes" />
+                  <FormSelectOption key="3" value={60*60} label="Hours" />
+                </FormSelect>
+              </SplitItem>
+            </Split>
           </FormGroup>
         </Form>
       </ExpandableSection>
