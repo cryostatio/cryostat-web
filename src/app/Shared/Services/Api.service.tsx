@@ -98,7 +98,7 @@ export class ApiService {
         form.append('duration', String(recordingAttributes.duration));
       }
       if (!!recordingAttributes.options){
-        if (!!recordingAttributes.options.toDisk) {
+        if (recordingAttributes.options.toDisk != null) {
           form.append('toDisk', String(recordingAttributes.options.toDisk));
         }
         if (!!recordingAttributes.options.maxAge && recordingAttributes.options.maxAge >= 0) {

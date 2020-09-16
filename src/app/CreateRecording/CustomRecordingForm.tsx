@@ -355,15 +355,18 @@ export const CustomRecordingForm = (props) => {
                     aria-label="Max size units input"
                   > 
                     <FormSelectOption key="1" value="1" label="B" />
-                    <FormSelectOption key="2" value={1024} label="KB" />
-                    <FormSelectOption key="3" value={1024*1024} label="MB" />
+                    <FormSelectOption key="2" value={1024} label="KiB" />
+                    <FormSelectOption key="3" value={1024*1024} label="MiB" />
                   </FormSelect>
                 </SplitItem>
             </Split>
           </FormGroup>
-          <FormGroup fieldId="toDisk">
+          <FormGroup 
+            fieldId="To Disk"
+            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
+          >
             <Checkbox 
-              label="toDisk" 
+              label="To Disk" 
               id="toDisk-checkbox"
               isChecked={toDisk}
               onChange={handleToDiskChange} />
