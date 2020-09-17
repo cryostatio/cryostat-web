@@ -150,8 +150,8 @@ export const CustomRecordingForm = (props) => {
     }
     const options: RecordingOptions = {
       toDisk: toDisk,
-      maxAge: maxAge * maxAgeUnits,
-      maxSize: maxSize * maxSizeUnits 
+      maxAge: toDisk? continuous? maxAge * maxAgeUnits : undefined : undefined,
+      maxSize: toDisk? maxSize * maxSizeUnits : undefined
     }
     const recordingAttributes: RecordingAttributes = {
       name: recordingName,
