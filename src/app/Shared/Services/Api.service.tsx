@@ -124,7 +124,7 @@ export class ApiService {
           form.append('maxSize', String(recordingAttributes.options.maxSize));
         }
       }
-      
+
       return this.target.target().pipe(concatMap(targetId =>
         this.sendRequest(`targets/${encodeURIComponent(targetId)}/recordings`, {
           method: 'POST',
@@ -420,7 +420,7 @@ export class ApiService {
 
   private handleError<T>(error: Error, retry: () => Observable<T>): ObservableInput<T> {
     if (isHttpError(error)) {
-      if (error.httpResponse.status === 407) {
+      if (error.httpResponse.status === 427) {
         const jmxAuthScheme = error.httpResponse.headers.get('X-JMX-Authenticate');
         if (jmxAuthScheme === 'Basic') {
           this.target.setAuthFailure();
