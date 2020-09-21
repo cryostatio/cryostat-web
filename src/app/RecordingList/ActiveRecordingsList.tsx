@@ -219,6 +219,16 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           id={`active-ex-expand-${props.index}`}
           isHidden={!isExpanded}
         >
+          <Text>Recording Options:</Text>
+          <Text>
+            toDisk = { String(props.recording.toDisk) } &emsp; 
+            maxAge = {props.recording.maxAge / 1000}s &emsp; 
+            maxSize = { props.recording.maxSize }B
+          </Text>
+          <br></br>
+          <hr></hr>
+          <br></br>
+          <Text>Automated Analysis:</Text>
           <ReportFrame recording={props.recording} width="100%" height="640" />
         </DataListContent>
       </DataListItem>
