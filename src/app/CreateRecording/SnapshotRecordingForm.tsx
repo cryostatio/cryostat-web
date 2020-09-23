@@ -47,7 +47,7 @@ export const SnapshotRecordingForm = (props) => {
   const history = useHistory();
 
   return (<>
-    <Form>
+    <Form isHorizontal>
       <Text component={TextVariants.p}>
         A Snapshot recording is one which contains all information about all
         events that have been captured in the current session by <i>other,&nbsp;
