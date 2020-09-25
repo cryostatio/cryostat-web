@@ -36,18 +36,24 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow } from '@patternfly/react-core';
+import { Bullseye, DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow, Spinner } from '@patternfly/react-core';
 
 export interface RecordingsDataTableProps {
   toolbar: React.ReactElement;
   tableColumns: string[];
   listTitle: string;
   isHeaderChecked: boolean;
+  isLoading: boolean;
   onHeaderCheck: (checked: boolean) => void;
 }
 
 export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTableProps> = (props) => {
-  return (<>
+  return props.isLoading? (<>
+    <br/>
+    <Bullseye> 
+      <Spinner/>
+    </Bullseye>
+    </>) : (<>
     { props.toolbar }
     <DataList aria-label={props.listTitle}>
       <DataListItem aria-labelledby="table-header-1">
