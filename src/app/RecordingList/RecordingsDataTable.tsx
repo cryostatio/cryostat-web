@@ -36,7 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Bullseye, DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow, Spinner } from '@patternfly/react-core';
+import { Bullseye, DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow, Spinner, Text } from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 export interface RecordingsDataTableProps {
   toolbar: React.ReactElement;
@@ -44,31 +45,46 @@ export interface RecordingsDataTableProps {
   listTitle: string;
   isHeaderChecked: boolean;
   isLoading: boolean;
+  errorMessage: string;
   onHeaderCheck: (checked: boolean) => void;
 }
 
 export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTableProps> = (props) => {
-  return props.isLoading? (<>
-    <br/>
-    <Bullseye> 
-      <Spinner/>
-    </Bullseye>
-    </>) : (<>
-    { props.toolbar }
-    <DataList aria-label={props.listTitle}>
-      <DataListItem aria-labelledby="table-header-1">
-        <DataListItemRow>
-          <DataListCheck aria-labelledby="table-header-1" name="header-check" onChange={props.onHeaderCheck} isChecked={props.isHeaderChecked} />
-          <DataListItemCells
-            dataListCells={props.tableColumns.map((key , idx) => (
-              <DataListCell key={key}>
-                <span id={`table-header-${idx}`}>{key}</span>
-              </DataListCell>
-            ))}
-          />
-        </DataListItemRow>
-      </DataListItem>
-      { props.children }
-    </DataList>
-  </>);
+  if (props.errorMessage != '') {
+    return (<>
+      <br/>
+      <Bullseye>
+        <ExclamationCircleIcon size='md' color='Red'/>
+      </Bullseye>
+      <Bullseye>
+        <Text>
+          Unable to connect
+        </Text>
+      </Bullseye>
+    </>)
+  } else {
+    return props.isLoading? (<>
+      <br/>
+      <Bullseye> 
+        <Spinner/>
+      </Bullseye>
+      </>) : (<>
+      { props.toolbar }
+      <DataList aria-label={props.listTitle}>
+        <DataListItem aria-labelledby="table-header-1">
+          <DataListItemRow>
+            <DataListCheck aria-labelledby="table-header-1" name="header-check" onChange={props.onHeaderCheck} isChecked={props.isHeaderChecked} />
+            <DataListItemCells
+              dataListCells={props.tableColumns.map((key , idx) => (
+                <DataListCell key={key}>
+                  <span id={`table-header-${idx}`}>{key}</span>
+                </DataListCell>
+              ))}
+            />
+          </DataListItemRow>
+        </DataListItem>
+        { props.children }
+      </DataList>
+    </>);
+  }
 };

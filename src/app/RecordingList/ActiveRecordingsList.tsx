@@ -62,6 +62,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
 
   const tableColumns: string[] = [
@@ -94,6 +95,12 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const handleRecordings = (recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
+    setErrorMessage('');
+  };
+
+  const handleError = (error) => {
+    setIsLoading(false);
+    setErrorMessage(error);
   }
 
   const refreshRecordingList = React.useCallback(() => {
@@ -103,7 +110,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       .pipe(
         concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target)}/recordings`)),
         first(),
-      ).subscribe(handleRecordings)
+      ).subscribe(value => handleRecordings(value), err => handleError(err))
     );
   }, [addSubscription, context.target, context.api]);
 
@@ -304,6 +311,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
         isLoading = {isLoading}
+        errorMessage = {errorMessage}
     >
       {recordingRows}
     </RecordingsDataTable>
