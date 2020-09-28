@@ -45,12 +45,12 @@ export interface RecordingsDataTableProps {
   listTitle: string;
   isHeaderChecked: boolean;
   isLoading: boolean;
-  errorMessage: string;
+  isConnectionError: boolean;
   onHeaderCheck: (checked: boolean) => void;
 }
 
 export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTableProps> = (props) => {
-  if (props.errorMessage != '') {
+  if (props.isConnectionError) {
     return (<>
       <br/>
       <Bullseye>

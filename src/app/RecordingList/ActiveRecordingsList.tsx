@@ -62,7 +62,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
+  const [isConnectionError, setIsConnectionError] = React.useState(false);
   const { url } = useRouteMatch();
 
   const tableColumns: string[] = [
@@ -95,12 +95,12 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const handleRecordings = (recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-    setErrorMessage('');
+    setIsConnectionError(false);
   };
 
   const handleError = (error) => {
     setIsLoading(false);
-    setErrorMessage(error);
+    setIsConnectionError(true);
   }
 
   const refreshRecordingList = React.useCallback(() => {
@@ -311,7 +311,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
         isLoading = {isLoading}
-        errorMessage = {errorMessage}
+        isConnectionError = {isConnectionError}
     >
       {recordingRows}
     </RecordingsDataTable>
