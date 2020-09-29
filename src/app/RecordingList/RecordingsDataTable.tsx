@@ -45,12 +45,12 @@ export interface RecordingsDataTableProps {
   listTitle: string;
   isHeaderChecked: boolean;
   isLoading: boolean;
-  isConnectionError: boolean;
+  errorMessage: String;
   onHeaderCheck: (checked: boolean) => void;
 }
 
 export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTableProps> = (props) => {
-  if (props.isConnectionError) {
+  if (props.errorMessage != '') {
     return (<>
       <br/>
       <Bullseye>
@@ -58,17 +58,19 @@ export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTablePro
       </Bullseye>
       <Bullseye>
         <Text>
-          Unable to connect
+          Error:&nbsp;{props.errorMessage}
         </Text>
       </Bullseye>
     </>)
-  } else {
-    return props.isLoading? (<>
+  } else if (props.isLoading) {
+    return (<>
       <br/>
       <Bullseye> 
         <Spinner/>
       </Bullseye>
-      </>) : (<>
+      </>) 
+  } else {
+    return (<>
       { props.toolbar }
       <DataList aria-label={props.listTitle}>
         <DataListItem aria-labelledby="table-header-1">

@@ -207,7 +207,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
         isLoading={isLoading}
-        isConnectionError={false}
+        errorMessage=''
     >
       {
         recordingRows
