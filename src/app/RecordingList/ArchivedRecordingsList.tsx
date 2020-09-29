@@ -59,8 +59,9 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const addSubscription = useSubscriptions();
   const [showUploadModal, setShowUploadModal] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
     'Name'
@@ -80,11 +81,17 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
     }
   };
 
+  const handleRecordings = (recordings) => {
+    setRecordings(recordings);
+    setIsLoading(false);
+  }
+
   const refreshRecordingList = React.useCallback(() => {
+    setIsLoading(true);
     addSubscription(
       context.api.doGet<Recording[]>(`recordings`)
       .pipe(first())
-      .subscribe(setRecordings)
+      .subscribe(handleRecordings)
     );
   }, [addSubscription, context.api]);
 
@@ -199,6 +206,8 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
         tableColumns={tableColumns}
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
+        isLoading={isLoading}
+        errorMessage=''
     >
       {
         recordingRows

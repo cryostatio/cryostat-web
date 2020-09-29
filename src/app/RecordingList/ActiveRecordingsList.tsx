@@ -61,6 +61,8 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
 
   const tableColumns: string[] = [
@@ -90,13 +92,25 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     routerHistory.push(`${url}/create`);
   };
 
+  const handleRecordings = (recordings) => {
+    setRecordings(recordings);
+    setIsLoading(false);
+    setErrorMessage('');
+  };
+
+  const handleError = (error) => {
+    setIsLoading(false);
+    setErrorMessage(error.message);
+  }
+
   const refreshRecordingList = React.useCallback(() => {
+    setIsLoading(true);
     addSubscription(
       context.target.target()
       .pipe(
         concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target)}/recordings`)),
         first(),
-      ).subscribe(setRecordings)
+      ).subscribe(value => handleRecordings(value), err => handleError(err))
     );
   }, [addSubscription, context.target, context.api]);
 
@@ -288,7 +302,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const recordingRows = React.useMemo(() => {
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
-
+  
   return (<>
     <RecordingsDataTable
         listTitle="Active Flight Recordings"
@@ -296,6 +310,8 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         tableColumns={tableColumns}
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
+        isLoading = {isLoading}
+        errorMessage = {errorMessage}
     >
       {recordingRows}
     </RecordingsDataTable>
