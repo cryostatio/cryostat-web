@@ -370,7 +370,7 @@ export class ApiService {
       concatMap(parts => {
         const headers = parts[0];
         const target = parts[1];
-        if (!!target.connectUrl && this.target.hasCredentials(target.connectUrl)) {
+        if (!!target && !!target.connectUrl && this.target.hasCredentials(target.connectUrl)) {
           const credentials = this.target.getCredentials(target.connectUrl);
           if (credentials) {
             headers.set('X-JMX-Authorization', `Basic ${this.target.getCredentials(target.connectUrl)}`);

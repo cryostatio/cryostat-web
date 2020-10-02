@@ -36,7 +36,11 @@
  * SOFTWARE.
  */
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { Target } from './Services';
+
+export interface Target {
+  connectUrl: string;
+  alias: string;
+}
 
 class TargetService {
   private readonly _target: Subject<Target> = new BehaviorSubject({} as Target);

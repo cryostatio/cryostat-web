@@ -36,7 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ServiceContext, Target } from '@app/Shared/Services/Services';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
 import { ContainerNodeIcon, Spinner2Icon } from '@patternfly/react-icons';
