@@ -39,8 +39,8 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
-import { PlusIcon } from '@patternfly/react-icons';
+import { ActionGroup, Bullseye, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Spinner, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
+import { ExclamationCircleIcon, PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, first } from 'rxjs/operators';
@@ -58,6 +58,8 @@ export const EventTemplates = () => {
   const [uploading, setUploading] = React.useState(false);
   const [fileRejected, setFileRejected] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const addSubscription = useSubscriptions();
 
   const tableColumns = [
@@ -85,13 +87,25 @@ export const EventTemplates = () => {
     setFilteredTemplates([...filtered]);
   }, [filterText, templates, sortBy]);
 
+  const handleTemplates = (templates) => {
+    setTemplates(templates);
+    setIsLoading(false);
+    setErrorMessage('');
+  }
+
+  const handleError = (error) => {
+    setIsLoading(false);
+    setErrorMessage(error.message);
+  }
+
   const refreshTemplates = React.useCallback(() => {
+    setIsLoading(true)
     addSubscription(
       context.target.target()
       .pipe(
         first(),
         concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`)),
-      ).subscribe(setTemplates)
+      ).subscribe(value => handleTemplates(value), err => handleError(err))
     );
   }, [addSubscription, context.target, context.api]);
 
@@ -204,67 +218,88 @@ export const EventTemplates = () => {
     setSortBy({ index, direction });
   };
 
-  return (<>
-    <Toolbar id="event-templates-toolbar">
-      <ToolbarContent>
-        <ToolbarGroup variant="filter-group">
-          <ToolbarItem>
-            <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarGroup variant="icon-button-group">
-          <ToolbarItem>
-            <Button variant="plain" aria-label="add" onClick={handleModalToggle}><PlusIcon /></Button>
-          </ToolbarItem>
-        </ToolbarGroup>
-      </ToolbarContent>
-    </Toolbar>
-    <Table aria-label="Event Templates table"
-      variant={TableVariant.compact}
-      cells={tableColumns}
-      rows={displayTemplates}
-      actionResolver={actionResolver}
-      sortBy={sortBy}
-      onSort={handleSort}
-    >
-      <TableHeader />
-      <TableBody />
-    </Table>
-
-    <Modal
-      isOpen={modalOpen}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={handleModalToggle}
-      title="Create Custom Event Template"
-      description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
+  if (errorMessage != '') {
+    return (<>
+      <br/>
+      <Bullseye>
+        <ExclamationCircleIcon size='md' color='Red'/>
+      </Bullseye>
+      <Bullseye>
+        <Text>
+          Error:&nbsp;{errorMessage}
+        </Text>
+      </Bullseye>
+    </>)
+  } else if (isLoading) {
+    return (<>
+      <br/>
+      <Bullseye> 
+        <Spinner/>
+      </Bullseye>
+      </>) 
+  } else {
+    return (<>
+      <Toolbar id="event-templates-toolbar">
+        <ToolbarContent>
+          <ToolbarGroup variant="filter-group">
+            <ToolbarItem>
+              <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
+            </ToolbarItem>
+          </ToolbarGroup>
+          <ToolbarGroup variant="icon-button-group">
+            <ToolbarItem>
+              <Button variant="plain" aria-label="add" onClick={handleModalToggle}><PlusIcon /></Button>
+            </ToolbarItem>
+          </ToolbarGroup>
+        </ToolbarContent>
+      </Toolbar>
+      <Table aria-label="Event Templates table"
+        variant={TableVariant.compact}
+        cells={tableColumns}
+        rows={displayTemplates}
+        actionResolver={actionResolver}
+        sortBy={sortBy}
+        onSort={handleSort}
       >
-      <Form>
-        <FormGroup
-          label="Template XML"
-          isRequired
-          fieldId="template"
-          validated={fileRejected ? 'error' : 'default'}
+        <TableHeader />
+        <TableBody />
+      </Table>
+
+      <Modal
+        isOpen={modalOpen}
+        variant={ModalVariant.large}
+        showClose={true}
+        onClose={handleModalToggle}
+        title="Create Custom Event Template"
+        description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
         >
-          <FileUpload
-            id="template-file-upload"
-            value={uploadFile}
-            filename={uploadFilename}
-            onChange={handleFileChange}
-            isLoading={uploading}
+        <Form>
+          <FormGroup
+            label="Template XML"
+            isRequired
+            fieldId="template"
             validated={fileRejected ? 'error' : 'default'}
-            dropzoneProps={{
-              accept: '.xml,.jfc',
-              onDropRejected: handleFileRejected
-            }}
-          />
-        </FormGroup>
-        <ActionGroup>
-          <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>Submit</Button>
-          <Button variant="link" onClick={handleUploadCancel}>Cancel</Button>
-        </ActionGroup>
-      </Form>
-    </Modal>
-  </>);
+          >
+            <FileUpload
+              id="template-file-upload"
+              value={uploadFile}
+              filename={uploadFilename}
+              onChange={handleFileChange}
+              isLoading={uploading}
+              validated={fileRejected ? 'error' : 'default'}
+              dropzoneProps={{
+                accept: '.xml,.jfc',
+                onDropRejected: handleFileRejected
+              }}
+            />
+          </FormGroup>
+          <ActionGroup>
+            <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>Submit</Button>
+            <Button variant="link" onClick={handleUploadCancel}>Cancel</Button>
+          </ActionGroup>
+        </Form>
+      </Modal>
+    </>);
+  }
 
 }
