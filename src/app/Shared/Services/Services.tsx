@@ -42,6 +42,11 @@ import { ApiService } from './Api.service';
 import { CommandChannel } from './CommandChannel.service';
 import { ReportService } from './Report.service';
 
+export interface Target {
+  connectUrl: string;
+  alias: string;
+}
+
 export interface Services {
   target: TargetService;
   api: ApiService;

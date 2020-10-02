@@ -36,19 +36,19 @@
  * SOFTWARE.
  */
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Target } from './Services';
 
 class TargetService {
-
-  private readonly _target: Subject<string> = new BehaviorSubject('');
+  private readonly _target: Subject<Target> = new BehaviorSubject({} as Target);
   private readonly _authFailure: Subject<void> = new Subject();
   private readonly _authRetry: Subject<void> = new Subject();
   private readonly _credentials: Map<string, string> = new window.Map();
 
-  setTarget(target: string): void {
+  setTarget(target: Target): void {
     this._target.next(target);
   }
 
-  target(): Observable<string> {
+  target(): Observable<Target> {
     return this._target.asObservable();
   }
 
