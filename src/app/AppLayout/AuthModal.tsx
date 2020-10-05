@@ -60,7 +60,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
 
   const handleSave = () => {
     context.target.target().pipe(first()).subscribe(target => {
-      context.target.setCredentials(target, window.btoa(`${username}:${password}`));
+      context.target.setCredentials(target.connectUrl, window.btoa(`${username}:${password}`));
       context.target.setAuthRetry();
       clear();
       props.onSave();
@@ -69,7 +69,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
 
   const handleDeleteCredentials = () => {
     context.target.target().pipe(first()).subscribe(target => {
-      context.target.deleteCredentials(target);
+      context.target.deleteCredentials(target.connectUrl);
       clear();
       props.onSave();
     });
