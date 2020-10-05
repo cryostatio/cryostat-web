@@ -1,6 +1,6 @@
 # Container-JFR-Web
 
-Web front-end for container-jfr, providing a graphical user interface for managing JFR on remote JVMs.
+Web front-end for [ContainerJFR](https://github.com/rh-jmc-team/container-jfr), providing a graphical user interface for managing JFR on remote JVMs.
 
 Based on [Patternfly React Seed](https://github.com/patternfly/patternfly-react-seed).
 
