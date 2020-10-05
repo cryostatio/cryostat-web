@@ -37,13 +37,15 @@
  */
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
+export const NO_TARGET = {} as Target;
+
 export interface Target {
   connectUrl: string;
   alias: string;
 }
 
 class TargetService {
-  private readonly _target: Subject<Target> = new BehaviorSubject({} as Target);
+  private readonly _target: Subject<Target> = new BehaviorSubject(NO_TARGET);
   private readonly _authFailure: Subject<void> = new Subject();
   private readonly _authRetry: Subject<void> = new Subject();
   private readonly _credentials: Map<string, string> = new window.Map();

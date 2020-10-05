@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
 import { ContainerNodeIcon, Spinner2Icon } from '@patternfly/react-icons';
@@ -49,7 +49,7 @@ export interface TargetSelectProps {
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const [selected, setSelected] = React.useState({connectUrl:'', alias:''} as Target);
+  const [selected, setSelected] = React.useState(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
@@ -81,7 +81,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
-      context.target.setTarget({connectUrl:'', alias:''} as Target);
+      context.target.setTarget(NO_TARGET);
     } else {
       if (selection != selected) context.target.setTarget(selection);  
     }

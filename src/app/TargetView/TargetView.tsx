@@ -54,7 +54,7 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
 
   React.useLayoutEffect(() => {
     const sub = context.target.target().subscribe(target => {
-      setConnected(!!target.connectUrl);
+      setConnected(!!target && !!target.connectUrl);
     });
     return () => sub.unsubscribe();
   }, [context.target])
