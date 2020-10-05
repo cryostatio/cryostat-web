@@ -83,7 +83,13 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     if (isPlaceholder) {
       context.target.setTarget(NO_TARGET);
     } else {
-      if (selection != selected) context.target.setTarget(selection);  
+      if (selection != selected) {
+        try {
+          context.target.setTarget(selection);  
+        } catch (error) {
+          context.target.setTarget(NO_TARGET);
+        }
+      }
     }
     // FIXME setting the expanded state to false seems to cause an "unmounted component" error
     // in the browser console

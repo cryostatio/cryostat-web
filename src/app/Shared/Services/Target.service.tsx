@@ -51,7 +51,11 @@ class TargetService {
   private readonly _credentials: Map<string, string> = new window.Map();
 
   setTarget(target: Target): void {
-    this._target.next(target);
+    if (target === NO_TARGET || (target.alias != '' && target.connectUrl != '')) {
+      this._target.next(target);
+    } else {
+      throw new Error("Malformed target");
+    }
   }
 
   target(): Observable<Target> {
