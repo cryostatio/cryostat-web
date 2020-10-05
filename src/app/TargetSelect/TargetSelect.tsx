@@ -37,6 +37,8 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
 import { ContainerNodeIcon, Spinner2Icon } from '@patternfly/react-icons';
@@ -46,14 +48,10 @@ export interface TargetSelectProps {
   isCompact?: boolean;
 }
 
-interface Target {
-  connectUrl: string;
-  alias: string;
-}
-
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
+  const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
-  const [selected, setSelected] = React.useState('');
+  const [selected, setSelected] = React.useState(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
@@ -85,9 +83,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
-      context.target.setTarget('');
+      context.target.setTarget(NO_TARGET);
     } else {
-      if (selection.connectUrl != selected) context.target.setTarget(selection.connectUrl);  
+      if (selection != selected) {
+        try {
+          context.target.setTarget(selection);  
+        } catch (error) {
+          notifications.danger("Cannot set target", error.message)
+          context.target.setTarget(NO_TARGET);
+        }
+      }
     }
     // FIXME setting the expanded state to false seems to cause an "unmounted component" error
     // in the browser console
@@ -117,7 +122,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               <Select
                 toggleIcon={<ContainerNodeIcon />}
                 variant={SelectVariant.single}
-                selections={selected}
+                selections={selected.alias}
                 onSelect={onSelect}
                 onToggle={setExpanded}
                 isDisabled={isLoading}

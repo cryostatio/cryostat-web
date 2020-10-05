@@ -163,13 +163,13 @@ export const CustomRecordingForm = (props) => {
   };
 
   React.useEffect(() => {
-    const sub = context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`))).subscribe(setTemplates);
+    const sub = context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`))).subscribe(setTemplates);
     return () => sub.unsubscribe();
   }, []);
 
   React.useEffect(() => {
     const sub = context.target.target()
-      .pipe(concatMap(target => context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target)}/recordingOptions`)))
+      .pipe(concatMap(target => context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`)))
       .subscribe(options => setRecordingOptions(options));
     return () => sub.unsubscribe();
   }, []);
