@@ -38,9 +38,11 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
+import { Bullseye, Spinner, Text, Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { concatMap, first } from 'rxjs/operators';
+
 
 export interface EventType {
   name: string;
@@ -74,6 +76,8 @@ export const EventTypes = () => {
   const prevPerPage = React.useRef(10);
   const [openRow, setOpenRow] = React.useState(-1);
   const [filterText, setFilterText] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const tableColumns = [
     {
@@ -85,14 +89,26 @@ export const EventTypes = () => {
     'Categories'
   ];
 
+  const handleTypes = (types) => {
+    setTypes(types);
+    setIsLoading(false);
+    setErrorMessage('');
+  }
+
+  const handleError = (error) => {
+    setIsLoading(false);
+    setErrorMessage(error.message);
+  }
+
   const refreshEvents = React.useCallback(() => {
+    setIsLoading(true)
     addSubscription(
       context.target.target()
         .pipe(
           first(),
           concatMap(target => context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target)}/events`)),
         )
-        .subscribe(setTypes)
+        .subscribe(value => handleTypes(value), err => handleError(err))
     );
   }, [addSubscription, context.target, context.api]);
 
@@ -177,29 +193,50 @@ export const EventTypes = () => {
   };
 
   // TODO replace table with data list so collapsed event options can be custom formatted
-  return (<>
-    <Toolbar id="event-types-toolbar">
-      <ToolbarContent>
-        <ToolbarItem>
-          <TextInput name="eventFilter" id="eventFilter" type="search" placeholder="Filter..." aria-label="Event filter" onChange={setFilterText}/>
-        </ToolbarItem>
-        <ToolbarItem variant={ToolbarItemVariant.pagination}>
-          <Pagination
-            itemCount={filterText ? filterTypesByText().length : types.length}
-            page={currentPage}
-            perPage={perPage}
-            onSetPage={onCurrentPage}
-            widgetId="event-types-pagination"
-            onPerPageSelect={onPerPage}
-            isCompact
-          />
-        </ToolbarItem>
-      </ToolbarContent>
-    </Toolbar>
-    <Table aria-label="Event Types table" cells={tableColumns} rows={displayedTypes} onCollapse={onCollapse} variant={TableVariant.compact}>
-      <TableHeader />
-      <TableBody />
-    </Table>
-  </>);
+  if (errorMessage != '') {
+    return (<>
+      <br/>
+      <Bullseye>
+        <ExclamationCircleIcon size='md' color='Red'/>
+      </Bullseye>
+      <Bullseye>
+        <Text>
+          Error:&nbsp;{errorMessage}
+        </Text>
+      </Bullseye>
+    </>)
+  } else if (isLoading) {
+    return (<>
+      <br/>
+      <Bullseye> 
+        <Spinner/>
+      </Bullseye>
+      </>) 
+  } else {
+    return (<>
+      <Toolbar id="event-types-toolbar">
+        <ToolbarContent>
+          <ToolbarItem>
+            <TextInput name="eventFilter" id="eventFilter" type="search" placeholder="Filter..." aria-label="Event filter" onChange={setFilterText}/>
+          </ToolbarItem>
+          <ToolbarItem variant={ToolbarItemVariant.pagination}>
+            <Pagination
+              itemCount={filterText ? filterTypesByText().length : types.length}
+              page={currentPage}
+              perPage={perPage}
+              onSetPage={onCurrentPage}
+              widgetId="event-types-pagination"
+              onPerPageSelect={onPerPage}
+              isCompact
+            />
+          </ToolbarItem>
+        </ToolbarContent>
+      </Toolbar>
+      <Table aria-label="Event Types table" cells={tableColumns} rows={displayedTypes} onCollapse={onCollapse} variant={TableVariant.compact}>
+        <TableHeader />
+        <TableBody />
+      </Table>
+    </>)
+  }
 
 }
