@@ -2,7 +2,7 @@
 
 Web front-end for container-jfr, providing a graphical user interface for managing JFR on remote JVMs.
 
-Based on [https://github.com/patternfly/patternfly-react-seed](Patternfly React Seed).
+Based on [Patternfly React Seed](https://github.com/patternfly/patternfly-react-seed).
 
 ## Development Scripts
 
