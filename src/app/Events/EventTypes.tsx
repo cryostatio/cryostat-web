@@ -38,10 +38,11 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Bullseye, Spinner, Text, Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
+import { Text, Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { concatMap, first } from 'rxjs/operators';
+import { Loading } from '@app/Loading/Loading';
 
 
 export interface EventType {
@@ -206,12 +207,7 @@ export const EventTypes = () => {
       </Bullseye>
     </>)
   } else if (isLoading) {
-    return (<>
-      <br/>
-      <Bullseye> 
-        <Spinner/>
-      </Bullseye>
-      </>) 
+    return (<Loading/>) 
   } else {
     return (<>
       <Toolbar id="event-types-toolbar">

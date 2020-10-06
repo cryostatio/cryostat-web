@@ -39,11 +39,12 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Bullseye, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Spinner, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
+import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
 import { ExclamationCircleIcon, PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, first } from 'rxjs/operators';
+import { Loading } from '@app/Loading/Loading'
 
 export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
@@ -231,12 +232,7 @@ export const EventTemplates = () => {
       </Bullseye>
     </>)
   } else if (isLoading) {
-    return (<>
-      <br/>
-      <Bullseye> 
-        <Spinner/>
-      </Bullseye>
-      </>) 
+    return (<Loading/>) 
   } else {
     return (<>
       <Toolbar id="event-templates-toolbar">
