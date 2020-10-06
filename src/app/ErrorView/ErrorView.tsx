@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Bullseye, Spinner, Text } from '@patternfly/react-core';
+import { Bullseye, Text } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 export interface ErrorViewProps {

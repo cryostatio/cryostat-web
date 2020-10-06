@@ -36,8 +36,9 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow, Text } from '@patternfly/react-core';
+import { DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow } from '@patternfly/react-core';
 import { Loading } from '@app/Loading/Loading';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 
 export interface RecordingsDataTableProps {
   toolbar: React.ReactElement;
