@@ -104,7 +104,7 @@ export const EventTemplates = () => {
       context.target.target()
       .pipe(
         first(),
-        concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target)}/templates`)),
+        concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)),
       ).subscribe(value => handleTemplates(value), err => handleError(err))
     );
   }, [addSubscription, context.target, context.api]);

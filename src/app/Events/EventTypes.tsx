@@ -106,7 +106,7 @@ export const EventTypes = () => {
       context.target.target()
         .pipe(
           first(),
-          concatMap(target => context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target)}/events`)),
+          concatMap(target => context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`)),
         )
         .subscribe(value => handleTypes(value), err => handleError(err))
     );

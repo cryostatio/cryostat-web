@@ -125,8 +125,8 @@ export class ApiService {
         }
       }
 
-      return this.target.target().pipe(concatMap(targetId =>
-        this.sendRequest(`targets/${encodeURIComponent(targetId)}/recordings`, {
+      return this.target.target().pipe(concatMap(target =>
+        this.sendRequest(`targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
           method: 'POST',
           body: form,
         }).pipe(
@@ -141,8 +141,8 @@ export class ApiService {
   }
 
   createSnapshot(): Observable<boolean> {
-    return this.target.target().pipe(concatMap(targetId =>
-      this.sendRequest(`targets/${encodeURIComponent(targetId)}/snapshot`, {
+    return this.target.target().pipe(concatMap(target =>
+      this.sendRequest(`targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
         method: 'POST',
       }).pipe(
         tap(resp => {
@@ -157,9 +157,9 @@ export class ApiService {
   }
 
   archiveRecording(recordingName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(targetId =>
+    return this.target.target().pipe(concatMap(target =>
       this.sendRequest(
-        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
         {
           method: 'PATCH',
           body: 'SAVE',
@@ -172,9 +172,9 @@ export class ApiService {
   }
 
   stopRecording(recordingName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(targetId =>
+    return this.target.target().pipe(concatMap(target =>
       this.sendRequest(
-        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
         {
           method: 'PATCH',
           body: 'STOP',
@@ -187,9 +187,9 @@ export class ApiService {
   }
 
   deleteRecording(recordingName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(targetId =>
+    return this.target.target().pipe(concatMap(target =>
       this.sendRequest(
-        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}`,
+        `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
         {
           method: 'DELETE',
         }
@@ -210,9 +210,9 @@ export class ApiService {
   }
 
   uploadActiveRecordingToGrafana(recordingName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(targetId =>
+    return this.target.target().pipe(concatMap(target =>
       this.sendRequest(
-        `targets/${encodeURIComponent(targetId)}/recordings/${encodeURIComponent(recordingName)}/upload`,
+        `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/upload`,
         {
           method: 'POST',
         }
@@ -331,8 +331,8 @@ export class ApiService {
   }
 
   downloadTemplate(template: EventTemplate): void {
-    this.target.target().pipe(concatMap(targetId => {
-      const url = `targets/${encodeURIComponent(targetId)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
+    this.target.target().pipe(concatMap(target => {
+      const url = `targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
       return this.sendRequest(url)
         .pipe(concatMap(resp => resp.text()));
     }))
@@ -370,10 +370,10 @@ export class ApiService {
       concatMap(parts => {
         const headers = parts[0];
         const target = parts[1];
-        if (!!target && this.target.hasCredentials(target)) {
-          const credentials = this.target.getCredentials(target);
+        if (!!target && !!target.connectUrl && this.target.hasCredentials(target.connectUrl)) {
+          const credentials = this.target.getCredentials(target.connectUrl);
           if (credentials) {
-            headers.set('X-JMX-Authorization', `Basic ${this.target.getCredentials(target)}`);
+            headers.set('X-JMX-Authorization', `Basic ${this.target.getCredentials(target.connectUrl)}`);
           }
         }
         return of(headers);

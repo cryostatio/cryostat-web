@@ -37,18 +37,28 @@
  */
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
-class TargetService {
+export const NO_TARGET = {} as Target;
 
-  private readonly _target: Subject<string> = new BehaviorSubject('');
+export interface Target {
+  connectUrl: string;
+  alias: string;
+}
+
+class TargetService {
+  private readonly _target: Subject<Target> = new BehaviorSubject(NO_TARGET);
   private readonly _authFailure: Subject<void> = new Subject();
   private readonly _authRetry: Subject<void> = new Subject();
   private readonly _credentials: Map<string, string> = new window.Map();
 
-  setTarget(target: string): void {
-    this._target.next(target);
+  setTarget(target: Target): void {
+    if (target === NO_TARGET || (!!target.alias && !!target.connectUrl)) {
+      this._target.next(target);
+    } else {
+      throw new Error("Malformed target");
+    }
   }
 
-  target(): Observable<string> {
+  target(): Observable<Target> {
     return this._target.asObservable();
   }
 

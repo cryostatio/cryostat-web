@@ -1,8 +1,8 @@
 # Container-JFR-Web
 
-Web front-end for container-jfr, providing a graphical user interface for managing JFR on remote JVMs.
+Web front-end for [ContainerJFR](https://github.com/rh-jmc-team/container-jfr), providing a graphical user interface for managing JFR on remote JVMs.
 
-Based on [https://github.com/patternfly/patternfly-react-seed](Patternfly React Seed).
+Based on [Patternfly React Seed](https://github.com/patternfly/patternfly-react-seed).
 
 ## Development Scripts
 
@@ -36,6 +36,6 @@ First run a `container-jfr` instance with WebSocket communication and CORS enabl
 The environment variable `CONTAINER_JFR_CORS_ORIGIN` enables CORS and sets its origin to the value provided.
 For example:
 
-`cd $CONTAINER_JFR_DIR && CONTAINER_JFR_CORS_ORIGIN=http://localhost:9000 mvn exec:java`
+`cd $CONTAINER_JFR_DIR && CONTAINER_JFR_CORS_ORIGIN=http://localhost:9000 sh run.sh`
 
-Then run `npm run start:dev` to start a hot-reloading WebServer instance of the `-web` UI, which will by default target the `container-jfr` instance started above.
+Then run `npm run start:dev` to start a hot-reloading WebServer instance of the `-web` UI, which will by default target the `container-jfr` instance started above. This can be customized by editing the `.env` file, for example if you have another service already listening on the default port `8181` and your ContainerJFR is listening elsewhere.
