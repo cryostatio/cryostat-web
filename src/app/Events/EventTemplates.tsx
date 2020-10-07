@@ -39,11 +39,13 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Bullseye, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Spinner, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
-import { ExclamationCircleIcon, PlusIcon } from '@patternfly/react-icons';
+import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
+import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, first } from 'rxjs/operators';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 
 export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
@@ -219,24 +221,9 @@ export const EventTemplates = () => {
   };
 
   if (errorMessage != '') {
-    return (<>
-      <br/>
-      <Bullseye>
-        <ExclamationCircleIcon size='md' color='Red'/>
-      </Bullseye>
-      <Bullseye>
-        <Text>
-          Error:&nbsp;{errorMessage}
-        </Text>
-      </Bullseye>
-    </>)
+    return (<ErrorView message={errorMessage}/>)
   } else if (isLoading) {
-    return (<>
-      <br/>
-      <Bullseye> 
-        <Spinner/>
-      </Bullseye>
-      </>) 
+    return (<LoadingView/>) 
   } else {
     return (<>
       <Toolbar id="event-templates-toolbar">

@@ -38,11 +38,11 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Bullseye, Spinner, Text, Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
+import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { concatMap, first } from 'rxjs/operators';
-
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 
 export interface EventType {
   name: string;
@@ -194,24 +194,9 @@ export const EventTypes = () => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   if (errorMessage != '') {
-    return (<>
-      <br/>
-      <Bullseye>
-        <ExclamationCircleIcon size='md' color='Red'/>
-      </Bullseye>
-      <Bullseye>
-        <Text>
-          Error:&nbsp;{errorMessage}
-        </Text>
-      </Bullseye>
-    </>)
+    return (<ErrorView message={errorMessage}/>)
   } else if (isLoading) {
-    return (<>
-      <br/>
-      <Bullseye> 
-        <Spinner/>
-      </Bullseye>
-      </>) 
+    return (<LoadingView/>) 
   } else {
     return (<>
       <Toolbar id="event-types-toolbar">
