@@ -46,13 +46,13 @@ export interface ErrorViewProps {
 export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
     return (<>
         <br/>
-      <Bullseye>
-        <ExclamationCircleIcon size='md' color='Red'/>
-      </Bullseye>
-      <Bullseye>
-        <Text>
-          Error:&nbsp;{props.message}
-        </Text>
-      </Bullseye>
+        <Bullseye>
+            <ExclamationCircleIcon size='md' color='Red'/>
+        </Bullseye>
+        <Bullseye>
+            <Text>
+                Error:&nbsp;{props.message}
+            </Text>
+        </Bullseye>
     </>)
 }

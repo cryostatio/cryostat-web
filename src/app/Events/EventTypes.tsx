@@ -41,7 +41,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { concatMap, first } from 'rxjs/operators';
-import { Loading } from '@app/Loading/Loading';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 
 export interface EventType {
@@ -196,7 +196,7 @@ export const EventTypes = () => {
   if (errorMessage != '') {
     return (<ErrorView message={errorMessage}/>)
   } else if (isLoading) {
-    return (<Loading/>) 
+    return (<LoadingView/>) 
   } else {
     return (<>
       <Toolbar id="event-types-toolbar">

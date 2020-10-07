@@ -44,7 +44,7 @@ import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, first } from 'rxjs/operators';
-import { Loading } from '@app/Loading/Loading';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 
 export const EventTemplates = () => {
@@ -223,7 +223,7 @@ export const EventTemplates = () => {
   if (errorMessage != '') {
     return (<ErrorView message={errorMessage}/>)
   } else if (isLoading) {
-    return (<Loading/>) 
+    return (<LoadingView/>) 
   } else {
     return (<>
       <Toolbar id="event-templates-toolbar">

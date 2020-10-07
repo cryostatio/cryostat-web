@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow } from '@patternfly/react-core';
-import { Loading } from '@app/Loading/Loading';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 
 export interface RecordingsDataTableProps {
@@ -54,7 +54,7 @@ export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTablePro
   if (props.errorMessage != '') {
     return (<ErrorView message={props.errorMessage}/>)
   } else if (props.isLoading) {
-    return (<Loading/>) 
+    return (<LoadingView/>) 
   } else {
     return (<>
       { props.toolbar }
