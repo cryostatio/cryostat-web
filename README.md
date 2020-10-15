@@ -8,8 +8,8 @@ Based on [Patternfly React Seed](https://github.com/patternfly/patternfly-react-
 
 Install development/build dependencies
 ```
-npm install --save-dev yarn
-npm run yarn:install
+npm install --save-dev yarn # or install using your package manager
+npm run yarn:install # or just yarn install, if installed globally
 ```
 
 Start the development server

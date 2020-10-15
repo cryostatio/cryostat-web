@@ -16,7 +16,8 @@
     "format": "prettier --check --write ./src/**/*.{tsx,ts} && license-check-and-add add -f license-config.json",
     "build:bundle-profile": "webpack --config webpack.prod.js --profile --json > stats.json",
     "bundle-profile:analyze": "npm run build:bundle-profile && webpack-bundle-analyzer ./stats.json",
-    "yarn:install": "yarn install"
+    "yarn:install": "yarn install",
+    "yarn:prodinstall": "yarn install --production --frozen-lockfile"
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.5",
