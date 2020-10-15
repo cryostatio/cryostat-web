@@ -7,7 +7,10 @@ Based on [Patternfly React Seed](https://github.com/patternfly/patternfly-react-
 ## Development Scripts
 
 Install development/build dependencies
-`npm install`
+```
+npm install --save-dev yarn
+npm run yarn:install
+```
 
 Start the development server
 `npm run start:dev`
