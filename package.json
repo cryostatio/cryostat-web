@@ -17,7 +17,7 @@
     "build:bundle-profile": "webpack --config webpack.prod.js --profile --json > stats.json",
     "bundle-profile:analyze": "npm run build:bundle-profile && webpack-bundle-analyzer ./stats.json",
     "yarn:install": "yarn install",
-    "yarn:prodinstall": "yarn install --production --frozen-lockfile"
+    "yarn:frzinstall": "yarn install --frozen-lockfile"
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.5",
