@@ -60,7 +60,7 @@ export const SecurityPanel = () => {
                     <br/>
                     <br/>
                     <Text component={TextVariants.p}>
-                        After uploading certificates, the JVM must be restarted to import the certificates into the truststore.
+                        Restart is needed to apply changes.
                     </Text>
                 </CardBody>
             </Card>
