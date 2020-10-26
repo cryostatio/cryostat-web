@@ -41,6 +41,8 @@ import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from '
 import { TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
+type ApiVersion = "v1" | "v2";
+
 class HttpError extends Error {
   readonly httpResponse: Response;
 
@@ -126,7 +128,8 @@ export class ApiService {
       }
 
       return this.target.target().pipe(concatMap(target =>
-        this.sendRequest(`targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
+        this.sendRequest(`targets/${encodeURIComponent(target.connectUrl)}/recordings`, 
+        "v1", {
           method: 'POST',
           body: form,
         }).pipe(
@@ -142,7 +145,8 @@ export class ApiService {
 
   createSnapshot(): Observable<boolean> {
     return this.target.target().pipe(concatMap(target =>
-      this.sendRequest(`targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
+      this.sendRequest(`targets/${encodeURIComponent(target.connectUrl)}/snapshot`, 
+      "v1", {
         method: 'POST',
       }).pipe(
         tap(resp => {
@@ -160,7 +164,7 @@ export class ApiService {
     return this.target.target().pipe(concatMap(target =>
       this.sendRequest(
         `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
-        {
+        "v1", {
           method: 'PATCH',
           body: 'SAVE',
         }
@@ -175,7 +179,7 @@ export class ApiService {
     return this.target.target().pipe(concatMap(target =>
       this.sendRequest(
         `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
-        {
+        "v1", {
           method: 'PATCH',
           body: 'STOP',
         }
@@ -190,6 +194,7 @@ export class ApiService {
     return this.target.target().pipe(concatMap(target =>
       this.sendRequest(
         `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+        "v1", 
         {
           method: 'DELETE',
         }
@@ -201,7 +206,7 @@ export class ApiService {
   }
 
   deleteArchivedRecording(recordingName: string): Observable<boolean> {
-    return this.sendRequest(`recordings/${encodeURIComponent(recordingName)}`, {
+    return this.sendRequest(`recordings/${encodeURIComponent(recordingName)}`, "v1", {
       method: 'DELETE'
     }).pipe(
       map(resp => resp.ok),
@@ -213,6 +218,7 @@ export class ApiService {
     return this.target.target().pipe(concatMap(target =>
       this.sendRequest(
         `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/upload`,
+        "v1", 
         {
           method: 'POST',
         }
@@ -225,7 +231,7 @@ export class ApiService {
 
   uploadArchivedRecordingToGrafana(recordingName: string): Observable<boolean> {
     return this.sendRequest(
-        `recordings/${encodeURIComponent(recordingName)}/upload`,
+        `recordings/${encodeURIComponent(recordingName)}/upload`, "v1", 
         {
           method: 'POST',
         }
@@ -237,7 +243,7 @@ export class ApiService {
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<void> {
-    return this.sendRequest(`templates/${encodeURIComponent(templateName)}`, {
+    return this.sendRequest(`templates/${encodeURIComponent(templateName)}`, "v1", {
       method: 'DELETE',
       body: null,
     })
@@ -254,7 +260,7 @@ export class ApiService {
   addCustomEventTemplate(file: File): Observable<boolean> {
     const body = new window.FormData();
     body.append('template', file);
-    return this.sendRequest(`templates`, {
+    return this.sendRequest(`templates`, "v1", {
       method: 'POST',
       body,
     })
@@ -270,7 +276,7 @@ export class ApiService {
   }
 
   doGet<T>(path: string): Observable<T> {
-    return this.sendRequest(path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
+    return this.sendRequest(path, "v1", { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
   getAuthMethod(): Observable<string> {
@@ -333,7 +339,7 @@ export class ApiService {
   downloadTemplate(template: EventTemplate): void {
     this.target.target().pipe(concatMap(target => {
       const url = `targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
-      return this.sendRequest(url)
+      return this.sendRequest(url, "v1")
         .pipe(concatMap(resp => resp.text()));
     }))
     .subscribe(resp => {
@@ -347,7 +353,7 @@ export class ApiService {
   uploadRecording(file: File): Observable<string> {
     const body = new window.FormData(); // as multipart/form-data
     body.append('recording', file);
-    return this.sendRequest('recordings', {
+    return this.sendRequest('recordings', "v1", {
         method: 'POST',
         body,
       })
@@ -359,6 +365,24 @@ export class ApiService {
           throw resp.statusText;
         }),
       );
+  }
+
+  uploadSSLCertificate(file: File): Observable<string> {
+    const body = new window.FormData();
+    body.append('cert', file);
+    return this.sendRequest('certificates', "v2", {
+      method: 'POST',
+      body,
+    })
+    .pipe(
+      concatMap(resp => {
+        if (resp.ok) {
+          this.notifications.success("Successfully uploaded certificate");
+          return from(resp.text());
+        }
+        throw resp.statusText;
+      }),
+    );
   }
 
   getHeaders(): Observable<Headers> {
@@ -381,10 +405,10 @@ export class ApiService {
     );
   }
 
-  private sendRequest(path: string, config?: RequestInit): Observable<Response> {
+  private sendRequest(path: string, apiVersion: ApiVersion, config?: RequestInit): Observable<Response> {
     const req = () => this.getHeaders().pipe(
       concatMap(headers =>
-        fromFetch(`${this.authority}/api/v1/${path}`, {
+        fromFetch(`${this.authority}/api/${apiVersion}/${path}`, {
           credentials: 'include',
           mode: 'cors',
           headers,

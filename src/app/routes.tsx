@@ -42,6 +42,7 @@ import { Events } from '@app/Events/Events';
 import { Login } from '@app/Login/Login';
 import { NotFound } from '@app/NotFound/NotFound';
 import { RecordingList } from '@app/RecordingList/RecordingList';
+import { SecurityPanel } from '@app/SecurityPanel/SecurityPanel';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
@@ -92,6 +93,13 @@ const routes: IAppRoute[] = [
     label: 'Events',
     path: '/events',
     title: 'Events',
+  },
+  {
+    component: SecurityPanel,
+    exact: true,
+    label: 'Security',
+    path: '/security',
+    title: 'Security',
   },
 ];
 
