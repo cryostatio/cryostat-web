@@ -77,14 +77,17 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
   };
 
   const handleSubmit = () => {
+    if (rejected) {
+        notifications.warning('File format is not compatible');
+        return;
+    }
     if (!uploadFile) {
       notifications.warning('Attempted to submit certificate upload without a file selected');
       return;
     }
-    notifications.info(uploadFile.type);
     let type = uploadFile.type;
     if (type != "application/x-x509-ca-cert" && type != "application/pkix-cert") {
-        notifications.warning('Certificate is not encoded in a compatible format');
+        notifications.warning('File format is not compatible');
         return;
     }
     setUploading(true);
@@ -119,6 +122,10 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
             onChange={handleFileChange}
             isLoading={uploading}
             validated={rejected ? 'error' : 'default'}
+            dropzoneProps={{
+                accept: 'application/x-x509-ca-cert, application/pkix-cert',
+                onDropRejected: handleReject
+            }}
           />
         </FormGroup>
         <ActionGroup>
