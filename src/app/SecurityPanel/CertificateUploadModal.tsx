@@ -81,6 +81,12 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
       notifications.warning('Attempted to submit certificate upload without a file selected');
       return;
     }
+    notifications.info(uploadFile.type);
+    let type = uploadFile.type;
+    if (type != "application/x-x509-ca-cert" && type != "application/pkix-cert") {
+        notifications.warning('Certificate is not encoded in a compatible format');
+        return;
+    }
     setUploading(true);
     context.api.uploadSSLCertificate(uploadFile)
       .pipe(
@@ -113,10 +119,6 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
             onChange={handleFileChange}
             isLoading={uploading}
             validated={rejected ? 'error' : 'default'}
-            dropzoneProps={{
-              accept: '.cer',
-              onDropRejected: handleReject
-            }}
           />
         </FormGroup>
         <ActionGroup>
