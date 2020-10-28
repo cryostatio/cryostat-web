@@ -272,7 +272,7 @@ export class ApiService {
   }
 
   doGet<T>(path: string): Observable<T> {
-    return this.sendRequest(path, "v1", { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
+    return this.sendRequest('v1', path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
   getAuthMethod(): Observable<string> {
