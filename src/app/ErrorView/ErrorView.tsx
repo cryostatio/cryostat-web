@@ -44,15 +44,31 @@ export interface ErrorViewProps {
 }
 
 export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
-    return (<>
-        <br/>
-        <Bullseye>
-            <ExclamationCircleIcon size='md' color='Red'/>
-        </Bullseye>
-        <Bullseye>
-            <Text>
+
+    if (props.message === 'Target SSL Untrusted'){
+        return (<>
+            <br/>
+            <Bullseye>
+                <ExclamationCircleIcon size='md' color='Red'/>
+            </Bullseye>
+            <Bullseye>
+                <Text>Error:&nbsp;{props.message}</Text>
+            </Bullseye>
+            <Bullseye>
+                <Text>
+                    To add the SSL certificate for this target, click <a href='/Security'>here</a> or go to the Security tab
+                </Text>
+            </Bullseye>
+        </>)
+    } else {
+        return (<>
+            <br/>
+            <Bullseye>
+                <ExclamationCircleIcon size='md' color='Red'/>
+            </Bullseye>
+            <Bullseye>
                 Error:&nbsp;{props.message}
-            </Text>
-        </Bullseye>
-    </>)
+            </Bullseye>
+        </>)
+    }
 }
