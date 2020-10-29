@@ -35,76 +35,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import * as React from 'react';
+import { Button, Modal, ModalVariant, Text } from '@patternfly/react-core';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
-export const NO_TARGET = {} as Target;
-
-export interface Target {
-  connectUrl: string;
-  alias: string;
+export interface SslErrorModalProps {
+    visible: boolean;
+    onDismiss: () => void;
 }
 
-class TargetService {
-  private readonly _target: Subject<Target> = new BehaviorSubject(NO_TARGET);
-  private readonly _authFailure: Subject<void> = new Subject();
-  private readonly _authRetry: Subject<void> = new Subject();
-  private readonly _credentials: Map<string, string> = new window.Map();
-  private readonly _sslFailure: Subject<void> = new Subject();
+export const SslErrorModal: React.FunctionComponent<SslErrorModalProps> = (props) => {
+    const routerHistory = useHistory();
+    const { url } = useRouteMatch();
 
-  setTarget(target: Target): void {
-    if (target === NO_TARGET || (!!target.alias && !!target.connectUrl)) {
-      this._target.next(target);
-    } else {
-      throw new Error("Malformed target");
+    const handleClick = () => {
+        routerHistory.push('/security');
+        props.onDismiss();
     }
-  }
-
-  target(): Observable<Target> {
-    return this._target.asObservable();
-  }
-
-  authFailure(): Observable<void> {
-    return this._authFailure.asObservable();
-  }
-
-  setAuthFailure(): void {
-    this._authFailure.next();
-  }
-
-  authRetry(): Observable<void> {
-    return this._authRetry.asObservable();
-  }
-
-  setAuthRetry(): void {
-    this._authRetry.next();
-  }
-
-  hasCredentials(target: string): boolean {
-    return this._credentials.has(target);
-  }
-
-  deleteCredentials(target: string): void {
-    this._credentials.delete(target);
-  }
-
-  setCredentials(target: string, credentials: string): void {
-    this._credentials.set(target, credentials);
-  }
-
-  getCredentials(target: string): string | undefined {
-    return this._credentials.get(target);
-  }
-
-  sslFailure(): Observable<void> {
-    return this._sslFailure.asObservable();
-  }
-
-  setSslFailure(): void {
-    this._sslFailure.next();
-  }
-
+    
+    return (
+        <Modal
+            isOpen={props.visible}
+            variant={ModalVariant.medium}
+            showClose={true}
+            onClose={props.onDismiss}
+            title="SSL Error"
+            description="The connection failed because the SSL Certificate for the target is not trusted."
+        >
+            <Text>
+                To add the SSL certificate for this target, go to &nbsp;
+                <Button variant="primary" onClick={handleClick}>Security</Button>
+            </Text>
+        </Modal>
+    )
 }
-
-const TargetInstance = new TargetService();
-
-export { TargetService, TargetInstance }
