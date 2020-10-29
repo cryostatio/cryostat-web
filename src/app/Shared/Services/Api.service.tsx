@@ -448,8 +448,11 @@ export class ApiService {
             flatMap(() => retry())
           );
         }
+      } else if (error.httpResponse.status === 502) {
+        this.target.setSslFailure();
+      } else {
+        this.notifications.danger(`Request failed (Status ${error.httpResponse.status})`, error.message)
       }
-      this.notifications.danger(`Request failed (Status ${error.httpResponse.status})`, error.message)
       throw error;
     }
     this.notifications.danger(`Request failed`, error.message);
