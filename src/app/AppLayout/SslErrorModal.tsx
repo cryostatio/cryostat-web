@@ -60,14 +60,12 @@ export const SslErrorModal: React.FunctionComponent<SslErrorModalProps> = (props
             showClose={true}
             onClose={props.onDismiss}
             title="SSL Error"
-            description="The connection failed because the SSL Certificate for the target is not trusted"
+            description="The connection failed because the SSL Certificate for the target is not trusted."
         >
-            <div>
-                <Text>
-                    To add the SSL certificate for this target, go to 
-                </Text>
+            <Text>
+                To add the SSL certificate for this target, go to &nbsp;
                 <Button variant="primary" onClick={handleClick}>Security</Button>
-            </div>
+            </Text>
         </Modal>
     )
 }
