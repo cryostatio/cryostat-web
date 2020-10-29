@@ -50,7 +50,10 @@ export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
             <ExclamationCircleIcon size='md' color='Red'/>
         </Bullseye>
         <Bullseye>
-            Error:&nbsp;{props.message}
+            <Text>
+                Error:&nbsp;{props.message}
+            </Text>
+            
         </Bullseye>
     </>)
 }
