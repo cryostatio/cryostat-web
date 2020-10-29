@@ -272,7 +272,7 @@ export class ApiService {
   }
 
   doGet<T>(path: string): Observable<T> {
-    return this.sendRequest(path, "v1", { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
+    return this.sendRequest('v1', path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
   getAuthMethod(): Observable<string> {
@@ -448,6 +448,8 @@ export class ApiService {
             flatMap(() => retry())
           );
         }
+      } else if (error.httpResponse.status === 502) {
+        this.target.setSslFailure();
       }
       this.notifications.danger(`Request failed (Status ${error.httpResponse.status})`, error.message)
       throw error;

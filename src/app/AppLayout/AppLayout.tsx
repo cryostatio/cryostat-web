@@ -42,6 +42,7 @@ import { IAppRoute, routes } from '@app/routes';
 import { Nav, NavItem, NavList, Page, PageHeader, PageSidebar, SkipToContent } from '@patternfly/react-core';
 import { NavLink, matchPath, useLocation } from 'react-router-dom';
 import { AuthModal } from './AuthModal';
+import { SslErrorModal} from './SslErrorModal';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -57,6 +58,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
+  const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const location = useLocation();
 
   React.useEffect(() => {
@@ -69,6 +71,17 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const dismissAuthModal = () => {
     setShowAuthModal(false);
   };
+
+  React.useEffect(() => {
+    const sub = context.target.sslFailure().subscribe(() => {
+      setShowSslErrorModal(true);
+    });
+    return () => sub.unsubscribe();
+  }, [context.target]);
+
+  const dismissSslErrorModal = () => {
+    setShowSslErrorModal(false);
+  }
 
   const onNavToggleMobile = () => {
     setIsNavOpenMobile(!isNavOpenMobile);
@@ -138,6 +151,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       {children}
     </Page>
     <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={dismissAuthModal}/>
+    <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal}/>
     <NotificationCenter />
   </>);
 }
