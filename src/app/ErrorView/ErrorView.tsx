@@ -53,7 +53,6 @@ export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
             <Text>
                 Error:&nbsp;{props.message}
             </Text>
-            
         </Bullseye>
     </>)
 }
