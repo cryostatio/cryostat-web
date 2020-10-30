@@ -168,6 +168,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
+        context.reports.delete(r);
         tasks.push(
           context.api.deleteRecording(r.name).pipe(first())
         );
@@ -242,8 +243,8 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         >
           <Text>Recording Options:</Text>
           <Text>
-            toDisk = { String(props.recording.toDisk) } &emsp; 
-            maxAge = {props.recording.maxAge / 1000}s &emsp; 
+            toDisk = { String(props.recording.toDisk) } &emsp;
+            maxAge = {props.recording.maxAge / 1000}s &emsp;
             maxSize = { props.recording.maxSize }B
           </Text>
           <br></br>
@@ -309,7 +310,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const recordingRows = React.useMemo(() => {
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
-  
+
   return (<>
     <RecordingsDataTable
         listTitle="Active Flight Recordings"

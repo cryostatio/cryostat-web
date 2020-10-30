@@ -90,6 +90,10 @@ export class ReportService {
     );
   }
 
+  delete(recording: SavedRecording): boolean {
+    return this.reports.delete(recording.reportUrl);
+  }
+
 }
 
 type GenerationError = Error & {
