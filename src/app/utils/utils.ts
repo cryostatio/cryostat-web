@@ -35,6 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+import * as _ from 'lodash';
+
 export function accessibleRouteChangeHandler() {
   return window.setTimeout(() => {
     const mainContainer = document.getElementById('primary-app-container');
@@ -42,4 +45,16 @@ export function accessibleRouteChangeHandler() {
       mainContainer.focus();
     }
   }, 50);
+}
+
+export function arraysEqual(a: any[], b: any[], comparator = _.eq): boolean {
+  if (a.length != b.length) {
+    return false;
+  }
+  for (let i = 0; i < a.length; i++) {
+    if (!comparator(a[i], b[i])) {
+      return false;
+    }
+  }
+  return true;
 }

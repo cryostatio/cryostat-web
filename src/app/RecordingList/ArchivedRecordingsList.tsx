@@ -36,9 +36,10 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Recording } from '@app/Shared/Services/Api.service';
+import { Recording, SavedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { arraysEqual } from '@app/utils/utils';
 import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { RecordingActions } from './ActiveRecordingsList';
 import { RecordingsDataTable } from './RecordingsDataTable';
@@ -47,6 +48,7 @@ import { Observable, Subject, forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
+import * as _ from 'lodash';
 
 interface ArchivedRecordingsListProps {
   updater: Subject<void>;
@@ -61,6 +63,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
@@ -81,9 +84,23 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
     }
   };
 
-  const handleRecordings = (recordings) => {
-    setRecordings(recordings);
+  const handleRecordings = (newRecordings) => {
+    setRecordings(recordings => {
+      if (!arraysEqual(
+        newRecordings,
+        recordings,
+        (a: SavedRecording, b: SavedRecording): boolean => a.name === b.name
+      )) {
+        return newRecordings;
+      }
+      return recordings;
+    });
     setIsLoading(false);
+  }
+
+  const handleError = (error) => {
+    setIsLoading(false);
+    setErrorMessage(error.message);
   }
 
   const refreshRecordingList = React.useCallback(() => {
@@ -91,7 +108,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
     addSubscription(
       context.api.doGet<Recording[]>(`recordings`)
       .pipe(first())
-      .subscribe(handleRecordings)
+      .subscribe(newRecordings => handleRecordings(newRecordings), err => handleError(err))
     );
   }, [addSubscription, context.api]);
 
@@ -207,7 +224,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
         isLoading={isLoading}
-        errorMessage=''
+        errorMessage={errorMessage}
     >
       {
         recordingRows

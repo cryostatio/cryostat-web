@@ -41,6 +41,7 @@ import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { arraysEqual } from '@app/utils/utils';
 import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { forkJoin, Observable } from 'rxjs';
@@ -92,8 +93,17 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     routerHistory.push(`${url}/create`);
   };
 
-  const handleRecordings = (recordings) => {
-    setRecordings(recordings);
+  const handleRecordings = newRecordings => {
+    setRecordings(recordings => {
+      if (!arraysEqual(
+        recordings,
+        newRecordings,
+        (a: Recording, b: Recording): boolean => a.id === b.id && a.state === b.state
+      )) {
+        return newRecordings;
+      }
+      return recordings;
+    });
     setIsLoading(false);
     setErrorMessage('');
   };
@@ -110,9 +120,9 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       .pipe(
         concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
         first(),
-      ).subscribe(value => handleRecordings(value), err => handleError(err))
+      ).subscribe(newRecordings => handleRecordings(newRecordings), err => handleError(err))
     );
-  }, [addSubscription, context.target, context.api]);
+  }, [addSubscription, context.target, context.api, recordings]);
 
   React.useEffect(() => {
     addSubscription(
@@ -173,7 +183,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
   React.useEffect(() => {
     refreshRecordingList();
-    const id = window.setInterval(() => refreshRecordingList(), 30_000);
+    const id = window.setInterval(() => refreshRecordingList(), 60_000);
     return () => window.clearInterval(id);
   }, []);
 
@@ -235,8 +245,8 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         >
           <Text>Recording Options:</Text>
           <Text>
-            toDisk = { String(props.recording.toDisk) } &emsp; 
-            maxAge = {props.recording.maxAge / 1000}s &emsp; 
+            toDisk = { String(props.recording.toDisk) } &emsp;
+            maxAge = {props.recording.maxAge / 1000}s &emsp;
             maxSize = { props.recording.maxSize }B
           </Text>
           <br></br>
@@ -302,7 +312,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const recordingRows = React.useMemo(() => {
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
-  
+
   return (<>
     <RecordingsDataTable
         listTitle="Active Flight Recordings"
