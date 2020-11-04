@@ -120,6 +120,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     );
   }, []);
 
+  React.useEffect(() => {
+    const sub = context.target.authFailure().subscribe(() => {
+      setErrorMessage("Auth failure");
+    });
+    return () => sub.unsubscribe();
+  }, [context.target]);
+
   const handleArchiveRecordings = () => {
     const tasks: Observable<boolean>[] = [];
     recordings.forEach((r: Recording, idx) => {
