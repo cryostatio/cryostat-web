@@ -54,7 +54,13 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
   React.useLayoutEffect(() => {
     const sub = context.reports.report(recording).pipe(
       first()
-    ).subscribe(setReport);
+    ).subscribe(report => setReport(report), err => {
+      if (err.message != undefined) {
+        setReport(err.message);
+      } else {
+        setReport(err);
+      }
+    });
     return () =>  sub.unsubscribe();
   }, [context.reports, recording, props, props.recording]);
 
