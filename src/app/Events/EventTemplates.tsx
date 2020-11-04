@@ -121,6 +121,13 @@ export const EventTemplates = () => {
     refreshTemplates();
   }, []);
 
+  React.useEffect(() => {
+    const sub = context.target.authFailure().subscribe(() => {
+      setErrorMessage("Auth failure");
+    });
+    return () => sub.unsubscribe();
+  }, [context.target]);
+
   const displayTemplates = React.useMemo(
     () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),
     [filteredTemplates]

@@ -122,6 +122,13 @@ export const EventTypes = () => {
     refreshEvents();
   }, []);
 
+  React.useEffect(() => {
+    const sub = context.target.authFailure().subscribe(() => {
+      setErrorMessage("Auth failure");
+    });
+    return () => sub.unsubscribe();
+  }, [context.target]);
+
   const getCategoryString = (eventType: EventType): string => {
     return eventType.category.join(', ').trim();
   };
