@@ -252,7 +252,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           <br></br>
           <hr></hr>
           <br></br>
-          <Text>Automated Analysis:</Text>
           <ReportFrame recording={props.recording} width="100%" height="640" />
         </DataListContent>
       </DataListItem>

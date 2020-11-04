@@ -40,7 +40,8 @@ import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Spinner } from '@patternfly/react-core';
+import { Button, Level, LevelItem, Spinner, Text } from '@patternfly/react-core';
+import { Spinner2Icon } from '@patternfly/react-icons';
 import { first } from 'rxjs/operators';
 
 export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
@@ -55,10 +56,10 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
   const { recording, ...rest } = props;
   const addSubscription = useSubscriptions();
 
-  const handleReport = report => {
+  const handleReport = React.useCallback(report => {
     setReport(report);
     setLoaded(true);
-  };
+  }, []);
 
   const loadReport = React.useCallback(() => {
     setLoaded(false);
@@ -68,7 +69,7 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
         err => notifications.danger(err),
       )
     );
-  }, [props.recording, setLoaded, addSubscription, context.reports, handleReport, notifications]);
+  }, [recording, setLoaded, addSubscription, context.reports, handleReport, notifications]);
 
   React.useLayoutEffect(() => {
     const sub = context.reports.report(recording).pipe(first()).subscribe(
@@ -82,6 +83,19 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
 
   return (<>
     { !loaded && <Spinner /> }
+    <Level>
+      <LevelItem>
+        <Text>Automated Analysis:</Text>
+      </LevelItem>
+      <LevelItem>
+        <Button
+          isDisabled={!loaded}
+          onClick={loadReport}
+          variant='control'
+          icon={<Spinner2Icon />}
+        />
+      </LevelItem>
+    </Level>
     <iframe srcDoc={report} {...rest} onLoad={onLoad} hidden={!loaded} />
   </>);
 });
