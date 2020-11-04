@@ -181,7 +181,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
   React.useEffect(() => {
     refreshRecordingList();
-    const id = window.setInterval(() => refreshRecordingList(), 30_000);
+    const id = window.setInterval(() => refreshRecordingList(), 60_000);
     return () => window.clearInterval(id);
   }, []);
 
