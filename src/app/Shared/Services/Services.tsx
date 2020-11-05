@@ -51,7 +51,7 @@ export interface Services {
 
 const api = new ApiService(TargetInstance, NotificationsInstance);
 const commandChannel = new CommandChannel(api, NotificationsInstance);
-const reports = new ReportService(api);
+const reports = new ReportService(api, NotificationsInstance);
 
 const defaultServices: Services = { target: TargetInstance, api, commandChannel, reports };
 
