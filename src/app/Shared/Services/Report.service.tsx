@@ -35,23 +35,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, from, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, tap } from 'rxjs/operators';
 import { ApiService, isActiveRecording, RecordingState, SavedRecording } from './Api.service';
+import { Notifications } from '@app/Notifications/Notifications';
 
 export class ReportService {
 
-  private readonly reports: Map<SavedRecording, string> = new window.Map();
+  private readonly reports: Map<string, string> = new window.Map();
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService, private notifications: Notifications) { }
 
   report(recording: SavedRecording): Observable<string> {
     if (!recording?.reportUrl) {
       return throwError('No recording report URL');
     }
-    if (this.reports.has(recording)) {
-      return of(this.reports.get(recording) || '<p>Invalid report cache entry</p>');
+    if (this.reports.has(recording.reportUrl)) {
+      return of(this.reports.get(recording.reportUrl) || '<p>Invalid report cache entry</p>');
     }
     return this.api.getHeaders().pipe(
       concatMap(headers =>
@@ -64,19 +65,50 @@ export class ReportService {
       ),
       concatMap(resp => {
         if (resp.ok) {
-          return resp.text();
+          return from(resp.text());
         } else {
-          throw new Error('Response not OK');
+          const ge: GenerationError = {
+            name: `Report Failure (${recording.name})`,
+            message: resp.statusText,
+            status: resp.status,
+          };
+          throw ge;
         }
       }),
       tap(report => {
         const isArchived = !isActiveRecording(recording);
         const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
         if (isArchived || isActivedStopped) {
-          this.reports.set(recording, report);
+          this.reports.set(recording.reportUrl, report);
+        }
+      }, err => {
+        this.notifications.danger(err.name, err.message);
+        if (isGenerationError(err) && err.status >= 500) {
+          this.reports.set(recording.reportUrl, `<p>${err.message}</p>`);
         }
       })
     );
   }
 
+  delete(recording: SavedRecording): boolean {
+    return this.reports.delete(recording.reportUrl);
+  }
+
+}
+
+type GenerationError = Error & {
+  status: number;
+}
+
+const isGenerationError = (toCheck: any): toCheck is GenerationError => {
+  if ((toCheck as GenerationError).name === undefined) {
+    return false;
+  }
+  if ((toCheck as GenerationError).message === undefined) {
+    return false;
+  }
+  if ((toCheck as GenerationError).status === undefined) {
+    return false;
+  }
+  return true;
 }

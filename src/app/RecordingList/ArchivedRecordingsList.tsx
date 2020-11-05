@@ -128,7 +128,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
 
   React.useEffect(() => {
     refreshRecordingList();
-    const id = window.setInterval(refreshRecordingList, 30_000);
+    const id = window.setInterval(refreshRecordingList, 60_000);
     return () => window.clearInterval(id);
   }, []);
 
