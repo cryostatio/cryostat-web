@@ -88,7 +88,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     }
     const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
-  }, [context.target, context.settings]);
+  }, [context.target, context.settings, refreshTargetList]);
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {

@@ -56,9 +56,9 @@ export class SettingsService {
     window.localStorage.setItem(StorageKeys.AutoRefreshPeriod, String(period));
   }
 
-  autoRefreshPeriod(defaultPeriod: number = 30): number {
+  autoRefreshPeriod(defaultPeriod = 30): number {
     const raw = window.localStorage.getItem(StorageKeys.AutoRefreshPeriod)
-    if (!!raw) {
+    if (raw) {
       return Number(raw);
     }
     this.setAutoRefreshPeriod(defaultPeriod);
@@ -69,9 +69,9 @@ export class SettingsService {
     window.localStorage.setItem(StorageKeys.AutoRefreshUnits, String(units));
   }
 
-  autoRefreshUnits(defaultUnits: number = 1000): number {
+  autoRefreshUnits(defaultUnits = 1000): number {
     const raw = window.localStorage.getItem(StorageKeys.AutoRefreshUnits);
-    if (!!raw) {
+    if (raw) {
       return Number(raw);
     }
     this.setAutoRefreshUnits(defaultUnits);

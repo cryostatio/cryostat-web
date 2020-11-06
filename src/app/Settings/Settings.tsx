@@ -41,9 +41,13 @@ import { Card, Checkbox, CardBody, CardHeader, FormSelect, FormSelectOption, Spl
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
-export interface SettingsProps { }
+const defaultPreferences = {
+  autoRefreshEnabled: true,
+  autoRefreshPeriod: 30,
+  autoRefreshUnits: 1,
+}
 
-export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
+export const Settings: React.FunctionComponent<{}> = () => {
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(defaultPreferences);
 
@@ -113,16 +117,4 @@ export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
     </BreadcrumbPage>
   </>);
 
-}
-
-export interface UserPreferences {
-  autoRefreshEnabled: boolean;
-  autoRefreshPeriod: number;
-  autoRefreshUnits: number;
-}
-
-const defaultPreferences: UserPreferences = {
-  autoRefreshEnabled: true,
-  autoRefreshPeriod: 30,
-  autoRefreshUnits: 1,
 }
