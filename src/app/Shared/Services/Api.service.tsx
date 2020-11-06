@@ -43,7 +43,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 
 type ApiVersion = "v1" | "v2";
 
-class HttpError extends Error {
+export class HttpError extends Error {
   readonly httpResponse: Response;
 
   constructor(httpResponse: Response) {
@@ -52,7 +52,7 @@ class HttpError extends Error {
   }
 }
 
-const isHttpError = (toCheck: any): toCheck is HttpError => {
+export const isHttpError = (toCheck: any): toCheck is HttpError => {
   if (!(toCheck instanceof Error)) {
     return false;
   }

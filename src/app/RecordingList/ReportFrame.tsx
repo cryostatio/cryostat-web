@@ -36,10 +36,11 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Recording } from '@app/Shared/Services/Api.service';
+import { Recording, isHttpError } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Spinner } from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
+import { isGenerationError } from '@app/Shared/Services/Report.service';
 
 export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
   recording: Recording;
@@ -55,12 +56,12 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
     const sub = context.reports.report(recording).pipe(
       first()
     ).subscribe(report => setReport(report), err => {
-      if (err.messageDetail != undefined) {
+      if (isGenerationError(err)) {
         err.messageDetail.pipe(first()).subscribe(detail => setReport(detail));
-      } else if (err.message != undefined) {
+      } else if (isHttpError(err)) {
         setReport(err.message);
       } else {
-        setReport(err);
+        setReport(JSON.stringify(err));
       }
     });
     return () =>  sub.unsubscribe();

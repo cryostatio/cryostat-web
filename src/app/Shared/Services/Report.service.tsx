@@ -99,12 +99,12 @@ export class ReportService {
 
 }
 
-type GenerationError = Error & {
+export type GenerationError = Error & {
   status: number;
   messageDetail: Observable<string>;
 }
 
-const isGenerationError = (toCheck: any): toCheck is GenerationError => {
+export const isGenerationError = (toCheck: any): toCheck is GenerationError => {
   if ((toCheck as GenerationError).name === undefined) {
     return false;
   }
