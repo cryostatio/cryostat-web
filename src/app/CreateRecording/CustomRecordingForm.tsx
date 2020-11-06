@@ -63,7 +63,7 @@ export const CustomRecordingForm = (props) => {
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
-  const [durationUnit, setDurationUnit] = React.useState(1);
+  const [durationUnit, setDurationUnit] = React.useState(1000);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  '');
   const [templateType] = React.useState(props.templateType || props?.location?.state?.templateType || '');
