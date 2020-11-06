@@ -55,7 +55,9 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
     const sub = context.reports.report(recording).pipe(
       first()
     ).subscribe(report => setReport(report), err => {
-      if (err.message != undefined) {
+      if (err.messageDetail != undefined) {
+        err.messageDetail.pipe(first()).subscribe(detail => setReport(detail));
+      } else if (err.message != undefined) {
         setReport(err.message);
       } else {
         setReport(err);

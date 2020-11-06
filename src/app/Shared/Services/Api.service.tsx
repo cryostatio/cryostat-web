@@ -227,7 +227,7 @@ export class ApiService {
 
   uploadArchivedRecordingToGrafana(recordingName: string): Observable<boolean> {
     return this.sendRequest(
-        'v1', `recordings/${encodeURIComponent(recordingName)}/upload`, 
+        'v1', `recordings/${encodeURIComponent(recordingName)}/upload`,
         {
           method: 'POST',
         }
@@ -451,7 +451,9 @@ export class ApiService {
       } else if (error.httpResponse.status === 502) {
         this.target.setSslFailure();
       } else {
-        this.notifications.danger(`Request failed (Status ${error.httpResponse.status})`, error.message)
+        error.httpResponse.text().then(detail => {
+          this.notifications.danger(`Request failed (${error.httpResponse.status} ${error.message})`, detail);
+        });
       }
       throw error;
     }
