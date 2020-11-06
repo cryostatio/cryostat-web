@@ -81,13 +81,22 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     return () => sub.unsubscribe();
   }, [context.target]);
 
+  React.useEffect(() => {
+    refreshTargetList();
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
+    }
+    const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    return () => window.clearInterval(id);
+  }, [context.target, context.settings]);
+
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
       context.target.setTarget(NO_TARGET);
     } else {
       if (selection != selected) {
         try {
-          context.target.setTarget(selection);  
+          context.target.setTarget(selection);
         } catch (error) {
           notifications.danger("Cannot set target", error.message)
           context.target.setTarget(NO_TARGET);
