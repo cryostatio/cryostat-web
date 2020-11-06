@@ -44,6 +44,7 @@ import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes, Recording } from '@app/Shared/Services/Api.service';
+import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 
 export interface CustomRecordingFormProps {
   onSubmit: (recordingAttributes: RecordingAttributes) => void;
@@ -62,7 +63,7 @@ export const CustomRecordingForm = (props) => {
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
-  const [durationUnit, setDurationUnit] = React.useState(1);
+  const [durationUnit, setDurationUnit] = React.useState(1000);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  '');
   const [templateType] = React.useState(props.templateType || props?.location?.state?.templateType || '');
@@ -129,9 +130,9 @@ export const CustomRecordingForm = (props) => {
 
   const setRecordingOptions = (options: RecordingOptions) => {
     // toDisk is not set, and defaults to true because of container-jfr issue #263
-    setMaxAge(options.maxAge);
+    setMaxAge(options.maxAge || 0);
     setMaxAgeUnits(1);
-    setMaxSize(options.maxSize);
+    setMaxSize(options.maxSize || 0);
     setMaxSizeUnits(1);
   };
 
@@ -156,7 +157,7 @@ export const CustomRecordingForm = (props) => {
     const recordingAttributes: RecordingAttributes = {
       name: recordingName,
       events: getEventString(),
-      duration: continuous ? undefined : duration * durationUnit,
+      duration: continuous ? undefined : duration * (durationUnit/1000),
       options: options
     }
     props.onSubmit(recordingAttributes);
@@ -224,32 +225,7 @@ export const CustomRecordingForm = (props) => {
           id="recording-continuous"
           name="recording-continuous"
         />
-        <Split hasGutter={true}>
-          <SplitItem isFilled>
-            <TextInput
-              value={duration}
-              isRequired
-              type="number"
-              id="recording-duration"
-              aria-describedby="recording-duration-helper"
-              onChange={handleDurationChange}
-              isDisabled={continuous}
-              min="0"
-            />
-          </SplitItem>
-          <SplitItem>
-            <FormSelect
-              value={durationUnit}
-              onChange={handleDurationUnitChange}
-              aria-label="Duration Units Input"
-              isDisabled={continuous}
-            >
-              <FormSelectOption key="1" value="1" label="Seconds" />
-              <FormSelectOption key="2" value={60} label="Minutes" />
-              <FormSelectOption key="3" value={60*60} label="Hours" />
-            </FormSelect>
-          </SplitItem>
-        </Split>
+        <DurationPicker enabled={!continuous} period={duration} onPeriodChange={handleDurationChange} unitScalar={durationUnit} onUnitScalarChange={handleDurationUnitChange} />
       </FormGroup>
       <FormGroup
         label="Events"
@@ -301,18 +277,18 @@ export const CustomRecordingForm = (props) => {
           <Text component={TextVariants.small}>
             A value of 0 for maximum age or size means unbounded.
           </Text>
-          <FormGroup 
+          <FormGroup
             fieldId="To Disk"
             helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
           >
-            <Checkbox 
-              label="To Disk" 
+            <Checkbox
+              label="To Disk"
               id="toDisk-checkbox"
               isChecked={toDisk}
               onChange={handleToDiskChange} />
           </FormGroup>
-          <FormGroup 
-            label="Maximum size" 
+          <FormGroup
+            label="Maximum size"
             fieldId="maxSize"
             helperText="The maximum size of recording data saved to disk"
           >
@@ -335,7 +311,7 @@ export const CustomRecordingForm = (props) => {
                     onChange={handleMaxSizeUnitChange}
                     aria-label="Max size units input"
                     isDisabled={!toDisk}
-                  > 
+                  >
                     <FormSelectOption key="1" value="1" label="B" />
                     <FormSelectOption key="2" value={1024} label="KiB" />
                     <FormSelectOption key="3" value={1024*1024} label="MiB" />
@@ -343,8 +319,8 @@ export const CustomRecordingForm = (props) => {
                 </SplitItem>
             </Split>
           </FormGroup>
-          <FormGroup 
-            label="Maximum age" 
+          <FormGroup
+            label="Maximum age"
             fieldId="maxAge"
             helperText="The maximum age of recording data stored to disk"
           >
