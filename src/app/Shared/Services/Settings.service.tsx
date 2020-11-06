@@ -35,30 +35,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService, TargetInstance } from './Target.service';
-import { ApiService } from './Api.service';
-import { CommandChannel } from './CommandChannel.service';
-import { ReportService } from './Report.service';
-import { SettingsService } from './Settings.service';
 
-export interface Services {
-  target: TargetService;
-  api: ApiService;
-  commandChannel: CommandChannel;
-  reports: ReportService;
-  settings: SettingsService;
+enum StorageKeys {
+  AutoRefreshEnabled = "auto-refresh-enabled",
+  AutoRefreshPeriod = "auto-refresh-period",
+  AutoRefreshUnits = "auto-refresh-units",
 }
 
-const api = new ApiService(TargetInstance, NotificationsInstance);
-const commandChannel = new CommandChannel(api, NotificationsInstance);
-const reports = new ReportService(api, NotificationsInstance);
-const settings = new SettingsService();
+export class SettingsService {
 
-const defaultServices: Services = { target: TargetInstance, api, commandChannel, reports, settings };
+  setAutoRefreshEnabled(enabled: boolean): void {
+    window.localStorage.setItem(StorageKeys.AutoRefreshEnabled, String(enabled));
+  }
 
-const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
+  autoRefreshEnabled(): boolean {
+    return window.localStorage.getItem(StorageKeys.AutoRefreshEnabled) === 'true';
+  }
 
-export { ServiceContext, defaultServices };
+  setAutoRefreshPeriod(period: number): void {
+    window.localStorage.setItem(StorageKeys.AutoRefreshPeriod, String(period));
+  }
 
+  autoRefreshPeriod(defaultPeriod = 30): number {
+    const raw = window.localStorage.getItem(StorageKeys.AutoRefreshPeriod)
+    if (raw) {
+      return Number(raw);
+    }
+    this.setAutoRefreshPeriod(defaultPeriod);
+    return defaultPeriod;
+  }
+
+  setAutoRefreshUnits(units: number): void {
+    window.localStorage.setItem(StorageKeys.AutoRefreshUnits, String(units));
+  }
+
+  autoRefreshUnits(defaultUnits = 1000): number {
+    const raw = window.localStorage.getItem(StorageKeys.AutoRefreshUnits);
+    if (raw) {
+      return Number(raw);
+    }
+    this.setAutoRefreshUnits(defaultUnits);
+    return defaultUnits;
+  }
+
+}

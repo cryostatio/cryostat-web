@@ -119,6 +119,11 @@ export const EventTemplates = () => {
 
   React.useEffect(() => {
     refreshTemplates();
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
+    }
+    const id = window.setInterval(() => refreshTemplates(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    return () => window.clearInterval(id);
   }, []);
 
   React.useEffect(() => {
@@ -230,7 +235,7 @@ export const EventTemplates = () => {
   if (errorMessage != '') {
     return (<ErrorView message={errorMessage}/>)
   } else if (isLoading) {
-    return (<LoadingView/>) 
+    return (<LoadingView/>)
   } else {
     return (<>
       <Toolbar id="event-templates-toolbar">

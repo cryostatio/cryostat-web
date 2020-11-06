@@ -36,29 +36,44 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService, TargetInstance } from './Target.service';
-import { ApiService } from './Api.service';
-import { CommandChannel } from './CommandChannel.service';
-import { ReportService } from './Report.service';
-import { SettingsService } from './Settings.service';
+import { FormSelect, FormSelectOption, Split, SplitItem, TextInput } from '@patternfly/react-core';
 
-export interface Services {
-  target: TargetService;
-  api: ApiService;
-  commandChannel: CommandChannel;
-  reports: ReportService;
-  settings: SettingsService;
+export interface DurationPickerProps {
+  onPeriodChange: (period: number) => void;
+  onUnitScalarChange: (unitScalar: number) => void;
+  period: number;
+  unitScalar: number;
+  enabled: boolean;
 }
 
-const api = new ApiService(TargetInstance, NotificationsInstance);
-const commandChannel = new CommandChannel(api, NotificationsInstance);
-const reports = new ReportService(api, NotificationsInstance);
-const settings = new SettingsService();
+export const DurationPicker: React.FunctionComponent<DurationPickerProps> = (props) => {
 
-const defaultServices: Services = { target: TargetInstance, api, commandChannel, reports, settings };
+  return (<>
+    <Split hasGutter={true}>
+      <SplitItem isFilled>
+        <TextInput
+          value={props.period}
+          isRequired
+          type="number"
+          id="duration-picker-period"
+          onChange={v => props.onPeriodChange(Number(v))}
+          isDisabled={!props.enabled}
+          min="0"
+        />
+      </SplitItem>
+      <SplitItem>
+        <FormSelect
+          value={props.unitScalar}
+          onChange={v => props.onUnitScalarChange(Number(v))}
+          aria-label="Duration Picker Units Input"
+          isDisabled={!props.enabled}
+        >
+          <FormSelectOption key="1" value={1*1000} label="Seconds" />
+          <FormSelectOption key="2" value={60*1000} label="Minutes" />
+          <FormSelectOption key="3" value={60*60*1000} label="Hours" />
+        </FormSelect>
+      </SplitItem>
+    </Split>
+  </>);
 
-const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
-
-export { ServiceContext, defaultServices };
-
+}

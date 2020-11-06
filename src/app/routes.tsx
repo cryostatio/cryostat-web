@@ -42,6 +42,7 @@ import { Events } from '@app/Events/Events';
 import { Login } from '@app/Login/Login';
 import { NotFound } from '@app/NotFound/NotFound';
 import { RecordingList } from '@app/RecordingList/RecordingList';
+import { Settings } from '@app/Settings/Settings';
 import { SecurityPanel } from '@app/SecurityPanel/SecurityPanel';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
@@ -100,6 +101,13 @@ const routes: IAppRoute[] = [
     label: 'Security',
     path: '/security',
     title: 'Security',
+  },
+  {
+    component: Settings,
+    exact: true,
+    label: 'Settings',
+    path: '/settings',
+    title: 'Settings',
   },
 ];
 
