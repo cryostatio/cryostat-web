@@ -37,14 +37,15 @@
  */
 
 import * as React from 'react';
-import { Card, Checkbox, CardBody, CardHeader, FormSelect, FormSelectOption, Split, SplitItem, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { Card, Checkbox, CardBody, CardHeader, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 
 const defaultPreferences = {
   autoRefreshEnabled: true,
   autoRefreshPeriod: 30,
-  autoRefreshUnits: 1,
+  autoRefreshUnits: 1_000,
 }
 
 export const Settings: React.FunctionComponent<{}> = () => {
@@ -59,19 +60,19 @@ export const Settings: React.FunctionComponent<{}> = () => {
     });
   }, [context.settings]);
 
+  const handleAutoRefreshEnabledChange = React.useCallback(autoRefreshEnabled => {
+    setState(state => ({ ...state, autoRefreshEnabled }));
+    context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
+  }, [context.settings]);
+
   const handleAutoRefreshPeriodChange = React.useCallback(autoRefreshPeriod => {
     setState(state => ({ ...state, autoRefreshPeriod }));
     context.settings.setAutoRefreshPeriod(autoRefreshPeriod);
   }, [context.settings]);
 
-  const handleAutoRefreshUnitChange = React.useCallback(autoRefreshUnits => {
+  const handleAutoRefreshUnitScalarChange = React.useCallback(autoRefreshUnits => {
     setState(state => ({ ...state, autoRefreshUnits }));
     context.settings.setAutoRefreshUnits(autoRefreshUnits);
-  }, [context.settings]);
-
-  const handleAutoRefreshEnabledChange = React.useCallback(autoRefreshEnabled => {
-    setState(state => ({ ...state, autoRefreshEnabled }));
-    context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
   }, [context.settings]);
 
   return (<>
@@ -86,31 +87,13 @@ export const Settings: React.FunctionComponent<{}> = () => {
           <Text component={TextVariants.p}>
             Set the refresh period for content views.
           </Text>
-          <Split hasGutter={true}>
-            <SplitItem isFilled>
-              <TextInput
-                value={state.autoRefreshPeriod}
-                isRequired
-                type="number"
-                id="auto-refresh-period"
-                onChange={handleAutoRefreshPeriodChange}
-                isDisabled={!state.autoRefreshEnabled}
-                min="0"
-              />
-            </SplitItem>
-            <SplitItem>
-              <FormSelect
-                value={state.autoRefreshUnits}
-                onChange={handleAutoRefreshUnitChange}
-                aria-label="Auto Refresh Units Input"
-                isDisabled={!state.autoRefreshEnabled}
-              >
-                <FormSelectOption key="1" value={1*1000} label="Seconds" />
-                <FormSelectOption key="2" value={60*1000} label="Minutes" />
-                <FormSelectOption key="3" value={60*60*1000} label="Hours" />
-              </FormSelect>
-            </SplitItem>
-          </Split>
+          <DurationPicker
+            enabled={state.autoRefreshEnabled}
+            period={state.autoRefreshPeriod}
+            onPeriodChange={handleAutoRefreshPeriodChange}
+            unitScalar={state.autoRefreshUnits}
+            onUnitScalarChange={handleAutoRefreshUnitScalarChange}
+          />
           <Checkbox id="auto-refresh-enabled" label="Enabled" isChecked={state.autoRefreshEnabled} onChange={handleAutoRefreshEnabledChange} />
         </CardBody>
       </Card>
