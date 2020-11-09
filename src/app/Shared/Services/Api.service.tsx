@@ -43,7 +43,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 
 type ApiVersion = "v1" | "v2";
 
-class HttpError extends Error {
+export class HttpError extends Error {
   readonly httpResponse: Response;
 
   constructor(httpResponse: Response) {
@@ -52,7 +52,7 @@ class HttpError extends Error {
   }
 }
 
-const isHttpError = (toCheck: any): toCheck is HttpError => {
+export const isHttpError = (toCheck: any): toCheck is HttpError => {
   if (!(toCheck instanceof Error)) {
     return false;
   }
@@ -227,7 +227,7 @@ export class ApiService {
 
   uploadArchivedRecordingToGrafana(recordingName: string): Observable<boolean> {
     return this.sendRequest(
-        'v1', `recordings/${encodeURIComponent(recordingName)}/upload`, 
+        'v1', `recordings/${encodeURIComponent(recordingName)}/upload`,
         {
           method: 'POST',
         }
@@ -451,7 +451,9 @@ export class ApiService {
       } else if (error.httpResponse.status === 502) {
         this.target.setSslFailure();
       } else {
-        this.notifications.danger(`Request failed (Status ${error.httpResponse.status})`, error.message)
+        error.httpResponse.text().then(detail => {
+          this.notifications.danger(`Request failed (${error.httpResponse.status} ${error.message})`, detail);
+        });
       }
       throw error;
     }
