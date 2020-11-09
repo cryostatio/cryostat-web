@@ -37,7 +37,7 @@
  */
 import { Observable, from, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { concatMap, tap } from 'rxjs/operators';
+import { concatMap, first, tap } from 'rxjs/operators';
 import { ApiService, isActiveRecording, RecordingState, SavedRecording } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
@@ -70,6 +70,7 @@ export class ReportService {
           const ge: GenerationError = {
             name: `Report Failure (${recording.name})`,
             message: resp.statusText,
+            messageDetail: from(resp.text()),
             status: resp.status,
           };
           throw ge;
@@ -84,7 +85,9 @@ export class ReportService {
       }, err => {
         this.notifications.danger(err.name, err.message);
         if (isGenerationError(err) && err.status >= 500) {
-          this.reports.set(recording.reportUrl, `<p>${err.message}</p>`);
+          err.messageDetail.pipe(first()).subscribe(detail => {
+            this.reports.set(recording.reportUrl, `<p>${detail}</p>`);
+          });
         }
       })
     );
@@ -96,15 +99,19 @@ export class ReportService {
 
 }
 
-type GenerationError = Error & {
+export type GenerationError = Error & {
   status: number;
+  messageDetail: Observable<string>;
 }
 
-const isGenerationError = (toCheck: any): toCheck is GenerationError => {
+export const isGenerationError = (toCheck: any): toCheck is GenerationError => {
   if ((toCheck as GenerationError).name === undefined) {
     return false;
   }
   if ((toCheck as GenerationError).message === undefined) {
+    return false;
+  }
+  if ((toCheck as GenerationError).messageDetail === undefined) {
     return false;
   }
   if ((toCheck as GenerationError).status === undefined) {
