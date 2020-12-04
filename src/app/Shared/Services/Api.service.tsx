@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
+import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
 import { TargetService } from './Target.service';
@@ -64,24 +64,59 @@ export class ApiService {
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
+  private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
+  private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
   readonly authority: string;
 
   constructor(
     private readonly target: TargetService,
     private readonly notifications: Notifications
   ) {
-     let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
-     if (!apiAuthority) {
-       apiAuthority = '';
-     }
-     window.console.log(`Using API authority ${apiAuthority}`);
-     this.authority = apiAuthority;
+    let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
+    if (!apiAuthority) {
+      apiAuthority = '';
+    }
+    window.console.log(`Using API authority ${apiAuthority}`);
+    this.authority = apiAuthority;
 
-   this.doGet('recordings').subscribe(() => {
-     this.archiveEnabled.next(true);
-   }, () => {
-     this.archiveEnabled.next(false);
-   });
+    this.doGet('recordings').subscribe(() => {
+      this.archiveEnabled.next(true);
+    }, () => {
+      this.archiveEnabled.next(false);
+    });
+
+    const getDatasourceURL = fromFetch(`${apiAuthority}/api/v1/grafana_datasource_url`)
+    .pipe(concatMap(resp => from(resp.json())));
+    const getDashboardURL = fromFetch(`${apiAuthority}/api/v1/grafana_dashboard_url`)
+    .pipe(concatMap(resp => from(resp.json())));
+
+    fromFetch(`${apiAuthority}/health`)
+      .pipe(
+        concatMap(resp => from(resp.json())),
+        concatMap((jsonResp: any) => {
+          if (jsonResp.dashboardAvailable && jsonResp.datasourceAvailable) {
+            return forkJoin([getDatasourceURL, getDashboardURL]);
+          } else {
+            const missing: string[] = [];
+            if (!jsonResp.dashboardAvailable) {
+              missing.push('dashboard URL');
+            }
+            if (!jsonResp.datasourceAvailable) {
+              missing.push('datasource URL');
+            }
+            const message = missing.join(', ') + ' unavailable';
+            return throwError(message);
+          }}))
+      .subscribe(
+        (url: any) => {
+          this.grafanaDatasourceUrlSubject.next(url[0].grafanaDatasourceUrl);
+          this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);
+        },
+        err => {
+          window.console.error(err);
+          this.notifications.danger('Grafana configuration not found', JSON.stringify(err));
+        }
+      );
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
@@ -280,6 +315,14 @@ export class ApiService {
       }),
       catchError((): ObservableInput<boolean> => of(false)),
     );
+  }
+
+  grafanaDatasourceUrl(): Observable<string> {
+    return this.grafanaDatasourceUrlSubject.asObservable();
+  }
+
+  grafanaDashboardUrl(): Observable<string> {
+    return this.grafanaDashboardUrlSubject.asObservable();
   }
 
   doGet<T>(path: string): Observable<T> {

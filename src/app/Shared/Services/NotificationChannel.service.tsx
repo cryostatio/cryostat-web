@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, forkJoin, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, first } from 'rxjs/operators';
@@ -49,8 +49,6 @@ export class NotificationChannel {
   private readonly messages = new Subject<NotificationMessage>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
-  private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
-  private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
 
   constructor(
     apiSvc: ApiService,
@@ -65,36 +63,6 @@ export class NotificationChannel {
         (err: any) => this.logError('Client URL configuration', err)
       );
 
-    const getDatasourceURL = fromFetch(`${this.apiSvc.authority}/api/v1/grafana_datasource_url`)
-    .pipe(concatMap(resp => from(resp.json())));
-    const getDashboardURL = fromFetch(`${this.apiSvc.authority}/api/v1/grafana_dashboard_url`)
-    .pipe(concatMap(resp => from(resp.json())));
-
-    fromFetch(`${this.apiSvc.authority}/health`)
-      .pipe(
-        concatMap(resp => from(resp.json())),
-        concatMap((jsonResp: any) => {
-          if (jsonResp.dashboardAvailable && jsonResp.datasourceAvailable) {
-            return forkJoin([getDatasourceURL, getDashboardURL]);
-          } else {
-            const missing: string[] = [];
-            if (!jsonResp.dashboardAvailable) {
-              missing.push('dashboard URL');
-            }
-            if (!jsonResp.datasourceAvailable) {
-              missing.push('datasource URL');
-            }
-            const message = missing.join(', ') + ' unavailable';
-            return throwError(message);
-          }}))
-      .subscribe(
-        (url: any) => {
-          this.grafanaDatasourceUrlSubject.next(url[0].grafanaDatasourceUrl);
-          this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);
-        },
-        err => this.logError('Grafana configuration not found', err)
-      );
-
     this.clientUrl().pipe(
       first()
     ).subscribe(url => this.connect(url));
@@ -102,14 +70,6 @@ export class NotificationChannel {
 
   clientUrl(): Observable<string> {
     return this.clientUrlSubject.asObservable();
-  }
-
-  grafanaDatasourceUrl(): Observable<string> {
-    return this.grafanaDatasourceUrlSubject.asObservable();
-  }
-
-  grafanaDashboardUrl(): Observable<string> {
-    return this.grafanaDashboardUrlSubject.asObservable();
   }
 
   connect(clientUrl: string): Observable<void> {

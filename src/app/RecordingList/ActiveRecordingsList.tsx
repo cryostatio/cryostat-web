@@ -344,7 +344,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.grafanaDatasourceUrl()
+    const sub = context.api.grafanaDatasourceUrl()
       .pipe(first())
       .subscribe(() => setGrafanaEnabled(true));
     return () => sub.unsubscribe();
@@ -358,7 +358,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       .subscribe(success => {
         if (success) {
           notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
-          context.notificationChannel.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
+          context.api.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
         }
       })
     );
