@@ -42,11 +42,11 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, first } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 
-export class CommandChannel {
+export class NotificationChannel {
 
   private ws: WebSocketSubject<any> | null = null;
   private readonly apiSvc: ApiService;
-  private readonly messages = new Subject<ResponseMessage<any>>();
+  private readonly messages = new Subject<NotificationMessage>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
@@ -173,48 +173,5 @@ export class CommandChannel {
   }
 }
 
-export interface CommandMessage {
-  id: string;
-  command: string;
-  args?: string[];
-}
-
-export interface ResponseMessage<T> {
-  id?: string;
-  status: number;
-  commandName: string;
-  payload: T;
-}
-
-export interface SuccessMessage extends ResponseMessage<void> { }
-
-export function isSuccessMessage(m: ResponseMessage<any>): m is SuccessMessage {
-  return m.status === 0;
-}
-
-export interface StringMessage extends ResponseMessage<string> { }
-
-export function isStringMessage(m: ResponseMessage<any>): m is StringMessage {
-  return m.status === 0 && typeof m.payload === 'string';
-}
-
-export interface ListMessage extends ResponseMessage<any[]> { }
-
-export function isListMessage(m: ResponseMessage<any>): m is ListMessage {
-  return m.status === 0 && Array.isArray(m.payload);
-}
-
-export interface FailureMessage extends ResponseMessage<string> { }
-
-export function isFailureMessage(m: ResponseMessage<any>): m is FailureMessage {
-  return m.status < 0 && typeof m.payload === 'string';
-}
-
-export interface ExceptionMessage extends ResponseMessage<{ commandName: string; exception: string }> { }
-
-export function isExceptionMessage(m: ResponseMessage<any>): m is ExceptionMessage {
-  return m.status < 0
-    && m.payload != null
-    && m.payload.commandName != null && typeof m.payload.commandName === 'string'
-    && m.payload.exception != null && typeof m.payload.exception === 'string';
+export interface NotificationMessage {
 }

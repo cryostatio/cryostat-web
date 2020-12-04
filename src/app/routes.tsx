@@ -158,12 +158,12 @@ const AppRoutes = () => {
   const [authenticated, setAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.commandChannel
+    const sub = context.notificationChannel
       .isReady()
       .pipe(filter((v) => !v))
       .subscribe(() => setAuthenticated(false));
     return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+  }, [context.notificationChannel]);
 
   return (
     <LastLocationProvider>

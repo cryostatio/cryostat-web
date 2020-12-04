@@ -172,7 +172,7 @@ export const EventTypes = () => {
     });
 
     setDisplayedTypes(rows);
-  }, [context.commandChannel, currentPage, perPage, filterTypesByText, openRow]);
+  }, [currentPage, perPage, filterTypesByText, openRow]);
 
   const onCurrentPage = (evt, currentPage) => {
     setOpenRow(-1);
@@ -203,7 +203,7 @@ export const EventTypes = () => {
   if (errorMessage != '') {
     return (<ErrorView message={errorMessage}/>)
   } else if (isLoading) {
-    return (<LoadingView/>) 
+    return (<LoadingView/>)
   } else {
     return (<>
       <Toolbar id="event-types-toolbar">

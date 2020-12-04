@@ -70,11 +70,11 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   }, [context.api]);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.isReady()
+    const sub = context.notificationChannel.isReady()
       .pipe(filter(v => !!v), first())
       .subscribe(refreshTargetList);
     return () => sub.unsubscribe();
-  }, [context.commandChannel, refreshTargetList]);
+  }, [context.notificationChannel, refreshTargetList]);
 
   React.useLayoutEffect(() => {
     const sub = context.target.target().subscribe(setSelected);

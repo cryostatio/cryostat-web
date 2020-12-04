@@ -344,11 +344,11 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.commandChannel.grafanaDatasourceUrl()
+    const sub = context.notificationChannel.grafanaDatasourceUrl()
       .pipe(first())
       .subscribe(() => setGrafanaEnabled(true));
     return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+  }, [context.notificationChannel]);
 
   const grafanaUpload = () => {
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
@@ -358,7 +358,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       .subscribe(success => {
         if (success) {
           notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
-          context.commandChannel.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
+          context.notificationChannel.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
         }
       })
     );
