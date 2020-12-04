@@ -63,19 +63,26 @@ export class ApiService {
 
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
+  private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   readonly authority: string;
 
-   constructor(
-     private readonly target: TargetService,
-     private readonly notifications: Notifications
-   ) {
-      let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
-      if (!apiAuthority) {
-        apiAuthority = '';
-      }
-      window.console.log(`Using API authority ${apiAuthority}`);
-      this.authority = apiAuthority;
-   }
+  constructor(
+    private readonly target: TargetService,
+    private readonly notifications: Notifications
+  ) {
+     let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
+     if (!apiAuthority) {
+       apiAuthority = '';
+     }
+     window.console.log(`Using API authority ${apiAuthority}`);
+     this.authority = apiAuthority;
+
+   this.doGet('recordings').subscribe(() => {
+     this.archiveEnabled.next(true);
+   }, () => {
+     this.archiveEnabled.next(false);
+   });
+  }
 
   checkAuth(token: string, method: string): Observable<boolean> {
     return fromFetch(`${this.authority}/api/v1/auth`, {
@@ -156,6 +163,10 @@ export class ApiService {
         first(),
       )
     ));
+  }
+
+  isArchiveEnabled(): Observable<boolean> {
+    return this.archiveEnabled.asObservable();
   }
 
   archiveRecording(recordingName: string): Observable<boolean> {

@@ -48,7 +48,6 @@ export class NotificationChannel {
   private readonly apiSvc: ApiService;
   private readonly messages = new Subject<NotificationMessage>();
   private readonly ready = new BehaviorSubject<boolean>(false);
-  private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
@@ -95,12 +94,6 @@ export class NotificationChannel {
         },
         err => this.logError('Grafana configuration not found', err)
       );
-
-    apiSvc.doGet('recordings').subscribe(() => {
-      this.archiveEnabled.next(true);
-    }, () => {
-      this.archiveEnabled.next(false);
-    });
 
     this.clientUrl().pipe(
       first()
@@ -161,10 +154,6 @@ export class NotificationChannel {
 
   isReady(): Observable<boolean> {
     return this.ready.asObservable();
-  }
-
-  isArchiveEnabled(): Observable<boolean> {
-    return this.archiveEnabled.asObservable();
   }
 
   private logError(title: string, err: any): void {
