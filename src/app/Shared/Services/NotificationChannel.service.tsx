@@ -45,17 +45,14 @@ import { ApiService } from './Api.service';
 export class NotificationChannel {
 
   private ws: WebSocketSubject<any> | null = null;
-  private readonly apiSvc: ApiService;
   private readonly messages = new Subject<NotificationMessage>();
   private readonly ready = new BehaviorSubject<boolean>(false);
   private readonly clientUrlSubject = new ReplaySubject<string>(1);
 
   constructor(
-    apiSvc: ApiService,
+    private readonly apiSvc: ApiService,
     private readonly notifications: Notifications
   ) {
-    this.apiSvc = apiSvc;
-
     fromFetch(`${this.apiSvc.authority}/api/v1/clienturl`)
       .pipe(concatMap(resp => from(resp.json())))
       .subscribe(
