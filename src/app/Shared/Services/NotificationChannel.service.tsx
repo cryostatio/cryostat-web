@@ -111,4 +111,17 @@ export class NotificationChannel {
 }
 
 export interface NotificationMessage {
+  meta: MessageMeta;
+  message: any;
+  serverTime: number;
+}
+
+export interface MessageMeta {
+  category: string;
+  type: MessageType;
+}
+
+export interface MessageType {
+  type: string;
+  subtype: string;
 }
