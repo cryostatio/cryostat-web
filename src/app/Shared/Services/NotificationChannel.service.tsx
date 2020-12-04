@@ -39,7 +39,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { BehaviorSubject, combineLatest, from, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, first, map } from 'rxjs/operators';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 
 export class NotificationChannel {
@@ -100,8 +100,8 @@ export class NotificationChannel {
     return this._ready.asObservable();
   }
 
-  messages(): Observable<NotificationMessage> {
-    return this._messages.asObservable();
+  messages(category: string): Observable<NotificationMessage> {
+    return this._messages.asObservable().pipe(filter(msg => msg.meta.category === category));
   }
 
   private logError(title: string, err: any): void {

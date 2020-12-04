@@ -80,8 +80,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   }, [context.notificationChannel, refreshTargetList]);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.messages()
-      .pipe(filter(v => v.meta.category === NOTIFICATION_CATEGORY))
+    const sub = context.notificationChannel.messages(NOTIFICATION_CATEGORY)
       .subscribe(v => {
         const evt: TargetDiscoveryEvent = v.message.event;
         switch (evt.kind) {
