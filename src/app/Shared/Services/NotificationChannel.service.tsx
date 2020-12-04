@@ -42,6 +42,8 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 
+const NOTIFICATION_CATEGORY = 'WS_CLIENT_ACTIVITY';
+
 export class NotificationChannel {
 
   private ws: WebSocketSubject<any> | null = null;
@@ -52,6 +54,12 @@ export class NotificationChannel {
     private readonly apiSvc: ApiService,
     private readonly notifications: Notifications
   ) {
+    this.messages(NOTIFICATION_CATEGORY).subscribe(v => {
+      const addr = Object.keys(v.message)[0];
+      const status = v.message[addr];
+      notifications.info('WebSocket Client Activity', `Client at ${addr} ${status}`);
+    });
+
     const clientUrl = fromFetch(`${this.apiSvc.authority}/api/v1/clienturl`)
       .pipe(
         concatMap(resp => from(resp.json())),
