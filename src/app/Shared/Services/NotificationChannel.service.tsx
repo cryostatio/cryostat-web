@@ -36,81 +36,72 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, first } from 'rxjs/operators';
+import { concatMap, first, map } from 'rxjs/operators';
 import { ApiService } from './Api.service';
 
 export class NotificationChannel {
 
   private ws: WebSocketSubject<any> | null = null;
-  private readonly messages = new Subject<NotificationMessage>();
-  private readonly ready = new BehaviorSubject<boolean>(false);
-  private readonly clientUrlSubject = new ReplaySubject<string>(1);
+  private readonly _messages = new Subject<NotificationMessage>();
+  private readonly _ready = new BehaviorSubject<boolean>(false);
 
   constructor(
     private readonly apiSvc: ApiService,
     private readonly notifications: Notifications
   ) {
-    fromFetch(`${this.apiSvc.authority}/api/v1/clienturl`)
-      .pipe(concatMap(resp => from(resp.json())))
+    const clientUrl = fromFetch(`${this.apiSvc.authority}/api/v1/clienturl`)
+      .pipe(
+        concatMap(resp => from(resp.json())),
+        map((url: any): string => url.clientUrl)
+      );
+    combineLatest(clientUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
+      .pipe(first())
       .subscribe(
-        (url: any) => this.clientUrlSubject.next(url.clientUrl),
+        (parts: string[]) => {
+          const url = parts[0];
+          const token = parts[1];
+          const authMethod = parts[2];
+          let subprotocol: string | undefined = undefined;
+          if (authMethod === 'Bearer') {
+            subprotocol = `base64url.bearer.authorization.containerjfr.${window.btoa(token)}`;
+          } else if (authMethod === 'Basic') {
+            subprotocol = `basic.authorization.containerjfr.${token}`;
+          }
+
+          this.ws = webSocket({
+            url,
+            protocol: subprotocol,
+            openObserver: {
+              next: () => {
+                this._ready.next(true);
+              }
+            },
+            closeObserver: {
+              next: () => {
+                this._ready.next(false);
+                this.notifications.info('WebSocket connection lost');
+              }
+            }
+          });
+
+          this.ws.subscribe(
+            v => this._messages.next(v),
+            err => this.logError('WebSocket error', err)
+          );
+        },
         (err: any) => this.logError('Client URL configuration', err)
       );
-
-    this.clientUrl().pipe(
-      first()
-    ).subscribe(url => this.connect(url));
-  }
-
-  clientUrl(): Observable<string> {
-    return this.clientUrlSubject.asObservable();
-  }
-
-  connect(clientUrl: string): Observable<void> {
-    const ret = new Subject<void>();
-    combineLatest(this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
-      .pipe(
-        first(),
-      )
-      .subscribe(auths => {
-        let subprotocol: string | undefined = undefined;
-        if (auths[1] === 'Bearer') {
-          subprotocol = `base64url.bearer.authorization.containerjfr.${window.btoa(auths[0])}`;
-        } else if (auths[1] === 'Basic') {
-          subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
-        }
-
-        this.ws = webSocket({
-          url: clientUrl,
-          protocol: subprotocol,
-          openObserver: {
-            next: () => {
-              this.ready.next(true);
-            }
-          },
-          closeObserver: {
-            next: () => {
-              this.ready.next(false);
-              this.notifications.info('WebSocket connection lost');
-            }
-          }
-        });
-
-        this.ws.subscribe(
-          v => this.messages.next(v),
-          err => this.logError('WebSocket error', err)
-        );
-
-        ret.complete();
-      });
-    return ret;
   }
 
   isReady(): Observable<boolean> {
-    return this.ready.asObservable();
+    return this._ready.asObservable();
+  }
+
+  messages(): Observable<NotificationMessage> {
+    return this._messages.asObservable();
   }
 
   private logError(title: string, err: any): void {
