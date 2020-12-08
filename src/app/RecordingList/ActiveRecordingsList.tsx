@@ -348,7 +348,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       .pipe(first())
       .subscribe(() => setGrafanaEnabled(true));
     return () => sub.unsubscribe();
-  }, [context.notificationChannel]);
+  }, [context.api, notifications]);
 
   const grafanaUpload = () => {
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);

@@ -52,7 +52,7 @@ export const RecordingList = () => {
   React.useEffect(() => {
     const sub = context.api.isArchiveEnabled().subscribe(setArchiveEnabled);
     return () => sub.unsubscribe();
-  }, [context.notificationChannel]);
+  }, [context.api]);
 
   React.useEffect(() => {
     return () => archiveUpdate.complete();
