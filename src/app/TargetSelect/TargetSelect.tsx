@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import * as _ from 'lodash';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
@@ -47,6 +48,8 @@ import { filter, first } from 'rxjs/operators';
 export interface TargetSelectProps {
   isCompact?: boolean;
 }
+
+const NOTIFICATION_CATEGORY = 'TargetJvmDiscovery';
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
@@ -70,11 +73,42 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   }, [context.api]);
 
   React.useEffect(() => {
-    const sub = context.commandChannel.isReady()
+    const sub = context.notificationChannel.isReady()
       .pipe(filter(v => !!v), first())
       .subscribe(refreshTargetList);
     return () => sub.unsubscribe();
-  }, [context.commandChannel, refreshTargetList]);
+  }, [context.notificationChannel, refreshTargetList]);
+
+  React.useEffect(() => {
+    const sub = context.notificationChannel.messages(NOTIFICATION_CATEGORY)
+      .subscribe(v => {
+        const evt: TargetDiscoveryEvent = v.message.event;
+        switch (evt.kind) {
+          case 'FOUND':
+            setTargets(old => _.unionBy(old, [evt.serviceRef], t => t.connectUrl));
+            break;
+          case 'LOST':
+            setTargets(old => _.filter(old, t => t.connectUrl !== evt.serviceRef.connectUrl));
+            if (selected.connectUrl === evt.serviceRef.connectUrl) {
+              notifications.info('Target Disappeared', `The selected target "${selected.alias}" disappeared.`);
+              selectNone();
+            }
+            break;
+          case 'CHANGED':
+            setTargets(old => {
+              const filtered = _.filter(old, t => t.connectUrl !== evt.serviceRef.connectUrl);
+              const updated =_.unionBy(filtered, [evt.serviceRef], t => t.connectUrl);
+              onSelect(undefined, _.find(updated, t => t.connectUrl === selected.connectUrl), false);
+              return updated;
+            });
+            break;
+          default:
+            notifications.danger(`Bad ${NOTIFICATION_CATEGORY} message received`, `Unknown event type ${evt.kind}`);
+            break;
+        }
+      });
+    return () => sub.unsubscribe();
+  }, [context.notificationChannel, notifications, NOTIFICATION_CATEGORY, setTargets, selected]);
 
   React.useLayoutEffect(() => {
     const sub = context.target.target().subscribe(setSelected);
@@ -89,6 +123,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetList]);
+
+  const selectNone = () => {
+    onSelect(undefined, undefined, true);
+  };
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
@@ -157,4 +195,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       </Grid>
   </>);
 
+}
+
+interface TargetDiscoveryEvent {
+  kind: 'LOST' | 'FOUND' | 'CHANGED';
+  serviceRef: Target;
 }

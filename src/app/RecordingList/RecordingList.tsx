@@ -50,9 +50,9 @@ export const RecordingList = () => {
   const archiveUpdate = new Subject<void>();
 
   React.useEffect(() => {
-    const sub = context.commandChannel.isArchiveEnabled().subscribe(setArchiveEnabled);
+    const sub = context.api.isArchiveEnabled().subscribe(setArchiveEnabled);
     return () => sub.unsubscribe();
-  }, [context.commandChannel]);
+  }, [context.api]);
 
   React.useEffect(() => {
     return () => archiveUpdate.complete();
