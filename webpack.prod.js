@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
+const OnlyIfChangedPlugin = require('only-if-changed-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -22,6 +23,10 @@ module.exports = merge(common, {
     }),
     new DotenvPlugin({
       path: './.env.prod',
+    }),
+    new OnlyIfChangedPlugin({
+      cacheDirectory: path.join(process.cwd(), 'dist', 'cache'),
+      cacheIdentifier: {},
     }),
   ],
   output: {

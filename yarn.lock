@@ -1343,6 +1343,11 @@ async-limiter@~1.0.0:
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
 
+async@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
+  integrity sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
+
 async@^2.6.2:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.3.tgz#d72625e2344a3656e3a3ad4fa749fa83299d82ff"
@@ -6146,6 +6151,14 @@ onetime@^5.1.0:
   integrity sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
   dependencies:
     mimic-fn "^2.1.0"
+
+only-if-changed-webpack-plugin@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/only-if-changed-webpack-plugin/-/only-if-changed-webpack-plugin-0.0.3.tgz#d8502dfed61407247cb5bc8cc3d78e3df18fd180"
+  integrity sha512-OOwTJGuEiF4E2g5uTNv9E8LP/5MfnXpBtmunofWN1uYpselr+acrkmnc7DxB85ER3rFgQDO8dZv/ZKtns6Eobg==
+  dependencies:
+    async "^1.5.2"
+    mkdirp "^0.5.1"
 
 opener@^1.5.1:
   version "1.5.2"
