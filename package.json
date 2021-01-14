@@ -8,6 +8,8 @@
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.prod.js",
+    "clean": "rimraf dist",
+    "clean:cache": "rimraf dist/cache",
     "start": "node server.js",
     "start:dev": "webpack-dev-server --hot --color --progress --info=true --config webpack.dev.js",
     "test": "jest",
@@ -42,6 +44,7 @@
     "lodash": "^4.17.19",
     "mini-css-extract-plugin": "^0.9.0",
     "nanoid": "^3.0.2",
+    "only-if-changed-webpack-plugin": "^0.0.3",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "prettier": "^2.0.5",
     "prop-types": "^15.6.1",
