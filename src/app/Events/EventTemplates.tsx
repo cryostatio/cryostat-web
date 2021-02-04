@@ -38,12 +38,13 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
+import {NO_TARGET} from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { concatMap, first } from 'rxjs/operators';
+import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 
@@ -105,6 +106,7 @@ export const EventTemplates = () => {
     addSubscription(
       context.target.target()
       .pipe(
+        filter(target => target !== NO_TARGET),
         first(),
         concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)),
       ).subscribe(value => handleTemplates(value), err => handleError(err))
