@@ -37,10 +37,11 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import {NO_TARGET} from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
-import { concatMap, first } from 'rxjs/operators';
+import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 
@@ -105,6 +106,7 @@ export const EventTypes = () => {
     addSubscription(
       context.target.target()
         .pipe(
+          filter(target => target !== NO_TARGET),
           first(),
           concatMap(target => context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`)),
         )
