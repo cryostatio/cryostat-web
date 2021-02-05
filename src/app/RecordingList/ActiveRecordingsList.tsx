@@ -36,17 +36,18 @@
  * SOFTWARE.
  */
 
+import {NotificationsContext} from '@app/Notifications/Notifications';
+import {Recording, RecordingState} from '@app/Shared/Services/Api.service';
+import {ServiceContext} from '@app/Shared/Services/Services';
+import {NO_TARGET} from '@app/Shared/Services/Target.service';
+import {useSubscriptions} from '@app/utils/useSubscriptions';
+import {Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem} from '@patternfly/react-core';
 import * as React from 'react';
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
-import { useHistory, useRouteMatch } from 'react-router-dom';
-import { forkJoin, Observable } from 'rxjs';
-import { concatMap, first, tap } from 'rxjs/operators';
-import { RecordingsDataTable } from './RecordingsDataTable';
-import { ReportFrame } from './ReportFrame';
+import {useHistory, useRouteMatch} from 'react-router-dom';
+import {forkJoin, Observable} from 'rxjs';
+import {concatMap, filter, first} from 'rxjs/operators';
+import {RecordingsDataTable} from './RecordingsDataTable';
+import {ReportFrame} from './ReportFrame';
 
 export interface ActiveRecordingsListProps {
   archiveEnabled: boolean;
@@ -108,6 +109,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     addSubscription(
       context.target.target()
       .pipe(
+        filter(target => target !== NO_TARGET),
         concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
         first(),
       ).subscribe(value => handleRecordings(value), err => handleError(err))
