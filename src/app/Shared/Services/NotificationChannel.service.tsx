@@ -40,6 +40,7 @@ import { BehaviorSubject, combineLatest, from, Observable, Subject } from 'rxjs'
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, filter, first, map } from 'rxjs/operators';
+import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
 const NOTIFICATION_CATEGORY = 'WS_CLIENT_ACTIVITY';
@@ -74,7 +75,7 @@ export class NotificationChannel {
           const authMethod = parts[2];
           let subprotocol: string | undefined = undefined;
           if (authMethod === 'Bearer') {
-            subprotocol = `base64url.bearer.authorization.containerjfr.${window.btoa(token)}`;
+            subprotocol = `base64url.bearer.authorization.containerjfr.${Base64.encodeURL(token)}`;
           } else if (authMethod === 'Basic') {
             subprotocol = `basic.authorization.containerjfr.${token}`;
           }
