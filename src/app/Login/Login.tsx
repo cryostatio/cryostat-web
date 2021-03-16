@@ -40,6 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
+import { Base64 } from 'js-base64';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 
@@ -54,7 +55,7 @@ export const Login = (props) => {
   const checkAuth = React.useCallback(() => {
     let tok = token;
     if (authMethod === 'Basic') {
-      tok = window.btoa(token);
+      tok = Base64.encodeURL(token);
     } // else this is Bearer auth and the token is sent as-is
     addSubscription(
       context.api.checkAuth(tok, authMethod)

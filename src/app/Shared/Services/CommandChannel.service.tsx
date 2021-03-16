@@ -40,6 +40,7 @@ import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subjec
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, first } from 'rxjs/operators';
+import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
 export class CommandChannel {
@@ -128,7 +129,7 @@ export class CommandChannel {
       .subscribe(auths => {
         let subprotocol: string | undefined = undefined;
         if (auths[1] === 'Bearer') {
-          subprotocol = `base64url.bearer.authorization.containerjfr.${window.btoa(auths[0])}`;
+          subprotocol = `base64url.bearer.authorization.containerjfr.${Base64.encodeURL(auths[0])}`;
         } else if (auths[1] === 'Basic') {
           subprotocol = `basic.authorization.containerjfr.${auths[0]}`;
         }
