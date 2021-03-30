@@ -1,8 +1,8 @@
-# Container-JFR-Web
+# Cryostat-Web
 
-![Build Status](https://github.com/rh-jmc-team/container-jfr-web/actions/workflows/ci.yaml/badge.svg)
+![Build Status](https://github.com/cryostatio/cryostat-web/actions/workflows/ci.yaml/badge.svg)
 
-Web front-end for [ContainerJFR](https://github.com/rh-jmc-team/container-jfr), providing a graphical user interface for managing JFR on remote JVMs.
+Web front-end for [Cryostat](https://github.com/cryostatio/cryostat), providing a graphical user interface for managing JFR on remote JVMs.
 
 Based on [Patternfly React Seed](https://github.com/patternfly/patternfly-react-seed).
 
@@ -37,10 +37,10 @@ Start the express server (run a production build first)
 
 ## Development server
 
-First run a `container-jfr` instance with WebSocket communication and CORS enabled. 
-The environment variable `CONTAINER_JFR_CORS_ORIGIN` enables CORS and sets its origin to the value provided.
+First run a `cryostat` instance with WebSocket communication and CORS enabled. 
+The environment variable `CRYOSTAT_CORS_ORIGIN` enables CORS and sets its origin to the value provided.
 For example:
 
-`cd $CONTAINER_JFR_DIR && CONTAINER_JFR_CORS_ORIGIN=http://localhost:9000 sh run.sh`
+`cd $CRYOSTAT_DIR && CRYOSTAT_CORS_ORIGIN=http://localhost:9000 sh run.sh`
 
-Then run `npm run start:dev` to start a hot-reloading WebServer instance of the `-web` UI, which will by default target the `container-jfr` instance started above. This can be customized by editing the `.env` file, for example if you have another service already listening on the default port `8181` and your ContainerJFR is listening elsewhere.
+Then run `npm run start:dev` to start a hot-reloading WebServer instance of the `-web` UI, which will by default target the `cryostat` instance started above. This can be customized by editing the `.env` file, for example if you have another service already listening on the default port `8181` and your Cryostat is listening elsewhere.

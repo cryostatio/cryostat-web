@@ -129,7 +129,7 @@ export const CustomRecordingForm = (props) => {
   };
 
   const setRecordingOptions = (options: RecordingOptions) => {
-    // toDisk is not set, and defaults to true because of container-jfr issue #263
+    // toDisk is not set, and defaults to true because of cryostat issue #263
     setMaxAge(options.maxAge || 0);
     setMaxAgeUnits(1);
     setMaxSize(options.maxSize || 0);

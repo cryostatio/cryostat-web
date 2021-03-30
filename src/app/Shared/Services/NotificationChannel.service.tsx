@@ -75,9 +75,9 @@ export class NotificationChannel {
           const authMethod = parts[2];
           let subprotocol: string | undefined = undefined;
           if (authMethod === 'Bearer') {
-            subprotocol = `base64url.bearer.authorization.containerjfr.${Base64.encodeURL(token)}`;
+            subprotocol = `base64url.bearer.authorization.cryostat.${Base64.encodeURL(token)}`;
           } else if (authMethod === 'Basic') {
-            subprotocol = `basic.authorization.containerjfr.${token}`;
+            subprotocol = `basic.authorization.cryostat.${token}`;
           }
 
           this.ws = webSocket({

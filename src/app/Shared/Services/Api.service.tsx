@@ -72,7 +72,7 @@ export class ApiService {
     private readonly target: TargetService,
     private readonly notifications: Notifications
   ) {
-    let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
+    let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
     if (!apiAuthority) {
       apiAuthority = '';
     }

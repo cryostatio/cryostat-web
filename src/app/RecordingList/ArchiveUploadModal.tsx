@@ -97,7 +97,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
       showClose={true}
       onClose={handleClose}
       title="Re-Upload Archived Recording"
-      description="Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming convention used by ContainerJFR when archiving recordings."
+      description="Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming convention used by Cryostat when archiving recordings."
       >
       <Form>
         <FormGroup

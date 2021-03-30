@@ -97,7 +97,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   };
   const Header = (
     <PageHeader
-      logo="ContainerJFR"
+      logo="Cryostat"
       logoProps={logoProps}
       showNavToggle
       isNavOpen={isNavOpen}
