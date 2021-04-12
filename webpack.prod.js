@@ -1,11 +1,10 @@
 const path = require('path');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
-const OnlyIfChangedPlugin = require('only-if-changed-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -23,10 +22,6 @@ module.exports = merge(common, {
     }),
     new DotenvPlugin({
       path: './.env.prod',
-    }),
-    new OnlyIfChangedPlugin({
-      cacheDirectory: path.join(process.cwd(), 'dist', 'cache'),
-      cacheIdentifier: {},
     }),
   ],
   output: {
@@ -48,7 +43,16 @@ module.exports = merge(common, {
           path.resolve(__dirname, 'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
         ],
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '',
+            },
+          },{
+            loader: 'css-loader',
+          },
+        ]
       }
     ]
   }
