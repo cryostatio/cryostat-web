@@ -33,7 +33,7 @@
     "dotenv-webpack": "^1.8.0",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.15.1",
-    "enzyme-to-json": "^3.5.0",
+    "enzyme-to-json": "^3.6.2",
     "eslint": "^7.1.0",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.4",
