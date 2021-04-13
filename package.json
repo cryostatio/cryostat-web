@@ -38,7 +38,7 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.4",
     "file-loader": "^6.0.0",
-    "html-webpack-plugin": "^4.3.0",
+    "html-webpack-plugin": "^4.5.2",
     "imagemin": "^7.0.0",
     "jest": "^26.0.1",
     "js-base64": "3.6.0",
