@@ -40,7 +40,7 @@
     "imagemin": "^7.0.0",
     "jest": "^26.0.1",
     "js-base64": "3.6.0",
-    "license-check-and-add": "^3.0.4",
+    "license-check-and-add": "^4.0.2",
     "lodash": "^4.17.19",
     "mini-css-extract-plugin": "^1.4.1",
     "nanoid": "^3.1.22",
