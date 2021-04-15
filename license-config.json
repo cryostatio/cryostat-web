@@ -9,5 +9,5 @@
 			}
 		}
 	},
-	"ignore": [".git", "tags", "coverage", "stories", "__mocks__","**/.*", "README.md", "**/*.js"]
+	"ignore": [".git", "tags", "coverage", "stories", "__mocks__","**/.*", "README.md", "**/*.js", ".github/**/*"]
 }
