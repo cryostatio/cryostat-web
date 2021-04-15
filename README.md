@@ -1,5 +1,7 @@
 # Container-JFR-Web
 
+![Build Status](https://github.com/rh-jmc-team/container-jfr-web/actions/workflows/ci.yaml/badge.svg)
+
 Web front-end for [ContainerJFR](https://github.com/rh-jmc-team/container-jfr), providing a graphical user interface for managing JFR on remote JVMs.
 
 Based on [Patternfly React Seed](https://github.com/patternfly/patternfly-react-seed).
