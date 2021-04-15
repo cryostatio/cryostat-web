@@ -27,7 +27,7 @@
     "@types/victory": "^33.1.4",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
-    "css-loader": "^3.5.3",
+    "css-loader": "^5.2.1",
     "dotenv-webpack": "^7.0.2",
     "enzyme": "^3.7.0",
     "enzyme-adapter-react-16": "^1.15.1",
