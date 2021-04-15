@@ -52,11 +52,11 @@ export const SslErrorModal: React.FunctionComponent<SslErrorModalProps> = (props
         routerHistory.push('/security');
         props.onDismiss();
     }
-    
+
     return (
         <Modal
             isOpen={props.visible}
-            variant={ModalVariant.medium}
+            variant={ModalVariant.small}
             showClose={true}
             onClose={props.onDismiss}
             title="SSL Error"
