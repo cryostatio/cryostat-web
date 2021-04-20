@@ -1,9 +1,9 @@
 {
-  "name": "container-jfr-web",
+  "name": "cryostat-web",
   "version": "0.0.1",
-  "description": "Web-Client for ContainerJFR",
+  "description": "Web-Client for Cryostat",
   "main": "server.js",
-  "repository": "https://github.com/rh-jmc-team/container-jfr-web.git",
+  "repository": "https://github.com/cryostatio/cryostat-web.git",
   "license": "UPL",
   "private": true,
   "scripts": {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Red Hat, Inc.
+ * Copyright The Cryostat Authors
  * 
  * The Universal Permissive License (UPL), Version 1.0
  * 
@@ -80,7 +80,7 @@ export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
 export const BearerAuthDescriptionText = () => {
   return (
     <Text component={TextVariants.p}>
-      The ContainerJFR server is configured with Bearer token authentication. If this is an OpenShift deployment,
+      The Cryostat server is configured with Bearer token authentication. If this is an OpenShift deployment,
       you can use <Text component={TextVariants.pre}>oc whoami --show-token</Text> to retrieve your user account token.
     </Text>
   );
