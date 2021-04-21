@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Red Hat, Inc.
+ * Copyright The Cryostat Authors
  *
  * The Universal Permissive License (UPL), Version 1.0
  *
@@ -69,7 +69,7 @@ export class ApiService {
      private readonly target: TargetService,
      private readonly notifications: Notifications
    ) {
-      let apiAuthority = process.env.CONTAINER_JFR_AUTHORITY;
+      let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
       if (!apiAuthority) {
         apiAuthority = '';
       }

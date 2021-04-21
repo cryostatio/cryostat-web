@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Red Hat, Inc.
+ * Copyright The Cryostat Authors
  * 
  * The Universal Permissive License (UPL), Version 1.0
  * 
@@ -110,6 +110,6 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
 
 export const BasicAuthDescriptionText = () => {
   return (
-    <Text component={TextVariants.p}>The ContainerJFR server is configured with Basic authentication.</Text>
+    <Text component={TextVariants.p}>The Cryostat server is configured with Basic authentication.</Text>
   );
 }
