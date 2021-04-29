@@ -1,8 +1,8 @@
 /*
  * Copyright The Cryostat Authors
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
 import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
-import { TargetService } from './Target.service';
+import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
 type ApiVersion = "v1" | "v2";
@@ -150,38 +150,50 @@ export class ApiService {
     );
   }
 
-  createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {
-      const form = new window.FormData();
-      form.append('recordingName', recordingAttributes.name);
-      form.append('events', recordingAttributes.events);
-      if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
-        form.append('duration', String(recordingAttributes.duration));
+  deleteTarget(target: Target): Observable<boolean> {
+    return this.sendRequest(
+      'v2', `targets/${encodeURIComponent(target.connectUrl)}`,
+      {
+        method: 'DELETE',
       }
-      if (!!recordingAttributes.options){
-        if (recordingAttributes.options.toDisk != null) {
-          form.append('toDisk', String(recordingAttributes.options.toDisk));
-        }
-        if (!!recordingAttributes.options.maxAge && recordingAttributes.options.maxAge >= 0) {
-          form.append('maxAge', String(recordingAttributes.options.maxAge));
-        }
-        if (!!recordingAttributes.options.maxSize && recordingAttributes.options.maxSize >= 0) {
-          form.append('maxSize', String(recordingAttributes.options.maxSize));
-        }
-      }
+    ).pipe(
+      map(resp => resp.ok),
+      first(),
+    );
+  }
 
-      return this.target.target().pipe(concatMap(target =>
-        this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
-          method: 'POST',
-          body: form,
-        }).pipe(
-          tap(resp => {
-            if (resp.ok) {
-              this.notifications.success('Recording created');
-            }
-          }),
-          map(resp => resp.ok),
-          first(),
-        )));
+  createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {
+    const form = new window.FormData();
+    form.append('recordingName', recordingAttributes.name);
+    form.append('events', recordingAttributes.events);
+    if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
+      form.append('duration', String(recordingAttributes.duration));
+    }
+    if (!!recordingAttributes.options){
+      if (recordingAttributes.options.toDisk != null) {
+        form.append('toDisk', String(recordingAttributes.options.toDisk));
+      }
+      if (!!recordingAttributes.options.maxAge && recordingAttributes.options.maxAge >= 0) {
+        form.append('maxAge', String(recordingAttributes.options.maxAge));
+      }
+      if (!!recordingAttributes.options.maxSize && recordingAttributes.options.maxSize >= 0) {
+        form.append('maxSize', String(recordingAttributes.options.maxSize));
+      }
+    }
+
+    return this.target.target().pipe(concatMap(target =>
+      this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
+        method: 'POST',
+        body: form,
+      }).pipe(
+        tap(resp => {
+          if (resp.ok) {
+            this.notifications.success('Recording created');
+          }
+        }),
+        map(resp => resp.ok),
+        first(),
+      )));
   }
 
   createSnapshot(): Observable<boolean> {
