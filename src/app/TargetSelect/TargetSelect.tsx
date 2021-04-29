@@ -48,6 +48,8 @@ import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@pat
 import { of } from 'rxjs';
 import { catchError, filter, first } from 'rxjs/operators';
 
+import { CreateTargetModal } from './CreateTargetModal';
+
 export interface TargetSelectProps {
   isCompact?: boolean;
 }
@@ -62,8 +64,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
   const [isModalOpen, setModalOpen] = React.useState(false);
-  const [createUrl, setCreateUrl] = React.useState('');
-  const [createAlias, setCreateAlias] = React.useState('');
   const addSubscription = useSubscriptions();
 
   const refreshTargetList = React.useCallback(() => {
@@ -148,19 +148,17 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     setModalOpen(true);
   }, [setModalOpen]);
 
-  const createTarget = React.useCallback(() => {
+  const createTarget = React.useCallback((target: Target) => {
     setLoading(true);
     addSubscription(
-      context.api.createTarget({ connectUrl: createUrl, alias: createAlias })
+      context.api.createTarget(target)
         .pipe(first(), catchError(() => of(false)))
         .subscribe(() => {
           setLoading(false);
           setModalOpen(false);
-          setCreateUrl('');
-          setCreateAlias('');
         })
     );
-  }, [context.api, createUrl, setCreateUrl, createAlias, setCreateAlias, setModalOpen]);
+  }, [context.api, setModalOpen]);
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
@@ -234,48 +232,11 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           </Card>
         </GridItem>
       </Grid>
-      // TODO extract this Modal to a subcomponent
-      <Modal
-        isOpen={isModalOpen}
-        variant={ModalVariant.small}
-        showClose={true}
-        onClose={() => setModalOpen(false)}
-        title="Create Target"
-        description="Create a custom target connection"
-      >
-        <Form isHorizontal>
-          <FormGroup
-            label="Connection URL"
-            isRequired
-            fieldId="connect-url"
-            helperText="JMX Service URL"
-          >
-            <TextInput
-              value={createUrl}
-              isRequired
-              type="text"
-              id="connect-url"
-              onChange={setCreateUrl}
-            />
-          </FormGroup>
-          <FormGroup
-            label="Alias"
-            fieldId="alias"
-            helperText="Connection Nickname"
-          >
-            <TextInput
-              value={createAlias}
-              isRequired
-              type="text"
-              id="alias"
-              onChange={setCreateAlias}
-            />
-          </FormGroup>
-        </Form>
-        <ActionGroup>
-          <Button variant="primary" onClick={createTarget}>Create</Button>
-        </ActionGroup>
-      </Modal>
+      <CreateTargetModal
+        visible={isModalOpen}
+        onSubmit={(target) => createTarget(target)}
+        onDismiss={() => setModalOpen(false)}
+      ></CreateTargetModal>
   </>);
 
 }
