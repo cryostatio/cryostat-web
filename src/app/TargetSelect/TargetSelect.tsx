@@ -208,7 +208,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               <Select
                 toggleIcon={<ContainerNodeIcon />}
                 variant={SelectVariant.single}
-                selections={selected.alias}
+                selections={selected.alias || selected.connectUrl}
                 onSelect={onSelect}
                 onToggle={setExpanded}
                 isDisabled={isLoading}
@@ -219,11 +219,18 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />])
                   .concat(
                     targets.map((t: Target) => (
-                      <SelectOption
-                        key={t.connectUrl}
-                        value={t}
-                        isPlaceholder={false}
-                      >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+                      (t.alias == t.connectUrl) || !t.alias ?
+                        <SelectOption
+                          key={t.connectUrl}
+                          value={t}
+                          isPlaceholder={false}
+                        >{`${t.connectUrl}`}</SelectOption>
+                      :
+                        <SelectOption
+                          key={t.connectUrl}
+                          value={t}
+                          isPlaceholder={false}
+                        >{`${t.alias} (${t.connectUrl})`}</SelectOption>
                     ))
                 )
               }
