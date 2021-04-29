@@ -153,12 +153,18 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     addSubscription(
       context.api.createTarget(target)
         .pipe(first(), catchError(() => of(false)))
-        .subscribe(() => {
+        .subscribe(success => {
+          console.log({ success });
           setLoading(false);
           setModalOpen(false);
+          if (success) {
+            notifications.info('Target Created');
+          } else {
+            notifications.warning('Target Creation Failed');
+          }
         })
     );
-  }, [context.api, setModalOpen]);
+  }, [context.api, notifications, setModalOpen]);
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
