@@ -41,9 +41,9 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain,
-  Form, FormGroup, Grid, GridItem, Modal, ModalVariant, Select, SelectOption,
-  SelectVariant, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid,
+  GridItem, Select, SelectOption, SelectVariant, Text, TextVariants
+} from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
 import { catchError, filter, first } from 'rxjs/operators';
