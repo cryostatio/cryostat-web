@@ -41,9 +41,12 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
-import { ContainerNodeIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
-import { filter, first } from 'rxjs/operators';
+import { ActionGroup, Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain,
+  Form, FormGroup, Grid, GridItem, Modal, ModalVariant, Select, SelectOption,
+  SelectVariant, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
+import { of } from 'rxjs';
+import { catchError, filter, first } from 'rxjs/operators';
 
 export interface TargetSelectProps {
   isCompact?: boolean;
@@ -58,6 +61,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
+  const [isModalOpen, setModalOpen] = React.useState(false);
+  const [createUrl, setCreateUrl] = React.useState('');
+  const [createAlias, setCreateAlias] = React.useState('');
   const addSubscription = useSubscriptions();
 
   const refreshTargetList = React.useCallback(() => {
@@ -138,6 +144,24 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     setExpanded(false);
   };
 
+  const showCreateTargetModal = React.useCallback(() => {
+    setModalOpen(true);
+  }, [setModalOpen]);
+
+  const createTarget = React.useCallback(() => {
+    setLoading(true);
+    addSubscription(
+      context.api.createTarget({ connectUrl: createUrl, alias: createAlias })
+        .pipe(first(), catchError(() => of(false)))
+        .subscribe(() => {
+          setLoading(false);
+          setModalOpen(false);
+          setCreateUrl('');
+          setCreateAlias('');
+        })
+    );
+  }, [context.api, createUrl, setCreateUrl, createAlias, setCreateAlias, setModalOpen]);
+
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
     addSubscription(
@@ -145,7 +169,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       .pipe(first())
       .subscribe(() => {
         setLoading(false);
-      }, err => {
+      }, () => {
         setLoading(false);
       })
     );
@@ -162,6 +186,12 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 </Text>
               </CardHeaderMain>
               <CardActions>
+                <Button
+                  isDisabled={isLoading}
+                  onClick={showCreateTargetModal}
+                  variant="control"
+                  icon={<PlusCircleIcon />}
+                />
                 <Button
                   isDisabled={isLoading || (selected == NO_TARGET)}
                   onClick={deleteTarget}
@@ -204,6 +234,48 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           </Card>
         </GridItem>
       </Grid>
+      // TODO extract this Modal to a subcomponent
+      <Modal
+        isOpen={isModalOpen}
+        variant={ModalVariant.small}
+        showClose={true}
+        onClose={() => setModalOpen(false)}
+        title="Create Target"
+        description="Create a custom target connection"
+      >
+        <Form isHorizontal>
+          <FormGroup
+            label="Connection URL"
+            isRequired
+            fieldId="connect-url"
+            helperText="JMX Service URL"
+          >
+            <TextInput
+              value={createUrl}
+              isRequired
+              type="text"
+              id="connect-url"
+              onChange={setCreateUrl}
+            />
+          </FormGroup>
+          <FormGroup
+            label="Alias"
+            fieldId="alias"
+            helperText="Connection Nickname"
+          >
+            <TextInput
+              value={createAlias}
+              isRequired
+              type="text"
+              id="alias"
+              onChange={setCreateAlias}
+            />
+          </FormGroup>
+        </Form>
+        <ActionGroup>
+          <Button variant="primary" onClick={createTarget}>Create</Button>
+        </ActionGroup>
+      </Modal>
   </>);
 
 }

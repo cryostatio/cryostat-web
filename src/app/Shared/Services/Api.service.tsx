@@ -150,6 +150,24 @@ export class ApiService {
     );
   }
 
+  createTarget(target: Target): Observable<boolean> {
+    const form = new window.FormData();
+    form.append('connectUrl', target.connectUrl);
+    if (!!target.alias && !!target.alias.trim()) {
+      form.append('alias', target.alias);
+    }
+    return this.sendRequest(
+      'v2', `targets`,
+      {
+        method: 'POST',
+        body: form,
+      }
+    ).pipe(
+      map(resp => resp.ok),
+      first(),
+    );
+  }
+
   deleteTarget(target: Target): Observable<boolean> {
     return this.sendRequest(
       'v2', `targets/${encodeURIComponent(target.connectUrl)}`,
