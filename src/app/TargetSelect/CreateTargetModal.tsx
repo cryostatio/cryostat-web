@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { Target } from '@app/Shared/Services/Target.service';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
+import { ActionGroup, Button, ButtonType, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface CreateTargetModalProps {
@@ -54,6 +54,12 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
     setConnectUrl('');
     setAlias('');
   }, [props.onSubmit, connectUrl, alias]);
+
+  const handleKeyDown = React.useCallback((evt) => {
+    if (evt.key === 'Enter') {
+      createTarget();
+    }
+  }, [createTarget]);
 
   return (<>
     <Modal
@@ -77,6 +83,7 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
             type="text"
             id="connect-url"
             onChange={setConnectUrl}
+            onKeyDown={handleKeyDown}
           />
         </FormGroup>
         <FormGroup
@@ -89,11 +96,12 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
             type="text"
             id="alias"
             onChange={setAlias}
+            onKeyDown={handleKeyDown}
           />
         </FormGroup>
       </Form>
       <ActionGroup>
-        <Button variant="primary" onClick={createTarget}>Create</Button>
+        <Button variant="primary" type={ButtonType.submit} onClick={createTarget}>Create</Button>
       </ActionGroup>
     </Modal>
   </>);
