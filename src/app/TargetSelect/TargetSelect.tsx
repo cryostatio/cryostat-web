@@ -154,13 +154,12 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.api.createTarget(target)
         .pipe(first(), catchError(() => of(false)))
         .subscribe(success => {
-          console.log({ success });
           setLoading(false);
           setModalOpen(false);
           if (success) {
             notifications.info('Target Created');
           } else {
-            notifications.warning('Target Creation Failed');
+            notifications.danger('Target Creation Failed');
           }
         })
     );
@@ -175,6 +174,13 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         setLoading(false);
       }, () => {
         setLoading(false);
+        let id: string;
+        if (selected.alias === selected.connectUrl) {
+          id = selected.alias;
+        } else {
+          id = `${selected.alias} [${selected.connectUrl}]`
+        }
+        notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
       })
     );
   }, [context.api, selected]);
