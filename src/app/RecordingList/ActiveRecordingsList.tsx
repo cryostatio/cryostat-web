@@ -55,6 +55,7 @@ export interface ActiveRecordingsListProps {
 }
 
 export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListProps> = (props) => {
+  const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
 
@@ -65,6 +66,11 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
+
+  const RECORDING_CREATED = "RecordingCreated";
+  const RECORDING_DELETED = "RecordingDeleted";
+  const RECORDING_SAVED = "RecordingSaved";
+  const RECORDING_ARCHIVED = "RecordingArchived";
 
   const tableColumns: string[] = [
     'Name',
@@ -120,6 +126,34 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     addSubscription(
       context.target.target().subscribe(refreshRecordingList)
     );
+  }, []);
+
+  React.useEffect(() => {
+    const created_sub = context.notificationChannel.messages(RECORDING_CREATED)
+      .subscribe(v => {
+        const recordingName = Object.values(v.message)[0];
+        const targetId = Object.values(v.message)[1];
+        notifications.info('WebSocket Client Activity', `Recording ${recordingName} created in target: ${targetId}`);
+        refreshRecordingList();
+      });
+      const archived_sub = context.notificationChannel.messages(RECORDING_ARCHIVED)
+      .subscribe(v => {
+         const recordingName = Object.values(v.message)[0];
+         notifications.info('WebSocket Client Activity', `Recording ${recordingName} archived`);
+         refreshRecordingList();
+      });
+      const deleted_sub = context.notificationChannel.messages(RECORDING_DELETED)
+      .subscribe(v => {
+         const recording = Object.values(v.message)[0];
+         notifications.info('WebSocket Client Activity', `Recording ${recording} deleted`);
+         refreshRecordingList();
+      });
+      const saved_sub = context.notificationChannel.messages(RECORDING_SAVED)
+      .subscribe(v => {
+         const recordingName = Object.values(v.message)[0];
+         notifications.info('WebSocket Client Activity', `Recording ${recordingName} archived`);
+         refreshRecordingList();
+      });
   }, []);
 
   React.useEffect(() => {
