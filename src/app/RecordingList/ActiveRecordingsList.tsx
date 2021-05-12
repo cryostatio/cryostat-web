@@ -142,7 +142,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         notifications.info('Recording Created', `${event.recording} created in target: ${event.target}`);
         refreshRecordingList();
       }));
-  }, []);
+  }, [context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingSaved)
@@ -151,7 +151,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Archived', `${event.recording} was archived`);
          refreshRecordingList();
       }));
-  }, []);
+  }, [context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingArchived)
@@ -160,7 +160,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Archived', `${event.recording} was archived`);
          refreshRecordingList();
       }));
-  }, []);
+  }, [context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
@@ -169,7 +169,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Deleted', `${event.recording} was deleted`);
          refreshRecordingList();
       }));
-  }, []);
+  }, [context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
