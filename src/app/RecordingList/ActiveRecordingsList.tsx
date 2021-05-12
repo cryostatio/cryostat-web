@@ -54,6 +54,18 @@ export interface ActiveRecordingsListProps {
   onArchive?: Function;
 }
 
+interface RecordingNotificationEvent {
+  recording : string;
+  target : string;
+}
+
+enum NotificationCategory {
+  RecordingCreated = 'RecordingCreated',
+  RecordingDeleted = 'RecordingDeleted',
+  RecordingSaved = 'RecordingSaved',
+  RecordingArchived = 'RecordingArchived'
+};
+
 export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
@@ -73,13 +85,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     'Duration',
     'State',
   ];
-
-  enum NotificationCategory {
-    RecordingCreated = 'RecordingCreated',
-    RecordingDeleted = 'RecordingDeleted',
-    RecordingSaved = 'RecordingSaved',
-    RecordingArchived = 'RecordingArchived'
-  };
 
   const addSubscription = useSubscriptions();
 
@@ -165,11 +170,6 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          refreshRecordingList();
       }));
   }, []);
-
-interface RecordingNotificationEvent {
-  recording : string;
-  target : string;
-}
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
