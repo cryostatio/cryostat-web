@@ -394,7 +394,7 @@ export class ApiService {
     }))
     .subscribe(resp => {
       this.downloadFile(
-        `${template.name}.xml`,
+        `${template.name}.jfc`,
         resp,
         'application/jfc+xml')
     });
