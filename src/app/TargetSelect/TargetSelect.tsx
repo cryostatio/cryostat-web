@@ -94,14 +94,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               selectNone();
             }
             break;
-          case 'CHANGED':
-            setTargets(old => {
-              const filtered = _.filter(old, t => t.connectUrl !== evt.serviceRef.connectUrl);
-              const updated =_.unionBy(filtered, [evt.serviceRef], t => t.connectUrl);
-              onSelect(undefined, _.find(updated, t => t.connectUrl === selected.connectUrl), false);
-              return updated;
-            });
-            break;
           default:
             notifications.danger(`Bad ${NOTIFICATION_CATEGORY} message received`, `Unknown event type ${evt.kind}`);
             break;
@@ -198,6 +190,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 }
 
 interface TargetDiscoveryEvent {
-  kind: 'LOST' | 'FOUND' | 'CHANGED';
+  kind: 'LOST' | 'FOUND';
   serviceRef: Target;
 }
