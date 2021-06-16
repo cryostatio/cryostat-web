@@ -57,8 +57,10 @@ export interface EventTemplate {
   name: string;
   description: string;
   provider: string;
-  type: "TARGET" | "CUSTOM";
+  type: TemplateType;
 }
+
+export type TemplateType = "TARGET" | "CUSTOM";
 
 const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
   const context = React.useContext(ServiceContext);

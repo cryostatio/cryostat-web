@@ -42,7 +42,7 @@ import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, Form
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
-import { EventTemplate } from './CreateRecording';
+import { EventTemplate, TemplateType } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes, Recording } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 
@@ -63,8 +63,8 @@ export const CustomRecordingForm = (props) => {
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  '');
-  const [templateType, setTemplateType] = React.useState(props.templateType || props?.location?.state?.templateType || null as "TARGET" | "CUSTOM" | null);
+  const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  null);
+  const [templateType, setTemplateType] = React.useState(props.templateType || props?.location?.state?.templateType || null as TemplateType | null);
   const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
@@ -170,6 +170,23 @@ export const CustomRecordingForm = (props) => {
     return () => sub.unsubscribe();
   }, []);
 
+  const templatesOptionGroups = React.useMemo(() => {
+    const offset = templates.filter(t => t.type === "CUSTOM").length;
+    return (<>
+      <FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder />
+      <FormSelectOptionGroup key="-2" label="Custom Templates">
+        {
+          templates.filter(t => t.type === "CUSTOM").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx} value={`${t.name},${t.type}`} label={t.name} />))
+        }
+      </FormSelectOptionGroup>
+      <FormSelectOptionGroup key="-3" label="Target Templates">
+        {
+          templates.filter(t => t.type === "TARGET").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx+offset} value={`${t.name},${t.type}`} label={t.name} />))
+        }
+      </FormSelectOptionGroup>
+    </>);
+  }, [templates]);
+
   return (<>
     <Text component={TextVariants.small}>
       JDK Flight Recordings are compact records of events which have occurred within the target JVM.
@@ -213,26 +230,15 @@ export const CustomRecordingForm = (props) => {
         label="Template"
         isRequired
         fieldId="recording-template"
-        validated={!!template ? "success" : "error"}
+        validated={template === null ? ValidatedOptions.default : !!template ? ValidatedOptions.success : ValidatedOptions.error}
+        helperTextInvalid="A Template must be selected"
       >
         <FormSelect
           value={`${template},${templateType}`}
           onChange={handleTemplateChange}
           aria-label="Event Template Input"
         >
-          <FormSelectOption key="0" value="" label="Select a Template" />
-          <FormSelectOptionGroup key="1" label="Target Templates">
-            {
-              // FIXME idx offset hardcoding is fragile and will break if the number of TARGET templates != 3. These should be computed and memoized in advance in
-              // a separate function and then referenced here.
-              templates.filter(t => t.type === "TARGET").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx+2} value={`${t.name},${t.type}`} label={t.name} />))
-            }
-          </FormSelectOptionGroup>
-          <FormSelectOptionGroup key="2" label="Custom Templates">
-            {
-              templates.filter(t => t.type === "CUSTOM").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx+5} value={`${t.name},${t.type}`} label={t.name} />))
-            }
-          </FormSelectOptionGroup>
+          { templatesOptionGroups }
         </FormSelect>
       </FormGroup>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
