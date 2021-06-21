@@ -140,36 +140,44 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       .subscribe(v => {
         const event: RecordingNotificationEvent = v.message;
         notifications.info('Recording Created', `${event.recording} created in target: ${event.target}`);
-        refreshRecordingList();
+        React.useCallback(() => {
+          refreshRecordingList();
+        }, [refreshRecordingList]);
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]);
+  }, [context.notificationChannel, notifications, refreshRecordingList]); 
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingSaved)
       .subscribe(v => {
          const event: RecordingNotificationEvent = v.message;
          notifications.info('Recording Archived', `${event.recording} was archived`);
-         refreshRecordingList();
+         React.useCallback(() => {
+          refreshRecordingList();
+        }, [refreshRecordingList]);
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]);
+  }, [context.notificationChannel, notifications]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingArchived)
       .subscribe(v => {
          const event: RecordingNotificationEvent = v.message;
          notifications.info('Recording Archived', `${event.recording} was archived`);
-         refreshRecordingList();
+         React.useCallback(() => {
+          refreshRecordingList();
+        }, [refreshRecordingList]);
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]);
+  }, [context.notificationChannel, notifications]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
       .subscribe(v => {
          const event: RecordingNotificationEvent = v.message;
          notifications.info('Recording Deleted', `${event.recording} was deleted`);
-         refreshRecordingList();
+         React.useCallback(() => {
+          refreshRecordingList();
+        }, [refreshRecordingList]);
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]);
+  }, [context.notificationChannel, notifications]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
