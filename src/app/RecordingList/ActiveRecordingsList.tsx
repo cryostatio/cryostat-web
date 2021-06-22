@@ -144,7 +144,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           refreshRecordingList();
         }, [refreshRecordingList]);
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]); 
+  }, [context.notificationChannel, notifications]); 
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingSaved)
