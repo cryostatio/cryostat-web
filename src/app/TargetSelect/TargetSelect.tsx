@@ -1,8 +1,8 @@
 /*
  * Copyright The Cryostat Authors
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,9 +41,14 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid, GridItem, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
-import { ContainerNodeIcon, Spinner2Icon } from '@patternfly/react-icons';
-import { filter, first } from 'rxjs/operators';
+import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid,
+  GridItem, Select, SelectOption, SelectVariant, Text, TextVariants
+} from '@patternfly/react-core';
+import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
+import { of } from 'rxjs';
+import { catchError, filter, first } from 'rxjs/operators';
+
+import { CreateTargetModal } from './CreateTargetModal';
 
 export interface TargetSelectProps {
   isCompact?: boolean;
@@ -58,6 +63,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(true);
+  const [isModalOpen, setModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const refreshTargetList = React.useCallback(() => {
@@ -138,6 +144,47 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     setExpanded(false);
   };
 
+  const showCreateTargetModal = React.useCallback(() => {
+    setModalOpen(true);
+  }, [setModalOpen]);
+
+  const createTarget = React.useCallback((target: Target) => {
+    setLoading(true);
+    addSubscription(
+      context.api.createTarget(target)
+        .pipe(first(), catchError(() => of(false)))
+        .subscribe(success => {
+          setLoading(false);
+          setModalOpen(false);
+          if (success) {
+            notifications.info('Target Created');
+          } else {
+            notifications.danger('Target Creation Failed');
+          }
+        })
+    );
+  }, [context.api, notifications, setModalOpen]);
+
+  const deleteTarget = React.useCallback(() => {
+    setLoading(true);
+    addSubscription(
+      context.api.deleteTarget(selected)
+      .pipe(first())
+      .subscribe(() => {
+        setLoading(false);
+      }, () => {
+        setLoading(false);
+        let id: string;
+        if (selected.alias === selected.connectUrl) {
+          id = selected.alias;
+        } else {
+          id = `${selected.alias} [${selected.connectUrl}]`
+        }
+        notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
+      })
+    );
+  }, [context.api, selected]);
+
   return (<>
       <Grid>
         <GridItem span={props.isCompact ? 4 : 8}>
@@ -151,6 +198,18 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               <CardActions>
                 <Button
                   isDisabled={isLoading}
+                  onClick={showCreateTargetModal}
+                  variant="control"
+                  icon={<PlusCircleIcon />}
+                />
+                <Button
+                  isDisabled={isLoading || (selected == NO_TARGET)}
+                  onClick={deleteTarget}
+                  variant="control"
+                  icon={<TrashIcon />}
+                />
+                <Button
+                  isDisabled={isLoading}
                   onClick={refreshTargetList}
                   variant="control"
                   icon={<Spinner2Icon />}
@@ -161,7 +220,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               <Select
                 toggleIcon={<ContainerNodeIcon />}
                 variant={SelectVariant.single}
-                selections={selected.alias}
+                selections={selected.alias || selected.connectUrl}
                 onSelect={onSelect}
                 onToggle={setExpanded}
                 isDisabled={isLoading}
@@ -172,11 +231,18 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />])
                   .concat(
                     targets.map((t: Target) => (
-                      <SelectOption
-                        key={t.connectUrl}
-                        value={t}
-                        isPlaceholder={false}
-                      >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+                      (t.alias == t.connectUrl) || !t.alias ?
+                        <SelectOption
+                          key={t.connectUrl}
+                          value={t}
+                          isPlaceholder={false}
+                        >{`${t.connectUrl}`}</SelectOption>
+                      :
+                        <SelectOption
+                          key={t.connectUrl}
+                          value={t}
+                          isPlaceholder={false}
+                        >{`${t.alias} (${t.connectUrl})`}</SelectOption>
                     ))
                 )
               }
@@ -185,6 +251,11 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           </Card>
         </GridItem>
       </Grid>
+      <CreateTargetModal
+        visible={isModalOpen}
+        onSubmit={(target) => createTarget(target)}
+        onDismiss={() => setModalOpen(false)}
+      ></CreateTargetModal>
   </>);
 
 }
