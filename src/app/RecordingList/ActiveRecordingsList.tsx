@@ -1,8 +1,8 @@
 /*
  * Copyright The Cryostat Authors
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -88,34 +88,34 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
   const addSubscription = useSubscriptions();
 
-  const handleRowCheck = (checked, index) => {
+  const handleRowCheck = React.useCallback((checked, index) => {
     if (checked) {
       setCheckedIndices(ci => ([...ci, index]));
     } else {
       setHeaderChecked(false);
       setCheckedIndices(ci => ci.filter(v => v !== index));
     }
-  };
+  }, [setCheckedIndices, setHeaderChecked]);
 
-  const handleHeaderCheck = (checked) => {
+  const handleHeaderCheck = React.useCallback((checked) => {
     setHeaderChecked(checked);
     setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
-  };
+  }, [setHeaderChecked, setCheckedIndices, recordings]);
 
-  const handleCreateRecording = () => {
+  const handleCreateRecording = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
-  };
+  }, [routerHistory]);
 
-  const handleRecordings = (recordings) => {
+  const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
     setErrorMessage('');
-  };
+  }, [setRecordings, setIsLoading, setErrorMessage]);
 
-  const handleError = (error) => {
+  const handleError = React.useCallback((error) => {
     setIsLoading(false);
     setErrorMessage(error.message);
-  }
+  }, [setIsLoading, setErrorMessage]);
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
@@ -133,7 +133,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     addSubscription(
       context.target.target().subscribe(refreshRecordingList)
     );
-  }, []);
+  }, [addSubscription]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingCreated)
@@ -142,7 +142,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         notifications.info('Recording Created', `${event.recording} created in target: ${event.target}`);
         refreshRecordingList();
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]);
+  }, [addSubscription, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingSaved)
@@ -151,7 +151,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Archived', `${event.recording} was archived`);
          refreshRecordingList();
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]);
+  }, [addSubscription, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingArchived)
@@ -160,7 +160,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Archived', `${event.recording} was archived`);
          refreshRecordingList();
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]);
+  }, [addSubscription, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
@@ -169,16 +169,16 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Deleted', `${event.recording} was deleted`);
          refreshRecordingList();
       }));
-  }, [context.notificationChannel, notifications, refreshRecordingList]);
+  }, [addSubscription, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
       setErrorMessage("Auth failure");
     });
     return () => sub.unsubscribe();
-  }, [context.target]);
+  }, [context.target, setErrorMessage]);
 
-  const handleArchiveRecordings = () => {
+  const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
@@ -195,9 +195,9 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         }
       }, window.console.error)
     );
-  };
+  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription, props.onArchive]);
 
-  const handleStopRecordings = () => {
+  const handleStopRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
@@ -212,9 +212,9 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     addSubscription(
       forkJoin(tasks).subscribe(refreshRecordingList, window.console.error)
     );
-  };
+  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription, refreshRecordingList]);
 
-  const handleDeleteRecordings = () => {
+  const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<{}>[] = [];
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
@@ -228,7 +228,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     addSubscription(
       forkJoin(tasks).subscribe(refreshRecordingList, window.console.error)
     );
-  };
+  }, [recordings, checkedIndices, handleRowCheck, context.reports, context.api, addSubscription, refreshRecordingList]);
 
   React.useEffect(() => {
     refreshRecordingList();
@@ -237,7 +237,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     }
     const id = window.setInterval(() => refreshRecordingList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
-  }, []);
+  }, [refreshRecordingList, context.settings]);
 
   const RecordingRow = (props) => {
     const expandedRowId =`active-table-row-${props.index}-exp`;
@@ -401,7 +401,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     return () => sub.unsubscribe();
   }, [context.api, notifications]);
 
-  const grafanaUpload = () => {
+  const grafanaUpload = React.useCallback(() => {
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
     addSubscription(
       props.uploadFn()
@@ -413,15 +413,15 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         }
       })
     );
-  };
+  }, [addSubscription]);
 
-  const handleDownloadRecording = () => {
+  const handleDownloadRecording = React.useCallback(() => {
     context.api.downloadRecording(props.recording);
-  };
+  }, [context.api, props.recording]);
 
-  const handleDownloadReport = () => {
+  const handleDownloadReport = React.useCallback(() => {
     context.api.downloadReport(props.recording);
-  };
+  }, [context.api, props.recording]);
 
   const actionItems = React.useMemo(() => {
     const actionItems = [
