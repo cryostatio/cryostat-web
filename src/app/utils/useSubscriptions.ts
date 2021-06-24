@@ -52,5 +52,5 @@ export function useSubscriptions() {
     });
   };
 
-  return addSubscription;
+  return React.useCallback(addSubscription, [setSubscriptions]);
 }
