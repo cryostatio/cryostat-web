@@ -1,8 +1,8 @@
 /*
  * Copyright The Cryostat Authors
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@ import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, Form
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
-import { EventTemplate } from './CreateRecording';
+import { EventTemplate, TemplateType } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes, Recording } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 
@@ -51,8 +51,6 @@ export interface CustomRecordingFormProps {
 }
 
 export const RecordingNamePattern = /^[\w_]+$/;
-export const TemplatePattern = /^template=([\w]+)(?:,type=([\w]+))?$/;
-export const EventSpecifierPattern = /([\w\\.$]+):([\w]+)=([\w\d\\.]+)/;
 
 export const CustomRecordingForm = (props) => {
   const context = React.useContext(ServiceContext);
@@ -65,10 +63,8 @@ export const CustomRecordingForm = (props) => {
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  '');
-  const [templateType] = React.useState(props.templateType || props?.location?.state?.templateType || '');
-  const [eventSpecifiers, setEventSpecifiers] = React.useState(props?.eventSpecifiers?.join(' ') || '');
-  const [eventsValid, setEventsValid] = React.useState((!!props.template || !!props?.location?.state?.template) ? ValidatedOptions.success : ValidatedOptions.default);
+  const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  null);
+  const [templateType, setTemplateType] = React.useState(props.templateType || props?.location?.state?.templateType || null as TemplateType | null);
   const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
@@ -87,21 +83,23 @@ export const CustomRecordingForm = (props) => {
     setDurationUnit(Number(evt));
   };
 
-  const handleTemplateChange = (name) => {
-    setEventsValid(name ? ValidatedOptions.success : ValidatedOptions.error);
-    setEventSpecifiers('');
-    setTemplate(name);
+  const handleTemplateChange = (template) => {
+    const parts: string[] = template.split(',');
+    setTemplate(parts[0]);
+    setTemplateType(parts[1]);
   };
 
-  const handleEventSpecifiersChange = (evt) => {
-    setEventsValid((TemplatePattern.test(evt) || EventSpecifierPattern.test(evt)) ? ValidatedOptions.success : ValidatedOptions.error);
-    setTemplate('');
-    setEventSpecifiers(evt);
+  const getEventString = () => {
+    var str = '';
+    if (!!template) {
+      str += `template=${template}`;
+    }
+    if (!!templateType) {
+      str += `,type=${templateType}`;
+    }
+    console.log({ str });
+    return str;
   };
-
-  const getEventSpecifiers = () => template ? templateType ? `template=${template},type=${templateType}` : `template=${template}` : eventSpecifiers;
-
-  const getEventString = () => template ? templateType ? `template=${template},type=${templateType}` : `template=${template}` : eventSpecifiers.split(/\s+/).filter(Boolean).join(',');
 
   const handleRecordingNameChange = (name) => {
     setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
@@ -141,9 +139,6 @@ export const CustomRecordingForm = (props) => {
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
     }
-    if (eventsValid !== ValidatedOptions.success) {
-      notificationMessages.push(`Event specifiers are invalid`);
-    }
     if (notificationMessages.length > 0) {
       const message = notificationMessages.join('. ').trim() + '.';
       notifications.warning('Invalid form data', message);
@@ -175,18 +170,22 @@ export const CustomRecordingForm = (props) => {
     return () => sub.unsubscribe();
   }, []);
 
-  React.useEffect(() => {
-    if (TemplatePattern.test(eventSpecifiers)) {
-      const regexMatches = TemplatePattern.exec(eventSpecifiers);
-      if (!regexMatches || !regexMatches[1]) {
-        return;
-      }
-      const template = regexMatches[1];
-      if (templates.find(t => t.name === template)) {
-        handleTemplateChange(template);
-      }
-    }
-  }, [eventSpecifiers, templates]);
+  const templatesOptionGroups = React.useMemo(() => {
+    const offset = templates.filter(t => t.type === "CUSTOM").length;
+    return (<>
+      <FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder />
+      <FormSelectOptionGroup key="-2" label="Custom Templates">
+        {
+          templates.filter(t => t.type === "CUSTOM").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx} value={`${t.name},${t.type}`} label={t.name} />))
+        }
+      </FormSelectOptionGroup>
+      <FormSelectOptionGroup key="-3" label="Target Templates">
+        {
+          templates.filter(t => t.type === "TARGET").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx+offset} value={`${t.name},${t.type}`} label={t.name} />))
+        }
+      </FormSelectOptionGroup>
+    </>);
+  }, [templates]);
 
   return (<>
     <Text component={TextVariants.small}>
@@ -228,49 +227,19 @@ export const CustomRecordingForm = (props) => {
         <DurationPicker enabled={!continuous} period={duration} onPeriodChange={handleDurationChange} unitScalar={durationUnit} onUnitScalarChange={handleDurationUnitChange} />
       </FormGroup>
       <FormGroup
-        label="Events"
+        label="Template"
         isRequired
-        fieldId="recording-events"
-        validated={eventsValid}
-        helperText="Select a template from the dropdown, or enter a template name or event specifier string in the text area"
+        fieldId="recording-template"
+        validated={template === null ? ValidatedOptions.default : !!template ? ValidatedOptions.success : ValidatedOptions.error}
+        helperTextInvalid="A Template must be selected"
       >
-        <Split hasGutter={true}>
-          <SplitItem>
-            <FormSelect
-              value={template}
-              onChange={handleTemplateChange}
-              aria-label="Event Template Input"
-            >
-              <FormSelectOption key="0" value="" label="Custom Event Definition" />
-              <FormSelectOptionGroup key="1" label="Remote Templates">
-                {
-                  templates.map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx+2} value={t.name} label={t.name} />))
-                }
-              </FormSelectOptionGroup>
-            </FormSelect>
-          </SplitItem>
-          <SplitItem>
-            <Tooltip
-              isContentLeftAligned
-              position={TooltipPosition.auto}
-              content={
-                <Text component={TextVariants.p}>
-                  Templates are selected with the syntax <i>template=Foo</i>.<br /><br />
-
-                  Event names and options are specified with the syntax <i>ns.Event:option=Value</i>
-                  &mdash; ex. <i>jdk.SocketRead:enabled=true</i>.<br /><br />
-
-                Multiple event option specifiers should be separated by whitespace.
-                </Text>
-              }
-            >
-              <OutlinedQuestionCircleIcon />
-            </Tooltip>
-          </SplitItem>
-          <SplitItem isFilled>
-            <TextArea value={getEventSpecifiers()} onChange={handleEventSpecifiersChange} aria-label="Custom Event Specifiers Area" validated={eventsValid} />
-          </SplitItem>
-        </Split>
+        <FormSelect
+          value={`${template},${templateType}`}
+          onChange={handleTemplateChange}
+          aria-label="Event Template Input"
+        >
+          { templatesOptionGroups }
+        </FormSelect>
       </FormGroup>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
