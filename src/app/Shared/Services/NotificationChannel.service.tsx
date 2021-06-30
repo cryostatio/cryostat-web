@@ -61,12 +61,12 @@ export class NotificationChannel {
       notifications.info('WebSocket Client Activity', `Client at ${addr} ${status}`);
     });
 
-    const clientUrl = fromFetch(`${this.apiSvc.authority}/api/v1/clienturl`)
+    const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
       .pipe(
         concatMap(resp => from(resp.json())),
-        map((url: any): string => url.clientUrl)
+        map((url: any): string => url.notificationsUrl)
       );
-    combineLatest(clientUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
+    combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
       .pipe(first())
       .subscribe(
         (parts: string[]) => {
@@ -101,7 +101,7 @@ export class NotificationChannel {
             err => this.logError('WebSocket error', err)
           );
         },
-        (err: any) => this.logError('Client URL configuration', err)
+        (err: any) => this.logError('Notifications URL configuration', err)
       );
   }
 
