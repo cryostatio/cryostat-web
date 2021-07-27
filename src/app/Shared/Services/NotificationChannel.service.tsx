@@ -100,6 +100,9 @@ export class NotificationChannel {
             v => this._messages.next(v),
             err => this.logError('WebSocket error', err)
           );
+
+          // message doesn't matter, we just need to send something to the server so that our SubProtocol token can be authenticated
+          this.ws.next('connect');
         },
         (err: any) => this.logError('Notifications URL configuration', err)
       );
