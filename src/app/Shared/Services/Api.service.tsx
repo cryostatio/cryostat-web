@@ -64,6 +64,7 @@ export class ApiService {
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
+  private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
   readonly authority: string;
@@ -94,10 +95,13 @@ export class ApiService {
       .pipe(
         concatMap(resp => from(resp.json())),
         concatMap((jsonResp: any) => {
-          if (jsonResp.dashboardAvailable && jsonResp.datasourceAvailable) {
-            return forkJoin([getDatasourceURL, getDashboardURL]);
+          if (!!jsonResp.cryostatVersion && jsonResp.dashboardAvailable && jsonResp.datasourceAvailable) {
+            return forkJoin([of(jsonResp.cryostatVersion), getDatasourceURL, getDashboardURL]);
           } else {
             const missing: string[] = [];
+            if (!jsonResp.cryostatVersion) {
+              missing.push('Cryostat version');
+            }
             if (!jsonResp.dashboardAvailable) {
               missing.push('dashboard URL');
             }
@@ -108,9 +112,11 @@ export class ApiService {
             return throwError(message);
           }}))
       .subscribe(
-        (url: any) => {
-          this.grafanaDatasourceUrlSubject.next(url[0].grafanaDatasourceUrl);
-          this.grafanaDashboardUrlSubject.next(url[1].grafanaDashboardUrl);
+        (parts: any) => {
+          console.log({parts});
+          this.cryostatVersionSubject.next(parts[0]);
+          this.grafanaDatasourceUrlSubject.next(parts[1].grafanaDatasourceUrl);
+          this.grafanaDashboardUrlSubject.next(parts[2].grafanaDashboardUrl);
         },
         err => {
           window.console.error(err);
@@ -345,6 +351,10 @@ export class ApiService {
       }),
       catchError((): ObservableInput<boolean> => of(false)),
     );
+  }
+
+  cryostatVersion(): Observable<string> {
+    return this.cryostatVersionSubject.asObservable();
   }
 
   grafanaDatasourceUrl(): Observable<string> {
