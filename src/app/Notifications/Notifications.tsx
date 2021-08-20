@@ -61,7 +61,7 @@ export class Notifications {
     }
     notification.read = false;
     notification.timestamp = +Date.now();
-    this._notifications.push(notification);
+    this._notifications.unshift(notification);
     this._notifications$.next(this._notifications);
   }
 
