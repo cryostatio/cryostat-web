@@ -36,10 +36,13 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
 
 export interface Notification {
+  read?: boolean;
   key?: string;
   title: string;
   message?: string;
@@ -50,13 +53,16 @@ export interface Notification {
 export class Notifications {
 
   private readonly _notifications: Notification[] = [];
+  private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>(this._notifications);
 
   notify(notification: Notification): void {
     if (!notification.key) {
       notification.key = nanoid();
     }
+    notification.read = false;
     notification.timestamp = +Date.now();
     this._notifications.push(notification);
+    this._notifications$.next(this._notifications);
   }
 
   success(title: string, message?: string): void {
@@ -75,10 +81,28 @@ export class Notifications {
     this.notify({ title, message, variant: AlertVariant.danger });
   }
 
-  notifications(): Notification[] {
-    return [...this._notifications];
+  notifications(): Observable<Notification[]> {
+    return this._notifications$.asObservable();
   }
 
+  unreadNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(n => !n.read))
+    );
+  }
+
+  setRead(key?: string, read: boolean = true) {
+    if (!key) {
+      return;
+    }
+    for (var n of this._notifications) {
+      if (n.key === key) {
+        n.read = read;
+      }
+    }
+    this._notifications$.next(this._notifications);
+  }
 }
 
 const NotificationsInstance = new Notifications();

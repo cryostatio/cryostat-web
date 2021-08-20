@@ -69,6 +69,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [cryostatVersion, setCryostatVersion] = React.useState('unknown');
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const location = useLocation();
 
   React.useEffect(() => {
@@ -82,6 +83,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
     return () => sub.unsubscribe();
   })
+
+  React.useEffect(() => {
+    const sub = notificationsContext.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
+    return () => sub.unsubscribe();
+  }, [notificationsContext, notificationsContext.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
 
   const dismissAuthModal = () => {
     setShowAuthModal(false);
@@ -123,7 +129,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <PageHeaderTools>
       <PageHeaderToolsGroup>
         <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded} >
-          <NotificationBadge variant={ notificationsContext.notifications().length === 0 ? 'read' : 'unread' } onClick={handleNotificationBadgeToggle} aria-label='Notifications'>
+          <NotificationBadge variant={ unreadNotificationsCount === 0 ? 'read' : 'unread' } onClick={handleNotificationBadgeToggle} aria-label='Notifications'>
             <BellIcon />
           </NotificationBadge>
         </PageHeaderToolsItem>
@@ -232,12 +238,13 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       Skip to Content
     </SkipToContent>
   );
+  const NotificationDrawer = React.useMemo(() => (<NotificationCenter />), []);
   return (<>
     <Page
       mainContainerId="primary-app-container"
       header={Header}
       sidebar={Sidebar}
-      notificationDrawer={<NotificationCenter />}
+      notificationDrawer={NotificationDrawer}
       isNotificationDrawerExpanded={isNotificationDrawerExpanded}
       onPageResize={onPageResize}
       skipToContent={PageSkipToContent}>

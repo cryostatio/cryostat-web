@@ -39,21 +39,45 @@ import * as React from 'react';
 import { NotificationDrawer, NotificationDrawerBody, NotificationDrawerHeader,
   NotificationDrawerList, NotificationDrawerListItem, NotificationDrawerListItemBody,
   NotificationDrawerListItemHeader, Text, TextVariants } from '@patternfly/react-core';
-import { NotificationsContext } from './Notifications';
+import { Notification, NotificationsContext } from './Notifications';
 
 export const NotificationCenter = () => {
   const context = React.useContext(NotificationsContext);
+  const [notifications, setNotifications] = React.useState([] as Notification[]);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
+
+  React.useEffect(() => {
+    const sub = context.notifications().subscribe(setNotifications);
+    return () => sub.unsubscribe();
+  }, [context, context.notifications, notifications, setNotifications]);
+
+  React.useEffect(() => {
+    const sub = context.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
+    return () => sub.unsubscribe();
+  }, [context, context.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
+
+  const markRead = React.useCallback((key?: string) => {
+    context.setRead(key);
+  }, [context, context.setRead]);
+
+  const timestampToDateTimeString = (timestamp?: number): string => {
+    if (!timestamp) {
+      return '';
+    }
+    var date = new Date(timestamp);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  }
 
   return (<>
     <NotificationDrawer>
-      <NotificationDrawerHeader count={context.notifications().length} />
+      <NotificationDrawerHeader count={unreadNotificationsCount} />
       <NotificationDrawerBody>
         <NotificationDrawerList>
         {
-          context.notifications().map(({ key, title, message, variant, timestamp }) => (
-            <NotificationDrawerListItem key={key} variant={variant} >
+          notifications.map(({ key, title, message, variant, timestamp, read }) => (
+            <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
               <NotificationDrawerListItemHeader title={title} variant={variant} />
-              <NotificationDrawerListItemBody timestamp={timestamp} >
+              <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
                 <Text component={TextVariants.p}>{message}</Text>
               </NotificationDrawerListItemBody>
             </NotificationDrawerListItem>
