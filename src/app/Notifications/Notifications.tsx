@@ -92,7 +92,7 @@ export class Notifications {
     );
   }
 
-  setRead(key?: string, read: boolean = true) {
+  setRead(key?: string, read: boolean = true): void {
     if (!key) {
       return;
     }
@@ -100,6 +100,20 @@ export class Notifications {
       if (n.key === key) {
         n.read = read;
       }
+    }
+    this._notifications$.next(this._notifications);
+  }
+
+  markAllRead(): void {
+    for (var n of this._notifications) {
+      n.read = true;
+    }
+    this._notifications$.next(this._notifications);
+  }
+
+  clearAll(): void {
+    while (this._notifications.length > 0) {
+      this._notifications.shift();
     }
     this._notifications$.next(this._notifications);
   }

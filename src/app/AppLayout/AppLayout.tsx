@@ -119,8 +119,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const handleSettingsButtonClick = () => {
     routerHistory.push('/settings');
   };
-  const handleNotificationBadgeToggle = () => {
+  const handleNotificationCenterToggle = () => {
     setNotificationDrawerExpanded(!isNotificationDrawerExpanded);
+  };
+  const handleCloseNotificationCenter = () => {
+    setNotificationDrawerExpanded(false);
   };
   const handleAboutModalToggle = () => {
     setAboutModalOpen(!aboutModalOpen);
@@ -129,7 +132,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <PageHeaderTools>
       <PageHeaderToolsGroup>
         <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded} >
-          <NotificationBadge variant={ unreadNotificationsCount === 0 ? 'read' : 'unread' } onClick={handleNotificationBadgeToggle} aria-label='Notifications'>
+          <NotificationBadge
+            count={unreadNotificationsCount}
+            variant={ unreadNotificationsCount === 0 ? 'read' : 'unread' }
+            onClick={handleNotificationCenterToggle} aria-label='Notifications'
+            >
             <BellIcon />
           </NotificationBadge>
         </PageHeaderToolsItem>
@@ -238,7 +245,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       Skip to Content
     </SkipToContent>
   );
-  const NotificationDrawer = React.useMemo(() => (<NotificationCenter />), []);
+  const NotificationDrawer = React.useMemo(() => (<NotificationCenter onClose={handleCloseNotificationCenter} />), []);
   return (<>
     <Page
       mainContainerId="primary-app-container"

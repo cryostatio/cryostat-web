@@ -36,15 +36,20 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { NotificationDrawer, NotificationDrawerBody, NotificationDrawerHeader,
+import { Dropdown, DropdownItem, DropdownPosition, KebabToggle, NotificationDrawer, NotificationDrawerBody, NotificationDrawerHeader,
   NotificationDrawerList, NotificationDrawerListItem, NotificationDrawerListItemBody,
   NotificationDrawerListItemHeader, Text, TextVariants } from '@patternfly/react-core';
 import { Notification, NotificationsContext } from './Notifications';
 
-export const NotificationCenter = () => {
+export interface NotificationCenterProps {
+  onClose: () => void;
+}
+
+export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = props => {
   const context = React.useContext(NotificationsContext);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
+  const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
 
   React.useEffect(() => {
     const sub = context.notifications().subscribe(setNotifications);
@@ -55,6 +60,18 @@ export const NotificationCenter = () => {
     const sub = context.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
     return () => sub.unsubscribe();
   }, [context, context.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
+
+  const handleToggleDropdown = () => {
+    setHeaderDropdownOpen(!isHeaderDropdownOpen);
+  };
+
+  const handleMarkAllRead = React.useCallback(() => {
+    context.markAllRead();
+  }, [context, context.markAllRead]);
+
+  const handleClearAll = React.useCallback(() => {
+    context.clearAll();
+  }, [context, context.clearAll]);
 
   const markRead = React.useCallback((key?: string) => {
     context.setRead(key);
@@ -68,9 +85,27 @@ export const NotificationCenter = () => {
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   }
 
+  const drawerDropdownItems = [
+    <DropdownItem key="markAllRead" onClick={handleMarkAllRead} component="button">
+      Mark all read
+    </DropdownItem>,
+    <DropdownItem key="clearAll" onClick={handleClearAll} component="button">
+      Clear all
+    </DropdownItem>,
+  ];
+
   return (<>
     <NotificationDrawer>
-      <NotificationDrawerHeader count={unreadNotificationsCount} />
+      <NotificationDrawerHeader count={unreadNotificationsCount} onClose={props.onClose} >
+        <Dropdown
+          isPlain
+          onSelect={handleToggleDropdown}
+          toggle={(<KebabToggle onToggle={handleToggleDropdown} />)}
+          isOpen={isHeaderDropdownOpen}
+          position={DropdownPosition.right}
+          dropdownItems={drawerDropdownItems}
+        />
+      </NotificationDrawerHeader>
       <NotificationDrawerBody>
         <NotificationDrawerList>
         {
