@@ -35,33 +35,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService, TargetInstance } from './Target.service';
-import { TargetsService } from './Targets.service';
-import { ApiService } from './Api.service';
-import { NotificationChannel } from './NotificationChannel.service';
-import { ReportService } from './Report.service';
-import { SettingsService } from './Settings.service';
 
-export interface Services {
-  target: TargetService;
-  targets: TargetsService;
-  api: ApiService;
-  notificationChannel: NotificationChannel;
-  reports: ReportService;
-  settings: SettingsService;
+import * as _ from 'lodash';
+import { ApiService } from './Api.service';
+import { Target } from './Target.service';
+import { NotificationChannel } from './NotificationChannel.service';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
+
+const NOTIFICATION_CATEGORY = 'TargetJvmDiscovery';
+
+export interface TargetDiscoveryEvent {
+  kind: 'LOST' | 'FOUND';
+  serviceRef: Target;
 }
 
-const api = new ApiService(TargetInstance, NotificationsInstance);
-const notificationChannel = new NotificationChannel(api, NotificationsInstance);
-const reports = new ReportService(api, NotificationsInstance);
-const settings = new SettingsService();
-const targets = new TargetsService(api, notificationChannel);
+export class TargetsService {
+  private readonly _targets$: BehaviorSubject<Target[]> = new BehaviorSubject<Target[]>([] as Target[]);
 
-const defaultServices: Services = { target: TargetInstance, targets, api, notificationChannel, reports, settings };
+  constructor(
+    api: ApiService,
+    notifications: NotificationChannel,
+    ) {
+    api.doGet<Target[]>(`targets`)
+      .pipe(first())
+      .subscribe(v => this._targets$.next(v), err => console.error(err));
+    notifications.messages(NOTIFICATION_CATEGORY)
+      .subscribe(v => {
+        const evt: TargetDiscoveryEvent = v.message.event;
+        switch (evt.kind) {
+          case 'FOUND':
+            this._targets$.next(_.unionBy(this._targets$.getValue(), [evt.serviceRef], t => t.connectUrl));
+            break;
+          case 'LOST':
+            this._targets$.next(_.filter(this._targets$.getValue(), t => t.connectUrl !== evt.serviceRef.connectUrl));
+            break;
+          default:
+            console.error({ notificationMessage: v });
+            break;
+        }
+      });
+  }
 
-const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
+  targets(): Observable<Target[]> {
+    return this._targets$.asObservable();
+  }
 
-export { ServiceContext, defaultServices };
+}
 

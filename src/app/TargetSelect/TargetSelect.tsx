@@ -46,7 +46,7 @@ import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
-import { catchError, filter, first } from 'rxjs/operators';
+import { catchError, first } from 'rxjs/operators';
 
 import { CreateTargetModal } from './CreateTargetModal';
 
@@ -62,9 +62,14 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [selected, setSelected] = React.useState(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
-  const [isLoading, setLoading] = React.useState(true);
+  const [isLoading, setLoading] = React.useState(false);
   const [isModalOpen, setModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
+
+  React.useEffect(() => {
+    const sub = context.targets.targets().subscribe(setTargets);
+    return () => sub.unsubscribe();
+  }, [context, context.targets, setTargets]);
 
   const refreshTargetList = React.useCallback(() => {
     setLoading(true);
@@ -78,12 +83,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     );
   }, [context.api]);
 
-  React.useEffect(() => {
-    const sub = context.notificationChannel.isReady()
-      .pipe(filter(v => !!v), first())
-      .subscribe(refreshTargetList);
-    return () => sub.unsubscribe();
-  }, [context.notificationChannel, refreshTargetList]);
+  const selectNone = () => {
+    onSelect(undefined, undefined, true);
+  };
 
   React.useEffect(() => {
     const sub = context.notificationChannel.messages(NOTIFICATION_CATEGORY)
@@ -91,12 +93,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         const evt: TargetDiscoveryEvent = v.message.event;
         switch (evt.kind) {
           case 'FOUND':
-            setTargets(old => _.unionBy(old, [evt.serviceRef], t => t.connectUrl));
             break;
           case 'LOST':
-            setTargets(old => _.filter(old, t => t.connectUrl !== evt.serviceRef.connectUrl));
             if (selected.connectUrl === evt.serviceRef.connectUrl) {
-              notifications.info('Target Disappeared', `The selected target "${selected.alias}" disappeared.`);
+              notifications.warning('Target Disappeared', `The selected target "${selected.alias}" disappeared.`);
               selectNone();
             }
             break;
@@ -106,25 +106,21 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         }
       });
     return () => sub.unsubscribe();
-  }, [context.notificationChannel, notifications, NOTIFICATION_CATEGORY, setTargets, selected]);
+  }, [context.notificationChannel, notifications, NOTIFICATION_CATEGORY, selectNone, selected]);
 
   React.useLayoutEffect(() => {
-    const sub = context.target.target().subscribe(setSelected);
-    return () => sub.unsubscribe();
+    addSubscription(
+      context.target.target().subscribe(setSelected)
+    );
   }, [context.target]);
 
   React.useEffect(() => {
-    refreshTargetList();
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
     const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetList]);
-
-  const selectNone = () => {
-    onSelect(undefined, undefined, true);
-  };
 
   const onSelect = (evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
