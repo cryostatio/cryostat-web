@@ -72,14 +72,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const refreshTargetList = React.useCallback(() => {
     setLoading(true);
     addSubscription(
-      context.api.doGet<Target[]>(`targets`)
-      .pipe(first())
-      .subscribe(targets => {
-        setTargets(targets);
-        setLoading(false);
-      })
+      context.targets.queryForTargets().subscribe(() => setLoading(false))
     );
-  }, [context.api]);
+  }, [setLoading, addSubscription, context.targets]);
 
   const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
     if (isPlaceholder) {

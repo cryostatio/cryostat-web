@@ -41,8 +41,8 @@ import { ApiService } from './Api.service';
 import { Target } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { NotificationChannel } from './NotificationChannel.service';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { catchError, first, map, tap } from 'rxjs/operators';
 
 const NOTIFICATION_CATEGORY = 'TargetJvmDiscovery';
 
@@ -55,13 +55,13 @@ export class TargetsService {
   private readonly _targets$: BehaviorSubject<Target[]> = new BehaviorSubject<Target[]>([] as Target[]);
 
   constructor(
-    api: ApiService,
+    private readonly api: ApiService,
+    private readonly notifications: Notifications,
     notificationChannel: NotificationChannel,
-    notifications: Notifications,
     ) {
-    api.doGet<Target[]>(`targets`)
-      .pipe(first())
-      .subscribe(v => this._targets$.next(v), err => console.error(err));
+    this.queryForTargets().subscribe(() => {
+      ; // just trigger a startup query
+    });
     notificationChannel.messages(NOTIFICATION_CATEGORY)
       .subscribe(v => {
         const evt: TargetDiscoveryEvent = v.message.event;
@@ -69,17 +69,30 @@ export class TargetsService {
         switch (evt.kind) {
           case 'FOUND':
             this._targets$.next(_.unionBy(this._targets$.getValue(), [evt.serviceRef], t => t.connectUrl));
-            notifications.info('Target Appeared', `A new target "${target.alias}" appeared (${target.connectUrl})"`);
+            notifications.info('Target Appeared', `Target "${target.alias}" appeared (${target.connectUrl})"`);
             break;
           case 'LOST':
             this._targets$.next(_.filter(this._targets$.getValue(), t => t.connectUrl !== evt.serviceRef.connectUrl));
             notifications.info('Target Disappeared', `Target "${target.alias}" disappeared (${target.connectUrl})"`);
             break;
           default:
-            console.error({ notificationMessage: v });
+            notifications.danger(`Invalid Message Received`, `Received a notification with category ${NOTIFICATION_CATEGORY} and unrecognized kind ${evt.kind}`);
             break;
         }
       });
+  }
+
+  queryForTargets(): Observable<void> {
+    return this.api.doGet<Target[]>(`targets`)
+    .pipe(
+      first(),
+      tap(targets => this._targets$.next(targets)),
+      map(() => undefined),
+      catchError(err => {
+        this.notifications.danger('Target List Update Failed', err)
+        return of(undefined);
+      }),
+    );
   }
 
   targets(): Observable<Target[]> {
