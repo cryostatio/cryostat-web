@@ -54,8 +54,6 @@ export interface TargetSelectProps {
   isCompact?: boolean;
 }
 
-const NOTIFICATION_CATEGORY = 'TargetJvmDiscovery';
-
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
@@ -83,30 +81,25 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     );
   }, [context.api]);
 
-  const selectNone = () => {
-    onSelect(undefined, undefined, true);
-  };
-
-  React.useEffect(() => {
-    const sub = context.notificationChannel.messages(NOTIFICATION_CATEGORY)
-      .subscribe(v => {
-        const evt: TargetDiscoveryEvent = v.message.event;
-        switch (evt.kind) {
-          case 'FOUND':
-            break;
-          case 'LOST':
-            if (selected.connectUrl === evt.serviceRef.connectUrl) {
-              notifications.warning('Target Disappeared', `The selected target "${selected.alias}" disappeared.`);
-              selectNone();
-            }
-            break;
-          default:
-            notifications.danger(`Bad ${NOTIFICATION_CATEGORY} message received`, `Unknown event type ${evt.kind}`);
-            break;
+  const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
+    if (isPlaceholder) {
+      context.target.setTarget(NO_TARGET);
+    } else {
+      if (selection != selected) {
+        try {
+          context.target.setTarget(selection);
+        } catch (error) {
+          notifications.danger("Cannot set target", error.message)
+          context.target.setTarget(NO_TARGET);
         }
-      });
-    return () => sub.unsubscribe();
-  }, [context.notificationChannel, notifications, NOTIFICATION_CATEGORY, selectNone, selected]);
+      }
+    }
+    setExpanded(false);
+  }, [context, context.target, selected, notifications, setExpanded]);
+
+  const selectNone = React.useCallback(() => {
+    onSelect(undefined, undefined, true);
+  }, [onSelect]);
 
   React.useLayoutEffect(() => {
     addSubscription(
@@ -122,24 +115,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetList]);
 
-  const onSelect = (evt, selection, isPlaceholder) => {
-    if (isPlaceholder) {
-      context.target.setTarget(NO_TARGET);
-    } else {
-      if (selection != selected) {
-        try {
-          context.target.setTarget(selection);
-        } catch (error) {
-          notifications.danger("Cannot set target", error.message)
-          context.target.setTarget(NO_TARGET);
-        }
-      }
-    }
-    // FIXME setting the expanded state to false seems to cause an "unmounted component" error
-    // in the browser console
-    setExpanded(false);
-  };
-
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
   }, [setModalOpen]);
@@ -152,9 +127,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         .subscribe(success => {
           setLoading(false);
           setModalOpen(false);
-          if (success) {
-            notifications.info('Target Created');
-          } else {
+          if (!success) {
             notifications.danger('Target Creation Failed');
           }
         })
@@ -167,6 +140,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.api.deleteTarget(selected)
       .pipe(first())
       .subscribe(() => {
+        selectNone();
         setLoading(false);
       }, () => {
         setLoading(false);
@@ -179,7 +153,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
       })
     );
-  }, [context.api, selected]);
+  }, [context.api, selected, setLoading, addSubscription, notifications, selectNone]);
 
   return (<>
       <Grid>

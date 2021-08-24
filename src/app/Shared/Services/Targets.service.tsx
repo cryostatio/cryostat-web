@@ -39,6 +39,7 @@
 import * as _ from 'lodash';
 import { ApiService } from './Api.service';
 import { Target } from './Target.service';
+import { Notifications } from '@app/Notifications/Notifications';
 import { NotificationChannel } from './NotificationChannel.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -55,20 +56,24 @@ export class TargetsService {
 
   constructor(
     api: ApiService,
-    notifications: NotificationChannel,
+    notificationChannel: NotificationChannel,
+    notifications: Notifications,
     ) {
     api.doGet<Target[]>(`targets`)
       .pipe(first())
       .subscribe(v => this._targets$.next(v), err => console.error(err));
-    notifications.messages(NOTIFICATION_CATEGORY)
+    notificationChannel.messages(NOTIFICATION_CATEGORY)
       .subscribe(v => {
         const evt: TargetDiscoveryEvent = v.message.event;
+        const target: Target = evt.serviceRef;
         switch (evt.kind) {
           case 'FOUND':
             this._targets$.next(_.unionBy(this._targets$.getValue(), [evt.serviceRef], t => t.connectUrl));
+            notifications.info('Target Appeared', `A new target "${target.alias}" appeared (${target.connectUrl})"`);
             break;
           case 'LOST':
             this._targets$.next(_.filter(this._targets$.getValue(), t => t.connectUrl !== evt.serviceRef.connectUrl));
+            notifications.info('Target Disappeared', `Target "${target.alias}" disappeared (${target.connectUrl})"`);
             break;
           default:
             console.error({ notificationMessage: v });
