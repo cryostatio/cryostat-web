@@ -1,8 +1,8 @@
 /*
  * Copyright The Cryostat Authors
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,58 +36,91 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Alert, AlertActionCloseButton, AlertGroup, AlertVariant, Text, TextVariants } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownPosition, KebabToggle, NotificationDrawer, NotificationDrawerBody, NotificationDrawerHeader,
+  NotificationDrawerList, NotificationDrawerListItem, NotificationDrawerListItemBody,
+  NotificationDrawerListItemHeader, Text, TextVariants } from '@patternfly/react-core';
 import { Notification, NotificationsContext } from './Notifications';
 
-export const NotificationCenter = () => {
+export interface NotificationCenterProps {
+  onClose: () => void;
+}
+
+export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = props => {
   const context = React.useContext(NotificationsContext);
-
   const [notifications, setNotifications] = React.useState([] as Notification[]);
-
-  const removeNotificationByKey = (notifications, key) => {
-    const idx = notifications.findIndex(n => n.key === key);
-    if (idx < 0) {
-      return notifications;
-    }
-    const before = notifications.slice(0, idx);
-    const after = notifications.slice(idx + 1, notifications.length);
-    return before.concat(after);
-  };
-
-  const addNotification = (notification: Notification) => {
-    setNotifications(notifications => [...notifications, notification]);
-    if (notification.timeout) {
-      window.setTimeout(() => setNotifications(notifications => removeNotificationByKey(notifications, notification.key)), notification.timeout);
-    }
-  };
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
+  const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.watch().subscribe(notification => addNotification(notification));
+    const sub = context.notifications().subscribe(setNotifications);
     return () => sub.unsubscribe();
-  });
+  }, [context, context.notifications, notifications, setNotifications]);
+
+  React.useEffect(() => {
+    const sub = context.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
+    return () => sub.unsubscribe();
+  }, [context, context.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
+
+  const handleToggleDropdown = () => {
+    setHeaderDropdownOpen(!isHeaderDropdownOpen);
+  };
+
+  const handleMarkAllRead = React.useCallback(() => {
+    context.markAllRead();
+  }, [context, context.markAllRead]);
+
+  const handleClearAll = React.useCallback(() => {
+    context.clearAll();
+  }, [context, context.clearAll]);
+
+  const markRead = React.useCallback((key?: string) => {
+    context.setRead(key);
+  }, [context, context.setRead]);
+
+  const timestampToDateTimeString = (timestamp?: number): string => {
+    if (!timestamp) {
+      return '';
+    }
+    var date = new Date(timestamp);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  }
+
+  const drawerDropdownItems = [
+    <DropdownItem key="markAllRead" onClick={handleMarkAllRead} component="button">
+      Mark all read
+    </DropdownItem>,
+    <DropdownItem key="clearAll" onClick={handleClearAll} component="button">
+      Clear all
+    </DropdownItem>,
+  ];
 
   return (<>
-    <AlertGroup isToast>
-    {
-      notifications.map(({key, title, message, variant}) => (
-        <Alert
-          isLiveRegion
-          variant={AlertVariant[variant]}
-          title={title}
-          key={key}
-          actionClose={
-            <AlertActionCloseButton
-              title={title}
-              variantLabel={`${variant} alert`}
-              onClose={() => setNotifications(removeNotificationByKey(notifications, key))}
-            />
-          }
-        >
-          <Text component={TextVariants.p}>{message}</Text>
-        </Alert>
-      ))
-    }
-    </AlertGroup>
+    <NotificationDrawer>
+      <NotificationDrawerHeader count={unreadNotificationsCount} onClose={props.onClose} >
+        <Dropdown
+          isPlain
+          onSelect={handleToggleDropdown}
+          toggle={(<KebabToggle onToggle={handleToggleDropdown} />)}
+          isOpen={isHeaderDropdownOpen}
+          position={DropdownPosition.right}
+          dropdownItems={drawerDropdownItems}
+        />
+      </NotificationDrawerHeader>
+      <NotificationDrawerBody>
+        <NotificationDrawerList>
+        {
+          notifications.map(({ key, title, message, variant, timestamp, read }) => (
+            <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
+              <NotificationDrawerListItemHeader title={title} variant={variant} />
+              <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
+                <Text component={TextVariants.p}>{message}</Text>
+              </NotificationDrawerListItemBody>
+            </NotificationDrawerListItem>
+          ))
+        }
+        </NotificationDrawerList>
+      </NotificationDrawerBody>
+    </NotificationDrawer>
   </>);
 
 };

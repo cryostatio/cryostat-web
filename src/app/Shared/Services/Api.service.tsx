@@ -113,7 +113,6 @@ export class ApiService {
           }}))
       .subscribe(
         (parts: any) => {
-          console.log({parts});
           this.cryostatVersionSubject.next(parts[0]);
           this.grafanaDatasourceUrlSubject.next(parts[1].grafanaDatasourceUrl);
           this.grafanaDashboardUrlSubject.next(parts[2].grafanaDashboardUrl);

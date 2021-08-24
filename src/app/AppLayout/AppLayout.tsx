@@ -39,13 +39,14 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, routes } from '@app/routes';
-import { AboutModal, Button, Nav, NavItem, NavList, Page, PageHeader,
+import { AboutModal, Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
   SkipToContent, Text, TextContent, TextList, TextListItem } from '@patternfly/react-core';
-import { CogIcon, HelpIcon } from '@patternfly/react-icons';
-import { NavLink, matchPath, useHistory, useLocation } from 'react-router-dom';
+import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
+import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
+import { NotificationsContext } from '../Notifications/Notifications';
 import { AuthModal } from './AuthModal';
-import { SslErrorModal} from './SslErrorModal';
+import { SslErrorModal } from './SslErrorModal';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -53,6 +54,8 @@ interface IAppLayout {
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const context = React.useContext(ServiceContext);
+  const serviceContext = React.useContext(ServiceContext);
+  const notificationsContext = React.useContext(NotificationsContext);
   const routerHistory = useHistory();
   const logoProps = {
     href: '/',
@@ -64,31 +67,38 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
+  const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [cryostatVersion, setCryostatVersion] = React.useState('unknown');
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const location = useLocation();
 
   React.useEffect(() => {
-    const sub = context.target.authFailure().subscribe(() => {
+    const sub = serviceContext.target.authFailure().subscribe(() => {
       setShowAuthModal(true);
     });
     return () => sub.unsubscribe();
-  }, [context.target]);
+  }, [serviceContext.target]);
 
   React.useEffect(() => {
-    const sub = context.api.cryostatVersion().subscribe(setCryostatVersion);
+    const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
     return () => sub.unsubscribe();
   })
+
+  React.useEffect(() => {
+    const sub = notificationsContext.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
+    return () => sub.unsubscribe();
+  }, [notificationsContext, notificationsContext.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
 
   const dismissAuthModal = () => {
     setShowAuthModal(false);
   };
 
   React.useEffect(() => {
-    const sub = context.target.sslFailure().subscribe(() => {
+    const sub = serviceContext.target.sslFailure().subscribe(() => {
       setShowSslErrorModal(true);
     });
     return () => sub.unsubscribe();
-  }, [context.target]);
+  }, [serviceContext.target]);
 
   const dismissSslErrorModal = () => {
     setShowSslErrorModal(false);
@@ -109,12 +119,27 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const handleSettingsButtonClick = () => {
     routerHistory.push('/settings');
   };
+  const handleNotificationCenterToggle = () => {
+    setNotificationDrawerExpanded(!isNotificationDrawerExpanded);
+  };
+  const handleCloseNotificationCenter = () => {
+    setNotificationDrawerExpanded(false);
+  };
   const handleAboutModalToggle = () => {
     setAboutModalOpen(!aboutModalOpen);
   };
   const HeaderTools = (<>
     <PageHeaderTools>
       <PageHeaderToolsGroup>
+        <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded} >
+          <NotificationBadge
+            count={unreadNotificationsCount}
+            variant={ unreadNotificationsCount === 0 ? 'read' : 'unread' }
+            onClick={handleNotificationCenterToggle} aria-label='Notifications'
+            >
+            <BellIcon />
+          </NotificationBadge>
+        </PageHeaderToolsItem>
         <PageHeaderToolsItem>
           <Button
             onClick={handleSettingsButtonClick}
@@ -220,18 +245,20 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       Skip to Content
     </SkipToContent>
   );
+  const NotificationDrawer = React.useMemo(() => (<NotificationCenter onClose={handleCloseNotificationCenter} />), []);
   return (<>
     <Page
       mainContainerId="primary-app-container"
       header={Header}
       sidebar={Sidebar}
+      notificationDrawer={NotificationDrawer}
+      isNotificationDrawerExpanded={isNotificationDrawerExpanded}
       onPageResize={onPageResize}
       skipToContent={PageSkipToContent}>
       {children}
     </Page>
     <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={dismissAuthModal}/>
     <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal}/>
-    <NotificationCenter />
   </>);
 }
 
