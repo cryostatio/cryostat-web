@@ -42,8 +42,8 @@ import { IAppRoute, routes } from '@app/routes';
 import { AboutModal, Button, Nav, NavItem, NavList, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
   SkipToContent, Text, TextContent, TextList, TextListItem } from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
-import { NavLink, matchPath, useLocation } from 'react-router-dom';
+import { CogIcon, HelpIcon } from '@patternfly/react-icons';
+import { NavLink, matchPath, useHistory, useLocation } from 'react-router-dom';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal} from './SslErrorModal';
 
@@ -53,6 +53,7 @@ interface IAppLayout {
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const context = React.useContext(ServiceContext);
+  const routerHistory = useHistory();
   const logoProps = {
     href: '/',
     target: '_blank'
@@ -105,6 +106,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const mobileOnSelect = (selected) => {
     if(isMobileView) setIsNavOpenMobile(false)
   };
+  const handleSettingsButtonClick = () => {
+    routerHistory.push('/settings');
+  };
   const handleAboutModalToggle = () => {
     setAboutModalOpen(!aboutModalOpen);
   };
@@ -112,6 +116,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <PageHeaderTools>
       <PageHeaderToolsGroup>
         <PageHeaderToolsItem>
+          <Button
+            onClick={handleSettingsButtonClick}
+            variant='link'
+            icon={<CogIcon color='white 'size='sm' />}
+          />
           <Button
             onClick={handleAboutModalToggle}
             variant='link'

@@ -105,7 +105,6 @@ const routes: IAppRoute[] = [
   {
     component: Settings,
     exact: true,
-    label: 'Settings',
     path: '/settings',
     title: 'Settings',
   },
