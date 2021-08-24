@@ -117,7 +117,7 @@ export const EventTemplates = () => {
     addSubscription(
       context.target.target().subscribe(refreshTemplates)
     );
-  }, [context, context.target, addSubscription]);
+  }, [context, context.target, addSubscription, refreshTemplates]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
