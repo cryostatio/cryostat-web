@@ -167,7 +167,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
           id={`archived-ex-expand-${props.index}`}
           isHidden={!isExpanded}
         >
-          <ReportFrame recording={props.recording} width="100%" height="640" />
+          <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
         </DataListContent>
       </DataListItem>
     </>);
