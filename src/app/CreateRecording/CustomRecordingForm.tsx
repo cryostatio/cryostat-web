@@ -197,7 +197,7 @@ export const CustomRecordingForm = (props) => {
         label="Name"
         isRequired
         fieldId="recording-name"
-        helperText="Please enter a recording name, this will be unique within the target JVM"
+        helperText="Enter a recording name. This will be unique within the target JVM"
         validated={nameValid}
       >
         <TextInput
@@ -323,7 +323,7 @@ export const CustomRecordingForm = (props) => {
         </Form>
       </ExpandableSection>
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit}>Create</Button>
+        <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
