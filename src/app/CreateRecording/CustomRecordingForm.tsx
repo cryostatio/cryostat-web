@@ -323,7 +323,7 @@ export const CustomRecordingForm = (props) => {
         </Form>
       </ExpandableSection>
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit}>Create</Button>
+        <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
