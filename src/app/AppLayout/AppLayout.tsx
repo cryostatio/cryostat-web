@@ -36,15 +36,17 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import * as _ from 'lodash';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, routes } from '@app/routes';
-import { AboutModal, Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
+import { AboutModal, AlertVariant, Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
   SkipToContent, Text, TextContent, TextList, TextListItem } from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
+import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
-import { NotificationsContext } from '../Notifications/Notifications';
+import { Notification, NotificationsContext } from '../Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 
@@ -70,6 +72,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [cryostatVersion, setCryostatVersion] = React.useState('unknown');
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
+  const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const location = useLocation();
 
   React.useEffect(() => {
@@ -86,6 +89,16 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
 
   React.useEffect(() => {
     const sub = notificationsContext.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
+    return () => sub.unsubscribe();
+  }, [notificationsContext, notificationsContext.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
+
+  React.useEffect(() => {
+    const sub = notificationsContext
+      .unreadNotifications()
+      .pipe(map((notifications: Notification[]) =>
+        _.filter(notifications, n => n.variant === AlertVariant.danger || n.variant === AlertVariant.warning)
+      ))
+      .subscribe(s => setErrorNotificationsCount(s.length));
     return () => sub.unsubscribe();
   }, [notificationsContext, notificationsContext.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
 
@@ -134,7 +147,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
         <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded} >
           <NotificationBadge
             count={unreadNotificationsCount}
-            variant={ unreadNotificationsCount === 0 ? 'read' : 'unread' }
+            variant={errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'}
             onClick={handleNotificationCenterToggle} aria-label='Notifications'
             >
             <BellIcon />
