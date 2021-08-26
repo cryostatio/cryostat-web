@@ -36,13 +36,29 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { map } from 'rxjs/operators';
 import { FormProps } from './FormProps';
+import { Base64 } from 'js-base64';
 
 export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
-
+  const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
+
+  React.useEffect(() => {
+    const sub = context.api.getToken().pipe(map(Base64.decode)).subscribe(creds => {
+      if (!creds.includes(':')) {
+        setUsername(creds);
+        return;
+      }
+      let parts: string[] = creds.split(':');
+      setUsername(parts[0]);
+      setPassword(parts[1]);
+    });
+    return () => sub.unsubscribe();
+  }, [context, context.api, setUsername, setPassword]);
 
   const handleUserChange = React.useCallback((evt) => {
     setUsername(evt);

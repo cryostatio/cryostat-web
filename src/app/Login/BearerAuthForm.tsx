@@ -36,12 +36,18 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
 import { FormProps } from './FormProps';
 
 export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
-
+  const context = React.useContext(ServiceContext);
   const [token, setToken] = React.useState('');
+
+  React.useEffect(() => {
+    const sub = context.api.getToken().subscribe(setToken);
+    return () => sub.unsubscribe();
+  }, [context, context.api, setToken]);
 
   const handleTokenChange = React.useCallback((evt) => {
     setToken(evt);
