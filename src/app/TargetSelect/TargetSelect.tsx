@@ -46,7 +46,7 @@ import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
-import { catchError, filter, first } from 'rxjs/operators';
+import { catchError, first } from 'rxjs/operators';
 
 import { CreateTargetModal } from './CreateTargetModal';
 
@@ -54,79 +54,29 @@ export interface TargetSelectProps {
   isCompact?: boolean;
 }
 
-const NOTIFICATION_CATEGORY = 'TargetJvmDiscovery';
-
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
   const [selected, setSelected] = React.useState(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
-  const [isLoading, setLoading] = React.useState(true);
+  const [isLoading, setLoading] = React.useState(false);
   const [isModalOpen, setModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
+
+  React.useEffect(() => {
+    const sub = context.targets.targets().subscribe(setTargets);
+    return () => sub.unsubscribe();
+  }, [context, context.targets, setTargets]);
 
   const refreshTargetList = React.useCallback(() => {
     setLoading(true);
     addSubscription(
-      context.api.doGet<Target[]>(`targets`)
-      .pipe(first())
-      .subscribe(targets => {
-        setTargets(targets);
-        setLoading(false);
-      })
+      context.targets.queryForTargets().subscribe(() => setLoading(false))
     );
-  }, [context.api]);
+  }, [setLoading, addSubscription, context.targets]);
 
-  React.useEffect(() => {
-    const sub = context.notificationChannel.isReady()
-      .pipe(filter(v => !!v), first())
-      .subscribe(refreshTargetList);
-    return () => sub.unsubscribe();
-  }, [context.notificationChannel, refreshTargetList]);
-
-  React.useEffect(() => {
-    const sub = context.notificationChannel.messages(NOTIFICATION_CATEGORY)
-      .subscribe(v => {
-        const evt: TargetDiscoveryEvent = v.message.event;
-        switch (evt.kind) {
-          case 'FOUND':
-            setTargets(old => _.unionBy(old, [evt.serviceRef], t => t.connectUrl));
-            break;
-          case 'LOST':
-            setTargets(old => _.filter(old, t => t.connectUrl !== evt.serviceRef.connectUrl));
-            if (selected.connectUrl === evt.serviceRef.connectUrl) {
-              notifications.info('Target Disappeared', `The selected target "${selected.alias}" disappeared.`);
-              selectNone();
-            }
-            break;
-          default:
-            notifications.danger(`Bad ${NOTIFICATION_CATEGORY} message received`, `Unknown event type ${evt.kind}`);
-            break;
-        }
-      });
-    return () => sub.unsubscribe();
-  }, [context.notificationChannel, notifications, NOTIFICATION_CATEGORY, setTargets, selected]);
-
-  React.useLayoutEffect(() => {
-    const sub = context.target.target().subscribe(setSelected);
-    return () => sub.unsubscribe();
-  }, [context.target]);
-
-  React.useEffect(() => {
-    refreshTargetList();
-    if (!context.settings.autoRefreshEnabled()) {
-      return;
-    }
-    const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
-    return () => window.clearInterval(id);
-  }, [context.target, context.settings, refreshTargetList]);
-
-  const selectNone = () => {
-    onSelect(undefined, undefined, true);
-  };
-
-  const onSelect = (evt, selection, isPlaceholder) => {
+  const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
       context.target.setTarget(NO_TARGET);
     } else {
@@ -139,10 +89,26 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         }
       }
     }
-    // FIXME setting the expanded state to false seems to cause an "unmounted component" error
-    // in the browser console
     setExpanded(false);
-  };
+  }, [context, context.target, selected, notifications, setExpanded]);
+
+  const selectNone = React.useCallback(() => {
+    onSelect(undefined, undefined, true);
+  }, [onSelect]);
+
+  React.useLayoutEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(setSelected)
+    );
+  }, [context.target]);
+
+  React.useEffect(() => {
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
+    }
+    const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    return () => window.clearInterval(id);
+  }, [context.target, context.settings, refreshTargetList]);
 
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
@@ -156,9 +122,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         .subscribe(success => {
           setLoading(false);
           setModalOpen(false);
-          if (success) {
-            notifications.info('Target Created');
-          } else {
+          if (!success) {
             notifications.danger('Target Creation Failed');
           }
         })
@@ -171,6 +135,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.api.deleteTarget(selected)
       .pipe(first())
       .subscribe(() => {
+        selectNone();
         setLoading(false);
       }, () => {
         setLoading(false);
@@ -183,7 +148,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
       })
     );
-  }, [context.api, selected]);
+  }, [context.api, selected, setLoading, addSubscription, notifications, selectNone]);
 
   return (<>
       <Grid>
