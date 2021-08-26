@@ -39,8 +39,8 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
-import { timer } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { combineLatest, timer } from 'rxjs';
+import { debounceTime, first } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
@@ -81,6 +81,21 @@ export const Login = (props) => {
     checkAuth('', 'Basic'); // check auth once at component load to query the server's auth method
     return () => sub.unsubscribe();
   }, [context, context.api, setAuthMethod, checkAuth]);
+
+  React.useEffect(() => {
+    const sub =
+      combineLatest(context.api.getToken(), context.api.getAuthMethod(), timer(0, 5000))
+      .pipe(debounceTime(1000))
+      .subscribe(parts => {
+        let token = parts[0];
+        let authMethod = parts[1];
+        if (authMethod === 'Basic') {
+          token = Base64.decode(token);
+        }
+        checkAuth(token, authMethod);
+    });
+    return () => sub.unsubscribe();
+  }, [context, context.api, checkAuth]);
 
   return (
     <PageSection>
