@@ -1,8 +1,8 @@
 /*
  * Copyright The Cryostat Authors
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -67,24 +67,24 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
     'Name'
   ];
 
-  const handleHeaderCheck = (checked) => {
+  const handleHeaderCheck = React.useCallback((checked) => {
     setHeaderChecked(checked);
     setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
-  };
+  }, [setHeaderChecked, setCheckedIndices, recordings]);
 
-  const handleRowCheck = (checked, index) => {
+  const handleRowCheck = React.useCallback((checked, index) => {
     if (checked) {
       setCheckedIndices(ci => ([...ci, index]));
     } else {
       setHeaderChecked(false);
       setCheckedIndices(ci => ci.filter(v => v !== index));
     }
-  };
+  }, [setCheckedIndices, setHeaderChecked]);
 
-  const handleRecordings = (recordings) => {
+  const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-  }
+  }, [setRecordings, setIsLoading]);
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
@@ -93,13 +93,13 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
       .pipe(first())
       .subscribe(handleRecordings)
     );
-  }, [addSubscription, context.api]);
+  }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe(refreshRecordingList)
     );
-  }, []);
+  }, [addSubscription, context, context.target, refreshRecordingList]);
 
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
@@ -127,13 +127,12 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   }, [props.updater])
 
   React.useEffect(() => {
-    refreshRecordingList();
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
     const id = window.setInterval(() => refreshRecordingList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
-  }, []);
+  }, [context, context.settings, refreshRecordingList]);
 
   const RecordingRow = (props) => {
     const expandedRowId =`archived-table-row-${props.index}-exp`;
@@ -168,7 +167,7 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
           id={`archived-ex-expand-${props.index}`}
           isHidden={!isExpanded}
         >
-          <ReportFrame recording={props.recording} width="100%" height="640" />
+          <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
         </DataListContent>
       </DataListItem>
     </>);

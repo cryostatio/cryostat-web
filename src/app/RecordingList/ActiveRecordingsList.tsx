@@ -127,13 +127,13 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         first(),
       ).subscribe(value => handleRecordings(value), err => handleError(err))
     );
-  }, [addSubscription, context.target, context.api]);
+  }, [addSubscription, context, context.target, context.api, setIsLoading, handleRecordings, handleError]);
 
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe(refreshRecordingList)
     );
-  }, [addSubscription]);
+  }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingCreated)
@@ -142,7 +142,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         notifications.info('Recording Created', `${event.recording} created in target: ${event.target}`);
         refreshRecordingList();
       }));
-  }, [addSubscription, context.notificationChannel, notifications, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingSaved)
@@ -151,7 +151,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Archived', `${event.recording} was archived`);
          refreshRecordingList();
       }));
-  }, [addSubscription, context.notificationChannel, notifications, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingArchived)
@@ -160,7 +160,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Archived', `${event.recording} was archived`);
          refreshRecordingList();
       }));
-  }, [addSubscription, context.notificationChannel, notifications, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
@@ -169,14 +169,14 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          notifications.info('Recording Deleted', `${event.recording} was deleted`);
          refreshRecordingList();
       }));
-  }, [addSubscription, context.notificationChannel, notifications, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
       setErrorMessage("Auth failure");
     });
     return () => sub.unsubscribe();
-  }, [context.target, setErrorMessage]);
+  }, [context, context.target, setErrorMessage]);
 
   const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
@@ -231,13 +231,12 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   }, [recordings, checkedIndices, handleRowCheck, context.reports, context.api, addSubscription, refreshRecordingList]);
 
   React.useEffect(() => {
-    refreshRecordingList();
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
     const id = window.setInterval(() => refreshRecordingList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
-  }, [refreshRecordingList, context.settings]);
+  }, [refreshRecordingList, context, context.settings]);
 
   const RecordingRow = (props) => {
     const expandedRowId =`active-table-row-${props.index}-exp`;
@@ -305,7 +304,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
           <hr></hr>
           <br></br>
           <Text>Automated Analysis:</Text>
-          <ReportFrame recording={props.recording} width="100%" height="640" />
+          <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
         </DataListContent>
       </DataListItem>
     );
