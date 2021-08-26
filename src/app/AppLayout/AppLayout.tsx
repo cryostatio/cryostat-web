@@ -40,9 +40,11 @@ import * as _ from 'lodash';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, routes } from '@app/routes';
-import { AboutModal, AlertVariant, Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
+import { AboutModal, Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
+  Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
-  SkipToContent, Text, TextContent, TextList, TextListItem } from '@patternfly/react-core';
+  SkipToContent, Text, TextContent, TextList, TextListItem
+} from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
@@ -71,6 +73,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [cryostatVersion, setCryostatVersion] = React.useState('unknown');
+  const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const location = useLocation();
@@ -86,6 +89,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
     return () => sub.unsubscribe();
   })
+
+  React.useEffect(() => {
+    const sub = notificationsContext.notifications().subscribe(setNotifications);
+    return () => sub.unsubscribe();
+  }, []);
 
   React.useEffect(() => {
     const sub = notificationsContext.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
@@ -105,6 +113,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const dismissAuthModal = () => {
     setShowAuthModal(false);
   };
+  const handleMarkNotificationRead = React.useCallback(key => {
+    notificationsContext.setRead(key, true);
+  }, [notificationsContext]);
 
   React.useEffect(() => {
     const sub = serviceContext.target.sslFailure().subscribe(() => {
@@ -260,6 +271,20 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   );
   const NotificationDrawer = React.useMemo(() => (<NotificationCenter onClose={handleCloseNotificationCenter} />), []);
   return (<>
+    <AlertGroup isToast>
+      {
+        notifications
+          .filter(n => !n.read && (n.variant === AlertVariant.danger || n.variant === AlertVariant.warning))
+          .map(( { key, title, message, variant } ) => (
+            <Alert
+              variant={variant}
+              title={title}
+              actionClose={<AlertActionCloseButton onClose={() => handleMarkNotificationRead(key)} />}
+            >{message}
+            </Alert>
+        ))
+      }
+    </AlertGroup>
     <Page
       mainContainerId="primary-app-container"
       header={Header}
