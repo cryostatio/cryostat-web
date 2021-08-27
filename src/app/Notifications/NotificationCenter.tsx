@@ -36,9 +36,11 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Dropdown, DropdownItem, DropdownPosition, KebabToggle, NotificationDrawer, NotificationDrawerBody, NotificationDrawerHeader,
-  NotificationDrawerList, NotificationDrawerListItem, NotificationDrawerListItemBody,
-  NotificationDrawerListItemHeader, Text, TextVariants } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownPosition, KebabToggle,
+  NotificationDrawer, NotificationDrawerBody, NotificationDrawerHeader,
+  NotificationDrawerList, NotificationDrawerListItem,
+  NotificationDrawerListItemBody, NotificationDrawerListItemHeader, Text,
+  TextVariants } from '@patternfly/react-core';
 import { Notification, NotificationsContext } from './Notifications';
 
 export interface NotificationCenterProps {
