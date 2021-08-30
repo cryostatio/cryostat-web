@@ -48,7 +48,7 @@ import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 
 export const Login = (props) => {
   const serviceContext = React.useContext(ServiceContext);
-  const notificationsContext = React.useContext(NotificationsContext);
+  const notifications = React.useContext(NotificationsContext);
 
   const [token, setToken] = React.useState('');
   const [authMethod, setAuthMethod] = React.useState('');
@@ -67,7 +67,7 @@ export const Login = (props) => {
         if (v) {
           onLoginSuccess();
         } else if (userSubmission) {
-          notificationsContext.danger('Authentication Failure', `${authMethod} authentication failed`);
+          notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
       })
     );
