@@ -50,21 +50,39 @@ import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 export const Login = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
+  const useTokenWithSessionStorage = storageKey => {
+    const [token, setToken] = React.useState(
+      sessionStorage.getItem(storageKey) || ''
+    );
 
-  const [token, setToken] = React.useState('');
+    React.useEffect(() => {
+      sessionStorage.setItem(storageKey, token);
+    }, [token]);
+
+    return [token, setToken] as const;
+  };
+
+  const [savedToken, setToken] = useTokenWithSessionStorage('token');
   const [authMethod, setAuthMethod] = React.useState('');
   const addSubscription = useSubscriptions();
 
   const checkAuth = React.useCallback((token, authMethod, userSubmission) => {
     let tok = token;
+
+    if(!token) {
+      tok = savedToken;
+    }
+
     if (authMethod === 'Basic') {
-      tok = Base64.encodeURL(token);
+      tok = Base64.encodeURL(tok);
     } // else this is Bearer auth and the token is sent as-is
     addSubscription(
       serviceContext.api.checkAuth(tok, authMethod)
       .pipe(first())
       .subscribe(v => {
-        if (!v && userSubmission) {
+        if (v) {
+          sessionStorage.setItem('token', token);
+        } else if (userSubmission) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
       })
@@ -72,11 +90,10 @@ export const Login = () => {
   }, [serviceContext, serviceContext.api, addSubscription, notifications, authMethod]);
 
   const handleSubmit = React.useCallback((evt, token, authMethod) => {
-    setToken(token);
     setAuthMethod(authMethod);
     checkAuth(token, authMethod, true);
     evt.preventDefault();
-  }, [setToken, setAuthMethod, checkAuth]);
+  }, [setAuthMethod, checkAuth]);
 
   React.useEffect(() => {
     const sub = serviceContext.api.getAuthMethod().subscribe(setAuthMethod);

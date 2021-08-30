@@ -46,7 +46,7 @@ import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
   SkipToContent,
   NavGroup
 } from '@patternfly/react-core';
-import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
+import { BellIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
@@ -74,6 +74,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [showUserInfo, setShowUserInfo] = React.useState(false);
+  const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
@@ -149,8 +150,21 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     setAboutModalOpen(!aboutModalOpen);
   };
 
+  // TODO refactor
+  React.useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if(token) {
+      setShowUserInfo(true);
+    }
+  }, [serviceContext.api]);
+
+  const handleUserInfoToggle = () => {
+    setShowUserInfoDropdown(!showUserInfoDropdown);
+  }
+
   const handleLogout = () => {
-    console.log("log out");
+    sessionStorage.removeItem('token');
+    setShowUserInfo(false);
   };
 
   const userInfoItems = [<DropdownGroup><DropdownItem onClick={handleLogout}>Logout</DropdownItem></DropdownGroup>];
@@ -179,12 +193,16 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             icon={<HelpIcon color='white' size='sm' />}
           />
         </PageHeaderToolsItem>
-        <PageHeaderToolsItem>
+        <PageHeaderToolsItem visibility={{default: showUserInfo ? 'visible' : 'hidden'}} >
             <Dropdown
               isPlain
               position="right"
-              isOpen={showUserInfo}
-              toggle={<DropdownToggle onToggle={setShowUserInfo}>Your username</DropdownToggle>}
+              isOpen={showUserInfoDropdown}
+              toggle={<Button
+                onClick={handleUserInfoToggle}
+                variant='link'
+                icon={<UserIcon color='white' size='sm' />}
+              />}
               dropdownItems={userInfoItems}
             />
           </PageHeaderToolsItem>
