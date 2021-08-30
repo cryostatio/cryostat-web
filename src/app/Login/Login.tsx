@@ -37,6 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationsContext } from '../Notifications/Notifications';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
 import { combineLatest, timer } from 'rxjs';
@@ -46,45 +47,48 @@ import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 
 export const Login = (props) => {
-  const context = React.useContext(ServiceContext);
+  const serviceContext = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
 
   const [token, setToken] = React.useState('');
   const [authMethod, setAuthMethod] = React.useState('');
   const addSubscription = useSubscriptions();
   const onLoginSuccess = props.onLoginSuccess;
 
-  const checkAuth = React.useCallback((token, authMethod) => {
+  const checkAuth = React.useCallback((token, authMethod, userSubmission = false) => {
     let tok = token;
     if (authMethod === 'Basic') {
       tok = Base64.encodeURL(token);
     } // else this is Bearer auth and the token is sent as-is
     addSubscription(
-      context.api.checkAuth(tok, authMethod)
+      serviceContext.api.checkAuth(tok, authMethod)
       .pipe(first())
       .subscribe(v => {
         if (v) {
           onLoginSuccess();
+        } else if (userSubmission) {
+          notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
       })
     );
-  }, [context, context.api, addSubscription, onLoginSuccess]);
+  }, [serviceContext, serviceContext.api, addSubscription, onLoginSuccess, notifications, authMethod]);
 
   const handleSubmit = React.useCallback((evt, token, authMethod) => {
     setToken(token);
     setAuthMethod(authMethod);
-    checkAuth(token, authMethod);
+    checkAuth(token, authMethod, true);
     evt.preventDefault();
   }, [setToken, setAuthMethod, checkAuth]);
 
   React.useEffect(() => {
-    const sub = context.api.getAuthMethod().subscribe(setAuthMethod);
+    const sub = serviceContext.api.getAuthMethod().subscribe(setAuthMethod);
     checkAuth('', 'Basic'); // check auth once at component load to query the server's auth method
     return () => sub.unsubscribe();
-  }, [context, context.api, setAuthMethod, checkAuth]);
+  }, [serviceContext, serviceContext.api, setAuthMethod, checkAuth]);
 
   React.useEffect(() => {
     const sub =
-      combineLatest(context.api.getToken(), context.api.getAuthMethod(), timer(0, 5000))
+      combineLatest(serviceContext.api.getToken(), serviceContext.api.getAuthMethod(), timer(0, 5000))
       .pipe(debounceTime(1000))
       .subscribe(parts => {
         let token = parts[0];
@@ -95,7 +99,7 @@ export const Login = (props) => {
         checkAuth(token, authMethod);
     });
     return () => sub.unsubscribe();
-  }, [context, context.api, checkAuth]);
+  }, [serviceContext, serviceContext.api, checkAuth]);
 
   return (
     <PageSection>
