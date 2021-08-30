@@ -1,8 +1,8 @@
 /*
  * Copyright The Cryostat Authors
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,10 +40,9 @@ import { fromFetch } from 'rxjs/fetch';
 import { concatMap, first, tap } from 'rxjs/operators';
 import { ApiService, isActiveRecording, RecordingState, SavedRecording } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
+import { Base64 } from 'js-base64';
 
 export class ReportService {
-
-  private readonly reports: Map<string, string> = new window.Map();
 
   constructor(private api: ApiService, private notifications: Notifications) { }
 
@@ -51,8 +50,9 @@ export class ReportService {
     if (!recording?.reportUrl) {
       return throwError('No recording report URL');
     }
-    if (this.reports.has(recording.reportUrl)) {
-      return of(this.reports.get(recording.reportUrl) || '<p>Invalid report cache entry</p>');
+    let stored = sessionStorage.getItem(this.key(recording));
+    if (!!stored) {
+      return of(stored);
     }
     return this.api.getHeaders().pipe(
       concatMap(headers =>
@@ -80,21 +80,30 @@ export class ReportService {
         const isArchived = !isActiveRecording(recording);
         const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
         if (isArchived || isActivedStopped) {
-          this.reports.set(recording.reportUrl, report);
+          try {
+            sessionStorage.setItem(this.key(recording), report);
+          } catch (error) {
+            this.notifications.warning('Report Caching Failed', error.message);
+            sessionStorage.clear();
+          }
         }
       }, err => {
         this.notifications.danger(err.name, err.message);
         if (isGenerationError(err) && err.status >= 500) {
           err.messageDetail.pipe(first()).subscribe(detail => {
-            this.reports.set(recording.reportUrl, `<p>${detail}</p>`);
+            sessionStorage.setItem(this.key(recording), `<p>${detail}</p>`);
           });
         }
       })
     );
   }
 
-  delete(recording: SavedRecording): boolean {
-    return this.reports.delete(recording.reportUrl);
+  delete(recording: SavedRecording): void {
+    sessionStorage.removeItem(this.key(recording));
+  }
+
+  private key(recording: SavedRecording): string {
+    return Base64.encode(`report.${recording.reportUrl}`);
   }
 
 }
