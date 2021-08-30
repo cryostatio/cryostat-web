@@ -41,9 +41,10 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
-  Brand, Button, Nav, NavItem, NavGroup, NavList, NotificationBadge, Page, PageHeader,
+  Brand, Button, Dropdown, DropdownGroup, DropdownItem, DropdownToggle, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
-  SkipToContent
+  SkipToContent,
+  NavGroup
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
@@ -72,6 +73,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
+  const [showUserInfo, setShowUserInfo] = React.useState(false);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
@@ -146,6 +148,13 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const handleAboutModalToggle = () => {
     setAboutModalOpen(!aboutModalOpen);
   };
+
+  const handleLogout = () => {
+    console.log("log out");
+  };
+
+  const userInfoItems = [<DropdownGroup><DropdownItem onClick={handleLogout}>Logout</DropdownItem></DropdownGroup>];
+
   const HeaderTools = (<>
     <PageHeaderTools>
       <PageHeaderToolsGroup>
@@ -170,6 +179,15 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             icon={<HelpIcon color='white' size='sm' />}
           />
         </PageHeaderToolsItem>
+        <PageHeaderToolsItem>
+            <Dropdown
+              isPlain
+              position="right"
+              isOpen={showUserInfo}
+              toggle={<DropdownToggle onToggle={setShowUserInfo}>Your username</DropdownToggle>}
+              dropdownItems={userInfoItems}
+            />
+          </PageHeaderToolsItem>
       </PageHeaderToolsGroup>
     </PageHeaderTools>
   </>);
