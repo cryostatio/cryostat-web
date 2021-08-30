@@ -71,7 +71,7 @@ export const Login = (props) => {
         }
       })
     );
-  }, [serviceContext, serviceContext.api, addSubscription, onLoginSuccess, authMethod]);
+  }, [serviceContext, serviceContext.api, addSubscription, onLoginSuccess, notifications, authMethod]);
 
   const handleSubmit = React.useCallback((evt, token, authMethod) => {
     setToken(token);
