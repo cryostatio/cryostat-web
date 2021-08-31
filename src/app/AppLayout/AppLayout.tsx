@@ -73,7 +73,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
-  const [showUserInfo, setShowUserInfo] = React.useState(false);
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
@@ -150,13 +149,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     setAboutModalOpen(!aboutModalOpen);
   };
 
-  // TODO refactor
-  React.useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    if(token) {
-      setShowUserInfo(true);
-    }
-  }, [serviceContext.api]);
+  const isAuthenticated = () => {
+    return !! sessionStorage.getItem('token');
+  }
 
   const handleUserInfoToggle = () => {
     setShowUserInfoDropdown(!showUserInfoDropdown);
@@ -164,7 +159,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
 
   const handleLogout = () => {
     sessionStorage.removeItem('token');
-    setShowUserInfo(false);
   };
 
   const userInfoItems = [<DropdownGroup><DropdownItem onClick={handleLogout}>Logout</DropdownItem></DropdownGroup>];
@@ -193,7 +187,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             icon={<HelpIcon color='white' size='sm' />}
           />
         </PageHeaderToolsItem>
-        <PageHeaderToolsItem visibility={{default: showUserInfo ? 'visible' : 'hidden'}} >
+        <PageHeaderToolsItem visibility={{default: isAuthenticated() ? 'visible' : 'hidden'}} >
             <Dropdown
               isPlain
               position="right"
