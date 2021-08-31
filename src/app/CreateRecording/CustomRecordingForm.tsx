@@ -97,7 +97,6 @@ export const CustomRecordingForm = (props) => {
     if (!!templateType) {
       str += `,type=${templateType}`;
     }
-    console.log({ str });
     return str;
   };
 
