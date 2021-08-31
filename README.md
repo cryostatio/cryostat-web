@@ -31,7 +31,7 @@ Build:
 
 ```
 npm install --save-dev yarn # or install using your package manager
-npm run yarn:install # or just yarn install, if installed globally
+npm run yarn:frzinstall # or just yarn install, if installed globally
 ```
 
 ### Run a production build
@@ -46,7 +46,7 @@ npm run build
 To run a hot-reloading instance of cryostat-web, first run a `cryostat` instance with WebSocket communication and CORS enabled. Use `CRYOSTAT_CORS_ORIGIN` to target `http://localhost:9000`
 
 For example:
-`cd /path/to/cryostat && CRYOSTAT_CORS_ORIGIN=http://localhost:9000 sh run.sh`
+`cd /path/to/cryostat && CRYOSTAT_DISABLE_SSL=true CRYOSTAT_CORS_ORIGIN=http://localhost:9000 sh run.sh`
 
 Then run `npm run start:dev`. This will target the `cryostat` instance started above by default. This can be customized by editing the `.env` file, for example if you have another service already listening on the default port `8181` and your Cryostat is listening elsewhere.
 
