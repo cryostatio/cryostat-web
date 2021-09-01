@@ -43,7 +43,7 @@ import { IAppRoute, routes } from '@app/routes';
 import { AboutModal, Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
   Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
-  SkipToContent, Text, TextContent, TextList, TextListItem
+  SkipToContent, Text, TextContent, TextList, TextListItem, TextVariants
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
@@ -72,7 +72,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
-  const [cryostatVersion, setCryostatVersion] = React.useState('unknown');
+  const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
@@ -89,6 +89,19 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
     return () => sub.unsubscribe();
   })
+
+  const cryostatCommitHash = React.useMemo(() => {
+    if (!cryostatVersion) {
+      return;
+    }
+    const expr = /^(?<describe>[a-zA-Z0-9-_.]+-[0-9]+-[a-z0-9]{9})(?:-dirty)?$/;
+    const result = cryostatVersion.match(expr);
+    if (!result) {
+      notificationsContext.warning('Cryostat Version Parse Failure', `Could not parse Cryostat version string '${cryostatVersion}'.`);
+      return 'main';
+    }
+    return result.groups?.describe || 'main';
+  }, [cryostatVersion]);
 
   React.useEffect(() => {
     const sub = notificationsContext.notifications().subscribe(setNotifications);
@@ -202,7 +215,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             Version
           </TextListItem>
           <TextListItem component="dd">
-            <Text>{cryostatVersion}</Text>
+            <Text
+              component={TextVariants.a}
+              target="_blank"
+              href={`https://github.com/cryostatio/cryostat/commits/${cryostatCommitHash}`}
+            >{cryostatVersion}</Text>
           </TextListItem>
           <TextListItem component="dt">
             Homepage
