@@ -95,7 +95,7 @@ export class LoginService {
           this.authMethod.complete();
           this.token.next(token);
           sessionStorage.setItem('token', token);
-          this.authenticated.next(false);
+          this.authenticated.next(true);
         }
       })
     );

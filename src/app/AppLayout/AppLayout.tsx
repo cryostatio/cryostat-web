@@ -153,16 +153,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   };
 
   React.useEffect(() => {
-    const sub = serviceContext.login
-      .getAuthenticated()
-      .pipe(first())
-      .subscribe(v => setShowUserIcon(v));
-    return () => sub.unsubscribe();
-  }, [serviceContext.login]);
-
-  React.useEffect(() => {
-    setShowUserIcon(!!sessionStorage.getItem('token'));
-  }, [serviceContext.login]);
+    addSubscription(
+      serviceContext.login.getAuthenticated().subscribe(setShowUserIcon)
+    );
+  }, [addSubscription, serviceContext, serviceContext.login, setShowUserIcon]);
 
   const handleLogout = (): void => {
     addSubscription(
