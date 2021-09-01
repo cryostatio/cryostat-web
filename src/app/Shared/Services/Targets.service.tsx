@@ -87,7 +87,7 @@ export class TargetsService {
       tap(targets => this._targets$.next(targets)),
       map(() => undefined),
       catchError(err => {
-        this.notifications.danger('Target List Update Failed', err)
+        this.notifications.danger('Target List Update Failed', JSON.stringify(err));
         return of(undefined);
       }),
     );
