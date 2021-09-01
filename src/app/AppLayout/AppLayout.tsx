@@ -225,7 +225,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             Homepage
           </TextListItem>
           <TextListItem component="dd">
-            <a href='https://cryostat.io'>cryostat.io</a>
+            <Text component={TextVariants.a} target="_blank" href='https://cryostat.io'>cryostat.io</Text>
           </TextListItem>
           <TextListItem component="dt">
             Bugs
@@ -247,13 +247,13 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             Mailing List
           </TextListItem>
           <TextListItem component="dd">
-            <a href='https://groups.google.com/g/cryostat-development'>Google Groups</a>
+            <Text component={TextVariants.a} target="_blank" href='https://groups.google.com/g/cryostat-development'>Google Groups</Text>
           </TextListItem>
           <TextListItem component="dt">
             Open Source License
           </TextListItem>
           <TextListItem component="dd">
-            <a href='https://github.com/cryostatio/cryostat/blob/main/LICENSE'>License</a>
+            <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/blob/main/LICENSE'>License</Text>
           </TextListItem>
         </TextList>
       </TextContent>
