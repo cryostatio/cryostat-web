@@ -228,10 +228,20 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             <a href='https://cryostat.io'>cryostat.io</a>
           </TextListItem>
           <TextListItem component="dt">
-            Bug Reports
+            Bugs
           </TextListItem>
           <TextListItem component="dd">
-            <a href='https://github.com/cryostatio/cryostat/issues'>GitHub</a>
+            <Text>
+            <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/issues'>Known Issues</Text>
+            &nbsp;|&nbsp;
+            <Text
+              component={TextVariants.a}
+              target="_blank"
+              href={`https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+${cryostatVersion}`}
+            >
+              File a Report
+            </Text>
+            </Text>
           </TextListItem>
           <TextListItem component="dt">
             Mailing List
