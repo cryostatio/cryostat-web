@@ -41,19 +41,20 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
-  Brand, Button, Dropdown, DropdownGroup, DropdownItem, DropdownToggle, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
+  Brand, Button, Dropdown, DropdownGroup, DropdownItem, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
   SkipToContent,
   NavGroup
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
-import { map } from 'rxjs/operators';
+import { map, first } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
+import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -63,6 +64,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const routerHistory = useHistory();
+  const addSubscription = useSubscriptions();
   const logoProps = {
     href: '/'
   };
@@ -73,6 +75,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
+  const [showUserIcon, setShowUserIcon] = React.useState(false);
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
@@ -149,18 +152,33 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     setAboutModalOpen(!aboutModalOpen);
   };
 
-  const isAuthenticated = () => {
-    return !! sessionStorage.getItem('token');
-  }
+  React.useEffect(() => {
+    const sub = serviceContext.login
+      .getAuthenticated()
+      .pipe(first())
+      .subscribe(v => setShowUserIcon(v));
+    return () => sub.unsubscribe();
+  }, [serviceContext.login]);
+
+  React.useEffect(() => {
+    setShowUserIcon(!!sessionStorage.getItem('token'));
+  }, [serviceContext.login]);
+
+  const handleLogout = (): void => {
+    addSubscription(
+      serviceContext.login.handleLogout()
+      .pipe(first())
+      .subscribe(() => {
+          setShowUserIcon(false);
+      })
+    );
+  };
 
   const handleUserInfoToggle = () => {
     setShowUserInfoDropdown(!showUserInfoDropdown);
   }
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('token');
-  };
-
+  // TODO make this easier to read
   const userInfoItems = [<DropdownGroup><DropdownItem onClick={handleLogout}>Logout</DropdownItem></DropdownGroup>];
 
   const HeaderTools = (<>
@@ -187,15 +205,14 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             icon={<HelpIcon color='white' size='sm' />}
           />
         </PageHeaderToolsItem>
-        <PageHeaderToolsItem visibility={{default: isAuthenticated() ? 'visible' : 'hidden'}} >
+        <PageHeaderToolsItem visibility={{default: showUserIcon ? 'visible' : 'hidden'}} >
             <Dropdown
-              isPlain
               position="right"
               isOpen={showUserInfoDropdown}
               toggle={<Button
-                onClick={handleUserInfoToggle}
-                variant='link'
-                icon={<UserIcon color='white' size='sm' />}
+              onClick={handleUserInfoToggle}
+              variant='link'
+              icon={<UserIcon color='white' size='sm' />}
               />}
               dropdownItems={userInfoItems}
             />

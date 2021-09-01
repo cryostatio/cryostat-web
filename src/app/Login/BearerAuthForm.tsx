@@ -45,7 +45,7 @@ export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const [token, setToken] = React.useState('');
 
   React.useEffect(() => {
-    const sub = context.api.getToken().subscribe(setToken);
+    const sub = context.login.getToken().subscribe(setToken);
     return () => sub.unsubscribe();
   }, [context, context.api, setToken]);
 

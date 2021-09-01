@@ -53,28 +53,18 @@ export const Login = () => {
   const [authMethod, setAuthMethod] = React.useState('');
   const addSubscription = useSubscriptions();
 
-  const cachedToken = () => {
-    return sessionStorage.getItem('token');
-  }
-
-  const setCachedToken = (value) => {
-     sessionStorage.setItem('token', value);
-  }
-
   const checkAuth = React.useCallback((token, authMethod, userSubmission = false) => {
     let tok = token;
 
-    if(!!cachedToken()) {
-      tok = cachedToken();
-    } else if (authMethod === 'Basic') {
+    if (authMethod === 'Basic') {
       tok = Base64.encodeURL(tok);
     } // else this is Bearer auth and the token is sent as-is
     addSubscription(
-      serviceContext.api.checkAuth(tok, authMethod)
+      serviceContext.login.checkAuth(tok, authMethod)
       .pipe(first())
       .subscribe(v => {
         if (v) {
-          setCachedToken(tok);
+          //what goes here?
         } else if (userSubmission) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
@@ -86,17 +76,18 @@ export const Login = () => {
     setAuthMethod(authMethod);
     checkAuth(token, authMethod, true);
     evt.preventDefault();
-  }, [setAuthMethod, checkAuth]);
+  }, [serviceContext, serviceContext.login, setAuthMethod, checkAuth]);
+
 
   React.useEffect(() => {
-    const sub = serviceContext.api.getAuthMethod().subscribe(setAuthMethod);
-    checkAuth('', 'Basic', false); // check auth once at component load to query the server's auth method
+    const sub = serviceContext.login.getAuthMethod().subscribe(setAuthMethod);
+    checkAuth('', 'Basic'); // check auth once at component load to query the server's auth method
     return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.api, setAuthMethod, checkAuth]);
+  }, [serviceContext, serviceContext.login, setAuthMethod, checkAuth]);
 
   React.useEffect(() => {
     const sub =
-      combineLatest(serviceContext.api.getToken(), serviceContext.api.getAuthMethod(), serviceContext.notificationChannel.isReady(), timer(0, 5000))
+      combineLatest(serviceContext.login.getToken(), serviceContext.login.getAuthMethod(), timer(0, 5000))
       .pipe(debounceTime(1000))
       .subscribe(parts => {
         let token = parts[0];
@@ -110,7 +101,7 @@ export const Login = () => {
         }
     });
     return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.api, checkAuth]);
+  }, [serviceContext, serviceContext.login, checkAuth]);
 
   return (
     <PageSection>

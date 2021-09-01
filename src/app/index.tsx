@@ -46,12 +46,11 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 const App: React.FunctionComponent = () => (
   <ServiceContext.Provider value={defaultServices}>
     <Router>
-      <AppLayout>
+      <AppLayout >
         <AppRoutes />
       </AppLayout>
     </Router>
   </ServiceContext.Provider>
 );
-
 
 export { App };

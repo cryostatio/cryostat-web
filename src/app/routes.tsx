@@ -50,6 +50,7 @@ import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { About } from './About/About';
+import { first } from 'rxjs/operators';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -179,6 +180,14 @@ const AppRoutes = () => {
     const sub = context.notificationChannel.isReady().subscribe(v => setAuthenticated(v.ready));
     return () => sub.unsubscribe();
   }, [context.notificationChannel, setAuthenticated]);
+
+  React.useEffect(() => {
+    const sub = context.login
+      .getAuthenticated()
+      .pipe(first())
+      .subscribe(v => setAuthenticated(v));
+    return () => sub.unsubscribe();
+  }, [context.login, setAuthenticated]);
 
   return (
     <LastLocationProvider>

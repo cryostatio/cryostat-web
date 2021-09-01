@@ -48,7 +48,7 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const [password, setPassword] = React.useState('');
 
   React.useEffect(() => {
-    const sub = context.api.getToken().pipe(map(Base64.decode)).subscribe(creds => {
+    const sub = context.login.getToken().pipe(map(Base64.decode)).subscribe(creds => {
       if (!creds.includes(':')) {
         setUsername(creds);
         return;

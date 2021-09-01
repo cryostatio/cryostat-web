@@ -43,6 +43,7 @@ import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
 import { ApiService } from './Api.service';
+import { LoginService } from './Login.service';
 
 interface RecordingNotificationEvent {
   recording: string;
@@ -77,7 +78,8 @@ export class NotificationChannel {
 
   constructor(
     private readonly apiSvc: ApiService,
-    private readonly notifications: Notifications
+    private readonly notifications: Notifications,
+    private readonly login: LoginService
   ) {
     this.messages(NotificationCategory.WsClientActivity).subscribe(v => {
       const addr = Object.keys(v.message)[0];
@@ -118,7 +120,7 @@ export class NotificationChannel {
         })
       );
 
-    combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
+    combineLatest(notificationsUrl, this.login.getToken(), this.login.getAuthMethod())
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe({
         next: (parts: string[]) => {
