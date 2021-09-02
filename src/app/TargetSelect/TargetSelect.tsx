@@ -47,6 +47,7 @@ import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid,
 import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
+import { ActiveRecordingsList } from '@app/RecordingList/ActiveRecordingsList'
 
 import { CreateTargetModal } from './CreateTargetModal';
 
@@ -83,6 +84,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       if (selection != selected) {
         try {
           context.target.setTarget(selection);
+          
         } catch (error) {
           notifications.danger("Cannot set target", error.message)
           context.target.setTarget(NO_TARGET);
