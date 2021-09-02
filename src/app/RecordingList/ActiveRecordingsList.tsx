@@ -52,7 +52,6 @@ import {ReportFrame} from './ReportFrame';
 export interface ActiveRecordingsListProps {
   archiveEnabled: boolean;
   onArchive?: Function;
-  rowExpansionEnabled : boolean;
 }
 
 interface RecordingNotificationEvent {
@@ -132,8 +131,10 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(refreshRecordingList)
-    );
+      context.target.target().subscribe(() => {
+        refreshRecordingList();
+        setExpandedRows(expandedRows => expandedRows.splice(0, expandedRows.length));
+      }));
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
@@ -312,12 +313,8 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   };
 
   const toggleExpanded = (id) => {
-    if (props.rowExpansionEnabled) {
-      const idx = expandedRows.indexOf(id);
-      setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
-    } else {
-      expandedRows.length = 0;
-    } 
+    const idx = expandedRows.indexOf(id);
+    setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
   const RecordingsToolbar = () => {

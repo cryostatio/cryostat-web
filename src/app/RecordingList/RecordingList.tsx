@@ -62,7 +62,7 @@ export const RecordingList = () => {
     return archiveEnabled ? (
       <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
         <Tab eventKey={0} title="Active Recordings">
-          <ActiveRecordingsList archiveEnabled={true} onArchive={() => archiveUpdate.next()} rowExpansionEnabled={true}/>
+          <ActiveRecordingsList archiveEnabled={true} onArchive={() => archiveUpdate.next()}/>
         </Tab>
         <Tab eventKey={1} title="Archived Recordings">
           <ArchivedRecordingsList updater={archiveUpdate} />
@@ -71,7 +71,7 @@ export const RecordingList = () => {
     ) : (
       <>
         <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
-        <ActiveRecordingsList archiveEnabled={false} rowExpansionEnabled={true}/>
+        <ActiveRecordingsList archiveEnabled={false}/>
       </>
     );
   }, [archiveEnabled, activeTab]);
