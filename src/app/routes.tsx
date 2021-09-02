@@ -50,8 +50,6 @@ import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { About } from './About/About';
-import { first } from 'rxjs/operators';
-import { useSubscriptions } from './utils/useSubscriptions';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -175,14 +173,19 @@ const PageNotFound = ({ title }: { title: string }) => {
 
 const AppRoutes = () => {
   const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const [authenticated, setAuthenticated] = React.useState(false);
+  const [authenticated, setAuthenticated] = React.useState(context.login.isAuthenticated());
 
   React.useEffect(() => {
-    addSubscription(
-      context.login.getAuthenticated().subscribe(setAuthenticated)
-    );
-  }, [addSubscription, context, context.target, setAuthenticated]);
+    const sub = context.login.loggedIn()
+    .subscribe(() => setAuthenticated(true));
+    return () => sub.unsubscribe();
+  }, [context, context.login, setAuthenticated]);
+
+  React.useEffect(() => {
+    const sub = context.login.loggedOut()
+    .subscribe(() => setAuthenticated(false));
+    return () => sub.unsubscribe();
+  }, [context, context.login, setAuthenticated]);
 
   return (
     <LastLocationProvider>

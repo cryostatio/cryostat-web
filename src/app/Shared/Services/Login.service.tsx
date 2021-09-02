@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Observable, ObservableInput, of, ReplaySubject} from 'rxjs';
+import { Observable, ObservableInput, of, ReplaySubject, Subject} from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, first, map, tap } from 'rxjs/operators';
 
@@ -43,8 +43,8 @@ export class LoginService {
 
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
-  private readonly authenticated = new ReplaySubject<boolean>(1);
-  private readonly logout = new ReplaySubject<void>(1);
+  private readonly login: Subject<void> = new Subject();
+  private readonly logout: Subject<void> = new Subject();
   readonly authority: string; //how to prevent duplication?
 
   constructor() {
@@ -53,16 +53,6 @@ export class LoginService {
       apiAuthority = '';
     }
     this.authority = apiAuthority;
-
-    this.token.next(this.replaceWithCachedToken(''));
-    this.authenticated.next(this.isAuthenticated());
-  }
-
-  handleLogout(): Observable<void> {
-    this.removeCachedToken();
-    this.token.next('');
-    this.authenticated.next(false);
-    return this.logout.asObservable();
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
@@ -95,18 +85,14 @@ export class LoginService {
           this.authMethod.complete();
           this.token.next(token);
           this.setCachedToken(token);
-          this.authenticated.next(true);
         }
       })
     );
   }
 
   getToken(): Observable<string> {
+    console.log(this.token);
     return this.token.asObservable();
-  }
-
-  getAuthenticated(): Observable<boolean> {
-    return this.authenticated.asObservable();
   }
 
   getAuthHeaders(token: string, method: string): Headers {
@@ -121,8 +107,26 @@ export class LoginService {
     return this.authMethod.asObservable();
   }
 
-  private isAuthenticated() : boolean {
+  isAuthenticated() : boolean {
     return !!this.getCachedToken();
+  }
+
+  loggedOut(): Observable<void> {
+    return this.logout.asObservable();
+  }
+
+  loggedIn(): Observable<void> {
+    return this.login.asObservable();
+  }
+
+  setLoggedOut(): void {
+    this.removeCachedToken();
+    this.token.next('');
+    this.logout.next();
+  }
+
+  setLoggedIn(): void {
+    this.login.next();
   }
 
   private replaceWithCachedToken(defaultToken: string) {

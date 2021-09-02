@@ -47,12 +47,11 @@ import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
   NavGroup
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
-import { map, first } from 'rxjs/operators';
+import { map, } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 
@@ -64,7 +63,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const routerHistory = useHistory();
-  const addSubscription = useSubscriptions();
   const logoProps = {
     href: '/'
   };
@@ -75,7 +73,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
-  const [showUserIcon, setShowUserIcon] = React.useState(false);
+  const [showUserIcon, setShowUserIcon] = React.useState(serviceContext.login.isAuthenticated());
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
@@ -153,19 +151,21 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   };
 
   React.useEffect(() => {
-    addSubscription(
-      serviceContext.login.getAuthenticated().subscribe(setShowUserIcon)
-    );
-  }, [addSubscription, serviceContext, serviceContext.login, setShowUserIcon]);
+    const sub = serviceContext.login.loggedIn().subscribe(() => {
+      setShowUserIcon(true);
+  });
+    return () => sub.unsubscribe();
+  }, [serviceContext, serviceContext.login]);
+
+  React.useEffect(() => {
+    const sub = serviceContext.login.loggedOut().subscribe(() => {
+      setShowUserIcon(false);
+    });
+    return () => sub.unsubscribe();
+  }, [serviceContext, serviceContext.login]);
 
   const handleLogout = (): void => {
-    addSubscription(
-      serviceContext.login.handleLogout()
-      .pipe(first())
-      .subscribe(() => {
-          setShowUserIcon(false);
-      })
-    );
+    serviceContext.login.setLoggedOut();
   };
 
   const handleUserInfoToggle = () => {

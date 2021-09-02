@@ -64,7 +64,7 @@ export const Login = () => {
       .pipe(first())
       .subscribe(v => {
         if (v) {
-          //what goes here?
+          onLoginSuccess();
         } else if (userSubmission) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
@@ -78,6 +78,9 @@ export const Login = () => {
     evt.preventDefault();
   }, [serviceContext, serviceContext.login, setAuthMethod, checkAuth]);
 
+  const onLoginSuccess = () => {
+    serviceContext.login.setLoggedIn();
+  }
 
   React.useEffect(() => {
     const sub = serviceContext.login.getAuthMethod().subscribe(setAuthMethod);
