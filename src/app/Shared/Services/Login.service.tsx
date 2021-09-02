@@ -53,21 +53,21 @@ export class LoginService {
       apiAuthority = '';
     }
     this.authority = apiAuthority;
-    this.token.next('');
+
+    this.token.next(this.replaceWithCachedToken(''));
+    this.authenticated.next(this.isAuthenticated());
   }
 
   handleLogout(): Observable<void> {
-    sessionStorage.removeItem('token');
+    this.removeCachedToken();
     this.token.next('');
     this.authenticated.next(false);
     return this.logout.asObservable();
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
-    let cachedToken = sessionStorage.getItem('token');
-    if(!!cachedToken) {
-      token = cachedToken;
-    }
+
+    token = this.replaceWithCachedToken(token);
 
     return fromFetch(`${this.authority}/api/v1/auth`, {
       credentials: 'include',
@@ -94,7 +94,7 @@ export class LoginService {
           this.authMethod.next(method);
           this.authMethod.complete();
           this.token.next(token);
-          sessionStorage.setItem('token', token);
+          this.setCachedToken(token);
           this.authenticated.next(true);
         }
       })
@@ -119,6 +119,28 @@ export class LoginService {
 
   getAuthMethod(): Observable<string> {
     return this.authMethod.asObservable();
+  }
+
+  private isAuthenticated() : boolean {
+    return !!this.getCachedToken();
+  }
+
+  private replaceWithCachedToken(defaultToken: string) {
+    const cachedToken = this.getCachedToken();
+    return (!!cachedToken) ? cachedToken : defaultToken;
+  }
+
+  private getCachedToken() : string {
+    const token = sessionStorage.getItem('token');
+    return (!!token) ? token : '';
+  }
+
+  private setCachedToken(token: string) : void {
+    sessionStorage.setItem('token', token);
+  }
+
+  private removeCachedToken() : void {
+    sessionStorage.removeItem('token');
   }
 
 }
