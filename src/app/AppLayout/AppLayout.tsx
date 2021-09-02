@@ -46,7 +46,7 @@ import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
   SkipToContent,
   NavGroup
 } from '@patternfly/react-core';
-import { BellIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
+import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
 import { map, } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
@@ -173,7 +173,20 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   }
 
   // TODO make this easier to read
-  const userInfoItems = [<DropdownGroup><DropdownItem onClick={handleLogout}>Logout</DropdownItem></DropdownGroup>];
+  const userInfoItems = [<DropdownGroup key={0}><DropdownItem onClick={handleLogout}>Logout</DropdownItem></DropdownGroup>];
+
+  const UserInfoToggle = (
+    <DropdownToggle
+      onToggle={handleUserInfoToggle}
+      toggleIndicator={CaretDownIcon}
+    >
+      <Button
+        onClick={handleUserInfoToggle}
+        variant='link'
+        icon={<UserIcon color='white' size='sm' />}
+      />
+    </DropdownToggle>
+    );
 
   const HeaderTools = (<>
     <PageHeaderTools>
@@ -202,12 +215,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
         <PageHeaderToolsItem visibility={{default: showUserIcon ? 'visible' : 'hidden'}} >
             <Dropdown
               position="right"
+              isPlain={true}
               isOpen={showUserInfoDropdown}
-              toggle={<Button
-              onClick={handleUserInfoToggle}
-              variant='link'
-              icon={<UserIcon color='white' size='sm' />}
-              />}
+              toggle={UserInfoToggle}
               dropdownItems={userInfoItems}
             />
           </PageHeaderToolsItem>
@@ -276,6 +286,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     </SkipToContent>
   );
   const NotificationDrawer = React.useMemo(() => (<NotificationCenter onClose={handleCloseNotificationCenter} />), []);
+
   return (<>
     <AlertGroup isToast>
       {
