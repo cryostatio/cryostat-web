@@ -132,8 +132,8 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe(() => {
+        setExpandedRows(expandedRows => expandedRows = []);
         refreshRecordingList();
-        setExpandedRows(expandedRows => expandedRows.splice(0, expandedRows.length));
       }));
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
