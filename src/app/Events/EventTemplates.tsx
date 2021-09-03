@@ -115,8 +115,10 @@ export const EventTemplates = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(refreshTemplates)
-    );
+      context.target.target().subscribe(() => {
+        setFilterText(filterText => filterText = '');
+        refreshTemplates();
+      }));
   }, [context, context.target, addSubscription, refreshTemplates]);
 
   React.useEffect(() => {
