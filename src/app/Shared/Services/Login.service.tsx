@@ -140,7 +140,12 @@ export class LoginService {
   }
 
   private setCachedToken(token: string): void {
+    try {
     sessionStorage.setItem('token', token);
+  } catch (error) {
+    console.error('User Session Caching Failed', error.message);
+    sessionStorage.clear();
+  }
   }
 
   private removeCachedToken(): void {
