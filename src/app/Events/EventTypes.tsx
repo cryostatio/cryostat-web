@@ -116,8 +116,10 @@ export const EventTypes = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(refreshEvents)
-    );
+      context.target.target().subscribe(() => {
+        setFilterText(filterText => filterText = '');
+        refreshEvents();
+      }));
   }, [addSubscription, context, context.target, refreshEvents]);
 
   React.useEffect(() => {
