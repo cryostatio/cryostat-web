@@ -41,10 +41,8 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
-  Brand, Button, Dropdown, DropdownGroup, DropdownItem, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
-  PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
-  SkipToContent,
-  NavGroup
+  Brand, Button, Dropdown, DropdownGroup, DropdownItem, DropdownToggle, Nav, NavGroup, NavItem, NavList, NotificationBadge, Page, PageHeader,
+  PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar, SkipToContent
 } from '@patternfly/react-core';
 import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
 import { map, } from 'rxjs/operators';
@@ -164,29 +162,21 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     return () => sub.unsubscribe();
   }, [serviceContext, serviceContext.login]);
 
-  const handleLogout = (): void => {
-    serviceContext.login.setLoggedOut();
-  };
+  const handleLogout = () => serviceContext.login.setLoggedOut();
 
-  const handleUserInfoToggle = () => {
-    setShowUserInfoDropdown(!showUserInfoDropdown);
-  }
+  const handleUserInfoToggle = () => setShowUserInfoDropdown(!showUserInfoDropdown);
 
-  // TODO make this easier to read
-  const userInfoItems = [<DropdownGroup key={0}><DropdownItem onClick={handleLogout}>Logout</DropdownItem></DropdownGroup>];
+  const userInfoItems = [
+    <DropdownGroup key={0}>
+      <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
+    </DropdownGroup>,
+  ];
 
   const UserInfoToggle = (
-    <DropdownToggle
-      onToggle={handleUserInfoToggle}
-      toggleIndicator={CaretDownIcon}
-    >
-      <Button
-        onClick={handleUserInfoToggle}
-        variant='link'
-        icon={<UserIcon color='white' size='sm' />}
-      />
+    <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
+      <Button onClick={handleUserInfoToggle} variant="link" icon={<UserIcon color="white" size="sm" />} />
     </DropdownToggle>
-    );
+  );
 
   const HeaderTools = (<>
     <PageHeaderTools>

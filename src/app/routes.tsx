@@ -54,10 +54,7 @@ import { About } from './About/About';
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
 const CONSOLE = 'Console';
-const navGroups = [
-  OVERVIEW,
-  CONSOLE,
-];
+const navGroups = [OVERVIEW, CONSOLE];
 
 export interface IAppRoute {
   label?: string;
@@ -176,14 +173,12 @@ const AppRoutes = () => {
   const [authenticated, setAuthenticated] = React.useState(context.login.isAuthenticated());
 
   React.useEffect(() => {
-    const sub = context.login.loggedIn()
-    .subscribe(() => setAuthenticated(true));
+    const sub = context.login.loggedIn().subscribe(() => setAuthenticated(true));
     return () => sub.unsubscribe();
   }, [context, context.login, setAuthenticated]);
 
   React.useEffect(() => {
-    const sub = context.login.loggedOut()
-    .subscribe(() => setAuthenticated(false));
+    const sub = context.login.loggedOut().subscribe(() => setAuthenticated(false));
     return () => sub.unsubscribe();
   }, [context, context.login, setAuthenticated]);
 

@@ -70,13 +70,17 @@ export const Login = () => {
         }
       })
     );
+<<<<<<< HEAD
   }, [serviceContext, serviceContext.api, addSubscription, notifications, authMethod]);
+=======
+  }, [serviceContext, serviceContext.login, addSubscription, onLoginSuccess, notifications, authMethod]);
+>>>>>>> 2da8e13 (Fix formatting and lint warnings)
 
   const handleSubmit = React.useCallback((evt, token, authMethod) => {
     setAuthMethod(authMethod);
     checkAuth(token, authMethod, true);
     evt.preventDefault();
-  }, [serviceContext, serviceContext.login, setAuthMethod, checkAuth]);
+  }, [setAuthMethod, checkAuth]);
 
   const onLoginSuccess = () => {
     serviceContext.login.setLoggedIn();
@@ -94,8 +98,12 @@ export const Login = () => {
       .pipe(debounceTime(1000))
       .subscribe(parts => {
         let token = parts[0];
+<<<<<<< HEAD
         let authMethod = parts[1];
         let ready = parts[2];
+=======
+        const authMethod = parts[1];
+>>>>>>> 2da8e13 (Fix formatting and lint warnings)
         if (authMethod === 'Basic') {
           token = Base64.decode(token);
         }

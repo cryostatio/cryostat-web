@@ -107,7 +107,7 @@ export class LoginService {
     return this.authMethod.asObservable();
   }
 
-  isAuthenticated() : boolean {
+  isAuthenticated(): boolean {
     return !!this.getCachedToken();
   }
 
@@ -131,19 +131,19 @@ export class LoginService {
 
   private replaceWithCachedToken(defaultToken: string) {
     const cachedToken = this.getCachedToken();
-    return (!!cachedToken) ? cachedToken : defaultToken;
+    return (cachedToken) ? cachedToken : defaultToken;
   }
 
-  private getCachedToken() : string {
+  private getCachedToken(): string {
     const token = sessionStorage.getItem('token');
-    return (!!token) ? token : '';
+    return (token) ? token : '';
   }
 
-  private setCachedToken(token: string) : void {
+  private setCachedToken(token: string): void {
     sessionStorage.setItem('token', token);
   }
 
-  private removeCachedToken() : void {
+  private removeCachedToken(): void {
     sessionStorage.removeItem('token');
   }
 
