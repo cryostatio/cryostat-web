@@ -62,7 +62,7 @@ export const RecordingList = () => {
     return archiveEnabled ? (
       <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
         <Tab eventKey={0} title="Active Recordings">
-          <ActiveRecordingsList archiveEnabled={true} onArchive={() => archiveUpdate.next()}/>
+          <ActiveRecordingsList archiveEnabled={true} onArchive={() => archiveUpdate.next()} />
         </Tab>
         <Tab eventKey={1} title="Archived Recordings">
           <ArchivedRecordingsList updater={archiveUpdate} />
