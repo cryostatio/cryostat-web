@@ -64,17 +64,14 @@ export const Login = () => {
       .pipe(first())
       .subscribe(v => {
         if (v) {
-          onLoginSuccess();
+          serviceContext.login.setLoggedIn();
         } else if (userSubmission) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
       })
     );
-<<<<<<< HEAD
-  }, [serviceContext, serviceContext.api, addSubscription, notifications, authMethod]);
-=======
-  }, [serviceContext, serviceContext.login, addSubscription, onLoginSuccess, notifications, authMethod]);
->>>>>>> 2da8e13 (Fix formatting and lint warnings)
+  }, [serviceContext, serviceContext.login, addSubscription,  notifications, authMethod]);
+
 
   const handleSubmit = React.useCallback((evt, token, authMethod) => {
     setAuthMethod(authMethod);
@@ -98,12 +95,8 @@ export const Login = () => {
       .pipe(debounceTime(1000))
       .subscribe(parts => {
         let token = parts[0];
-<<<<<<< HEAD
         let authMethod = parts[1];
         let ready = parts[2];
-=======
-        const authMethod = parts[1];
->>>>>>> 2da8e13 (Fix formatting and lint warnings)
         if (authMethod === 'Basic') {
           token = Base64.decode(token);
         }
