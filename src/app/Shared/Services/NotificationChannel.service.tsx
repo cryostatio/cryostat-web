@@ -43,7 +43,7 @@ import { concatMap, filter, first, map } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
-const NOTIFICATION_CATEGORY = 'WS_CLIENT_ACTIVITY';
+const NOTIFICATION_CATEGORY = 'WsClientActivity';
 
 export class NotificationChannel {
 
