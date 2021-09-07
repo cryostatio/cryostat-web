@@ -51,6 +51,7 @@ import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { About } from './About/About';
 import { combineLatest } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -176,9 +177,11 @@ const AppRoutes = () => {
   React.useEffect(() => {
     const sub =
       combineLatest(context.login.loggedIn(), context.notificationChannel.isReady())
+      .pipe(debounceTime(500))
       .subscribe(parts => {
         const loggedIn = parts[0];
         const connected = parts[1];
+
         if(loggedIn && connected) {
           setAuthenticated(true);
         } else {
