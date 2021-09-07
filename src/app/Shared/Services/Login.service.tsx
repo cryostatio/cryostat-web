@@ -53,6 +53,8 @@ export class LoginService {
       apiAuthority = '';
     }
     this.authority = apiAuthority;
+    this.token.next(this.getCachedToken());
+    this.authMethod.next(this.getCachedAuthMethod());
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
@@ -85,13 +87,13 @@ export class LoginService {
           this.authMethod.complete();
           this.token.next(token);
           this.setCachedToken(token);
+          this.setCachedAuthMethod(method);
         }
       })
     );
   }
 
   getToken(): Observable<string> {
-    console.log(this.token);
     return this.token.asObservable();
   }
 
@@ -100,6 +102,7 @@ export class LoginService {
     if (!!token && !!method) {
       headers.set('Authorization', `${method} ${token}`)
     }
+
     return headers;
   }
 
@@ -136,20 +139,34 @@ export class LoginService {
 
   private getCachedToken(): string {
     const token = sessionStorage.getItem('token');
-    return (token) ? token : '';
+    return (!!token) ? token : '';
   }
 
   private setCachedToken(token: string): void {
     try {
     sessionStorage.setItem('token', token);
   } catch (error) {
-    console.error('User Session Caching Failed', error.message);
+    console.error('Session Token Caching Failed', error.message);
     sessionStorage.clear();
   }
   }
 
   private removeCachedToken(): void {
     sessionStorage.removeItem('token');
+  }
+
+  private getCachedAuthMethod(): string {
+    const method = sessionStorage.getItem('method');
+    return (!!method) ? method : '';
+  }
+
+  private setCachedAuthMethod(method: string): void {
+    try {
+    sessionStorage.setItem('method', method);
+  } catch (error) {
+    console.error('Auth Method Caching Failed', error.message);
+    sessionStorage.clear();
+  }
   }
 
 }
