@@ -57,7 +57,7 @@ export const Login = () => {
     let tok = token;
 
     if (authMethod === 'Basic') {
-      tok = Base64.encodeURL(tok);
+      tok = Base64.encodeURL(token);
     } // else this is Bearer auth and the token is sent as-is
     addSubscription(
       serviceContext.login.checkAuth(tok, authMethod)

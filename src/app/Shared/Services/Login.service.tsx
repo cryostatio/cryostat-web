@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Observable, ObservableInput, of, ReplaySubject, Subject} from 'rxjs';
+import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, first, map, tap } from 'rxjs/operators';
 
@@ -44,7 +44,7 @@ export class LoginService {
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
   private readonly login = new ReplaySubject<boolean>(1);
-  readonly authority: string; //how to prevent duplication?
+  readonly authority: string;
 
   constructor() {
     let apiAuthority = process.env.CRYOSTAT_AUTHORITY;

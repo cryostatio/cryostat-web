@@ -160,7 +160,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const userInfoItems = [
     <DropdownGroup key={0}>
       <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
-    </DropdownGroup>,
+    </DropdownGroup>
   ];
 
   const UserInfoToggle = (
@@ -195,7 +195,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
         </PageHeaderToolsItem>
         <PageHeaderToolsItem visibility={{default: showUserIcon ? 'visible' : 'hidden'}} >
             <Dropdown
-              position="right"
               isPlain={true}
               isOpen={showUserInfoDropdown}
               toggle={UserInfoToggle}
@@ -267,7 +266,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     </SkipToContent>
   );
   const NotificationDrawer = React.useMemo(() => (<NotificationCenter onClose={handleCloseNotificationCenter} />), []);
-
   return (<>
     <AlertGroup isToast>
       {

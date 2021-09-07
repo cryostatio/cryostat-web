@@ -42,7 +42,6 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
-import { ApiService } from './Api.service';
 import { LoginService } from './Login.service';
 
 interface RecordingNotificationEvent {
@@ -77,7 +76,6 @@ export class NotificationChannel {
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
   constructor(
-    private readonly apiSvc: ApiService,
     private readonly notifications: Notifications,
     private readonly login: LoginService
   ) {
@@ -107,7 +105,7 @@ export class NotificationChannel {
       notifications.success('Recording Deleted', `${event.recording} was deleted`);
     });
 
-    const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
+    const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)
       .pipe(
         concatMap(async resp => {
           if (resp.ok) {

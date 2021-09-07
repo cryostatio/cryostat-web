@@ -66,19 +66,12 @@ export class ApiService {
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
-  readonly authority: string;
 
   constructor(
     private readonly target: TargetService,
     private readonly notifications: Notifications,
     private readonly login: LoginService
   ) {
-    let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
-    if (!apiAuthority) {
-      apiAuthority = '';
-    }
-    window.console.log(`Using API authority ${apiAuthority}`);
-    this.authority = apiAuthority;
 
     if(login.isAuthenticated()) {
       this.doGet('recordings').subscribe(() => {
@@ -88,12 +81,12 @@ export class ApiService {
       });
     }
 
-    const getDatasourceURL = fromFetch(`${apiAuthority}/api/v1/grafana_datasource_url`)
+    const getDatasourceURL = fromFetch(`${this.login.authority}/api/v1/grafana_datasource_url`)
     .pipe(concatMap(resp => from(resp.json())));
-    const getDashboardURL = fromFetch(`${apiAuthority}/api/v1/grafana_dashboard_url`)
+    const getDashboardURL = fromFetch(`${this.login.authority}/api/v1/grafana_dashboard_url`)
     .pipe(concatMap(resp => from(resp.json())));
 
-    fromFetch(`${apiAuthority}/health`)
+    fromFetch(`${this.login.authority}/health`)
       .pipe(
         concatMap(resp => from(resp.json())),
         concatMap((jsonResp: any) => {
@@ -459,7 +452,7 @@ export class ApiService {
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
     const req = () => this.getHeaders().pipe(
       concatMap(headers =>
-        fromFetch(`${this.authority}/api/${apiVersion}/${path}`, {
+        fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
           credentials: 'include',
           mode: 'cors',
           headers,

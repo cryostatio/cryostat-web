@@ -175,19 +175,18 @@ const AppRoutes = () => {
   const [authenticated, setAuthenticated] = React.useState(context.login.isAuthenticated());
 
   React.useEffect(() => {
-    const sub =
-      combineLatest(context.login.loggedIn(), context.notificationChannel.isReady())
+    const sub = combineLatest(context.login.loggedIn(), context.notificationChannel.isReady())
       .pipe(debounceTime(500))
-      .subscribe(parts => {
+      .subscribe((parts) => {
         const loggedIn = parts[0];
         const connected = parts[1];
 
-        if(loggedIn && connected) {
+        if (loggedIn && connected) {
           setAuthenticated(true);
         } else {
           setAuthenticated(false);
         }
-    });
+      });
     return () => sub.unsubscribe();
   }, [context, context.login, setAuthenticated]);
 
