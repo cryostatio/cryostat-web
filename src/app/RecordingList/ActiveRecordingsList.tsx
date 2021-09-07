@@ -239,7 +239,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   }, [refreshRecordingList, context, context.settings]);
 
   const RecordingRow = (props) => {
-    const expandedRowId =`active-table-row-${props.index}-exp`;
+    const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
