@@ -79,10 +79,6 @@ export const Login = () => {
     evt.preventDefault();
   }, [setAuthMethod, checkAuth]);
 
-  const onLoginSuccess = () => {
-    serviceContext.login.setLoggedIn();
-  }
-
   React.useEffect(() => {
     const sub = serviceContext.login.getAuthMethod().subscribe(setAuthMethod);
     checkAuth('', 'Basic'); // check auth once at component load to query the server's auth method
