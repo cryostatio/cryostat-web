@@ -80,14 +80,13 @@ export class ApiService {
     window.console.log(`Using API authority ${apiAuthority}`);
     this.authority = apiAuthority;
 
-    this.doGet('recordings').subscribe({
-      next: () => {
+    if(login.isAuthenticated()) {
+      this.doGet('recordings').subscribe(() => {
         this.archiveEnabled.next(true);
-      },
-      error: () => {
+      }, () => {
         this.archiveEnabled.next(false);
-      }
-    });
+      });
+    }
 
     const getDatasourceURL = fromFetch(`${apiAuthority}/api/v1/grafana_datasource_url`)
     .pipe(concatMap(resp => from(resp.json())));

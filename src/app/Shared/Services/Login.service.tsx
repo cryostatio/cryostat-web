@@ -43,8 +43,7 @@ export class LoginService {
 
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
-  private readonly login: Subject<void> = new Subject();
-  private readonly logout: Subject<void> = new Subject();
+  private readonly login = new ReplaySubject<boolean>(1);
   readonly authority: string; //how to prevent duplication?
 
   constructor() {
@@ -114,22 +113,18 @@ export class LoginService {
     return !!this.getCachedToken();
   }
 
-  loggedOut(): Observable<void> {
-    return this.logout.asObservable();
-  }
-
-  loggedIn(): Observable<void> {
+  loggedIn(): Observable<boolean> {
     return this.login.asObservable();
   }
 
-  setLoggedOut(): void {
-    this.removeCachedToken();
-    this.token.next('');
-    this.logout.next();
-  }
-
-  setLoggedIn(): void {
-    this.login.next();
+  setLoggedIn(isLoggedIn: boolean): void {
+    if(isLoggedIn) {
+      this.login.next(true);
+    } else {
+      this.removeCachedToken();
+      this.token.next('');
+      this.login.next(false);
+    }
   }
 
   private replaceWithCachedToken(defaultToken: string) {

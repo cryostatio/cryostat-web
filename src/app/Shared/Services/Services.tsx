@@ -60,7 +60,7 @@ const api = new ApiService(TargetInstance, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(api, NotificationsInstance, login);
 const reports = new ReportService(api, NotificationsInstance);
 const settings = new SettingsService();
-const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
+const targets = new TargetsService(api, NotificationsInstance, login, notificationChannel);
 
 const defaultServices: Services = { target: TargetInstance, targets, api, notificationChannel, reports, settings, login };
 

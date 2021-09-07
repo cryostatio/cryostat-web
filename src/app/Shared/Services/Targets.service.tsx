@@ -43,6 +43,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { NotificationCategory, NotificationChannel } from './NotificationChannel.service';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { catchError, first, map, tap } from 'rxjs/operators';
+import { LoginService } from './Login.service';
 
 export interface TargetDiscoveryEvent {
   kind: 'LOST' | 'FOUND';
@@ -55,6 +56,7 @@ export class TargetsService {
   constructor(
     private readonly api: ApiService,
     private readonly notifications: Notifications,
+    private readonly login: LoginService,
     notificationChannel: NotificationChannel,
     ) {
     this.queryForTargets().subscribe(() => {
