@@ -117,7 +117,7 @@ export const EventTypes = () => {
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe(() => {
-        setFilterText(filterText => filterText = '');
+        setFilterText('');
         refreshEvents();
       }));
   }, [addSubscription, context, context.target, refreshEvents]);
