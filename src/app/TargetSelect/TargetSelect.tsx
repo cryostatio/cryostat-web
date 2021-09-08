@@ -149,6 +149,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetList]);
 
+  React.useEffect(() => {
+    addSubscription(
+      context.login.loggedIn().subscribe((loggedIn) => {
+        if(loggedIn) {
+          refreshTargetList();
+        }
+      })
+    );
+  }, [context.login, addSubscription, refreshTargetList]);
+
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
   }, [setModalOpen]);
