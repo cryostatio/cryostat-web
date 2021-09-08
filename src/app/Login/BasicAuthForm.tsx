@@ -70,7 +70,8 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
 
   const handleSubmit = React.useCallback((evt) => {
     props.onSubmit(evt, `${username}:${password}`, 'Basic');
-  }, [props, props.onSubmit, username, password]);
+    context.login.setUsername(username);
+  }, [props, props.onSubmit, username, password, context.login]);
 
   // FIXME Patternfly Form component onSubmit is not triggered by Enter keydown when the Form contains
   // multiple FormGroups. This key handler is a workaround to allow keyboard-driven use of the form

@@ -73,6 +73,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [showUserIcon, setShowUserIcon] = React.useState(serviceContext.login.isAuthenticated());
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
+  const [username, setUsername] = React.useState('');
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
@@ -157,6 +158,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
 
   const handleUserInfoToggle = () => setShowUserInfoDropdown(!showUserInfoDropdown);
 
+  React.useEffect(() => {
+    const sub = serviceContext.login.getUsername().subscribe(setUsername);
+    return () => sub.unsubscribe();
+  }, [serviceContext, serviceContext.login]);
+
   const userInfoItems = [
     <DropdownGroup key={0}>
       <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
@@ -165,7 +171,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
 
   const UserInfoToggle = (
     <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-      <Button onClick={handleUserInfoToggle} variant="link" icon={<UserIcon color="white" size="sm" />} />
+      {username ? username : <UserIcon color="white" size="sm"/>}
     </DropdownToggle>
   );
 
