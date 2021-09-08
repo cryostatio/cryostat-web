@@ -41,6 +41,8 @@ import { catchError, first, map, tap } from 'rxjs/operators';
 
 export class LoginService {
 
+  private readonly TOKEN_KEY: string = 'token';
+  private readonly METHOD_KEY: string = 'method';
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
   private readonly login = new ReplaySubject<boolean>(1);
@@ -52,13 +54,13 @@ export class LoginService {
       apiAuthority = '';
     }
     this.authority = apiAuthority;
-    this.token.next(this.getCachedToken());
-    this.authMethod.next(this.getCachedAuthMethod());
+    this.token.next(this.getCacheItem(this.TOKEN_KEY));
+    this.authMethod.next(this.getCacheItem(this.METHOD_KEY));
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
 
-    token = this.replaceWithCachedToken(token);
+    token = this.useCacheItemIfAvailable(this.TOKEN_KEY, token);
 
     return fromFetch(`${this.authority}/api/v1/auth`, {
       credentials: 'include',
@@ -85,8 +87,8 @@ export class LoginService {
           this.authMethod.next(method);
           this.authMethod.complete();
           this.token.next(token);
-          this.setCachedToken(token);
-          this.setCachedAuthMethod(method);
+          this.setCacheItem(this.TOKEN_KEY, token);
+          this.setCacheItem(this.METHOD_KEY, method);
         }
       })
     );
@@ -110,7 +112,7 @@ export class LoginService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getCachedToken();
+    return !!this.getCacheItem(this.TOKEN_KEY);
   }
 
   loggedIn(): Observable<boolean> {
@@ -121,47 +123,33 @@ export class LoginService {
     if(isLoggedIn) {
       this.login.next(true);
     } else {
-      this.removeCachedToken();
+      this.removeCacheItem(this.TOKEN_KEY);
       this.token.next('');
       this.login.next(false);
     }
   }
 
-  private replaceWithCachedToken(defaultToken: string) {
-    const cachedToken = this.getCachedToken();
-    return (cachedToken) ? cachedToken : defaultToken;
+  private getCacheItem(key: string): string {
+    const item = sessionStorage.getItem(key);
+    return (!!item) ? item : '';
   }
 
-  private getCachedToken(): string {
-    const token = sessionStorage.getItem('token');
-    return (!!token) ? token : '';
+  private useCacheItemIfAvailable(key: string, defaultToken: string) {
+    const cacheItem = this.getCacheItem(key);
+    return (cacheItem) ? cacheItem : defaultToken;
   }
 
-  private setCachedToken(token: string): void {
+  private setCacheItem(key: string, token: string): void {
     try {
-    sessionStorage.setItem('token', token);
-  } catch (error) {
-    console.error('Session Token Caching Failed', error.message);
-    sessionStorage.clear();
-  }
-  }
-
-  private removeCachedToken(): void {
-    sessionStorage.removeItem('token');
+      sessionStorage.setItem(key, token);
+    } catch (error) {
+      console.error('Caching Failed', error.message);
+      sessionStorage.clear();
+    }
   }
 
-  private getCachedAuthMethod(): string {
-    const method = sessionStorage.getItem('method');
-    return (!!method) ? method : '';
-  }
-
-  private setCachedAuthMethod(method: string): void {
-    try {
-    sessionStorage.setItem('method', method);
-  } catch (error) {
-    console.error('Auth Method Caching Failed', error.message);
-    sessionStorage.clear();
-  }
+  private removeCacheItem(key: string): void {
+    sessionStorage.removeItem(key);
   }
 
 }
