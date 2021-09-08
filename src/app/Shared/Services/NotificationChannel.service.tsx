@@ -126,7 +126,10 @@ export class NotificationChannel {
           const token = parts[1];
           const authMethod = parts[2];
           let subprotocol: string | undefined = undefined;
-          if (authMethod === 'Bearer') {
+
+          if(!token) {
+            return;
+          } else if (authMethod === 'Bearer') {
             subprotocol = `base64url.bearer.authorization.cryostat.${Base64.encodeURL(token)}`;
           } else if (authMethod === 'Basic') {
             subprotocol = `basic.authorization.cryostat.${token}`;
@@ -181,6 +184,14 @@ export class NotificationChannel {
         },
         error: (err: any) => this.logError('Notifications URL configuration', err)
       });
+
+    combineLatest(this.login.loggedOut())
+    .subscribe(
+      () => {
+        this.ws?.complete();
+      },
+      (err: any) => this.logError('Notifications URL configuration', err)
+      );
   }
 
   isReady(): Observable<ReadyState> {

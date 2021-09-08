@@ -64,7 +64,7 @@ export const Login = () => {
       .pipe(first())
       .subscribe(v => {
         if (v) {
-          serviceContext.login.setLoggedIn(true);
+          serviceContext.login.setLoggedIn();
         } else if (userSubmission) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }

@@ -151,11 +151,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   React.useEffect(() => {
     addSubscription(
-      context.login.loggedIn().subscribe((loggedIn) => {
-        if(loggedIn) {
-          refreshTargetList();
-        }
-      })
+      context.login.loggedIn().subscribe(
+          refreshTargetList
+      )
     );
   }, [context.login, addSubscription, refreshTargetList]);
 
