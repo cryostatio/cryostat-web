@@ -155,8 +155,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     [serviceContext.login]);
 
   const handleUserInfoToggle = React.useCallback(() =>
-    setShowUserInfoDropdown(!showUserInfoDropdown),
-    [setShowUserInfoDropdown, showUserInfoDropdown]);
+    setShowUserInfoDropdown(v => !v),
+    [setShowUserInfoDropdown]);
 
   React.useEffect(() => {
     const sub = serviceContext.login.getUsername().subscribe(setUsername);
