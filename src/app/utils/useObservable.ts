@@ -37,16 +37,14 @@
  */
 
 import * as React from 'react';
+import { Observable } from 'rxjs';
 
-export function useObservable(observable) {
-  const [value, setValue] = React.useState(observable && observable.value);
+export function useObservable(observable: Observable<any>) {
+  const [value, setValue] = React.useState();
 
   React.useEffect(() => {
-    if (!observable || !observable.subscribe) {
-      return;
-    }
-    const subscription = observable.subscribe(setValue);
-    return () => subscription.unsubscribe();
+    const sub = observable.subscribe(setValue);
+    return () => sub.unsubscribe();
   }, [observable]);
 
   return value;
