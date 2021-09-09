@@ -184,7 +184,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
 
   const UserInfoToggle = (
     <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-      {username ? username : <UserIcon color="white" size="sm"/>}
+      {username || <UserIcon color="white" size="sm"/>}
     </DropdownToggle>
   );
 
