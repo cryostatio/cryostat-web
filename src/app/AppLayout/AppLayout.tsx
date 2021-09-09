@@ -154,18 +154,22 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       () => setShowUserIcon(true)
     );
     return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.login]);
+  }, [serviceContext, serviceContext.login, setShowUserIcon]);
 
   React.useEffect(() => {
     const sub = serviceContext.login.loggedOut().subscribe(
       () => setShowUserIcon(false)
     );
     return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.login]);
+  }, [serviceContext, serviceContext.login, setShowUserIcon]);
 
-  const handleLogout = () => serviceContext.login.setLoggedOut();
+  const handleLogout = React.useCallback(() =>
+    serviceContext.login.setLoggedOut(),
+    [serviceContext.login]);
 
-  const handleUserInfoToggle = () => setShowUserInfoDropdown(!showUserInfoDropdown);
+  const handleUserInfoToggle = React.useCallback(() =>
+    setShowUserInfoDropdown(!showUserInfoDropdown),
+    [setShowUserInfoDropdown, showUserInfoDropdown]);
 
   React.useEffect(() => {
     const sub = serviceContext.login.getUsername().subscribe(setUsername);

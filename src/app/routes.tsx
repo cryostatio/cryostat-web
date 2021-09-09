@@ -178,18 +178,17 @@ const AppRoutes = () => {
       context.notificationChannel.isReady(),
       context.login.getToken(),
       context.login.getAuthMethod()
-    )
-      .subscribe((parts) => {
-        const connected = parts[0];
-        const token = parts[1];
-        const authMethod = parts[2];
+    ).subscribe((parts) => {
+      const connected = parts[0];
+      const token = parts[1];
+      const authMethod = parts[2];
 
-        if (connected && !!token && !!authMethod) {
-          setAuthenticated(true);
-        } else {
-          setAuthenticated(false);
-        }
-      });
+      if (connected && !!token && !!authMethod) {
+        setAuthenticated(true);
+      } else {
+        setAuthenticated(false);
+      }
+    });
     return () => sub.unsubscribe();
   }, [context, context.login, setAuthenticated]);
 
