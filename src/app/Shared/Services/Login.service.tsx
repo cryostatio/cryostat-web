@@ -49,6 +49,7 @@ export class LoginService {
   private readonly login = new ReplaySubject<void>(1);
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
+  private readonly authenticated = new ReplaySubject<boolean>(1);
   readonly authority: string;
 
   constructor() {
@@ -60,6 +61,7 @@ export class LoginService {
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
     this.authMethod.next(this.getCacheItem(this.METHOD_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
+    this.authenticated.next(!!this.getCacheItem(this.TOKEN_KEY));
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
@@ -119,8 +121,8 @@ export class LoginService {
     return this.username.asObservable();
   }
 
-  isAuthenticated(): boolean {
-    return !!this.getCacheItem(this.TOKEN_KEY);
+  isAuthenticated(): Observable<boolean> {
+    return this.authenticated.asObservable();
   }
 
   loggedIn(): Observable<void> {
@@ -133,6 +135,7 @@ export class LoginService {
 
   setLoggedIn(): void {
     this.login.next();
+    this.authenticated.next(true);
   }
 
   setLoggedOut(): void {
@@ -141,6 +144,7 @@ export class LoginService {
     this.token.next('');
     this.username.next('');
     this.logout.next();
+    this.authenticated.next(false);
   }
 
   setUsername(username: string): void {

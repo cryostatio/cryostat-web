@@ -171,31 +171,28 @@ const PageNotFound = ({ title }: { title: string }) => {
 
 const AppRoutes = () => {
   const context = React.useContext(ServiceContext);
-  const [authenticated, setAuthenticated] = React.useState(context.login.isAuthenticated());
+  const [showDashboard, setShowDashboard] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = combineLatest(
-      context.notificationChannel.isReady(),
-      context.login.getToken(),
-      context.login.getAuthMethod()
-    ).subscribe((parts) => {
-      const connected = parts[0];
-      const token = parts[1];
-      const authMethod = parts[2];
+    const sub = combineLatest(context.notificationChannel.isReady(), context.login.isAuthenticated()).subscribe(
+      (parts) => {
+        const connected = parts[0];
+        const authenticated = parts[1];
 
-      if (connected && !!token && !!authMethod) {
-        setAuthenticated(true);
-      } else {
-        setAuthenticated(false);
+        if (connected && authenticated) {
+          setShowDashboard(true);
+        } else {
+          setShowDashboard(false);
+        }
       }
-    });
+    );
     return () => sub.unsubscribe();
-  }, [context, context.login, setAuthenticated]);
+  }, [context, context.login, setShowDashboard]);
 
   return (
     <LastLocationProvider>
       <Switch>
-        {authenticated ? (
+        {showDashboard ? (
           flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
             <RouteWithTitleUpdates
               path={path}

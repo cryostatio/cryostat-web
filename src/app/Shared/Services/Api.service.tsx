@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError } from 'rxjs';
+import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators';
 import { Target, TargetService } from './Target.service';
@@ -73,13 +73,16 @@ export class ApiService {
     private readonly login: LoginService
   ) {
 
-    if(login.isAuthenticated()) {
-      this.doGet('recordings').subscribe(() => {
+    // show recording archives when recordings available
+    login.isAuthenticated().pipe(
+    concatMap((authenticated) => authenticated ? this.doGet('recordings') : EMPTY)
+    )
+    .subscribe(
+      () => {
         this.archiveEnabled.next(true);
       }, () => {
         this.archiveEnabled.next(false);
       });
-    }
 
     const getDatasourceURL = fromFetch(`${this.login.authority}/api/v1/grafana_datasource_url`)
     .pipe(concatMap(resp => from(resp.json())));
