@@ -185,7 +185,7 @@ export class NotificationChannel {
         error: (err: any) => this.logError('Notifications URL configuration', err)
       });
 
-    combineLatest(this.login.loggedOut())
+    this.login.loggedOut()
     .subscribe(
       () => {
         this.ws?.complete();
