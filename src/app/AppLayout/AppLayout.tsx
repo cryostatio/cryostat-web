@@ -52,7 +52,6 @@ import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
-import { useObservable } from '@app/utils/useObservable';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -72,7 +71,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
-  const showUserIcon = useObservable(serviceContext.login.isAuthenticated());
+  const [showUserIcon, setShowUserIcon] = React.useState(false);
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [notifications, setNotifications] = React.useState([] as Notification[]);
@@ -149,6 +148,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const handleAboutModalToggle = () => {
     setAboutModalOpen(!aboutModalOpen);
   };
+
+  React.useEffect(() => {
+    const sub = serviceContext.login.isAuthenticated().subscribe(setShowUserIcon);
+    return () => sub.unsubscribe();
+  }, [serviceContext.target]);
 
   const handleLogout = React.useCallback(() =>
     serviceContext.login.setLoggedOut(),
