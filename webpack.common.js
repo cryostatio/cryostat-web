@@ -13,7 +13,8 @@ module.exports = {
   plugins: [
     new ForkTsCheckerPlugin(),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'src', 'index.html')
+      template: path.resolve(__dirname, 'src', 'index.html'),
+      favicon: './src/app/assets/cryostat-3-favicon.png',
     }),
   ],
   // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
@@ -108,13 +109,16 @@ module.exports = {
           (input.indexOf('background-filter') === -1) &&
           (input.indexOf('pficon') === -1)
         ),
+        exclude: [
+          path.resolve(__dirname, 'src/app/assets')
+        ],
         use: {
           loader: 'raw-loader',
           options: {}
         }
       },
       {
-        test: /\.(jpg|jpeg|png|gif)$/i,
+        test: /\.(jpg|jpeg|png|gif|svg)$/i,
         include: [
           path.resolve(__dirname, 'src'),
           path.resolve(__dirname, 'node_modules/patternfly'),

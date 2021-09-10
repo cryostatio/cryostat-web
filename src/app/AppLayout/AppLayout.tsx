@@ -51,13 +51,13 @@ import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, Notifications, NotificationsContext } from '../Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
+import cryostatLogo from '../assets/cryostat-3.svg';
 
 interface IAppLayout {
   children: React.ReactNode;
 }
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
-  const context = React.useContext(ServiceContext);
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const routerHistory = useHistory();
@@ -205,7 +205,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       isOpen={aboutModalOpen}
       onClose={handleAboutModalToggle}
       trademark='Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0'
-      brandImageSrc='' // TODO
+      brandImageSrc={cryostatLogo}
       brandImageAlt='Cryostat Logo'
       productName='Cryostat'
     >
