@@ -52,69 +52,61 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   const [actionsNotifications, setActionsNotifications] = React.useState([] as Notification[]);
   const [networkInfoNotifications, setNetworkInfoNotifications] = React.useState([] as Notification[]);
   const [problemsNotifications, setProblemsNotifications] = React.useState([] as Notification[]);
-  const [notifications, setNotifications] = React.useState([] as Notification[]);
-  const [actionsExpanded, setActionsExpanded] = React.useState(true);
-  const [networkInfoExpanded, setNetworkInfoExpanded] = React.useState(true);
-  const [problemsExpanded, setProblemsExpanded] = React.useState(true);
+  const [groupExpanded, setGroupExpanded] = React.useState([true, false, false]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [unreadActionsCount, setUnreadActionsCount] = React.useState(0);
   const [unreadNetworkInfoCount, setUnreadNetworkInfoCount] = React.useState(0);
   const [unreadProblemsCount, setUnreadProblemsCount] = React.useState(0);
-
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    const sub = context.notifications().subscribe(setNotifications);
-    return () => sub.unsubscribe();
-  }, [context, context.notifications, notifications, setNotifications]);
-
-  React.useEffect(() => {
-    const sub = context.unreadNotifications().subscribe(s => {
-      setUnreadNotificationsCount(s.length)});
-    return () => sub.unsubscribe();
-  }, [context, context.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
 
   // TODO reduce duplication
   React.useEffect(() => {
     const sub = context.actionsNotifications().subscribe(setActionsNotifications);
     return () => sub.unsubscribe();
-  }, [context, context.actionsNotifications, notifications, setActionsNotifications]);
+  }, [context, context.actionsNotifications, setActionsNotifications]);
 
   React.useEffect(() => {
     const sub = context.networkInfoNotifications().subscribe(setNetworkInfoNotifications);
     return () => sub.unsubscribe();
-  }, [context, context.networkInfoNotifications, notifications, setNetworkInfoNotifications]);
+  }, [context, context.networkInfoNotifications, setNetworkInfoNotifications]);
 
   React.useEffect(() => {
     const sub = context.problemsNotifications().subscribe(setProblemsNotifications);
     return () => sub.unsubscribe();
-  }, [context, context.problemsNotifications, notifications, setProblemsNotifications]);
+  }, [context, context.problemsNotifications, setProblemsNotifications]);
+
+  React.useEffect(() => {
+    const sub = context.unreadNotifications().subscribe(s => {
+      setUnreadActionsCount(s.length)});
+    return () => sub.unsubscribe();
+  }, [context, context.unreadNotifications, setUnreadNotificationsCount]);
 
   React.useEffect(() => {
     const sub = context.unreadActionsNotifications().subscribe(s => {
       setUnreadActionsCount(s.length)});
     return () => sub.unsubscribe();
-  }, [context, context.unreadActionsNotifications, unreadNotificationsCount, setUnreadActionsCount]);
+  }, [context, context.unreadActionsNotifications, setUnreadActionsCount]);
 
   React.useEffect(() => {
     const sub = context.unreadNetworkInfoNotifications().subscribe(s => {
       setUnreadNetworkInfoCount(s.length)});
     return () => sub.unsubscribe();
-  }, [context, context.unreadNetworkInfoNotifications, unreadNotificationsCount, setUnreadNetworkInfoCount]);
+  }, [context, context.unreadNetworkInfoNotifications, setUnreadNetworkInfoCount]);
 
   React.useEffect(() => {
     const sub = context.unreadProblemsNotifications().subscribe(s => {
       setUnreadProblemsCount(s.length)});
     return () => sub.unsubscribe();
-  }, [context, context.unreadProblemsNotifications, unreadNotificationsCount, setUnreadProblemsCount]);
+  }, [context, context.unreadProblemsNotifications, setUnreadProblemsCount]);
 
   const handleToggleDropdown = React.useCallback(() => {
     setHeaderDropdownOpen(v => !v);
-  }, []);
+  }, [setHeaderDropdownOpen]);
 
-  const handleToggleDrawerGroup = React.useCallback((setGroupExpanded) => {
-    setGroupExpanded(v => !v);
-  },[]); // dependencies?
+  const handleToggleDrawerGroup = React.useCallback(index => {
+    const updatedGroupExpanded = groupExpanded.map((isExpanded, idx) => idx === index ? !isExpanded : false);
+    setGroupExpanded(updatedGroupExpanded);
+  }, [setGroupExpanded]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
@@ -145,14 +137,14 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     </DropdownItem>,
   ];
 
-  const NotificationDrawerGroupItems = ({title, isExpanded, notifications, count, onExpand}) => (
+  const NotificationDrawerGroupItems = ({title, notifications, count, idx}) => (
     <NotificationDrawerGroup
       title={title}
-      isExpanded={isExpanded}
+      isExpanded={groupExpanded[idx]}
       count={count}
-      onExpand={() => handleToggleDrawerGroup(onExpand)}
+      onExpand={() => handleToggleDrawerGroup(idx)}
     >
-      <NotificationDrawerList isHidden={!isExpanded}>
+      <NotificationDrawerList isHidden={!groupExpanded[idx]}>
             {
               notifications.map(({ key, title, message, variant, timestamp, read }) => (
                 <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
@@ -183,24 +175,21 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       <NotificationDrawerGroupList>
         <NotificationDrawerGroupItems
           title="Completed Actions"
-          isExpanded={actionsExpanded}
           notifications={actionsNotifications}
           count={unreadActionsCount}
-          onExpand={setActionsExpanded}
+          idx={0}
         />
         <NotificationDrawerGroupItems
           title="Network Info"
-          isExpanded={networkInfoExpanded}
           notifications={networkInfoNotifications}
           count={unreadNetworkInfoCount}
-          onExpand={setNetworkInfoExpanded}
+          idx={1}
         />
         <NotificationDrawerGroupItems
           title="Problems"
-          isExpanded={problemsExpanded}
           notifications={problemsNotifications}
           count={unreadProblemsCount}
-          onExpand={setProblemsExpanded}
+          idx={2}
         />
       </NotificationDrawerGroupList>
       </NotificationDrawerBody>
