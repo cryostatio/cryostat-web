@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
@@ -46,6 +46,7 @@ export interface Notification {
   key?: string;
   title: string;
   message?: string;
+  category?: string;
   variant: AlertVariant;
   timestamp?: number;
 }
@@ -65,20 +66,20 @@ export class Notifications {
     this._notifications$.next(this._notifications);
   }
 
-  success(title: string, message?: string): void {
-    this.notify({ title, message, variant: AlertVariant.success });
+  success(title: string, message?: string, category?: string): void {
+    this.notify({ title, message, category, variant: AlertVariant.success });
   }
 
-  info(title: string, message?: string): void {
-    this.notify({ title, message, variant: AlertVariant.info });
+  info(title: string, message?: string, category?: string): void {
+    this.notify({ title, message, category, variant: AlertVariant.info });
   }
 
-  warning(title: string, message?: string): void {
-    this.notify({ title, message, variant: AlertVariant.warning });
+  warning(title: string, message?: string, category?: string): void {
+    this.notify({ title, message, category, variant: AlertVariant.warning });
   }
 
-  danger(title: string, message?: string): void {
-    this.notify({ title, message, variant: AlertVariant.danger });
+  danger(title: string, message?: string, category?: string): void {
+    this.notify({ title, message, category, variant: AlertVariant.danger });
   }
 
   notifications(): Observable<Notification[]> {
@@ -87,6 +88,50 @@ export class Notifications {
 
   unreadNotifications(): Observable<Notification[]> {
     return this.notifications()
+    .pipe(
+      map(a => a.filter(n => !n.read))
+    );
+  }
+
+  problemsNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(n => n.variant === AlertVariant.warning || n.variant === AlertVariant.danger))
+    );
+  }
+
+  unreadProblemsNotifications(): Observable<Notification[]> {
+    return this.problemsNotifications()
+    .pipe(
+      map(a => a.filter(n => !n.read))
+    );
+  }
+
+  networkInfoNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(n => (n.category === 'WsClientActivity' || n.category === 'TargetJvmDiscovery')
+      && (n.variant === AlertVariant.info)))
+    );
+  }
+
+  unreadNetworkInfoNotifications(): Observable<Notification[]> {
+    return this.networkInfoNotifications()
+    .pipe(
+      map(a => a.filter(n => !n.read))
+    );
+  }
+
+  actionsNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(n => (n.category !== 'WsClientActivity' && n.category !== 'TargetJvmDiscovery')
+      && (n.variant === AlertVariant.success || n.variant === AlertVariant.info)))
+    );
+  }
+
+  unreadActionsNotifications(): Observable<Notification[]> {
+    return this.actionsNotifications()
     .pipe(
       map(a => a.filter(n => !n.read))
     );

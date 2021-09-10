@@ -39,7 +39,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { BehaviorSubject, combineLatest, from, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { concatMap, filter, map } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
@@ -58,7 +58,7 @@ export class NotificationChannel {
     this.messages(NOTIFICATION_CATEGORY).subscribe(v => {
       const addr = Object.keys(v.message)[0];
       const status = v.message[addr];
-      notifications.info('WebSocket Client Activity', `Client at ${addr} ${status}`);
+      notifications.info('WebSocket Client Activity', `Client at ${addr} ${status}`, NOTIFICATION_CATEGORY);
     });
 
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
@@ -90,7 +90,7 @@ export class NotificationChannel {
             closeObserver: {
               next: () => {
                 this._ready.next(false);
-                this.notifications.info('WebSocket connection lost');
+                this.notifications.info('WebSocket connection lost', undefined, NOTIFICATION_CATEGORY);
               }
             }
           });

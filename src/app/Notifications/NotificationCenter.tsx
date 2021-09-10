@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { Dropdown, DropdownItem, DropdownPosition, KebabToggle,
-  NotificationDrawer, NotificationDrawerBody, NotificationDrawerHeader,
+  NotificationDrawer, NotificationDrawerBody, NotificationDrawerGroup, NotificationDrawerGroupList, NotificationDrawerHeader,
   NotificationDrawerList, NotificationDrawerListItem,
   NotificationDrawerListItemBody, NotificationDrawerListItemHeader, Text,
   TextVariants } from '@patternfly/react-core';
@@ -49,8 +49,18 @@ export interface NotificationCenterProps {
 
 export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = props => {
   const context = React.useContext(NotificationsContext);
+  const [actionsNotifications, setActionsNotifications] = React.useState([] as Notification[]);
+  const [networkInfoNotifications, setNetworkInfoNotifications] = React.useState([] as Notification[]);
+  const [problemsNotifications, setProblemsNotifications] = React.useState([] as Notification[]);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
+  const [actionsExpanded, setActionsExpanded] = React.useState(true);
+  const [networkInfoExpanded, setNetworkInfoExpanded] = React.useState(true);
+  const [problemsExpanded, setProblemsExpanded] = React.useState(true);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
+  const [unreadActionsCount, setUnreadActionsCount] = React.useState(0);
+  const [unreadNetworkInfoCount, setUnreadNetworkInfoCount] = React.useState(0);
+  const [unreadProblemsCount, setUnreadProblemsCount] = React.useState(0);
+
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -59,13 +69,52 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   }, [context, context.notifications, notifications, setNotifications]);
 
   React.useEffect(() => {
-    const sub = context.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
+    const sub = context.unreadNotifications().subscribe(s => {
+      setUnreadNotificationsCount(s.length)});
     return () => sub.unsubscribe();
   }, [context, context.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
 
-  const handleToggleDropdown = () => {
-    setHeaderDropdownOpen(!isHeaderDropdownOpen);
-  };
+  // TODO reduce duplication
+  React.useEffect(() => {
+    const sub = context.actionsNotifications().subscribe(setActionsNotifications);
+    return () => sub.unsubscribe();
+  }, [context, context.actionsNotifications, notifications, setActionsNotifications]);
+
+  React.useEffect(() => {
+    const sub = context.networkInfoNotifications().subscribe(setNetworkInfoNotifications);
+    return () => sub.unsubscribe();
+  }, [context, context.networkInfoNotifications, notifications, setNetworkInfoNotifications]);
+
+  React.useEffect(() => {
+    const sub = context.problemsNotifications().subscribe(setProblemsNotifications);
+    return () => sub.unsubscribe();
+  }, [context, context.problemsNotifications, notifications, setProblemsNotifications]);
+
+  React.useEffect(() => {
+    const sub = context.unreadActionsNotifications().subscribe(s => {
+      setUnreadActionsCount(s.length)});
+    return () => sub.unsubscribe();
+  }, [context, context.unreadActionsNotifications, unreadNotificationsCount, setUnreadActionsCount]);
+
+  React.useEffect(() => {
+    const sub = context.unreadNetworkInfoNotifications().subscribe(s => {
+      setUnreadNetworkInfoCount(s.length)});
+    return () => sub.unsubscribe();
+  }, [context, context.unreadNetworkInfoNotifications, unreadNotificationsCount, setUnreadNetworkInfoCount]);
+
+  React.useEffect(() => {
+    const sub = context.unreadProblemsNotifications().subscribe(s => {
+      setUnreadProblemsCount(s.length)});
+    return () => sub.unsubscribe();
+  }, [context, context.unreadProblemsNotifications, unreadNotificationsCount, setUnreadProblemsCount]);
+
+  const handleToggleDropdown = React.useCallback(() => {
+    setHeaderDropdownOpen(v => !v);
+  }, []);
+
+  const handleToggleDrawerGroup = React.useCallback((setGroupExpanded) => {
+    setGroupExpanded(v => !v);
+  },[]); // dependencies?
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
@@ -96,6 +145,28 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     </DropdownItem>,
   ];
 
+  const NotificationDrawerGroupItems = ({title, isExpanded, notifications, count, onExpand}) => (
+    <NotificationDrawerGroup
+      title={title}
+      isExpanded={isExpanded}
+      count={count}
+      onExpand={() => handleToggleDrawerGroup(onExpand)}
+    >
+      <NotificationDrawerList isHidden={!isExpanded}>
+            {
+              notifications.map(({ key, title, message, variant, timestamp, read }) => (
+                <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
+                  <NotificationDrawerListItemHeader title={title} variant={variant} />
+                  <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
+                    <Text component={TextVariants.p}>{message}</Text>
+                  </NotificationDrawerListItemBody>
+                </NotificationDrawerListItem>
+              ))
+            }
+      </NotificationDrawerList>
+    </NotificationDrawerGroup>
+  );
+
   return (<>
     <NotificationDrawer>
       <NotificationDrawerHeader count={unreadNotificationsCount} onClose={props.onClose} >
@@ -109,18 +180,29 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
         />
       </NotificationDrawerHeader>
       <NotificationDrawerBody>
-        <NotificationDrawerList>
-        {
-          notifications.map(({ key, title, message, variant, timestamp, read }) => (
-            <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
-              <NotificationDrawerListItemHeader title={title} variant={variant} />
-              <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
-                <Text component={TextVariants.p}>{message}</Text>
-              </NotificationDrawerListItemBody>
-            </NotificationDrawerListItem>
-          ))
-        }
-        </NotificationDrawerList>
+      <NotificationDrawerGroupList>
+        <NotificationDrawerGroupItems
+          title="Completed Actions"
+          isExpanded={actionsExpanded}
+          notifications={actionsNotifications}
+          count={unreadActionsCount}
+          onExpand={setActionsExpanded}
+        />
+        <NotificationDrawerGroupItems
+          title="Network Info"
+          isExpanded={networkInfoExpanded}
+          notifications={networkInfoNotifications}
+          count={unreadNetworkInfoCount}
+          onExpand={setNetworkInfoExpanded}
+        />
+        <NotificationDrawerGroupItems
+          title="Problems"
+          isExpanded={problemsExpanded}
+          notifications={problemsNotifications}
+          count={unreadProblemsCount}
+          onExpand={setProblemsExpanded}
+        />
+      </NotificationDrawerGroupList>
       </NotificationDrawerBody>
     </NotificationDrawer>
   </>);
