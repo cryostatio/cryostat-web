@@ -41,17 +41,18 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, routes } from '@app/routes';
 import { AboutModal, Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
-  Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
+  Brand, Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
   SkipToContent, Text, TextContent, TextList, TextListItem, TextVariants
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
-import { Notification, Notifications, NotificationsContext } from '../Notifications/Notifications';
+import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-import cryostatLogo from '../assets/cryostat-3.svg';
+import cryostatIcon from '@app/assets/icon-cryostat-3.svg';
+import cryostatIconWhite from '@app/assets/icon-cryostat-3-white.svg';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -194,7 +195,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   </>);
   const Header = (<>
     <PageHeader
-      logo="Cryostat"
+      logo={<><Brand alt="Cryostat" src={cryostatIcon} className="cryostat-logo" /><Text component={TextVariants.pre}>&nbsp;Cryostat</Text></>}
       logoProps={logoProps}
       showNavToggle
       isNavOpen={isNavOpen}
@@ -205,7 +206,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       isOpen={aboutModalOpen}
       onClose={handleAboutModalToggle}
       trademark='Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0'
-      brandImageSrc={cryostatLogo}
+      brandImageSrc={cryostatIconWhite}
       brandImageAlt='Cryostat Logo'
       productName='Cryostat'
     >

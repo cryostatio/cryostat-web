@@ -40,5 +40,9 @@ html, body, #root {
 }
 
 .pf-c-about-modal-box__brand-image {
-  height: 10em;
+  height: 4em;
+}
+
+.cryostat-logo {
+  height: 2em;
 }
