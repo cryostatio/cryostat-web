@@ -102,18 +102,23 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     setHeaderDropdownOpen(v => !v);
   }, [setHeaderDropdownOpen]);
 
-  const handleExpandCategory = React.useCallback((groupIdx) => {
-    setSelectedCategoryIdx(groupIdx);
+  const handleExpandCategory = React.useCallback((categoryIdx) => {
+    setSelectedCategoryIdx(categoryIdx);
   }, [setSelectedCategoryIdx]);
 
-  // Expands one notification category at a time and
-  // also expands the first category on first render
+  // Expands the first category by default unless
+  // there are unread errors/warnings
   React.useEffect(() => {
+    if(unreadProblemsCount > 0) {
+      setExpandedCategories([false, false, true]);
+      return;
+    }
+
     const newExpandedCategory = expandedCategories.map((isExpanded, idx) => {
       return idx === selectedCategoryIdx ? !isExpanded : false;
     });
     setExpandedCategories(newExpandedCategory);
-  }, [setExpandedCategories, selectedCategoryIdx]);
+  }, [setExpandedCategories, selectedCategoryIdx, unreadProblemsCount]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
