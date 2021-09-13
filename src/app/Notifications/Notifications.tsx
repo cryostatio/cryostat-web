@@ -93,6 +93,27 @@ export class Notifications {
     );
   }
 
+  actionsNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(this.isActionNotification))
+    );
+  }
+
+  networkInfoNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(this.isNetworkInfoNotification))
+    );
+  }
+
+  problemsNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(this.isProblemNotification))
+    );
+  }
+
   setRead(key?: string, read: boolean = true): void {
     if (!key) {
       return;
@@ -117,6 +138,20 @@ export class Notifications {
       this._notifications.shift();
     }
     this._notifications$.next(this._notifications);
+  }
+
+  private isActionNotification(n: Notification): boolean {
+    return (n.category !== 'WsClientActivity' && n.category !== 'TargetJvmDiscovery')
+      && (n.variant === AlertVariant.success || n.variant === AlertVariant.info);
+  }
+
+  private isNetworkInfoNotification(n: Notification): boolean {
+    return (n.category === 'WsClientActivity' || n.category === 'TargetJvmDiscovery')
+      && (n.variant === AlertVariant.info);
+  }
+
+  private isProblemNotification(n: Notification): boolean {
+    return (n.variant === AlertVariant.warning) || (n.variant === AlertVariant.danger);
   }
 }
 

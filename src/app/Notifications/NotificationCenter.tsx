@@ -42,6 +42,7 @@ import { AlertVariant, Dropdown, DropdownItem, DropdownPosition, KebabToggle,
   NotificationDrawerListItemBody, NotificationDrawerListItemHeader, Text,
   TextVariants } from '@patternfly/react-core';
 import { Notification, NotificationsContext } from './Notifications';
+import { combineLatest } from 'rxjs';
 
 export interface NotificationCenterProps {
   onClose: () => void;
@@ -62,8 +63,16 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   ]);
 
   React.useEffect(() => {
-    const sub = context.notifications().subscribe(notifications => {
-      sortNotificationsByCategory(notifications);
+    const sub = combineLatest(context.actionsNotifications(), context.networkInfoNotifications(), context.problemsNotifications())
+    .subscribe(categories => {
+      let updatedDrawerCategories = [...drawerCategories];
+
+      categories.forEach((notifications, idx) => {
+        updatedDrawerCategories[idx].notifications = notifications;
+        updatedDrawerCategories[idx].unreadCount = countUnreadNotifications(notifications);
+      });
+
+      setDrawerCategories(updatedDrawerCategories);
     });
     return () => sub.unsubscribe();
   },[context, context.notifications]);
@@ -73,41 +82,6 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       setUnreadNotificationsCount(s.length)});
     return () => sub.unsubscribe();
   }, [context, context.unreadNotifications, setUnreadNotificationsCount]);
-
-  const sortNotificationsByCategory = notifications => {
-    let updatedActionsNotifications = [] as Notification[];
-    let updatedNetworkInfoNotifications = [] as Notification[];
-    let updatedProblemsNotifications = [] as Notification[];
-
-    notifications.forEach((msg) => {
-      if(isProblemNotification(msg)) {
-        updatedProblemsNotifications = [...updatedProblemsNotifications, msg];
-      } else if(isNetworkInfoNotification(msg)) {
-        updatedNetworkInfoNotifications = [...updatedNetworkInfoNotifications, msg];
-      } else {
-        updatedActionsNotifications = [...updatedActionsNotifications, msg];
-      }
-    });
-
-    const sortedNotifications = [updatedActionsNotifications, updatedNetworkInfoNotifications, updatedProblemsNotifications];
-    let updatedDrawerCategories = [...drawerCategories];
-
-    sortedNotifications.forEach((notifications, idx) => {
-      updatedDrawerCategories[idx].notifications = notifications;
-      updatedDrawerCategories[idx].unreadCount = countUnreadNotifications(notifications);
-    });
-
-    setDrawerCategories(updatedDrawerCategories);
-  };
-
-  const isProblemNotification = (msg) => (
-    (msg.variant === AlertVariant.warning) || (msg.variant === AlertVariant.danger)
-  );
-
-  const isNetworkInfoNotification = (msg) => (
-    (msg.category === 'WsClientActivity' || msg.category === 'TargetJvmDiscovery')
-      && (msg.variant === AlertVariant.info)
-  );
 
   const countUnreadNotifications = (notifications: Notification[]) => {
     return notifications.filter(n => !n.read).length;
