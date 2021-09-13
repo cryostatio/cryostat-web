@@ -100,13 +100,6 @@ export class Notifications {
     );
   }
 
-  unreadProblemsNotifications(): Observable<Notification[]> {
-    return this.problemsNotifications()
-    .pipe(
-      map(a => a.filter(n => !n.read))
-    );
-  }
-
   networkInfoNotifications(): Observable<Notification[]> {
     return this.notifications()
     .pipe(
@@ -115,25 +108,11 @@ export class Notifications {
     );
   }
 
-  unreadNetworkInfoNotifications(): Observable<Notification[]> {
-    return this.networkInfoNotifications()
-    .pipe(
-      map(a => a.filter(n => !n.read))
-    );
-  }
-
   actionsNotifications(): Observable<Notification[]> {
     return this.notifications()
     .pipe(
       map(a => a.filter(n => (n.category !== 'WsClientActivity' && n.category !== 'TargetJvmDiscovery')
       && (n.variant === AlertVariant.success || n.variant === AlertVariant.info)))
-    );
-  }
-
-  unreadActionsNotifications(): Observable<Notification[]> {
-    return this.actionsNotifications()
-    .pipe(
-      map(a => a.filter(n => !n.read))
     );
   }
 

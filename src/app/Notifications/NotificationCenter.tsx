@@ -49,29 +49,42 @@ export interface NotificationCenterProps {
 
 export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = props => {
   const context = React.useContext(NotificationsContext);
+
   const [actionsNotifications, setActionsNotifications] = React.useState([] as Notification[]);
   const [networkInfoNotifications, setNetworkInfoNotifications] = React.useState([] as Notification[]);
   const [problemsNotifications, setProblemsNotifications] = React.useState([] as Notification[]);
-  const [groupExpanded, setGroupExpanded] = React.useState([true, false, false]);
+
+  const [expandedCategories, setExpandedCategories] = React.useState([false, false, false]);
+  const [selectedCategoryIdx, setSelectedCategoryIdx] = React.useState(0);
+
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [unreadActionsCount, setUnreadActionsCount] = React.useState(0);
   const [unreadNetworkInfoCount, setUnreadNetworkInfoCount] = React.useState(0);
   const [unreadProblemsCount, setUnreadProblemsCount] = React.useState(0);
+
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
 
-  // TODO reduce duplication
   React.useEffect(() => {
-    const sub = context.actionsNotifications().subscribe(setActionsNotifications);
+    const sub = context.actionsNotifications().subscribe(notifications => {
+      setActionsNotifications(notifications);
+      setUnreadActionsCount(countUnreadNotifications(notifications));
+    });
     return () => sub.unsubscribe();
   }, [context, context.actionsNotifications, setActionsNotifications]);
 
   React.useEffect(() => {
-    const sub = context.networkInfoNotifications().subscribe(setNetworkInfoNotifications);
+    const sub = context.networkInfoNotifications().subscribe(notifications => {
+      setNetworkInfoNotifications(notifications);
+      setUnreadNetworkInfoCount(countUnreadNotifications(notifications));
+    });
     return () => sub.unsubscribe();
   }, [context, context.networkInfoNotifications, setNetworkInfoNotifications]);
 
   React.useEffect(() => {
-    const sub = context.problemsNotifications().subscribe(setProblemsNotifications);
+    const sub = context.problemsNotifications().subscribe(notifications => {
+      setProblemsNotifications(notifications);
+      setUnreadProblemsCount(countUnreadNotifications(notifications));
+    });
     return () => sub.unsubscribe();
   }, [context, context.problemsNotifications, setProblemsNotifications]);
 
@@ -81,32 +94,26 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     return () => sub.unsubscribe();
   }, [context, context.unreadNotifications, setUnreadNotificationsCount]);
 
-  React.useEffect(() => {
-    const sub = context.unreadActionsNotifications().subscribe(s => {
-      setUnreadActionsCount(s.length)});
-    return () => sub.unsubscribe();
-  }, [context, context.unreadActionsNotifications, setUnreadActionsCount]);
-
-  React.useEffect(() => {
-    const sub = context.unreadNetworkInfoNotifications().subscribe(s => {
-      setUnreadNetworkInfoCount(s.length)});
-    return () => sub.unsubscribe();
-  }, [context, context.unreadNetworkInfoNotifications, setUnreadNetworkInfoCount]);
-
-  React.useEffect(() => {
-    const sub = context.unreadProblemsNotifications().subscribe(s => {
-      setUnreadProblemsCount(s.length)});
-    return () => sub.unsubscribe();
-  }, [context, context.unreadProblemsNotifications, setUnreadProblemsCount]);
+  const countUnreadNotifications = (notifications: Notification[]) => {
+    return notifications.filter(n => !n.read).length;
+  }
 
   const handleToggleDropdown = React.useCallback(() => {
     setHeaderDropdownOpen(v => !v);
   }, [setHeaderDropdownOpen]);
 
-  const handleToggleDrawerGroup = React.useCallback(index => {
-    const updatedGroupExpanded = groupExpanded.map((isExpanded, idx) => idx === index ? !isExpanded : false);
-    setGroupExpanded(updatedGroupExpanded);
-  }, [setGroupExpanded]);
+  const handleExpandCategory = React.useCallback((groupIdx) => {
+    setSelectedCategoryIdx(groupIdx);
+  }, [setSelectedCategoryIdx]);
+
+  // Expands one notification category at a time and
+  // also expands the first category on first render
+  React.useEffect(() => {
+    const newExpandedCategory = expandedCategories.map((isExpanded, idx) => {
+      return idx === selectedCategoryIdx ? !isExpanded : false;
+    });
+    setExpandedCategories(newExpandedCategory);
+  }, [setExpandedCategories, selectedCategoryIdx]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
@@ -137,27 +144,35 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     </DropdownItem>,
   ];
 
-  const NotificationDrawerGroupItems = ({title, notifications, count, idx}) => (
-    <NotificationDrawerGroup
-      title={title}
-      isExpanded={groupExpanded[idx]}
-      count={count}
-      onExpand={() => handleToggleDrawerGroup(idx)}
-    >
-      <NotificationDrawerList isHidden={!groupExpanded[idx]}>
-            {
-              notifications.map(({ key, title, message, variant, timestamp, read }) => (
-                <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
-                  <NotificationDrawerListItemHeader title={title} variant={variant} />
-                  <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
-                    <Text component={TextVariants.p}>{message}</Text>
-                  </NotificationDrawerListItemBody>
-                </NotificationDrawerListItem>
-              ))
-            }
-      </NotificationDrawerList>
-    </NotificationDrawerGroup>
-  );
+  const NotificationDrawerCategories = () => {
+    const notificationCategories = ["Completed Actions", "Network Info", "Problems"];
+    const sortedNotifications = [actionsNotifications, networkInfoNotifications, problemsNotifications];
+    const unreadCategoriesCount = [unreadActionsCount, unreadNetworkInfoCount, unreadProblemsCount];
+
+    return <NotificationDrawerGroupList>
+      { notificationCategories.map((title, idx) => (
+        <NotificationDrawerGroup
+          title={title}
+          isExpanded={expandedCategories[idx]}
+          count={unreadCategoriesCount[idx]}
+          onExpand={() => handleExpandCategory(idx)}
+        >
+        <NotificationDrawerList isHidden={!expandedCategories[idx]}>
+              {
+                sortedNotifications[idx].map(({ key, title, message, variant, timestamp, read }) => (
+                  <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
+                    <NotificationDrawerListItemHeader title={title} variant={variant} />
+                    <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
+                      <Text component={TextVariants.p}>{message}</Text>
+                    </NotificationDrawerListItemBody>
+                  </NotificationDrawerListItem>
+                ))
+              }
+        </NotificationDrawerList>
+        </NotificationDrawerGroup>
+      ))}
+    </NotificationDrawerGroupList>;
+};
 
   return (<>
     <NotificationDrawer>
@@ -172,26 +187,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
         />
       </NotificationDrawerHeader>
       <NotificationDrawerBody>
-      <NotificationDrawerGroupList>
-        <NotificationDrawerGroupItems
-          title="Completed Actions"
-          notifications={actionsNotifications}
-          count={unreadActionsCount}
-          idx={0}
-        />
-        <NotificationDrawerGroupItems
-          title="Network Info"
-          notifications={networkInfoNotifications}
-          count={unreadNetworkInfoCount}
-          idx={1}
-        />
-        <NotificationDrawerGroupItems
-          title="Problems"
-          notifications={problemsNotifications}
-          count={unreadProblemsCount}
-          idx={2}
-        />
-      </NotificationDrawerGroupList>
+        <NotificationDrawerCategories />
       </NotificationDrawerBody>
     </NotificationDrawer>
   </>);
