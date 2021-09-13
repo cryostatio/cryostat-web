@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Dropdown, DropdownItem, DropdownPosition, KebabToggle,
+import { AlertVariant, Dropdown, DropdownItem, DropdownPosition, KebabToggle,
   NotificationDrawer, NotificationDrawerBody, NotificationDrawerGroup, NotificationDrawerGroupList, NotificationDrawerHeader,
   NotificationDrawerList, NotificationDrawerListItem,
   NotificationDrawerListItemBody, NotificationDrawerListItemHeader, Text,
@@ -65,34 +65,51 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.actionsNotifications().subscribe(notifications => {
-      setActionsNotifications(notifications);
-      setUnreadActionsCount(countUnreadNotifications(notifications));
+    const sub = context.notifications().subscribe(notifications => {
+      sortNotificationsByCategory(notifications);
     });
     return () => sub.unsubscribe();
-  }, [context, context.actionsNotifications, setActionsNotifications]);
-
-  React.useEffect(() => {
-    const sub = context.networkInfoNotifications().subscribe(notifications => {
-      setNetworkInfoNotifications(notifications);
-      setUnreadNetworkInfoCount(countUnreadNotifications(notifications));
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.networkInfoNotifications, setNetworkInfoNotifications]);
-
-  React.useEffect(() => {
-    const sub = context.problemsNotifications().subscribe(notifications => {
-      setProblemsNotifications(notifications);
-      setUnreadProblemsCount(countUnreadNotifications(notifications));
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.problemsNotifications, setProblemsNotifications]);
+  },[context, context.notifications]);
 
   React.useEffect(() => {
     const sub = context.unreadNotifications().subscribe(s => {
-      setUnreadActionsCount(s.length)});
+      setUnreadNotificationsCount(s.length)});
     return () => sub.unsubscribe();
   }, [context, context.unreadNotifications, setUnreadNotificationsCount]);
+
+  const sortNotificationsByCategory = notifications => {
+    let updatedActionsNotifications = [] as Notification[];
+    let updatedNetworkInfoNotifications = [] as Notification[];;
+    let updatedProblemsNotifications = [] as Notification[];;
+
+    notifications.forEach((msg) => {
+      if(isProblemNotification(msg)) {
+        updatedProblemsNotifications = [...updatedProblemsNotifications, msg];
+      } else if(isNetworkInfoNotification(msg)) {
+        updatedNetworkInfoNotifications = [...updatedNetworkInfoNotifications, msg];
+      } else {
+        updatedActionsNotifications = [...updatedActionsNotifications, msg];
+      }
+    });
+
+    setActionsNotifications(updatedActionsNotifications);
+    setNetworkInfoNotifications(updatedNetworkInfoNotifications);
+    setProblemsNotifications(updatedProblemsNotifications);
+
+    setUnreadActionsCount(countUnreadNotifications(updatedActionsNotifications));
+    setUnreadNetworkInfoCount(countUnreadNotifications(updatedNetworkInfoNotifications));
+    setUnreadProblemsCount(countUnreadNotifications(updatedProblemsNotifications));
+
+  };
+
+  const isProblemNotification = (msg) => (
+    (msg.variant === AlertVariant.warning) || (msg.variant === AlertVariant.danger)
+  );
+
+  const isNetworkInfoNotification = (msg) => (
+    (msg.category === 'WsClientActivity' || msg.category === 'TargetJvmDiscovery')
+      && (msg.variant === AlertVariant.info)
+  );
 
   const countUnreadNotifications = (notifications: Notification[]) => {
     return notifications.filter(n => !n.read).length;

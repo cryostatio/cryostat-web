@@ -93,29 +93,6 @@ export class Notifications {
     );
   }
 
-  problemsNotifications(): Observable<Notification[]> {
-    return this.notifications()
-    .pipe(
-      map(a => a.filter(n => n.variant === AlertVariant.warning || n.variant === AlertVariant.danger))
-    );
-  }
-
-  networkInfoNotifications(): Observable<Notification[]> {
-    return this.notifications()
-    .pipe(
-      map(a => a.filter(n => (n.category === 'WsClientActivity' || n.category === 'TargetJvmDiscovery')
-      && (n.variant === AlertVariant.info)))
-    );
-  }
-
-  actionsNotifications(): Observable<Notification[]> {
-    return this.notifications()
-    .pipe(
-      map(a => a.filter(n => (n.category !== 'WsClientActivity' && n.category !== 'TargetJvmDiscovery')
-      && (n.variant === AlertVariant.success || n.variant === AlertVariant.info)))
-    );
-  }
-
   setRead(key?: string, read: boolean = true): void {
     if (!key) {
       return;
