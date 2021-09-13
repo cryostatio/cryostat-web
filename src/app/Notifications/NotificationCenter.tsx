@@ -49,20 +49,17 @@ export interface NotificationCenterProps {
 
 export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = props => {
   const context = React.useContext(NotificationsContext);
+  const PROBLEMS_CATEGORY_IDX = 2;
 
-  const [actionsNotifications, setActionsNotifications] = React.useState([] as Notification[]);
-  const [networkInfoNotifications, setNetworkInfoNotifications] = React.useState([] as Notification[]);
-  const [problemsNotifications, setProblemsNotifications] = React.useState([] as Notification[]);
-
-  const [expandedCategories, setExpandedCategories] = React.useState([false, false, false]);
   const [selectedCategoryIdx, setSelectedCategoryIdx] = React.useState(0);
-
-  const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
-  const [unreadActionsCount, setUnreadActionsCount] = React.useState(0);
-  const [unreadNetworkInfoCount, setUnreadNetworkInfoCount] = React.useState(0);
-  const [unreadProblemsCount, setUnreadProblemsCount] = React.useState(0);
-
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
+
+  const [drawerCategories, setDrawerCategories] = React.useState([
+    {title: "Completed Actions", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
+    {title: "Network Info", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
+    {title: "Problems", isExpanded: false, notifications: [] as Notification[], unreadCount: 0}
+  ]);
 
   React.useEffect(() => {
     const sub = context.notifications().subscribe(notifications => {
@@ -79,8 +76,8 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
 
   const sortNotificationsByCategory = notifications => {
     let updatedActionsNotifications = [] as Notification[];
-    let updatedNetworkInfoNotifications = [] as Notification[];;
-    let updatedProblemsNotifications = [] as Notification[];;
+    let updatedNetworkInfoNotifications = [] as Notification[];
+    let updatedProblemsNotifications = [] as Notification[];
 
     notifications.forEach((msg) => {
       if(isProblemNotification(msg)) {
@@ -92,14 +89,15 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       }
     });
 
-    setActionsNotifications(updatedActionsNotifications);
-    setNetworkInfoNotifications(updatedNetworkInfoNotifications);
-    setProblemsNotifications(updatedProblemsNotifications);
+    const sortedNotifications = [updatedActionsNotifications, updatedNetworkInfoNotifications, updatedProblemsNotifications];
+    let updatedDrawerCategories = [...drawerCategories];
 
-    setUnreadActionsCount(countUnreadNotifications(updatedActionsNotifications));
-    setUnreadNetworkInfoCount(countUnreadNotifications(updatedNetworkInfoNotifications));
-    setUnreadProblemsCount(countUnreadNotifications(updatedProblemsNotifications));
+    sortedNotifications.forEach((notifications, idx) => {
+      updatedDrawerCategories[idx].notifications = notifications;
+      updatedDrawerCategories[idx].unreadCount = countUnreadNotifications(notifications);
+    });
 
+    setDrawerCategories(updatedDrawerCategories);
   };
 
   const isProblemNotification = (msg) => (
@@ -126,16 +124,21 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   // Expands the first category by default unless
   // there are unread errors/warnings
   React.useEffect(() => {
-    if(unreadProblemsCount > 0) {
-      setExpandedCategories([false, false, true]);
+    let updatedDrawerCategories = [...drawerCategories];
+
+    if(drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount > 0) {
+      drawerCategories.forEach(({}, idx) => {
+        updatedDrawerCategories[idx].isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
+      });
       return;
     }
 
-    const newExpandedCategory = expandedCategories.map((isExpanded, idx) => {
-      return idx === selectedCategoryIdx ? !isExpanded : false;
+    drawerCategories.forEach(({isExpanded}, idx) => {
+      updatedDrawerCategories[idx].isExpanded = (idx === selectedCategoryIdx) ? !isExpanded : false;
     });
-    setExpandedCategories(newExpandedCategory);
-  }, [setExpandedCategories, selectedCategoryIdx, unreadProblemsCount]);
+    setDrawerCategories(updatedDrawerCategories);
+
+  }, [setDrawerCategories, selectedCategoryIdx]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
@@ -166,22 +169,18 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     </DropdownItem>,
   ];
 
-  const NotificationDrawerCategories = () => {
-    const notificationCategories = ["Completed Actions", "Network Info", "Problems"];
-    const sortedNotifications = [actionsNotifications, networkInfoNotifications, problemsNotifications];
-    const unreadCategoriesCount = [unreadActionsCount, unreadNetworkInfoCount, unreadProblemsCount];
-
-    return <NotificationDrawerGroupList>
-      { notificationCategories.map((title, idx) => (
+  const NotificationDrawerCategories = () => (
+    <NotificationDrawerGroupList>
+      { drawerCategories.map(({title, isExpanded, notifications, unreadCount}, idx) => (
         <NotificationDrawerGroup
           title={title}
-          isExpanded={expandedCategories[idx]}
-          count={unreadCategoriesCount[idx]}
+          isExpanded={isExpanded}
+          count={unreadCount}
           onExpand={() => handleExpandCategory(idx)}
         >
-        <NotificationDrawerList isHidden={!expandedCategories[idx]}>
+        <NotificationDrawerList isHidden={!isExpanded}>
               {
-                sortedNotifications[idx].map(({ key, title, message, variant, timestamp, read }) => (
+                notifications.map(({ key, title, message, variant, timestamp, read }) => (
                   <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
                     <NotificationDrawerListItemHeader title={title} variant={variant} />
                     <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
@@ -193,8 +192,8 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
         </NotificationDrawerList>
         </NotificationDrawerGroup>
       ))}
-    </NotificationDrawerGroupList>;
-};
+    </NotificationDrawerGroupList>
+);
 
   return (<>
     <NotificationDrawer>
