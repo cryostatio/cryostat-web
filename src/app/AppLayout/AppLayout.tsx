@@ -52,7 +52,7 @@ import { Notification, Notifications, NotificationsContext } from '@app/Notifica
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import cryostatIcon from '@app/assets/icon-cryostat-3.svg';
-import cryostatIconWhite from '@app/assets/icon-cryostat-3-white.svg';
+import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -206,9 +206,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       isOpen={aboutModalOpen}
       onClose={handleAboutModalToggle}
       trademark='Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0'
-      brandImageSrc={cryostatIconWhite}
+      brandImageSrc={cryostatLogoWhite}
       brandImageAlt='Cryostat Logo'
-      productName='Cryostat'
     >
       <TextContent>
         <TextList component="dl">
