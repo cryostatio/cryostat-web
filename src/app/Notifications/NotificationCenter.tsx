@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { AlertVariant, Dropdown, DropdownItem, DropdownPosition, KebabToggle,
+import { Dropdown, DropdownItem, DropdownPosition, KebabToggle,
   NotificationDrawer, NotificationDrawerBody, NotificationDrawerGroup, NotificationDrawerGroupList, NotificationDrawerHeader,
   NotificationDrawerList, NotificationDrawerListItem,
   NotificationDrawerListItemBody, NotificationDrawerListItemHeader, Text,
@@ -50,22 +50,24 @@ export interface NotificationCenterProps {
 
 export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = props => {
   const context = React.useContext(NotificationsContext);
-  const PROBLEMS_CATEGORY_IDX = 2;
-
-  const [selectedCategoryIdx, setSelectedCategoryIdx] = React.useState(0);
+  const [totalUnreadNotificationsCount, setTotalUnreadNotificationsCount] = React.useState(0);
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
-  const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
-
+  const PROBLEMS_CATEGORY_IDX = 2;
+  const [selectedCategoryIdx, setSelectedCategoryIdx] = React.useState(0);
   const [drawerCategories, setDrawerCategories] = React.useState([
     {title: "Completed Actions", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
     {title: "Network Info", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
     {title: "Problems", isExpanded: false, notifications: [] as Notification[], unreadCount: 0}
   ]);
 
+  const countUnreadNotifications = (notifications: Notification[]) => {
+    return notifications.filter(n => !n.read).length;
+  }
+
   React.useEffect(() => {
     const sub = combineLatest(context.actionsNotifications(), context.networkInfoNotifications(), context.problemsNotifications())
     .subscribe(categories => {
-      let updatedDrawerCategories = [...drawerCategories];
+      const updatedDrawerCategories = [...drawerCategories];
 
       categories.forEach((notifications, idx) => {
         updatedDrawerCategories[idx].notifications = notifications;
@@ -75,17 +77,13 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       setDrawerCategories(updatedDrawerCategories);
     });
     return () => sub.unsubscribe();
-  },[context, context.notifications]);
+  },[context, context.notifications, setDrawerCategories]);
 
   React.useEffect(() => {
     const sub = context.unreadNotifications().subscribe(s => {
-      setUnreadNotificationsCount(s.length)});
+      setTotalUnreadNotificationsCount(s.length)});
     return () => sub.unsubscribe();
-  }, [context, context.unreadNotifications, setUnreadNotificationsCount]);
-
-  const countUnreadNotifications = (notifications: Notification[]) => {
-    return notifications.filter(n => !n.read).length;
-  }
+  }, [context, context.unreadNotifications, setTotalUnreadNotificationsCount]);
 
   const handleToggleDropdown = React.useCallback(() => {
     setHeaderDropdownOpen(v => !v);
@@ -98,7 +96,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   // Expands the first category by default unless
   // there are unread errors/warnings
   React.useEffect(() => {
-    let updatedDrawerCategories = [...drawerCategories];
+    const updatedDrawerCategories = [...drawerCategories];
 
     if(drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount > 0) {
       drawerCategories.forEach(({}, idx) => {
@@ -130,7 +128,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     if (!timestamp) {
       return '';
     }
-    var date = new Date(timestamp);
+    const date = new Date(timestamp);
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   }
 
@@ -151,6 +149,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
           isExpanded={isExpanded}
           count={unreadCount}
           onExpand={() => handleExpandCategory(idx)}
+          key={idx}
         >
         <NotificationDrawerList isHidden={!isExpanded}>
               {
@@ -171,7 +170,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
 
   return (<>
     <NotificationDrawer>
-      <NotificationDrawerHeader count={unreadNotificationsCount} onClose={props.onClose} >
+      <NotificationDrawerHeader count={totalUnreadNotificationsCount} onClose={props.onClose} >
         <Dropdown
           isPlain
           onSelect={handleToggleDropdown}

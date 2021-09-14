@@ -49,7 +49,6 @@ import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { filter } from 'rxjs/operators';
 
 let routeFocusTimer: number;
 
