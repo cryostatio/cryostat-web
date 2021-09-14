@@ -51,6 +51,13 @@ export interface Notification {
   timestamp?: number;
 }
 
+export interface NotificationDrawerCategory {
+  title: string;
+  isExpanded: boolean;
+  notifications: Notification[];
+  unreadCount: number;
+}
+
 export class Notifications {
 
   private readonly _notifications: Notification[] = [];

@@ -41,7 +41,7 @@ import { Dropdown, DropdownItem, DropdownPosition, KebabToggle,
   NotificationDrawerList, NotificationDrawerListItem,
   NotificationDrawerListItemBody, NotificationDrawerListItemHeader, Text,
   TextVariants } from '@patternfly/react-core';
-import { Notification, NotificationsContext } from './Notifications';
+import { Notification, NotificationDrawerCategory, NotificationsContext } from './Notifications';
 import { combineLatest } from 'rxjs';
 
 export interface NotificationCenterProps {
@@ -53,25 +53,24 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   const [totalUnreadNotificationsCount, setTotalUnreadNotificationsCount] = React.useState(0);
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
   const PROBLEMS_CATEGORY_IDX = 2;
-  const [selectedCategoryIdx, setSelectedCategoryIdx] = React.useState(0);
   const [drawerCategories, setDrawerCategories] = React.useState([
-    {title: "Completed Actions", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
+    {title: "Completed Actions", isExpanded: true, notifications: [] as Notification[], unreadCount: 0},
     {title: "Network Info", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
     {title: "Problems", isExpanded: false, notifications: [] as Notification[], unreadCount: 0}
-  ]);
+  ] as NotificationDrawerCategory[]);
 
   const countUnreadNotifications = (notifications: Notification[]) => {
     return notifications.filter(n => !n.read).length;
   }
 
   React.useEffect(() => {
-    const sub = combineLatest(context.actionsNotifications(), context.networkInfoNotifications(), context.problemsNotifications())
-    .subscribe(categories => {
+    const sub = combineLatest([context.actionsNotifications(), context.networkInfoNotifications(), context.problemsNotifications()])
+    .subscribe(notificationLists => {
       const updatedDrawerCategories = [...drawerCategories];
 
-      categories.forEach((notifications, idx) => {
-        updatedDrawerCategories[idx].notifications = notifications;
-        updatedDrawerCategories[idx].unreadCount = countUnreadNotifications(notifications);
+      updatedDrawerCategories.map((category: NotificationDrawerCategory, idx) => {
+        category.notifications = notificationLists[idx];
+        category.unreadCount = countUnreadNotifications(notificationLists[idx]);
       });
 
       setDrawerCategories(updatedDrawerCategories);
@@ -89,28 +88,27 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     setHeaderDropdownOpen(v => !v);
   }, [setHeaderDropdownOpen]);
 
-  const handleExpandCategory = React.useCallback((categoryIdx) => {
-    setSelectedCategoryIdx(categoryIdx);
-  }, [setSelectedCategoryIdx]);
-
-  // Expands the first category by default unless
-  // there are unread errors/warnings
-  React.useEffect(() => {
+  const handleToggleExpandCategory = React.useCallback((categoryIdx) => {
     const updatedDrawerCategories = [...drawerCategories];
-
-    if(drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount > 0) {
-      drawerCategories.forEach(({}, idx) => {
-        updatedDrawerCategories[idx].isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
+    updatedDrawerCategories.map((category: NotificationDrawerCategory, idx) => {
+        category.isExpanded = (idx === categoryIdx) ? !category.isExpanded : false
       });
+
+    setDrawerCategories(updatedDrawerCategories);
+  }, [setDrawerCategories]);
+
+  // Automatically expands the Problems category when unread errors/warnings exist
+  React.useEffect(() => {
+    if(drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount === 0) {
       return;
     }
 
-    drawerCategories.forEach(({isExpanded}, idx) => {
-      updatedDrawerCategories[idx].isExpanded = (idx === selectedCategoryIdx) ? !isExpanded : false;
+    const updatedDrawerCategories = [...drawerCategories];
+    updatedDrawerCategories.map((category: NotificationDrawerCategory, idx) => {
+      category.isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
     });
     setDrawerCategories(updatedDrawerCategories);
-
-  }, [setDrawerCategories, selectedCategoryIdx]);
+  }, [setDrawerCategories, drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
@@ -148,7 +146,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
           title={title}
           isExpanded={isExpanded}
           count={unreadCount}
-          onExpand={() => handleExpandCategory(idx)}
+          onExpand={() => handleToggleExpandCategory(idx)}
           key={idx}
         >
         <NotificationDrawerList isHidden={!isExpanded}>
