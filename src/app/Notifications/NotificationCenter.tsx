@@ -139,33 +139,6 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     </DropdownItem>,
   ];
 
-  const NotificationDrawerCategories = () => (
-    <NotificationDrawerGroupList>
-      { drawerCategories.map(({title, isExpanded, notifications, unreadCount}, idx) => (
-        <NotificationDrawerGroup
-          title={title}
-          isExpanded={isExpanded}
-          count={unreadCount}
-          onExpand={() => handleToggleExpandCategory(idx)}
-          key={idx}
-        >
-        <NotificationDrawerList isHidden={!isExpanded}>
-              {
-                notifications.map(({ key, title, message, variant, timestamp, read }) => (
-                  <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
-                    <NotificationDrawerListItemHeader title={title} variant={variant} />
-                    <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
-                      <Text component={TextVariants.p}>{message}</Text>
-                    </NotificationDrawerListItemBody>
-                  </NotificationDrawerListItem>
-                ))
-              }
-        </NotificationDrawerList>
-        </NotificationDrawerGroup>
-      ))}
-    </NotificationDrawerGroupList>
-);
-
   return (<>
     <NotificationDrawer>
       <NotificationDrawerHeader count={totalUnreadNotificationsCount} onClose={props.onClose} >
@@ -179,7 +152,30 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
         />
       </NotificationDrawerHeader>
       <NotificationDrawerBody>
-        <NotificationDrawerCategories />
+      <NotificationDrawerGroupList>
+        { drawerCategories.map(({title, isExpanded, notifications, unreadCount}, idx) => (
+          <NotificationDrawerGroup
+            title={title}
+            isExpanded={isExpanded}
+            count={unreadCount}
+            onExpand={() => handleToggleExpandCategory(idx)}
+            key={idx}
+          >
+          <NotificationDrawerList isHidden={!isExpanded}>
+                {
+                  notifications.map(({ key, title, message, variant, timestamp, read }) => (
+                    <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
+                      <NotificationDrawerListItemHeader title={title} variant={variant} />
+                      <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
+                        <Text component={TextVariants.p}>{message}</Text>
+                      </NotificationDrawerListItemBody>
+                    </NotificationDrawerListItem>
+                  ))
+                }
+          </NotificationDrawerList>
+          </NotificationDrawerGroup>
+        ))}
+    </NotificationDrawerGroupList>
       </NotificationDrawerBody>
     </NotificationDrawer>
   </>);
