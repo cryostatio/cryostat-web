@@ -58,6 +58,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     {title: "Network Info", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
     {title: "Problems", isExpanded: false, notifications: [] as Notification[], unreadCount: 0}
   ] as NotificationDrawerCategory[]);
+  const unreadProblemsCount = drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount;
 
   const countUnreadNotifications = (notifications: Notification[]) => {
     return notifications.filter(n => !n.read).length;
@@ -97,7 +98,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     setDrawerCategories(updatedDrawerCategories);
   }, [setDrawerCategories]);
 
-  // Automatically expands the Problems category when unread errors/warnings exist
+  // Expands the Problems tab when unread errors/warnings are present
   React.useEffect(() => {
     if(drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount === 0) {
       return;
@@ -108,7 +109,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       category.isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
     });
     setDrawerCategories(updatedDrawerCategories);
-  }, [setDrawerCategories, drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount]);
+  }, [setDrawerCategories, unreadProblemsCount]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
@@ -175,7 +176,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
           </NotificationDrawerList>
           </NotificationDrawerGroup>
         ))}
-    </NotificationDrawerGroupList>
+      </NotificationDrawerGroupList>
       </NotificationDrawerBody>
     </NotificationDrawer>
   </>);

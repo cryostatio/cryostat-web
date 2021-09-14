@@ -125,7 +125,7 @@ export class Notifications {
     if (!key) {
       return;
     }
-    for (var n of this._notifications) {
+    for (let n of this._notifications) {
       if (n.key === key) {
         n.read = read;
       }
@@ -134,7 +134,7 @@ export class Notifications {
   }
 
   markAllRead(): void {
-    for (var n of this._notifications) {
+    for (let n of this._notifications) {
       n.read = true;
     }
     this._notifications$.next(this._notifications);
