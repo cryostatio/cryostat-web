@@ -48,7 +48,7 @@ import { AboutModal, Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
-import { Notification, NotificationsContext } from '../Notifications/Notifications';
+import { Notification, Notifications, NotificationsContext } from '../Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 
@@ -301,7 +301,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <AlertGroup isToast>
       {
         notifications
-          .filter(n => !n.read && (n.variant === AlertVariant.danger || n.variant === AlertVariant.warning))
+          .filter(n => !n.read && Notifications.isProblemNotification(n))
           .map(( { key, title, message, variant } ) => (
             <Alert
               variant={variant}

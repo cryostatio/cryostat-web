@@ -113,7 +113,7 @@ export class Notifications {
   problemsNotifications(): Observable<Notification[]> {
     return this.notifications()
     .pipe(
-      map(a => a.filter(this.isProblemNotification))
+      map(a => a.filter(Notifications.isProblemNotification))
     );
   }
 
@@ -146,7 +146,7 @@ export class Notifications {
   private isActionNotification(n: Notification): boolean {
     return !this.isWsClientActivity(n)
       && !this.isJvmDiscovery(n)
-      && !this.isProblemNotification(n);
+      && !Notifications.isProblemNotification(n);
   }
 
   private isWsClientActivity(n: Notification): boolean {
@@ -157,7 +157,7 @@ export class Notifications {
     return (n.category === NotificationCategory.JvmDiscovery);
   }
 
-  private isProblemNotification(n: Notification): boolean {
+  static isProblemNotification(n: Notification): boolean {
     return (n.variant === AlertVariant.warning) || (n.variant === AlertVariant.danger);
   }
 }
