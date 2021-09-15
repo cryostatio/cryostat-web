@@ -51,7 +51,7 @@ import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-import cryostatIcon from '@app/assets/icon-cryostat-3.svg';
+import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
 
 interface IAppLayout {
@@ -195,7 +195,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   </>);
   const Header = (<>
     <PageHeader
-      logo={<><Brand alt="Cryostat" src={cryostatIcon} className="cryostat-logo" /><Text component={TextVariants.pre}>&nbsp;Cryostat</Text></>}
+      logo={<Brand alt="Cryostat" src={cryostatLogoHorizontal} className="cryostat-logo" />}
       logoProps={logoProps}
       showNavToggle
       isNavOpen={isNavOpen}
