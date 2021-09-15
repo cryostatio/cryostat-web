@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
@@ -46,6 +46,7 @@ export interface Notification {
   key?: string;
   title: string;
   message?: string;
+  category?: string;
   variant: AlertVariant;
   timestamp?: number;
 }
@@ -65,20 +66,20 @@ export class Notifications {
     this._notifications$.next(this._notifications);
   }
 
-  success(title: string, message?: string): void {
-    this.notify({ title, message, variant: AlertVariant.success });
+  success(title: string, message?: string, category?: string): void {
+    this.notify({ title, message, category, variant: AlertVariant.success });
   }
 
-  info(title: string, message?: string): void {
-    this.notify({ title, message, variant: AlertVariant.info });
+  info(title: string, message?: string, category?: string): void {
+    this.notify({ title, message, category, variant: AlertVariant.info });
   }
 
-  warning(title: string, message?: string): void {
-    this.notify({ title, message, variant: AlertVariant.warning });
+  warning(title: string, message?: string, category?: string): void {
+    this.notify({ title, message, category, variant: AlertVariant.warning });
   }
 
-  danger(title: string, message?: string): void {
-    this.notify({ title, message, variant: AlertVariant.danger });
+  danger(title: string, message?: string, category?: string): void {
+    this.notify({ title, message, category, variant: AlertVariant.danger });
   }
 
   notifications(): Observable<Notification[]> {
@@ -92,11 +93,32 @@ export class Notifications {
     );
   }
 
+  actionsNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(n => this.isActionNotification(n)))
+    );
+  }
+
+  networkInfoNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(this.isNetworkInfoNotification))
+    );
+  }
+
+  problemsNotifications(): Observable<Notification[]> {
+    return this.notifications()
+    .pipe(
+      map(a => a.filter(this.isProblemNotification))
+    );
+  }
+
   setRead(key?: string, read: boolean = true): void {
     if (!key) {
       return;
     }
-    for (var n of this._notifications) {
+    for (let n of this._notifications) {
       if (n.key === key) {
         n.read = read;
       }
@@ -105,7 +127,7 @@ export class Notifications {
   }
 
   markAllRead(): void {
-    for (var n of this._notifications) {
+    for (let n of this._notifications) {
       n.read = true;
     }
     this._notifications$.next(this._notifications);
@@ -116,6 +138,19 @@ export class Notifications {
       this._notifications.shift();
     }
     this._notifications$.next(this._notifications);
+  }
+
+  private isActionNotification(n: Notification): boolean {
+    return !this.isNetworkInfoNotification(n) && !this.isProblemNotification(n);
+  }
+
+  private isNetworkInfoNotification(n: Notification): boolean {
+    return (n.category === 'WsClientActivity' || n.category === 'TargetJvmDiscovery')
+      && (n.variant === AlertVariant.info);
+  }
+
+  private isProblemNotification(n: Notification): boolean {
+    return (n.variant === AlertVariant.warning) || (n.variant === AlertVariant.danger);
   }
 }
 

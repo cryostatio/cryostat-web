@@ -69,11 +69,11 @@ export class TargetsService {
         switch (evt.kind) {
           case 'FOUND':
             this._targets$.next(_.unionBy(this._targets$.getValue(), [evt.serviceRef], t => t.connectUrl));
-            notifications.info('Target Appeared', `Target "${target.alias}" appeared (${target.connectUrl})"`);
+            notifications.info('Target Appeared', `Target "${target.alias}" appeared (${target.connectUrl})"`, NOTIFICATION_CATEGORY);
             break;
           case 'LOST':
             this._targets$.next(_.filter(this._targets$.getValue(), t => t.connectUrl !== evt.serviceRef.connectUrl));
-            notifications.info('Target Disappeared', `Target "${target.alias}" disappeared (${target.connectUrl})"`);
+            notifications.info('Target Disappeared', `Target "${target.alias}" disappeared (${target.connectUrl})"`, NOTIFICATION_CATEGORY);
             break;
           default:
             notifications.danger(`Invalid Message Received`, `Received a notification with category ${NOTIFICATION_CATEGORY} and unrecognized kind ${evt.kind}`);

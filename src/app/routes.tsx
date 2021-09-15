@@ -49,7 +49,6 @@ import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { filter } from 'rxjs/operators';
 
 let routeFocusTimer: number;
 
@@ -157,9 +156,7 @@ const AppRoutes = () => {
   const [authenticated, setAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel
-      .isReady()
-      .subscribe(v => setAuthenticated(v));
+    const sub = context.notificationChannel.isReady().subscribe((v) => setAuthenticated(v));
     return () => sub.unsubscribe();
   }, [context.notificationChannel, setAuthenticated]);
 
