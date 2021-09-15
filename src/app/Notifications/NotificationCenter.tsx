@@ -67,14 +67,14 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   React.useEffect(() => {
     const sub = combineLatest([context.actionsNotifications(), context.networkInfoNotifications(), context.problemsNotifications()])
     .subscribe(notificationLists => {
-      const updatedDrawerCategories = [...drawerCategories];
+      setDrawerCategories(drawerCategories => {
+        drawerCategories.map((category: NotificationDrawerCategory, idx) => {
 
-      updatedDrawerCategories.map((category: NotificationDrawerCategory, idx) => {
-        category.notifications = notificationLists[idx];
-        category.unreadCount = countUnreadNotifications(notificationLists[idx]);
+          category.notifications = notificationLists[idx];
+          category.unreadCount = countUnreadNotifications(notificationLists[idx]);
+        });
+        return drawerCategories;
       });
-
-      setDrawerCategories(updatedDrawerCategories);
     });
     return () => sub.unsubscribe();
   },[context, context.notifications, setDrawerCategories]);
@@ -90,12 +90,14 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   }, [setHeaderDropdownOpen]);
 
   const handleToggleExpandCategory = React.useCallback((categoryIdx) => {
-    const updatedDrawerCategories = [...drawerCategories];
-    updatedDrawerCategories.map((category: NotificationDrawerCategory, idx) => {
+    setDrawerCategories(drawerCategories => {
+      let newDrawerCategories = [...drawerCategories];
+      newDrawerCategories.map((category: NotificationDrawerCategory, idx) => {
+
         category.isExpanded = (idx === categoryIdx) ? !category.isExpanded : false
       });
-
-    setDrawerCategories(updatedDrawerCategories);
+      return newDrawerCategories;
+    });
   }, [setDrawerCategories]);
 
   // Expands the Problems tab when unread errors/warnings are present
@@ -103,12 +105,13 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     if(drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount === 0) {
       return;
     }
+    setDrawerCategories(drawerCategories => {
+      drawerCategories.map((category: NotificationDrawerCategory, idx) => {
 
-    const updatedDrawerCategories = [...drawerCategories];
-    updatedDrawerCategories.map((category: NotificationDrawerCategory, idx) => {
-      category.isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
+        category.isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
+      });
+      return drawerCategories;
     });
-    setDrawerCategories(updatedDrawerCategories);
   }, [setDrawerCategories, unreadProblemsCount]);
 
   const handleMarkAllRead = React.useCallback(() => {
