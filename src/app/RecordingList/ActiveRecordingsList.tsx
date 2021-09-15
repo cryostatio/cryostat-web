@@ -44,7 +44,7 @@ import {useSubscriptions} from '@app/utils/useSubscriptions';
 import {Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem} from '@patternfly/react-core';
 import * as React from 'react';
 import {useHistory, useRouteMatch} from 'react-router-dom';
-import {forkJoin, Observable} from 'rxjs';
+import {combineLatest, forkJoin, Observable} from 'rxjs';
 import {concatMap, filter, first} from 'rxjs/operators';
 import {RecordingsDataTable} from './RecordingsDataTable';
 import {ReportFrame} from './ReportFrame';
@@ -136,39 +136,14 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingCreated)
-      .subscribe(v => {
-        const event: RecordingNotificationEvent = v.message;
-        notifications.info('Recording Created', `${event.recording} created in target: ${event.target}`);
-        refreshRecordingList();
-      }));
-  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
-
-  React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingSaved)
-      .subscribe(v => {
-         const event: RecordingNotificationEvent = v.message;
-         notifications.info('Recording Archived', `${event.recording} was archived`);
-         refreshRecordingList();
-      }));
-  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
-
-  React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingArchived)
-      .subscribe(v => {
-         const event: RecordingNotificationEvent = v.message;
-         notifications.info('Recording Archived', `${event.recording} was archived`);
-         refreshRecordingList();
-      }));
-  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
-
-  React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
-      .subscribe(v => {
-         const event: RecordingNotificationEvent = v.message;
-         notifications.info('Recording Deleted', `${event.recording} was deleted`);
-         refreshRecordingList();
-      }));
+    combineLatest([
+      context.notificationChannel.messages(NotificationCategory.RecordingCreated),
+      context.notificationChannel.messages(NotificationCategory.RecordingSaved),
+      context.notificationChannel.messages(NotificationCategory.RecordingArchived),
+      context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
+    ]).subscribe(
+      refreshRecordingList
+    );
   }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
 
   React.useEffect(() => {
