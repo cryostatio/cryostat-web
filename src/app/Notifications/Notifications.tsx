@@ -96,7 +96,7 @@ export class Notifications {
   actionsNotifications(): Observable<Notification[]> {
     return this.notifications()
     .pipe(
-      map(a => a.filter(this.isActionNotification))
+      map(a => a.filter(n => this.isActionNotification(n)))
     );
   }
 
@@ -141,8 +141,7 @@ export class Notifications {
   }
 
   private isActionNotification(n: Notification): boolean {
-    return (n.category !== 'WsClientActivity' && n.category !== 'TargetJvmDiscovery')
-      && (n.variant === AlertVariant.success || n.variant === AlertVariant.info);
+    return !this.isNetworkInfoNotification(n) && !this.isProblemNotification(n);
   }
 
   private isNetworkInfoNotification(n: Notification): boolean {
