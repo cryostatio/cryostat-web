@@ -79,7 +79,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
             category.notifications = notificationLists[idx];
             category.unreadCount = countUnreadNotifications(notificationLists[idx]);
             return category;
-        }) as unknown as NotificationDrawerCategory[];
+        });
       });
     });
     return () => sub.unsubscribe();
@@ -101,7 +101,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
         category.isExpanded = (idx === categoryIdx) ? !category.isExpanded : false;
         return category;
-      }) as unknown as NotificationDrawerCategory[];
+      });
     });
   }, [setDrawerCategories]);
 
@@ -115,7 +115,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
         category.isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
         return category;
-      }) as unknown as NotificationDrawerCategory[];
+      });
     });
   }, [setDrawerCategories, drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount]);
 
