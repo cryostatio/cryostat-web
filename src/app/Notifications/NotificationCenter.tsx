@@ -73,13 +73,13 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   React.useEffect(() => {
     const sub = combineLatest([context.actionsNotifications(), context.networkInfoNotifications(), context.problemsNotifications()])
     .subscribe(notificationLists => {
-      setDrawerCategories(drawerCategories => {
-        drawerCategories.map((category: NotificationDrawerCategory, idx) => {
+        setDrawerCategories(drawerCategories => {
 
-          category.notifications = notificationLists[idx];
-          category.unreadCount = countUnreadNotifications(notificationLists[idx]);
-        });
-        return drawerCategories;
+          return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
+            category.notifications = notificationLists[idx];
+            category.unreadCount = countUnreadNotifications(notificationLists[idx]);
+            return category;
+        }) as unknown as NotificationDrawerCategory[];
       });
     });
     return () => sub.unsubscribe();
@@ -97,12 +97,11 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
 
   const handleToggleExpandCategory = React.useCallback((categoryIdx) => {
     setDrawerCategories(drawerCategories => {
-      let newDrawerCategories = [...drawerCategories];
-      newDrawerCategories.map((category: NotificationDrawerCategory, idx) => {
 
-        category.isExpanded = (idx === categoryIdx) ? !category.isExpanded : false
-      });
-      return newDrawerCategories;
+      return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
+        category.isExpanded = (idx === categoryIdx) ? !category.isExpanded : false;
+        return category;
+      }) as unknown as NotificationDrawerCategory[];
     });
   }, [setDrawerCategories]);
 
@@ -111,14 +110,14 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     if(drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount === 0) {
       return;
     }
-    setDrawerCategories(drawerCategories => {
-      drawerCategories.map((category: NotificationDrawerCategory, idx) => {
 
+    setDrawerCategories(drawerCategories => {
+      return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
         category.isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
-      });
-      return drawerCategories;
+        return category;
+      }) as unknown as NotificationDrawerCategory[];
     });
-  }, [setDrawerCategories, drawerCategories]);
+  }, [setDrawerCategories, drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
