@@ -113,7 +113,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
 
     setDrawerCategories(drawerCategories => {
       return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
-        category.isExpanded = (idx === PROBLEMS_CATEGORY_IDX) ? true : false;
+        category.isExpanded = idx === PROBLEMS_CATEGORY_IDX;
         return category;
       });
     });
