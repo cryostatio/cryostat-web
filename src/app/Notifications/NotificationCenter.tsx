@@ -65,7 +65,6 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     {title: "Network Info", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
     {title: "Problems", isExpanded: false, notifications: [] as Notification[], unreadCount: 0}
   ] as NotificationDrawerCategory[]);
-  const unreadProblemsCount = drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount;
 
   const countUnreadNotifications = (notifications: Notification[]) => {
     return notifications.filter(n => !n.read).length;
@@ -119,7 +118,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       });
       return drawerCategories;
     });
-  }, [setDrawerCategories, unreadProblemsCount]);
+  }, [setDrawerCategories, drawerCategories]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
