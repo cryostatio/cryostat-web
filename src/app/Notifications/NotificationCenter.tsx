@@ -41,11 +41,18 @@ import { Dropdown, DropdownItem, DropdownPosition, KebabToggle,
   NotificationDrawerList, NotificationDrawerListItem,
   NotificationDrawerListItemBody, NotificationDrawerListItemHeader, Text,
   TextVariants } from '@patternfly/react-core';
-import { Notification, NotificationDrawerCategory, NotificationsContext } from './Notifications';
+import { Notification, NotificationsContext } from './Notifications';
 import { combineLatest } from 'rxjs';
 
 export interface NotificationCenterProps {
   onClose: () => void;
+}
+
+export interface NotificationDrawerCategory {
+  title: string;
+  isExpanded: boolean;
+  notifications: Notification[];
+  unreadCount: number;
 }
 
 export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = props => {
