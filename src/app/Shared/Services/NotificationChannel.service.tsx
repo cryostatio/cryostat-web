@@ -76,22 +76,22 @@ export class NotificationChannel {
 
     this.messages(NotificationCategory.RecordingCreated).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
-      notifications.info('Recording Created', `${event.recording} created in target: ${event.target}`);
+      notifications.success('Recording Created', `${event.recording} created in target: ${event.target}`);
     });
 
     this.messages(NotificationCategory.RecordingSaved).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
-      notifications.info('Recording Archived', `${event.recording} was archived`);
+      notifications.success('Recording Archived', `${event.recording} was archived`);
     });
 
     this.messages(NotificationCategory.RecordingArchived).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
-      notifications.info('Recording Archived', `${event.recording} was archived`);
+      notifications.success('Recording Archived', `${event.recording} was archived`);
     });
 
     this.messages(NotificationCategory.RecordingDeleted).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
-      notifications.info('Recording Deleted', `${event.recording} was deleted`);
+      notifications.success('Recording Deleted', `${event.recording} was deleted`);
     });
 
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
