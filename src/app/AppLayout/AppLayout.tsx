@@ -94,7 +94,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     if (!cryostatVersion) {
       return;
     }
-    const expr = /^(?<describe>[a-zA-Z0-9-_.]+-[0-9]+-[a-z0-9]{9})(?:-dirty)?$/;
+    const expr = /^(?<describe>[a-zA-Z0-9-_.]+-[0-9]+-[a-z0-9]+)(?:-dirty)?$/;
     const result = cryostatVersion.match(expr);
     if (!result) {
       notificationsContext.warning('Cryostat Version Parse Failure', `Could not parse Cryostat version string '${cryostatVersion}'.`);
