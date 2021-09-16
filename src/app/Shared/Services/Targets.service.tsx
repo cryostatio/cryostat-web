@@ -40,11 +40,9 @@ import * as _ from 'lodash';
 import { ApiService } from './Api.service';
 import { Target } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
-import { NotificationChannel } from './NotificationChannel.service';
+import { NotificationCategory, NotificationChannel } from './NotificationChannel.service';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { catchError, first, map, tap } from 'rxjs/operators';
-
-const NOTIFICATION_CATEGORY = 'TargetJvmDiscovery';
 
 export interface TargetDiscoveryEvent {
   kind: 'LOST' | 'FOUND';
@@ -62,21 +60,21 @@ export class TargetsService {
     this.queryForTargets().subscribe(() => {
       ; // just trigger a startup query
     });
-    notificationChannel.messages(NOTIFICATION_CATEGORY)
+    notificationChannel.messages(NotificationCategory.JvmDiscovery)
       .subscribe(v => {
         const evt: TargetDiscoveryEvent = v.message.event;
         const target: Target = evt.serviceRef;
         switch (evt.kind) {
           case 'FOUND':
             this._targets$.next(_.unionBy(this._targets$.getValue(), [evt.serviceRef], t => t.connectUrl));
-            notifications.info('Target Appeared', `Target "${target.alias}" appeared (${target.connectUrl})"`, NOTIFICATION_CATEGORY);
+            notifications.info('Target Appeared', `Target "${target.alias}" appeared (${target.connectUrl})"`, NotificationCategory.JvmDiscovery);
             break;
           case 'LOST':
             this._targets$.next(_.filter(this._targets$.getValue(), t => t.connectUrl !== evt.serviceRef.connectUrl));
-            notifications.info('Target Disappeared', `Target "${target.alias}" disappeared (${target.connectUrl})"`, NOTIFICATION_CATEGORY);
+            notifications.info('Target Disappeared', `Target "${target.alias}" disappeared (${target.connectUrl})"`, NotificationCategory.JvmDiscovery);
             break;
           default:
-            notifications.danger(`Invalid Message Received`, `Received a notification with category ${NOTIFICATION_CATEGORY} and unrecognized kind ${evt.kind}`);
+            notifications.danger(`Invalid Message Received`, `Received a notification with category ${NotificationCategory.JvmDiscovery} and unrecognized kind ${evt.kind}`);
             break;
         }
       });

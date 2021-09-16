@@ -40,6 +40,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface Notification {
   read?: boolean;
@@ -145,7 +146,8 @@ export class Notifications {
   }
 
   private isNetworkInfoNotification(n: Notification): boolean {
-    return (n.category === 'WsClientActivity' || n.category === 'TargetJvmDiscovery')
+    return (n.category === NotificationCategory.WsClientActivity
+      || n.category === NotificationCategory.JvmDiscovery)
       && (n.variant === AlertVariant.info);
   }
 

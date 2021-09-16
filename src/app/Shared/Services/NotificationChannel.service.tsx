@@ -43,20 +43,19 @@ import { concatMap, filter, map } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
-const NOTIFICATION_CATEGORY = 'WsClientActivity';
-
 interface RecordingNotificationEvent {
-  recording : string;
-  target : string;
+  recording: string;
+  target: string;
 }
 
-enum NotificationCategory {
+export enum NotificationCategory {
+  JvmDiscovery = 'TargetJvmDiscovery',
   RecordingCreated = 'RecordingCreated',
   RecordingDeleted = 'RecordingDeleted',
   RecordingSaved = 'RecordingSaved',
   RecordingArchived = 'RecordingArchived',
   WsClientActivity = 'WsClientActivity'
-};
+}
 
 export class NotificationChannel {
 

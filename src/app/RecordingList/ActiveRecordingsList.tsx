@@ -38,6 +38,7 @@
 
 import {NotificationsContext} from '@app/Notifications/Notifications';
 import {Recording, RecordingState} from '@app/Shared/Services/Api.service';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import {ServiceContext} from '@app/Shared/Services/Services';
 import {NO_TARGET} from '@app/Shared/Services/Target.service';
 import {useSubscriptions} from '@app/utils/useSubscriptions';
@@ -53,18 +54,6 @@ export interface ActiveRecordingsListProps {
   archiveEnabled: boolean;
   onArchive?: Function;
 }
-
-interface RecordingNotificationEvent {
-  recording : string;
-  target : string;
-}
-
-enum NotificationCategory {
-  RecordingCreated = 'RecordingCreated',
-  RecordingDeleted = 'RecordingDeleted',
-  RecordingSaved = 'RecordingSaved',
-  RecordingArchived = 'RecordingArchived'
-};
 
 export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
