@@ -95,7 +95,11 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   React.useEffect(() => {
     const cachedTargetSelection = getCachedTargetSelection();
     if(cachedTargetSelection) {
-      context.target.setTarget(cachedTargetSelection);
+      try {
+        context.target.setTarget(cachedTargetSelection);
+      } catch (error) {
+        removeCachedTargetSelection();
+      }
     }
   }, [context.target]);
 
