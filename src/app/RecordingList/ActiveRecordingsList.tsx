@@ -133,7 +133,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     ]).subscribe(
       refreshRecordingList
     );
-  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
+  }, [context, context.notificationChannel, refreshRecordingList]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
