@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import * as _ from 'lodash';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
@@ -77,6 +76,29 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     );
   }, [setLoading, addSubscription, context.targets]);
 
+  const setCachedTargetSelection = (target) => {
+    localStorage.setItem(TARGET_KEY, JSON.stringify(target));
+  };
+
+  const removeCachedTargetSelection = () => {
+    localStorage.removeItem(TARGET_KEY);
+  };
+
+  const getCachedTargetSelection = () => {
+    const cachedTarget = localStorage.getItem(TARGET_KEY);
+    if(cachedTarget) {
+      return JSON.parse(cachedTarget);
+    }
+    return NO_TARGET;
+  };
+
+  React.useEffect(() => {
+    const cachedTargetSelection = getCachedTargetSelection();
+    if(cachedTargetSelection) {
+      context.target.setTarget(cachedTargetSelection);
+    }
+  }, [context.target]);
+
   const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
       context.target.setTarget(NO_TARGET);
@@ -95,38 +117,15 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     setExpanded(false);
   }, [context, context.target, selected, notifications, setExpanded]);
 
-  const getCachedTargetSelection = () => {
-    const cachedTarget = localStorage.getItem(TARGET_KEY);
-    if(!!cachedTarget) {
-      return JSON.parse(cachedTarget);
-    }
-    return NO_TARGET;
-  };
-
-  const setCachedTargetSelection = (target) => {
-    localStorage.setItem(TARGET_KEY, JSON.stringify(target));
-  };
-
-  const removeCachedTargetSelection = () => {
-    localStorage.removeItem(TARGET_KEY);
-  };
-
   const selectNone = React.useCallback(() => {
     onSelect(undefined, undefined, true);
   }, [onSelect]);
-
-  React.useEffect(() => {
-    const cachedTargetSelection = getCachedTargetSelection();
-    if(cachedTargetSelection) {
-      context.target.setTarget(cachedTargetSelection);
-    }
-  }, [context.target]);
 
   React.useLayoutEffect(() => {
     addSubscription(
       context.target.target().subscribe(setSelected)
     );
-  }, [context.target]);
+  }, [context.target, addSubscription]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -153,7 +152,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           }
         })
     );
-  }, [context.api, notifications, setModalOpen]);
+  }, [context.api, notifications, setModalOpen, addSubscription]);
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
