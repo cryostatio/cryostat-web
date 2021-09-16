@@ -301,12 +301,13 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <AlertGroup isToast>
       {
         notifications
-          .filter(n => !n.read && Notifications.isProblemNotification(n))
+          .filter(n => !n.read && (Notifications.isProblemNotification(n) || n.variant === AlertVariant.success))
           .map(( { key, title, message, variant } ) => (
             <Alert
               variant={variant}
               title={title}
               actionClose={<AlertActionCloseButton onClose={() => handleMarkNotificationRead(key)} />}
+              timeout={true}
             >{message}
             </Alert>
         ))
