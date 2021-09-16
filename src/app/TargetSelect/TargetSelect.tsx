@@ -55,6 +55,7 @@ export interface TargetSelectProps {
 }
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
+  const TARGET_KEY = "target";
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
   const [selected, setSelected] = React.useState(NO_TARGET);
@@ -79,12 +80,14 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
       context.target.setTarget(NO_TARGET);
+      removeCachedTargetSelection();
     } else {
       if (selection != selected) {
         try {
           context.target.setTarget(selection);
+          setCachedTargetSelection(selection);
         } catch (error) {
-          notifications.danger("Cannot set target", error.message)
+          notifications.danger("Cannot set target", error.message);
           context.target.setTarget(NO_TARGET);
         }
       }
@@ -92,9 +95,32 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     setExpanded(false);
   }, [context, context.target, selected, notifications, setExpanded]);
 
+  const getCachedTargetSelection = () => {
+    const cachedTarget = localStorage.getItem(TARGET_KEY);
+    if(!!cachedTarget) {
+      return JSON.parse(cachedTarget);
+    }
+    return NO_TARGET;
+  };
+
+  const setCachedTargetSelection = (target) => {
+    localStorage.setItem(TARGET_KEY, JSON.stringify(target));
+  };
+
+  const removeCachedTargetSelection = () => {
+    localStorage.removeItem(TARGET_KEY);
+  };
+
   const selectNone = React.useCallback(() => {
     onSelect(undefined, undefined, true);
   }, [onSelect]);
+
+  React.useEffect(() => {
+    const cachedTargetSelection = getCachedTargetSelection();
+    if(cachedTargetSelection) {
+      context.target.setTarget(cachedTargetSelection);
+    }
+  }, [context.target]);
 
   React.useLayoutEffect(() => {
     addSubscription(
