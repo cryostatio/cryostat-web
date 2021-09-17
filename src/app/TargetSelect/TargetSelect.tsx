@@ -86,20 +86,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   const getCachedTargetSelection = () => {
     const cachedTarget = localStorage.getItem(TARGET_KEY);
-    if(cachedTarget) {
-      return JSON.parse(cachedTarget);
-    }
-    return NO_TARGET;
+    return cachedTarget ? JSON.parse(cachedTarget) : NO_TARGET;
   };
 
   React.useEffect(() => {
-    const cachedTargetSelection = getCachedTargetSelection();
-    if(cachedTargetSelection) {
-      try {
-        context.target.setTarget(cachedTargetSelection);
-      } catch (error) {
-        removeCachedTargetSelection();
-      }
+    try {
+      const previouslyCachedTarget = getCachedTargetSelection();
+      context.target.setTarget(previouslyCachedTarget);
+    } catch (error) {
+      removeCachedTargetSelection();
+      context.target.setTarget(NO_TARGET);
     }
   }, [context.target]);
 
