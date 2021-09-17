@@ -48,11 +48,7 @@ import { AboutModal, Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
-<<<<<<< HEAD
 import { Notification, NotificationsContext } from '../Notifications/Notifications';
-=======
-import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
->>>>>>> 4f42251 (fix(images): add favicon and brand image (#280))
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
