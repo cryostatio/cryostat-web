@@ -39,8 +39,8 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
-import { ActiveRecordingsList } from './ActiveRecordingsList';
-import { ArchivedRecordingsList } from './ArchivedRecordingsList';
+import { ActiveRecordingsTable } from './ActiveRecordingsTable';
+import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 import { Subject } from 'rxjs';
 
 export const RecordingList = () => {
@@ -62,16 +62,16 @@ export const RecordingList = () => {
     return archiveEnabled ? (
       <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
         <Tab eventKey={0} title="Active Recordings">
-          <ActiveRecordingsList archiveEnabled={true} onArchive={() => archiveUpdate.next()} />
+          <ActiveRecordingsTable archiveEnabled={true} onArchive={() => archiveUpdate.next()} />
         </Tab>
         <Tab eventKey={1} title="Archived Recordings">
-          <ArchivedRecordingsList updater={archiveUpdate} />
+          <ArchivedRecordingsTable updater={archiveUpdate} />
         </Tab>
       </Tabs>
     ) : (
       <>
         <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
-        <ActiveRecordingsList archiveEnabled={false}/>
+        <ActiveRecordingsTable archiveEnabled={false}/>
       </>
     );
   }, [archiveEnabled, activeTab]);

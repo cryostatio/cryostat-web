@@ -51,12 +51,12 @@ import {RecordingActions} from './RecordingActions';
 import {RecordingsDataTable} from './RecordingsDataTable';
 import {ReportFrame} from './ReportFrame';
 
-export interface ActiveRecordingsListProps {
+export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
   onArchive?: Function;
 }
 
-export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListProps> = (props) => {
+export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();

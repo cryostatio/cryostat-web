@@ -48,11 +48,11 @@ import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 
-interface ArchivedRecordingsListProps {
+interface ArchivedRecordingsTableProps {
   updater: Subject<void>;
 }
 
-export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsListProps> = (props) => {
+export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
   const [recordings, setRecordings] = React.useState([] as Recording[]);
