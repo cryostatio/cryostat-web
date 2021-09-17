@@ -38,13 +38,14 @@
 
 import {NotificationsContext} from '@app/Notifications/Notifications';
 import {Recording, RecordingState} from '@app/Shared/Services/Api.service';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import {ServiceContext} from '@app/Shared/Services/Services';
 import {NO_TARGET} from '@app/Shared/Services/Target.service';
 import {useSubscriptions} from '@app/utils/useSubscriptions';
 import {Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem} from '@patternfly/react-core';
 import * as React from 'react';
 import {useHistory, useRouteMatch} from 'react-router-dom';
-import {forkJoin, Observable} from 'rxjs';
+import {combineLatest, forkJoin, Observable} from 'rxjs';
 import {concatMap, filter, first} from 'rxjs/operators';
 import {RecordingsDataTable} from './RecordingsDataTable';
 import {ReportFrame} from './ReportFrame';
@@ -53,18 +54,6 @@ export interface ActiveRecordingsListProps {
   archiveEnabled: boolean;
   onArchive?: Function;
 }
-
-interface RecordingNotificationEvent {
-  recording : string;
-  target : string;
-}
-
-enum NotificationCategory {
-  RecordingCreated = 'RecordingCreated',
-  RecordingDeleted = 'RecordingDeleted',
-  RecordingSaved = 'RecordingSaved',
-  RecordingArchived = 'RecordingArchived'
-};
 
 export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
@@ -136,40 +125,15 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingCreated)
-      .subscribe(v => {
-        const event: RecordingNotificationEvent = v.message;
-        notifications.info('Recording Created', `${event.recording} created in target: ${event.target}`);
-        refreshRecordingList();
-      }));
-  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
-
-  React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingSaved)
-      .subscribe(v => {
-         const event: RecordingNotificationEvent = v.message;
-         notifications.info('Recording Archived', `${event.recording} was archived`);
-         refreshRecordingList();
-      }));
-  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
-
-  React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingArchived)
-      .subscribe(v => {
-         const event: RecordingNotificationEvent = v.message;
-         notifications.info('Recording Archived', `${event.recording} was archived`);
-         refreshRecordingList();
-      }));
-  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
-
-  React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
-      .subscribe(v => {
-         const event: RecordingNotificationEvent = v.message;
-         notifications.info('Recording Deleted', `${event.recording} was deleted`);
-         refreshRecordingList();
-      }));
-  }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
+    combineLatest([
+      context.notificationChannel.messages(NotificationCategory.RecordingCreated),
+      context.notificationChannel.messages(NotificationCategory.RecordingSaved),
+      context.notificationChannel.messages(NotificationCategory.RecordingArchived),
+      context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
+    ]).subscribe(
+      refreshRecordingList
+    );
+  }, [context, context.notificationChannel, refreshRecordingList]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {

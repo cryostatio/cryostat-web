@@ -40,6 +40,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface Notification {
   read?: boolean;
@@ -100,10 +101,12 @@ export class Notifications {
     );
   }
 
-  networkInfoNotifications(): Observable<Notification[]> {
+  cryostatStatusNotifications(): Observable<Notification[]> {
     return this.notifications()
     .pipe(
-      map(a => a.filter(this.isNetworkInfoNotification))
+      map(a => a.filter(n =>
+        (this.isWsClientActivity(n) || this.isJvmDiscovery(n))
+      ))
     );
   }
 
@@ -141,12 +144,17 @@ export class Notifications {
   }
 
   private isActionNotification(n: Notification): boolean {
-    return !this.isNetworkInfoNotification(n) && !this.isProblemNotification(n);
+    return !this.isWsClientActivity(n)
+      && !this.isJvmDiscovery(n)
+      && !this.isProblemNotification(n);
   }
 
-  private isNetworkInfoNotification(n: Notification): boolean {
-    return (n.category === 'WsClientActivity' || n.category === 'TargetJvmDiscovery')
-      && (n.variant === AlertVariant.info);
+  private isWsClientActivity(n: Notification): boolean {
+    return (n.category === NotificationCategory.WsClientActivity);
+  }
+
+  private isJvmDiscovery(n: Notification): boolean {
+    return (n.category === NotificationCategory.JvmDiscovery);
   }
 
   private isProblemNotification(n: Notification): boolean {

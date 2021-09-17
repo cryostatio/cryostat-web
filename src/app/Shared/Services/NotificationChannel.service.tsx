@@ -43,7 +43,19 @@ import { concatMap, filter, map } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
-const NOTIFICATION_CATEGORY = 'WsClientActivity';
+interface RecordingNotificationEvent {
+  recording: string;
+  target: string;
+}
+
+export enum NotificationCategory {
+  JvmDiscovery = 'TargetJvmDiscovery',
+  RecordingCreated = 'RecordingCreated',
+  RecordingDeleted = 'RecordingDeleted',
+  RecordingSaved = 'RecordingSaved',
+  RecordingArchived = 'RecordingArchived',
+  WsClientActivity = 'WsClientActivity'
+}
 
 export class NotificationChannel {
 
@@ -55,10 +67,30 @@ export class NotificationChannel {
     private readonly apiSvc: ApiService,
     private readonly notifications: Notifications
   ) {
-    this.messages(NOTIFICATION_CATEGORY).subscribe(v => {
+    this.messages(NotificationCategory.WsClientActivity).subscribe(v => {
       const addr = Object.keys(v.message)[0];
       const status = v.message[addr];
-      notifications.info('WebSocket Client Activity', `Client at ${addr} ${status}`, NOTIFICATION_CATEGORY);
+      notifications.info('WebSocket Client Activity', `Client at ${addr} ${status}`, NotificationCategory.WsClientActivity);
+    });
+
+    this.messages(NotificationCategory.RecordingCreated).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Created', `${event.recording} created in target: ${event.target}`);
+    });
+
+    this.messages(NotificationCategory.RecordingSaved).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Archived', `${event.recording} was archived`);
+    });
+
+    this.messages(NotificationCategory.RecordingArchived).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Archived', `${event.recording} was archived`);
+    });
+
+    this.messages(NotificationCategory.RecordingDeleted).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Deleted', `${event.recording} was deleted`);
     });
 
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
@@ -90,7 +122,7 @@ export class NotificationChannel {
             closeObserver: {
               next: () => {
                 this._ready.next(false);
-                this.notifications.info('WebSocket connection lost', undefined, NOTIFICATION_CATEGORY);
+                this.notifications.info('WebSocket connection lost', undefined, NotificationCategory.WsClientActivity);
               }
             }
           });

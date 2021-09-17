@@ -62,7 +62,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   const PROBLEMS_CATEGORY_IDX = 2;
   const [drawerCategories, setDrawerCategories] = React.useState([
     {title: "Completed Actions", isExpanded: true, notifications: [] as Notification[], unreadCount: 0},
-    {title: "Network Info", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
+    {title: "Cryostat Status", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
     {title: "Problems", isExpanded: false, notifications: [] as Notification[], unreadCount: 0}
   ] as NotificationDrawerCategory[]);
 
@@ -71,7 +71,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   }
 
   React.useEffect(() => {
-    const sub = combineLatest([context.actionsNotifications(), context.networkInfoNotifications(), context.problemsNotifications()])
+    const sub = combineLatest([context.actionsNotifications(), context.cryostatStatusNotifications(), context.problemsNotifications()])
     .subscribe(notificationLists => {
         setDrawerCategories(drawerCategories => {
 

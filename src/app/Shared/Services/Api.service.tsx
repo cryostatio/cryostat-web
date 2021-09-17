@@ -209,11 +209,6 @@ export class ApiService {
         method: 'POST',
         body: form,
       }).pipe(
-        tap(resp => {
-          if (resp.ok) {
-            this.notifications.success('Recording created');
-          }
-        }),
         map(resp => resp.ok),
         first(),
       )));
