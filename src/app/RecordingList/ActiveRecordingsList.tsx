@@ -42,11 +42,12 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import {ServiceContext} from '@app/Shared/Services/Services';
 import {NO_TARGET} from '@app/Shared/Services/Target.service';
 import {useSubscriptions} from '@app/utils/useSubscriptions';
-import {Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem} from '@patternfly/react-core';
+import {Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Text, Toolbar, ToolbarContent, ToolbarItem} from '@patternfly/react-core';
 import * as React from 'react';
 import {useHistory, useRouteMatch} from 'react-router-dom';
 import {combineLatest, forkJoin, Observable} from 'rxjs';
 import {concatMap, filter, first} from 'rxjs/operators';
+import {RecordingActions} from './RecordingActions';
 import {RecordingsDataTable} from './RecordingsDataTable';
 import {ReportFrame} from './ReportFrame';
 
@@ -341,97 +342,4 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       {recordingRows}
     </RecordingsDataTable>
   </>);
-};
-
-export interface RecordingActionsProps {
-  index: number;
-  recording: Recording;
-  uploadFn: () => Observable<boolean>;
-}
-
-export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const notifications = React.useContext(NotificationsContext);
-  const [open, setOpen] = React.useState(false);
-  const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
-
-  const addSubscription = useSubscriptions();
-
-  React.useEffect(() => {
-    const sub = context.api.grafanaDatasourceUrl()
-      .pipe(first())
-      .subscribe(() => setGrafanaEnabled(true));
-    return () => sub.unsubscribe();
-  }, [context.api, notifications]);
-
-  const grafanaUpload = React.useCallback(() => {
-    notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
-    addSubscription(
-      props.uploadFn()
-      .pipe(first())
-      .subscribe(success => {
-        if (success) {
-          notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
-          context.api.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
-        }
-      })
-    );
-  }, [addSubscription]);
-
-  const handleDownloadRecording = React.useCallback(() => {
-    context.api.downloadRecording(props.recording);
-  }, [context.api, props.recording]);
-
-  const handleDownloadReport = React.useCallback(() => {
-    context.api.downloadReport(props.recording);
-  }, [context.api, props.recording]);
-
-  const actionItems = React.useMemo(() => {
-    const actionItems = [
-      <DropdownItem key="download" component={
-        <Text onClick={handleDownloadRecording}>
-          Download Recording
-        </Text>
-        }>
-      </DropdownItem>,
-      <DropdownItem key="report" component={
-        <Text onClick={handleDownloadReport} >
-          Download Report
-        </Text>
-        }>
-      </DropdownItem>
-    ];
-    if (grafanaEnabled) {
-      actionItems.push(
-        <DropdownItem key="grafana" component={
-          <Text onClick={grafanaUpload} >
-            View in Grafana ...
-          </Text>
-          }>
-        </DropdownItem>
-      );
-    }
-    return actionItems;
-  }, [handleDownloadRecording, handleDownloadReport, grafanaEnabled, grafanaUpload]);
-
-  const onSelect = () => {
-    setOpen(o => !o);
-  };
-
-  return (
-    <DataListAction
-      aria-labelledby={`dropdown-actions-item-${props.index} dropdown-actions-action-${props.index}`}
-      id={`dropdown-actions-action-${props.index}`}
-      aria-label="Actions"
-    >
-      <Dropdown
-        isPlain
-        position={DropdownPosition.right}
-        isOpen={open}
-        onSelect={onSelect}
-        toggle={<KebabToggle onToggle={setOpen} />}
-        dropdownItems={actionItems}
-      />
-    </DataListAction>
-  );
 };
