@@ -41,23 +41,24 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, routes } from '@app/routes';
 import { AboutModal, Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
-  Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
+  Brand, Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
   SkipToContent, Text, TextContent, TextList, TextListItem, TextVariants
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
-import { Notification, Notifications, NotificationsContext } from '../Notifications/Notifications';
+import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
+import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
+import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
 
 interface IAppLayout {
   children: React.ReactNode;
 }
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
-  const context = React.useContext(ServiceContext);
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const routerHistory = useHistory();
@@ -194,7 +195,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   </>);
   const Header = (<>
     <PageHeader
-      logo="Cryostat"
+      logo={<Brand alt="Cryostat" src={cryostatLogoHorizontal} className="cryostat-logo" />}
       logoProps={logoProps}
       showNavToggle
       isNavOpen={isNavOpen}
@@ -205,9 +206,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       isOpen={aboutModalOpen}
       onClose={handleAboutModalToggle}
       trademark='Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0'
-      brandImageSrc='' // TODO
+      brandImageSrc={cryostatLogoWhite}
       brandImageAlt='Cryostat Logo'
-      productName='Cryostat'
     >
       <TextContent>
         <TextList component="dl">

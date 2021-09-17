@@ -38,3 +38,11 @@ SOFTWARE.
 html, body, #root {
   height: 100%;
 }
+
+.pf-c-about-modal-box__brand-image {
+  height: 8em;
+}
+
+.cryostat-logo {
+  height: 2em;
+}
