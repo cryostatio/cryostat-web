@@ -101,10 +101,12 @@ export class Notifications {
     );
   }
 
-  networkInfoNotifications(): Observable<Notification[]> {
+  backendStatusNotifications(): Observable<Notification[]> {
     return this.notifications()
     .pipe(
-      map(a => a.filter(this.isNetworkInfoNotification))
+      map(a => a.filter(n =>
+        (this.isWsClientActivity(n) || this.isJvmDiscovery(n))
+      ))
     );
   }
 
@@ -142,13 +144,17 @@ export class Notifications {
   }
 
   private isActionNotification(n: Notification): boolean {
-    return !this.isNetworkInfoNotification(n) && !this.isProblemNotification(n);
+    return !this.isWsClientActivity(n)
+      && !this.isJvmDiscovery(n)
+      && !this.isProblemNotification(n);
   }
 
-  private isNetworkInfoNotification(n: Notification): boolean {
-    return (n.category === NotificationCategory.WsClientActivity
-      || n.category === NotificationCategory.JvmDiscovery)
-      && (n.variant === AlertVariant.info);
+  private isWsClientActivity(n: Notification): boolean {
+    return (n.category === NotificationCategory.WsClientActivity);
+  }
+
+  private isJvmDiscovery(n: Notification): boolean {
+    return (n.category === NotificationCategory.JvmDiscovery);
   }
 
   private isProblemNotification(n: Notification): boolean {
