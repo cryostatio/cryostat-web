@@ -76,6 +76,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     );
   }, [setLoading, addSubscription, context.targets]);
 
+  React.useEffect(() => {
+    try {
+      const previouslyCachedTarget = getCachedTargetSelection();
+      context.target.setTarget(previouslyCachedTarget);
+    } catch (error) {
+      removeCachedTargetSelection();
+      context.target.setTarget(NO_TARGET);
+    }
+  }, [context.target]);
+
   const setCachedTargetSelection = (target) => {
     localStorage.setItem(TARGET_KEY, JSON.stringify(target));
   };
@@ -88,16 +98,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     const cachedTarget = localStorage.getItem(TARGET_KEY);
     return cachedTarget ? JSON.parse(cachedTarget) : NO_TARGET;
   };
-
-  React.useEffect(() => {
-    try {
-      const previouslyCachedTarget = getCachedTargetSelection();
-      context.target.setTarget(previouslyCachedTarget);
-    } catch (error) {
-      removeCachedTargetSelection();
-      context.target.setTarget(NO_TARGET);
-    }
-  }, [context.target]);
 
   const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
