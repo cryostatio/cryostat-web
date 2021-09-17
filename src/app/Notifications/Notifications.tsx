@@ -101,7 +101,7 @@ export class Notifications {
     );
   }
 
-  backendStatusNotifications(): Observable<Notification[]> {
+  cryostatStatusNotifications(): Observable<Notification[]> {
     return this.notifications()
     .pipe(
       map(a => a.filter(n =>
