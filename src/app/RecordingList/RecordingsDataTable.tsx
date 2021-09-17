@@ -36,7 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { DataList, DataListCell, DataListCheck, DataListItem, DataListItemCells, DataListItemRow } from '@patternfly/react-core';
+import { Checkbox } from '@patternfly/react-core';
+import { TableComposable, Thead, Tr, Th } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 
@@ -58,21 +59,25 @@ export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTablePro
   } else {
     return (<>
       { props.toolbar }
-      <DataList aria-label={props.listTitle}>
-        <DataListItem aria-labelledby="table-header-1">
-          <DataListItemRow>
-            <DataListCheck aria-labelledby="table-header-1" name="header-check" onChange={props.onHeaderCheck} isChecked={props.isHeaderChecked} />
-            <DataListItemCells
-              dataListCells={props.tableColumns.map((key , idx) => (
-                <DataListCell key={key}>
-                  <span id={`table-header-${idx}`}>{key}</span>
-                </DataListCell>
-              ))}
-            />
-          </DataListItemRow>
-        </DataListItem>
+      <TableComposable aria-label={props.listTitle}>
+        <Thead aria-label="table header">
+          <Tr>
+            <Th>
+              <Checkbox
+                isChecked={props.isHeaderChecked}
+                onChange={props.onHeaderCheck}
+                aria-label="toggle check all checkbox"
+                id="toggle-check-all"
+                name="header-check-all"
+              />
+            </Th>
+            {props.tableColumns.map((key , idx) => (
+              <Th id={`table-header-${idx}`}>{key}</Th>
+            ))}
+          </Tr>
+        </Thead>
         { props.children }
-      </DataList>
+      </TableComposable>
     </>);
   }
 };
