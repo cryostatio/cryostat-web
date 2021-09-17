@@ -81,8 +81,8 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       const previouslyCachedTarget = getCachedTargetSelection();
       context.target.setTarget(previouslyCachedTarget);
     } catch (error) {
-      removeCachedTargetSelection();
       context.target.setTarget(NO_TARGET);
+      removeCachedTargetSelection();
     }
   }, [context.target]);
 
