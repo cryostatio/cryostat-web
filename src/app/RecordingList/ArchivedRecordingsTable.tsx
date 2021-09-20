@@ -39,7 +39,14 @@ import * as React from 'react';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import {
+  Button,
+  Checkbox,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem } from '@patternfly/react-core';
+import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsDataTable } from './RecordingsDataTable';
 import { ReportFrame } from './ReportFrame';
@@ -150,28 +157,58 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       handleRowCheck(checked, props.index);
     };
 
-    return (<>
-      <DataListItem aria-labelledby={`table-row-${props.index}-1`} name={`row-${props.index}-check`} isExpanded={isExpanded} >
-        <DataListItemRow>
-          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
-          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`archived-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
-          <DataListItemCells
-            dataListCells={[
-              <DataListCell key={`table-row-${props.index}-1`}>
-                {props.recording.name}
-              </DataListCell>
-            ]}
-          />
+    const parentRow = React.useMemo(() => {
+      let rowIndex = props.index;
+      return(
+        <Tr key={rowIndex}>
+          <Td key={`${rowIndex}_0`}>
+            <Checkbox
+                  isChecked={checkedIndices.includes(props.index)}
+                  onChange={handleCheck}
+                  aria-label="checkbox"
+                  id="id"
+                  name={`row-${props.index}-check`}
+                />
+          </Td>
+          <Td
+              key={`${rowIndex}_1`}
+              id={`active-ex-toggle-${props.index}`}
+              aria-controls={`ex-expand-${props.index}`}
+              expand={{
+                rowIndex: rowIndex,
+                isExpanded: isExpanded,
+                onToggle: handleToggle,
+              }}
+            />
+          <Td key={`${rowIndex}_2`} dataLabel={tableColumns[0]}>
+            {props.recording.name}
+          </Td>
           <RecordingActions recording={props.recording} index={props.index} uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)} />
-        </DataListItemRow>
-        <DataListContent
-          aria-label="Content Details"
-          id={`archived-ex-expand-${props.index}`}
-          isHidden={!isExpanded}
-        >
-          <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-        </DataListContent>
-      </DataListItem>
+        </Tr>
+      );
+    }, [props.recording, props.recording.name, props.index]);
+
+    const childRow = React.useMemo(() => {
+      return (
+        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
+          <Td
+            key={`${props.index}_automated`}
+            dataLabel={"Content Details"}
+            colSpan={4}
+          >
+            <ExpandableRowContent>
+              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
+            </ExpandableRowContent>
+          </Td>
+        </Tr>
+      )
+    }, [props.recording, props.recording.name, props.index]);
+
+    return (<>
+      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
+        {parentRow}
+        {childRow}
+      </Tbody>
     </>);
   };
 
@@ -214,9 +251,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         isEmpty={isEmpty}
         errorMessage=''
     >
-      {
-        recordingRows
-      }
+      {recordingRows}
     </RecordingsDataTable>
 
     <ArchiveUploadModal visible={showUploadModal} onClose={handleModalClose}/>
