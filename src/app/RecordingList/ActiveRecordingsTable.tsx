@@ -36,20 +36,27 @@
  * SOFTWARE.
  */
 
-import {NotificationsContext} from '@app/Notifications/Notifications';
-import {Recording, RecordingState} from '@app/Shared/Services/Api.service';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import {ServiceContext} from '@app/Shared/Services/Services';
-import {NO_TARGET} from '@app/Shared/Services/Target.service';
-import {useSubscriptions} from '@app/utils/useSubscriptions';
-import {Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Text, Toolbar, ToolbarContent, ToolbarItem} from '@patternfly/react-core';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { useSubscriptions} from '@app/utils/useSubscriptions';
+import { Button,
+  Checkbox,
+  Text,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem
+} from '@patternfly/react-core';
+import { TableComposable, Thead, Tbody, Tr, Th, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
-import {useHistory, useRouteMatch} from 'react-router-dom';
-import {combineLatest, forkJoin, Observable} from 'rxjs';
-import {concatMap, filter, first} from 'rxjs/operators';
-import {RecordingActions} from './RecordingActions';
-import {RecordingsDataTable} from './RecordingsDataTable';
-import {ReportFrame} from './ReportFrame';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { combineLatest, forkJoin, Observable } from 'rxjs';
+import { concatMap, filter, first } from 'rxjs/operators';
+import { RecordingActions } from './RecordingActions';
+import { RecordingsDataTable } from './RecordingsDataTable';
+import { ReportFrame } from './ReportFrame';
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
@@ -68,6 +75,45 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
+
+  // place this later
+  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
+  const [selected, setSelected] = React.useState(recordings.map(row => false));
+  const [recentSelection, setRecentSelection] = React.useState(null);
+  const [shifting, setShifting] = React.useState(false);
+  const onSelect = (event, isSelected, rowId) => {
+    let newSelected = selected.map((sel, index) => (index === rowId ? isSelected : sel))
+    
+    // if the user is shift + selecting the checkboxes, then all intermediate checkboxes should be selected
+    if (shifting && recentSelection !== null && isSelected) {
+      const numberSelected = rowId;
+      newSelected = newSelected.map((sel, index) => {
+        // select all between recentSelection and current rowId;
+        const intermediateIndexes = numberSelected > 0 ? 
+          Array.from(new Array(numberSelected + 1), (x, i) => i) : 
+          Array.from(new Array(Math.abs(numberSelected) + 1), (x, i) => i + rowId);
+        return intermediateIndexes.includes(index) ? true : sel;
+      })
+    }
+    setSelected(newSelected);
+    setRecentSelection(rowId);
+    
+    if (!isSelected && allRowsSelected) {
+      setAllRowsSelected(false);
+    } else if (isSelected && !allRowsSelected) {
+      let allSelected = true;
+      for (let i = 0; i < selected.length; i++) {
+        if (i !== rowId) {
+          if (!selected[i]) {
+            allSelected = false;
+          }
+        }
+      }
+      if (allSelected) {
+        setAllRowsSelected(true);
+      }
+    }
+  };
 
   const tableColumns: string[] = [
     'Name',
@@ -217,7 +263,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleRowCheck(checked, props.index);
     };
 
-    const listColumns = React.useMemo(() => {
+    const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
         const fmt = new Date(props.timeStr).toISOString();
         return (<span>{fmt}</span>);
@@ -228,50 +274,83 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         return (<span>{str}</span>);
       };
 
-      return <>
-        <DataListCell key={`table-row-${props.index}-1`}>
-          {props.recording.name}
-        </DataListCell>
-        <DataListCell key={`table-row-${props.index}-2`}>
-          <ISOTime timeStr={props.recording.startTime} />
-        </DataListCell>
-        <DataListCell key={`table-row-${props.index}-3`}>
-          <RecordingDuration duration={props.recording.duration} />
-        </DataListCell>
-        <DataListCell key={`table-row-${props.index}-4`}>
-          {props.recording.state}
-        </DataListCell>
-      </>
+      let rowIndex = props.index;
+      return (
+        <Tr key={rowIndex}>
+          <Td key={`${rowIndex}_0`}>
+            <Checkbox
+              isChecked={checkedIndices.includes(props.index)}
+              onChange={handleCheck}
+              aria-label="checkbox"
+              id="id"
+              name={`row-${props.index}-check`}
+            />
+          </Td>
+          <Td
+            key={`${rowIndex}_0`}
+            id={`active-ex-toggle-${props.index}`}
+            aria-controls={`ex-expand-${props.index}`}
+            expand={{
+              rowIndex: rowIndex,
+              isExpanded: isExpanded,
+              onToggle: handleToggle,
+            }}
+          />
+          <Td key={`${rowIndex}_1`} dataLabel={tableColumns[0]}>
+            {props.recording.name}
+          </Td>
+          <Td key={`${rowIndex}_2`} dataLabel={tableColumns[1]}>
+            <ISOTime timeStr={props.recording.startTime} />
+          </Td>
+          <Td key={`${rowIndex}_3`} dataLabel={tableColumns[2]}>
+            <RecordingDuration duration={props.recording.duration} />
+          </Td>
+          <Td key={`${rowIndex}_4`} dataLabel={tableColumns[3]}>
+            {props.recording.state}
+          </Td>
+          <Td key={`${rowIndex}_5`}>
+            <RecordingActions index={props.index} recording={props.recording} uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)} />
+          </Td>
+        </Tr>
+      )
+    }, [props.recording, props.recording.name, props.duration, props.index]);
+
+    const childRow = React.useMemo(() => {
+      return (
+        <Tr key={`${props.index}`} isExpanded={isExpanded}>
+          <Td
+            key={`${props.index}_`}
+            dataLabel={""}
+            noPadding={false}
+            colSpan={tableColumns.length + 3}
+          >
+            <ExpandableRowContent
+              aria-label="Content Details"
+              // id={`active-ex-expand-${props.index}`}
+              // isHidden={!isExpanded}
+            >
+              <Text>Recording Options:</Text>
+              <Text>
+                toDisk = { String(props.recording.toDisk) } &emsp;
+                maxAge = {props.recording.maxAge / 1000}s &emsp;
+                maxSize = { props.recording.maxSize }B
+              </Text>
+              <br></br>
+              <hr></hr>
+              <br></br>
+              <Text>Automated Analysis:</Text>
+              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
+            </ExpandableRowContent>
+          </Td>
+        </Tr>
+      );
     }, [props.recording, props.recording.name, props.duration, props.index]);
 
     return (
-      <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
-        <DataListItemRow>
-          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
-          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`active-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
-          <DataListItemCells
-            dataListCells={listColumns}
-          />
-          <RecordingActions index={props.index} recording={props.recording} uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)} />
-        </DataListItemRow>
-        <DataListContent
-          aria-label="Content Details"
-          id={`active-ex-expand-${props.index}`}
-          isHidden={!isExpanded}
-        >
-          <Text>Recording Options:</Text>
-          <Text>
-            toDisk = { String(props.recording.toDisk) } &emsp;
-            maxAge = {props.recording.maxAge / 1000}s &emsp;
-            maxSize = { props.recording.maxSize }B
-          </Text>
-          <br></br>
-          <hr></hr>
-          <br></br>
-          <Text>Automated Analysis:</Text>
-          <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-        </DataListContent>
-      </DataListItem>
+      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
+        {parentRow}
+        {childRow}
+      </Tbody>
     );
   };
 
@@ -329,7 +408,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
-  return (<>
+  return (
     <RecordingsDataTable
         listTitle="Active Flight Recordings"
         toolbar={<RecordingsToolbar />}
@@ -341,5 +420,5 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     >
       {recordingRows}
     </RecordingsDataTable>
-  </>);
+  );
 };

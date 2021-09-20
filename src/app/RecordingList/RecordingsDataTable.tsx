@@ -71,9 +71,11 @@ export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTablePro
                 name="header-check-all"
               />
             </Th>
+            <Th id="TODO-empty-for-expand"/>
             {props.tableColumns.map((key , idx) => (
               <Th id={`table-header-${idx}`}>{key}</Th>
             ))}
+            <Th id="TODO-empty-for-actions"/>
           </Tr>
         </Thead>
         { props.children }
