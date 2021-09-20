@@ -55,7 +55,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import { combineLatest, forkJoin, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { RecordingActions } from './RecordingActions';
-import { RecordingsDataTable } from './RecordingsDataTable';
+import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 
 export interface ActiveRecordingsTableProps {
@@ -365,7 +365,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [recordings, expandedRows, checkedIndices]);
 
   return (
-    <RecordingsDataTable
+    <RecordingsTable
         tableTitle="Active Flight Recordings"
         toolbar={<RecordingsToolbar />}
         tableColumns={tableColumns}
@@ -376,6 +376,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         errorMessage ={errorMessage}
     >
       {recordingRows}
-    </RecordingsDataTable>
+    </RecordingsTable>
   );
 };

@@ -48,7 +48,7 @@ import {
   ToolbarItem } from '@patternfly/react-core';
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
-import { RecordingsDataTable } from './RecordingsDataTable';
+import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { Observable, Subject, forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -241,7 +241,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   };
 
   return (<>
-    <RecordingsDataTable
+    <RecordingsTable
         tableTitle="Archived Flight Recordings"
         toolbar={<RecordingsToolbar />}
         tableColumns={tableColumns}
@@ -252,7 +252,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         errorMessage=''
     >
       {recordingRows}
-    </RecordingsDataTable>
+    </RecordingsTable>
 
     <ArchiveUploadModal visible={showUploadModal} onClose={handleModalClose}/>
   </>);

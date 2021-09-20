@@ -46,7 +46,7 @@ import { TableComposable, Thead, Tr, Th } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 
-export interface RecordingsDataTableProps {
+export interface RecordingsTableProps {
   toolbar: React.ReactElement;
   tableColumns: string[];
   tableTitle: string;
@@ -57,7 +57,7 @@ export interface RecordingsDataTableProps {
   onHeaderCheck: (event, checked: boolean) => void;
 }
 
-export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTableProps> = (props) => {
+export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
   if (props.errorMessage != '') {
     return (<ErrorView message={props.errorMessage}/>)
   } else if (props.isLoading) {

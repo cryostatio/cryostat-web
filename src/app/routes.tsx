@@ -41,7 +41,7 @@ import { Dashboard } from '@app/Dashboard/Dashboard';
 import { Events } from '@app/Events/Events';
 import { Login } from '@app/Login/Login';
 import { NotFound } from '@app/NotFound/NotFound';
-import { RecordingList } from '@app/RecordingList/RecordingList';
+import { Recordings } from '@app/Recordings/Recordings';
 import { Settings } from '@app/Settings/Settings';
 import { SecurityPanel } from '@app/SecurityPanel/SecurityPanel';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -73,7 +73,7 @@ const routes: IAppRoute[] = [
     title: 'Dashboard',
   },
   {
-    component: RecordingList,
+    component: Recordings,
     exact: true,
     label: 'Recordings',
     path: '/recordings',
