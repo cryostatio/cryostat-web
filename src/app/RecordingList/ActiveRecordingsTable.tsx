@@ -49,7 +49,7 @@ import { Button,
   ToolbarContent,
   ToolbarItem
 } from '@patternfly/react-core';
-import { TableComposable, Thead, Tbody, Tr, Th, Td, ExpandableRowContent } from '@patternfly/react-table';
+import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { combineLatest, forkJoin, Observable } from 'rxjs';
@@ -76,45 +76,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
 
-  // place this later
-  const [allRowsSelected, setAllRowsSelected] = React.useState(false);
-  const [selected, setSelected] = React.useState(recordings.map(row => false));
-  const [recentSelection, setRecentSelection] = React.useState(null);
-  const [shifting, setShifting] = React.useState(false);
-  const onSelect = (event, isSelected, rowId) => {
-    let newSelected = selected.map((sel, index) => (index === rowId ? isSelected : sel))
-    
-    // if the user is shift + selecting the checkboxes, then all intermediate checkboxes should be selected
-    if (shifting && recentSelection !== null && isSelected) {
-      const numberSelected = rowId;
-      newSelected = newSelected.map((sel, index) => {
-        // select all between recentSelection and current rowId;
-        const intermediateIndexes = numberSelected > 0 ? 
-          Array.from(new Array(numberSelected + 1), (x, i) => i) : 
-          Array.from(new Array(Math.abs(numberSelected) + 1), (x, i) => i + rowId);
-        return intermediateIndexes.includes(index) ? true : sel;
-      })
-    }
-    setSelected(newSelected);
-    setRecentSelection(rowId);
-    
-    if (!isSelected && allRowsSelected) {
-      setAllRowsSelected(false);
-    } else if (isSelected && !allRowsSelected) {
-      let allSelected = true;
-      for (let i = 0; i < selected.length; i++) {
-        if (i !== rowId) {
-          if (!selected[i]) {
-            allSelected = false;
-          }
-        }
-      }
-      if (allSelected) {
-        setAllRowsSelected(true);
-      }
-    }
-  };
-
   const tableColumns: string[] = [
     'Name',
     'Start Time',
@@ -133,7 +94,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     }
   }, [setCheckedIndices, setHeaderChecked]);
 
-  const handleHeaderCheck = React.useCallback((checked) => {
+  const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
     setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
   }, [setHeaderChecked, setCheckedIndices, recordings]);
@@ -287,7 +248,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             />
           </Td>
           <Td
-            key={`${rowIndex}_0`}
+            key={`${rowIndex}_1`}
             id={`active-ex-toggle-${props.index}`}
             aria-controls={`ex-expand-${props.index}`}
             expand={{
@@ -296,39 +257,32 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
               onToggle: handleToggle,
             }}
           />
-          <Td key={`${rowIndex}_1`} dataLabel={tableColumns[0]}>
+          <Td key={`${rowIndex}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
-          <Td key={`${rowIndex}_2`} dataLabel={tableColumns[1]}>
+          <Td key={`${rowIndex}_3`} dataLabel={tableColumns[1]}>
             <ISOTime timeStr={props.recording.startTime} />
           </Td>
-          <Td key={`${rowIndex}_3`} dataLabel={tableColumns[2]}>
+          <Td key={`${rowIndex}_4`} dataLabel={tableColumns[2]}>
             <RecordingDuration duration={props.recording.duration} />
           </Td>
-          <Td key={`${rowIndex}_4`} dataLabel={tableColumns[3]}>
+          <Td key={`${rowIndex}_5`} dataLabel={tableColumns[3]}>
             {props.recording.state}
           </Td>
-          <Td key={`${rowIndex}_5`}>
-            <RecordingActions index={props.index} recording={props.recording} uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)} />
-          </Td>
+          <RecordingActions index={props.index} recording={props.recording} uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)} />
         </Tr>
       )
     }, [props.recording, props.recording.name, props.duration, props.index]);
 
     const childRow = React.useMemo(() => {
       return (
-        <Tr key={`${props.index}`} isExpanded={isExpanded}>
+        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
           <Td
-            key={`${props.index}_`}
-            dataLabel={""}
-            noPadding={false}
+            key={`${props.index}_automated`}
+            dataLabel={"Content Details"}
             colSpan={tableColumns.length + 3}
           >
-            <ExpandableRowContent
-              aria-label="Content Details"
-              // id={`active-ex-expand-${props.index}`}
-              // isHidden={!isExpanded}
-            >
+            <ExpandableRowContent>
               <Text>Recording Options:</Text>
               <Text>
                 toDisk = { String(props.recording.toDisk) } &emsp;

@@ -67,7 +67,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     'Name'
   ];
 
-  const handleHeaderCheck = React.useCallback((checked) => {
+  const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
     setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
   }, [setHeaderChecked, setCheckedIndices, recordings]);

@@ -39,101 +39,82 @@ import {NotificationsContext} from '@app/Notifications/Notifications';
 import {Recording} from '@app/Shared/Services/Api.service';
 import {ServiceContext} from '@app/Shared/Services/Services';
 import {useSubscriptions} from '@app/utils/useSubscriptions';
-import {DataListAction, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text} from '@patternfly/react-core';
+import { Td } from '@patternfly/react-table';
 import * as React from 'react';
 import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
 export interface RecordingActionsProps {
-    index: number;
-    recording: Recording;
-    uploadFn: () => Observable<boolean>;
-  }
+  index: number;
+  recording: Recording;
+  uploadFn: () => Observable<boolean>;
+}
   
-  export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
-    const context = React.useContext(ServiceContext);
-    const notifications = React.useContext(NotificationsContext);
-    const [open, setOpen] = React.useState(false);
-    const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
-  
-    const addSubscription = useSubscriptions();
-  
-    React.useEffect(() => {
-      const sub = context.api.grafanaDatasourceUrl()
-        .pipe(first())
-        .subscribe(() => setGrafanaEnabled(true));
-      return () => sub.unsubscribe();
-    }, [context.api, notifications]);
-  
-    const grafanaUpload = React.useCallback(() => {
-      notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
-      addSubscription(
-        props.uploadFn()
-        .pipe(first())
-        .subscribe(success => {
-          if (success) {
-            notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
-            context.api.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
-          }
-        })
-      );
-    }, [addSubscription]);
-  
-    const handleDownloadRecording = React.useCallback(() => {
-      context.api.downloadRecording(props.recording);
-    }, [context.api, props.recording]);
-  
-    const handleDownloadReport = React.useCallback(() => {
-      context.api.downloadReport(props.recording);
-    }, [context.api, props.recording]);
-  
-    const actionItems = React.useMemo(() => {
-      const actionItems = [
-        <DropdownItem key="download" component={
-          <Text onClick={handleDownloadRecording}>
-            Download Recording
-          </Text>
-          }>
-        </DropdownItem>,
-        <DropdownItem key="report" component={
-          <Text onClick={handleDownloadReport} >
-            Download Report
-          </Text>
-          }>
-        </DropdownItem>
-      ];
-      if (grafanaEnabled) {
-        actionItems.push(
-          <DropdownItem key="grafana" component={
-            <Text onClick={grafanaUpload} >
-              View in Grafana ...
-            </Text>
-            }>
-          </DropdownItem>
-        );
-      }
-      return actionItems;
-    }, [handleDownloadRecording, handleDownloadReport, grafanaEnabled, grafanaUpload]);
-  
-    const onSelect = () => {
-      setOpen(o => !o);
-    };
-  
-    return (
-      <DataListAction
-        aria-labelledby={`dropdown-actions-item-${props.index} dropdown-actions-action-${props.index}`}
-        id={`dropdown-actions-action-${props.index}`}
-        aria-label="Actions"
-      >
-        <Dropdown
-          isPlain
-          position={DropdownPosition.right}
-          isOpen={open}
-          onSelect={onSelect}
-          toggle={<KebabToggle onToggle={setOpen} />}
-          dropdownItems={actionItems}
-        />
-      </DataListAction>
+export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
+  const context = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
+  const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
+
+  const addSubscription = useSubscriptions();
+
+  React.useEffect(() => {
+    const sub = context.api.grafanaDatasourceUrl()
+      .pipe(first())
+      .subscribe(() => setGrafanaEnabled(true));
+    return () => sub.unsubscribe();
+  }, [context.api, notifications]);
+
+  const grafanaUpload = React.useCallback(() => {
+    notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
+    addSubscription(
+      props.uploadFn()
+      .pipe(first())
+      .subscribe(success => {
+        if (success) {
+          notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
+          context.api.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
+        }
+      })
     );
-  };
+  }, [addSubscription]);
+
+  const handleDownloadRecording = React.useCallback(() => {
+    context.api.downloadRecording(props.recording);
+  }, [context.api, props.recording]);
+
+  const handleDownloadReport = React.useCallback(() => {
+    context.api.downloadReport(props.recording);
+  }, [context.api, props.recording]);
+
+  const actionItems = React.useMemo(() => {
+    const actionItems = [
+      {
+        title: "Download Recording",
+        onClick: handleDownloadRecording
+      },
+      {
+        title: "Download Report",
+        onClick: handleDownloadReport
+      }
+    ];
+    if (grafanaEnabled) {
+      actionItems.push(
+        {
+          title: "View in Grafana ...",
+          onClick: grafanaUpload
+        }
+      );
+    }
+    return actionItems;
+  }, [handleDownloadRecording, handleDownloadReport, grafanaEnabled, grafanaUpload]);
+
+  return (
+    <Td
+      key={`${props.index}_actions`}
+      actions={{
+        items: actionItems
+      }}
+    />
+  );
+};
   

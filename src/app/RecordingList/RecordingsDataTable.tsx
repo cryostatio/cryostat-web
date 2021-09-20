@@ -48,7 +48,7 @@ export interface RecordingsDataTableProps {
   isHeaderChecked: boolean;
   isLoading: boolean;
   errorMessage: string;
-  onHeaderCheck: (checked: boolean) => void;
+  onHeaderCheck: (event, checked: boolean) => void;
 }
 
 export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTableProps> = (props) => {
@@ -62,20 +62,21 @@ export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTablePro
       <TableComposable aria-label={props.listTitle}>
         <Thead aria-label="table header">
           <Tr>
-            <Th>
-              <Checkbox
-                isChecked={props.isHeaderChecked}
-                onChange={props.onHeaderCheck}
-                aria-label="toggle check all checkbox"
-                id="toggle-check-all"
-                name="header-check-all"
-              />
-            </Th>
-            <Th id="TODO-empty-for-expand"/>
+            <Th
+              aria-label="toggle check all checkbox"
+              id="toggle-check-all"
+              key="key1"
+              name="header-check-all"
+              select={{
+              onSelect: props.onHeaderCheck,
+              isSelected: props.isHeaderChecked
+              }}
+            />
+            <Th id="empty-for-dropdown" key={`tableheader-empty1`}/>
             {props.tableColumns.map((key , idx) => (
-              <Th id={`table-header-${idx}`}>{key}</Th>
+              <Th id={`table-header-${idx}`} key={`tableheader-${idx}`}>{key}</Th>
             ))}
-            <Th id="TODO-empty-for-actions"/>
+            <Th id="empty-for-actions" key={`tableheader-empty2`}/>
           </Tr>
         </Thead>
         { props.children }
