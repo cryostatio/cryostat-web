@@ -39,14 +39,8 @@ import * as React from 'react';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import {
-  Button,
-  Checkbox,
-  Toolbar,
-  ToolbarContent,
-  ToolbarGroup,
-  ToolbarItem } from '@patternfly/react-core';
-import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { Button, Checkbox, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';

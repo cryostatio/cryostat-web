@@ -36,19 +36,12 @@
  * SOFTWARE.
  */
 
-import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button,
-  Checkbox,
-  Text,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem
-} from '@patternfly/react-core';
+import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -64,7 +57,6 @@ export interface ActiveRecordingsTableProps {
 }
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
-  const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
 

@@ -36,11 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import {
-  Title,
-  EmptyState,
-  EmptyStateIcon,
-} from '@patternfly/react-core';
+import { Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { TableComposable, Thead, Tr, Th } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
