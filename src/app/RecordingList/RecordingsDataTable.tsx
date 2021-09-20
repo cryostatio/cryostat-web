@@ -36,7 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Checkbox } from '@patternfly/react-core';
+import {
+  Title,
+  EmptyState,
+  EmptyStateIcon,
+} from '@patternfly/react-core';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { TableComposable, Thead, Tr, Th } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
@@ -44,7 +49,8 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 export interface RecordingsDataTableProps {
   toolbar: React.ReactElement;
   tableColumns: string[];
-  listTitle: string;
+  tableTitle: string;
+  isEmpty: boolean;
   isHeaderChecked: boolean;
   isLoading: boolean;
   errorMessage: string;
@@ -55,11 +61,22 @@ export const RecordingsDataTable: React.FunctionComponent<RecordingsDataTablePro
   if (props.errorMessage != '') {
     return (<ErrorView message={props.errorMessage}/>)
   } else if (props.isLoading) {
-    return (<LoadingView/>) 
+    return (<LoadingView/>)
+  } else if (props.isEmpty) {
+    return (
+    <>
+      { props.toolbar }
+      <EmptyState>
+        <EmptyStateIcon icon={SearchIcon}/>
+        <Title headingLevel="h4" size="lg">
+          No {props.tableTitle}
+        </Title>
+      </EmptyState>
+    </>)
   } else {
     return (<>
       { props.toolbar }
-      <TableComposable aria-label={props.listTitle}>
+      <TableComposable aria-label={props.tableTitle}>
         <Thead aria-label="table header">
           <Tr>
             <Th

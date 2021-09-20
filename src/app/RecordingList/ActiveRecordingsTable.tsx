@@ -73,6 +73,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isEmpty, setIsEmpty] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
 
@@ -106,8 +107,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
+    recordings.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
     setErrorMessage('');
-  }, [setRecordings, setIsLoading, setErrorMessage]);
+  }, [setRecordings, setIsLoading, setIsEmpty, setErrorMessage]);
 
   const handleError = React.useCallback((error) => {
     setIsLoading(false);
@@ -364,13 +366,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   return (
     <RecordingsDataTable
-        listTitle="Active Flight Recordings"
+        tableTitle="Active Flight Recordings"
         toolbar={<RecordingsToolbar />}
         tableColumns={tableColumns}
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
-        isLoading = {isLoading}
-        errorMessage = {errorMessage}
+        isEmpty={isEmpty}
+        isLoading ={isLoading}
+        errorMessage ={errorMessage}
     >
       {recordingRows}
     </RecordingsDataTable>

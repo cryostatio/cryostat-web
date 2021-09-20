@@ -61,6 +61,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isEmpty, setIsEmpty] = React.useState(true);
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
@@ -84,7 +85,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-  }, [setRecordings, setIsLoading]);
+    recordings.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
+  }, [setRecordings, setIsLoading, setIsEmpty]);
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
@@ -203,12 +205,13 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   return (<>
     <RecordingsDataTable
-        listTitle="Archived Flight Recordings"
+        tableTitle="Archived Flight Recordings"
         toolbar={<RecordingsToolbar />}
         tableColumns={tableColumns}
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
         isLoading={isLoading}
+        isEmpty={isEmpty}
         errorMessage=''
     >
       {
