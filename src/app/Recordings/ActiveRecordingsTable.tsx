@@ -231,18 +231,16 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
       return (
         <Tr key={`${props.index}_parent`}>
-          <Td key={`table-row-${props.index}_0`}>
+          <Td key={`active-table-row-${props.index}_0`}>
             <Checkbox
-              aria-labelledby={`table-row-${props.index}_0`}
-              name={`table-row-${props.index}-check`}
+              name={`active-table-row-${props.index}-check`}
               onChange={handleCheck}
               isChecked={checkedIndices.includes(props.index)}
-              aria-label="active recordings checkbox"
               id={`active-table-row-${props.index}-check`}
             />
           </Td>
           <Td
-            key={`table-row-${props.index}_1`}
+            key={`active-table-row-${props.index}_1`}
             id={`active-ex-toggle-${props.index}`}
             aria-controls={`active-ex-expand-${props.index}`}
             expand={{
@@ -251,16 +249,16 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
               onToggle: handleToggle,
             }}
           />
-          <Td key={`table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
+          <Td key={`active-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
-          <Td key={`table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
+          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <ISOTime timeStr={props.recording.startTime} />
           </Td>
-          <Td key={`table-row-${props.index}_4`} dataLabel={tableColumns[2]}>
+          <Td key={`active-table-row-${props.index}_4`} dataLabel={tableColumns[2]}>
             <RecordingDuration duration={props.recording.duration} />
           </Td>
-          <Td key={`table-row-${props.index}_5`} dataLabel={tableColumns[3]}>
+          <Td key={`active-table-row-${props.index}_5`} dataLabel={tableColumns[3]}>
             {props.recording.state}
           </Td>
           <RecordingActions

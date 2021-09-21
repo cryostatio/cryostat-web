@@ -154,18 +154,16 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const parentRow = React.useMemo(() => {
       return(
         <Tr key={`${props.index}_parent`}>
-          <Td key={`table-row-${props.index}_0`}>
+          <Td key={`archived-table-row-${props.index}_0`}>
             <Checkbox
-              aria-labelledby={`table-row-${props.index}_0`}
-              name={`table-row-${props.index}-check`}
+              name={`archived-table-row-${props.index}-check`}
               onChange={handleCheck}
               isChecked={checkedIndices.includes(props.index)}
-              aria-label="checkbox"
               id={`archived-table-row-${props.index}-check`}
             />
           </Td>
           <Td
-              key={`table-row-${props.index}_1`}
+              key={`archived-table-row-${props.index}_1`}
               id={`archived-ex-toggle-${props.index}`}
               aria-controls={`archived-ex-expand-${props.index}`}
               expand={{
@@ -174,7 +172,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
                 onToggle: handleToggle,
               }}
             />
-          <Td key={`table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
+          <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
           <RecordingActions
