@@ -234,17 +234,17 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           <Td key={`table-row-${props.index}_0`}>
             <Checkbox
               aria-labelledby={`table-row-${props.index}_0`}
-              name={`row-${props.index}-check`}
+              name={`table-row-${props.index}-check`}
               onChange={handleCheck}
               isChecked={checkedIndices.includes(props.index)}
-              aria-label="checkbox"
-              id="id"
+              aria-label="active recordings checkbox"
+              id={`active-table-row-${props.index}-check`}
             />
           </Td>
           <Td
             key={`table-row-${props.index}_1`}
             id={`active-ex-toggle-${props.index}`}
-            aria-controls={`ex-expand-${props.index}`}
+            aria-controls={`active-ex-expand-${props.index}`}
             expand={{
               rowIndex: props.index,
               isExpanded: isExpanded,

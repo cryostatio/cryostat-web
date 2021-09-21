@@ -75,6 +75,6 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
 
   return (<>
     { !loaded && <Spinner /> }
-    <iframe srcDoc={report} {...rest} onLoad={onLoad} hidden={!(loaded && isExpanded)} />
+    <iframe title="Automated Analysis" srcDoc={report} {...rest} onLoad={onLoad} hidden={!(loaded && isExpanded)} />
   </>);
 });

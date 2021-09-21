@@ -157,17 +157,17 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <Td key={`table-row-${props.index}_0`}>
             <Checkbox
               aria-labelledby={`table-row-${props.index}_0`}
-              name={`row-${props.index}-check`}
+              name={`table-row-${props.index}-check`}
               onChange={handleCheck}
               isChecked={checkedIndices.includes(props.index)}
               aria-label="checkbox"
-              id="id"
+              id={`archived-table-row-${props.index}-check`}
             />
           </Td>
           <Td
               key={`table-row-${props.index}_1`}
-              id={`active-ex-toggle-${props.index}`}
-              aria-controls={`ex-expand-${props.index}`}
+              id={`archived-ex-toggle-${props.index}`}
+              aria-controls={`archived-ex-expand-${props.index}`}
               expand={{
                 rowIndex: props.index,
                 isExpanded: isExpanded,
@@ -190,7 +190,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       return (
         <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
           <Td
-            key={`active-ex-expand-${props.index}`}
+            key={`archived-ex-expand-${props.index}`}
             dataLabel={"Content Details"}
             colSpan={tableColumns.length + 3}
           >
