@@ -152,32 +152,36 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     };
 
     const parentRow = React.useMemo(() => {
-      let rowIndex = props.index;
       return(
-        <Tr key={rowIndex}>
-          <Td key={`${rowIndex}_0`}>
+        <Tr key={`${props.index}_parent`}>
+          <Td key={`table-row-${props.index}_0`}>
             <Checkbox
-                  isChecked={checkedIndices.includes(props.index)}
-                  onChange={handleCheck}
-                  aria-label="checkbox"
-                  id="id"
-                  name={`row-${props.index}-check`}
-                />
+              aria-labelledby={`table-row-${props.index}_0`}
+              name={`row-${props.index}-check`}
+              onChange={handleCheck}
+              isChecked={checkedIndices.includes(props.index)}
+              aria-label="checkbox"
+              id="id"
+            />
           </Td>
           <Td
-              key={`${rowIndex}_1`}
+              key={`table-row-${props.index}_1`}
               id={`active-ex-toggle-${props.index}`}
               aria-controls={`ex-expand-${props.index}`}
               expand={{
-                rowIndex: rowIndex,
+                rowIndex: props.index,
                 isExpanded: isExpanded,
                 onToggle: handleToggle,
               }}
             />
-          <Td key={`${rowIndex}_2`} dataLabel={tableColumns[0]}>
+          <Td key={`table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
-          <RecordingActions recording={props.recording} index={props.index} uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)} />
+          <RecordingActions
+            recording={props.recording}
+            index={props.index}
+            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
+          />
         </Tr>
       );
     }, [props.recording, props.recording.name, props.index]);
@@ -186,24 +190,24 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       return (
         <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
           <Td
-            key={`${props.index}_automated`}
+            key={`active-ex-expand-${props.index}`}
             dataLabel={"Content Details"}
-            colSpan={4}
+            colSpan={tableColumns.length + 3}
           >
-            <ExpandableRowContent>
-              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-            </ExpandableRowContent>
+          <ExpandableRowContent>
+            <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
+          </ExpandableRowContent>
           </Td>
         </Tr>
       )
     }, [props.recording, props.recording.name, props.index]);
 
-    return (<>
+    return (
       <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
         {parentRow}
         {childRow}
       </Tbody>
-    </>);
+    );
   };
 
   const RecordingsToolbar = () => {

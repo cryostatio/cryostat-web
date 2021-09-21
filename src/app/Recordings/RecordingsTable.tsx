@@ -73,23 +73,21 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
     return (<>
       { props.toolbar }
       <TableComposable aria-label={props.tableTitle}>
-        <Thead aria-label="table header">
+        <Thead aria-labelledby="table-header-1">
           <Tr>
             <Th
-              aria-label="toggle check all checkbox"
-              id="toggle-check-all"
-              key="key1"
+              aria-labelledby="table-header-1"
               name="header-check-all"
               select={{
-              onSelect: props.onHeaderCheck,
-              isSelected: props.isHeaderChecked
+                onSelect: props.onHeaderCheck,
+                isSelected: props.isHeaderChecked
               }}
             />
-            <Th id="empty-for-dropdown" key={`tableheader-empty1`}/>
+            <Th/>
             {props.tableColumns.map((key , idx) => (
-              <Th id={`table-header-${idx}`} key={`tableheader-${idx}`}>{key}</Th>
+              <Th id={`table-header-${idx}`}>{key}</Th>
             ))}
-            <Th id="empty-for-actions" key={`tableheader-empty2`}/>
+            <Th/>
           </Tr>
         </Thead>
         { props.children }

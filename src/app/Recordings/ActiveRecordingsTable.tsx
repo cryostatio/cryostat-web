@@ -229,41 +229,45 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         return (<span>{str}</span>);
       };
 
-      let rowIndex = props.index;
       return (
-        <Tr key={rowIndex}>
-          <Td key={`${rowIndex}_0`}>
+        <Tr key={`${props.index}_parent`}>
+          <Td key={`table-row-${props.index}_0`}>
             <Checkbox
-              isChecked={checkedIndices.includes(props.index)}
+              aria-labelledby={`table-row-${props.index}_0`}
+              name={`row-${props.index}-check`}
               onChange={handleCheck}
+              isChecked={checkedIndices.includes(props.index)}
               aria-label="checkbox"
               id="id"
-              name={`row-${props.index}-check`}
             />
           </Td>
           <Td
-            key={`${rowIndex}_1`}
+            key={`table-row-${props.index}_1`}
             id={`active-ex-toggle-${props.index}`}
             aria-controls={`ex-expand-${props.index}`}
             expand={{
-              rowIndex: rowIndex,
+              rowIndex: props.index,
               isExpanded: isExpanded,
               onToggle: handleToggle,
             }}
           />
-          <Td key={`${rowIndex}_2`} dataLabel={tableColumns[0]}>
+          <Td key={`table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
-          <Td key={`${rowIndex}_3`} dataLabel={tableColumns[1]}>
+          <Td key={`table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <ISOTime timeStr={props.recording.startTime} />
           </Td>
-          <Td key={`${rowIndex}_4`} dataLabel={tableColumns[2]}>
+          <Td key={`table-row-${props.index}_4`} dataLabel={tableColumns[2]}>
             <RecordingDuration duration={props.recording.duration} />
           </Td>
-          <Td key={`${rowIndex}_5`} dataLabel={tableColumns[3]}>
+          <Td key={`table-row-${props.index}_5`} dataLabel={tableColumns[3]}>
             {props.recording.state}
           </Td>
-          <RecordingActions index={props.index} recording={props.recording} uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)} />
+          <RecordingActions
+            index={props.index}
+            recording={props.recording}
+            uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
+          />
         </Tr>
       )
     }, [props.recording, props.recording.name, props.duration, props.index]);
@@ -272,7 +276,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       return (
         <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
           <Td
-            key={`${props.index}_automated`}
+            key={`active-ex-expand-${props.index}`}
             dataLabel={"Content Details"}
             colSpan={tableColumns.length + 3}
           >

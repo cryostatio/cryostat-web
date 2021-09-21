@@ -49,7 +49,7 @@ export interface RecordingActionsProps {
   recording: Recording;
   uploadFn: () => Observable<boolean>;
 }
-  
+
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
@@ -117,4 +117,3 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     />
   );
 };
-  
