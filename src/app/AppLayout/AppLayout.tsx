@@ -52,8 +52,6 @@ import { Notification, Notifications, NotificationsContext } from '@app/Notifica
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
-import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
-import { AboutCryostatModal } from './AboutCryostatModal';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -71,7 +69,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
-  const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
@@ -145,7 +142,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     setNotificationDrawerExpanded(false);
   };
   const handleAboutModalToggle = () => {
-    setAboutModalOpen(!aboutModalOpen);
+    routerHistory.push('/about');
   };
   const HeaderTools = (<>
     <PageHeaderTools>
@@ -182,13 +179,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       isNavOpen={isNavOpen}
       onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
       headerTools={HeaderTools}
-    />
-    <AboutCryostatModal
-      isOpen={aboutModalOpen}
-      onClose={handleAboutModalToggle}
-      children={children}
-      brandImageSrc={cryostatLogoWhite}
-      brandImageAlt='Cryostat Logo'
     />
   </>);
 

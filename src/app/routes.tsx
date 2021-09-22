@@ -49,6 +49,8 @@ import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
+import { AboutCryostatModal } from './AppLayout/AboutCryostatModal';
+
 
 let routeFocusTimer: number;
 
@@ -106,6 +108,13 @@ const routes: IAppRoute[] = [
     exact: true,
     path: '/settings',
     title: 'Settings',
+  },
+  {
+    component: AboutCryostatModal,
+    exact: true,
+    label: 'About',
+    path: '/about',
+    title: 'About Cryostat',
   },
 ];
 

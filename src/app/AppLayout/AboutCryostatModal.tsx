@@ -36,15 +36,17 @@
  * SOFTWARE.
  */
 
-import { AboutModal, AboutModalProps, Text, TextContent, TextList, TextListItem, TextVariants } from "@patternfly/react-core"
+import { AboutModal, Text, TextContent, TextList, TextListItem, TextVariants } from "@patternfly/react-core"
 import React from "react"
 import { ServiceContext } from "@app/Shared/Services/Services";
 import { NotificationsContext } from "@app/Notifications/Notifications";
+import { useHistory } from 'react-router-dom';
+import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
 
-export const AboutCryostatModal: React.FunctionComponent<AboutModalProps> = ({children, isOpen, onClose, brandImageSrc, brandImageAlt}) => {
+export const AboutCryostatModal = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
-
+  const routerHistory = useHistory();
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
 
   React.useEffect(() => {
@@ -65,13 +67,17 @@ export const AboutCryostatModal: React.FunctionComponent<AboutModalProps> = ({ch
     return result.groups?.describe || 'main';
   }, [cryostatVersion]);
 
+  const onClose = () => {
+    return routerHistory.goBack();
+  }
+
   return(<>
     <AboutModal
-        isOpen={isOpen}
+        isOpen={true}
         onClose={onClose}
         trademark='Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0'
-        brandImageSrc={brandImageSrc}
-        brandImageAlt={brandImageAlt}
+        brandImageSrc={cryostatLogoWhite}
+        brandImageAlt='Cryostat Logo'
       >
         <TextContent>
         <TextList component="dl">
