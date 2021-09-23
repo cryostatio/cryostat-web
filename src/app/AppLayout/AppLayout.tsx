@@ -141,9 +141,18 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const handleCloseNotificationCenter = () => {
     setNotificationDrawerExpanded(false);
   };
+
+  const getModalRoute = (modalPath: string) => {
+    if(location.pathname !== '/') {
+      modalPath = `${location.pathname}${modalPath}`;
+    }
+    return {pathname: modalPath, state: { modalBackground: location }};
+  }
+
   const handleAboutModalToggle = () => {
-    routerHistory.push('/about');
+    routerHistory.push(getModalRoute('/about'));
   };
+
   const HeaderTools = (<>
     <PageHeaderTools>
       <PageHeaderToolsGroup>
@@ -201,7 +210,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       <NavList id="nav-list-simple">
         {routes.map((route, idx) => route.label && (
             <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
-              <NavLink exact to={route.path} activeClassName="pf-m-current">{route.label}</NavLink>
+              <NavLink
+                exact to={route.isModal? getModalRoute(route.path) : route.path}
+                activeClassName="pf-m-current">{route.label}
+              </NavLink>
             </NavItem>
           ))}
       </NavList>

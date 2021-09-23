@@ -68,7 +68,8 @@ export const AboutCryostatModal = () => {
   }, [cryostatVersion]);
 
   const onClose = () => {
-    return routerHistory.goBack();
+    return routerHistory.location.state ?
+      routerHistory.goBack() : routerHistory.push('/');
   }
 
   return(<>
