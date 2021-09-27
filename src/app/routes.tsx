@@ -49,7 +49,7 @@ import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch, useLocation } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { AboutCryostatModal } from './AppLayout/AboutCryostatModal';
+import { About } from './About/About';
 
 let routeFocusTimer: number;
 
@@ -110,7 +110,7 @@ const routes: IAppRoute[] = [
     title: 'Settings',
   },
   {
-    component: AboutCryostatModal,
+    component: About,
     exact: true,
     label: 'About',
     path: '/about',
@@ -165,7 +165,6 @@ const AppRoutes = () => {
   const context = React.useContext(ServiceContext);
   const [authenticated, setAuthenticated] = React.useState(false);
   const location = useLocation();
-  const modalBackground = location.state && location.state.modalBackground;
 
   React.useEffect(() => {
     const sub = context.notificationChannel.isReady().subscribe((v) => setAuthenticated(v));
@@ -178,7 +177,7 @@ const AppRoutes = () => {
 
   return (
     <LastLocationProvider>
-      <Switch location={modalBackground || location}>
+      <Switch>
         {authenticated ? (
           flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
             <RouteWithTitleUpdates
@@ -195,21 +194,6 @@ const AppRoutes = () => {
         )}
         <PageNotFound title="404 Page Not Found" />
       </Switch>
-
-      {/* Renders the modal routes on top of the page components in the background */}
-      {modalBackground &&
-        flatten(routes)
-          .filter(({ isModal }) => isModal)
-          .map(({ exact, component, title, isAsync }, idx) => (
-            <RouteWithTitleUpdates
-              path={location.pathname}
-              exact={exact}
-              component={component}
-              key={idx}
-              title={title}
-              isAsync={isAsync}
-            />
-          ))}
     </LastLocationProvider>
   );
 };

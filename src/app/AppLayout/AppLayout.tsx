@@ -52,6 +52,7 @@ import { Notification, Notifications, NotificationsContext } from '@app/Notifica
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
+import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -69,6 +70,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
+  const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
@@ -142,15 +144,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     setNotificationDrawerExpanded(false);
   };
 
-  const getModalRoute = (modalPath: string) => {
-    if(location.pathname !== '/') {
-      modalPath = `${location.pathname}${modalPath}`;
-    }
-    return {pathname: modalPath, state: { modalBackground: location }};
-  }
-
   const handleAboutModalToggle = () => {
-    routerHistory.push(getModalRoute('/about'));
+    setAboutModalOpen(!aboutModalOpen);
   };
 
   const HeaderTools = (<>
@@ -189,6 +184,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
       headerTools={HeaderTools}
     />
+    <AboutCryostatModal
+      isOpen={aboutModalOpen}
+      onClose={handleAboutModalToggle}
+    />
   </>);
 
   const isActiveRoute = (route: IAppRoute): boolean => {
@@ -211,7 +210,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
         {routes.map((route, idx) => route.label && (
             <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
               <NavLink
-                exact to={route.isModal? getModalRoute(route.path) : route.path}
+                exact to={route.path}
                 activeClassName="pf-m-current">{route.label}
               </NavLink>
             </NavItem>

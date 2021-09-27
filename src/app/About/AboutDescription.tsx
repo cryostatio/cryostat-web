@@ -36,23 +36,20 @@
  * SOFTWARE.
  */
 
-import { AboutModal, Text, TextContent, TextList, TextListItem, TextVariants } from "@patternfly/react-core"
+import { Text, TextContent, TextList, TextListItem, TextVariants } from "@patternfly/react-core"
 import React from "react"
 import { ServiceContext } from "@app/Shared/Services/Services";
 import { NotificationsContext } from "@app/Notifications/Notifications";
-import { useHistory } from 'react-router-dom';
-import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
 
-export const AboutCryostatModal = () => {
+export const AboutDescription = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
-  const routerHistory = useHistory();
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
 
   React.useEffect(() => {
     const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
     return () => sub.unsubscribe();
-  })
+  }, [serviceContext])
 
   const cryostatCommitHash = React.useMemo(() => {
     if (!cryostatVersion) {
@@ -65,69 +62,56 @@ export const AboutCryostatModal = () => {
       return 'main';
     }
     return result.groups?.describe || 'main';
-  }, [cryostatVersion]);
-
-  const onClose = () => {
-    return routerHistory.location.state ?
-      routerHistory.goBack() : routerHistory.push('/');
-  }
+  }, [cryostatVersion, notificationsContext]);
 
   return(<>
-    <AboutModal
-        isOpen={true}
-        onClose={onClose}
-        trademark='Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0'
-        brandImageSrc={cryostatLogoWhite}
-        brandImageAlt='Cryostat Logo'
-      >
-        <TextContent>
-        <TextList component="dl">
-          <TextListItem component="dt">
-            Version
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text
-              component={TextVariants.a}
-              target="_blank"
-              href={`https://github.com/cryostatio/cryostat/commits/${cryostatCommitHash}`}
-            >{cryostatVersion}</Text>
-          </TextListItem>
-          <TextListItem component="dt">
-            Homepage
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href='https://cryostat.io'>cryostat.io</Text>
-          </TextListItem>
-          <TextListItem component="dt">
-            Bugs
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text>
-            <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/issues'>Known Issues</Text>
-            &nbsp;|&nbsp;
-            <Text
-              component={TextVariants.a}
-              target="_blank"
-              href={`https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+${cryostatVersion}`}
-            >
-              File a Report
-            </Text>
-            </Text>
-          </TextListItem>
-          <TextListItem component="dt">
-            Mailing List
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href='https://groups.google.com/g/cryostat-development'>Google Groups</Text>
-          </TextListItem>
-          <TextListItem component="dt">
-            Open Source License
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/blob/main/LICENSE'>License</Text>
-          </TextListItem>
-        </TextList>
-      </TextContent>
-    </AboutModal>
+      <TextContent>
+      <TextList component="dl">
+        <TextListItem component="dt">
+          Version
+        </TextListItem>
+        <TextListItem component="dd">
+          <Text
+            component={TextVariants.a}
+            target="_blank"
+            href={`https://github.com/cryostatio/cryostat/commits/${cryostatCommitHash}`}
+          >{cryostatVersion}</Text>
+        </TextListItem>
+        <TextListItem component="dt">
+          Homepage
+        </TextListItem>
+        <TextListItem component="dd">
+          <Text component={TextVariants.a} target="_blank" href='https://cryostat.io'>cryostat.io</Text>
+        </TextListItem>
+        <TextListItem component="dt">
+          Bugs
+        </TextListItem>
+        <TextListItem component="dd">
+          <Text>
+          <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/issues'>Known Issues</Text>
+          &nbsp;|&nbsp;
+          <Text
+            component={TextVariants.a}
+            target="_blank"
+            href={`https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+${cryostatVersion}`}
+          >
+            File a Report
+          </Text>
+          </Text>
+        </TextListItem>
+        <TextListItem component="dt">
+          Mailing List
+        </TextListItem>
+        <TextListItem component="dd">
+          <Text component={TextVariants.a} target="_blank" href='https://groups.google.com/g/cryostat-development'>Google Groups</Text>
+        </TextListItem>
+        <TextListItem component="dt">
+          Open Source License
+        </TextListItem>
+        <TextListItem component="dd">
+          <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/blob/main/LICENSE'>License</Text>
+        </TextListItem>
+      </TextList>
+    </TextContent>
     </>);
 }
