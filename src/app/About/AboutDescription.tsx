@@ -41,6 +41,8 @@ import React from "react"
 import { ServiceContext } from "@app/Shared/Services/Services";
 import { NotificationsContext } from "@app/Notifications/Notifications";
 
+export const CRYOSTAT_TRADEMARK = 'Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0';
+
 export const AboutDescription = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);

@@ -164,7 +164,6 @@ const PageNotFound = ({ title }: { title: string }) => {
 const AppRoutes = () => {
   const context = React.useContext(ServiceContext);
   const [authenticated, setAuthenticated] = React.useState(false);
-  const location = useLocation();
 
   React.useEffect(() => {
     const sub = context.notificationChannel.isReady().subscribe((v) => setAuthenticated(v));

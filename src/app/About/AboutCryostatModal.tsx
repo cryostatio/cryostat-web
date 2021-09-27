@@ -39,7 +39,7 @@
 import { AboutModal } from "@patternfly/react-core"
 import React from "react"
 import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
-import { AboutDescription } from "./AboutDescription";
+import { AboutDescription, CRYOSTAT_TRADEMARK } from "./AboutDescription";
 
 export const AboutCryostatModal = ({isOpen, onClose}) => {
 
@@ -47,7 +47,7 @@ export const AboutCryostatModal = ({isOpen, onClose}) => {
     <AboutModal
         isOpen={isOpen}
         onClose={onClose}
-        trademark='Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0'
+        trademark={CRYOSTAT_TRADEMARK}
         brandImageSrc={cryostatLogoWhite}
         brandImageAlt='Cryostat Logo'
       >
