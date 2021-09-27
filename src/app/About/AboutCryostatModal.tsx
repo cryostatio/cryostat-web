@@ -51,7 +51,7 @@ export const AboutCryostatModal = ({isOpen, onClose}) => {
         brandImageSrc={cryostatLogoWhite}
         brandImageAlt='Cryostat Logo'
       >
-       <AboutDescription />
+      <AboutDescription />
     </AboutModal>
     </>);
 }

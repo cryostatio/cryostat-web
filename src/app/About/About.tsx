@@ -44,7 +44,7 @@ import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react
 
 export const About = () => {
   return (
-    <BreadcrumbPage pageTitle="About Cryostat">
+    <BreadcrumbPage pageTitle="About">
       <Card>
         <CardHeader>
           <Brand alt="Cryostat" src={cryostatLogoHorizontal} className="cryostat-logo" />

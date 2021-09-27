@@ -143,11 +143,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const handleCloseNotificationCenter = () => {
     setNotificationDrawerExpanded(false);
   };
-
   const handleAboutModalToggle = () => {
     setAboutModalOpen(!aboutModalOpen);
   };
-
   const HeaderTools = (<>
     <PageHeaderTools>
       <PageHeaderToolsGroup>
@@ -209,10 +207,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       <NavList id="nav-list-simple">
         {routes.map((route, idx) => route.label && (
             <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
-              <NavLink
-                exact to={route.path}
-                activeClassName="pf-m-current">{route.label}
-              </NavLink>
+              <NavLink exact to={route.path} activeClassName="pf-m-current">{route.label}</NavLink>
             </NavItem>
           ))}
       </NavList>

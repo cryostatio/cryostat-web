@@ -47,7 +47,7 @@ import { SecurityPanel } from '@app/SecurityPanel/SecurityPanel';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
-import { Route, RouteComponentProps, Switch, useLocation } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { About } from './About/About';
 
@@ -62,7 +62,6 @@ export interface IAppRoute {
   path: string;
   title: string;
   isAsync?: boolean;
-  isModal?: boolean;
   children?: IAppRoute[];
 }
 
@@ -114,8 +113,7 @@ const routes: IAppRoute[] = [
     exact: true,
     label: 'About',
     path: '/about',
-    title: 'About Cryostat',
-    isModal: true,
+    title: 'About',
   },
 ];
 
