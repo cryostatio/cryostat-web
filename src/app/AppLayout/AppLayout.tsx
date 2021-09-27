@@ -63,8 +63,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const notificationsContext = React.useContext(NotificationsContext);
   const routerHistory = useHistory();
   const logoProps = {
-    href: '/',
-    target: '_blank'
+    href: '/'
   };
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
