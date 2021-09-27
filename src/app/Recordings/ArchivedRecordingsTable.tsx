@@ -86,7 +86,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-    recordings.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
+    setIsEmpty(!recordings.length);
   }, [setRecordings, setIsLoading, setIsEmpty]);
 
   const refreshRecordingList = React.useCallback(() => {
@@ -182,7 +182,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           />
         </Tr>
       );
-    }, [props.recording, props.recording.name, props.index]);
+    }, [props.recording, props.recording.name, props.index, handleCheck, checkedIndices, isExpanded, handleToggle, tableColumns, context.api]);
 
     const childRow = React.useMemo(() => {
       return (
@@ -198,7 +198,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           </Td>
         </Tr>
       )
-    }, [props.recording, props.recording.name, props.index]);
+    }, [props.recording, props.recording.name, props.index, isExpanded, tableColumns]);
 
     return (
       <Tbody key={props.index} isExpanded={isExpanded[props.index]}>

@@ -99,7 +99,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-    recordings.length === 0 ? setIsEmpty(true) : setIsEmpty(false);
+    setIsEmpty(!recordings.length);
     setErrorMessage('');
   }, [setRecordings, setIsLoading, setIsEmpty, setErrorMessage]);
 
@@ -268,7 +268,22 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           />
         </Tr>
       )
-    }, [props.recording, props.recording.name, props.duration, props.index]);
+    }, [
+      props.duration,
+      props.index,
+      props.recording,
+      props.recording.duration,
+      props.recording.name,
+      props.recording.startTime,
+      props.recording.state,
+      props.timeStr,
+      context.api,
+      checkedIndices,
+      handleCheck,
+      handleToggle,
+      isExpanded,
+      tableColumns
+    ]);
 
     const childRow = React.useMemo(() => {
       return (
@@ -294,7 +309,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
         </Tr>
       );
-    }, [props.recording, props.recording.name, props.duration, props.index]);
+    }, [props.recording, props.recording.name, props.duration, props.index, isExpanded, tableColumns, props.recording.toDisk, props.recording.maxAge, props.recording.maxSize]);
 
     return (
       <Tbody key={props.index} isExpanded={isExpanded[props.index]}>

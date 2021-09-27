@@ -62,7 +62,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       .pipe(first())
       .subscribe(() => setGrafanaEnabled(true));
     return () => sub.unsubscribe();
-  }, [context.api, notifications]);
+  }, [context.api, setGrafanaEnabled]);
 
   const grafanaUpload = React.useCallback(() => {
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
@@ -76,7 +76,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         }
       })
     );
-  }, [addSubscription]);
+  }, [addSubscription, notifications, props.uploadFn, context.api]);
 
   const handleDownloadRecording = React.useCallback(() => {
     context.api.downloadRecording(props.recording);
