@@ -36,53 +36,61 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
-import { ActiveRecordingsList } from './ActiveRecordingsList';
-import { ArchivedRecordingsList } from './ArchivedRecordingsList';
-import { Subject } from 'rxjs';
+import { Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
+import { TableComposable, Thead, Tr, Th } from '@patternfly/react-table';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 
-export const RecordingList = () => {
-  const context = React.useContext(ServiceContext);
-  const [activeTab, setActiveTab] = React.useState(0);
-  const [archiveEnabled, setArchiveEnabled] = React.useState(false);
-  const archiveUpdate = new Subject<void>();
+export interface RecordingsTableProps {
+  toolbar: React.ReactElement;
+  tableColumns: string[];
+  tableTitle: string;
+  isEmpty: boolean;
+  isHeaderChecked: boolean;
+  isLoading: boolean;
+  errorMessage: string;
+  onHeaderCheck: (event, checked: boolean) => void;
+}
 
-  React.useEffect(() => {
-    const sub = context.api.isArchiveEnabled().subscribe(setArchiveEnabled);
-    return () => sub.unsubscribe();
-  }, [context.api]);
-
-  React.useEffect(() => {
-    return () => archiveUpdate.complete();
-  }, []);
-
-  const cardBody = React.useMemo(() => {
-    return archiveEnabled ? (
-      <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-        <Tab eventKey={0} title="Active Recordings">
-          <ActiveRecordingsList archiveEnabled={true} onArchive={() => archiveUpdate.next()} />
-        </Tab>
-        <Tab eventKey={1} title="Archived Recordings">
-          <ArchivedRecordingsList updater={archiveUpdate} />
-        </Tab>
-      </Tabs>
-    ) : (
-      <>
-        <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
-        <ActiveRecordingsList archiveEnabled={false}/>
-      </>
-    );
-  }, [archiveEnabled, activeTab]);
-
-  return (
-    <TargetView pageTitle="Recordings">
-      <Card>
-        <CardBody>
-          { cardBody }
-        </CardBody>
-      </Card>
-    </TargetView>
-  );
+export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
+  if (props.errorMessage != '') {
+    return (<ErrorView message={props.errorMessage}/>)
+  } else if (props.isLoading) {
+    return (<LoadingView/>)
+  } else if (props.isEmpty) {
+    return (
+    <>
+      { props.toolbar }
+      <EmptyState>
+        <EmptyStateIcon icon={SearchIcon}/>
+        <Title headingLevel="h4" size="lg">
+          No {props.tableTitle}
+        </Title>
+      </EmptyState>
+    </>)
+  } else {
+    return (<>
+      { props.toolbar }
+      <TableComposable aria-label={props.tableTitle}>
+        <Thead>
+          <Tr>
+            <Th
+              key="table-header-check-all"
+              select={{
+                onSelect: props.onHeaderCheck,
+                isSelected: props.isHeaderChecked
+              }}
+            />
+            <Th key="table-header-expand"/>
+            {props.tableColumns.map((key , idx) => (
+              <Th key={`table-header-${key}`}>{key}</Th>
+            ))}
+            <Th key="table-header-actions"/>
+          </Tr>
+        </Thead>
+        { props.children }
+      </TableComposable>
+    </>);
+  }
 };

@@ -39,20 +39,21 @@ import * as React from 'react';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
-import { RecordingActions } from './ActiveRecordingsList';
-import { RecordingsDataTable } from './RecordingsDataTable';
+import { Button, Checkbox, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { RecordingActions } from './RecordingActions';
+import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { Observable, Subject, forkJoin } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 
-interface ArchivedRecordingsListProps {
+interface ArchivedRecordingsTableProps {
   updater: Subject<void>;
 }
 
-export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsListProps> = (props) => {
+export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
   const [recordings, setRecordings] = React.useState([] as Recording[]);
@@ -61,13 +62,14 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isEmpty, setIsEmpty] = React.useState(true);
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
     'Name'
   ];
 
-  const handleHeaderCheck = React.useCallback((checked) => {
+  const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
     setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
   }, [setHeaderChecked, setCheckedIndices, recordings]);
@@ -84,7 +86,8 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-  }, [setRecordings, setIsLoading]);
+    setIsEmpty(!recordings.length);
+  }, [setRecordings, setIsLoading, setIsEmpty]);
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
@@ -148,29 +151,61 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
       handleRowCheck(checked, props.index);
     };
 
-    return (<>
-      <DataListItem aria-labelledby={`table-row-${props.index}-1`} name={`row-${props.index}-check`} isExpanded={isExpanded} >
-        <DataListItemRow>
-          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
-          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`archived-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
-          <DataListItemCells
-            dataListCells={[
-              <DataListCell key={`table-row-${props.index}-1`}>
-                {props.recording.name}
-              </DataListCell>
-            ]}
+    const parentRow = React.useMemo(() => {
+      return(
+        <Tr key={`${props.index}_parent`}>
+          <Td key={`archived-table-row-${props.index}_0`}>
+            <Checkbox
+              name={`archived-table-row-${props.index}-check`}
+              onChange={handleCheck}
+              isChecked={checkedIndices.includes(props.index)}
+              id={`archived-table-row-${props.index}-check`}
+            />
+          </Td>
+          <Td
+              key={`archived-table-row-${props.index}_1`}
+              id={`archived-ex-toggle-${props.index}`}
+              aria-controls={`archived-ex-expand-${props.index}`}
+              expand={{
+                rowIndex: props.index,
+                isExpanded: isExpanded,
+                onToggle: handleToggle,
+              }}
+            />
+          <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
+            {props.recording.name}
+          </Td>
+          <RecordingActions
+            recording={props.recording}
+            index={props.index}
+            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
           />
-          <RecordingActions recording={props.recording} index={props.index} uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)} />
-        </DataListItemRow>
-        <DataListContent
-          aria-label="Content Details"
-          id={`archived-ex-expand-${props.index}`}
-          isHidden={!isExpanded}
-        >
-          <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-        </DataListContent>
-      </DataListItem>
-    </>);
+        </Tr>
+      );
+    }, [props.recording, props.recording.name, props.index, handleCheck, checkedIndices, isExpanded, handleToggle, tableColumns, context.api]);
+
+    const childRow = React.useMemo(() => {
+      return (
+        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
+          <Td
+            key={`archived-ex-expand-${props.index}`}
+            dataLabel={"Content Details"}
+            colSpan={tableColumns.length + 3}
+          >
+          <ExpandableRowContent>
+            <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
+          </ExpandableRowContent>
+          </Td>
+        </Tr>
+      )
+    }, [props.recording, props.recording.name, props.index, isExpanded, tableColumns]);
+
+    return (
+      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
+        {parentRow}
+        {childRow}
+      </Tbody>
+    );
   };
 
   const RecordingsToolbar = () => {
@@ -202,19 +237,18 @@ export const ArchivedRecordingsList: React.FunctionComponent<ArchivedRecordingsL
   };
 
   return (<>
-    <RecordingsDataTable
-        listTitle="Archived Flight Recordings"
+    <RecordingsTable
+        tableTitle="Archived Flight Recordings"
         toolbar={<RecordingsToolbar />}
         tableColumns={tableColumns}
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
         isLoading={isLoading}
+        isEmpty={isEmpty}
         errorMessage=''
     >
-      {
-        recordingRows
-      }
-    </RecordingsDataTable>
+      {recordingRows}
+    </RecordingsTable>
 
     <ArchiveUploadModal visible={showUploadModal} onClose={handleModalClose}/>
   </>);

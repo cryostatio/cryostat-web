@@ -36,27 +36,27 @@
  * SOFTWARE.
  */
 
-import {NotificationsContext} from '@app/Notifications/Notifications';
-import {Recording, RecordingState} from '@app/Shared/Services/Api.service';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import {ServiceContext} from '@app/Shared/Services/Services';
-import {NO_TARGET} from '@app/Shared/Services/Target.service';
-import {useSubscriptions} from '@app/utils/useSubscriptions';
-import {Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem} from '@patternfly/react-core';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { useSubscriptions} from '@app/utils/useSubscriptions';
+import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
-import {useHistory, useRouteMatch} from 'react-router-dom';
-import {combineLatest, forkJoin, Observable} from 'rxjs';
-import {concatMap, filter, first} from 'rxjs/operators';
-import {RecordingsDataTable} from './RecordingsDataTable';
-import {ReportFrame} from './ReportFrame';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { combineLatest, forkJoin, Observable } from 'rxjs';
+import { concatMap, filter, first } from 'rxjs/operators';
+import { RecordingActions } from './RecordingActions';
+import { RecordingsTable } from './RecordingsTable';
+import { ReportFrame } from './ReportFrame';
 
-export interface ActiveRecordingsListProps {
+export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
   onArchive?: Function;
 }
 
-export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListProps> = (props) => {
-  const notifications = React.useContext(NotificationsContext);
+export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
 
@@ -65,6 +65,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isEmpty, setIsEmpty] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
 
@@ -86,7 +87,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     }
   }, [setCheckedIndices, setHeaderChecked]);
 
-  const handleHeaderCheck = React.useCallback((checked) => {
+  const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
     setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
   }, [setHeaderChecked, setCheckedIndices, recordings]);
@@ -98,8 +99,9 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
+    setIsEmpty(!recordings.length);
     setErrorMessage('');
-  }, [setRecordings, setIsLoading, setErrorMessage]);
+  }, [setRecordings, setIsLoading, setIsEmpty, setErrorMessage]);
 
   const handleError = React.useCallback((error) => {
     setIsLoading(false);
@@ -216,7 +218,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
       handleRowCheck(checked, props.index);
     };
 
-    const listColumns = React.useMemo(() => {
+    const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
         const fmt = new Date(props.timeStr).toISOString();
         return (<span>{fmt}</span>);
@@ -227,50 +229,93 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
         return (<span>{str}</span>);
       };
 
-      return <>
-        <DataListCell key={`table-row-${props.index}-1`}>
-          {props.recording.name}
-        </DataListCell>
-        <DataListCell key={`table-row-${props.index}-2`}>
-          <ISOTime timeStr={props.recording.startTime} />
-        </DataListCell>
-        <DataListCell key={`table-row-${props.index}-3`}>
-          <RecordingDuration duration={props.recording.duration} />
-        </DataListCell>
-        <DataListCell key={`table-row-${props.index}-4`}>
-          {props.recording.state}
-        </DataListCell>
-      </>
-    }, [props.recording, props.recording.name, props.duration, props.index]);
+      return (
+        <Tr key={`${props.index}_parent`}>
+          <Td key={`active-table-row-${props.index}_0`}>
+            <Checkbox
+              name={`active-table-row-${props.index}-check`}
+              onChange={handleCheck}
+              isChecked={checkedIndices.includes(props.index)}
+              id={`active-table-row-${props.index}-check`}
+            />
+          </Td>
+          <Td
+            key={`active-table-row-${props.index}_1`}
+            id={`active-ex-toggle-${props.index}`}
+            aria-controls={`active-ex-expand-${props.index}`}
+            expand={{
+              rowIndex: props.index,
+              isExpanded: isExpanded,
+              onToggle: handleToggle,
+            }}
+          />
+          <Td key={`active-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
+            {props.recording.name}
+          </Td>
+          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
+            <ISOTime timeStr={props.recording.startTime} />
+          </Td>
+          <Td key={`active-table-row-${props.index}_4`} dataLabel={tableColumns[2]}>
+            <RecordingDuration duration={props.recording.duration} />
+          </Td>
+          <Td key={`active-table-row-${props.index}_5`} dataLabel={tableColumns[3]}>
+            {props.recording.state}
+          </Td>
+          <RecordingActions
+            index={props.index}
+            recording={props.recording}
+            uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
+          />
+        </Tr>
+      )
+    }, [
+      props.duration,
+      props.index,
+      props.recording,
+      props.recording.duration,
+      props.recording.name,
+      props.recording.startTime,
+      props.recording.state,
+      props.timeStr,
+      context.api,
+      checkedIndices,
+      handleCheck,
+      handleToggle,
+      isExpanded,
+      tableColumns
+    ]);
+
+    const childRow = React.useMemo(() => {
+      return (
+        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
+          <Td
+            key={`active-ex-expand-${props.index}`}
+            dataLabel={"Content Details"}
+            colSpan={tableColumns.length + 3}
+          >
+            <ExpandableRowContent>
+              <Text>Recording Options:</Text>
+              <Text>
+                toDisk = { String(props.recording.toDisk) } &emsp;
+                maxAge = {props.recording.maxAge / 1000}s &emsp;
+                maxSize = { props.recording.maxSize }B
+              </Text>
+              <br></br>
+              <hr></hr>
+              <br></br>
+              <Text>Automated Analysis:</Text>
+              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
+            </ExpandableRowContent>
+          </Td>
+        </Tr>
+      );
+    }, [props.recording, props.recording.name, props.duration, props.index, isExpanded, tableColumns, props.recording.toDisk, props.recording.maxAge, props.recording.maxSize]);
 
     return (
-      <DataListItem aria-labelledby={`table-row-${props.index}-1`} isExpanded={isExpanded} >
-        <DataListItemRow>
-          <DataListCheck aria-labelledby="table-row-1-1" name={`row-${props.index}-check`} onChange={handleCheck} isChecked={checkedIndices.includes(props.index)} />
-          <DataListToggle onClick={handleToggle} isExpanded={isExpanded} id={`active-ex-toggle-${props.index}`} aria-controls={`ex-expand-${props.index}`} />
-          <DataListItemCells
-            dataListCells={listColumns}
-          />
-          <RecordingActions index={props.index} recording={props.recording} uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)} />
-        </DataListItemRow>
-        <DataListContent
-          aria-label="Content Details"
-          id={`active-ex-expand-${props.index}`}
-          isHidden={!isExpanded}
-        >
-          <Text>Recording Options:</Text>
-          <Text>
-            toDisk = { String(props.recording.toDisk) } &emsp;
-            maxAge = {props.recording.maxAge / 1000}s &emsp;
-            maxSize = { props.recording.maxSize }B
-          </Text>
-          <br></br>
-          <hr></hr>
-          <br></br>
-          <Text>Automated Analysis:</Text>
-          <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-        </DataListContent>
-      </DataListItem>
+      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
+        {parentRow}
+        {childRow}
+      </Tbody>
     );
   };
 
@@ -328,110 +373,18 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
-  return (<>
-    <RecordingsDataTable
-        listTitle="Active Flight Recordings"
+  return (
+    <RecordingsTable
+        tableTitle="Active Flight Recordings"
         toolbar={<RecordingsToolbar />}
         tableColumns={tableColumns}
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
-        isLoading = {isLoading}
-        errorMessage = {errorMessage}
+        isEmpty={isEmpty}
+        isLoading ={isLoading}
+        errorMessage ={errorMessage}
     >
       {recordingRows}
-    </RecordingsDataTable>
-  </>);
-};
-
-export interface RecordingActionsProps {
-  index: number;
-  recording: Recording;
-  uploadFn: () => Observable<boolean>;
-}
-
-export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const notifications = React.useContext(NotificationsContext);
-  const [open, setOpen] = React.useState(false);
-  const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
-
-  const addSubscription = useSubscriptions();
-
-  React.useEffect(() => {
-    const sub = context.api.grafanaDatasourceUrl()
-      .pipe(first())
-      .subscribe(() => setGrafanaEnabled(true));
-    return () => sub.unsubscribe();
-  }, [context.api, notifications]);
-
-  const grafanaUpload = React.useCallback(() => {
-    notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
-    addSubscription(
-      props.uploadFn()
-      .pipe(first())
-      .subscribe(success => {
-        if (success) {
-          notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
-          context.api.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
-        }
-      })
-    );
-  }, [addSubscription]);
-
-  const handleDownloadRecording = React.useCallback(() => {
-    context.api.downloadRecording(props.recording);
-  }, [context.api, props.recording]);
-
-  const handleDownloadReport = React.useCallback(() => {
-    context.api.downloadReport(props.recording);
-  }, [context.api, props.recording]);
-
-  const actionItems = React.useMemo(() => {
-    const actionItems = [
-      <DropdownItem key="download" component={
-        <Text onClick={handleDownloadRecording}>
-          Download Recording
-        </Text>
-        }>
-      </DropdownItem>,
-      <DropdownItem key="report" component={
-        <Text onClick={handleDownloadReport} >
-          Download Report
-        </Text>
-        }>
-      </DropdownItem>
-    ];
-    if (grafanaEnabled) {
-      actionItems.push(
-        <DropdownItem key="grafana" component={
-          <Text onClick={grafanaUpload} >
-            View in Grafana ...
-          </Text>
-          }>
-        </DropdownItem>
-      );
-    }
-    return actionItems;
-  }, [handleDownloadRecording, handleDownloadReport, grafanaEnabled, grafanaUpload]);
-
-  const onSelect = () => {
-    setOpen(o => !o);
-  };
-
-  return (
-    <DataListAction
-      aria-labelledby={`dropdown-actions-item-${props.index} dropdown-actions-action-${props.index}`}
-      id={`dropdown-actions-action-${props.index}`}
-      aria-label="Actions"
-    >
-      <Dropdown
-        isPlain
-        position={DropdownPosition.right}
-        isOpen={open}
-        onSelect={onSelect}
-        toggle={<KebabToggle onToggle={setOpen} />}
-        dropdownItems={actionItems}
-      />
-    </DataListAction>
+    </RecordingsTable>
   );
 };
