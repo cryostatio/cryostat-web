@@ -45,12 +45,7 @@ export interface Notification {
   read?: boolean;
   key?: string;
   title: string;
-<<<<<<< HEAD
-  message?: string;
-=======
   message?: string | Error;
-  category?: string;
->>>>>>> 6325741 (fix(notifications): handle Error type messages (#305))
   variant: AlertVariant;
   timestamp?: number;
 }
