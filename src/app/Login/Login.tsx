@@ -63,9 +63,7 @@ export const Login = () => {
       serviceContext.login.checkAuth(tok, authMethod)
       .pipe(first())
       .subscribe(v => {
-        if (v) {
-          serviceContext.login.setLoggedIn();
-        } else if (userSubmission) {
+        if (!v && userSubmission) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
       })
@@ -87,7 +85,7 @@ export const Login = () => {
 
   React.useEffect(() => {
     const sub =
-      combineLatest(serviceContext.login.getToken(), serviceContext.login.getAuthMethod(), timer(0, 5000))
+      combineLatest(serviceContext.login.getToken(), serviceContext.login.getAuthMethod(),  serviceContext.notificationChannel.isReady(), timer(0, 5000))
       .pipe(debounceTime(1000))
       .subscribe(parts => {
         let token = parts[0];

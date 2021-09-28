@@ -176,8 +176,10 @@ const AppRoutes = () => {
   React.useEffect(() => {
     const sub = combineLatest(context.notificationChannel.isReady(), context.login.isAuthenticated()).subscribe(
       (parts) => {
-        const connected = parts[0];
+        const connected = parts[0].ready;
         const authenticated = parts[1];
+        console.log("connected:", connected)
+        console.log("authenticated: ", authenticated)
 
         if (connected && authenticated) {
           setShowDashboard(true);

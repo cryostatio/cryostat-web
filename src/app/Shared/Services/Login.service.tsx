@@ -46,7 +46,6 @@ export class LoginService {
   private readonly USER_KEY: string = 'user';
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
-  private readonly login = new ReplaySubject<void>(1);
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
   private readonly authenticated = new ReplaySubject<boolean>(1);
@@ -95,6 +94,7 @@ export class LoginService {
           this.token.next(token);
           this.setCacheItem(this.TOKEN_KEY, token);
           this.setCacheItem(this.METHOD_KEY, method);
+          this.authenticated.next(true);
         }
       })
     );
@@ -125,17 +125,8 @@ export class LoginService {
     return this.authenticated.asObservable();
   }
 
-  loggedIn(): Observable<void> {
-    return this.login.asObservable();
-  }
-
   loggedOut(): Observable<void> {
     return this.logout.asObservable();
-  }
-
-  setLoggedIn(): void {
-    this.login.next();
-    this.authenticated.next(true);
   }
 
   setLoggedOut(): void {
