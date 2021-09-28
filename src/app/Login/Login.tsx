@@ -38,6 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '../Notifications/Notifications';
+import { CloseStatus } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
 import { combineLatest, timer } from 'rxjs';
@@ -85,15 +86,18 @@ export const Login = () => {
 
   React.useEffect(() => {
     const sub =
-      combineLatest(serviceContext.api.getToken(), serviceContext.api.getAuthMethod(), timer(0, 5000))
+      combineLatest(serviceContext.api.getToken(), serviceContext.api.getAuthMethod(), serviceContext.notificationChannel.isReady(), timer(0, 5000))
       .pipe(debounceTime(1000))
       .subscribe(parts => {
         let token = parts[0];
         let authMethod = parts[1];
+        let ready = parts[2];
         if (authMethod === 'Basic') {
           token = Base64.decode(token);
         }
-        checkAuth(token, authMethod, false);
+        if (!ready.ready && ready.code != CloseStatus.PROTOCOL_FAILURE) {
+          checkAuth(token, authMethod, false);
+        }
     });
     return () => sub.unsubscribe();
   }, [serviceContext, serviceContext.api, checkAuth]);

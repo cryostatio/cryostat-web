@@ -156,7 +156,7 @@ const AppRoutes = () => {
   const [authenticated, setAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.isReady().subscribe(setAuthenticated);
+    const sub = context.notificationChannel.isReady().subscribe(v => setAuthenticated(v.ready));
     return () => sub.unsubscribe();
   }, [context.notificationChannel, setAuthenticated]);
 

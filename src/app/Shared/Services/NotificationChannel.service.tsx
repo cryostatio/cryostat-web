@@ -57,11 +57,22 @@ export enum NotificationCategory {
   WsClientActivity = 'WsClientActivity'
 }
 
+export enum CloseStatus {
+  PROTOCOL_FAILURE = 1002,
+  INTERNAL_ERROR = 1011,
+  UNKNOWN = -1,
+}
+
+interface ReadyState {
+  ready: boolean;
+  code?: CloseStatus;
+}
+
 export class NotificationChannel {
 
   private ws: WebSocketSubject<any> | null = null;
   private readonly _messages = new Subject<NotificationMessage>();
-  private readonly _ready = new BehaviorSubject<boolean>(false);
+  private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
   constructor(
     private readonly apiSvc: ApiService,
@@ -116,12 +127,24 @@ export class NotificationChannel {
             protocol: subprotocol,
             openObserver: {
               next: () => {
-                this._ready.next(true);
+                this._ready.next({ ready: true });
               }
             },
             closeObserver: {
-              next: () => {
-                this._ready.next(false);
+              next: (evt) => {
+                let code;
+                switch (evt.code) {
+                  case CloseStatus.PROTOCOL_FAILURE:
+                    code = CloseStatus.PROTOCOL_FAILURE;
+                    break;
+                  case CloseStatus.INTERNAL_ERROR:
+                    code = CloseStatus.INTERNAL_ERROR;
+                    break;
+                  default:
+                    code = CloseStatus.UNKNOWN;
+                    break;
+                }
+                this._ready.next({ ready: false, code });
                 this.notifications.info('WebSocket connection lost', undefined, NotificationCategory.WsClientActivity);
               }
             }
@@ -139,7 +162,7 @@ export class NotificationChannel {
       );
   }
 
-  isReady(): Observable<boolean> {
+  isReady(): Observable<ReadyState> {
     return this._ready.asObservable();
   }
 
