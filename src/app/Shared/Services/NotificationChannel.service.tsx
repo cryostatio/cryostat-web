@@ -45,11 +45,22 @@ import { ApiService } from './Api.service';
 
 const NOTIFICATION_CATEGORY = 'WS_CLIENT_ACTIVITY';
 
+export enum CloseStatus {
+  PROTOCOL_FAILURE = 1002,
+  INTERNAL_ERROR = 1011,
+  UNKNOWN = -1,
+}
+
+interface ReadyState {
+  ready: boolean;
+  code?: CloseStatus;
+}
+
 export class NotificationChannel {
 
   private ws: WebSocketSubject<any> | null = null;
   private readonly _messages = new Subject<NotificationMessage>();
-  private readonly _ready = new BehaviorSubject<boolean>(false);
+  private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
   constructor(
     private readonly apiSvc: ApiService,
@@ -84,13 +95,32 @@ export class NotificationChannel {
             protocol: subprotocol,
             openObserver: {
               next: () => {
-                this._ready.next(true);
+                this._ready.next({ ready: true });
               }
             },
             closeObserver: {
-              next: () => {
-                this._ready.next(false);
-                this.notifications.info('WebSocket connection lost');
+              next: (evt) => {
+                let code: CloseStatus;
+                let msg: string | undefined = undefined;
+                let fn: Function;
+                switch (evt.code) {
+                  case CloseStatus.PROTOCOL_FAILURE:
+                    code = CloseStatus.PROTOCOL_FAILURE;
+                    msg = 'Authentication failed';
+                    fn = this.notifications.danger;
+                    break;
+                  case CloseStatus.INTERNAL_ERROR:
+                    code = CloseStatus.INTERNAL_ERROR;
+                    msg = 'Internal server error';
+                    fn = this.notifications.danger;
+                    break;
+                  default:
+                    code = CloseStatus.UNKNOWN;
+                    fn = this.notifications.info;
+                    break;
+                }
+                this._ready.next({ ready: false, code });
+                fn.apply(this.notifications, ['WebSocket connection lost', msg]);
               }
             }
           });
@@ -107,7 +137,7 @@ export class NotificationChannel {
       );
   }
 
-  isReady(): Observable<boolean> {
+  isReady(): Observable<ReadyState> {
     return this._ready.asObservable();
   }
 
