@@ -132,7 +132,7 @@ export class NotificationChannel {
             },
             closeObserver: {
               next: (evt) => {
-                let code;
+                let code: CloseStatus;
                 switch (evt.code) {
                   case CloseStatus.PROTOCOL_FAILURE:
                     code = CloseStatus.PROTOCOL_FAILURE;
