@@ -134,21 +134,25 @@ export class NotificationChannel {
               next: (evt) => {
                 let code: CloseStatus;
                 let msg: string | undefined = undefined;
+                let fn: Function;
                 switch (evt.code) {
                   case CloseStatus.PROTOCOL_FAILURE:
                     code = CloseStatus.PROTOCOL_FAILURE;
                     msg = 'Authentication failed';
+                    fn = this.notifications.danger;
                     break;
                   case CloseStatus.INTERNAL_ERROR:
                     code = CloseStatus.INTERNAL_ERROR;
                     msg = 'Internal server error';
+                    fn = this.notifications.danger;
                     break;
                   default:
                     code = CloseStatus.UNKNOWN;
+                    fn = this.notifications.info;
                     break;
                 }
                 this._ready.next({ ready: false, code });
-                this.notifications.info('WebSocket connection lost', msg, NotificationCategory.WsClientActivity);
+                fn.apply(this.notifications, ['WebSocket connection lost', msg, NotificationCategory.WsClientActivity]);
               }
             }
           });
