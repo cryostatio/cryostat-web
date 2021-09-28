@@ -46,16 +46,15 @@ import { Base64 } from 'js-base64';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 
-export const Login = (props) => {
+export const Login = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
 
   const [token, setToken] = React.useState('');
   const [authMethod, setAuthMethod] = React.useState('');
   const addSubscription = useSubscriptions();
-  const onLoginSuccess = props.onLoginSuccess;
 
-  const checkAuth = React.useCallback((token, authMethod, userSubmission = false) => {
+  const checkAuth = React.useCallback((token, authMethod, userSubmission) => {
     let tok = token;
     if (authMethod === 'Basic') {
       tok = Base64.encodeURL(token);
@@ -64,14 +63,12 @@ export const Login = (props) => {
       serviceContext.api.checkAuth(tok, authMethod)
       .pipe(first())
       .subscribe(v => {
-        if (v) {
-          onLoginSuccess();
-        } else if (userSubmission) {
+        if (!v && userSubmission) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
       })
     );
-  }, [serviceContext, serviceContext.api, addSubscription, onLoginSuccess, notifications, authMethod]);
+  }, [serviceContext, serviceContext.api, addSubscription, notifications, authMethod]);
 
   const handleSubmit = React.useCallback((evt, token, authMethod) => {
     setToken(token);
@@ -82,7 +79,7 @@ export const Login = (props) => {
 
   React.useEffect(() => {
     const sub = serviceContext.api.getAuthMethod().subscribe(setAuthMethod);
-    checkAuth('', 'Basic'); // check auth once at component load to query the server's auth method
+    checkAuth('', 'Basic', false); // check auth once at component load to query the server's auth method
     return () => sub.unsubscribe();
   }, [serviceContext, serviceContext.api, setAuthMethod, checkAuth]);
 
@@ -96,7 +93,7 @@ export const Login = (props) => {
         if (authMethod === 'Basic') {
           token = Base64.decode(token);
         }
-        checkAuth(token, authMethod);
+        checkAuth(token, authMethod, false);
     });
     return () => sub.unsubscribe();
   }, [serviceContext, serviceContext.api, checkAuth]);
