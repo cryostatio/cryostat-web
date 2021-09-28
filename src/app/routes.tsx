@@ -49,6 +49,7 @@ import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
+import { About } from './About/About';
 
 let routeFocusTimer: number;
 
@@ -106,6 +107,13 @@ const routes: IAppRoute[] = [
     exact: true,
     path: '/settings',
     title: 'Settings',
+  },
+  {
+    component: About,
+    exact: true,
+    label: 'About',
+    path: '/about',
+    title: 'About',
   },
 ];
 

@@ -35,15 +35,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Alert, PageSection } from '@patternfly/react-core';
 
-const NotFound: React.FunctionComponent = () => (
-    <PageSection>
-      <Alert variant="danger" title="404! This view hasn't been created yet." /><br />
-      <NavLink to="/" className="pf-c-nav__link">Take me home</NavLink>
-    </PageSection>
-  )
+import { AboutModal } from "@patternfly/react-core"
+import React from "react"
+import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
+import { AboutDescription, CRYOSTAT_TRADEMARK } from "./AboutDescription";
 
-export { NotFound };
+export const AboutCryostatModal = ({isOpen, onClose}) => {
+
+  return(<>
+    <AboutModal
+        isOpen={isOpen}
+        onClose={onClose}
+        trademark={CRYOSTAT_TRADEMARK}
+        brandImageSrc={cryostatLogoWhite}
+        brandImageAlt='Cryostat Logo'
+      >
+      <AboutDescription />
+    </AboutModal>
+    </>);
+}

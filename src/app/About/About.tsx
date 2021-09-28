@@ -35,15 +35,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Alert, PageSection } from '@patternfly/react-core';
 
-const NotFound: React.FunctionComponent = () => (
-    <PageSection>
-      <Alert variant="danger" title="404! This view hasn't been created yet." /><br />
-      <NavLink to="/" className="pf-c-nav__link">Take me home</NavLink>
-    </PageSection>
-  )
+import React from 'react';
+import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
+import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
 
-export { NotFound };
+export const About = () => {
+  return (
+    <BreadcrumbPage pageTitle="About">
+      <Card>
+        <CardHeader>
+          <Brand alt="Cryostat" src={cryostatLogoHorizontal} className="cryostat-logo" />
+        </CardHeader>
+        <CardBody>
+          <AboutDescription />
+        </CardBody>
+        <CardFooter>{CRYOSTAT_TRADEMARK}</CardFooter>
+      </Card>
+    </BreadcrumbPage>
+  );
+};
