@@ -157,13 +157,7 @@ const AppRoutes = () => {
   const [authenticated, setAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
-<<<<<<< HEAD
-    const sub = context.notificationChannel
-      .isReady()
-      .subscribe(v => setAuthenticated(v));
-=======
     const sub = context.notificationChannel.isReady().subscribe(v => setAuthenticated(v.ready));
->>>>>>> ee1d674 (fix(login): do not re-attempt ws connection on auth fail (#301))
     return () => sub.unsubscribe();
   }, [context.notificationChannel, setAuthenticated]);
 
