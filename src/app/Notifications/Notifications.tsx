@@ -45,7 +45,12 @@ export interface Notification {
   read?: boolean;
   key?: string;
   title: string;
+<<<<<<< HEAD
   message?: string;
+=======
+  message?: string | Error;
+  category?: string;
+>>>>>>> 6325741 (fix(notifications): handle Error type messages (#305))
   variant: AlertVariant;
   timestamp?: number;
 }
@@ -61,6 +66,11 @@ export class Notifications {
     }
     notification.read = false;
     notification.timestamp = +Date.now();
+    if (notification.message instanceof Error) {
+      notification.message = JSON.stringify(notification.message, Object.getOwnPropertyNames(notification.message));
+    } else if (typeof notification.message !== 'string') {
+      notification.message = JSON.stringify(notification.message);
+    }
     this._notifications.unshift(notification);
     this._notifications$.next(this._notifications);
   }
