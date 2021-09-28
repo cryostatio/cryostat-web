@@ -40,10 +40,10 @@ import * as _ from 'lodash';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, routes } from '@app/routes';
-import { AboutModal, Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
+import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
   Brand, Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
-  SkipToContent, Text, TextContent, TextList, TextListItem, TextVariants
+  SkipToContent
 } from '@patternfly/react-core';
 import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
@@ -52,7 +52,7 @@ import { Notification, Notifications, NotificationsContext } from '@app/Notifica
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
-import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
+import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -72,7 +72,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
-  const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
@@ -84,24 +83,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     });
     return () => sub.unsubscribe();
   }, [serviceContext.target]);
-
-  React.useEffect(() => {
-    const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
-    return () => sub.unsubscribe();
-  })
-
-  const cryostatCommitHash = React.useMemo(() => {
-    if (!cryostatVersion) {
-      return;
-    }
-    const expr = /^(?<describe>[a-zA-Z0-9-_.]+-[0-9]+-[a-z0-9]+)(?:-dirty)?$/;
-    const result = cryostatVersion.match(expr);
-    if (!result) {
-      notificationsContext.warning('Cryostat Version Parse Failure', `Could not parse Cryostat version string '${cryostatVersion}'.`);
-      return 'main';
-    }
-    return result.groups?.describe || 'main';
-  }, [cryostatVersion]);
 
   React.useEffect(() => {
     const sub = notificationsContext.notifications().subscribe(setNotifications);
@@ -201,62 +182,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
       headerTools={HeaderTools}
     />
-    <AboutModal
+    <AboutCryostatModal
       isOpen={aboutModalOpen}
       onClose={handleAboutModalToggle}
-      trademark='Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0'
-      brandImageSrc={cryostatLogoWhite}
-      brandImageAlt='Cryostat Logo'
-    >
-      <TextContent>
-        <TextList component="dl">
-          <TextListItem component="dt">
-            Version
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text
-              component={TextVariants.a}
-              target="_blank"
-              href={`https://github.com/cryostatio/cryostat/commits/${cryostatCommitHash}`}
-            >{cryostatVersion}</Text>
-          </TextListItem>
-          <TextListItem component="dt">
-            Homepage
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href='https://cryostat.io'>cryostat.io</Text>
-          </TextListItem>
-          <TextListItem component="dt">
-            Bugs
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text>
-            <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/issues'>Known Issues</Text>
-            &nbsp;|&nbsp;
-            <Text
-              component={TextVariants.a}
-              target="_blank"
-              href={`https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+${cryostatVersion}`}
-            >
-              File a Report
-            </Text>
-            </Text>
-          </TextListItem>
-          <TextListItem component="dt">
-            Mailing List
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href='https://groups.google.com/g/cryostat-development'>Google Groups</Text>
-          </TextListItem>
-          <TextListItem component="dt">
-            Open Source License
-          </TextListItem>
-          <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/blob/main/LICENSE'>License</Text>
-          </TextListItem>
-        </TextList>
-      </TextContent>
-    </AboutModal>
+    />
   </>);
 
   const isActiveRoute = (route: IAppRoute): boolean => {
