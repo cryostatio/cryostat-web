@@ -164,13 +164,9 @@ const AppRoutes = () => {
   const [authenticated, setAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.isReady().subscribe((v) => setAuthenticated(v));
+    const sub = context.notificationChannel.isReady().subscribe(v => setAuthenticated(v.ready));
     return () => sub.unsubscribe();
   }, [context.notificationChannel, setAuthenticated]);
-
-  const handleAuthenticated = React.useCallback(() => {
-    setAuthenticated(true);
-  }, [setAuthenticated]);
 
   return (
     <LastLocationProvider>
@@ -187,7 +183,7 @@ const AppRoutes = () => {
             />
           ))
         ) : (
-          <Login onLoginSuccess={handleAuthenticated} />
+          <Login />
         )}
         <PageNotFound title="404 Page Not Found" />
       </Switch>
