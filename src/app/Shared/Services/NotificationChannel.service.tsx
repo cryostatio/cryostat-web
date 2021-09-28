@@ -99,11 +99,6 @@ export class NotificationChannel {
               }
             },
             closeObserver: {
-<<<<<<< HEAD
-              next: () => {
-                this._ready.next(false);
-                this.notifications.info('WebSocket connection lost');
-=======
               next: (evt) => {
                 let code: CloseStatus;
                 let msg: string | undefined = undefined;
@@ -125,8 +120,7 @@ export class NotificationChannel {
                     break;
                 }
                 this._ready.next({ ready: false, code });
-                fn.apply(this.notifications, ['WebSocket connection lost', msg, NotificationCategory.WsClientActivity]);
->>>>>>> ee1d674 (fix(login): do not re-attempt ws connection on auth fail (#301))
+                fn.apply(this.notifications, ['WebSocket connection lost', msg]);
               }
             }
           });
