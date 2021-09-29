@@ -10,15 +10,16 @@ module.exports = merge(common, {
   mode: "development",
   devtool: "eval-source-map",
   devServer: {
-    contentBase: "./dist",
-    host: HOST,
-    port: PORT,
+    client: {
+      overlay: true,
+    },
     compress: true,
-    inline: true,
     historyApiFallback: true,
+    host: HOST,
     hot: true,
-    overlay: true,
-    open: true
+    open: true,
+    port: PORT,
+    static: "./dist",
   },
   plugins: [
     new DotenvPlugin(),
