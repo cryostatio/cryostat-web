@@ -83,7 +83,7 @@ export class ReportService {
           try {
             sessionStorage.setItem(this.key(recording), report);
           } catch (error) {
-            this.notifications.warning('Report Caching Failed', error.message);
+            this.notifications.warning('Report Caching Failed', (error as any).message);
             sessionStorage.clear();
           }
         }

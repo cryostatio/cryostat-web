@@ -109,7 +109,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           context.target.setTarget(selection);
           setCachedTargetSelection(selection);
         } catch (error) {
-          notifications.danger("Cannot set target", error.message);
+          notifications.danger("Cannot set target", (error as any).message);
           context.target.setTarget(NO_TARGET);
         }
       }
