@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, from, of, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, of, Observable, Subject, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -106,20 +106,16 @@ export class NotificationChannel {
     });
 
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
-    .pipe(
-      switchMap(resp => {
-        if (resp.ok) {
-          return resp.json();
-        } else {
-          return of({ error: true, message: `${resp.status} (${resp.statusText})` });
-        }
-      }),
-      catchError(err => {
-        this.logError('Notifications URL GET error', err);
-        return of({ error: true, message: err.message });
-      }),
-      map((url: any): string => url.notificationsUrl)
-    );
+      .pipe(
+        concatMap(resp => {
+          if (resp.ok) {
+            return from(resp.json());
+          } else {
+            throw new Error(resp.status + ' ' + resp.statusText);
+          }
+        }),
+        map((url: any): string => url.notificationsUrl)
+      );
 
     combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
       .subscribe(
