@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, from, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, of, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -106,14 +106,24 @@ export class NotificationChannel {
     });
 
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
-      .pipe(
-        concatMap(resp => from(resp.json())),
-        map((url: any): string => url.notificationsUrl)
-      );
-    combineLatest([notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod()])
-      .pipe(distinctUntilChanged(_.isEqual))
-      .subscribe({
-        next: (parts: string[]) => {
+    .pipe(
+      switchMap(resp => {
+        if (resp.ok) {
+          return resp.json();
+        } else {
+          return of({ error: true, message: `${resp.status} (${resp.statusText})` });
+        }
+      }),
+      catchError(err => {
+        this.logError('Notifications URL GET error', err);
+        return of({ error: true, message: err.message });
+      }),
+      map((url: any): string => url.notificationsUrl)
+    );
+
+    combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
+      .subscribe(
+        (parts: string[]) => {
           const url = parts[0];
           const token = parts[1];
           const authMethod = parts[2];
