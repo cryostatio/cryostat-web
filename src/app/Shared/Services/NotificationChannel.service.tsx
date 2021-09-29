@@ -59,6 +59,7 @@ export enum NotificationCategory {
 }
 
 export enum CloseStatus {
+  LOGGED_OUT = 1000,
   PROTOCOL_FAILURE = 1002,
   INTERNAL_ERROR = 1011,
   UNKNOWN = -1,
@@ -153,6 +154,11 @@ export class NotificationChannel {
                 let msg: string | undefined = undefined;
                 let fn: Function;
                 switch (evt.code) {
+                  case CloseStatus.LOGGED_OUT:
+                    code = CloseStatus.LOGGED_OUT;
+                    msg = 'Logout success';
+                    fn = this.notifications.info;
+                    break;
                   case CloseStatus.PROTOCOL_FAILURE:
                     code = CloseStatus.PROTOCOL_FAILURE;
                     msg = 'Authentication failed';

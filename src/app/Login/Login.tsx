@@ -46,6 +46,7 @@ import { debounceTime, first } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
+import { context } from 'webpack.common';
 
 export const Login = () => {
   const serviceContext = React.useContext(ServiceContext);
@@ -71,9 +72,12 @@ export const Login = () => {
   }, [serviceContext, serviceContext.login, addSubscription,  notifications, authMethod]);
 
 
-  const handleSubmit = React.useCallback((evt, token, authMethod) => {
+  const handleSubmit = React.useCallback((evt, token, authMethod, rememberMe) => {
     setAuthMethod(authMethod);
     checkAuth(token, authMethod, true);
+    if(rememberMe) {
+      serviceContext.login.rememberToken(token);
+    }
     evt.preventDefault();
   }, [setAuthMethod, checkAuth]);
 
@@ -94,8 +98,9 @@ export const Login = () => {
         if (authMethod === 'Basic') {
           token = Base64.decode(token);
         }
-        if (!ready.ready && ready.code != CloseStatus.PROTOCOL_FAILURE) {
-          checkAuth(token, authMethod, false);
+        console.log(parts)
+        if (!ready.ready && ready.code != CloseStatus.PROTOCOL_FAILURE && !!token) {
+          checkAuth(token, authMethod);
         }
     });
     return () => sub.unsubscribe();

@@ -37,12 +37,13 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
 import { FormProps } from './FormProps';
 
 export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [token, setToken] = React.useState('');
+  const [rememberMe, setRememberMe] = React.useState(false);
 
   React.useEffect(() => {
     const sub = context.login.getToken().subscribe(setToken);
@@ -53,9 +54,13 @@ export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
     setToken(evt);
   }, [setToken]);
 
+  const handleRememberMeToggle = React.useCallback((evt) => {
+    setRememberMe(evt)
+   }, [setRememberMe]);
+
   const handleSubmit = React.useCallback((evt) => {
-    props.onSubmit(evt, token, 'Bearer');
-  }, [props, props.onSubmit, token]);
+    props.onSubmit(evt, token, 'Bearer', rememberMe);
+  }, [props, props.onSubmit, token, rememberMe]);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -75,6 +80,7 @@ export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
           onChange={handleTokenChange}
         />
       </FormGroup>
+      <Checkbox id="remember-me" label="Remember Me" isChecked={rememberMe} onChange={handleRememberMeToggle} />
       <ActionGroup>
         <Button variant="primary" onClick={handleSubmit}>Login</Button>
       </ActionGroup>

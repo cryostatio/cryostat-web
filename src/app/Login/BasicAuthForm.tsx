@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
 import { map } from 'rxjs/operators';
 import { FormProps } from './FormProps';
 import { Base64 } from 'js-base64';
@@ -46,6 +46,7 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [rememberMe, setRememberMe] = React.useState(false);
 
   React.useEffect(() => {
     const sub = context.login.getToken().pipe(map(Base64.decode)).subscribe(creds => {
@@ -68,10 +69,14 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
     setPassword(evt);
   }, [setPassword]);
 
+  const handleRememberMeToggle = React.useCallback((evt) => {
+   setRememberMe(evt)
+  }, [setRememberMe]);
+
   const handleSubmit = React.useCallback((evt) => {
-    props.onSubmit(evt, `${username}:${password}`, 'Basic');
+    props.onSubmit(evt, `${username}:${password}`, 'Basic', rememberMe);
     context.login.setUsername(username);
-  }, [props, props.onSubmit, username, password, context.login]);
+  }, [props, props.onSubmit, username, password, context.login, rememberMe]);
 
   // FIXME Patternfly Form component onSubmit is not triggered by Enter keydown when the Form contains
   // multiple FormGroups. This key handler is a workaround to allow keyboard-driven use of the form
@@ -117,6 +122,7 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
           onKeyDown={handleKeyDown}
         />
       </FormGroup>
+      <Checkbox id="remember-me" label="Remember Me" isChecked={rememberMe} onChange={handleRememberMeToggle} />
       <ActionGroup>
         <Button variant="primary" onClick={handleSubmit}>Login</Button>
       </ActionGroup>

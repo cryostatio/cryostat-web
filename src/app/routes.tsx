@@ -178,8 +178,6 @@ const AppRoutes = () => {
       (parts) => {
         const connected = parts[0].ready;
         const authenticated = parts[1];
-        console.log("connected:", connected)
-        console.log("authenticated: ", authenticated)
 
         if (connected && authenticated) {
           setShowDashboard(true);

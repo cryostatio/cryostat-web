@@ -91,9 +91,8 @@ export class LoginService {
         if (v) {
           this.authMethod.next(method);
           this.authMethod.complete();
-          this.token.next(token);
-          this.setCacheItem(this.TOKEN_KEY, token);
           this.setCacheItem(this.METHOD_KEY, method);
+          this.token.next(token);
           this.authenticated.next(true);
         }
       })
@@ -141,6 +140,10 @@ export class LoginService {
   setUsername(username: string): void {
     this.setCacheItem(this.USER_KEY, username);
     this.username.next(username);
+  }
+
+  rememberToken(token: string): void {
+    this.setCacheItem(this.TOKEN_KEY, token);
   }
 
   private getCacheItem(key: string): string {
