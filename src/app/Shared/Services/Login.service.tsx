@@ -60,7 +60,7 @@ export class LoginService {
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
     this.authMethod.next(this.getCacheItem(this.METHOD_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
-    this.authenticated.next(!!this.getCacheItem(this.TOKEN_KEY));
+    this.authenticated.next(false);
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
