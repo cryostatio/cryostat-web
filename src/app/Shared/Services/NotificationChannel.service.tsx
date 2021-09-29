@@ -110,10 +110,10 @@ export class NotificationChannel {
         concatMap(resp => from(resp.json())),
         map((url: any): string => url.notificationsUrl)
       );
-    combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
+    combineLatest([notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod()])
       .pipe(distinctUntilChanged(_.isEqual))
-      .subscribe(
-        (parts: string[]) => {
+      .subscribe({
+        next: (parts: string[]) => {
           const url = parts[0];
           const token = parts[1];
           const authMethod = parts[2];
@@ -163,16 +163,16 @@ export class NotificationChannel {
             }
           });
 
-          this.ws.subscribe(
-            v => this._messages.next(v),
-            err => this.logError('WebSocket error', err)
-          );
+          this.ws.subscribe({
+            next: v => this._messages.next(v),
+            error: err => this.logError('WebSocket error', err)
+          });
 
           // message doesn't matter, we just need to send something to the server so that our SubProtocol token can be authenticated
           this.ws.next('connect');
         },
-        (err: any) => this.logError('Notifications URL configuration', err)
-      );
+        error: (err: any) => this.logError('Notifications URL configuration', err)
+      });
   }
 
   isReady(): Observable<ReadyState> {
