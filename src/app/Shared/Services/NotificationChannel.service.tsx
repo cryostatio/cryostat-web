@@ -108,8 +108,8 @@ export class NotificationChannel {
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
       .pipe(
         concatMap(resp => {
-          if (!resp.ok) throwError(new Error(resp.status + ' ' + resp.statusText));
-          return from(resp.json());
+          if (resp.ok) return from(resp.json());
+          throw new Error(resp.status + ' ' + resp.statusText);
         }),
         map((url: any): string => url.notificationsUrl)
       );
@@ -174,8 +174,8 @@ export class NotificationChannel {
           // message doesn't matter, we just need to send something to the server so that our SubProtocol token can be authenticated
           this.ws.next('connect');
         },
-        error: (err: any) => this.logError('Notifications URL configuration', err)
-      });
+        (err: any) => this.logError('Notifications URL configuration', err.message)
+      );
   }
 
   isReady(): Observable<ReadyState> {
