@@ -36,14 +36,13 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, from, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
 import { ApiService } from './Api.service';
-import { urlAlphabet } from 'nanoid';
 
 interface RecordingNotificationEvent {
   recording: string;
