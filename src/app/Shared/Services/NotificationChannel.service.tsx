@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, from, of, Observable, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -115,8 +115,9 @@ export class NotificationChannel {
       );
 
     combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
-      .subscribe(
-        (parts: string[]) => {
+      .pipe(distinctUntilChanged(_.isEqual))
+      .subscribe({
+        next: (parts: string[]) => {
           const url = parts[0];
           const token = parts[1];
           const authMethod = parts[2];
@@ -174,8 +175,8 @@ export class NotificationChannel {
           // message doesn't matter, we just need to send something to the server so that our SubProtocol token can be authenticated
           this.ws.next('connect');
         },
-        (err: any) => this.logError('Notifications URL configuration', err.message)
-      );
+        error: (err: any) => this.logError('Notifications URL configuration', err.message)
+      });
   }
 
   isReady(): Observable<ReadyState> {
