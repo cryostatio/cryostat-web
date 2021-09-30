@@ -107,12 +107,9 @@ export class NotificationChannel {
 
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
       .pipe(
-        concatMap(resp => {
-          if (resp.ok) {
-            return from(resp.json());
-          } else {
-            throw new Error(resp.status + ' ' + resp.statusText);
-          }
+        switchMap(resp => {
+          if (!resp.ok) throwError(new Error(resp.status + ' ' + resp.statusText));
+          return from(resp.json());
         }),
         map((url: any): string => url.notificationsUrl)
       );
