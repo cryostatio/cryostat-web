@@ -43,6 +43,7 @@ import { concatMap, distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
 import { ApiService } from './Api.service';
+import { urlAlphabet } from 'nanoid';
 
 interface RecordingNotificationEvent {
   recording: string;
@@ -107,11 +108,15 @@ export class NotificationChannel {
 
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
       .pipe(
-        concatMap(resp => {
-          if (resp.ok) return from(resp.json());
-          throw new Error(resp.status + ' ' + resp.statusText);
-        }),
-        map((url: any): string => url.notificationsUrl)
+        concatMap(async resp => {
+          if (resp.ok) {
+            let body: any = await resp.json();
+            return body.notificationsUrl;
+          } else {
+            let body: string = await resp.text();
+            throw new Error(resp.status + ' ' + body);
+          }
+        })
       );
 
     combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
@@ -188,7 +193,7 @@ export class NotificationChannel {
   }
 
   private logError(title: string, err: any): void {
-    window.console.error(err);
+    window.console.error(err.stack);
     this.notifications.danger(title, JSON.stringify(err));
   }
 }
