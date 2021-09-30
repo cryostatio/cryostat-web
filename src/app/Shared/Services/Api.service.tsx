@@ -35,9 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError } from 'rxjs';
+import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, combineLatest, concatMap, first, flatMap, map, tap } from 'rxjs/operators';
+import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators';
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 
@@ -80,10 +80,13 @@ export class ApiService {
     window.console.log(`Using API authority ${apiAuthority}`);
     this.authority = apiAuthority;
 
-    this.doGet('recordings').subscribe(() => {
-      this.archiveEnabled.next(true);
-    }, () => {
-      this.archiveEnabled.next(false);
+    this.doGet('recordings').subscribe({
+      next: () => {
+        this.archiveEnabled.next(true);
+      },
+      error: () => {
+        this.archiveEnabled.next(false);
+      }
     });
 
     const getDatasourceURL = fromFetch(`${apiAuthority}/api/v1/grafana_datasource_url`)
@@ -109,19 +112,19 @@ export class ApiService {
               missing.push('datasource URL');
             }
             const message = missing.join(', ') + ' unavailable';
-            return throwError(message);
+            return throwError(() => new Error(message));
           }}))
-      .subscribe(
-        (parts: any) => {
+      .subscribe({
+        next: (parts: any) => {
           this.cryostatVersionSubject.next(parts[0]);
           this.grafanaDatasourceUrlSubject.next(parts[1].grafanaDatasourceUrl);
           this.grafanaDashboardUrlSubject.next(parts[2].grafanaDashboardUrl);
         },
-        err => {
+        error: err => {
           window.console.error(err);
           this.notifications.danger('Grafana configuration not found', JSON.stringify(err));
         }
-      );
+      });
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {
@@ -470,12 +473,15 @@ export class ApiService {
   }
 
   getHeaders(): Observable<Headers> {
-    return this.getToken().pipe(
-      combineLatest(this.getAuthMethod()),
-      map(auths => this.getAuthHeaders(auths[0], auths[1])),
-      combineLatest(this.target.target()),
+    const authorization = combineLatest([this.getToken(), this.getAuthMethod()])
+    .pipe(
+      map((parts: [string, string]) => this.getAuthHeaders(parts[0], parts[1])),
       first(),
-      concatMap(parts => {
+    );
+    return combineLatest([authorization, this.target.target()])
+    .pipe(
+      first(),
+      map(parts => {
         const headers = parts[0];
         const target = parts[1];
         if (!!target && !!target.connectUrl && this.target.hasCredentials(target.connectUrl)) {
@@ -484,9 +490,10 @@ export class ApiService {
             headers.set('X-JMX-Authorization', `Basic ${this.target.getCredentials(target.connectUrl)}`);
           }
         }
-        return of(headers);
+        return headers;
       })
     );
+
   }
 
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
@@ -533,7 +540,7 @@ export class ApiService {
         if (jmxAuthScheme === 'Basic') {
           this.target.setAuthFailure();
           return this.target.authRetry().pipe(
-            flatMap(() => retry())
+            mergeMap(() => retry())
           );
         }
       } else if (error.httpResponse.status === 502) {

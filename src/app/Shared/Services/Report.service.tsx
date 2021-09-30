@@ -48,7 +48,7 @@ export class ReportService {
 
   report(recording: SavedRecording): Observable<string> {
     if (!recording?.reportUrl) {
-      return throwError('No recording report URL');
+      return throwError(() => new Error('No recording report URL'));
     }
     let stored = sessionStorage.getItem(this.key(recording));
     if (!!stored) {
@@ -76,23 +76,26 @@ export class ReportService {
           throw ge;
         }
       }),
-      tap(report => {
-        const isArchived = !isActiveRecording(recording);
-        const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
-        if (isArchived || isActivedStopped) {
-          try {
-            sessionStorage.setItem(this.key(recording), report);
-          } catch (error) {
-            this.notifications.warning('Report Caching Failed', error.message);
-            sessionStorage.clear();
+      tap({
+        next: report => {
+          const isArchived = !isActiveRecording(recording);
+          const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
+          if (isArchived || isActivedStopped) {
+            try {
+              sessionStorage.setItem(this.key(recording), report);
+            } catch (error) {
+              this.notifications.warning('Report Caching Failed', (error as any).message);
+              sessionStorage.clear();
+            }
           }
-        }
-      }, err => {
-        this.notifications.danger(err.name, err.message);
-        if (isGenerationError(err) && err.status >= 500) {
-          err.messageDetail.pipe(first()).subscribe(detail => {
-            sessionStorage.setItem(this.key(recording), `<p>${detail}</p>`);
-          });
+        },
+        error: err => {
+          this.notifications.danger(err.name, err.message);
+          if (isGenerationError(err) && err.status >= 500) {
+            err.messageDetail.pipe(first()).subscribe(detail => {
+              sessionStorage.setItem(this.key(recording), `<p>${detail}</p>`);
+            });
+          }
         }
       })
     );
