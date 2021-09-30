@@ -179,7 +179,7 @@ export class NotificationChannel {
           // message doesn't matter, we just need to send something to the server so that our SubProtocol token can be authenticated
           this.ws.next('connect');
         },
-        error: (err: any) => this.logError('Notifications URL configuration', err.message)
+        error: (err: any) => this.logError('Notifications URL configuration', err)
       });
   }
 
@@ -193,7 +193,7 @@ export class NotificationChannel {
 
   private logError(title: string, err: any): void {
     window.console.error(err.stack);
-    this.notifications.danger(title, JSON.stringify(err));
+    this.notifications.danger(title, JSON.stringify(err.message));
   }
 }
 
