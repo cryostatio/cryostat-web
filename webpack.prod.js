@@ -2,17 +2,21 @@ const path = require('path');
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const DotenvPlugin = require('dotenv-webpack');
 
-module.exports = merge(common, {
+module.exports = merge(common('production'), {
   mode: 'production',
   devtool: 'eval-source-map',
   optimization: {
     minimizer: [
       new TerserJSPlugin({}),
-      new OptimizeCSSAssetsPlugin({})
+      new CssMinimizerPlugin({
+        minimizerOptions: {
+          preset: ['default', { mergeLonghand: false }]
+        },
+      }),
     ],
   },
   plugins: [
@@ -24,10 +28,10 @@ module.exports = merge(common, {
       path: './.env.prod',
     }),
   ],
-  output: {
-    filename: '[name].[contenthash].bundle.js',
-    path: path.resolve(__dirname, 'dist')
-  },
+  // output: {
+  //   filename: '[name].[contenthash].bundle.js',
+  //   path: path.resolve(__dirname, 'dist')
+  // },
   module: {
     rules: [
       {
@@ -43,16 +47,7 @@ module.exports = merge(common, {
           path.resolve(__dirname, 'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
         ],
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '',
-            },
-          },{
-            loader: 'css-loader',
-          },
-        ]
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       }
     ]
   }

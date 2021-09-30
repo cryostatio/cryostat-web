@@ -6,20 +6,19 @@ const DotenvPlugin = require('dotenv-webpack');
 const HOST = process.env.HOST || "localhost";
 const PORT = process.env.PORT || "9000";
 
-module.exports = merge(common, {
-  mode: "development",
-  devtool: "eval-source-map",
+module.exports = merge(common('development'), {
+  mode: 'development',
+  devtool: 'eval-source-map',
   devServer: {
-    client: {
-      overlay: true,
-    },
+    contentBase: './dist',
     compress: true,
     historyApiFallback: true,
     host: HOST,
     hot: true,
+    inline: true,
     open: true,
+    overlay: true,
     port: PORT,
-    static: "./dist",
   },
   plugins: [
     new DotenvPlugin(),
@@ -43,7 +42,7 @@ module.exports = merge(common, {
           path.resolve(__dirname, 'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css'),
           path.resolve(__dirname, 'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css')
         ],
-        use: ["style-loader", "css-loader"]
+        use: ['style-loader', 'css-loader']
       }
     ]
   }
