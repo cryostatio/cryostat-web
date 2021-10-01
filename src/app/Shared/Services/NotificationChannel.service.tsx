@@ -36,10 +36,10 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, from, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { concatMap, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
@@ -74,9 +74,17 @@ export class NotificationChannel {
 
     const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
       .pipe(
-        concatMap(resp => from(resp.json())),
-        map((url: any): string => url.notificationsUrl)
+        concatMap(async resp => {
+          if (resp.ok) {
+            let body: any = await resp.json();
+            return body.notificationsUrl;
+          } else {
+            let body: string = await resp.text();
+            throw new Error(resp.status + ' ' + body);
+          }
+        })
       );
+
     combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
       .subscribe(
         (parts: string[]) => {
@@ -146,8 +154,8 @@ export class NotificationChannel {
   }
 
   private logError(title: string, err: any): void {
-    window.console.error(err);
-    this.notifications.danger(title, JSON.stringify(err));
+    window.console.error(err.stack);
+    this.notifications.danger(title, JSON.stringify(err.message));
   }
 }
 
