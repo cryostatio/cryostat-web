@@ -39,11 +39,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-<<<<<<< HEAD
 import { concatMap, filter, first, map } from 'rxjs/operators';
-=======
-import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
->>>>>>> 9e86184 (fix(notifications): Fix notifications url request failure handling (#310))
 import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
@@ -88,17 +84,10 @@ export class NotificationChannel {
           }
         })
       );
-<<<<<<< HEAD
+
     combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
       .subscribe(
         (parts: string[]) => {
-=======
-
-    combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
-      .pipe(distinctUntilChanged(_.isEqual))
-      .subscribe({
-        next: (parts: string[]) => {
->>>>>>> 9e86184 (fix(notifications): Fix notifications url request failure handling (#310))
           const url = parts[0];
           const token = parts[1];
           const authMethod = parts[2];
