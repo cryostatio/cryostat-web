@@ -39,7 +39,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, filter, first, map } from 'rxjs/operators';
+import { concatMap, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { ApiService } from './Api.service';
 
