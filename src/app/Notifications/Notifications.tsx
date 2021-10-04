@@ -111,6 +111,7 @@ export class Notifications {
     .pipe(
       map(a => a.filter(n =>
         (this.isWsClientActivity(n) || this.isJvmDiscovery(n))
+        && !Notifications.isProblemNotification(n)
       ))
     );
   }
