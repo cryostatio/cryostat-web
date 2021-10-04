@@ -160,7 +160,7 @@ export class LoginService {
     try {
       sessionStorage.setItem(key, token);
     } catch (error) {
-      console.error('Caching Failed', error.message);
+      console.error('Caching Failed', (error as any).message);
       sessionStorage.clear();
     }
   }

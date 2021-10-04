@@ -46,7 +46,6 @@ import { debounceTime, first } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
-import { context } from 'webpack.common';
 
 export const Login = () => {
   const serviceContext = React.useContext(ServiceContext);
