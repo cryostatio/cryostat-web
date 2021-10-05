@@ -48,6 +48,7 @@ import { of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
 
 import { CreateTargetModal } from './CreateTargetModal';
+import _ from 'lodash';
 
 export interface TargetSelectProps {
   isCompact?: boolean;
@@ -79,12 +80,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   React.useEffect(() => {
     try {
       const previouslyCachedTarget = getCachedTargetSelection();
-      context.target.setTarget(previouslyCachedTarget);
+      const targetStillExists = targets.some(target => _.isEqual(previouslyCachedTarget, target));
+
+      if(targetStillExists) {
+        context.target.setTarget(previouslyCachedTarget);
+      }
     } catch (error) {
       context.target.setTarget(NO_TARGET);
       removeCachedTargetSelection();
     }
-  }, [context.target]);
+  }, [context.target, targets]);
 
   const setCachedTargetSelection = (target) => {
     localStorage.setItem(TARGET_KEY, JSON.stringify(target));
