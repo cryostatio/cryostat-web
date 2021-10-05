@@ -52,6 +52,12 @@ import { LastLocationProvider, useLastLocation } from 'react-router-last-locatio
 import { About } from './About/About';
 
 let routeFocusTimer: number;
+const OVERVIEW = 'Overview';
+const CONSOLE = 'Console';
+const navGroups = [
+  OVERVIEW,
+  CONSOLE,
+];
 
 export interface IAppRoute {
   label?: string;
@@ -62,6 +68,7 @@ export interface IAppRoute {
   path: string;
   title: string;
   isAsync?: boolean;
+  navGroup?: string;
   children?: IAppRoute[];
 }
 
@@ -72,6 +79,7 @@ const routes: IAppRoute[] = [
     label: 'Dashboard',
     path: '/',
     title: 'Dashboard',
+    navGroup: OVERVIEW,
   },
   {
     component: Recordings,
@@ -79,6 +87,7 @@ const routes: IAppRoute[] = [
     label: 'Recordings',
     path: '/recordings',
     title: 'Recordings',
+    navGroup: CONSOLE,
     children: [
       {
         component: CreateRecording,
@@ -94,6 +103,7 @@ const routes: IAppRoute[] = [
     label: 'Events',
     path: '/events',
     title: 'Events',
+    navGroup: CONSOLE,
   },
   {
     component: SecurityPanel,
@@ -101,6 +111,7 @@ const routes: IAppRoute[] = [
     label: 'Security',
     path: '/security',
     title: 'Security',
+    navGroup: CONSOLE,
   },
   {
     component: Settings,
@@ -114,6 +125,7 @@ const routes: IAppRoute[] = [
     label: 'About',
     path: '/about',
     title: 'About',
+    navGroup: OVERVIEW,
   },
 ];
 
@@ -191,4 +203,4 @@ const AppRoutes = () => {
   );
 };
 
-export { AppRoutes, routes };
+export { AppRoutes, routes, navGroups };
