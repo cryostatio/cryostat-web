@@ -53,7 +53,7 @@ export const Login = () => {
   const [authMethod, setAuthMethod] = React.useState('');
   const addSubscription = useSubscriptions();
 
-  const checkAuth = React.useCallback((token, authMethod, userSubmission = false) => {
+  const checkAuth = React.useCallback((token, authMethod, rememberMe = false, userSubmission = false) => {
     let tok = token;
 
     if (authMethod === 'Basic') {
@@ -63,6 +63,10 @@ export const Login = () => {
       serviceContext.login.checkAuth(tok, authMethod)
       .pipe(first())
       .subscribe(v => {
+        if(v && rememberMe) {
+          serviceContext.login.rememberToken(tok);
+        }
+
         if (!v && userSubmission) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
@@ -73,10 +77,7 @@ export const Login = () => {
 
   const handleSubmit = React.useCallback((evt, token, authMethod, rememberMe) => {
     setAuthMethod(authMethod);
-    checkAuth(token, authMethod, true);
-    if(rememberMe) {
-      serviceContext.login.rememberToken(token);
-    }
+    checkAuth(token, authMethod, rememberMe, true);
     evt.preventDefault();
   }, [setAuthMethod, checkAuth]);
 
