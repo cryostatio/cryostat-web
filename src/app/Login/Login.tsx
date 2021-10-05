@@ -99,7 +99,12 @@ export const Login = () => {
           token = Base64.decode(token);
         }
         console.log(parts)
-        if (!ready.ready && ready.code != CloseStatus.PROTOCOL_FAILURE && !!token) {
+        const hasInvalidCredentials = !!ready.code && ready.code === CloseStatus.PROTOCOL_FAILURE;
+        const shouldRetryLogin = !hasInvalidCredentials
+          && !ready.ready
+          && !!token;
+
+        if (shouldRetryLogin) {
           checkAuth(token, authMethod);
         }
     });
