@@ -101,9 +101,8 @@ export const Login = () => {
         }
         console.log(parts)
         const hasInvalidCredentials = !!ready.code && ready.code === CloseStatus.PROTOCOL_FAILURE;
-        const shouldRetryLogin = !hasInvalidCredentials
-          && !ready.ready
-          && !!token;
+        const shouldRetryLogin = (!hasInvalidCredentials && !ready.ready)
+          || (!!token && ready.ready);
 
         if (shouldRetryLogin) {
           checkAuth(token, authMethod);
