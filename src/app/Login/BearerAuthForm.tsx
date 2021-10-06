@@ -43,7 +43,7 @@ import { FormProps } from './FormProps';
 export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [token, setToken] = React.useState('');
-  const [rememberMe, setRememberMe] = React.useState(false);
+  const [rememberMe, setRememberMe] = React.useState(true);
 
   React.useEffect(() => {
     const sub = context.login.getToken().subscribe(setToken);

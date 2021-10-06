@@ -65,6 +65,8 @@ export const Login = () => {
       .subscribe(v => {
         if(v && rememberMe) {
           serviceContext.login.rememberToken(tok);
+        } else if (v && !rememberMe && userSubmission) {
+          serviceContext.login.forgetToken();
         }
 
         if (!v && userSubmission) {
@@ -73,7 +75,6 @@ export const Login = () => {
       })
     );
   }, [serviceContext, serviceContext.login, addSubscription,  notifications, authMethod]);
-
 
   const handleSubmit = React.useCallback((evt, token, authMethod, rememberMe) => {
     setAuthMethod(authMethod);

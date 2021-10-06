@@ -129,8 +129,8 @@ export class LoginService {
   }
 
   setLoggedOut(): void {
-    this.removeCacheItem(this.TOKEN_KEY);
     this.removeCacheItem(this.USER_KEY);
+    this.forgetToken();
     this.token.next('');
     this.username.next('');
     this.logout.next();
@@ -144,6 +144,10 @@ export class LoginService {
 
   rememberToken(token: string): void {
     this.setCacheItem(this.TOKEN_KEY, token);
+  }
+
+  forgetToken(): void {
+    this.removeCacheItem(this.TOKEN_KEY);
   }
 
   private getCacheItem(key: string): string {

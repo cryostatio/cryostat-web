@@ -46,7 +46,7 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [rememberMe, setRememberMe] = React.useState(false);
+  const [rememberMe, setRememberMe] = React.useState(true);
 
   React.useEffect(() => {
     const sub = context.login.getToken().pipe(map(Base64.decode)).subscribe(creds => {
