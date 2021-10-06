@@ -48,6 +48,7 @@ import { of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
 
 import { CreateTargetModal } from './CreateTargetModal';
+import _ from 'lodash';
 
 export interface TargetSelectProps {
   isCompact?: boolean;
@@ -65,7 +66,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.targets.targets().subscribe(setTargets);
+    const sub = context.targets.targets().subscribe((targets) => {
+      setTargets(targets);
+      selectTargetFromCache(targets);
+    });
     return () => sub.unsubscribe();
   }, [context, context.targets, setTargets]);
 
@@ -75,16 +79,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.targets.queryForTargets().subscribe(() => setLoading(false))
     );
   }, [setLoading, addSubscription, context.targets]);
-
-  React.useEffect(() => {
-    try {
-      const previouslyCachedTarget = getCachedTargetSelection();
-      context.target.setTarget(previouslyCachedTarget);
-    } catch (error) {
-      context.target.setTarget(NO_TARGET);
-      removeCachedTargetSelection();
-    }
-  }, [context.target]);
 
   const setCachedTargetSelection = (target) => {
     localStorage.setItem(TARGET_KEY, JSON.stringify(target));
@@ -98,6 +92,26 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     const cachedTarget = localStorage.getItem(TARGET_KEY);
     return cachedTarget ? JSON.parse(cachedTarget) : NO_TARGET;
   };
+
+  const selectTargetFromCache = React.useCallback((targets) => {
+    if(targets.length === 0) {
+      return;
+    }
+
+    try {
+      const cachedTarget = getCachedTargetSelection();
+      const cachedTargetExists = targets.some(target => _.isEqual(cachedTarget, target));
+
+      if(cachedTargetExists) {
+        context.target.setTarget(cachedTarget);
+      } else {
+        removeCachedTargetSelection();
+      }
+    } catch (error) {
+      context.target.setTarget(NO_TARGET);
+      removeCachedTargetSelection();
+    }
+  }, [context.target, getCachedTargetSelection, removeCachedTargetSelection]);
 
   const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
