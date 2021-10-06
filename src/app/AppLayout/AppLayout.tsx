@@ -39,9 +39,9 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
-import { IAppRoute, routes } from '@app/routes';
+import { IAppRoute, navGroups, routes } from '@app/routes';
 import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
-  Brand, Button, Nav, NavItem, NavList, NotificationBadge, Page, PageHeader,
+  Brand, Button, Nav, NavItem, NavGroup, NavList, NotificationBadge, Page, PageHeader,
   PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
   SkipToContent
 } from '@patternfly/react-core';
@@ -205,11 +205,21 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const Navigation = (
     <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect}>
       <NavList id="nav-list-simple">
-        {routes.map((route, idx) => route.label && (
-            <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
-              <NavLink exact to={route.path} activeClassName="pf-m-current">{route.label}</NavLink>
-            </NavItem>
-          ))}
+        {navGroups.map((title) => {
+          return (
+          <NavGroup title={title}>
+            {routes.filter(route => route.navGroup === title)
+              .map((route, idx) => {
+                return (
+                route.label && (
+                <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
+                  <NavLink exact to={route.path} activeClassName="pf-m-current">{route.label}</NavLink>
+                </NavItem>
+                ));
+              })}
+          </NavGroup>
+          );
+        })}
       </NavList>
     </Nav>
   );
