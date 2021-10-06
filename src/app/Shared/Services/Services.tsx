@@ -43,6 +43,7 @@ import { ApiService } from './Api.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
+import { LoginService } from './Login.service';
 
 export interface Services {
   target: TargetService;
@@ -51,15 +52,17 @@ export interface Services {
   notificationChannel: NotificationChannel;
   reports: ReportService;
   settings: SettingsService;
+  login: LoginService;
 }
 
-const api = new ApiService(TargetInstance, NotificationsInstance);
-const notificationChannel = new NotificationChannel(api, NotificationsInstance);
+const login = new LoginService();
+const api = new ApiService(TargetInstance, NotificationsInstance, login);
+const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(api, NotificationsInstance);
 const settings = new SettingsService();
-const targets = new TargetsService(api, NotificationsInstance, notificationChannel);
+const targets = new TargetsService(api, NotificationsInstance, login, notificationChannel);
 
-const defaultServices: Services = { target: TargetInstance, targets, api, notificationChannel, reports, settings };
+const defaultServices: Services = { target: TargetInstance, targets, api, notificationChannel, reports, settings, login };
 
 const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
 

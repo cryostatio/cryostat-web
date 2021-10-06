@@ -129,7 +129,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       }
     }
     setExpanded(false);
-  }, [context, context.target, selected, notifications, setExpanded]);
+  }, [context, selected, notifications, setExpanded]);
 
   const selectNone = React.useCallback(() => {
     onSelect(undefined, undefined, true);

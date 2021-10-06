@@ -35,11 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError } from 'rxjs';
+import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators';
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
+import { LoginService } from './Login.service';
 
 type ApiVersion = "v1" | "v2";
 
@@ -61,26 +62,22 @@ export const isHttpError = (toCheck: any): toCheck is HttpError => {
 
 export class ApiService {
 
-  private readonly token = new ReplaySubject<string>(1);
-  private readonly authMethod = new ReplaySubject<string>(1);
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
   private readonly grafanaDashboardUrlSubject = new ReplaySubject<string>(1);
-  readonly authority: string;
 
   constructor(
     private readonly target: TargetService,
-    private readonly notifications: Notifications
+    private readonly notifications: Notifications,
+    private readonly login: LoginService
   ) {
-    let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
-    if (!apiAuthority) {
-      apiAuthority = '';
-    }
-    window.console.log(`Using API authority ${apiAuthority}`);
-    this.authority = apiAuthority;
 
-    this.doGet('recordings').subscribe({
+    // show recording archives when recordings available
+    login.isAuthenticated().pipe(
+    concatMap((authenticated) => authenticated ? this.doGet('recordings') : EMPTY)
+    )
+    .subscribe({
       next: () => {
         this.archiveEnabled.next(true);
       },
@@ -89,12 +86,12 @@ export class ApiService {
       }
     });
 
-    const getDatasourceURL = fromFetch(`${apiAuthority}/api/v1/grafana_datasource_url`)
+    const getDatasourceURL = fromFetch(`${this.login.authority}/api/v1/grafana_datasource_url`)
     .pipe(concatMap(resp => from(resp.json())));
-    const getDashboardURL = fromFetch(`${apiAuthority}/api/v1/grafana_dashboard_url`)
+    const getDashboardURL = fromFetch(`${this.login.authority}/api/v1/grafana_dashboard_url`)
     .pipe(concatMap(resp => from(resp.json())));
 
-    fromFetch(`${apiAuthority}/health`)
+    fromFetch(`${this.login.authority}/health`)
       .pipe(
         concatMap(resp => from(resp.json())),
         concatMap((jsonResp: any) => {
@@ -125,37 +122,6 @@ export class ApiService {
           this.notifications.danger('Grafana configuration not found', JSON.stringify(err));
         }
       });
-  }
-
-  checkAuth(token: string, method: string): Observable<boolean> {
-    return fromFetch(`${this.authority}/api/v1/auth`, {
-      credentials: 'include',
-      mode: 'cors',
-      method: 'POST',
-      body: null,
-      headers: this.getAuthHeaders(token, method),
-    })
-    .pipe(
-      map(response => {
-        if (!this.authMethod.isStopped) {
-          this.authMethod.next(response.ok ? method : (response.headers.get('X-WWW-Authenticate') || ''));
-        }
-        return response.ok;
-      }),
-      catchError((e: Error): ObservableInput<boolean> => {
-        window.console.error(JSON.stringify(e));
-        this.authMethod.complete();
-        return of(false);
-      }),
-      first(),
-      tap(v => {
-        if (v) {
-          this.authMethod.next(method);
-          this.authMethod.complete();
-          this.token.next(token);
-        }
-      })
-    );
   }
 
   createTarget(target: Target): Observable<boolean> {
@@ -366,14 +332,6 @@ export class ApiService {
     return this.sendRequest('v1', path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
-  getAuthMethod(): Observable<string> {
-    return this.authMethod.asObservable();
-  }
-
-  getToken(): Observable<string> {
-    return this.token.asObservable();
-  }
-
   downloadReport(recording: SavedRecording): void {
     this.getHeaders().subscribe(headers => {
       const req = () =>
@@ -473,9 +431,9 @@ export class ApiService {
   }
 
   getHeaders(): Observable<Headers> {
-    const authorization = combineLatest([this.getToken(), this.getAuthMethod()])
+    const authorization = combineLatest([this.login.getToken(), this.login.getAuthMethod()])
     .pipe(
-      map((parts: [string, string]) => this.getAuthHeaders(parts[0], parts[1])),
+      map((parts: [string, string]) => this.login.getAuthHeaders(parts[0], parts[1])),
       first(),
     );
     return combineLatest([authorization, this.target.target()])
@@ -499,7 +457,7 @@ export class ApiService {
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
     const req = () => this.getHeaders().pipe(
       concatMap(headers =>
-        fromFetch(`${this.authority}/api/${apiVersion}/${path}`, {
+        fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
           credentials: 'include',
           mode: 'cors',
           headers,
@@ -513,14 +471,6 @@ export class ApiService {
       catchError(err => this.handleError<Response>(err, req)),
     );
     return req();
-  }
-
-  private getAuthHeaders(token: string, method: string): Headers {
-    const headers = new window.Headers();
-    if (!!token && !!method) {
-      headers.set('Authorization', `${method} ${token}`)
-    }
-    return headers;
   }
 
   private downloadFile(filename: string, data: BlobPart, type: string): void {

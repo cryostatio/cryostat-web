@@ -50,14 +50,12 @@ import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { About } from './About/About';
+import { combineLatest } from 'rxjs';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
 const CONSOLE = 'Console';
-const navGroups = [
-  OVERVIEW,
-  CONSOLE,
-];
+const navGroups = [OVERVIEW, CONSOLE];
 
 export interface IAppRoute {
   label?: string;
@@ -173,17 +171,28 @@ const PageNotFound = ({ title }: { title: string }) => {
 
 const AppRoutes = () => {
   const context = React.useContext(ServiceContext);
-  const [authenticated, setAuthenticated] = React.useState(false);
+  const [showDashboard, setShowDashboard] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.isReady().subscribe(v => setAuthenticated(v.ready));
+    const sub = combineLatest(context.notificationChannel.isReady(), context.login.isAuthenticated()).subscribe(
+      (parts) => {
+        const connected = parts[0].ready;
+        const authenticated = parts[1];
+
+        if (connected && authenticated) {
+          setShowDashboard(true);
+        } else {
+          setShowDashboard(false);
+        }
+      }
+    );
     return () => sub.unsubscribe();
-  }, [context.notificationChannel, setAuthenticated]);
+  }, [context, context.login, setShowDashboard]);
 
   return (
     <LastLocationProvider>
       <Switch>
-        {authenticated ? (
+        {showDashboard ? (
           flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
             <RouteWithTitleUpdates
               path={path}

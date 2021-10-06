@@ -42,7 +42,7 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
-import { ApiService } from './Api.service';
+import { LoginService } from './Login.service';
 
 interface RecordingNotificationEvent {
   recording: string;
@@ -59,6 +59,7 @@ export enum NotificationCategory {
 }
 
 export enum CloseStatus {
+  LOGGED_OUT = 1000,
   PROTOCOL_FAILURE = 1002,
   INTERNAL_ERROR = 1011,
   UNKNOWN = -1,
@@ -76,8 +77,8 @@ export class NotificationChannel {
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
   constructor(
-    private readonly apiSvc: ApiService,
-    private readonly notifications: Notifications
+    private readonly notifications: Notifications,
+    private readonly login: LoginService
   ) {
     this.messages(NotificationCategory.WsClientActivity).subscribe(v => {
       const addr = Object.keys(v.message)[0];
@@ -105,7 +106,7 @@ export class NotificationChannel {
       notifications.success('Recording Deleted', `${event.recording} was deleted`);
     });
 
-    const notificationsUrl = fromFetch(`${this.apiSvc.authority}/api/v1/notifications_url`)
+    const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)
       .pipe(
         concatMap(async resp => {
           if (resp.ok) {
@@ -118,7 +119,7 @@ export class NotificationChannel {
         })
       );
 
-    combineLatest(notificationsUrl, this.apiSvc.getToken(), this.apiSvc.getAuthMethod())
+    combineLatest(notificationsUrl, this.login.getToken(), this.login.getAuthMethod())
       .pipe(distinctUntilChanged(_.isEqual))
       .subscribe({
         next: (parts: string[]) => {
@@ -126,7 +127,10 @@ export class NotificationChannel {
           const token = parts[1];
           const authMethod = parts[2];
           let subprotocol: string | undefined = undefined;
-          if (authMethod === 'Bearer') {
+
+          if(!token) {
+            return;
+          } else if (authMethod === 'Bearer') {
             subprotocol = `base64url.bearer.authorization.cryostat.${Base64.encodeURL(token)}`;
           } else if (authMethod === 'Basic') {
             subprotocol = `basic.authorization.cryostat.${token}`;
@@ -150,6 +154,11 @@ export class NotificationChannel {
                 let msg: string | undefined = undefined;
                 let fn: Function;
                 switch (evt.code) {
+                  case CloseStatus.LOGGED_OUT:
+                    code = CloseStatus.LOGGED_OUT;
+                    msg = 'Logout success';
+                    fn = this.notifications.info;
+                    break;
                   case CloseStatus.PROTOCOL_FAILURE:
                     code = CloseStatus.PROTOCOL_FAILURE;
                     msg = 'Authentication failed';
@@ -181,6 +190,14 @@ export class NotificationChannel {
         },
         error: (err: any) => this.logError('Notifications URL configuration', err)
       });
+
+    this.login.loggedOut()
+    .subscribe({
+      next: () => {
+        this.ws?.complete();
+      },
+      error: (err: any) => this.logError('Notifications URL configuration', err)
+    });
   }
 
   isReady(): Observable<ReadyState> {

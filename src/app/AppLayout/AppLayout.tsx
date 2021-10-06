@@ -41,18 +41,17 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
-  Brand, Button, Nav, NavItem, NavGroup, NavList, NotificationBadge, Page, PageHeader,
-  PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar,
-  SkipToContent
+  Brand, Button, Dropdown, DropdownGroup, DropdownItem, DropdownToggle, Nav, NavGroup, NavItem, NavList, NotificationBadge, Page, PageHeader,
+  PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar, SkipToContent
 } from '@patternfly/react-core';
-import { BellIcon, CogIcon, HelpIcon } from '@patternfly/react-icons';
-import { map } from 'rxjs/operators';
+import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
+import { map, } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
+import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -72,6 +71,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [showSslErrorModal, setShowSslErrorModal] = React.useState(false);
   const [aboutModalOpen, setAboutModalOpen] = React.useState(false);
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
+  const [showUserIcon, setShowUserIcon] = React.useState(false);
+  const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
+  const [username, setUsername] = React.useState('');
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
@@ -146,6 +148,37 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const handleAboutModalToggle = () => {
     setAboutModalOpen(!aboutModalOpen);
   };
+
+  React.useEffect(() => {
+    const sub = serviceContext.login.isAuthenticated().subscribe(setShowUserIcon);
+    return () => sub.unsubscribe();
+  }, [serviceContext.target]);
+
+  const handleLogout = React.useCallback(() =>
+    serviceContext.login.setLoggedOut(),
+    [serviceContext.login]);
+
+  const handleUserInfoToggle = React.useCallback(() =>
+    setShowUserInfoDropdown(v => !v),
+    [setShowUserInfoDropdown]);
+
+  React.useEffect(() => {
+    const sub = serviceContext.login.getUsername().subscribe(setUsername);
+    return () => sub.unsubscribe();
+  }, [serviceContext, serviceContext.login]);
+
+  const userInfoItems = [
+    <DropdownGroup key={0}>
+      <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
+    </DropdownGroup>
+  ];
+
+  const UserInfoToggle = (
+    <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
+      {username || <UserIcon color="white" size="sm"/>}
+    </DropdownToggle>
+  );
+
   const HeaderTools = (<>
     <PageHeaderTools>
       <PageHeaderToolsGroup>
@@ -170,6 +203,14 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
             icon={<HelpIcon color='white' size='sm' />}
           />
         </PageHeaderToolsItem>
+        <PageHeaderToolsItem visibility={{default: showUserIcon ? 'visible' : 'hidden'}} >
+            <Dropdown
+              isPlain={true}
+              isOpen={showUserInfoDropdown}
+              toggle={UserInfoToggle}
+              dropdownItems={userInfoItems}
+            />
+          </PageHeaderToolsItem>
       </PageHeaderToolsGroup>
     </PageHeaderTools>
   </>);

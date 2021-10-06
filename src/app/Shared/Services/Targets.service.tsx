@@ -41,8 +41,9 @@ import { ApiService } from './Api.service';
 import { Target } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { NotificationCategory, NotificationChannel } from './NotificationChannel.service';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { catchError, first, map, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of, EMPTY } from 'rxjs';
+import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
+import { LoginService } from './Login.service';
 
 export interface TargetDiscoveryEvent {
   kind: 'LOST' | 'FOUND';
@@ -55,9 +56,13 @@ export class TargetsService {
   constructor(
     private readonly api: ApiService,
     private readonly notifications: Notifications,
+    private readonly login: LoginService,
     notificationChannel: NotificationChannel,
     ) {
-    this.queryForTargets().subscribe(() => {
+    login.isAuthenticated().pipe(
+      concatMap((authenticated) => authenticated ? this.queryForTargets() : EMPTY)
+      )
+      .subscribe(() => {
       ; // just trigger a startup query
     });
     notificationChannel.messages(NotificationCategory.JvmDiscovery)
@@ -87,7 +92,7 @@ export class TargetsService {
       tap(targets => this._targets$.next(targets)),
       map(() => undefined),
       catchError(err => {
-        this.notifications.danger('Target List Update Failed', err)
+        this.notifications.danger('Target List Update Failed', JSON.stringify(err));
         return of(undefined);
       }),
     );
