@@ -77,12 +77,14 @@ export class ApiService {
     login.isAuthenticated().pipe(
     concatMap((authenticated) => authenticated ? this.doGet('recordings') : EMPTY)
     )
-    .subscribe(
-      () => {
+    .subscribe({
+      next: () => {
         this.archiveEnabled.next(true);
-      }, () => {
+      },
+      error: () => {
         this.archiveEnabled.next(false);
-      });
+      }
+    });
 
     const getDatasourceURL = fromFetch(`${this.login.authority}/api/v1/grafana_datasource_url`)
     .pipe(concatMap(resp => from(resp.json())));

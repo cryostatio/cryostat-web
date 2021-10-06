@@ -192,12 +192,12 @@ export class NotificationChannel {
       });
 
     this.login.loggedOut()
-    .subscribe(
-      () => {
+    .subscribe({
+      next: () => {
         this.ws?.complete();
       },
-      (err: any) => this.logError('Notifications URL configuration', err)
-      );
+      error: (err: any) => this.logError('Notifications URL configuration', err)
+    });
   }
 
   isReady(): Observable<ReadyState> {

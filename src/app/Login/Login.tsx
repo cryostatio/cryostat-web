@@ -99,7 +99,7 @@ export const Login = () => {
         if (authMethod === 'Basic') {
           token = Base64.decode(token);
         }
-        console.log(parts)
+
         const hasInvalidCredentials = !!ready.code && ready.code === CloseStatus.PROTOCOL_FAILURE;
         const shouldRetryLogin = (!hasInvalidCredentials && !ready.ready)
           || (!!token && ready.ready);
