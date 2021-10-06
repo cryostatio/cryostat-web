@@ -82,6 +82,14 @@ const routes: IAppRoute[] = [
     navGroup: OVERVIEW,
   },
   {
+    component: About,
+    exact: true,
+    label: 'About',
+    path: '/about',
+    title: 'About',
+    navGroup: OVERVIEW,
+  },
+  {
     component: Recordings,
     exact: true,
     label: 'Recordings',
@@ -118,14 +126,6 @@ const routes: IAppRoute[] = [
     exact: true,
     path: '/settings',
     title: 'Settings',
-  },
-  {
-    component: About,
-    exact: true,
-    label: 'About',
-    path: '/about',
-    title: 'About',
-    navGroup: OVERVIEW,
   },
 ];
 
