@@ -333,65 +333,30 @@ export class ApiService {
   }
 
   downloadReport(recording: SavedRecording): void {
-    this.login.getHeaders().subscribe(headers => {
-      const req = () =>
-        fromFetch(recording.reportUrl, {
-          credentials: 'include',
-          mode: 'cors',
-          headers,
-        })
-          .pipe(
-            map(resp => {
-              if (resp.ok) return resp;
-              throw new HttpError(resp);
-            }),
-            catchError(err => this.handleError<Response>(err, req)),
-            concatMap(resp => resp.blob()),
-          );
-      req().subscribe(resp =>
-        this.downloadFile(
-          `${recording.name}.report.html`,
-          resp,
-          'text/html')
-      )
-    });
+    this.downloadFile(
+      recording.reportUrl,
+      `${recording.name}.report.html`
+    );
   }
 
   downloadRecording(recording: SavedRecording): void {
-    this.login.getHeaders().subscribe(headers => {
-      const req = () => fromFetch(recording.downloadUrl, {
-        credentials: 'include',
-        mode: 'cors',
-        headers,
-      })
-        .pipe(
-          map(resp => {
-            if (resp.ok) return resp;
-            throw new HttpError(resp);
-          }),
-          catchError(err => this.handleError<Response>(err, req)),
-          concatMap(resp => resp.blob()),
-        );
-      req().subscribe(resp =>
-        this.downloadFile(
-          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
-          resp,
-          'application/octet-stream')
-      )
-    });
+    this.downloadFile(
+      recording.downloadUrl,
+      recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
+      );
   }
 
   downloadTemplate(template: EventTemplate): void {
-    this.target.target().pipe(concatMap(target => {
-      const url = `targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
-      return this.sendRequest('v1', url)
-        .pipe(concatMap(resp => resp.text()));
-    }))
-    .subscribe(resp => {
+    console.log('api.downloadTemplate called', { template });
+    this.target.target()
+    .pipe(first(), map(target =>
+      `${this.login.authority}/api/v1/targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
+    ))
+    .subscribe(url => {
       this.downloadFile(
-        `${template.name}.jfc`,
-        resp,
-        'application/jfc+xml')
+        url,
+        `${template.name}.jfc`
+      )
     });
   }
 
@@ -455,14 +420,14 @@ export class ApiService {
     return req();
   }
 
-  private downloadFile(filename: string, data: BlobPart, type: string): void {
-    const blob = new window.Blob([ data ], { type } );
-    const url = window.URL.createObjectURL(blob);
+  private downloadFile(url: string, filename: string): void {
     const anchor = document.createElement('a');
+    anchor.setAttribute('style', 'display: none; visibility: hidden;');
+    anchor.target = '_blank;'
     anchor.download = filename;
     anchor.href = url;
     anchor.click();
-    window.setTimeout(() => window.URL.revokeObjectURL(url));
+    anchor.remove();
   }
 
   private handleError<T>(error: Error, retry: () => Observable<T>): ObservableInput<T> {
