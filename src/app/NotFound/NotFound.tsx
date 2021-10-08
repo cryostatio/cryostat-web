@@ -37,13 +37,34 @@
  */
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Alert, PageSection } from '@patternfly/react-core';
+import { 
+  Alert, 
+  Button,
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateBody,
+  EmptyStateSecondaryActions,
+  PageSection,
+  Title
+} from '@patternfly/react-core';
+import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
 
 const NotFound: React.FunctionComponent = () => (
-    <PageSection>
-      <Alert variant="danger" title="404! This view hasn't been created yet." /><br />
-      <NavLink to="/" className="pf-c-nav__link">Take me home</NavLink>
-    </PageSection>
-  )
+  <EmptyState>
+    <EmptyStateIcon icon={CubesIcon} />
+    <Title headingLevel="h4" size="lg">
+      404: We can't find this page
+    </Title>
+    <Button component="a" href="/" variant="primary">Take me home</Button>
+    <EmptyStateSecondaryActions>
+      <Button variant="link">Multiple</Button>
+      <Button variant="link">Action Buttons</Button>
+      <Button variant="link">Can</Button>
+      <Button variant="link">Go here</Button>
+      <Button variant="link">In the secondary</Button>
+      <Button variant="link">Action area</Button>
+    </EmptyStateSecondaryActions>
+  </EmptyState>
+)
 
 export { NotFound };
