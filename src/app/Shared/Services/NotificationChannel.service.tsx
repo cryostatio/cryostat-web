@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';

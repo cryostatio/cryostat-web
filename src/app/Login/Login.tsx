@@ -41,9 +41,6 @@ import { NotificationsContext } from '../Notifications/Notifications';
 import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
-import { combineLatest, debounceTime, timer } from 'rxjs';
-import { Base64 } from 'js-base64';
-import { CloseStatus } from '@app/Shared/Services/NotificationChannel.service';
 
 export const Login = () => {
   const serviceContext = React.useContext(ServiceContext);
