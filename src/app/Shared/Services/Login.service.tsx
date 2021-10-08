@@ -61,6 +61,13 @@ export class LoginService {
     this.authMethod.next(this.getCacheItem(this.METHOD_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
     this.authenticated.next(false);
+    this.queryAuthMethod();
+  }
+
+  queryAuthMethod(): void {
+      this.checkAuth('', 'Basic').subscribe(() => {
+        ; // check auth once at component load to query the server's auth method
+      });
   }
 
   checkAuth(token: string, method: string): Observable<boolean> {

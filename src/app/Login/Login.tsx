@@ -84,9 +84,8 @@ export const Login = () => {
 
   React.useEffect(() => {
     const sub = serviceContext.login.getAuthMethod().subscribe(setAuthMethod);
-    checkAuth('', 'Basic'); // check auth once at component load to query the server's auth method
     return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.login, setAuthMethod, checkAuth]);
+  }, [serviceContext, serviceContext.login, setAuthMethod]);
 
   React.useEffect(() => {
     const sub =
