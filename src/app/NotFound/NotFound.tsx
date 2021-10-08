@@ -38,15 +38,18 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Alert, 
   Button,
+  Card, 
+  CardTitle, 
+  CardBody, 
+  CardFooter,
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
   EmptyStateSecondaryActions,
-  PageSection,
   Title
 } from '@patternfly/react-core';
+import '@app/app.css'
 import MapIcon from '@patternfly/react-icons/dist/esm/icons/map-marked-alt-icon';
 
 const NotFound: React.FunctionComponent = () => (
@@ -59,12 +62,30 @@ const NotFound: React.FunctionComponent = () => (
       One of the following pages might have what you're looking for.
     </EmptyStateBody>
     <EmptyStateSecondaryActions>
-      <Button variant="link">Multiple</Button>
-      <Button variant="link">Action Buttons</Button>
-      <Button variant="link">Can</Button>
-      <Button variant="link">Go here</Button>
-      <Button variant="link">In the secondary</Button>
-      <Button variant="link">Action area</Button>
+      <Card>
+        <CardTitle>Header</CardTitle>
+        <CardBody>Tesing if this expands the body out by more psl 
+          sdlkajsflkjalksjdlajdlajdljasdljdslkj</CardBody>
+        <CardFooter>Footer</CardFooter>
+      </Card>
+      <Card>
+        <CardTitle>Header</CardTitle>
+        <CardBody>Tesing if this expands the body out by more psl  
+          sdlkajsflkjalksjdlajdlajdljasdljdslkj</CardBody>
+        <CardFooter>Footer</CardFooter>
+      </Card>
+      <Card>
+        <CardTitle>Header</CardTitle>
+        <CardBody>Tesing if this expands the body out by more psl
+          sdlkajsflkjalksjdlajdlajdljasdljdslkj</CardBody>
+        <CardFooter>Footer</CardFooter>
+      </Card>
+      <Card>
+        <CardTitle>Header</CardTitle>
+        <CardBody>Tesing if this expands the body out by more psl 
+          sdlkajsflkjalksjdlajdlajdljasdljdslkj</CardBody>
+        <CardFooter>Footer</CardFooter>
+      </Card>
     </EmptyStateSecondaryActions>
     <Button variant="primary" component={props => <Link {...props} to="/"/>}>Take me home</Button>
   </EmptyState>
