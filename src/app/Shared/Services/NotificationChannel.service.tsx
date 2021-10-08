@@ -36,10 +36,10 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subject, timer } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
+import { concatMap, debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
 import { LoginService } from './Login.service';
@@ -120,7 +120,7 @@ export class NotificationChannel {
       );
 
     combineLatest([notificationsUrl, this.login.getToken(), this.login.getAuthMethod()])
-      .subscribe({
+    .subscribe({
         next: (parts: string[]) => {
           const url = parts[0];
           const token = parts[1];
@@ -196,6 +196,23 @@ export class NotificationChannel {
         this.ws?.complete();
       },
       error: (err: any) => this.logError('Notifications URL configuration', err)
+    });
+
+    combineLatest([this.login.getToken(), this.login.getAuthMethod(), this.isReady(), timer(0, 5000)])
+      .pipe(debounceTime(1000), distinctUntilChanged(_.isEqual))
+      .subscribe(parts => {
+        let token = parts[0];
+        let authMethod = parts[1];
+        let ready = parts[2];
+        if (authMethod === 'Basic') {
+          token = Base64.decode(token);
+        }
+
+        const shouldRetryLogin = !ready.ready && !!token && (ready.code !== CloseStatus.PROTOCOL_FAILURE);
+
+        if (shouldRetryLogin) {
+          this.login.checkAuth(token, authMethod).subscribe();
+        }
     });
   }
 

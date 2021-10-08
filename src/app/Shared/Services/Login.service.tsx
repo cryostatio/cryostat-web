@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { Base64 } from 'js-base64';
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
@@ -70,7 +71,11 @@ export class LoginService {
       });
   }
 
-  checkAuth(token: string, method: string): Observable<boolean> {
+  checkAuth(token: string, method: string, rememberMe = false, userSubmission = false): Observable<boolean> {
+
+    if (method === 'Basic') {
+      token = Base64.encodeURL(token);
+    }
 
     token = this.useCacheItemIfAvailable(this.TOKEN_KEY, token);
 
