@@ -119,8 +119,7 @@ export class NotificationChannel {
         })
       );
 
-    combineLatest(notificationsUrl, this.login.getToken(), this.login.getAuthMethod())
-      .pipe(distinctUntilChanged(_.isEqual))
+    combineLatest([notificationsUrl, this.login.getToken(), this.login.getAuthMethod()])
       .subscribe({
         next: (parts: string[]) => {
           const url = parts[0];

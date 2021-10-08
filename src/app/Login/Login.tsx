@@ -90,7 +90,7 @@ export const Login = () => {
 
   React.useEffect(() => {
     const sub =
-      combineLatest(serviceContext.login.getToken(), serviceContext.login.getAuthMethod(),  serviceContext.notificationChannel.isReady(), timer(0, 5000))
+      combineLatest([serviceContext.login.getToken(), serviceContext.login.getAuthMethod(),  serviceContext.notificationChannel.isReady(), timer(0, 5000)])
       .pipe(debounceTime(1000))
       .subscribe(parts => {
         let token = parts[0];
@@ -100,9 +100,8 @@ export const Login = () => {
           token = Base64.decode(token);
         }
 
-        const hasInvalidCredentials = !!ready.code && ready.code === CloseStatus.PROTOCOL_FAILURE;
-        const shouldRetryLogin = (!hasInvalidCredentials && !ready.ready)
-          || (!!token && ready.ready);
+        const shouldRetryLogin = !!token
+          && (ready.code !== CloseStatus.PROTOCOL_FAILURE);
 
         if (shouldRetryLogin) {
           checkAuth(token, authMethod);
