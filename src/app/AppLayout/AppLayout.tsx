@@ -52,6 +52,7 @@ import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
+import { SessionState } from '@app/Shared/Services/Login.service';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -150,7 +151,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   };
 
   React.useEffect(() => {
-    const sub = serviceContext.login.isAuthenticated().subscribe(setShowUserIcon);
+    const sub = serviceContext.login.getSessionState().subscribe(sessionState => {
+      setShowUserIcon(sessionState === SessionState.USER_SESSION);
+    });
     return () => sub.unsubscribe();
   }, [serviceContext.target]);
 

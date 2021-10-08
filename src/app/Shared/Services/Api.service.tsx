@@ -40,7 +40,7 @@ import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators';
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
-import { LoginService } from './Login.service';
+import { LoginService, SessionState } from './Login.service';
 
 type ApiVersion = "v1" | "v2";
 
@@ -74,8 +74,8 @@ export class ApiService {
   ) {
 
     // show recording archives when recordings available
-    login.isAuthenticated().pipe(
-    concatMap((authenticated) => authenticated ? this.doGet('recordings') : EMPTY)
+    login.getSessionState().pipe(
+    concatMap((sessionState) => sessionState === SessionState.USER_SESSION ? this.doGet('recordings') : EMPTY)
     )
     .subscribe({
       next: () => {

@@ -40,6 +40,12 @@ import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
 
+export enum SessionState {
+  NO_USER_SESSION,
+  CREATING_USER_SESSION,
+  USER_SESSION
+}
+
 export class LoginService {
 
   private readonly TOKEN_KEY: string = 'token';
@@ -49,7 +55,7 @@ export class LoginService {
   private readonly authMethod = new ReplaySubject<string>(1);
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
-  private readonly authenticated = new ReplaySubject<boolean>(1);
+  private readonly sessionState = new ReplaySubject<SessionState>(1);
   readonly authority: string;
 
   constructor() {
@@ -61,7 +67,7 @@ export class LoginService {
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
     this.authMethod.next(this.getCacheItem(this.METHOD_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
-    this.authenticated.next(false);
+    this.sessionState.next(SessionState.NO_USER_SESSION);
     this.queryAuthMethod();
   }
 
@@ -99,7 +105,7 @@ export class LoginService {
           this.completeAuthMethod(method);
           this.setUsername(jsonResp.data.result.username);
           this.token.next(token);
-          this.authenticated.next(true);
+          this.sessionState.next(SessionState.CREATING_USER_SESSION);
         }
       }),
       map((jsonResp: AuthV2Response) => {
@@ -134,8 +140,8 @@ export class LoginService {
     return this.username.asObservable();
   }
 
-  isAuthenticated(): Observable<boolean> {
-    return this.authenticated.asObservable();
+  getSessionState(): Observable<SessionState> {
+    return this.sessionState.asObservable();
   }
 
   loggedOut(): Observable<void> {
@@ -148,7 +154,7 @@ export class LoginService {
     this.token.next('');
     this.username.next('');
     this.logout.next();
-    this.authenticated.next(false);
+    this.sessionState.next(SessionState.NO_USER_SESSION);
   }
 
   rememberToken(token: string): void {
@@ -157,6 +163,10 @@ export class LoginService {
 
   forgetToken(): void {
     this.removeCacheItem(this.TOKEN_KEY);
+  }
+
+  setSessionState(state: SessionState): void {
+    this.sessionState.next(state);
   }
 
   private setUsername(username: string): void {

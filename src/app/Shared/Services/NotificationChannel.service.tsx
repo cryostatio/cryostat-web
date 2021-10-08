@@ -42,7 +42,7 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
-import { LoginService } from './Login.service';
+import { LoginService, SessionState } from './Login.service';
 
 interface RecordingNotificationEvent {
   recording: string;
@@ -145,6 +145,8 @@ export class NotificationChannel {
             openObserver: {
               next: () => {
                 this._ready.next({ ready: true });
+                this.login.setSessionState(SessionState.USER_SESSION);
+                console.log('ready')
               }
             },
             closeObserver: {
