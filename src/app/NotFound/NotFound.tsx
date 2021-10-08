@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   Alert, 
   Button,
@@ -47,15 +47,17 @@ import {
   PageSection,
   Title
 } from '@patternfly/react-core';
-import CubesIcon from '@patternfly/react-icons/dist/esm/icons/cubes-icon';
+import MapIcon from '@patternfly/react-icons/dist/esm/icons/map-marked-alt-icon';
 
 const NotFound: React.FunctionComponent = () => (
   <EmptyState>
-    <EmptyStateIcon icon={CubesIcon} />
-    <Title headingLevel="h4" size="lg">
-      404: We can't find this page
+    <EmptyStateIcon icon={MapIcon} />
+    <Title headingLevel="h4" size="lg" >
+      404: We couldn't find that page
     </Title>
-    <Button component="a" href="/" variant="primary">Take me home</Button>
+    <EmptyStateBody>
+      One of the following pages might have what you're looking for.
+    </EmptyStateBody>
     <EmptyStateSecondaryActions>
       <Button variant="link">Multiple</Button>
       <Button variant="link">Action Buttons</Button>
@@ -64,6 +66,7 @@ const NotFound: React.FunctionComponent = () => (
       <Button variant="link">In the secondary</Button>
       <Button variant="link">Action area</Button>
     </EmptyStateSecondaryActions>
+    <Button variant="primary" component={props => <Link {...props} to="/"/>}>Take me home</Button>
   </EmptyState>
 )
 
