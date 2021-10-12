@@ -83,10 +83,12 @@ export class LoginService {
       }),
       first(),
       tap((response: any) => {
+        if(response.ok) {
           this.completeAuthMethod(method);
           this.setUsername(response.data.result.username);
           this.token.next(token);
           this.authenticated.next(true);
+        }
       }),
       catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e));
