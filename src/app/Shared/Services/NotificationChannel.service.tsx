@@ -119,13 +119,19 @@ export class NotificationChannel {
         })
       );
 
-    combineLatest([notificationsUrl, this.login.getToken(), this.login.getAuthMethod()])
+    combineLatest([notificationsUrl, this.login.getToken(), this.login.getAuthMethod(), this.login.getSessionState(), timer(0, 5000)])
+    .pipe(distinctUntilChanged(_.isEqual))
     .subscribe({
         next: (parts: string[]) => {
           const url = parts[0];
           const token = parts[1];
           const authMethod = parts[2];
+          const sessionState = parseInt(parts[3]);
           let subprotocol: string | undefined = undefined;
+
+          if(sessionState !== SessionState.CREATING_USER_SESSION) {
+            return;
+          }
 
           if(!token) {
             return;
@@ -146,7 +152,6 @@ export class NotificationChannel {
               next: () => {
                 this._ready.next({ ready: true });
                 this.login.setSessionState(SessionState.USER_SESSION);
-                console.log('ready')
               }
             },
             closeObserver: {
@@ -154,28 +159,34 @@ export class NotificationChannel {
                 let code: CloseStatus;
                 let msg: string | undefined = undefined;
                 let fn: Function;
+                let sessionState: SessionState;
                 switch (evt.code) {
                   case CloseStatus.LOGGED_OUT:
                     code = CloseStatus.LOGGED_OUT;
                     msg = 'Logout success';
                     fn = this.notifications.info;
+                    sessionState = SessionState.NO_USER_SESSION;
                     break;
                   case CloseStatus.PROTOCOL_FAILURE:
                     code = CloseStatus.PROTOCOL_FAILURE;
                     msg = 'Authentication failed';
                     fn = this.notifications.danger;
+                    sessionState = SessionState.NO_USER_SESSION;
                     break;
                   case CloseStatus.INTERNAL_ERROR:
                     code = CloseStatus.INTERNAL_ERROR;
                     msg = 'Internal server error';
                     fn = this.notifications.danger;
+                    sessionState = SessionState.CREATING_USER_SESSION;
                     break;
                   default:
                     code = CloseStatus.UNKNOWN;
                     fn = this.notifications.info;
+                    sessionState = SessionState.CREATING_USER_SESSION;
                     break;
                 }
                 this._ready.next({ ready: false, code });
+                this.login.setSessionState(sessionState);
                 fn.apply(this.notifications, ['WebSocket connection lost', msg, NotificationCategory.WsClientActivity]);
               }
             }
@@ -200,22 +211,6 @@ export class NotificationChannel {
       error: (err: any) => this.logError('Notifications URL configuration', err)
     });
 
-    combineLatest([this.login.getToken(), this.login.getAuthMethod(), this.isReady(), timer(0, 5000)])
-      .pipe(debounceTime(1000), distinctUntilChanged(_.isEqual))
-      .subscribe(parts => {
-        let token = parts[0];
-        let authMethod = parts[1];
-        let ready = parts[2];
-        if (authMethod === 'Basic') {
-          token = Base64.decode(token);
-        }
-
-        const shouldRetryLogin = !ready.ready && !!token && (ready.code !== CloseStatus.PROTOCOL_FAILURE);
-
-        if (shouldRetryLogin) {
-          this.login.checkAuth(token, authMethod).subscribe();
-        }
-    });
   }
 
   isReady(): Observable<ReadyState> {

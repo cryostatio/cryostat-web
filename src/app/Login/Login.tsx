@@ -57,6 +57,7 @@ export const Login = () => {
         }
       });
     () => sub.unsubscribe();
+
     evt.preventDefault();
   }, [serviceContext, serviceContext.login, setAuthMethod]);
 
