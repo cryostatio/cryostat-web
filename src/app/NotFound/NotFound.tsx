@@ -63,28 +63,32 @@ const NotFound: React.FunctionComponent = () => (
     </EmptyStateBody>
     <EmptyStateSecondaryActions>
       <Card>
-        <CardTitle>Header</CardTitle>
-        <CardBody>Tesing if this expands the body out by more psl 
-          sdlkajsflkjalksjdlajdlajdljasdljdslkj</CardBody>
-        <CardFooter>Footer</CardFooter>
+        <CardTitle>About</CardTitle>
+        <CardBody>Access links containing further information about Cryostat.</CardBody>
+        <CardFooter>
+          <Link to="/about">View information about Cryostat</Link>
+        </CardFooter>
       </Card>
       <Card>
-        <CardTitle>Header</CardTitle>
-        <CardBody>Tesing if this expands the body out by more psl  
-          sdlkajsflkjalksjdlajdlajdljasdljdslkj</CardBody>
-        <CardFooter>Footer</CardFooter>
+        <CardTitle>Recordings</CardTitle>
+        <CardBody>Create, view and archive JFR recordings on targets JVMs</CardBody>
+        <CardFooter>
+          <Link to="/recordings">View recordings</Link>
+        </CardFooter>
       </Card>
       <Card>
-        <CardTitle>Header</CardTitle>
-        <CardBody>Tesing if this expands the body out by more psl
-          sdlkajsflkjalksjdlajdlajdljasdljdslkj</CardBody>
-        <CardFooter>Footer</CardFooter>
+        <CardTitle>Events</CardTitle>
+        <CardBody>View available JFR event templates and types for target JVMs, as well as upload custom templates.</CardBody>
+        <CardFooter>
+          <Link to="/events">View events</Link>
+        </CardFooter>
       </Card>
       <Card>
-        <CardTitle>Header</CardTitle>
-        <CardBody>Tesing if this expands the body out by more psl 
-          sdlkajsflkjalksjdlajdlajdljasdljdslkj</CardBody>
-        <CardFooter>Footer</CardFooter>
+        <CardTitle>Security</CardTitle>
+        <CardBody>Upload SSL certificates to secure communication channels with Cryostat</CardBody>
+        <CardFooter>
+          <Link to="/security">View security</Link>
+        </CardFooter>
       </Card>
     </EmptyStateSecondaryActions>
     <Button variant="primary" component={props => <Link {...props} to="/"/>}>Take me home</Button>
