@@ -50,7 +50,7 @@ export const Login = () => {
   const handleSubmit = React.useCallback((evt, token, authMethod, rememberMe) => {
     setAuthMethod(authMethod);
 
-    const sub = serviceContext.login.checkAuth(token, authMethod, rememberMe, true)
+    const sub = serviceContext.login.checkAuth(token, authMethod, rememberMe)
       .subscribe(authSuccess => {
         if(!authSuccess) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);

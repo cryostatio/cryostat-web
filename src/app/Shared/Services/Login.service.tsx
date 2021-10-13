@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 import { Base64 } from 'js-base64';
-import _ from 'lodash';
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
@@ -70,7 +69,6 @@ export class LoginService {
     this.username.next(this.getCacheItem(this.USER_KEY));
     this.sessionState.next(SessionState.NO_USER_SESSION);
     this.queryAuthMethod();
-
   }
 
   queryAuthMethod(): void {
@@ -79,7 +77,7 @@ export class LoginService {
       });
   }
 
-  checkAuth(token: string, method: string, rememberMe = false, userSubmission = false): Observable<boolean> {
+  checkAuth(token: string, method: string, rememberMe = false): Observable<boolean> {
 
     if (method === 'Basic') {
       token = Base64.encodeURL(token);
@@ -105,7 +103,7 @@ export class LoginService {
       tap((jsonResp: AuthV2Response) => {
         if(jsonResp.meta.status === 'OK') {
           this.completeAuthMethod(method);
-          this.rememberToken(token, rememberMe, userSubmission);
+          this.rememberToken(token, rememberMe);
           this.setUsername(jsonResp.data.result.username);
           this.sessionState.next(SessionState.CREATING_USER_SESSION);
         }
@@ -159,18 +157,16 @@ export class LoginService {
     this.sessionState.next(SessionState.NO_USER_SESSION);
   }
 
-  private rememberToken(token: string, rememberMe: boolean, userSubmission: boolean): void {
+  setSessionState(state: SessionState): void {
+    this.sessionState.next(state);
+  }
+
+  private rememberToken(token: string, rememberMe: boolean): void {
     this.token.next(token);
 
     if(rememberMe) {
       this.setCacheItem(this.TOKEN_KEY, token);
-    } else if (userSubmission && !rememberMe) {
-      this.removeCacheItem(this.TOKEN_KEY);
     }
-  }
-
-  setSessionState(state: SessionState): void {
-    this.sessionState.next(state);
   }
 
   private setUsername(username: string): void {
