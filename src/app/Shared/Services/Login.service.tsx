@@ -70,7 +70,7 @@ export class LoginService {
   }
 
   queryAuthMethod(): void {
-      this.checkAuth('', 'Basic').subscribe(() => {
+      this.checkAuth('', '').subscribe(() => {
         ; // check auth once at component load to query the server's auth method
       });
   }
