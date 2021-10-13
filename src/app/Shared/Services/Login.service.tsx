@@ -37,7 +37,7 @@
  */
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, concatMap, first, tap } from 'rxjs/operators';
+import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
 
 export class LoginService {
 
@@ -82,13 +82,16 @@ export class LoginService {
         return response.json();
       }),
       first(),
-      tap((response: any) => {
-        if(response.ok) {
+      tap((jsonResp: AuthV2Response) => {
+        if(jsonResp.meta.status === 'OK') {
           this.completeAuthMethod(method);
-          this.setUsername(response.data.result.username);
+          this.setUsername(jsonResp.data.result.username);
           this.token.next(token);
           this.authenticated.next(true);
         }
+      }),
+      map((jsonResp: AuthV2Response) => {
+        return jsonResp.meta.status === 'OK';
       }),
       catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e));
@@ -178,4 +181,25 @@ export class LoginService {
     sessionStorage.removeItem(key);
   }
 
+}
+
+interface ApiResponse {
+  meta: Meta;
+  data: Object;
+}
+
+interface Meta {
+  status: string;
+  type: string;
+}
+
+interface AuthV2Response extends ApiResponse {
+  data: AuthResult;
+}
+interface AuthResult {
+  result: Username;
+}
+
+interface Username {
+  username: string;
 }
