@@ -49,7 +49,6 @@ export enum SessionState {
 export class LoginService {
 
   private readonly TOKEN_KEY: string = 'token';
-  private readonly METHOD_KEY: string = 'method';
   private readonly USER_KEY: string = 'user';
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
@@ -65,7 +64,6 @@ export class LoginService {
     }
     this.authority = apiAuthority;
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
-    this.authMethod.next(this.getCacheItem(this.METHOD_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
     this.sessionState.next(SessionState.NO_USER_SESSION);
     this.queryAuthMethod();
@@ -178,7 +176,6 @@ export class LoginService {
 
   private completeAuthMethod(method: string): void {
     this.authMethod.next(method);
-    this.setCacheItem(this.METHOD_KEY, method);
     this.authMethod.complete();
   }
 
