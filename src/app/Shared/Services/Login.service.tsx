@@ -194,12 +194,9 @@ interface Meta {
 }
 
 interface AuthV2Response extends ApiResponse {
-  data: AuthResult;
-}
-interface AuthResult {
-  result: Username;
-}
-
-interface Username {
-  username: string;
+  data: {
+    result: {
+      username: string;
+    }
+  };
 }
