@@ -38,6 +38,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { 
+  Brand,
   Button,
   Card, 
   CardTitle, 
@@ -62,31 +63,31 @@ const NotFound: React.FunctionComponent = () => (
       One of the following pages might have what you're looking for.
     </EmptyStateBody>
     <EmptyStateSecondaryActions>
-      <Card>
+      <Card className='pf-c-card-not-found'>
         <CardTitle>About</CardTitle>
         <CardBody>Access links containing further information about Cryostat.</CardBody>
-        <CardFooter>
+        <CardFooter className='pf-c-card-not-found__footer'>
           <Link to="/about">View information about Cryostat</Link>
         </CardFooter>
       </Card>
-      <Card>
+      <Card className='pf-c-card-not-found'>
         <CardTitle>Recordings</CardTitle>
-        <CardBody>Create, view and archive JFR recordings on targets JVMs</CardBody>
-        <CardFooter>
+        <CardBody>Create, view and archive JFR recordings on targets JVMs.</CardBody>
+        <CardFooter className='pf-c-card-not-found__footer'>
           <Link to="/recordings">View recordings</Link>
         </CardFooter>
       </Card>
-      <Card>
+      <Card className='pf-c-card-not-found'>
         <CardTitle>Events</CardTitle>
         <CardBody>View available JFR event templates and types for target JVMs, as well as upload custom templates.</CardBody>
-        <CardFooter>
+        <CardFooter className='pf-c-card-not-found__footer'>
           <Link to="/events">View events</Link>
         </CardFooter>
       </Card>
-      <Card>
+      <Card className='pf-c-card-not-found'>
         <CardTitle>Security</CardTitle>
-        <CardBody>Upload SSL certificates to secure communication channels with Cryostat</CardBody>
-        <CardFooter>
+        <CardBody>Upload SSL certificates to secure communication channels with Cryostat.</CardBody>
+        <CardFooter className='pf-c-card-not-found__footer'>
           <Link to="/security">View security</Link>
         </CardFooter>
       </Card>
