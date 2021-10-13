@@ -50,7 +50,6 @@ import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { About } from './About/About';
-import { combineLatest } from 'rxjs';
 import { SessionState } from './Shared/Services/Login.service';
 
 let routeFocusTimer: number;
@@ -175,15 +174,9 @@ const AppRoutes = () => {
   const [showDashboard, setShowDashboard] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.login.getSessionState().subscribe(
-      (sessionState) => {
-        if(sessionState === SessionState.USER_SESSION) {
-          setShowDashboard(true);
-        } else {
-          setShowDashboard(false);
-        }
-      }
-    );
+    const sub = context.login
+      .getSessionState()
+      .subscribe(sessionState => setShowDashboard(sessionState === SessionState.USER_SESSION));
     return () => sub.unsubscribe();
   }, [context, context.login, setShowDashboard]);
 

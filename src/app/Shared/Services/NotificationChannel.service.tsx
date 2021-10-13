@@ -39,7 +39,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { concatMap, debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
 import { LoginService, SessionState } from './Login.service';
