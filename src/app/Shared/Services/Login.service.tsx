@@ -105,6 +105,9 @@ export class LoginService {
           this.completeAuthMethod(method);
           this.setUsername(jsonResp.data.result.username);
           this.token.next(token);
+          if(rememberMe) {
+            this.rememberToken(token);
+          }
           this.sessionState.next(SessionState.CREATING_USER_SESSION);
         }
       }),
