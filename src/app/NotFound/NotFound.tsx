@@ -37,12 +37,9 @@
  */
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { NotFoundCard } from './NotFoundCard';
 import { 
   Button,
-  Card, 
-  CardTitle, 
-  CardBody, 
-  CardFooter,
   EmptyState,
   EmptyStateIcon,
   EmptyStateBody,
@@ -62,34 +59,30 @@ const NotFound: React.FunctionComponent = () => (
       One of the following pages might have what you're looking for.
     </EmptyStateBody>
     <EmptyStateSecondaryActions>
-      <Card className='pf-c-card-not-found'>
-        <CardTitle>About</CardTitle>
-        <CardBody>Get information, help, or support for Cryostat.</CardBody>
-        <CardFooter className='pf-c-card-not-found__footer'>
-          <Link to="/about">View about</Link>
-        </CardFooter>
-      </Card>
-      <Card className='pf-c-card-not-found'>
-        <CardTitle>Recordings</CardTitle>
-        <CardBody>Create, view and archive JFR recordings on targets JVMs.</CardBody>
-        <CardFooter className='pf-c-card-not-found__footer'>
-          <Link to="/recordings">View recordings</Link>
-        </CardFooter>
-      </Card>
-      <Card className='pf-c-card-not-found'>
-        <CardTitle>Events</CardTitle>
-        <CardBody>View available JFR event templates and types for target JVMs, as well as upload custom templates.</CardBody>
-        <CardFooter className='pf-c-card-not-found__footer'>
-          <Link to="/events">View events</Link>
-        </CardFooter>
-      </Card>
-      <Card className='pf-c-card-not-found'>
-        <CardTitle>Security</CardTitle>
-        <CardBody>Upload SSL certificates for Cryostat to trust when communicating with target applications.</CardBody>
-        <CardFooter className='pf-c-card-not-found__footer'>
-          <Link to="/security">View security</Link>
-        </CardFooter>
-      </Card>
+      <NotFoundCard
+        title={'About'}
+        bodyText={'Get information, help, or support for Cryostat.'}
+        linkText={'View about'}
+        linkPath={'/about'}
+      />
+      <NotFoundCard
+        title={'Recordings'}
+        bodyText={'Create, view and archive JFR recordings on target JVMs.'}
+        linkText={'View recordings'}
+        linkPath={'/recordings'}
+      />
+      <NotFoundCard
+        title={'Events'}
+        bodyText={'View available JFR event templates and types for target JVMs, as well as upload custom templates.'}
+        linkText={'View events'}
+        linkPath={'/events'}
+      />
+      <NotFoundCard
+        title={'Security'}
+        bodyText={'Upload SSL certificates for Cryostat to trust when communicating with target applications.'}
+        linkText={'View security'}
+        linkPath={'/security'}
+      />
     </EmptyStateSecondaryActions>
     <Button variant="primary" component={props => <Link {...props} to="/"/>}>Take me home</Button>
   </EmptyState>
