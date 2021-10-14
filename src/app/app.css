@@ -43,6 +43,16 @@ html, body, #root {
   height: 8em;
 }
 
+.pf-c-card-not-found {
+  text-align: left;
+  margin-left: 1rem;
+  width: 20rem;
+}
+
+.pf-c-card-not-found__footer {
+  padding-top: 2rem;
+}
+
 .cryostat-logo {
   height: 2em;
 }

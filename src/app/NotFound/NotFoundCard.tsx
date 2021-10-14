@@ -35,57 +35,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { NotFoundCard } from './NotFoundCard';
-import { 
-  Button,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateBody,
-  EmptyStateSecondaryActions,
-  Title
-} from '@patternfly/react-core';
-import '@app/app.css'
-import MapIcon from '@patternfly/react-icons/dist/esm/icons/map-marked-alt-icon';
+import { Card, CardTitle, CardBody, CardFooter } from '@patternfly/react-core';
 
-const NotFound: React.FunctionComponent = () => (
-  <EmptyState>
-    <EmptyStateIcon icon={MapIcon} />
-    <Title headingLevel="h4" size="lg" >
-      404: We couldn't find that page
-    </Title>
-    <EmptyStateBody>
-      One of the following pages might have what you're looking for.
-    </EmptyStateBody>
-    <EmptyStateSecondaryActions>
-      <NotFoundCard
-        title='About'
-        bodyText='Get information, help, or support for Cryostat.'
-        linkText='View about'
-        linkPath='/about'
-      />
-      <NotFoundCard
-        title='Recordings'
-        bodyText='Create, view and archive JFR recordings on target JVMs.'
-        linkText='View recordings'
-        linkPath='/recordings'
-      />
-      <NotFoundCard
-        title='Events'
-        bodyText='View available JFR event templates and types for target JVMs, as well as upload custom templates.'
-        linkText='View events'
-        linkPath='/events'
-      />
-      <NotFoundCard
-        title='Security'
-        bodyText='Upload SSL certificates for Cryostat to trust when communicating with target applications.'
-        linkText='View security'
-        linkPath='/security'
-      />
-    </EmptyStateSecondaryActions>
-    <Button variant="primary" component={props => <Link {...props} to="/"/>}>Take me home</Button>
-  </EmptyState>
-)
-
-export { NotFound };
+export const NotFoundCard = ({title, bodyText, linkText, linkPath}) => {
+  return(<>
+    <Card className='pf-c-card-not-found'>
+      <CardTitle>{title}</CardTitle>
+      <CardBody>{bodyText}</CardBody>
+      <CardFooter className='pf-c-card-not-found__footer'>
+        <Link to={linkPath}>{linkText}</Link>
+      </CardFooter>
+    </Card>
+    </>);
+}
