@@ -64,9 +64,9 @@ const NotFound: React.FunctionComponent = () => (
     <EmptyStateSecondaryActions>
       <Card className='pf-c-card-not-found'>
         <CardTitle>About</CardTitle>
-        <CardBody>Access links containing further information about Cryostat.</CardBody>
+        <CardBody>Get information, help, or support for Cryostat.</CardBody>
         <CardFooter className='pf-c-card-not-found__footer'>
-          <Link to="/about">View information about Cryostat</Link>
+          <Link to="/about">View about</Link>
         </CardFooter>
       </Card>
       <Card className='pf-c-card-not-found'>
@@ -85,7 +85,7 @@ const NotFound: React.FunctionComponent = () => (
       </Card>
       <Card className='pf-c-card-not-found'>
         <CardTitle>Security</CardTitle>
-        <CardBody>Upload SSL certificates to secure communication channels with Cryostat.</CardBody>
+        <CardBody>Upload SSL certificates for Cryostat to trust when communicating with target applications.</CardBody>
         <CardFooter className='pf-c-card-not-found__footer'>
           <Link to="/security">View security</Link>
         </CardFooter>
