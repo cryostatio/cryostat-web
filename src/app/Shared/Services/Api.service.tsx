@@ -42,7 +42,7 @@ import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 
-type ApiVersion = "v1" | "v2";
+type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
 
 export class HttpError extends Error {
   readonly httpResponse: Response;
@@ -333,30 +333,62 @@ export class ApiService {
   }
 
   downloadReport(recording: SavedRecording): void {
-    this.downloadFile(
-      recording.reportUrl,
-      `${recording.name}.report.html`
-    );
+    const body = new window.FormData();
+    body.append('resource', recording.reportUrl.replace('/api/v1', '/api/beta'));
+    this.sendRequest('beta', 'jwt', {
+      method: 'POST',
+      body,
+    })
+      .pipe(
+        concatMap(resp => resp.json()),
+        map(json => json.data.result.resourceUrl)
+      ).subscribe(resourceUrl => {
+        this.downloadFile(
+          resourceUrl,
+          `${recording.name}.report.html`
+          );
+      });
   }
 
   downloadRecording(recording: SavedRecording): void {
-    this.downloadFile(
-      recording.downloadUrl,
-      recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
-      );
+    const body = new window.FormData();
+    body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/beta'));
+    this.sendRequest('beta', 'jwt', {
+      method: 'POST',
+      body,
+    })
+      .pipe(
+        concatMap(resp => resp.json()),
+        map(json => json.data.result.resourceUrl)
+      ).subscribe(resourceUrl => {
+        this.downloadFile(
+          resourceUrl,
+          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
+          );
+      });
   }
 
   downloadTemplate(template: EventTemplate): void {
-    console.log('api.downloadTemplate called', { template });
     this.target.target()
     .pipe(first(), map(target =>
-      `${this.login.authority}/api/v1/targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
+      `${this.login.authority}/api/beta/targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
     ))
-    .subscribe(url => {
-      this.downloadFile(
-        url,
-        `${template.name}.jfc`
-      )
+    .subscribe(resource => {
+      const body = new window.FormData();
+      body.append('resource', resource);
+      this.sendRequest('beta', 'jwt', {
+        method: 'POST',
+        body,
+      })
+        .pipe(
+          concatMap(resp => resp.json()),
+          map(json => json.data.result.resourceUrl),
+        ).subscribe(resourceUrl => {
+          this.downloadFile(
+            resourceUrl,
+            `${template.name}.jfc`
+            );
+        });
     });
   }
 
