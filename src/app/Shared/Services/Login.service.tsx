@@ -37,7 +37,7 @@
  */
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, first, map, tap } from 'rxjs/operators';
+import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
 
 export class LoginService {
 
@@ -67,7 +67,7 @@ export class LoginService {
 
     token = this.useCacheItemIfAvailable(this.TOKEN_KEY, token);
 
-    return fromFetch(`${this.authority}/api/v1/auth`, {
+    return fromFetch(`${this.authority}/api/v2.1/auth`, {
       credentials: 'include',
       mode: 'cors',
       method: 'POST',
@@ -75,27 +75,29 @@ export class LoginService {
       headers: this.getAuthHeaders(token, method),
     })
     .pipe(
-      map(response => {
+      concatMap(response => {
         if (!this.authMethod.isStopped) {
           this.authMethod.next(response.ok ? method : (response.headers.get('X-WWW-Authenticate') || ''));
         }
-        return response.ok;
+        return response.json();
+      }),
+      first(),
+      tap((jsonResp: AuthV2Response) => {
+        if(jsonResp.meta.status === 'OK') {
+          this.completeAuthMethod(method);
+          this.setUsername(jsonResp.data.result.username);
+          this.token.next(token);
+          this.authenticated.next(true);
+        }
+      }),
+      map((jsonResp: AuthV2Response) => {
+        return jsonResp.meta.status === 'OK';
       }),
       catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e));
         this.authMethod.complete();
         return of(false);
       }),
-      first(),
-      tap(v => {
-        if (v) {
-          this.authMethod.next(method);
-          this.authMethod.complete();
-          this.setCacheItem(this.METHOD_KEY, method);
-          this.token.next(token);
-          this.authenticated.next(true);
-        }
-      })
     );
   }
 
@@ -137,17 +139,23 @@ export class LoginService {
     this.authenticated.next(false);
   }
 
-  setUsername(username: string): void {
-    this.setCacheItem(this.USER_KEY, username);
-    this.username.next(username);
-  }
-
   rememberToken(token: string): void {
     this.setCacheItem(this.TOKEN_KEY, token);
   }
 
   forgetToken(): void {
     this.removeCacheItem(this.TOKEN_KEY);
+  }
+
+  private setUsername(username: string): void {
+    this.setCacheItem(this.USER_KEY, username);
+    this.username.next(username);
+  }
+
+  private completeAuthMethod(method: string): void {
+    this.authMethod.next(method);
+    this.setCacheItem(this.METHOD_KEY, method);
+    this.authMethod.complete();
   }
 
   private getCacheItem(key: string): string {
@@ -173,4 +181,22 @@ export class LoginService {
     sessionStorage.removeItem(key);
   }
 
+}
+
+interface ApiResponse {
+  meta: Meta;
+  data: Object;
+}
+
+interface Meta {
+  status: string;
+  type: string;
+}
+
+interface AuthV2Response extends ApiResponse {
+  data: {
+    result: {
+      username: string;
+    }
+  };
 }

@@ -75,7 +75,6 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
 
   const handleSubmit = React.useCallback((evt) => {
     props.onSubmit(evt, `${username}:${password}`, 'Basic', rememberMe);
-    context.login.setUsername(username);
   }, [props, props.onSubmit, username, password, context.login, rememberMe]);
 
   // FIXME Patternfly Form component onSubmit is not triggered by Enter keydown when the Form contains
