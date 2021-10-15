@@ -335,7 +335,7 @@ export class ApiService {
   downloadReport(recording: SavedRecording): void {
     const body = new window.FormData();
     body.append('resource', recording.reportUrl.replace('/api/v1', '/api/beta'));
-    this.sendRequest('beta', 'jwt', {
+    this.sendRequest('beta', 'auth/token', {
       method: 'POST',
       body,
     })
@@ -353,7 +353,7 @@ export class ApiService {
   downloadRecording(recording: SavedRecording): void {
     const body = new window.FormData();
     body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/beta'));
-    this.sendRequest('beta', 'jwt', {
+    this.sendRequest('beta', 'auth/token', {
       method: 'POST',
       body,
     })
@@ -376,7 +376,7 @@ export class ApiService {
     .subscribe(resource => {
       const body = new window.FormData();
       body.append('resource', resource);
-      this.sendRequest('beta', 'jwt', {
+      this.sendRequest('beta', 'auth/token', {
         method: 'POST',
         body,
       })
