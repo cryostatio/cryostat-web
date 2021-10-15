@@ -103,7 +103,7 @@ export class LoginService {
       tap((jsonResp: AuthV2Response) => {
         if(jsonResp.meta.status === 'OK') {
           this.completeAuthMethod(method);
-          this.rememberToken(token, rememberMe);
+          this.decideRememberToken(token, rememberMe);
           this.setUsername(jsonResp.data.result.username);
           this.sessionState.next(SessionState.CREATING_USER_SESSION);
         }
@@ -161,11 +161,13 @@ export class LoginService {
     this.sessionState.next(state);
   }
 
-  private rememberToken(token: string, rememberMe: boolean): void {
+  private decideRememberToken(token: string, rememberMe: boolean): void {
     this.token.next(token);
 
-    if(rememberMe) {
+    if(rememberMe && !!token) {
       this.setCacheItem(this.TOKEN_KEY, token);
+    } else {
+      this.removeCacheItem(this.TOKEN_KEY);
     }
   }
 
