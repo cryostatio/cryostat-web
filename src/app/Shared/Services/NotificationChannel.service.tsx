@@ -133,9 +133,7 @@ export class NotificationChannel {
             return;
           }
 
-          if(!token) {
-            return;
-          } else if (authMethod === 'Bearer') {
+          if (authMethod === 'Bearer') {
             subprotocol = `base64url.bearer.authorization.cryostat.${Base64.encodeURL(token)}`;
           } else if (authMethod === 'Basic') {
             subprotocol = `basic.authorization.cryostat.${token}`;
