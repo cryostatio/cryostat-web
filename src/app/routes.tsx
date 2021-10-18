@@ -50,7 +50,7 @@ import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { About } from './About/About';
-import { combineLatest } from 'rxjs';
+import { SessionState } from './Shared/Services/Login.service';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -174,18 +174,9 @@ const AppRoutes = () => {
   const [showDashboard, setShowDashboard] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = combineLatest(context.notificationChannel.isReady(), context.login.isAuthenticated()).subscribe(
-      (parts) => {
-        const connected = parts[0].ready;
-        const authenticated = parts[1];
-
-        if (connected && authenticated) {
-          setShowDashboard(true);
-        } else {
-          setShowDashboard(false);
-        }
-      }
-    );
+    const sub = context.login
+      .getSessionState()
+      .subscribe(sessionState => setShowDashboard(sessionState === SessionState.USER_SESSION));
     return () => sub.unsubscribe();
   }, [context, context.login, setShowDashboard]);
 

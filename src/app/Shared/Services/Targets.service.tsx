@@ -43,7 +43,7 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { NotificationCategory, NotificationChannel } from './NotificationChannel.service';
 import { Observable, BehaviorSubject, of, EMPTY } from 'rxjs';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
-import { LoginService } from './Login.service';
+import { LoginService, SessionState } from './Login.service';
 
 export interface TargetDiscoveryEvent {
   kind: 'LOST' | 'FOUND';
@@ -59,8 +59,8 @@ export class TargetsService {
     private readonly login: LoginService,
     notificationChannel: NotificationChannel,
     ) {
-    login.isAuthenticated().pipe(
-      concatMap((authenticated) => authenticated ? this.queryForTargets() : EMPTY)
+    login.getSessionState().pipe(
+      concatMap((sessionState) => sessionState === SessionState.USER_SESSION ? this.queryForTargets() : EMPTY)
       )
       .subscribe(() => {
       ; // just trigger a startup query

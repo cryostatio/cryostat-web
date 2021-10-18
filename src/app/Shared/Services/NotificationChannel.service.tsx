@@ -36,13 +36,13 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
-import { LoginService } from './Login.service';
+import { LoginService, SessionState } from './Login.service';
 
 interface RecordingNotificationEvent {
   recording: string;
@@ -119,18 +119,21 @@ export class NotificationChannel {
         })
       );
 
-    combineLatest(notificationsUrl, this.login.getToken(), this.login.getAuthMethod())
-      .pipe(distinctUntilChanged(_.isEqual))
-      .subscribe({
+    combineLatest([notificationsUrl, this.login.getToken(), this.login.getAuthMethod(), this.login.getSessionState(), timer(0, 5000)])
+    .pipe(distinctUntilChanged(_.isEqual))
+    .subscribe({
         next: (parts: string[]) => {
           const url = parts[0];
           const token = parts[1];
           const authMethod = parts[2];
+          const sessionState = parseInt(parts[3]);
           let subprotocol: string | undefined = undefined;
 
-          if(!token) {
+          if(sessionState !== SessionState.CREATING_USER_SESSION) {
             return;
-          } else if (authMethod === 'Bearer') {
+          }
+
+          if (authMethod === 'Bearer') {
             subprotocol = `base64url.bearer.authorization.cryostat.${Base64.encodeURL(token)}`;
           } else if (authMethod === 'Basic') {
             subprotocol = `basic.authorization.cryostat.${token}`;
@@ -146,6 +149,7 @@ export class NotificationChannel {
             openObserver: {
               next: () => {
                 this._ready.next({ ready: true });
+                this.login.setSessionState(SessionState.USER_SESSION);
               }
             },
             closeObserver: {
@@ -153,28 +157,34 @@ export class NotificationChannel {
                 let code: CloseStatus;
                 let msg: string | undefined = undefined;
                 let fn: Function;
+                let sessionState: SessionState;
                 switch (evt.code) {
                   case CloseStatus.LOGGED_OUT:
                     code = CloseStatus.LOGGED_OUT;
                     msg = 'Logout success';
                     fn = this.notifications.info;
+                    sessionState = SessionState.NO_USER_SESSION;
                     break;
                   case CloseStatus.PROTOCOL_FAILURE:
                     code = CloseStatus.PROTOCOL_FAILURE;
                     msg = 'Authentication failed';
                     fn = this.notifications.danger;
+                    sessionState = SessionState.NO_USER_SESSION;
                     break;
                   case CloseStatus.INTERNAL_ERROR:
                     code = CloseStatus.INTERNAL_ERROR;
                     msg = 'Internal server error';
                     fn = this.notifications.danger;
+                    sessionState = SessionState.CREATING_USER_SESSION;
                     break;
                   default:
                     code = CloseStatus.UNKNOWN;
                     fn = this.notifications.info;
+                    sessionState = SessionState.CREATING_USER_SESSION;
                     break;
                 }
                 this._ready.next({ ready: false, code });
+                this.login.setSessionState(sessionState);
                 fn.apply(this.notifications, ['WebSocket connection lost', msg, NotificationCategory.WsClientActivity]);
               }
             }
@@ -198,6 +208,7 @@ export class NotificationChannel {
       },
       error: (err: any) => this.logError('Notifications URL configuration', err)
     });
+
   }
 
   isReady(): Observable<ReadyState> {

@@ -35,20 +35,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { Base64 } from 'js-base64';
 import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
 
+export enum SessionState {
+  NO_USER_SESSION,
+  CREATING_USER_SESSION,
+  USER_SESSION
+}
+
 export class LoginService {
 
   private readonly TOKEN_KEY: string = 'token';
-  private readonly METHOD_KEY: string = 'method';
   private readonly USER_KEY: string = 'user';
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<string>(1);
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
-  private readonly authenticated = new ReplaySubject<boolean>(1);
+  private readonly sessionState = new ReplaySubject<SessionState>(1);
   readonly authority: string;
 
   constructor() {
@@ -58,12 +64,22 @@ export class LoginService {
     }
     this.authority = apiAuthority;
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
-    this.authMethod.next(this.getCacheItem(this.METHOD_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
-    this.authenticated.next(false);
+    this.sessionState.next(SessionState.NO_USER_SESSION);
+    this.queryAuthMethod();
   }
 
-  checkAuth(token: string, method: string): Observable<boolean> {
+  queryAuthMethod(): void {
+      this.checkAuth('', '').subscribe(() => {
+        ; // check auth once at component load to query the server's auth method
+      });
+  }
+
+  checkAuth(token: string, method: string, rememberMe = false): Observable<boolean> {
+
+    if (method === 'Basic') {
+      token = Base64.encodeURL(token);
+    }
 
     token = this.useCacheItemIfAvailable(this.TOKEN_KEY, token);
 
@@ -85,9 +101,9 @@ export class LoginService {
       tap((jsonResp: AuthV2Response) => {
         if(jsonResp.meta.status === 'OK') {
           this.completeAuthMethod(method);
+          this.decideRememberToken(token, rememberMe);
           this.setUsername(jsonResp.data.result.username);
-          this.token.next(token);
-          this.authenticated.next(true);
+          this.sessionState.next(SessionState.CREATING_USER_SESSION);
         }
       }),
       map((jsonResp: AuthV2Response) => {
@@ -122,8 +138,8 @@ export class LoginService {
     return this.username.asObservable();
   }
 
-  isAuthenticated(): Observable<boolean> {
-    return this.authenticated.asObservable();
+  getSessionState(): Observable<SessionState> {
+    return this.sessionState.asObservable();
   }
 
   loggedOut(): Observable<void> {
@@ -132,19 +148,25 @@ export class LoginService {
 
   setLoggedOut(): void {
     this.removeCacheItem(this.USER_KEY);
-    this.forgetToken();
+    this.removeCacheItem(this.TOKEN_KEY);
     this.token.next('');
     this.username.next('');
     this.logout.next();
-    this.authenticated.next(false);
+    this.sessionState.next(SessionState.NO_USER_SESSION);
   }
 
-  rememberToken(token: string): void {
-    this.setCacheItem(this.TOKEN_KEY, token);
+  setSessionState(state: SessionState): void {
+    this.sessionState.next(state);
   }
 
-  forgetToken(): void {
-    this.removeCacheItem(this.TOKEN_KEY);
+  private decideRememberToken(token: string, rememberMe: boolean): void {
+    this.token.next(token);
+
+    if(rememberMe && !!token) {
+      this.setCacheItem(this.TOKEN_KEY, token);
+    } else {
+      this.removeCacheItem(this.TOKEN_KEY);
+    }
   }
 
   private setUsername(username: string): void {
@@ -154,7 +176,6 @@ export class LoginService {
 
   private completeAuthMethod(method: string): void {
     this.authMethod.next(method);
-    this.setCacheItem(this.METHOD_KEY, method);
     this.authMethod.complete();
   }
 
