@@ -36,57 +36,21 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '../Notifications/Notifications';
-import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
-import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
-import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
-import { NoopAuthForm } from './NoopAuthForm';
+import { FormProps } from './FormProps';
 
-export const Login = () => {
-  const serviceContext = React.useContext(ServiceContext);
-  const notifications = React.useContext(NotificationsContext);
-  const [authMethod, setAuthMethod] = React.useState('');
-
-  const handleSubmit = React.useCallback((evt, token, authMethod, rememberMe) => {
-    setAuthMethod(authMethod);
-
-    const sub = serviceContext.login.checkAuth(token, authMethod, rememberMe)
-      .subscribe(authSuccess => {
-        if(!authSuccess) {
-          notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
-        }
-      });
-    () => sub.unsubscribe();
-
-    evt.preventDefault();
-  }, [serviceContext, serviceContext.login, setAuthMethod]);
+export const NoopAuthForm: React.FunctionComponent<FormProps> = (props) => {
 
   React.useEffect(() => {
-    const sub = serviceContext.login.getAuthMethod().subscribe(setAuthMethod);
-    return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.login, setAuthMethod]);
+    const noopEvt = {
+      preventDefault: () => {}
+    } as Event;
+
+    props.onSubmit(noopEvt, '', 'None', false);
+  }, [props.onSubmit]);
 
   return (
-    <PageSection>
-      <Card>
-        <CardHeader>
-          <Title headingLevel="h1" size="lg">Login</Title>
-        </CardHeader>
-        <CardBody>
-          {{
-            'Basic': <BasicAuthForm onSubmit={handleSubmit} />,
-            'Bearer': <BearerAuthForm onSubmit={handleSubmit} />,
-            'None': <NoopAuthForm onSubmit={handleSubmit} />
-          }[authMethod]}
-        </CardBody>
-        <CardFooter>
-          {
-            authMethod === 'Basic' ? <BasicAuthDescriptionText /> : <BearerAuthDescriptionText />
-          }
-        </CardFooter>
-      </Card>
-    </PageSection>
+    <>
+    </>
   );
 
 }

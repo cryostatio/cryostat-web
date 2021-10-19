@@ -90,14 +90,13 @@ export class LoginService {
     .pipe(
       concatMap(response => {
         if (!this.authMethod.isStopped) {
-          this.authMethod.next(response.ok ? method : (response.headers.get('X-WWW-Authenticate') || ''));
+          this.completeAuthMethod(response.headers.get('X-WWW-Authenticate') || '');
         }
         return response.json();
       }),
       first(),
       tap((jsonResp: AuthV2Response) => {
         if(jsonResp.meta.status === 'OK') {
-          this.completeAuthMethod(method);
           this.decideRememberToken(token, rememberMe);
           this.setUsername(jsonResp.data.result.username);
           this.sessionState.next(SessionState.CREATING_USER_SESSION);
