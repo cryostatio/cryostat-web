@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { EmptySnapshotWarningModal } from './EmptySnapshotWarningModal';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
@@ -52,6 +53,7 @@ export const SnapshotRecordingForm = (props) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
+  const [showAuthModal, setShowAuthModal] = React.useState(false);
 
   const handleCreateSnapshot = () => {
     addSubscription(
@@ -62,14 +64,22 @@ export const SnapshotRecordingForm = (props) => {
         first())
       .subscribe(activeRecordings => {
         if (activeRecordings.length == 0) {
-          
-
+          setShowAuthModal(true);
         } else {
           props.onSubmit;
         }
       })
     );
   };
+
+  const dismissWarningModal = () => {
+    setShowAuthModal(false);
+  }
+
+  const handleEmptySnapshotCreation = () => {
+    dismissWarningModal();
+    props.onSubmit();
+  }
 
   return (<>
     <Form isHorizontal>
@@ -85,5 +95,6 @@ export const SnapshotRecordingForm = (props) => {
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
+    <EmptySnapshotWarningModal visible={showAuthModal} onCancel={dismissWarningModal} onSubmit={handleEmptySnapshotCreation}/>
   </>);
 }

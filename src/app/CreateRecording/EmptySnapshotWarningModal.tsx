@@ -55,7 +55,7 @@ export const EmptySnapshotWarningModal: React.FunctionComponent<EmptySnapshotWar
       title="Warning: Empty Snapshot"
       description="Cryostat is not aware of any Active source recordings for the Snapshot to take event data from, and that the Snapshot is therefore likely to be empty"
     >
-      <ActionGroup>
+    <ActionGroup>
         <Button variant="primary" onClick={props.onSubmit}>Yes</Button>
         <Button variant="secondary" onClick={props.onCancel}>No</Button>
       </ActionGroup>
