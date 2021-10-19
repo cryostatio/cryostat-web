@@ -35,55 +35,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Recording } from '@app/Shared/Services/Api.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Button, Form, Modal, Text, TextVariants } from '@patternfly/react-core';
-import { useHistory } from 'react-router-dom';
-import { filter, concatMap, first } from 'rxjs/operators';
 
-export interface SnapshotRecordingFormProps {
-  onSubmit: Function;
+import * as React from 'react';
+import { ActionGroup, Button, Modal } from '@patternfly/react-core';
+
+export interface EmptySnapshotWarningModalProps {
+    visible: boolean;
+    onCancel: () => void;
+    onSubmit: () => void;
 }
 
-export const SnapshotRecordingForm = (props) => {
-  const context = React.useContext(ServiceContext);
-  const history = useHistory();
-  const addSubscription = useSubscriptions();
-
-  const handleCreateSnapshot = () => {
-    addSubscription(
-      context.target.target()
-      .pipe(
-        filter(target => target !== NO_TARGET),
-        concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
-        first())
-      .subscribe(activeRecordings => {
-        if (activeRecordings.length == 0) {
-          
-
-        } else {
-          props.onSubmit;
-        }
-      })
-    );
-  };
-
-  return (<>
-    <Form isHorizontal>
-      <Text component={TextVariants.p}>
-        A Snapshot recording is one which contains all information about all
-        events that have been captured in the current session by <i>other,&nbsp;
-        non-snapshot</i> recordings. Snapshots do not themselves define which
-        events are enabled, their thresholds, or any other options. A Snapshot
-        is only ever in the STOPPED state from the moment it is created.
-      </Text>
+export const EmptySnapshotWarningModal: React.FunctionComponent<EmptySnapshotWarningModalProps> = (props) => {
+  return (
+    <Modal 
+      width={'40%'}
+      isOpen={props.visible}
+      showClose={true}
+      onClose={props.onCancel}
+      title="Warning: Empty Snapshot"
+      description="Cryostat is not aware of any Active source recordings for the Snapshot to take event data from, and that the Snapshot is therefore likely to be empty"
+    >
       <ActionGroup>
-        <Button variant="primary" onClick={handleCreateSnapshot}>Create</Button>
-        <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
+        <Button variant="primary" onClick={props.onSubmit}>Yes</Button>
+        <Button variant="secondary" onClick={props.onCancel}>No</Button>
       </ActionGroup>
-    </Form>
-  </>);
+    </Modal>
+  );
 }
