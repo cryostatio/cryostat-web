@@ -53,7 +53,7 @@ export const SnapshotRecordingForm = (props) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
-  const [showAuthModal, setShowAuthModal] = React.useState(false);
+  const [showWarningModal, setShowWarningModal] = React.useState(false);
 
   const handleCreateSnapshot = () => {
     addSubscription(
@@ -64,7 +64,7 @@ export const SnapshotRecordingForm = (props) => {
         first())
       .subscribe(activeRecordings => {
         if (activeRecordings.length == 0) {
-          setShowAuthModal(true);
+          setShowWarningModal(true);
         } else {
           props.onSubmit;
         }
@@ -73,7 +73,7 @@ export const SnapshotRecordingForm = (props) => {
   };
 
   const dismissWarningModal = () => {
-    setShowAuthModal(false);
+    setShowWarningModal(false);
   }
 
   const handleEmptySnapshotCreation = () => {
@@ -95,6 +95,6 @@ export const SnapshotRecordingForm = (props) => {
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
-    <EmptySnapshotWarningModal visible={showAuthModal} onCancel={dismissWarningModal} onSubmit={handleEmptySnapshotCreation}/>
+    <EmptySnapshotWarningModal visible={showWarningModal} onCancel={dismissWarningModal} onSubmit={handleEmptySnapshotCreation}/>
   </>);
 }
