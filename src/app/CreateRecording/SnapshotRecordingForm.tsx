@@ -66,7 +66,7 @@ export const SnapshotRecordingForm = (props) => {
         if (activeRecordings.length == 0) {
           setShowWarningModal(true);
         } else {
-          props.onSubmit;
+          props.onSubmit();
         }
       })
     );
@@ -76,7 +76,7 @@ export const SnapshotRecordingForm = (props) => {
     setShowWarningModal(false);
   }
 
-  const handleEmptySnapshotCreation = () => {
+  const handleCreateEmptySnapshot = () => {
     dismissWarningModal();
     props.onSubmit();
   }
@@ -95,6 +95,6 @@ export const SnapshotRecordingForm = (props) => {
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
-    <EmptySnapshotWarningModal visible={showWarningModal} onCancel={dismissWarningModal} onSubmit={handleEmptySnapshotCreation}/>
+    <EmptySnapshotWarningModal visible={showWarningModal} onCancel={dismissWarningModal} onSubmit={handleCreateEmptySnapshot}/>
   </>);
 }
