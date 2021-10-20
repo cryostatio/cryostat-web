@@ -57,7 +57,7 @@ export const EmptySnapshotWarningModal: React.FunctionComponent<EmptySnapshotWar
         <Button variant="primary" onClick={props.onYes}>
           Yes
         </Button>,
-        <Button variant="link" onClick={props.onNo}>
+        <Button variant="secondary" onClick={props.onNo}>
           No
         </Button>
       ]}
