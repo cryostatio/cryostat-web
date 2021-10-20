@@ -68,7 +68,6 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
   const addSubscription = useSubscriptions();
 
   const [activeTab, setActiveTab] = React.useState(0);
-  const [numSnapshotRecordings, setNumSnapshotRecordings] = React.useState(1);
 
   const handleCreateRecording = (recordingAttributes: RecordingAttributes): void => {
     addSubscription(
@@ -81,7 +80,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
       })
     );
   };
-
+ 
   const handleCreateSnapshot = (): void => {
     addSubscription(
       context.api.createSnapshot()
@@ -89,7 +88,6 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
       .subscribe(success => {
         if (success) {
           history.push('/recordings');
-          setNumSnapshotRecordings(numSnapshotRecordings + 1);
         }
       })
     );
@@ -109,7 +107,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
               />
             </Tab>
             <Tab eventKey={1} title="Snapshot Recording">
-              <SnapshotRecordingForm onSubmit={handleCreateSnapshot} numSnapshotRecordings={numSnapshotRecordings}/>
+              <SnapshotRecordingForm onSubmit={handleCreateSnapshot}/>
             </Tab>
           </Tabs>
         </CardBody>

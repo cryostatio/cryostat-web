@@ -41,18 +41,18 @@ import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Button, Form, Modal, Text, TextVariants } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 import { filter, concatMap, first } from 'rxjs/operators';
 
 export interface SnapshotRecordingFormProps {
   onSubmit: Function;
-  numSnapshotRecordings: number;
 }
 
 export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
+  const regEx : RegExp = /snapshot-[0-9]+/;
   const addSubscription = useSubscriptions();
   const [showWarningModal, setShowWarningModal] = React.useState(false);
 
@@ -64,12 +64,17 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
         concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
         first())
       .subscribe(recordings => {
-        if (recordings.length == 0 || props.numSnapshotRecordings == recordings.length) {
+        let numSnapshotRecordings: number = 0;
+        recordings.forEach((recording: Recording) => {
+          if(regEx.test(recording.name)) {
+            numSnapshotRecordings++;
+          }
+        });
+        if (recordings.length == 0 || numSnapshotRecordings == recordings.length) {
           setShowWarningModal(true);
         } else {
           props.onSubmit();
         }
-        window.console.error(`There are ${props.numSnapshotRecordings} Snapshot recordings are ${recordings.length} Active recordings`)
       })
     );
   };
@@ -79,7 +84,6 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
   }
 
   const handleCreateEmptySnapshot = () => {
-    window.console.error(`There are ${props.numSnapshotRecordings} Snapshot recordings`);
     dismissWarningModal();
     props.onSubmit();
   }
@@ -98,6 +102,6 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
-    <EmptySnapshotWarningModal visible={showWarningModal} onCancel={dismissWarningModal} onSubmit={handleCreateEmptySnapshot}/>
+    <EmptySnapshotWarningModal visible={showWarningModal} onNo={dismissWarningModal} onYes={handleCreateEmptySnapshot}/>
   </>);
 }

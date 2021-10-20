@@ -41,8 +41,8 @@ import { ActionGroup, Button, Modal } from '@patternfly/react-core';
 
 export interface EmptySnapshotWarningModalProps {
     visible: boolean;
-    onCancel: () => void;
-    onSubmit: () => void;
+    onYes: () => void;
+    onNo: () => void;
 }
 
 export const EmptySnapshotWarningModal: React.FunctionComponent<EmptySnapshotWarningModalProps> = (props) => {
@@ -51,14 +51,19 @@ export const EmptySnapshotWarningModal: React.FunctionComponent<EmptySnapshotWar
       width={'40%'}
       isOpen={props.visible}
       showClose={true}
-      onClose={props.onCancel}
+      onClose={props.onNo}
       title="Warning: Empty Snapshot"
-      description="Cryostat is not aware of any Active, non-Snapshot source recordings for the Snapshot to take event data from, therefore the Snapshot is likely to be empty"
+      actions={[
+        <Button variant="primary" onClick={props.onYes}>
+          Yes
+        </Button>,
+        <Button variant="link" onClick={props.onNo}>
+          No
+        </Button>
+      ]}
     >
-    <ActionGroup>
-        <Button variant="primary" onClick={props.onSubmit}>Yes</Button>
-        <Button variant="secondary" onClick={props.onCancel}>No</Button>
-      </ActionGroup>
+      Cryostat is not aware of any Active, non-Snapshot source recordings for the Snapshot to take event data from, 
+      therefore the Snapshot is likely to be empty. Do you still wish to proceed?
     </Modal>
   );
 }
