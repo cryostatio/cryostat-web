@@ -47,9 +47,10 @@ import { filter, concatMap, first } from 'rxjs/operators';
 
 export interface SnapshotRecordingFormProps {
   onSubmit: Function;
+  numSnapshotRecordings: number;
 }
 
-export const SnapshotRecordingForm = (props) => {
+export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
@@ -62,12 +63,13 @@ export const SnapshotRecordingForm = (props) => {
         filter(target => target !== NO_TARGET),
         concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
         first())
-      .subscribe(activeRecordings => {
-        if (activeRecordings.length == 0) {
+      .subscribe(recordings => {
+        if (recordings.length == 0 || props.numSnapshotRecordings == recordings.length) {
           setShowWarningModal(true);
         } else {
           props.onSubmit();
         }
+        window.console.error(`There are ${props.numSnapshotRecordings} Snapshot recordings are ${recordings.length} Active recordings`)
       })
     );
   };
@@ -77,6 +79,7 @@ export const SnapshotRecordingForm = (props) => {
   }
 
   const handleCreateEmptySnapshot = () => {
+    window.console.error(`There are ${props.numSnapshotRecordings} Snapshot recordings`);
     dismissWarningModal();
     props.onSubmit();
   }
