@@ -38,13 +38,14 @@
 import { Observable, from, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, first, tap } from 'rxjs/operators';
-import { ApiService, isActiveRecording, RecordingState, SavedRecording } from './Api.service';
+import { isActiveRecording, RecordingState, SavedRecording } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { Base64 } from 'js-base64';
+import { LoginService } from './Login.service';
 
 export class ReportService {
 
-  constructor(private api: ApiService, private notifications: Notifications) { }
+  constructor(private login: LoginService, private notifications: Notifications) { }
 
   report(recording: SavedRecording): Observable<string> {
     if (!recording?.reportUrl) {
@@ -54,7 +55,7 @@ export class ReportService {
     if (!!stored) {
       return of(stored);
     }
-    return this.api.getHeaders().pipe(
+    return this.login.getHeaders().pipe(
       concatMap(headers =>
         fromFetch(recording.reportUrl, {
           method: 'GET',
