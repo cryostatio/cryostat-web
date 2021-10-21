@@ -37,7 +37,7 @@
  */
 
 import * as React from 'react';
-import { ActionGroup, Button, Modal } from '@patternfly/react-core';
+import { Button, Modal } from '@patternfly/react-core';
 
 export interface EmptySnapshotWarningModalProps {
     visible: boolean;
