@@ -44,7 +44,6 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 import { filter, concatMap, first } from 'rxjs/operators';
-import { Recordings } from '@app/Recordings/Recordings';
 
 export interface SnapshotRecordingFormProps {
   onSubmit: Function;
