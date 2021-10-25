@@ -50,7 +50,8 @@ export enum SessionState {
 export enum AuthMethod {
   BASIC = 'Basic',
   BEARER = 'Bearer',
-  NONE = 'None'
+  NONE = 'None',
+  UNKNOWN = ''
 }
 
 export class LoginService {
@@ -58,7 +59,7 @@ export class LoginService {
   private readonly TOKEN_KEY: string = 'token';
   private readonly USER_KEY: string = 'user';
   private readonly token = new ReplaySubject<string>(1);
-  private readonly authMethod = new ReplaySubject<string>(1);
+  private readonly authMethod = new ReplaySubject<AuthMethod>(1);
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
   private readonly sessionState = new ReplaySubject<SessionState>(1);
@@ -199,7 +200,13 @@ export class LoginService {
   }
 
   private completeAuthMethod(method: string): void {
-    this.authMethod.next(method);
+    const validMethod = method as AuthMethod;
+
+    if(!!validMethod) {
+      this.authMethod.next(validMethod);
+    } else {
+      this.authMethod.next(AuthMethod.UNKNOWN);
+    }
     this.authMethod.complete();
   }
 
