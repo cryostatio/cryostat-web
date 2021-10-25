@@ -80,7 +80,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
       })
     );
   };
-
+ 
   const handleCreateSnapshot = (): void => {
     addSubscription(
       context.api.createSnapshot()
@@ -107,14 +107,13 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
               />
             </Tab>
             <Tab eventKey={1} title="Snapshot Recording">
-              <SnapshotRecordingForm onSubmit={handleCreateSnapshot} />
+              <SnapshotRecordingForm onSubmit={handleCreateSnapshot}/>
             </Tab>
           </Tabs>
         </CardBody>
       </Card>
     </TargetView>
   );
-
 };
 
 export const CreateRecording = withRouter(Comp);
