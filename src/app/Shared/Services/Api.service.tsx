@@ -35,12 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY } from 'rxjs';
+import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators';
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
-import { LoginService, SessionState } from './Login.service';
+import { AuthMethod, LoginService, SessionState } from './Login.service';
 
 type ApiVersion = "v1" | "v2";
 
@@ -333,7 +333,7 @@ export class ApiService {
   }
 
   downloadReport(recording: SavedRecording): void {
-    this.getHeaders().subscribe(headers => {
+    this.login.getHeaders().subscribe(headers => {
       const req = () =>
         fromFetch(recording.reportUrl, {
           credentials: 'include',
@@ -358,7 +358,7 @@ export class ApiService {
   }
 
   downloadRecording(recording: SavedRecording): void {
-    this.getHeaders().subscribe(headers => {
+    this.login.getHeaders().subscribe(headers => {
       const req = () => fromFetch(recording.downloadUrl, {
         credentials: 'include',
         mode: 'cors',
@@ -430,32 +430,8 @@ export class ApiService {
     );
   }
 
-  getHeaders(): Observable<Headers> {
-    const authorization = combineLatest([this.login.getToken(), this.login.getAuthMethod()])
-    .pipe(
-      map((parts: [string, string]) => this.login.getAuthHeaders(parts[0], parts[1])),
-      first(),
-    );
-    return combineLatest([authorization, this.target.target()])
-    .pipe(
-      first(),
-      map(parts => {
-        const headers = parts[0];
-        const target = parts[1];
-        if (!!target && !!target.connectUrl && this.target.hasCredentials(target.connectUrl)) {
-          const credentials = this.target.getCredentials(target.connectUrl);
-          if (credentials) {
-            headers.set('X-JMX-Authorization', `Basic ${this.target.getCredentials(target.connectUrl)}`);
-          }
-        }
-        return headers;
-      })
-    );
-
-  }
-
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
-    const req = () => this.getHeaders().pipe(
+    const req = () => this.login.getHeaders().pipe(
       concatMap(headers =>
         fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
           credentials: 'include',
@@ -487,7 +463,7 @@ export class ApiService {
     if (isHttpError(error)) {
       if (error.httpResponse.status === 427) {
         const jmxAuthScheme = error.httpResponse.headers.get('X-JMX-Authenticate');
-        if (jmxAuthScheme === 'Basic') {
+        if (jmxAuthScheme === AuthMethod.BASIC) {
           this.target.setAuthFailure();
           return this.target.authRetry().pipe(
             mergeMap(() => retry())

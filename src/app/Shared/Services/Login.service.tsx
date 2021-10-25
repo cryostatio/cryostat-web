@@ -36,9 +36,10 @@
  * SOFTWARE.
  */
 import { Base64 } from 'js-base64';
-import { Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
+import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
+import { TargetService } from './Target.service';
 
 export enum SessionState {
   NO_USER_SESSION,
@@ -46,18 +47,25 @@ export enum SessionState {
   USER_SESSION
 }
 
+export enum AuthMethod {
+  BASIC = 'Basic',
+  BEARER = 'Bearer',
+  NONE = 'None',
+  UNKNOWN = ''
+}
+
 export class LoginService {
 
   private readonly TOKEN_KEY: string = 'token';
   private readonly USER_KEY: string = 'user';
   private readonly token = new ReplaySubject<string>(1);
-  private readonly authMethod = new ReplaySubject<string>(1);
+  private readonly authMethod = new ReplaySubject<AuthMethod>(1);
   private readonly logout = new ReplaySubject<void>(1);
   private readonly username = new ReplaySubject<string>(1);
   private readonly sessionState = new ReplaySubject<SessionState>(1);
   readonly authority: string;
 
-  constructor() {
+  constructor(private readonly target: TargetService) {
     let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
     if (!apiAuthority) {
       apiAuthority = '';
@@ -76,11 +84,7 @@ export class LoginService {
   }
 
   checkAuth(token: string, method: string, rememberMe = false): Observable<boolean> {
-
-    if (method === 'Basic') {
-      token = Base64.encodeURL(token);
-    }
-
+    token = Base64.encodeURL(token);
     token = this.useCacheItemIfAvailable(this.TOKEN_KEY, token);
 
     return fromFetch(`${this.authority}/api/v2.1/auth`, {
@@ -93,14 +97,13 @@ export class LoginService {
     .pipe(
       concatMap(response => {
         if (!this.authMethod.isStopped) {
-          this.authMethod.next(response.ok ? method : (response.headers.get('X-WWW-Authenticate') || ''));
+          this.completeAuthMethod(response.headers.get('X-WWW-Authenticate') || '');
         }
         return response.json();
       }),
       first(),
       tap((jsonResp: AuthV2Response) => {
         if(jsonResp.meta.status === 'OK') {
-          this.completeAuthMethod(method);
           this.decideRememberToken(token, rememberMe);
           this.setUsername(jsonResp.data.result.username);
           this.sessionState.next(SessionState.CREATING_USER_SESSION);
@@ -117,17 +120,39 @@ export class LoginService {
     );
   }
 
-  getToken(): Observable<string> {
-    return this.token.asObservable();
-  }
-
   getAuthHeaders(token: string, method: string): Headers {
     const headers = new window.Headers();
     if (!!token && !!method) {
       headers.set('Authorization', `${method} ${token}`)
     }
-
     return headers;
+  }
+
+  getHeaders(): Observable<Headers> {
+    const authorization = combineLatest([this.getToken(), this.getAuthMethod()])
+    .pipe(
+      map((parts: [string, string]) => this.getAuthHeaders(parts[0], parts[1])),
+      first(),
+    );
+    return combineLatest([authorization, this.target.target()])
+    .pipe(
+      first(),
+      map(parts => {
+        const headers = parts[0];
+        const target = parts[1];
+        if (!!target && !!target.connectUrl && this.target.hasCredentials(target.connectUrl)) {
+          const credentials = this.target.getCredentials(target.connectUrl);
+          if (credentials) {
+            headers.set('X-JMX-Authorization', `Basic ${Base64.encodeURL(credentials)}`);
+          }
+        }
+        return headers;
+      })
+    );
+  }
+
+  getToken(): Observable<string> {
+    return this.token.asObservable();
   }
 
   getAuthMethod(): Observable<string> {
@@ -175,7 +200,13 @@ export class LoginService {
   }
 
   private completeAuthMethod(method: string): void {
-    this.authMethod.next(method);
+    let validMethod = method as AuthMethod;
+
+    if (!Object.values(AuthMethod).includes(validMethod)) {
+      validMethod = AuthMethod.UNKNOWN;
+    }
+
+    this.authMethod.next(validMethod);
     this.authMethod.complete();
   }
 

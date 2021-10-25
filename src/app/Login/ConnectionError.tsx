@@ -36,35 +36,17 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService, TargetInstance } from './Target.service';
-import { TargetsService } from './Targets.service';
-import { ApiService } from './Api.service';
-import { NotificationChannel } from './NotificationChannel.service';
-import { ReportService } from './Report.service';
-import { SettingsService } from './Settings.service';
-import { LoginService } from './Login.service';
+import { EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
-export interface Services {
-  target: TargetService;
-  targets: TargetsService;
-  api: ApiService;
-  notificationChannel: NotificationChannel;
-  reports: ReportService;
-  settings: SettingsService;
-  login: LoginService;
-}
-
-const login = new LoginService(TargetInstance);
-const api = new ApiService(TargetInstance, NotificationsInstance, login);
-const notificationChannel = new NotificationChannel(NotificationsInstance, login);
-const reports = new ReportService(login, NotificationsInstance);
-const settings = new SettingsService();
-const targets = new TargetsService(api, NotificationsInstance, login, notificationChannel);
-
-const defaultServices: Services = { target: TargetInstance, targets, api, notificationChannel, reports, settings, login };
-
-const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
-
-export { ServiceContext, defaultServices };
-
+export const ConnectionError = () => (
+  <EmptyState>
+    <EmptyStateIcon variant='container' component={ExclamationCircleIcon} />
+    <Title size="lg" headingLevel="h4">
+      Unable to connect
+    </Title>
+    <EmptyStateBody>
+      Check your connection and reload the page.
+    </EmptyStateBody>
+  </EmptyState>
+);
