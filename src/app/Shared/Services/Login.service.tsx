@@ -200,13 +200,13 @@ export class LoginService {
   }
 
   private completeAuthMethod(method: string): void {
-    const validMethod = method as AuthMethod;
+    let validMethod = method as AuthMethod;
 
-    if(!!validMethod) {
-      this.authMethod.next(validMethod);
-    } else {
-      this.authMethod.next(AuthMethod.UNKNOWN);
+    if (!Object.values(AuthMethod).includes(validMethod)) {
+      validMethod = AuthMethod.UNKNOWN;
     }
+
+    this.authMethod.next(validMethod);
     this.authMethod.complete();
   }
 
