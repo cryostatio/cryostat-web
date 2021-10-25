@@ -42,6 +42,7 @@ import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@pat
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 import { NoopAuthForm } from './NoopAuthForm';
+import { ConnectionError } from './ConnectionError';
 
 export const Login = () => {
   const serviceContext = React.useContext(ServiceContext);
@@ -67,6 +68,30 @@ export const Login = () => {
     return () => sub.unsubscribe();
   }, [serviceContext, serviceContext.login, setAuthMethod]);
 
+  const LoginForm = () => {
+    switch(authMethod) {
+      case 'Basic':
+        return <BasicAuthForm onSubmit={handleSubmit} />;
+      case 'Bearer':
+        return <BearerAuthForm onSubmit={handleSubmit} />;
+      case 'None':
+        return <NoopAuthForm onSubmit={handleSubmit} />;
+      default:
+        return <ConnectionError />;
+    }
+  };
+
+  const DescriptionText = () => {
+    switch(authMethod) {
+      case 'Basic':
+        return <BasicAuthDescriptionText />;
+      case 'Bearer':
+        return <BearerAuthDescriptionText />;
+      default:
+        return null;
+    }
+  }
+
   return (
     <PageSection>
       <Card>
@@ -74,16 +99,10 @@ export const Login = () => {
           <Title headingLevel="h1" size="lg">Login</Title>
         </CardHeader>
         <CardBody>
-          {{
-            'Basic': <BasicAuthForm onSubmit={handleSubmit} />,
-            'Bearer': <BearerAuthForm onSubmit={handleSubmit} />,
-            'None': <NoopAuthForm onSubmit={handleSubmit} />
-          }[authMethod]}
+          <LoginForm />
         </CardBody>
         <CardFooter>
-          {
-            authMethod === 'Basic' ? <BasicAuthDescriptionText /> : <BearerAuthDescriptionText />
-          }
+          <DescriptionText />
         </CardFooter>
       </Card>
     </PageSection>
