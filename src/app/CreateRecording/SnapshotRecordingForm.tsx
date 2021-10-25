@@ -52,7 +52,7 @@ export interface SnapshotRecordingFormProps {
 export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
-  const snapshotNamingConvention : RegExp = /snapshot-[0-9]+/;
+  const snapshotNamingConvention : RegExp = /^snapshot-[0-9]+$/;
   const addSubscription = useSubscriptions();
   const [showWarningModal, setShowWarningModal] = React.useState(false);
 
