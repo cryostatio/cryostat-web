@@ -44,6 +44,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
 import { filter, concatMap, first } from 'rxjs/operators';
+import { Recordings } from '@app/Recordings/Recordings';
 
 export interface SnapshotRecordingFormProps {
   onSubmit: Function;
@@ -63,14 +64,8 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
         filter(target => target !== NO_TARGET),
         concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
         first())
-      .subscribe(recordings => {
-        let numSnapshotRecordings: number = 0;
-        recordings.forEach((recording: Recording) => {
-          if(snapshotNamingConvention.test(recording.name)) {
-            numSnapshotRecordings++;
-          }
-        });
-        if (recordings.length == 0 || numSnapshotRecordings == recordings.length) {
+      .subscribe(recordings => {        
+        if (!activeRecordingIsPresent(recordings)) {
           setShowWarningModal(true);
         } else {
           props.onSubmit();
@@ -78,6 +73,15 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
       })
     );
   };
+
+  const activeRecordingIsPresent = (recordings: Recording[]): boolean => {
+    for (let i = 0; i < recordings.length; i++) {
+      if (!snapshotNamingConvention.test(recordings[i].name)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   const dismissWarningModal = () => {
     setShowWarningModal(false);
