@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '../Notifications/Notifications';
-import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardFooter, CardHeader, PageSection, Text, Title } from '@patternfly/react-core';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 import { NoopAuthForm } from './NoopAuthForm';
@@ -69,7 +69,7 @@ export const Login = () => {
     return () => sub.unsubscribe();
   }, [serviceContext, serviceContext.login, setAuthMethod]);
 
-  const LoginForm = () => {
+  const loginForm = React.useMemo(() => {
     switch(authMethod) {
       case AuthMethod.BASIC:
         return <BasicAuthForm onSubmit={handleSubmit} />;
@@ -80,18 +80,18 @@ export const Login = () => {
       default:
         return <ConnectionError />;
     }
-  };
+  }, [authMethod]);
 
-  const DescriptionText = () => {
+  const descriptionText = React.useMemo(() => {
     switch(authMethod) {
       case AuthMethod.BASIC:
         return <BasicAuthDescriptionText />;
       case AuthMethod.BEARER:
         return <BearerAuthDescriptionText />;
       default:
-        return null;
+        return <Text />;
     }
-  }
+  }, [authMethod]);
 
   return (
     <PageSection>
@@ -100,10 +100,10 @@ export const Login = () => {
           <Title headingLevel="h1" size="lg">Login</Title>
         </CardHeader>
         <CardBody>
-          <LoginForm />
+          {loginForm}
         </CardBody>
         <CardFooter>
-          <DescriptionText />
+          {descriptionText}
         </CardFooter>
       </Card>
     </PageSection>
