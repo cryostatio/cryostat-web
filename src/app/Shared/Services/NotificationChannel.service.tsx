@@ -42,7 +42,8 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
-import { LoginService, SessionState } from './Login.service';
+import { AuthMethod, LoginService, SessionState } from './Login.service';
+
 
 interface RecordingNotificationEvent {
   recording: string;
@@ -133,9 +134,9 @@ export class NotificationChannel {
             return;
           }
 
-          if (authMethod === 'Bearer') {
+          if (authMethod === AuthMethod.BEARER) {
             subprotocol = `base64url.bearer.authorization.cryostat.${token}`;
-          } else if (authMethod === 'Basic') {
+          } else if (authMethod === AuthMethod.BASIC) {
             subprotocol = `basic.authorization.cryostat.${token}`;
           }
 

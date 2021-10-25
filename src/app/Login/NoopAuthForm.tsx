@@ -35,66 +35,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
-import { FormProps } from './FormProps';
 import { AuthMethod } from '@app/Shared/Services/Login.service';
+import * as React from 'react';
+import { FormProps } from './FormProps';
 
-export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const [token, setToken] = React.useState('');
-  const [rememberMe, setRememberMe] = React.useState(true);
+export const NoopAuthForm: React.FunctionComponent<FormProps> = (props) => {
 
   React.useEffect(() => {
-    const sub = context.login.getToken().subscribe(setToken);
-    return () => sub.unsubscribe();
-  }, [context, context.api, setToken]);
+    const noopEvt = {
+      preventDefault: () => {}
+    } as Event;
 
-  const handleTokenChange = React.useCallback((evt) => {
-    setToken(evt);
-  }, [setToken]);
-
-  const handleRememberMeToggle = React.useCallback((evt) => {
-    setRememberMe(evt)
-   }, [setRememberMe]);
-
-  const handleSubmit = React.useCallback((evt) => {
-    props.onSubmit(evt, token, AuthMethod.BEARER, rememberMe);
-  }, [props, props.onSubmit, token, rememberMe]);
+    props.onSubmit(noopEvt, '', AuthMethod.NONE, false);
+  }, [props.onSubmit]);
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormGroup
-        label="Token"
-        isRequired
-        fieldId="token"
-        helperText="Please provide your authorization token"
-      >
-        <TextInput
-          isRequired
-          type="text"
-          id="token"
-          name="token"
-          aria-describedby="token-helper"
-          value={token}
-          onChange={handleTokenChange}
-        />
-      </FormGroup>
-      <Checkbox id="remember-me" label="Remember Me" isChecked={rememberMe} onChange={handleRememberMeToggle} />
-      <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit}>Login</Button>
-      </ActionGroup>
-    </Form>
+    <>
+    </>
   );
 
-}
-
-export const BearerAuthDescriptionText = () => {
-  return (
-    <Text component={TextVariants.p}>
-      The Cryostat server is configured with Bearer token authentication. If this is an OpenShift deployment,
-      you can use <Text component={TextVariants.pre}>oc whoami --show-token</Text> to retrieve your user account token.
-    </Text>
-  );
 }

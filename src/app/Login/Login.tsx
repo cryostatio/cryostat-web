@@ -38,9 +38,12 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '../Notifications/Notifications';
-import { Card, CardBody, CardFooter, CardHeader, PageSection, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardFooter, CardHeader, PageSection, Text, Title } from '@patternfly/react-core';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
+import { NoopAuthForm } from './NoopAuthForm';
+import { ConnectionError } from './ConnectionError';
+import { AuthMethod } from '@app/Shared/Services/Login.service';
 
 export const Login = () => {
   const serviceContext = React.useContext(ServiceContext);
@@ -66,6 +69,30 @@ export const Login = () => {
     return () => sub.unsubscribe();
   }, [serviceContext, serviceContext.login, setAuthMethod]);
 
+  const loginForm = React.useMemo(() => {
+    switch(authMethod) {
+      case AuthMethod.BASIC:
+        return <BasicAuthForm onSubmit={handleSubmit} />;
+      case AuthMethod.BEARER:
+        return <BearerAuthForm onSubmit={handleSubmit} />;
+      case AuthMethod.NONE:
+        return <NoopAuthForm onSubmit={handleSubmit} />;
+      default:
+        return <ConnectionError />;
+    }
+  }, [authMethod]);
+
+  const descriptionText = React.useMemo(() => {
+    switch(authMethod) {
+      case AuthMethod.BASIC:
+        return <BasicAuthDescriptionText />;
+      case AuthMethod.BEARER:
+        return <BearerAuthDescriptionText />;
+      default:
+        return <Text />;
+    }
+  }, [authMethod]);
+
   return (
     <PageSection>
       <Card>
@@ -73,16 +100,10 @@ export const Login = () => {
           <Title headingLevel="h1" size="lg">Login</Title>
         </CardHeader>
         <CardBody>
-          {
-            authMethod === 'Basic' ?
-            <BasicAuthForm onSubmit={handleSubmit} />
-            : <BearerAuthForm onSubmit={handleSubmit} />
-          }
+          {loginForm}
         </CardBody>
         <CardFooter>
-          {
-            authMethod === 'Basic' ? <BasicAuthDescriptionText /> : <BearerAuthDescriptionText />
-          }
+          {descriptionText}
         </CardFooter>
       </Card>
     </PageSection>

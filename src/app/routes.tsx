@@ -176,7 +176,7 @@ const AppRoutes = () => {
   React.useEffect(() => {
     const sub = context.login
       .getSessionState()
-      .subscribe(sessionState => setShowDashboard(sessionState === SessionState.USER_SESSION));
+      .subscribe((sessionState) => setShowDashboard(sessionState === SessionState.USER_SESSION));
     return () => sub.unsubscribe();
   }, [context, context.login, setShowDashboard]);
 
