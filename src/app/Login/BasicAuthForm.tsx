@@ -41,6 +41,7 @@ import { ActionGroup, Button, Checkbox, Form, FormGroup, Text, TextInput, TextVa
 import { map } from 'rxjs/operators';
 import { FormProps } from './FormProps';
 import { Base64 } from 'js-base64';
+import { AuthMethod } from '@app/Shared/Services/Login.service';
 
 export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -74,7 +75,7 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
   }, [setRememberMe]);
 
   const handleSubmit = React.useCallback((evt) => {
-    props.onSubmit(evt, `${username}:${password}`, 'Basic', rememberMe);
+    props.onSubmit(evt, `${username}:${password}`, AuthMethod.BASIC, rememberMe);
   }, [props, props.onSubmit, username, password, context.login, rememberMe]);
 
   // FIXME Patternfly Form component onSubmit is not triggered by Enter keydown when the Form contains

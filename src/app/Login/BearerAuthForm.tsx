@@ -39,6 +39,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Checkbox, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
 import { FormProps } from './FormProps';
+import { AuthMethod } from '@app/Shared/Services/Login.service';
 
 export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -59,7 +60,7 @@ export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
    }, [setRememberMe]);
 
   const handleSubmit = React.useCallback((evt) => {
-    props.onSubmit(evt, token, 'Bearer', rememberMe);
+    props.onSubmit(evt, token, AuthMethod.BEARER, rememberMe);
   }, [props, props.onSubmit, token, rememberMe]);
 
   return (

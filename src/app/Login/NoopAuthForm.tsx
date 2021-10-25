@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { AuthMethod } from '@app/Shared/Services/Login.service';
 import * as React from 'react';
 import { FormProps } from './FormProps';
 
@@ -45,7 +46,7 @@ export const NoopAuthForm: React.FunctionComponent<FormProps> = (props) => {
       preventDefault: () => {}
     } as Event;
 
-    props.onSubmit(noopEvt, '', 'None', false);
+    props.onSubmit(noopEvt, '', AuthMethod.NONE, false);
   }, [props.onSubmit]);
 
   return (

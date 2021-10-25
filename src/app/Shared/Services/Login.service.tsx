@@ -47,6 +47,12 @@ export enum SessionState {
   USER_SESSION
 }
 
+export enum AuthMethod {
+  BASIC = 'Basic',
+  BEARER = 'Bearer',
+  NONE = 'None'
+}
+
 export class LoginService {
 
   private readonly TOKEN_KEY: string = 'token';

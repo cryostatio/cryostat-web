@@ -43,6 +43,7 @@ import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
 import { NoopAuthForm } from './NoopAuthForm';
 import { ConnectionError } from './ConnectionError';
+import { AuthMethod } from '@app/Shared/Services/Login.service';
 
 export const Login = () => {
   const serviceContext = React.useContext(ServiceContext);
@@ -70,11 +71,11 @@ export const Login = () => {
 
   const LoginForm = () => {
     switch(authMethod) {
-      case 'Basic':
+      case AuthMethod.BASIC:
         return <BasicAuthForm onSubmit={handleSubmit} />;
-      case 'Bearer':
+      case AuthMethod.BEARER:
         return <BearerAuthForm onSubmit={handleSubmit} />;
-      case 'None':
+      case AuthMethod.NONE:
         return <NoopAuthForm onSubmit={handleSubmit} />;
       default:
         return <ConnectionError />;
@@ -83,9 +84,9 @@ export const Login = () => {
 
   const DescriptionText = () => {
     switch(authMethod) {
-      case 'Basic':
+      case AuthMethod.BASIC:
         return <BasicAuthDescriptionText />;
-      case 'Bearer':
+      case AuthMethod.BEARER:
         return <BearerAuthDescriptionText />;
       default:
         return null;

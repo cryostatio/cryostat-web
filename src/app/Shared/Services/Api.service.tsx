@@ -40,7 +40,7 @@ import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators';
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
-import { LoginService, SessionState } from './Login.service';
+import { AuthMethod, LoginService, SessionState } from './Login.service';
 
 type ApiVersion = "v1" | "v2";
 
@@ -463,7 +463,7 @@ export class ApiService {
     if (isHttpError(error)) {
       if (error.httpResponse.status === 427) {
         const jmxAuthScheme = error.httpResponse.headers.get('X-JMX-Authenticate');
-        if (jmxAuthScheme === 'Basic') {
+        if (jmxAuthScheme === AuthMethod.BASIC) {
           this.target.setAuthFailure();
           return this.target.authRetry().pipe(
             mergeMap(() => retry())
