@@ -124,6 +124,8 @@ export class LoginService {
     const headers = new window.Headers();
     if (!!token && !!method) {
       headers.set('Authorization', `${method} ${token}`)
+    } else if (method === AuthMethod.NONE) {
+      headers.set('Authorization', AuthMethod.NONE);
     }
     return headers;
   }
