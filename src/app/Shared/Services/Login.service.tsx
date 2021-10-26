@@ -131,7 +131,7 @@ export class LoginService {
   getHeaders(): Observable<Headers> {
     const authorization = combineLatest([this.getToken(), this.getAuthMethod()])
     .pipe(
-      map((parts: [string, string]) => this.getAuthHeaders(parts[0], parts[1])),
+      map((parts: [string, AuthMethod]) => this.getAuthHeaders(parts[0], parts[1])),
       first(),
     );
     return combineLatest([authorization, this.target.target()])
@@ -155,7 +155,7 @@ export class LoginService {
     return this.token.asObservable();
   }
 
-  getAuthMethod(): Observable<string> {
+  getAuthMethod(): Observable<AuthMethod> {
     return this.authMethod.asObservable();
   }
 
