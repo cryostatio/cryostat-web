@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { Base64 } from 'js-base64';
-import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
+import { combineLatest, Observable, ObservableInput, of, ReplaySubject, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
 import { SettingsService } from './Settings.service';
@@ -88,6 +88,12 @@ export class LoginService {
   checkAuth(token: string, method: string, rememberMe = false): Observable<boolean> {
     token = Base64.encodeURL(token);
     token = this.useCacheItemIfAvailable(this.TOKEN_KEY, token);
+    const potentialTokenFragment = this.extractTokenFromUrlFragment();
+
+    if(potentialTokenFragment) {
+      token = Base64.encodeURL(potentialTokenFragment);
+      method = AuthMethod.BEARER;
+    }
 
     return fromFetch(`${this.authority}/api/v2.1/auth`, {
       credentials: 'include',
@@ -101,6 +107,15 @@ export class LoginService {
         if (!this.authMethod.isStopped) {
           this.completeAuthMethod(response.headers.get('X-WWW-Authenticate') || '');
         }
+
+        if(response.status === 302) {
+          const redirectUrl = response.headers.get('X-Location');
+
+          if(redirectUrl) {
+            window.location.replace(redirectUrl);
+          }
+        }
+
         return response.json();
       }),
       first(),
@@ -120,6 +135,11 @@ export class LoginService {
         return of(false);
       }),
     );
+  }
+
+  private extractTokenFromUrlFragment(): string|null {
+    var matches = location.hash.match(new RegExp('access_token'+'=([^&]*)'));
+    return matches ? matches[1] : null;
   }
 
   getAuthHeaders(token: string, method: string): Headers {
