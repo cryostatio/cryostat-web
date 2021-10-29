@@ -86,12 +86,10 @@ export class LoginService {
   }
 
   checkAuth(token: string, method: string, rememberMe = false): Observable<boolean> {
-    token = Base64.encodeURL(token);
-    token = this.useCacheItemIfAvailable(this.TOKEN_KEY, token);
-    const potentialTokenFragment = this.extractTokenFromUrlFragment();
+    token = Base64.encodeURL(token || this.getTokenFromUrlFragment());
+    token = token || this.getCachedEncodedTokenIfAvailable();
 
-    if(potentialTokenFragment) {
-      token = Base64.encodeURL(potentialTokenFragment);
+    if(this.hasBearerTokenUrlHash()) {
       method = AuthMethod.BEARER;
     }
 
@@ -135,11 +133,6 @@ export class LoginService {
         return of(false);
       }),
     );
-  }
-
-  private extractTokenFromUrlFragment(): string|null {
-    var matches = location.hash.match(new RegExp('access_token'+'=([^&]*)'));
-    return matches ? matches[1] : null;
   }
 
   getAuthHeaders(token: string, method: string): Headers {
@@ -202,10 +195,28 @@ export class LoginService {
     this.username.next('');
     this.logout.next();
     this.sessionState.next(SessionState.NO_USER_SESSION);
+
+    // TODO implement a logout call that will delete the access_token
+    // cached in the oauth server, thus redirecting users to the login page
+    this.queryAuthMethod();
   }
 
   setSessionState(state: SessionState): void {
     this.sessionState.next(state);
+  }
+
+  private getTokenFromUrlFragment(): string {
+    var matches = location.hash.match(new RegExp('access_token'+'=([^&]*)'));
+    return matches ? matches[1] : '';
+  }
+
+  private hasBearerTokenUrlHash(): boolean {
+    var matches = location.hash.match('token_type=Bearer');
+    return !!matches;
+  }
+
+  private getCachedEncodedTokenIfAvailable(): string {
+    return this.getCacheItem(this.TOKEN_KEY);
   }
 
   private decideRememberToken(token: string, rememberMe: boolean): void {
@@ -237,11 +248,6 @@ export class LoginService {
   private getCacheItem(key: string): string {
     const item = sessionStorage.getItem(key);
     return (!!item) ? item : '';
-  }
-
-  private useCacheItemIfAvailable(key: string, defaultToken: string) {
-    const cacheItem = this.getCacheItem(key);
-    return (cacheItem) ? cacheItem : defaultToken;
   }
 
   private setCacheItem(key: string, token: string): void {
