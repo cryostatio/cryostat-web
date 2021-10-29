@@ -441,11 +441,11 @@ export class ApiService {
 
   uploadRecording(file: File, signal?: AbortSignal): Observable<string> {
     window.onbeforeunload = () => true;
-    return this.login.getHeaders().pipe(
+    return this.getHeaders().pipe(
       concatMap(headers => {
         const body = new window.FormData();
         body.append('recording', file);
-        return fromFetch(`${this.login.authority}/api/v1/recordings`, {
+        return fromFetch(`${this.authority}/api/v1/recordings`, {
           credentials: 'include',
           mode: 'cors',
           method: 'POST',
@@ -501,21 +501,15 @@ export class ApiService {
   }
 
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
-<<<<<<< HEAD
     const req = () => this.getHeaders().pipe(
       concatMap(headers =>
         fromFetch(`${this.authority}/api/${apiVersion}/${path}`, {
-=======
-    const req = () => this.login.getHeaders().pipe(
-      concatMap(headers => {
-        return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
->>>>>>> dd715af (feat(archiveuploads): display prompt on cancel or navigation (#333))
           credentials: 'include',
           mode: 'cors',
           headers,
           ...config,
-        });
-      }),
+        })
+      ),
       map(resp => {
         if (resp.ok) return resp;
         throw new HttpError(resp);
