@@ -395,21 +395,27 @@ export class ApiService {
     });
   }
 
-  uploadRecording(file: File): Observable<string> {
-    const body = new window.FormData(); // as multipart/form-data
-    body.append('recording', file);
-    return this.sendRequest('v1', 'recordings', {
-        method: 'POST',
-        body,
-      })
-      .pipe(
-        concatMap(resp => {
-          if (resp.ok) {
-            return from(resp.text());
-          }
-          throw resp.statusText;
-        }),
-      );
+  uploadRecording(file: File, signal?: AbortSignal): Observable<string> {
+    window.onbeforeunload = () => true;
+    return this.login.getHeaders().pipe(
+      concatMap(headers => {
+        const body = new window.FormData();
+        body.append('recording', file);
+        return fromFetch(`${this.login.authority}/api/v1/recordings`, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'POST',
+          body,
+          headers,
+          selector: response => response.text(),
+          signal,
+        });
+      }),
+      tap({
+        next: () => window.onbeforeunload = null,
+        error: () => window.onbeforeunload = null,
+      }),
+    );
   }
 
   uploadSSLCertificate(file: File): Observable<string> {
@@ -432,14 +438,14 @@ export class ApiService {
 
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
     const req = () => this.login.getHeaders().pipe(
-      concatMap(headers =>
-        fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
+      concatMap(headers => {
+        return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
           credentials: 'include',
           mode: 'cors',
           headers,
           ...config,
-        }),
-      ),
+        });
+      }),
       map(resp => {
         if (resp.ok) return resp;
         throw new HttpError(resp);
