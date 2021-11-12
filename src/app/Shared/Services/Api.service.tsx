@@ -341,7 +341,7 @@ export class ApiService {
     })
       .pipe(
         concatMap(resp => resp.json()),
-        map(json => json.data.result.resourceUrl)
+        map((response: AssetJwtResponse) => response.data.result.resourceUrl)
       ).subscribe(resourceUrl => {
         this.downloadFile(
           resourceUrl,
@@ -359,7 +359,7 @@ export class ApiService {
     })
       .pipe(
         concatMap(resp => resp.json()),
-        map(json => json.data.result.resourceUrl)
+        map((response: AssetJwtResponse) => response.data.result.resourceUrl)
       ).subscribe(resourceUrl => {
         this.downloadFile(
           resourceUrl,
@@ -382,7 +382,7 @@ export class ApiService {
       })
         .pipe(
           concatMap(resp => resp.json()),
-          map(json => json.data.result.resourceUrl),
+          map((response: AssetJwtResponse) => response.data.result.resourceUrl),
         ).subscribe(resourceUrl => {
           this.downloadFile(
             resourceUrl,
@@ -485,6 +485,22 @@ export class ApiService {
     throw error;
   }
 
+}
+
+export interface ApiV2Response {
+  meta: {
+    status: string;
+    type: string;
+  };
+  data: Object;
+}
+
+interface AssetJwtResponse extends ApiV2Response {
+  data: {
+    result: {
+      resourceUrl: string;
+    }
+  }
 }
 
 export interface SavedRecording {

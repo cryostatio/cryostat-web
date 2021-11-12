@@ -39,6 +39,7 @@ import { Base64 } from 'js-base64';
 import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
+import { ApiV2Response } from './Api.service';
 import { TargetService } from './Target.service';
 
 export enum SessionState {
@@ -237,17 +238,7 @@ export class LoginService {
 
 }
 
-interface ApiResponse {
-  meta: Meta;
-  data: Object;
-}
-
-interface Meta {
-  status: string;
-  type: string;
-}
-
-interface AuthV2Response extends ApiResponse {
+interface AuthV2Response extends ApiV2Response {
   data: {
     result: {
       username: string;
