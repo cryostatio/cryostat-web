@@ -39,6 +39,7 @@ import { Base64 } from 'js-base64';
 import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
+import { ApiV2Response } from './Api.service';
 import { TargetService } from './Target.service';
 
 export enum SessionState {
@@ -124,6 +125,8 @@ export class LoginService {
     const headers = new window.Headers();
     if (!!token && !!method) {
       headers.set('Authorization', `${method} ${token}`)
+    } else if (method === AuthMethod.NONE) {
+      headers.set('Authorization', AuthMethod.NONE);
     }
     return headers;
   }
@@ -131,7 +134,7 @@ export class LoginService {
   getHeaders(): Observable<Headers> {
     const authorization = combineLatest([this.getToken(), this.getAuthMethod()])
     .pipe(
-      map((parts: [string, string]) => this.getAuthHeaders(parts[0], parts[1])),
+      map((parts: [string, AuthMethod]) => this.getAuthHeaders(parts[0], parts[1])),
       first(),
     );
     return combineLatest([authorization, this.target.target()])
@@ -155,7 +158,7 @@ export class LoginService {
     return this.token.asObservable();
   }
 
-  getAuthMethod(): Observable<string> {
+  getAuthMethod(): Observable<AuthMethod> {
     return this.authMethod.asObservable();
   }
 
@@ -235,17 +238,7 @@ export class LoginService {
 
 }
 
-interface ApiResponse {
-  meta: Meta;
-  data: Object;
-}
-
-interface Meta {
-  status: string;
-  type: string;
-}
-
-interface AuthV2Response extends ApiResponse {
+interface AuthV2Response extends ApiV2Response {
   data: {
     result: {
       username: string;

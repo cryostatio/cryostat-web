@@ -42,7 +42,7 @@ import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 
-type ApiVersion = "v1" | "v2";
+type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
 
 export class HttpError extends Error {
   readonly httpResponse: Response;
@@ -333,65 +333,63 @@ export class ApiService {
   }
 
   downloadReport(recording: SavedRecording): void {
-    this.login.getHeaders().subscribe(headers => {
-      const req = () =>
-        fromFetch(recording.reportUrl, {
-          credentials: 'include',
-          mode: 'cors',
-          headers,
-        })
-          .pipe(
-            map(resp => {
-              if (resp.ok) return resp;
-              throw new HttpError(resp);
-            }),
-            catchError(err => this.handleError<Response>(err, req)),
-            concatMap(resp => resp.blob()),
-          );
-      req().subscribe(resp =>
+    const body = new window.FormData();
+    body.append('resource', recording.reportUrl.replace('/api/v1', '/api/beta'));
+    this.sendRequest('beta', 'auth/token', {
+      method: 'POST',
+      body,
+    })
+      .pipe(
+        concatMap(resp => resp.json()),
+        map((response: AssetJwtResponse) => response.data.result.resourceUrl)
+      ).subscribe(resourceUrl => {
         this.downloadFile(
+          resourceUrl,
           `${recording.name}.report.html`,
-          resp,
-          'text/html')
-      )
-    });
+          false
+          );
+      });
   }
 
   downloadRecording(recording: SavedRecording): void {
-    this.login.getHeaders().subscribe(headers => {
-      const req = () => fromFetch(recording.downloadUrl, {
-        credentials: 'include',
-        mode: 'cors',
-        headers,
-      })
-        .pipe(
-          map(resp => {
-            if (resp.ok) return resp;
-            throw new HttpError(resp);
-          }),
-          catchError(err => this.handleError<Response>(err, req)),
-          concatMap(resp => resp.blob()),
-        );
-      req().subscribe(resp =>
+    const body = new window.FormData();
+    body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/beta'));
+    this.sendRequest('beta', 'auth/token', {
+      method: 'POST',
+      body,
+    })
+      .pipe(
+        concatMap(resp => resp.json()),
+        map((response: AssetJwtResponse) => response.data.result.resourceUrl)
+      ).subscribe(resourceUrl => {
         this.downloadFile(
-          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'),
-          resp,
-          'application/octet-stream')
-      )
-    });
+          resourceUrl,
+          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
+          );
+      });
   }
 
   downloadTemplate(template: EventTemplate): void {
-    this.target.target().pipe(concatMap(target => {
-      const url = `targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`;
-      return this.sendRequest('v1', url)
-        .pipe(concatMap(resp => resp.text()));
-    }))
-    .subscribe(resp => {
-      this.downloadFile(
-        `${template.name}.jfc`,
-        resp,
-        'application/jfc+xml')
+    this.target.target()
+    .pipe(first(), map(target =>
+      `${this.login.authority}/api/beta/targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
+    ))
+    .subscribe(resource => {
+      const body = new window.FormData();
+      body.append('resource', resource);
+      this.sendRequest('beta', 'auth/token', {
+        method: 'POST',
+        body,
+      })
+        .pipe(
+          concatMap(resp => resp.json()),
+          map((response: AssetJwtResponse) => response.data.result.resourceUrl),
+        ).subscribe(resourceUrl => {
+          this.downloadFile(
+            resourceUrl,
+            `${template.name}.jfc`
+            );
+        });
     });
   }
 
@@ -455,14 +453,16 @@ export class ApiService {
     return req();
   }
 
-  private downloadFile(filename: string, data: BlobPart, type: string): void {
-    const blob = new window.Blob([ data ], { type } );
-    const url = window.URL.createObjectURL(blob);
+  private downloadFile(url: string, filename: string, download = true): void {
     const anchor = document.createElement('a');
-    anchor.download = filename;
+    anchor.setAttribute('style', 'display: none; visibility: hidden;');
+    anchor.target = '_blank;'
+    if (download) {
+      anchor.download = filename;
+    }
     anchor.href = url;
     anchor.click();
-    window.setTimeout(() => window.URL.revokeObjectURL(url));
+    anchor.remove();
   }
 
   private handleError<T>(error: Error, retry: () => Observable<T>): ObservableInput<T> {
@@ -488,6 +488,22 @@ export class ApiService {
     throw error;
   }
 
+}
+
+export interface ApiV2Response {
+  meta: {
+    status: string;
+    type: string;
+  };
+  data: Object;
+}
+
+interface AssetJwtResponse extends ApiV2Response {
+  data: {
+    result: {
+      resourceUrl: string;
+    }
+  }
 }
 
 export interface SavedRecording {
