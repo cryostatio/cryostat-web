@@ -82,7 +82,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     context.api.downloadRecording(props.recording);
   }, [context.api, props.recording]);
 
-  const handleDownloadReport = React.useCallback(() => {
+  const handleViewReport = React.useCallback(() => {
     context.api.downloadReport(props.recording);
   }, [context.api, props.recording]);
 
@@ -93,8 +93,8 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
         onClick: handleDownloadRecording
       },
       {
-        title: "Download Report",
-        onClick: handleDownloadReport
+        title: "View Report ...",
+        onClick: handleViewReport
       }
     ];
     if (grafanaEnabled) {
@@ -106,7 +106,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       );
     }
     return actionItems;
-  }, [handleDownloadRecording, handleDownloadReport, grafanaEnabled, grafanaUpload]);
+  }, [handleDownloadRecording, handleViewReport, grafanaEnabled, grafanaUpload]);
 
   return (
     <Td
