@@ -345,7 +345,8 @@ export class ApiService {
       ).subscribe(resourceUrl => {
         this.downloadFile(
           resourceUrl,
-          `${recording.name}.report.html`
+          `${recording.name}.report.html`,
+          false
           );
       });
   }
@@ -452,11 +453,13 @@ export class ApiService {
     return req();
   }
 
-  private downloadFile(url: string, filename: string): void {
+  private downloadFile(url: string, filename: string, download = true): void {
     const anchor = document.createElement('a');
     anchor.setAttribute('style', 'display: none; visibility: hidden;');
     anchor.target = '_blank;'
-    anchor.download = filename;
+    if (download) {
+      anchor.download = filename;
+    }
     anchor.href = url;
     anchor.click();
     anchor.remove();
