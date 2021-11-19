@@ -221,8 +221,12 @@ export class NotificationChannel {
   }
 
   private logError(title: string, err: any): void {
-    window.console.error(err.stack);
-    this.notifications.danger(title, JSON.stringify(err.message));
+    window.console.error(err?.message);
+    window.console.error(err?.stack);
+
+    if(err?.message!!) {
+      this.notifications.danger(title, JSON.stringify(err?.message));
+    }
   }
 }
 
