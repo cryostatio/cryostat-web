@@ -224,7 +224,7 @@ export class NotificationChannel {
     window.console.error(err?.message);
     window.console.error(err?.stack);
 
-    if(err?.message!!) {
+    if(!!err?.message) {
       this.notifications.danger(title, JSON.stringify(err?.message));
     }
   }
