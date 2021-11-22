@@ -55,11 +55,11 @@ export interface Services {
   login: LoginService;
 }
 
-const login = new LoginService(TargetInstance);
+const settings = new SettingsService();
+const login = new LoginService(TargetInstance, settings);
 const api = new ApiService(TargetInstance, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(login, NotificationsInstance);
-const settings = new SettingsService();
 const targets = new TargetsService(api, NotificationsInstance, login, notificationChannel);
 
 const defaultServices: Services = { target: TargetInstance, targets, api, notificationChannel, reports, settings, login };

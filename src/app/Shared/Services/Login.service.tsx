@@ -38,7 +38,8 @@
 import { Base64 } from 'js-base64';
 import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
+import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
+import { SettingsService } from './Settings.service';
 import { ApiV2Response } from './Api.service';
 import { TargetService } from './Target.service';
 
@@ -66,7 +67,7 @@ export class LoginService {
   private readonly sessionState = new ReplaySubject<SessionState>(1);
   readonly authority: string;
 
-  constructor(private readonly target: TargetService) {
+  constructor(private readonly target: TargetService, private readonly settings: SettingsService) {
     let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
     if (!apiAuthority) {
       apiAuthority = '';
@@ -167,7 +168,7 @@ export class LoginService {
   }
 
   getSessionState(): Observable<SessionState> {
-    return this.sessionState.asObservable();
+    return this.sessionState.asObservable().pipe(distinctUntilChanged(), debounceTime(this.settings.webSocketDebounceMs()));
   }
 
   loggedOut(): Observable<void> {
