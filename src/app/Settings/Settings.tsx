@@ -1,8 +1,8 @@
 /*
  * Copyright The Cryostat Authors
- * 
+ *
  * The Universal Permissive License (UPL), Version 1.0
- * 
+ *
  * Subject to the condition set forth below, permission is hereby granted to any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
@@ -10,23 +10,23 @@
  * licensable by each licensor hereunder covering either (i) the unmodified
  * Software as contributed to or provided by such licensor, or (ii) the Larger
  * Works (as defined below), to deal in both
- * 
+ *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
  * one is included with the Software (each a "Larger Work" to which the Software
  * is contributed by such licensors),
- * 
+ *
  * without restriction, including without limitation the rights to copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
  * Software and the Larger Work(s), and to sublicense the foregoing rights on
  * either these or other terms.
- * 
+ *
  * This license is subject to the following condition:
  * The above copyright notice and either this complete permission notice or at
  * a minimum a reference to the UPL must be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,7 +37,7 @@
  */
 
 import * as React from 'react';
-import { Card, Checkbox, CardBody, CardHeader, Text, TextVariants } from '@patternfly/react-core';
+import { Card, Checkbox, CardBody, CardHeader, NumberInput, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
@@ -46,7 +46,11 @@ const defaultPreferences = {
   autoRefreshEnabled: true,
   autoRefreshPeriod: 30,
   autoRefreshUnits: 1_000,
+  webSocketDebounceMs: 100,
 }
+
+const debounceMin = 1;
+const debounceMax = 1000;
 
 export const Settings: React.FunctionComponent<{}> = () => {
   const context = React.useContext(ServiceContext);
@@ -57,23 +61,61 @@ export const Settings: React.FunctionComponent<{}> = () => {
       autoRefreshEnabled: context.settings.autoRefreshEnabled(),
       autoRefreshPeriod: context.settings.autoRefreshPeriod(),
       autoRefreshUnits: context.settings.autoRefreshUnits(),
+      webSocketDebounceMs: context.settings.webSocketDebounceMs(),
     });
-  }, [context.settings]);
+  }, [setState, context.settings]);
 
   const handleAutoRefreshEnabledChange = React.useCallback(autoRefreshEnabled => {
     setState(state => ({ ...state, autoRefreshEnabled }));
     context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
-  }, [context.settings]);
+  }, [setState, context.settings]);
 
   const handleAutoRefreshPeriodChange = React.useCallback(autoRefreshPeriod => {
     setState(state => ({ ...state, autoRefreshPeriod }));
     context.settings.setAutoRefreshPeriod(autoRefreshPeriod);
-  }, [context.settings]);
+  }, [setState, context.settings]);
 
   const handleAutoRefreshUnitScalarChange = React.useCallback(autoRefreshUnits => {
     setState(state => ({ ...state, autoRefreshUnits }));
     context.settings.setAutoRefreshUnits(autoRefreshUnits);
-  }, [context.settings]);
+  }, [setState, context.settings]);
+
+  const handleWebSocketDebounceMinus = React.useCallback(() => {
+    setState(state => {
+      const newState = { ...state };
+      let debounce = (state.webSocketDebounceMs || 1) - 1;
+      if (debounce < debounceMin) {
+        debounce = debounceMin;
+      }
+      newState.webSocketDebounceMs = debounce;
+      context.settings.setWebSocketDebounceMs(newState.webSocketDebounceMs)
+      return newState;
+    });
+  }, [setState, context.settings]);
+
+  const handleWebSocketDebouncePlus = React.useCallback(() => {
+    setState(state => {
+      const newState = { ...state };
+      let debounce = (state.webSocketDebounceMs || 1) + 1;
+      if (debounce > debounceMax) {
+        debounce = debounceMax;
+      }
+      newState.webSocketDebounceMs = debounce;
+      context.settings.setWebSocketDebounceMs(newState.webSocketDebounceMs)
+      return newState;
+    });
+  }, [setState, context.settings]);
+
+  const handleWebSocketDebounceChange = React.useCallback(event => {
+    let webSocketDebounceMs = isNaN(event.target.value) ? 0 : Number(event.target.value);
+    if (webSocketDebounceMs < debounceMin) {
+      webSocketDebounceMs = debounceMin;
+    } else if (webSocketDebounceMs > debounceMax) {
+      webSocketDebounceMs = debounceMax;
+    }
+    setState(state => ({ ...state, webSocketDebounceMs }));
+    context.settings.setWebSocketDebounceMs(webSocketDebounceMs);
+  }, [setState, context.settings]);
 
   return (<>
     <BreadcrumbPage pageTitle="Settings">
@@ -95,6 +137,29 @@ export const Settings: React.FunctionComponent<{}> = () => {
             onUnitScalarChange={handleAutoRefreshUnitScalarChange}
           />
           <Checkbox id="auto-refresh-enabled" label="Enabled" isChecked={state.autoRefreshEnabled} onChange={handleAutoRefreshEnabledChange} />
+        </CardBody>
+      </Card>
+      <Card>
+        <CardHeader>
+          <Text component={TextVariants.h4}>
+            WebSocket Connection Debounce
+          </Text>
+        </CardHeader>
+        <CardBody>
+          <Text component={TextVariants.p}>
+            Set the debounce time (in milliseconds) used when establishing WebSocket connections.
+            Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages.
+            Decrease this time if the web-interface takes a long time to populate on startup.
+          </Text>
+          <NumberInput
+            value={state.webSocketDebounceMs}
+            min={debounceMin}
+            max={debounceMax}
+            onChange={handleWebSocketDebounceChange}
+            onMinus={handleWebSocketDebounceMinus}
+            onPlus={handleWebSocketDebouncePlus}
+            unit="ms"
+          />
         </CardBody>
       </Card>
     </BreadcrumbPage>
