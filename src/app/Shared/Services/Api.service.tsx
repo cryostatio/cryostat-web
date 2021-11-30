@@ -190,7 +190,7 @@ export class ApiService {
       }).pipe(
         tap(resp => {
           if (resp.status == 200) {
-            this.notifications.success('Recording created');
+            this.notifications.success('Recording Created');
           }
         }),
         map(resp => resp.status == 200),
