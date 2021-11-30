@@ -37,33 +37,23 @@
  */
 
 import * as React from 'react';
-import { Button, Modal } from '@patternfly/react-core';
+import { Modal } from '@patternfly/react-core';
 
-export interface EmptySnapshotWarningModalProps {
+export interface SnapshotCreationFailureModalProps {
     visible: boolean;
-    onYes: () => void;
-    onNo: () => void;
+    onClose: () => void;
 }
 
-export const EmptySnapshotWarningModal: React.FunctionComponent<EmptySnapshotWarningModalProps> = (props) => {
+export const SnapshotCreationFailureModal: React.FunctionComponent<SnapshotCreationFailureModalProps> = (props) => {
   return (
     <Modal 
       width={'40%'}
       isOpen={props.visible}
       showClose={true}
-      onClose={props.onNo}
-      title="Warning: Empty Snapshot"
-      actions={[
-        <Button variant="primary" onClick={props.onYes}>
-          Yes
-        </Button>,
-        <Button variant="secondary" onClick={props.onNo}>
-          No
-        </Button>
-      ]}
+      onClose={props.onClose}
+      title="Warning: Snapshot Failed to Create"
     >
-      Cryostat is not aware of any Active, non-Snapshot source recordings for the Snapshot to take event data from, 
-      therefore the Snapshot is likely to be empty. Do you still wish to proceed?
+      Cryostat is not aware of any Active, non-Snapshot source recordings for the Snapshot to take event data from.
     </Modal>
   );
 }

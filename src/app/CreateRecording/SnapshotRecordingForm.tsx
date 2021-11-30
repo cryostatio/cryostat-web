@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { EmptySnapshotWarningModal } from './EmptySnapshotWarningModal';
+import { SnapshotCreationFailureModal } from './SnapshotCreationFailureModal';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
@@ -66,9 +66,8 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
       .subscribe(recordings => {        
         if (!activeRecordingIsPresent(recordings)) {
           setShowWarningModal(true);
-        } else {
-          props.onSubmit();
-        }
+        } 
+        props.onSubmit();
       })
     );
   };
@@ -86,11 +85,6 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
     setShowWarningModal(false);
   }
 
-  const handleCreateEmptySnapshot = () => {
-    dismissWarningModal();
-    props.onSubmit();
-  }
-
   return (<>
     <Form isHorizontal>
       <Text component={TextVariants.p}>
@@ -105,6 +99,6 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
-    <EmptySnapshotWarningModal visible={showWarningModal} onNo={dismissWarningModal} onYes={handleCreateEmptySnapshot}/>
+    <SnapshotCreationFailureModal visible={showWarningModal} onClose={dismissWarningModal}/>
   </>);
 }
