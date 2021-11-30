@@ -189,11 +189,11 @@ export class ApiService {
         method: 'POST',
       }).pipe(
         tap(resp => {
-          if (resp.ok) {
+          if (resp.status == 200) {
             this.notifications.success('Recording created');
           }
         }),
-        map(resp => resp.ok),
+        map(resp => resp.status == 200),
         first(),
       )
     ));
