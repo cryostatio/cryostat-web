@@ -36,69 +36,29 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { SnapshotCreationFailureModal } from './SnapshotCreationFailureModal';
-import { Recording } from '@app/Shared/Services/Api.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
-import { filter, concatMap, first } from 'rxjs/operators';
 
 export interface SnapshotRecordingFormProps {
   onSubmit: Function;
 }
 
-export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFormProps> = (props) => {
-  const context = React.useContext(ServiceContext);
+export const SnapshotRecordingForm = (props) => {
   const history = useHistory();
-  const snapshotNamingConvention : RegExp = /^snapshot-[0-9]+$/;
-  const addSubscription = useSubscriptions();
-  const [showWarningModal, setShowWarningModal] = React.useState(false);
-
-  const handleCreateSnapshot = () => {
-    addSubscription(
-      context.target.target()
-      .pipe(
-        filter(target => target !== NO_TARGET),
-        concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
-        first())
-      .subscribe(recordings => {        
-        if (!activeRecordingIsPresent(recordings)) {
-          setShowWarningModal(true);
-        } 
-        props.onSubmit();
-      })
-    );
-  };
-
-  const activeRecordingIsPresent = (recordings: Recording[]): boolean => {
-    for (let i = 0; i < recordings.length; i++) {
-      if (!snapshotNamingConvention.test(recordings[i].name)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  const dismissWarningModal = () => {
-    setShowWarningModal(false);
-  }
 
   return (<>
     <Form isHorizontal>
       <Text component={TextVariants.p}>
         A Snapshot recording is one which contains all information about all
         events that have been captured in the current session by <i>other,&nbsp;
-        non-snapshot</i> recordings. Snapshots do not themselves define which
+        non-Snapshot</i> recordings. Snapshots do not themselves define which
         events are enabled, their thresholds, or any other options. A Snapshot
         is only ever in the STOPPED state from the moment it is created.
       </Text>
       <ActionGroup>
-        <Button variant="primary" onClick={handleCreateSnapshot}>Create</Button>
+        <Button variant="primary" onClick={props.onSubmit}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
-    <SnapshotCreationFailureModal visible={showWarningModal} onClose={dismissWarningModal}/>
   </>);
 }
