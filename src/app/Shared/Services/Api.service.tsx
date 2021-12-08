@@ -189,11 +189,13 @@ export class ApiService {
         method: 'POST',
       }).pipe(
         tap(resp => {
-          if (resp.ok) {
-            this.notifications.success('Recording created');
+          if (resp.status == 200) {
+            this.notifications.success('Recording Created');
+          } else if (resp.status == 202) {
+            this.notifications.warning('Snapshot Failed to Create', 'The resultant recording was unreadable for some reason, likely due to a lack of Active, non-Snapshot source recordings to take event data from');
           }
         }),
-        map(resp => resp.ok),
+        map(resp => resp.status == 200),
         first(),
       )
     ));
