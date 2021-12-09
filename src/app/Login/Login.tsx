@@ -40,7 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '../Notifications/Notifications';
 import { Card, CardBody, CardFooter, CardHeader, PageSection, Text, Title } from '@patternfly/react-core';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
-import { BearerAuthDescriptionText, BearerAuthForm } from './BearerAuthForm';
+import { OpenShiftAuthDescriptionText, OpenShiftPlaceholderAuthForm } from './OpenShiftPlaceholderAuthForm';
 import { NoopAuthForm } from './NoopAuthForm';
 import { ConnectionError } from './ConnectionError';
 import { AuthMethod } from '@app/Shared/Services/Login.service';
@@ -74,7 +74,7 @@ export const Login = () => {
       case AuthMethod.BASIC:
         return <BasicAuthForm onSubmit={handleSubmit} />;
       case AuthMethod.BEARER:
-        return <BearerAuthForm onSubmit={handleSubmit} />;
+        return <OpenShiftPlaceholderAuthForm onSubmit={handleSubmit} />;
       case AuthMethod.NONE:
         return <NoopAuthForm onSubmit={handleSubmit} />;
       default:
@@ -87,7 +87,7 @@ export const Login = () => {
       case AuthMethod.BASIC:
         return <BasicAuthDescriptionText />;
       case AuthMethod.BEARER:
-        return <BearerAuthDescriptionText />;
+        return <OpenShiftAuthDescriptionText />;
       default:
         return <Text />;
     }

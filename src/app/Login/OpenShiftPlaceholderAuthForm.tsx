@@ -36,65 +36,21 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { Text, TextVariants } from '@patternfly/react-core';
 import { FormProps } from './FormProps';
-import { AuthMethod } from '@app/Shared/Services/Login.service';
 
-export const BearerAuthForm: React.FunctionComponent<FormProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const [token, setToken] = React.useState('');
-  const [rememberMe, setRememberMe] = React.useState(true);
-
-  React.useEffect(() => {
-    const sub = context.login.getToken().subscribe(setToken);
-    return () => sub.unsubscribe();
-  }, [context, context.api, setToken]);
-
-  const handleTokenChange = React.useCallback((evt) => {
-    setToken(evt);
-  }, [setToken]);
-
-  const handleRememberMeToggle = React.useCallback((evt) => {
-    setRememberMe(evt)
-   }, [setRememberMe]);
-
-  const handleSubmit = React.useCallback((evt) => {
-    props.onSubmit(evt, token, AuthMethod.BEARER, rememberMe);
-  }, [props, props.onSubmit, token, rememberMe]);
-
+export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = (props) => {
+  // Display an empty form while redirecting to the OpenShift login page
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormGroup
-        label="Token"
-        isRequired
-        fieldId="token"
-        helperText="Please provide your authorization token"
-      >
-        <TextInput
-          isRequired
-          type="text"
-          id="token"
-          name="token"
-          aria-describedby="token-helper"
-          value={token}
-          onChange={handleTokenChange}
-        />
-      </FormGroup>
-      <Checkbox id="remember-me" label="Remember Me" isChecked={rememberMe} onChange={handleRememberMeToggle} />
-      <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit}>Login</Button>
-      </ActionGroup>
-    </Form>
+    <>
+    </>
   );
-
 }
 
-export const BearerAuthDescriptionText = () => {
+export const OpenShiftAuthDescriptionText = () => {
   return (
     <Text component={TextVariants.p}>
-      The Cryostat server is configured with Bearer token authentication. If this is an OpenShift deployment,
-      you can use <Text component={TextVariants.pre}>oc whoami --show-token</Text> to retrieve your user account token.
+      Logging in with OpenShift Container Platform ...
     </Text>
   );
 }
