@@ -36,9 +36,9 @@
  * SOFTWARE.
  */
 import { Base64 } from 'js-base64';
-import { combineLatest, Observable, ObservableInput, of, ReplaySubject, throwError } from 'rxjs';
+import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
+import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, switchMap, tap } from 'rxjs/operators';
 import { SettingsService } from './Settings.service';
 import { ApiV2Response } from './Api.service';
 import { TargetService } from './Target.service';
@@ -119,8 +119,7 @@ export class LoginService {
       first(),
       tap((jsonResp: AuthV2Response) => {
         if(jsonResp.meta.status === 'OK') {
-          this.decideRememberToken(token, rememberMe);
-          this.setUsername(jsonResp.data.result.username);
+          this.decideRememberCredentials(token, jsonResp.data.result.username, rememberMe);
           this.sessionState.next(SessionState.CREATING_USER_SESSION);
         }
       }),
@@ -188,21 +187,64 @@ export class LoginService {
     return this.logout.asObservable();
   }
 
-  setLoggedOut(): void {
-    this.removeCacheItem(this.USER_KEY);
-    this.removeCacheItem(this.TOKEN_KEY);
-    this.token.next('');
-    this.username.next('');
-    this.logout.next();
-    this.sessionState.next(SessionState.NO_USER_SESSION);
-
-    // TODO implement a logout call that will delete the access_token
-    // cached in the oauth server, thus redirecting users to the login page
-    this.queryAuthMethod();
+  setLoggedOut(token: string, method: string): Observable<boolean> {
+    return fromFetch(`${this.authority}/api/v2.1/logout`, {
+      credentials: 'include',
+      mode: 'cors',
+      method: 'POST',
+      body: null,
+      headers: this.getAuthHeaders(token, method),
+    })
+    .pipe(
+      switchMap(response => {
+        if(response.status === 302) {
+          const redirectUrl = response.headers.get('X-Location') || '';
+          return this.logoutOAuthServer(redirectUrl, token, method);
+        } else {
+          this.resetSessionState();
+          return of(true);
+        }
+    }),
+    catchError((e: Error): ObservableInput<boolean> => {
+      window.console.error(JSON.stringify(e));
+      return of(false);
+      }),
+    );
   }
 
   setSessionState(state: SessionState): void {
     this.sessionState.next(state);
+  }
+
+  private logoutOAuthServer(redirectUrl: string, token: string, method: string): Observable<boolean> {
+    return fromFetch(redirectUrl, {
+        credentials: 'include',
+        mode: 'no-cors',
+        method: 'POST',
+        body: null,
+        headers: this.getAuthHeaders(token, method),
+      }).pipe(
+          map(response => {
+            this.resetSessionState();
+            this.navigateToLoginPage();
+            return true;
+      }),
+      catchError((e: Error): ObservableInput<boolean> => {
+        window.console.error(JSON.stringify(e));
+        return of(false);
+        }),
+      );
+  }
+
+  private resetSessionState(): void {
+    this.token.next(this.getCacheItem(this.TOKEN_KEY));
+    this.username.next(this.getCacheItem(this.USER_KEY));
+    this.logout.next();
+    this.sessionState.next(SessionState.NO_USER_SESSION);
+  }
+
+  private navigateToLoginPage(): void {
+    window.location.replace(`${this.authority}`);
   }
 
   private getTokenFromUrlFragment(): string {
@@ -219,19 +261,17 @@ export class LoginService {
     return this.getCacheItem(this.TOKEN_KEY);
   }
 
-  private decideRememberToken(token: string, rememberMe: boolean): void {
+  private decideRememberCredentials(token: string, username: string, rememberMe: boolean): void {
     this.token.next(token);
+    this.username.next(username);
 
     if(rememberMe && !!token) {
       this.setCacheItem(this.TOKEN_KEY, token);
+      this.setCacheItem(this.USER_KEY, username);
     } else {
       this.removeCacheItem(this.TOKEN_KEY);
+      this.removeCacheItem(this.USER_KEY);
     }
-  }
-
-  private setUsername(username: string): void {
-    this.setCacheItem(this.USER_KEY, username);
-    this.username.next(username);
   }
 
   private completeAuthMethod(method: string): void {
