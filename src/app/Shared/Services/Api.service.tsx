@@ -285,7 +285,7 @@ export class ApiService {
     ;
   }
 
-  deleteCustomEventTemplate(templateName: string): Observable<void> {
+  deleteCustomEventTemplate(templateName: string): Observable<boolean> {
     return this.sendRequest('v1', `templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
       body: null,
@@ -295,8 +295,9 @@ export class ApiService {
         if (!response.ok) {
           throw response.statusText;
         }
+        return true;
       }),
-      catchError((): ObservableInput<void> => of()),
+      catchError((): ObservableInput<boolean> => of(false)),
     );
   }
 
