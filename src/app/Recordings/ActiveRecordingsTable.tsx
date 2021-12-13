@@ -45,8 +45,8 @@ import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@p
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { combineLatest, forkJoin, Observable } from 'rxjs';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { concat, merge, forkJoin, Observable } from 'rxjs';
+import { mergeAll, concatMap, filter, first } from 'rxjs/operators';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
@@ -127,13 +127,25 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
-    combineLatest([
-      context.notificationChannel.messages(NotificationCategory.RecordingCreated),
-      context.notificationChannel.messages(NotificationCategory.RecordingSaved),
-      context.notificationChannel.messages(NotificationCategory.RecordingArchived),
-      context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
-    ]).subscribe(
-      refreshRecordingList
+    // merge([
+    //   context.notificationChannel.messages(NotificationCategory.RecordingCreated),
+    //   context.notificationChannel.messages(NotificationCategory.RecordingSaved),
+    //   context.notificationChannel.messages(NotificationCategory.RecordingArchived),
+    //   context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
+    // ]).subscribe(
+    //   refreshRecordingList
+    //);
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RecordingCreated).subscribe(refreshRecordingList)
+    );
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RecordingSaved).subscribe(refreshRecordingList)
+    );
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RecordingArchived).subscribe(refreshRecordingList)
+    );
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RecordingDeleted).subscribe(refreshRecordingList)
     );
   }, [context, context.notificationChannel, refreshRecordingList]);
 
