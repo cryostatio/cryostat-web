@@ -127,25 +127,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
-    // merge([
-    //   context.notificationChannel.messages(NotificationCategory.RecordingCreated),
-    //   context.notificationChannel.messages(NotificationCategory.RecordingSaved),
-    //   context.notificationChannel.messages(NotificationCategory.RecordingArchived),
-    //   context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
-    // ]).subscribe(
-    //   refreshRecordingList
-    //);
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingCreated).subscribe(refreshRecordingList)
-    );
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingSaved).subscribe(refreshRecordingList)
-    );
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingArchived).subscribe(refreshRecordingList)
-    );
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingDeleted).subscribe(refreshRecordingList)
+    merge(
+      context.notificationChannel.messages(NotificationCategory.RecordingCreated),
+      context.notificationChannel.messages(NotificationCategory.RecordingSaved),
+      context.notificationChannel.messages(NotificationCategory.RecordingArchived),
+      context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
+    ).subscribe(
+      refreshRecordingList
     );
   }, [context, context.notificationChannel, refreshRecordingList]);
 
