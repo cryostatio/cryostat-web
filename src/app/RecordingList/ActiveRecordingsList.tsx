@@ -43,11 +43,20 @@ import {NO_TARGET} from '@app/Shared/Services/Target.service';
 import {useSubscriptions} from '@app/utils/useSubscriptions';
 import {Button, DataListAction, DataListCell, DataListCheck, DataListContent, DataListItem, DataListItemCells, DataListItemRow, DataListToggle, Dropdown, DropdownItem, DropdownPosition, KebabToggle, Text, Toolbar, ToolbarContent, ToolbarItem} from '@patternfly/react-core';
 import * as React from 'react';
+<<<<<<< HEAD:src/app/RecordingList/ActiveRecordingsList.tsx
 import {useHistory, useRouteMatch} from 'react-router-dom';
 import {forkJoin, Observable} from 'rxjs';
 import {concatMap, filter, first} from 'rxjs/operators';
 import {RecordingsDataTable} from './RecordingsDataTable';
 import {ReportFrame} from './ReportFrame';
+=======
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { merge, forkJoin, Observable } from 'rxjs';
+import { concatMap, filter, first } from 'rxjs/operators';
+import { RecordingActions } from './RecordingActions';
+import { RecordingsTable } from './RecordingsTable';
+import { ReportFrame } from './ReportFrame';
+>>>>>>> 28f339b (fix(recordings): Ensure ActiveRecordingsTable properly refreshes recordings list (#353)):src/app/Recordings/ActiveRecordingsTable.tsx
 
 export interface ActiveRecordingsListProps {
   archiveEnabled: boolean;
@@ -136,6 +145,7 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
+<<<<<<< HEAD:src/app/RecordingList/ActiveRecordingsList.tsx
     addSubscription(context.notificationChannel.messages(NotificationCategory.RecordingCreated)
       .subscribe(v => {
         const event: RecordingNotificationEvent = v.message;
@@ -170,6 +180,17 @@ export const ActiveRecordingsList: React.FunctionComponent<ActiveRecordingsListP
          refreshRecordingList();
       }));
   }, [addSubscription, context, context.notificationChannel, notifications, refreshRecordingList]);
+=======
+    merge(
+      context.notificationChannel.messages(NotificationCategory.RecordingCreated),
+      context.notificationChannel.messages(NotificationCategory.RecordingSaved),
+      context.notificationChannel.messages(NotificationCategory.RecordingArchived),
+      context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
+    ).subscribe(
+      refreshRecordingList
+    );
+  }, [context, context.notificationChannel, refreshRecordingList]);
+>>>>>>> 28f339b (fix(recordings): Ensure ActiveRecordingsTable properly refreshes recordings list (#353)):src/app/Recordings/ActiveRecordingsTable.tsx
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
