@@ -46,7 +46,11 @@ import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarItem } f
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+<<<<<<< HEAD
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
+=======
+import { merge, forkJoin, Observable } from 'rxjs';
+>>>>>>> 28f339b (fix(recordings): Ensure ActiveRecordingsTable properly refreshes recordings list (#353))
 import { concatMap, filter, first } from 'rxjs/operators';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -126,6 +130,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
+<<<<<<< HEAD
     addSubscription(
       combineLatest([
         context.target.target(),
@@ -181,6 +186,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           return updated;
         });
       })
+=======
+    merge(
+      context.notificationChannel.messages(NotificationCategory.RecordingCreated),
+      context.notificationChannel.messages(NotificationCategory.RecordingSaved),
+      context.notificationChannel.messages(NotificationCategory.RecordingArchived),
+      context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
+    ).subscribe(
+      refreshRecordingList
+>>>>>>> 28f339b (fix(recordings): Ensure ActiveRecordingsTable properly refreshes recordings list (#353))
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
