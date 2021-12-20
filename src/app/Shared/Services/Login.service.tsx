@@ -85,7 +85,7 @@ export class LoginService {
       });
   }
 
-  checkAuth(token: string, method: string, rememberMe = false): Observable<boolean> {
+  checkAuth(token: string, method: string, rememberMe = true): Observable<boolean> {
     token = Base64.encodeURL(token || this.getTokenFromUrlFragment());
     token = token || this.getCachedEncodedTokenIfAvailable();
 
