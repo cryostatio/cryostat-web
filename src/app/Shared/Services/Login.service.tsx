@@ -36,13 +36,12 @@
  * SOFTWARE.
  */
 import { Base64 } from 'js-base64';
-import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
+import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
 import { SettingsService } from './Settings.service';
-import { ApiV2Response } from './Api.service';
+import { ApiV2Response, HttpError } from './Api.service';
 import { TargetService } from './Target.service';
-import { delay } from 'lodash';
 
 export enum SessionState {
   NO_USER_SESSION,
@@ -206,23 +205,28 @@ export class LoginService {
       concatMap(
         response => {
           if(response.status === 302) {
-            const redirectUrl = response.headers.get('X-Location') || '';
+            const redirectUrl = response.headers.get('X-Location');
+            if(!redirectUrl) {
+              throw new HttpError(response);
+            }
+
             return fromFetch(redirectUrl, {
               mode: 'cors',
               method: 'POST',
               body: null,
             });
+
           } else {
             return of(response);
           }
         }),
-      concatMap(
-        response => {
-          if(response.ok) {
+      map(response => response.ok),
+      tap(
+        responseOk => {
+          if(responseOk) {
             this.resetSessionState();
             this.navigateToLoginPage();
          }
-          return of(response.ok);
         }),
       catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e));
