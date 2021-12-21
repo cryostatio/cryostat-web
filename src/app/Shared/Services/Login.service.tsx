@@ -211,6 +211,7 @@ export class LoginService {
             }
 
             return fromFetch(redirectUrl, {
+              credentials: 'include',
               mode: 'cors',
               method: 'POST',
               body: null,
