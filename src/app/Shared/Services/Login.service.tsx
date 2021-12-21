@@ -36,12 +36,13 @@
  * SOFTWARE.
  */
 import { Base64 } from 'js-base64';
-import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
+import { combineLatest, from, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, switchMap, tap } from 'rxjs/operators';
 import { SettingsService } from './Settings.service';
 import { ApiV2Response } from './Api.service';
 import { TargetService } from './Target.service';
+import { delay } from 'lodash';
 
 export enum SessionState {
   NO_USER_SESSION,
@@ -187,53 +188,51 @@ export class LoginService {
     return this.logout.asObservable();
   }
 
-  setLoggedOut(token: string, method: string): Observable<boolean> {
-    return fromFetch(`${this.authority}/api/v2.1/logout`, {
-      credentials: 'include',
-      mode: 'cors',
-      method: 'POST',
-      body: null,
-      headers: this.getAuthHeaders(token, method),
-    })
-    .pipe(
-      switchMap(response => {
-        if(response.status === 302) {
-          const redirectUrl = response.headers.get('X-Location') || '';
-          return this.logoutOAuthServer(redirectUrl, token, method);
-        } else {
-          this.resetSessionState();
-          return of(true);
-        }
-    }),
-    catchError((e: Error): ObservableInput<boolean> => {
-      window.console.error(JSON.stringify(e));
-      return of(false);
+  setLoggedOut(): Observable<boolean> {
+    return combineLatest([this.getToken(), this.getAuthMethod()]).pipe(
+      first(),
+      concatMap(parts => {
+        const token = parts[0];
+        const method = parts[1];
+
+        return fromFetch(`${this.authority}/api/v2.1/logout`, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'POST',
+          body: null,
+          headers: this.getAuthHeaders(token, method),
+        });
+      }),
+      concatMap(
+        response => {
+          if(response.status === 302) {
+            const redirectUrl = response.headers.get('X-Location') || '';
+            return fromFetch(redirectUrl, {
+              mode: 'cors',
+              method: 'POST',
+              body: null,
+            });
+          } else {
+            return of(response);
+          }
+        }),
+      concatMap(
+        response => {
+          if(response.ok) {
+            this.resetSessionState();
+            this.navigateToLoginPage();
+         }
+          return of(response.ok);
+        }),
+      catchError((e: Error): ObservableInput<boolean> => {
+        window.console.error(JSON.stringify(e));
+        return of(false);
       }),
     );
   }
 
   setSessionState(state: SessionState): void {
     this.sessionState.next(state);
-  }
-
-  private logoutOAuthServer(redirectUrl: string, token: string, method: string): Observable<boolean> {
-    return fromFetch(redirectUrl, {
-        credentials: 'include',
-        mode: 'no-cors',
-        method: 'POST',
-        body: null,
-        headers: this.getAuthHeaders(token, method),
-      }).pipe(
-          map(response => {
-            this.resetSessionState();
-            this.navigateToLoginPage();
-            return true;
-      }),
-      catchError((e: Error): ObservableInput<boolean> => {
-        window.console.error(JSON.stringify(e));
-        return of(false);
-        }),
-      );
   }
 
   private resetSessionState(): void {

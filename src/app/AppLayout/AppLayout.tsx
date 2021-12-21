@@ -79,8 +79,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
-  const [token, setToken] = React.useState("");
-  const [authMethod, setAuthMethod] = React.useState("");
   const location = useLocation();
 
   React.useEffect(() => {
@@ -161,18 +159,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   }, [serviceContext.target]);
 
   const handleLogout = React.useCallback(() => {
-      const sub = serviceContext.login.setLoggedOut(token, authMethod).subscribe();
+      const sub = serviceContext.login.setLoggedOut().subscribe();
       return () => sub.unsubscribe();
-  }, [serviceContext.login, token, authMethod]);
-
-  React.useEffect(() => {
-    combineLatest([serviceContext.login.getToken(), serviceContext.login.getAuthMethod()]).subscribe(
-    parts => {
-      const token = parts[0];
-      const method = parts[1];
-      setToken(token);
-      setAuthMethod(method);
-    });
   }, [serviceContext.login]);
 
   const handleUserInfoToggle = React.useCallback(() =>
