@@ -248,7 +248,7 @@ export class LoginService {
   }
 
   private navigateToLoginPage(): void {
-    window.location.replace(`${this.authority}`);
+    window.location.reload();
   }
 
   private getTokenFromUrlFragment(): string {
