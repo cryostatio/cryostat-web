@@ -60,6 +60,7 @@ export class LoginService {
 
   private readonly TOKEN_KEY: string = 'token';
   private readonly USER_KEY: string = 'user';
+  private readonly AUTH_METHOD_KEY: string = 'auth_method';
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<AuthMethod>(1);
   private readonly logout = new ReplaySubject<void>(1);
@@ -75,6 +76,7 @@ export class LoginService {
     this.authority = apiAuthority;
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
+    this.authMethod.next(this.getCacheItem(this.AUTH_METHOD_KEY) as AuthMethod);
     this.sessionState.next(SessionState.NO_USER_SESSION);
     this.queryAuthMethod();
   }
@@ -91,6 +93,10 @@ export class LoginService {
 
     if(this.hasBearerTokenUrlHash()) {
       method = AuthMethod.BEARER;
+    }
+
+    if(!method) {
+      method = this.getCacheItem(this.AUTH_METHOD_KEY);
     }
 
     return fromFetch(`${this.authority}/api/v2.1/auth`, {
@@ -248,6 +254,8 @@ export class LoginService {
   }
 
   private navigateToLoginPage(): void {
+    this.authMethod.next(AuthMethod.UNKNOWN);
+    this.removeCacheItem(this.AUTH_METHOD_KEY);
     window.location.reload();
   }
 
@@ -286,6 +294,7 @@ export class LoginService {
     }
 
     this.authMethod.next(validMethod);
+    this.setCacheItem(this.AUTH_METHOD_KEY, validMethod);
     this.authMethod.complete();
   }
 
