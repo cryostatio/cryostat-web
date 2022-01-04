@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { Target } from '@app/Shared/Services/Target.service';
-import { ActionGroup, Button, ButtonType, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
+import { ActionGroup, AlertVariant, Button, ButtonType, Form, FormGroup, Modal, ModalVariant, TextInput, ValidatedOptions } from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface CreateTargetModalProps {
@@ -47,7 +47,17 @@ export interface CreateTargetModalProps {
 
 export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> = (props) => {
   const [connectUrl, setConnectUrl] = React.useState('');
+  const [validConnectUrl, setValidConnectUrl] = React.useState(ValidatedOptions.default);
   const [alias, setAlias] = React.useState('');
+
+  const jmxServiceUrlFormat = new RegExp([
+    /service:jmx:([a-z]+):/
+    ,/\/\/([a-z0-9-]+)\/jndi\/([a-z]+):/
+    ,/\/\/([a-z0-9-]+):([0-9]+)/
+    ,/\/([a-z]+)/g
+  ].map(function(r) {return r.source}).join(''));
+
+  const hostPortPairFormat = /([a-z0-9-]+):([0-9]+)/g;
 
   const createTarget = React.useCallback(() => {
     props.onSubmit({ connectUrl, alias: alias.trim() || connectUrl });
@@ -60,6 +70,17 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
       createTarget();
     }
   }, [createTarget]);
+
+  const handleSubmit = React.useCallback(() => {
+    const isValid = connectUrl
+      && (connectUrl.match(jmxServiceUrlFormat) || connectUrl.match(hostPortPairFormat));
+
+    if(isValid) {
+      createTarget();
+    } else {
+      setValidConnectUrl(ValidatedOptions.error);
+    }
+  }, [createTarget, setValidConnectUrl]);
 
   return (<>
     <Modal
@@ -76,6 +97,8 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
           isRequired
           fieldId="connect-url"
           helperText="JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi"
+          helperTextInvalid={'Must be a JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi, or host:port pair'}
+          validated={validConnectUrl}
         >
           <TextInput
             value={connectUrl}
@@ -101,7 +124,7 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
         </FormGroup>
       </Form>
       <ActionGroup>
-        <Button variant="primary" type={ButtonType.submit} onClick={createTarget}>Create</Button>
+        <Button variant="primary" type={ButtonType.submit} isDisabled={!connectUrl} onClick={handleSubmit}>Create</Button>
       </ActionGroup>
     </Modal>
   </>);
