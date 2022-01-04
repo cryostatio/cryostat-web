@@ -284,6 +284,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       {
         notifications
           .filter(n => !n.read && (Notifications.isProblemNotification(n) || n.variant === AlertVariant.success))
+          .sort((prev, curr) => {
+            if(!prev.timestamp) return -1;
+            if(!curr.timestamp) return 1;
+            return prev.timestamp - curr.timestamp;
+          })
           .map(( { key, title, message, variant } ) => (
             <Alert
               variant={variant}
