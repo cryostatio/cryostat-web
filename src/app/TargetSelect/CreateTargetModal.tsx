@@ -75,7 +75,7 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
           label="Connection URL"
           isRequired
           fieldId="connect-url"
-          helperText="JMX Service URL"
+          helperText="JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi"
         >
           <TextInput
             value={connectUrl}
