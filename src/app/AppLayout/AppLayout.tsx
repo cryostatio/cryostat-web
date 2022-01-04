@@ -284,6 +284,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       {
         notifications
           .filter(n => !n.read && (Notifications.isProblemNotification(n) || n.variant === AlertVariant.success))
+          .reverse()
           .map(( { key, title, message, variant } ) => (
             <Alert
               variant={variant}
