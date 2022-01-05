@@ -50,14 +50,8 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
   const [validConnectUrl, setValidConnectUrl] = React.useState(ValidatedOptions.default);
   const [alias, setAlias] = React.useState('');
 
-  const jmxServiceUrlFormat = new RegExp([
-    /service:jmx:([a-z]+):/
-    ,/\/\/([a-z0-9-]+)\/jndi\/([a-z]+):/
-    ,/\/\/([a-z0-9-]+):([0-9]+)/
-    ,/\/([a-z]+)/g
-  ].map(function(r) {return r.source}).join(''));
-
-  const hostPortPairFormat = /([a-z0-9-]+):([0-9]+)/g;
+  const jmxServiceUrlFormat = /service:jmx:([a-zA-Z0-9-]+)/g;
+  const hostPortPairFormat = /([a-zA-Z0-9-]+):([0-9]+)/g;
 
   const createTarget = React.useCallback(() => {
     props.onSubmit({ connectUrl, alias: alias.trim() || connectUrl });
