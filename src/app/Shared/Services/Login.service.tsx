@@ -256,7 +256,7 @@ export class LoginService {
   private navigateToLoginPage(): void {
     this.authMethod.next(AuthMethod.UNKNOWN);
     this.removeCacheItem(this.AUTH_METHOD_KEY);
-    window.location.reload();
+    window.location.href = window.location.href.split('#')[0];
   }
 
   private getTokenFromUrlFragment(): string {
