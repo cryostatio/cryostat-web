@@ -109,6 +109,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     recordings.forEach((r: Recording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
+        context.reports.delete(r);
         tasks.push(
           context.api.deleteArchivedRecording(r.name).pipe(first())
         );
