@@ -36,13 +36,63 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Text, TextVariants } from '@patternfly/react-core';
+import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Text, TextVariants, Title } from '@patternfly/react-core';
 import { FormProps } from './FormProps';
+import { LockIcon } from '@patternfly/react-icons';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { AuthMethod, SessionState } from '@app/Shared/Services/Login.service';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { combineLatest } from 'rxjs';
 
 export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = (props) => {
-  // Display an empty form while redirecting to the OpenShift login page
+  const serviceContext = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
+  const [showPermissionDenied, setShowPermissionDenied] = React.useState(false);
+
+  React.useEffect(() => {
+    const sub = combineLatest([serviceContext.login.getSessionState(), notifications.problemsNotifications()])
+      .subscribe(parts => {
+      const sessionState = parts[0];
+      const errors = parts[1];
+      const missingCryostatPermissions = errors.find(error => error.title.includes('401')) !== undefined;
+
+      setShowPermissionDenied(sessionState === SessionState.NO_USER_SESSION && missingCryostatPermissions);
+    });
+    return () => sub.unsubscribe();
+  }, [setShowPermissionDenied]);
+
+
+  const handleSubmit = React.useCallback((evt) => {
+    // Triggers a redirect to OpenShift Container Platform login page
+    props.onSubmit(evt, 'anInvalidToken', AuthMethod.BEARER, true);
+  }, [props, props.onSubmit, serviceContext.login]);
+
+  const permissionDenied = (
+    <EmptyState>
+      <EmptyStateIcon variant='container' component={LockIcon} />
+      <Title size="lg" headingLevel="h4">
+        Access Permissions Needed
+      </Title>
+      <EmptyStateBody>
+        <Text>
+        {`To continue, add permissions to your current account or login with a
+        different account. For more info, see the User Authentication section of the `}
+        </Text>
+        <Text
+              component={TextVariants.a}
+              target="_blank"
+              href='https://github.com/cryostatio/cryostat-operator#user-authentication'
+            >
+          Cryostat Operator README.
+        </Text>
+      </EmptyStateBody>
+      <Button variant="primary" onClick={handleSubmit}>Retry Login</Button>
+    </EmptyState>
+  );
+
   return (
     <>
+    { showPermissionDenied && permissionDenied }
     </>
   );
 }
@@ -50,7 +100,7 @@ export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = 
 export const OpenShiftAuthDescriptionText = () => {
   return (
     <Text component={TextVariants.p}>
-      Logging in with OpenShift Container Platform ...
+      The Cryostat server is configured to use OpenShift OAuth authentication.
     </Text>
   );
 }
