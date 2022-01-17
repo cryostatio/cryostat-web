@@ -35,7 +35,7 @@ module.exports = {
   preset: "ts-jest/presets/js-with-ts",
 
   // The path to a module that runs some code to configure or set up the testing framework before each test
-  setupFilesAfterEnv: ['<rootDir>/test-setup.js'],
+  //setupFilesAfterEnv: ['<rootDir>/test-setup.js'],
 
   // The test environment that will be used for testing.
   testEnvironment: "jsdom",
@@ -51,5 +51,7 @@ module.exports = {
   // A map from regular expressions to paths to transformers
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest"
-  }
+  },
+
+  transformIgnorePatterns: ["/node_modules/(?!@patternfly)"]
 };
