@@ -54,6 +54,7 @@ export enum NotificationCategory {
   JvmDiscovery = 'TargetJvmDiscovery',
   RecordingCreated = 'RecordingCreated',
   RecordingDeleted = 'RecordingDeleted',
+  RecordingStopped = 'RecordingStopped',
   RecordingSaved = 'RecordingSaved',
   RecordingArchived = 'RecordingArchived',
   WsClientActivity = 'WsClientActivity'
@@ -100,6 +101,11 @@ export class NotificationChannel {
     this.messages(NotificationCategory.RecordingArchived).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
       notifications.success('Recording Archived', `${event.recording} was archived`);
+    });
+
+    this.messages(NotificationCategory.RecordingStopped).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Stopped', `${event.recording} was stopped`);
     });
 
     this.messages(NotificationCategory.RecordingDeleted).subscribe(v => {
