@@ -36,11 +36,11 @@
  * SOFTWARE.
  */
 import { Base64 } from 'js-base64';
-import { combineLatest, Observable, ObservableInput, of, ReplaySubject, throwError } from 'rxjs';
+import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
 import { SettingsService } from './Settings.service';
-import { ApiV2Response } from './Api.service';
+import { ApiV2Response, HttpError } from './Api.service';
 import { TargetService } from './Target.service';
 
 export enum SessionState {
@@ -60,6 +60,7 @@ export class LoginService {
 
   private readonly TOKEN_KEY: string = 'token';
   private readonly USER_KEY: string = 'user';
+  private readonly AUTH_METHOD_KEY: string = 'auth_method';
   private readonly token = new ReplaySubject<string>(1);
   private readonly authMethod = new ReplaySubject<AuthMethod>(1);
   private readonly logout = new ReplaySubject<void>(1);
@@ -75,6 +76,7 @@ export class LoginService {
     this.authority = apiAuthority;
     this.token.next(this.getCacheItem(this.TOKEN_KEY));
     this.username.next(this.getCacheItem(this.USER_KEY));
+    this.authMethod.next(this.getCacheItem(this.AUTH_METHOD_KEY) as AuthMethod);
     this.sessionState.next(SessionState.NO_USER_SESSION);
     this.queryAuthMethod();
   }
@@ -85,12 +87,16 @@ export class LoginService {
       });
   }
 
-  checkAuth(token: string, method: string, rememberMe = false): Observable<boolean> {
+  checkAuth(token: string, method: string, rememberMe = true): Observable<boolean> {
     token = Base64.encodeURL(token || this.getTokenFromUrlFragment());
     token = token || this.getCachedEncodedTokenIfAvailable();
 
     if(this.hasBearerTokenUrlHash()) {
       method = AuthMethod.BEARER;
+    }
+
+    if(!method) {
+      method = this.getCacheItem(this.AUTH_METHOD_KEY);
     }
 
     return fromFetch(`${this.authority}/api/v2.1/auth`, {
@@ -119,8 +125,7 @@ export class LoginService {
       first(),
       tap((jsonResp: AuthV2Response) => {
         if(jsonResp.meta.status === 'OK') {
-          this.decideRememberToken(token, rememberMe);
-          this.setUsername(jsonResp.data.result.username);
+          this.decideRememberCredentials(token, jsonResp.data.result.username, rememberMe);
           this.sessionState.next(SessionState.CREATING_USER_SESSION);
         }
       }),
@@ -188,21 +193,70 @@ export class LoginService {
     return this.logout.asObservable();
   }
 
-  setLoggedOut(): void {
-    this.removeCacheItem(this.USER_KEY);
-    this.removeCacheItem(this.TOKEN_KEY);
-    this.token.next('');
-    this.username.next('');
-    this.logout.next();
-    this.sessionState.next(SessionState.NO_USER_SESSION);
+  setLoggedOut(): Observable<boolean> {
+    return combineLatest([this.getToken(), this.getAuthMethod()]).pipe(
+      first(),
+      concatMap(parts => {
+        const token = parts[0];
+        const method = parts[1];
 
-    // TODO implement a logout call that will delete the access_token
-    // cached in the oauth server, thus redirecting users to the login page
-    this.queryAuthMethod();
+        return fromFetch(`${this.authority}/api/v2.1/logout`, {
+          credentials: 'include',
+          mode: 'cors',
+          method: 'POST',
+          body: null,
+          headers: this.getAuthHeaders(token, method),
+        });
+      }),
+      concatMap(
+        response => {
+          if(response.status === 302) {
+            const redirectUrl = response.headers.get('X-Location');
+            if(!redirectUrl) {
+              throw new HttpError(response);
+            }
+
+            return fromFetch(redirectUrl, {
+              credentials: 'include',
+              mode: 'cors',
+              method: 'POST',
+              body: null,
+            });
+
+          } else {
+            return of(response);
+          }
+        }),
+      map(response => response.ok),
+      tap(
+        responseOk => {
+          if(responseOk) {
+            this.resetSessionState();
+            this.navigateToLoginPage();
+         }
+        }),
+      catchError((e: Error): ObservableInput<boolean> => {
+        window.console.error(JSON.stringify(e));
+        return of(false);
+      }),
+    );
   }
 
   setSessionState(state: SessionState): void {
     this.sessionState.next(state);
+  }
+
+  private resetSessionState(): void {
+    this.token.next(this.getCacheItem(this.TOKEN_KEY));
+    this.username.next(this.getCacheItem(this.USER_KEY));
+    this.logout.next();
+    this.sessionState.next(SessionState.NO_USER_SESSION);
+  }
+
+  private navigateToLoginPage(): void {
+    this.authMethod.next(AuthMethod.UNKNOWN);
+    this.removeCacheItem(this.AUTH_METHOD_KEY);
+    window.location.href = window.location.href.split('#')[0];
   }
 
   private getTokenFromUrlFragment(): string {
@@ -219,19 +273,17 @@ export class LoginService {
     return this.getCacheItem(this.TOKEN_KEY);
   }
 
-  private decideRememberToken(token: string, rememberMe: boolean): void {
+  private decideRememberCredentials(token: string, username: string, rememberMe: boolean): void {
     this.token.next(token);
+    this.username.next(username);
 
     if(rememberMe && !!token) {
       this.setCacheItem(this.TOKEN_KEY, token);
+      this.setCacheItem(this.USER_KEY, username);
     } else {
       this.removeCacheItem(this.TOKEN_KEY);
+      this.removeCacheItem(this.USER_KEY);
     }
-  }
-
-  private setUsername(username: string): void {
-    this.setCacheItem(this.USER_KEY, username);
-    this.username.next(username);
   }
 
   private completeAuthMethod(method: string): void {
@@ -242,6 +294,7 @@ export class LoginService {
     }
 
     this.authMethod.next(validMethod);
+    this.setCacheItem(this.AUTH_METHOD_KEY, validMethod);
     this.authMethod.complete();
   }
 

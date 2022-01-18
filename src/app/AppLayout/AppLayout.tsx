@@ -53,6 +53,7 @@ import { SslErrorModal } from './SslErrorModal';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 import { SessionState } from '@app/Shared/Services/Login.service';
+import { combineLatest } from 'rxjs';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -157,9 +158,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     return () => sub.unsubscribe();
   }, [serviceContext.target]);
 
-  const handleLogout = React.useCallback(() =>
-    serviceContext.login.setLoggedOut(),
-    [serviceContext.login]);
+  const handleLogout = React.useCallback(() => {
+      const sub = serviceContext.login.setLoggedOut().subscribe();
+      return () => sub.unsubscribe();
+  }, [serviceContext.login]);
 
   const handleUserInfoToggle = React.useCallback(() =>
     setShowUserInfoDropdown(v => !v),
