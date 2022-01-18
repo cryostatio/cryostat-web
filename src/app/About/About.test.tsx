@@ -37,14 +37,10 @@
  */
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { Recordings } from './Recordings';
+import { About } from './About';
 
 describe('<Recordings />', () => {
     it('test mocking', () => {
-       //render(<Recordings />);
+       render(<About />);
     })
 });
-
-
-
-
