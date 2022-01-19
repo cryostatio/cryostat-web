@@ -37,11 +37,13 @@
  */
 import * as React from 'react';
 import { render } from '@testing-library/react';
+import { shallow } from 'enzyme';
 import { Recordings } from './Recordings';
 
 describe('<Recordings />', () => {
     it('test mocking', () => {
        render(<Recordings />);
+       //const wrapper = shallow(<Recordings />);
     })
 });
 
