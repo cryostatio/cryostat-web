@@ -41,7 +41,7 @@ import { Recordings } from './Recordings';
 
 describe('<Recordings />', () => {
     it('test mocking', () => {
-       //render(<Recordings />);
+       render(<Recordings />);
     })
 });
 

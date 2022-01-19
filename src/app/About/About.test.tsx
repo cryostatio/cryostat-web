@@ -36,11 +36,16 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { About } from './About';
+import { CRYOSTAT_TRADEMARK } from './AboutDescription';
 
-describe('<Recordings />', () => {
-    it('test mocking', () => {
+describe('<About />', () => {
+    it('renders correctly', () => {
        render(<About />);
+       expect(screen.getByText("About")).toBeInTheDocument();
+       expect(screen.getByAltText("Cryostat")).toBeInTheDocument();
+       expect(screen.getByText(CRYOSTAT_TRADEMARK)).toBeInTheDocument();
     })
-});
+})
