@@ -36,15 +36,55 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { render } from '@testing-library/react';
-import { shallow } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { Recordings } from './Recordings';
+import { ApiService, Recording } from '@app/Shared/Services/Api.service'
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
+import { Target, TargetService} from '@app/Shared/Services/Target.service'
+import { Observable, of } from 'rxjs';
 
 describe('<Recordings />', () => {
-    it('test mocking', () => {
-       render(<Recordings />);
-       //const wrapper = shallow(<Recordings />);
-    })
+  it('renders correctly', () => {
+		jest.mock('@app/Shared/Services/Api.service', () => {
+			return {
+				ApiService: jest.fn().mockImplementation(() => {
+					return {
+						isArchiveEnabled: () => {of(true)}
+					};
+				})
+			};
+		});
+
+		jest.mock('@app/Shared/Services/Api.service', () => {
+			return {
+				ApiService: jest.fn().mockImplementation(() => {
+					return {
+						doGet: () => {of([])}
+					};
+				})
+			};
+		});
+
+		const target: Target = {connectUrl: 'url/to/target/foo', alias: 'Foo'};
+		jest.mock('@app/Shared/Services/Target.service', () => {
+			return {
+				TargetService: jest.fn().mockImplementation(() => {
+					return {
+						target: () => {of(target)}
+					}
+				})
+			}
+		})
+
+    render(
+      <ServiceContext.Provider value = {defaultServices}>
+				<Recordings />
+			</ServiceContext.Provider>
+		);
+
+		expect(screen.getByTitle('Archived Recordings')).toBeTruthy();
+  })
 });
 
 
