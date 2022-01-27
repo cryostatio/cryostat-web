@@ -39,10 +39,57 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Recordings } from './Recordings';
-import { ApiService, Recording } from '@app/Shared/Services/Api.service'
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
-import { Target, TargetService} from '@app/Shared/Services/Target.service'
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
+
+jest.mock('@patternfly/react-core/src/components/Card/Card', () => {
+  return {
+    Card: jest.fn().mockImplementation(() => {
+      return <div>MockCard</div>
+    })
+  }
+});
+
+jest.mock('@patternfly/react-core', () => {
+  return {
+    Card: jest.fn().mockImplementation(({ children }) => {
+      return <div>
+                MockCard
+                { children }
+              </div>
+    }),
+    CardBody: jest.fn().mockImplementation(() => {
+      return <div>MockCardBody</div>
+    }),
+    CardHeader: jest.fn().mockImplementation(() => {
+      return <div>MockCardHeader</div>
+    }),
+    // Tab: jest.fn().mockImplementation(() => {
+
+    // }),
+    // Tabs: jest.fn().mockImplementation(() => {
+
+    // }),
+    Text: jest.fn().mockImplementation(() => {
+      return <div>Active Recordings</div>
+    }),
+    // TextVariants: jest.fn().mockImplementation(() => {
+      
+
+    // }),
+  }
+}) 
+
+jest.mock('@app/TargetView/TargetView', () => {
+  return {
+    TargetView: jest.fn().mockImplementation(({pageTitle, children}) => {
+      return <div>
+                {pageTitle}
+                {children}
+              </div>
+    })
+  }
+});
 
 describe('<Recordings />', () => {
   it('renders correctly', () => {
@@ -56,34 +103,15 @@ describe('<Recordings />', () => {
 			};
 		});
 
-		jest.mock('@app/Shared/Services/Api.service', () => {
-			return {
-				ApiService: jest.fn().mockImplementation(() => {
-					return {
-						doGet: () => {of([])}
-					};
-				})
-			};
-		});
+    // render(
+    //   <ServiceContext.Provider value = {defaultServices}>
+		// 		<Recordings />
+		// 	</ServiceContext.Provider>
+		// );
 
-		const target: Target = {connectUrl: 'url/to/target/foo', alias: 'Foo'};
-		jest.mock('@app/Shared/Services/Target.service', () => {
-			return {
-				TargetService: jest.fn().mockImplementation(() => {
-					return {
-						target: () => {of(target)}
-					}
-				})
-			}
-		})
+    render (<Recordings />);
 
-    render(
-      <ServiceContext.Provider value = {defaultServices}>
-				<Recordings />
-			</ServiceContext.Provider>
-		);
-
-		expect(screen.getByTitle('Archived Recordings')).toBeTruthy();
+		expect(screen.getByTitle('Recordings')).toBeTruthy();
   })
 });
 

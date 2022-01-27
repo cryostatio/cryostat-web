@@ -64,7 +64,7 @@ export const Recordings = () => {
       </Tabs>
     ) : (
       <>
-        <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
+        <CardHeader><Text component={"h4"}>Active Recordings</Text></CardHeader>
         <ActiveRecordingsTable archiveEnabled={false}/>
       </>
     );
@@ -74,7 +74,8 @@ export const Recordings = () => {
     <TargetView pageTitle="Recordings">
       <Card>
         <CardBody>
-          { cardBody }
+          <CardHeader><Text component={"h4"}>Active Recordings</Text></CardHeader>
+          <ActiveRecordingsTable archiveEnabled={false}/>
         </CardBody>
       </Card>
     </TargetView>
