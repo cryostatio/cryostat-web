@@ -38,58 +38,87 @@
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Recordings } from './Recordings';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
 import { of } from 'rxjs';
+import { TextVariants } from '@patternfly/react-core'
 
-jest.mock('@patternfly/react-core/src/components/Card/Card', () => {
+jest.mock('@patternfly/react-core', () => {
   return {
-    Card: jest.fn().mockImplementation(() => {
-      return <div>MockCard</div>
+    Card: jest.fn().mockImplementation(({children}) => {
+      return <div>
+                MockCard
+                {children}
+              </div>
+    }),
+    CardBody: jest.fn().mockImplementation(({children}) => {
+      return <div>
+                MockCardBody
+                {children}
+              </div>
+    }),
+    CardHeader: jest.fn().mockImplementation(({children}) => {
+      return <div>
+                MockCardHeader
+                {children}
+              </div>
+    }),
+    Tabs: jest.fn().mockImplementation(({activeKey, onSelect, children}) => {
+      return <div>
+                MockTabs
+                {children}
+             </div>
+    }),
+    Tab: jest.fn().mockImplementation(({eventKey, title, children}) => {
+      return <div>
+                MockTab
+                eventKey: {eventKey}
+                title: {title}
+                {children}             
+             </div>
+    }),
+    Text: jest.fn().mockImplementation(({component, children}) => {
+      return <div> 
+                MockText
+                component: {component}
+                {children}   
+             </div>
+    })
+  }
+}) 
+
+jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
+  return {
+    ActiveRecordingsTable: jest.fn().mockImplementation(({archiveEnabled, onArchive}) => {
+      return <div>
+                MockActiveRecordingsTable
+                archiveEnabled: {archiveEnabled.toString()}
+             </div>
     })
   }
 });
 
-jest.mock('@patternfly/react-core', () => {
+jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
-    Card: jest.fn().mockImplementation(({ children }) => {
+    ArchivedRecordingsTable: jest.fn().mockImplementation(({updater}) => {
       return <div>
-                MockCard
-                { children }
-              </div>
-    }),
-    CardBody: jest.fn().mockImplementation(() => {
-      return <div>MockCardBody</div>
-    }),
-    CardHeader: jest.fn().mockImplementation(() => {
-      return <div>MockCardHeader</div>
-    }),
-    // Tab: jest.fn().mockImplementation(() => {
-
-    // }),
-    // Tabs: jest.fn().mockImplementation(() => {
-
-    // }),
-    Text: jest.fn().mockImplementation(() => {
-      return <div>Active Recordings</div>
-    }),
-    // TextVariants: jest.fn().mockImplementation(() => {
-      
-
-    // }),
+                MockArchivedRecordingsTable
+             </div>
+    })
   }
-}) 
+});
 
 jest.mock('@app/TargetView/TargetView', () => {
   return {
     TargetView: jest.fn().mockImplementation(({pageTitle, children}) => {
       return <div>
-                {pageTitle}
+                pageTitle: {pageTitle}
                 {children}
-              </div>
+             </div>
     })
   }
 });
+
+import { Recordings } from './Recordings';
 
 describe('<Recordings />', () => {
   it('renders correctly', () => {
@@ -103,13 +132,13 @@ describe('<Recordings />', () => {
 			};
 		});
 
-    // render(
-    //   <ServiceContext.Provider value = {defaultServices}>
-		// 		<Recordings />
-		// 	</ServiceContext.Provider>
-		// );
+    render(
+      <ServiceContext.Provider value = {defaultServices}>
+				<Recordings />
+			</ServiceContext.Provider>
+		);
 
-    render (<Recordings />);
+    //render (<Recordings />);
 
 		expect(screen.getByTitle('Recordings')).toBeTruthy();
   })

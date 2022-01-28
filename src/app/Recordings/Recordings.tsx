@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, Tab, Tabs, TextVariants, Text } from '@patternfly/react-core';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 
@@ -53,6 +53,7 @@ export const Recordings = () => {
   }, [context.api]);
 
   const cardBody = React.useMemo(() => {
+    const component = 'h4' as TextVariants.h4;
     return archiveEnabled ? (
       <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
         <Tab eventKey={0} title="Active Recordings">
@@ -64,7 +65,7 @@ export const Recordings = () => {
       </Tabs>
     ) : (
       <>
-        <CardHeader><Text component={"h4"}>Active Recordings</Text></CardHeader>
+        <CardHeader><Text component={component}>Active Recordings</Text></CardHeader>
         <ActiveRecordingsTable archiveEnabled={false}/>
       </>
     );
@@ -74,8 +75,7 @@ export const Recordings = () => {
     <TargetView pageTitle="Recordings">
       <Card>
         <CardBody>
-          <CardHeader><Text component={"h4"}>Active Recordings</Text></CardHeader>
-          <ActiveRecordingsTable archiveEnabled={false}/>
+          { cardBody }
         </CardBody>
       </Card>
     </TargetView>
