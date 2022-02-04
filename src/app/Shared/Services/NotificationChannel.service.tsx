@@ -40,13 +40,12 @@ import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs
 import { fromFetch } from 'rxjs/fetch';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
-import { Base64 } from 'js-base64';
 import * as _ from 'lodash';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
-
+import { SavedRecording } from '@app/Shared/Services/Api.service';
 
 interface RecordingNotificationEvent {
-  recording: string;
+  recording: SavedRecording;
   target: string;
 }
 
@@ -93,24 +92,24 @@ export class NotificationChannel {
       notifications.success('Recording Created', `${event.recording} created in target: ${event.target}`);
     });
 
-    this.messages(NotificationCategory.RecordingSaved).subscribe(v => {
-      const event: RecordingNotificationEvent = v.message;
-      notifications.success('Recording Archived', `${event.recording} was archived`);
-    });
-
-    this.messages(NotificationCategory.RecordingArchived).subscribe(v => {
-      const event: RecordingNotificationEvent = v.message;
-      notifications.success('Recording Archived', `${event.recording} was archived`);
-    });
-
     this.messages(NotificationCategory.RecordingStopped).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
       notifications.success('Recording Stopped', `${event.recording} was stopped`);
     });
 
+    this.messages(NotificationCategory.RecordingSaved).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Archived', `${event.recording.name} was uploaded into archives`);
+    });
+
+    this.messages(NotificationCategory.RecordingArchived).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Archived', `${event.recording.name} was archived`);
+    });
+
     this.messages(NotificationCategory.RecordingDeleted).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
-      notifications.success('Recording Deleted', `${event.recording} was deleted`);
+      notifications.success('Recording Deleted', `${event.recording.name} was deleted`);
     });
 
     const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)
