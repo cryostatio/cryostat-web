@@ -109,7 +109,7 @@ export class NotificationChannel {
 
     this.messages(NotificationCategory.RecordingDeleted).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
-      notifications.success('Recording Deleted', `${event.recording.name} was deleted`);
+      notifications.success('Recording Deleted', `${event.recording} was deleted`);
     });
 
     const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)
