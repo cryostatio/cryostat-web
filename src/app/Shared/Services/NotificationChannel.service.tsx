@@ -103,14 +103,14 @@ export class NotificationChannel {
       notifications.success('Recording Archived', `${event.recording.name} was archived`);
     });
 
-    this.messages(NotificationCategory.ArchivedRecordingCreated).subscribe(v => {
-      const event: RecordingNotificationEvent = v.message;
-      notifications.success('Recording Archived', `${event.recording.name} was uploaded into archives`);
-    });
-
     this.messages(NotificationCategory.ActiveRecordingDeleted).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
       notifications.success('Recording Deleted', `${event.recording} was deleted`);
+    });
+
+    this.messages(NotificationCategory.ArchivedRecordingCreated).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Archived', `${event.recording.name} was uploaded into archives`);
     });
 
     this.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe(v => {
