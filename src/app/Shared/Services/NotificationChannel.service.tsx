@@ -69,6 +69,12 @@ interface ReadyState {
 
 const messageKeys = new Map([
   [
+    // explicitly configure this category with a null mapper.
+    // This is a special case because we do not want to display an alert,
+    // the Targets.service already handles this
+    NotificationCategory.JvmDiscovery, null
+  ],
+  [
     NotificationCategory.WsClientActivity, {
       variant: AlertVariant.info,
       title: 'WebSocket Client Activity',
@@ -77,53 +83,53 @@ const messageKeys = new Map([
         const status = evt.message[addr];
         return `Client at ${addr} ${status}`
       }
-    } as NotificationMessageMap
+    } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ActiveRecordingCreated, {
       variant: AlertVariant.success,
       title: 'Recording Created',
       body: evt => `${evt.message.recording} created in target: ${evt.message.target}`,
-    } as NotificationMessageMap
+    } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ActiveRecordingStopped, {
       variant: AlertVariant.success,
       title: 'Recording Stopped',
       body: evt => `${evt.message.recording} was stopped`
-    } as NotificationMessageMap
+    } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ActiveRecordingSaved, {
       variant: AlertVariant.success,
       title: 'Recording Saved',
       body: evt => `${evt.message.recording.name} was archived`
-    } as NotificationMessageMap
+    } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ActiveRecordingDeleted, {
       variant: AlertVariant.success,
       title: 'Recording Deleted',
       body: evt => `${evt.message.recording} was deleted`
-    } as NotificationMessageMap
+    } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ArchivedRecordingCreated, {
       variant: AlertVariant.success,
       title: 'Recording Archived',
       body: evt => `${evt.message.recording.name} was uploaded into archives`
-    } as NotificationMessageMap
+    } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ActiveRecordingDeleted, {
       variant: AlertVariant.success,
       title: 'Recording Deleted',
       body: evt => `${evt.message.recording.name} was deleted`
-    } as NotificationMessageMap
+    } as NotificationMessageMapper
   ],
 ]);
 
-interface NotificationMessageMap {
+interface NotificationMessageMapper {
   title: string;
   body: (evt: NotificationMessage) => string;
   variant: AlertVariant;
@@ -140,6 +146,9 @@ export class NotificationChannel {
     private readonly login: LoginService
   ) {
     messageKeys.forEach((value, key) => {
+      if (!value) {
+        return;
+      }
       this.messages(key).subscribe((msg: NotificationMessage) => {
         const message = value.body.call(this, msg);
         notifications.notify({ title: value.title, message, category: key, variant: value.variant })
