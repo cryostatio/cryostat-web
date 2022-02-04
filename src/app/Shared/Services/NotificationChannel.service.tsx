@@ -50,13 +50,14 @@ interface RecordingNotificationEvent {
 }
 
 export enum NotificationCategory {
+  WsClientActivity = 'WsClientActivity',
   JvmDiscovery = 'TargetJvmDiscovery',
-  RecordingCreated = 'RecordingCreated',
-  RecordingDeleted = 'RecordingDeleted',
-  RecordingStopped = 'RecordingStopped',
-  RecordingSaved = 'RecordingSaved',
-  RecordingArchived = 'RecordingArchived',
-  WsClientActivity = 'WsClientActivity'
+  ActiveRecordingCreated = 'ActiveRecordingCreated',
+  ActiveRecordingStopped = 'ActiveRecordingStopped',
+  ActiveRecordingSaved = 'ActiveRecordingSaved',
+  ActiveRecordingDeleted = 'ActiveRecordingDeleted',
+  ArchivedRecordingCreated = 'ArchivedRecordingCreated',
+  ArchivedRecordingDeleted = 'ArchivedRecordingDeleted',
 }
 
 export enum CloseStatus {
@@ -87,29 +88,34 @@ export class NotificationChannel {
       notifications.info('WebSocket Client Activity', `Client at ${addr} ${status}`, NotificationCategory.WsClientActivity);
     });
 
-    this.messages(NotificationCategory.RecordingCreated).subscribe(v => {
+    this.messages(NotificationCategory.ActiveRecordingCreated).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
       notifications.success('Recording Created', `${event.recording} created in target: ${event.target}`);
     });
 
-    this.messages(NotificationCategory.RecordingStopped).subscribe(v => {
+    this.messages(NotificationCategory.ActiveRecordingStopped).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
       notifications.success('Recording Stopped', `${event.recording} was stopped`);
     });
 
-    this.messages(NotificationCategory.RecordingSaved).subscribe(v => {
-      const event: RecordingNotificationEvent = v.message;
-      notifications.success('Recording Archived', `${event.recording.name} was uploaded into archives`);
-    });
-
-    this.messages(NotificationCategory.RecordingArchived).subscribe(v => {
+    this.messages(NotificationCategory.ActiveRecordingSaved).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
       notifications.success('Recording Archived', `${event.recording.name} was archived`);
     });
 
-    this.messages(NotificationCategory.RecordingDeleted).subscribe(v => {
+    this.messages(NotificationCategory.ArchivedRecordingCreated).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Archived', `${event.recording.name} was uploaded into archives`);
+    });
+
+    this.messages(NotificationCategory.ActiveRecordingDeleted).subscribe(v => {
       const event: RecordingNotificationEvent = v.message;
       notifications.success('Recording Deleted', `${event.recording} was deleted`);
+    });
+
+    this.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe(v => {
+      const event: RecordingNotificationEvent = v.message;
+      notifications.success('Recording Deleted', `${event.recording.name} was deleted`);
     });
 
     const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)

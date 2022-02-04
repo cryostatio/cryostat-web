@@ -128,10 +128,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     merge(
-      context.notificationChannel.messages(NotificationCategory.RecordingCreated),
-      context.notificationChannel.messages(NotificationCategory.RecordingSaved),
-      context.notificationChannel.messages(NotificationCategory.RecordingArchived),
-      context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted)
     ).subscribe(
       refreshRecordingList
     );
