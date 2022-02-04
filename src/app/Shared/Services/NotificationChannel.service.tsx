@@ -42,10 +42,10 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import * as _ from 'lodash';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
-import { SavedRecording } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 
 interface RecordingNotificationEvent {
-  recording: SavedRecording;
+  recording: ArchivedRecording;
   target: string;
 }
 

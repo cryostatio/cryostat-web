@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Recording } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -57,7 +57,7 @@ interface ArchivedRecordingsTableProps {
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
-  const [recordings, setRecordings] = React.useState([] as Recording[]);
+  const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
@@ -91,7 +91,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<Recording[]>(`recordings`)
+      context.api.doGet<ArchivedRecording[]>(`recordings`)
       .pipe(first())
       .subscribe(handleRecordings)
     );
@@ -121,7 +121,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
-    recordings.forEach((r: Recording, idx) => {
+    recordings.forEach((r: ArchivedRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         context.reports.delete(r);

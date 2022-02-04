@@ -335,7 +335,7 @@ export class ApiService {
     return this.sendRequest('v1', path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
-  downloadReport(recording: SavedRecording): void {
+  downloadReport(recording: ArchivedRecording): void {
     const body = new window.FormData();
     body.append('resource', recording.reportUrl.replace('/api/v1', '/api/beta'));
     this.sendRequest('beta', 'auth/token', {
@@ -354,7 +354,7 @@ export class ApiService {
       });
   }
 
-  downloadRecording(recording: SavedRecording): void {
+  downloadRecording(recording: ArchivedRecording): void {
     const body = new window.FormData();
     body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/beta'));
     this.sendRequest('beta', 'auth/token', {
@@ -509,13 +509,13 @@ interface AssetJwtResponse extends ApiV2Response {
   }
 }
 
-export interface SavedRecording {
+export interface ArchivedRecording {
   name: string;
   downloadUrl: string;
   reportUrl: string;
 }
 
-export interface Recording extends SavedRecording {
+export interface ActiveRecording extends ArchivedRecording {
   id: number;
   state: RecordingState;
   duration: number;
@@ -533,8 +533,8 @@ export enum RecordingState {
   STOPPING = 'STOPPING',
 }
 
-export const isActiveRecording = (toCheck: SavedRecording): toCheck is Recording => {
-  return (toCheck as Recording).state !== undefined;
+export const isActiveRecording = (toCheck: ArchivedRecording): toCheck is ActiveRecording => {
+  return (toCheck as ActiveRecording).state !== undefined;
 }
 
 export interface EventTemplate {
