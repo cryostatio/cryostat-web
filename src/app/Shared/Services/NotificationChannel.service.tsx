@@ -145,6 +145,21 @@ export class NotificationChannel {
         notifications.notify({ title: value.title, message, category: key, variant: value.variant })
       });
     });
+    this._messages.pipe(
+      filter(msg => !messageKeys.has(msg.meta.category as NotificationCategory))
+    ).subscribe(msg => {
+      const category = NotificationCategory[msg.meta.category as keyof typeof NotificationCategory];
+
+      var variant: AlertVariant;
+      if (category == NotificationCategory.WsClientActivity) {
+        variant = AlertVariant.info;
+      } else if (category == NotificationCategory.JvmDiscovery) {
+        variant = AlertVariant.info;
+      } else {
+        variant = AlertVariant.success;
+      }
+      notifications.notify({ title: msg.meta.category, message: msg.message, category, variant });
+    });
 
     const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)
       .pipe(
