@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import {NotificationsContext} from '@app/Notifications/Notifications';
-import {Recording} from '@app/Shared/Services/Api.service';
+import {ActiveRecording} from '@app/Shared/Services/Api.service';
 import {ServiceContext} from '@app/Shared/Services/Services';
 import {useSubscriptions} from '@app/utils/useSubscriptions';
 import { Td } from '@patternfly/react-table';
@@ -46,7 +46,7 @@ import {first} from 'rxjs/operators';
 
 export interface RecordingActionsProps {
   index: number;
-  recording: Recording;
+  recording: ActiveRecording;
   uploadFn: () => Observable<boolean>;
 }
 

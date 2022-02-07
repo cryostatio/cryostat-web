@@ -43,7 +43,7 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
 import { EventTemplate, TemplateType } from './CreateRecording';
-import { RecordingOptions, RecordingAttributes, Recording } from '@app/Shared/Services/Api.service';
+import { RecordingOptions, RecordingAttributes, ActiveRecording } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 
 export interface CustomRecordingFormProps {

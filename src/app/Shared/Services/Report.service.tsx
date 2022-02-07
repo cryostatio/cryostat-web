@@ -38,7 +38,7 @@
 import { Observable, from, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, first, tap } from 'rxjs/operators';
-import { isActiveRecording, RecordingState, SavedRecording } from './Api.service';
+import { isActiveRecording, RecordingState, ArchivedRecording } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { Base64 } from 'js-base64';
 import { LoginService } from './Login.service';
@@ -47,7 +47,7 @@ export class ReportService {
 
   constructor(private login: LoginService, private notifications: Notifications) { }
 
-  report(recording: SavedRecording): Observable<string> {
+  report(recording: ArchivedRecording): Observable<string> {
     if (!recording?.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
@@ -102,11 +102,11 @@ export class ReportService {
     );
   }
 
-  delete(recording: SavedRecording): void {
+  delete(recording: ArchivedRecording): void {
     sessionStorage.removeItem(this.key(recording));
   }
 
-  private key(recording: SavedRecording): string {
+  private key(recording: ArchivedRecording): string {
     return Base64.encode(`report.${recording.reportUrl}`);
   }
 

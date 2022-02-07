@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
@@ -60,7 +60,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
 
-  const [recordings, setRecordings] = React.useState([] as Recording[]);
+  const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
@@ -114,7 +114,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       context.target.target()
       .pipe(
         filter(target => target !== NO_TARGET),
-        concatMap(target => context.api.doGet<Recording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
+        concatMap(target => context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
         first(),
       ).subscribe(value => handleRecordings(value), err => handleError(err))
     );
@@ -128,10 +128,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     merge(
-      context.notificationChannel.messages(NotificationCategory.RecordingCreated),
-      context.notificationChannel.messages(NotificationCategory.RecordingSaved),
-      context.notificationChannel.messages(NotificationCategory.RecordingArchived),
-      context.notificationChannel.messages(NotificationCategory.RecordingDeleted)
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted)
     ).subscribe(
       refreshRecordingList
     );
@@ -146,7 +146,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
-    recordings.forEach((r: Recording, idx) => {
+    recordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
@@ -165,7 +165,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleStopRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
-    recordings.forEach((r: Recording, idx) => {
+    recordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
@@ -182,7 +182,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<{}>[] = [];
-    recordings.forEach((r: Recording, idx) => {
+    recordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         context.reports.delete(r);
@@ -329,8 +329,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       if (!checkedIndices.length) {
         return true;
       }
-      const filtered = recordings.filter((r: Recording, idx: number) => checkedIndices.includes(idx));
-      const anyRunning = filtered.some((r: Recording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
+      const filtered = recordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
+      const anyRunning = filtered.some((r: ActiveRecording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
       return !anyRunning;
     }, [checkedIndices, recordings]);
 

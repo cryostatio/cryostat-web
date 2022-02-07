@@ -36,15 +36,16 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Recording } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Checkbox, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, Subject, forkJoin } from 'rxjs';
+import { Observable, Subject, forkJoin, merge } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
@@ -56,13 +57,12 @@ interface ArchivedRecordingsTableProps {
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
-  const [recordings, setRecordings] = React.useState([] as Recording[]);
+  const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isEmpty, setIsEmpty] = React.useState(true);
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
@@ -86,13 +86,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-    setIsEmpty(!recordings.length);
-  }, [setRecordings, setIsLoading, setIsEmpty]);
+  }, [setRecordings, setIsLoading]);
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<Recording[]>(`recordings`)
+      context.api.doGet<ArchivedRecording[]>(`recordings`)
       .pipe(first())
       .subscribe(handleRecordings)
     );
@@ -104,9 +103,25 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     );
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
+  React.useEffect(() => {
+    addSubscription(
+      merge(
+        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
+      ).subscribe(v => setRecordings(old => old.concat(v.message.recording)))
+    );
+  }, [context, context.notificationChannel, refreshRecordingList]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
+        .subscribe(v => setRecordings(old => old.filter(o => o.name != v.message.recording.name)))
+    )
+  }, [context, context.notificationChannel, refreshRecordingList]);
+
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
-    recordings.forEach((r: Recording, idx) => {
+    recordings.forEach((r: ArchivedRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         context.reports.delete(r);
@@ -116,7 +131,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(refreshRecordingList)
+      forkJoin(tasks).subscribe()
     );
   };
 
@@ -245,7 +260,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
         isLoading={isLoading}
-        isEmpty={isEmpty}
+        isEmpty={!recordings.length}
         errorMessage=''
     >
       {recordingRows}
