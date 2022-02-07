@@ -121,7 +121,7 @@ const messageKeys = new Map([
     } as NotificationMessageMapper
   ],
   [
-    NotificationCategory.ActiveRecordingDeleted, {
+    NotificationCategory.ArchivedRecordingDeleted, {
       variant: AlertVariant.success,
       title: 'Recording Deleted',
       body: evt => `${evt.message.recording.name} was deleted`
