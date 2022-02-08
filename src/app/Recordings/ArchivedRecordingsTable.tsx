@@ -110,14 +110,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
       ).subscribe(v => setRecordings(old => old.concat(v.message.recording)))
     );
-  }, [context, context.notificationChannel, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
         .subscribe(v => setRecordings(old => old.filter(o => o.name != v.message.recording.name)))
     )
-  }, [context, context.notificationChannel, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
