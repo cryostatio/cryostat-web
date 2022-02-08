@@ -45,7 +45,7 @@ import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@p
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { merge, forkJoin, Observable } from 'rxjs';
+import { combineLatest, merge, forkJoin, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -125,14 +125,32 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const eventRecording = parts[1];
+        if (currentTarget.connectUrl != eventRecording.message.target) {
+          return;
+        }
+        setRecordings(old => old.concat([eventRecording.message.recording]))
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
+  React.useEffect(() => {
     merge(
       context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
       context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
       context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
       context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted)
-    ).subscribe(
-      refreshRecordingList
-    );
+    ).subscribe(msg => {
+      console.log({ msg });
+      refreshRecordingList();
+    });
   }, [context, context.notificationChannel, refreshRecordingList]);
 
   React.useEffect(() => {
