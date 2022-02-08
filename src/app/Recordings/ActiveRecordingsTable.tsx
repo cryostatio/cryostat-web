@@ -53,7 +53,6 @@ import { ReportFrame } from './ReportFrame';
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
-  onArchive?: Function;
 }
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
@@ -201,13 +200,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(arr => {
-        if (props.onArchive && arr.some(v => !!v)) {
-          props.onArchive();
-        }
-      }, window.console.error)
+      forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription, props.onArchive]);
+  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleStopRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];

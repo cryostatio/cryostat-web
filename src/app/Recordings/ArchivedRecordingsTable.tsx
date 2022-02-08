@@ -50,9 +50,7 @@ import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 
-interface ArchivedRecordingsTableProps {
-  updater: Subject<void>;
-}
+export interface ArchivedRecordingsTableProps { }
 
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -139,11 +137,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
-
-  React.useEffect(() => {
-    const sub = props.updater.subscribe(refreshRecordingList);
-    return () => sub.unsubscribe();
-  }, [props.updater])
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
