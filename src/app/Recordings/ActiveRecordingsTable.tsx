@@ -65,7 +65,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isEmpty, setIsEmpty] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
 
@@ -99,9 +98,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-    setIsEmpty(!recordings.length);
     setErrorMessage('');
-  }, [setRecordings, setIsLoading, setIsEmpty, setErrorMessage]);
+  }, [setRecordings, setIsLoading, setErrorMessage]);
 
   const handleError = React.useCallback((error) => {
     setIsLoading(false);
@@ -380,7 +378,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         tableColumns={tableColumns}
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
-        isEmpty={isEmpty}
+        isEmpty={!recordings.length}
         isLoading ={isLoading}
         errorMessage ={errorMessage}
     >
