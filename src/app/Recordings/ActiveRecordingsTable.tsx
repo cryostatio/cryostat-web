@@ -132,26 +132,56 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       ])
       .subscribe(parts => {
         const currentTarget = parts[0];
-        const eventRecording = parts[1];
-        if (currentTarget.connectUrl != eventRecording.message.target) {
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        setRecordings(old => old.concat([eventRecording.message.recording]))
+        setRecordings(old => old.concat([event.message.recording]));
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
-    merge(
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted)
-    ).subscribe(msg => {
-      console.log({ msg });
-      refreshRecordingList();
-    });
-  }, [context, context.notificationChannel, refreshRecordingList]);
+    addSubscription(
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.filter(r => r.name != event.message.recording.name));
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => {
+          const updated = [...old];
+          for (const r of updated) {
+            if (r.name === event.message.recording.name) {
+              r.state = RecordingState.STOPPED;
+            }
+          }
+          return updated;
+        });
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
@@ -192,9 +222,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(refreshRecordingList, window.console.error)
+      forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription, refreshRecordingList]);
+  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<{}>[] = [];
@@ -208,9 +238,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(refreshRecordingList, window.console.error)
+      forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.reports, context.api, addSubscription, refreshRecordingList]);
+  }, [recordings, checkedIndices, handleRowCheck, context.reports, context.api, addSubscription]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
