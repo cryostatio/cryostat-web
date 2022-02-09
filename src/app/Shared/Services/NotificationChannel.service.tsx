@@ -48,7 +48,7 @@ export enum NotificationCategory {
   WsClientActivity = 'WsClientActivity',
   JvmDiscovery = 'TargetJvmDiscovery',
   ActiveRecordingCreated = 'ActiveRecordingCreated',
-  ActiveRecordingStopped = 'RecordingStopped',
+  ActiveRecordingStopped = 'ActiveRecordingStopped',
   ActiveRecordingSaved = 'ActiveRecordingSaved',
   ActiveRecordingDeleted = 'ActiveRecordingDeleted',
   ArchivedRecordingCreated = 'ArchivedRecordingCreated',
