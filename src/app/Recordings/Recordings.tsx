@@ -41,7 +41,6 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
-import { Subject } from 'rxjs';
 
 export const Recordings = () => {
   const context = React.useContext(ServiceContext);

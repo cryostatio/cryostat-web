@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { Prompt } from 'react-router-dom';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
-import { first, tap } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from './CancelUploadModal';
