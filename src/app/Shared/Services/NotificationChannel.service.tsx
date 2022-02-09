@@ -150,7 +150,7 @@ export class NotificationChannel {
         return;
       }
       this.messages(key).subscribe((msg: NotificationMessage) => {
-        const message = value.body.call(this, msg);
+        const message = value.body(msg);
         notifications.notify({ title: value.title, message, category: key, variant: value.variant })
       });
     });
