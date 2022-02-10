@@ -45,7 +45,7 @@ import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@p
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { merge, forkJoin, Observable } from 'rxjs';
+import { combineLatest, forkJoin, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -53,7 +53,6 @@ import { ReportFrame } from './ReportFrame';
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
-  onArchive?: Function;
 }
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
@@ -65,7 +64,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isEmpty, setIsEmpty] = React.useState(true);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
 
@@ -99,9 +97,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
     setIsLoading(false);
-    setIsEmpty(!recordings.length);
     setErrorMessage('');
-  }, [setRecordings, setIsLoading, setIsEmpty, setErrorMessage]);
+  }, [setRecordings, setIsLoading, setErrorMessage]);
 
   const handleError = React.useCallback((error) => {
     setIsLoading(false);
@@ -127,15 +124,63 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
   React.useEffect(() => {
-    merge(
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted)
-    ).subscribe(
-      refreshRecordingList
+    addSubscription(
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.concat([event.message.recording]));
+      })
     );
-  }, [context, context.notificationChannel, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.filter(r => r.name != event.message.recording.name));
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => {
+          const updated = [...old];
+          for (const r of updated) {
+            if (r.name === event.message.recording.name) {
+              r.state = RecordingState.STOPPED;
+            }
+          }
+          return updated;
+        });
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
@@ -155,13 +200,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(arr => {
-        if (props.onArchive && arr.some(v => !!v)) {
-          props.onArchive();
-        }
-      }, window.console.error)
+      forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription, props.onArchive]);
+  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleStopRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
@@ -176,9 +217,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(refreshRecordingList, window.console.error)
+      forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription, refreshRecordingList]);
+  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<{}>[] = [];
@@ -192,9 +233,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(refreshRecordingList, window.console.error)
+      forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.reports, context.api, addSubscription, refreshRecordingList]);
+  }, [recordings, checkedIndices, handleRowCheck, context.reports, context.api, addSubscription]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -380,7 +421,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         tableColumns={tableColumns}
         isHeaderChecked={headerChecked}
         onHeaderCheck={handleHeaderCheck}
-        isEmpty={isEmpty}
+        isEmpty={!recordings.length}
         isLoading ={isLoading}
         errorMessage ={errorMessage}
     >

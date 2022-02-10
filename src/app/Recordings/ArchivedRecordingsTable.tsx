@@ -45,16 +45,14 @@ import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, Subject, forkJoin, merge } from 'rxjs';
+import { Observable, forkJoin, merge } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 
-interface ArchivedRecordingsTableProps {
-  updater: Subject<void>;
-}
+export interface ArchivedRecordingsTableProps { }
 
-export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
+export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
@@ -110,14 +108,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
       ).subscribe(v => setRecordings(old => old.concat(v.message.recording)))
     );
-  }, [context, context.notificationChannel, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
         .subscribe(v => setRecordings(old => old.filter(o => o.name != v.message.recording.name)))
     )
-  }, [context, context.notificationChannel, refreshRecordingList]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
@@ -139,11 +137,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
-
-  React.useEffect(() => {
-    const sub = props.updater.subscribe(refreshRecordingList);
-    return () => sub.unsubscribe();
-  }, [props.updater])
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {

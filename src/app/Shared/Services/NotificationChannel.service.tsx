@@ -48,7 +48,7 @@ export enum NotificationCategory {
   WsClientActivity = 'WsClientActivity',
   JvmDiscovery = 'TargetJvmDiscovery',
   ActiveRecordingCreated = 'ActiveRecordingCreated',
-  ActiveRecordingStopped = 'RecordingStopped',
+  ActiveRecordingStopped = 'ActiveRecordingStopped',
   ActiveRecordingSaved = 'ActiveRecordingSaved',
   ActiveRecordingDeleted = 'ActiveRecordingDeleted',
   ArchivedRecordingCreated = 'ArchivedRecordingCreated',
@@ -89,14 +89,14 @@ const messageKeys = new Map([
     NotificationCategory.ActiveRecordingCreated, {
       variant: AlertVariant.success,
       title: 'Recording Created',
-      body: evt => `${evt.message.recording} created in target: ${evt.message.target}`,
+      body: evt => `${evt.message.recording.name} created in target: ${evt.message.target}`,
     } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ActiveRecordingStopped, {
       variant: AlertVariant.success,
       title: 'Recording Stopped',
-      body: evt => `${evt.message.recording} was stopped`
+      body: evt => `${evt.message.recording.name} was stopped`
     } as NotificationMessageMapper
   ],
   [
@@ -110,7 +110,7 @@ const messageKeys = new Map([
     NotificationCategory.ActiveRecordingDeleted, {
       variant: AlertVariant.success,
       title: 'Recording Deleted',
-      body: evt => `${evt.message.recording} was deleted`
+      body: evt => `${evt.message.recording.name} was deleted`
     } as NotificationMessageMapper
   ],
   [
