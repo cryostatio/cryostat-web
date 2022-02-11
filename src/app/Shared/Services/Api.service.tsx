@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY } from 'rxjs';
+import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators';
 import { Target, TargetService } from './Target.service';
@@ -90,36 +90,45 @@ export class ApiService {
     .pipe(concatMap(resp => from(resp.json())));
     const getDashboardURL = fromFetch(`${this.login.authority}/api/v1/grafana_dashboard_url`)
     .pipe(concatMap(resp => from(resp.json())));
-
-    fromFetch(`${this.login.authority}/health`)
+    const health = fromFetch(`${this.login.authority}/health`)
       .pipe(
-        concatMap(resp => from(resp.json())),
-        concatMap((jsonResp: any) => {
-          if (!!jsonResp.cryostatVersion && jsonResp.dashboardAvailable && jsonResp.datasourceAvailable) {
-            return forkJoin([of(jsonResp.cryostatVersion), getDatasourceURL, getDashboardURL]);
-          } else {
-            const missing: string[] = [];
-            if (!jsonResp.cryostatVersion) {
-              missing.push('Cryostat version');
-            }
-            if (!jsonResp.dashboardAvailable) {
-              missing.push('dashboard URL');
-            }
-            if (!jsonResp.datasourceAvailable) {
-              missing.push('datasource URL');
-            }
-            const message = missing.join(', ') + ' unavailable';
-            return throwError(() => new Error(message));
-          }}))
+        tap((resp: Response) => {
+          if (!resp.ok) {
+            window.console.error(resp);
+            this.notifications.danger('API /health request failed', resp.statusText);
+          }
+        }),
+        concatMap((resp: Response) => from(resp.json())),
+        shareReplay(),
+      );
+    health
+      .subscribe((jsonResp: any) => {
+        this.cryostatVersionSubject.next(jsonResp.cryostatVersion);
+      });
+    health
+      .pipe(concatMap((jsonResp: any) => {
+        if (jsonResp.datasourceAvailable && jsonResp.dashboardAvailable) {
+          return forkJoin([getDatasourceURL, getDashboardURL]);
+        } else {
+          const missing: string[] = [];
+          if (!jsonResp.dashboardAvailable) {
+            missing.push('dashboard URL');
+          }
+          if (!jsonResp.datasourceAvailable) {
+            missing.push('datasource URL');
+          }
+          const message = missing.join(', ') + ' unavailable';
+          return throwError(() => message);
+        }
+      }))
       .subscribe({
         next: (parts: any) => {
-          this.cryostatVersionSubject.next(parts[0]);
-          this.grafanaDatasourceUrlSubject.next(parts[1].grafanaDatasourceUrl);
-          this.grafanaDashboardUrlSubject.next(parts[2].grafanaDashboardUrl);
+          this.grafanaDatasourceUrlSubject.next(parts[0].grafanaDatasourceUrl);
+          this.grafanaDashboardUrlSubject.next(parts[1].grafanaDashboardUrl);
         },
         error: err => {
           window.console.error(err);
-          this.notifications.danger('Grafana configuration not found', JSON.stringify(err));
+          this.notifications.danger('Grafana configuration not found', err);
         }
       });
   }

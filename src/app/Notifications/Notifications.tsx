@@ -72,19 +72,19 @@ export class Notifications {
     this._notifications$.next(this._notifications);
   }
 
-  success(title: string, message?: string, category?: string): void {
+  success(title: string, message?: string | Error, category?: string): void {
     this.notify({ title, message, category, variant: AlertVariant.success });
   }
 
-  info(title: string, message?: string, category?: string): void {
+  info(title: string, message?: string | Error, category?: string): void {
     this.notify({ title, message, category, variant: AlertVariant.info });
   }
 
-  warning(title: string, message?: string, category?: string): void {
+  warning(title: string, message?: string | Error, category?: string): void {
     this.notify({ title, message, category, variant: AlertVariant.warning });
   }
 
-  danger(title: string, message?: string, category?: string): void {
+  danger(title: string, message?: string | Error, category?: string): void {
     this.notify({ title, message, category, variant: AlertVariant.danger });
   }
 
