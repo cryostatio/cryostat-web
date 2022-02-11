@@ -36,9 +36,11 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import mocked from 'jest-mock'
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch'
 import { Recordings } from './Recordings';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
 
@@ -130,6 +132,21 @@ jest.mock('@app/Shared/Services/Api.service', () => {
       };
     })
   };
+});
+
+jest.mock('rxjs/fetch', () => {
+  return {
+    fromFetch: jest.fn().mockImplementation(() => {
+      let obj: any;
+      obj.notificationsUrl = "some/url/";
+      let jsonString = JSON.stringify(obj);
+      let init = {"status": 200, "statusText": "OK"}
+      const resp = new Response(null, init);
+
+      
+
+    })
+  }
 });
 
 describe('<Recordings />', () => {
