@@ -232,6 +232,9 @@ export class ApiService {
         form.append('maxSize', String(recordingAttributes.options.maxSize));
       }
     }
+    if (!!recordingAttributes.labels) {
+      form.append('labels', JSON.stringify(recordingAttributes.labels));
+    }
 
     return this.target.target().pipe(concatMap(target =>
       this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
@@ -615,4 +618,5 @@ export interface RecordingAttributes {
   events: string;
   duration?: number;
   options?: RecordingOptions;
+  labels?: string;
 }
