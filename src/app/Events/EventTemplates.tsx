@@ -38,7 +38,8 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
-import {NO_TARGET} from '@app/Shared/Services/Target.service';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
@@ -122,6 +123,20 @@ export const EventTemplates = () => {
   }, [context, context.target, addSubscription, refreshTemplates]);
 
   React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TemplateCreated)
+        .subscribe(v => setTemplates(old => old.concat(v.message.template)))
+    );
+  }, [addSubscription, context, context.notificationChannel, setTemplates]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TemplateDeleted)
+        .subscribe(v => setTemplates(old => old.filter(o => o.name != v.message.template.name)))
+    )
+  }, [addSubscription, context, context.notificationChannel, setTemplates]);
+
+  React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
@@ -145,7 +160,7 @@ export const EventTemplates = () => {
     addSubscription(
       context.api.deleteCustomEventTemplate(rowData[0])
       .pipe(first())
-      .subscribe(refreshTemplates)
+      .subscribe(() => {} /* do nothing - notification will handle updating state */)
     );
   };
 
@@ -214,7 +229,6 @@ export const EventTemplates = () => {
         if (success) {
           setUploadFile(undefined);
           setUploadFilename('');
-          refreshTemplates();
           setModalOpen(false);
         }
       })
