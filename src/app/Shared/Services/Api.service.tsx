@@ -233,7 +233,7 @@ export class ApiService {
       }
     }
     if (!!recordingAttributes.labels) {
-      form.append('labels', JSON.stringify(recordingAttributes.labels));
+      form.append('labels', recordingAttributes.labels);
     }
 
     return this.target.target().pipe(concatMap(target =>
