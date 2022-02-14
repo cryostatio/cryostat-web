@@ -36,13 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import mocked from 'jest-mock'
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch'
 import { Recordings } from './Recordings';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
+import { ApiService } from '@app/Shared/Services/Api.service'
 
 jest.mock('@patternfly/react-core', () => {
   return {
@@ -114,7 +113,7 @@ jest.mock('@app/TargetView/TargetView', () => {
     TargetView: jest.fn().mockImplementation(({pageTitle, children}) => {
       return <div>
                 MockTargetView
-                pageTitle:
+                pageTitle: {pageTitle}
                 {children}
              </div>
     })
@@ -134,20 +133,6 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   };
 });
 
-jest.mock('rxjs/fetch', () => {
-  return {
-    fromFetch: jest.fn().mockImplementation(() => {
-      let obj: any;
-      obj.notificationsUrl = "some/url/";
-      let jsonString = JSON.stringify(obj);
-      let init = {"status": 200, "statusText": "OK"}
-      const resp = new Response(null, init);
-
-      
-
-    })
-  }
-});
 
 describe('<Recordings />', () => {
   it('renders correctly when archiving is enabled', () => {
@@ -158,30 +143,19 @@ describe('<Recordings />', () => {
 		);
 
     expect(screen.getByText("MockTargetView pageTitle:")).toBeInTheDocument()
-		//expect(screen.getByText("Archived Recordings")).toBeInTheDocument()
+		expect(screen.getByText("Archived Recordings")).toBeInTheDocument()
   });
 
-  // it ('renders correctly when archiving is disabled', () => {
-  //   render(
-  //     <ServiceContext.Provider value = {defaultServices}>
-	// 			<Recordings />
-	// 		</ServiceContext.Provider>
-	// 	);
+  it ('renders correctly when archiving is disabled', () => {
+    render(
+      <ServiceContext.Provider value = {defaultServices}>
+				<Recordings />
+			</ServiceContext.Provider>
+		);
 
-	// 	expect(screen.getByText("Active Recordings")).toBeInTheDocument()
-  //   expect(screen.queryByText("Archived Recordings")).not.toBeInTheDocument();
-  // });
-
-  // it ('renders correctly when archiving is enabled', () => {
-  //   render(
-  //     <ServiceContext.Provider value = {defaultServices}>
-	// 			<Recordings />
-	// 		</ServiceContext.Provider>
-	// 	);
-
-  //   expect(screen.getByText("Active Recordings")).toBeInTheDocument()
-	// 	expect(screen.getByText("Archived Recordings")).toBeInTheDocument()
-  // });
+		expect(screen.getByText("Active Recordings")).toBeInTheDocument()
+    expect(screen.queryByText("Archived Recordings")).not.toBeInTheDocument();
+  });
 });
 
 
