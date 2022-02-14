@@ -72,7 +72,7 @@ export const CustomRecordingForm = (props) => {
   const [maxSize, setMaxSize] = React.useState(0);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [toDisk, setToDisk] = React.useState(true);
-  const [labels, setLabels] = React.useState([{ key: '', value: '' } as RecordingLabel]);
+  const [labels, setLabels] = React.useState([] as RecordingLabel[]);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);

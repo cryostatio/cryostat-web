@@ -37,7 +37,17 @@
  */
 import * as React from 'react';
 import { CloseIcon } from '@patternfly/react-icons';
-import { Button, ExpandableSection, FormGroup, Split, SplitItem, TextInput, ValidatedOptions } from '@patternfly/react-core';
+import {
+  Button,
+  ExpandableSection,
+  FormGroup,
+  Split,
+  SplitItem,
+  Text,
+  TextInput,
+  TextVariants,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 
 export interface RecordingLabel {
   key: string;
@@ -46,7 +56,7 @@ export interface RecordingLabel {
 
 export const LabelPattern = /^[a-zA-Z0-9.-]+$/;
 
-export const EditRecordingLabels = ({labels, setLabels}) => {
+export const EditRecordingLabels = ({ labels, setLabels }) => {
   const [labelValid, setLabelValid] = React.useState(ValidatedOptions.default);
 
   // TODO enforce unique key names and non-null key/values
@@ -57,7 +67,6 @@ export const EditRecordingLabels = ({labels, setLabels}) => {
     updatedLabels[idx].key = key;
     setLabelValid(LabelPattern.test(key) ? ValidatedOptions.success : ValidatedOptions.error);
     setLabels(updatedLabels);
-    
   };
 
   const handleValueChange = (idx, val) => {
@@ -79,46 +88,56 @@ export const EditRecordingLabels = ({labels, setLabels}) => {
 
   return (
     <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
-      <FormGroup label="Labels" fieldId="labels" helperText="Alphanumeric key/value pairs. Keys must be unique. '.' and '-' accepted.">
+      <FormGroup
+        label="Labels"
+        fieldId="labels"
+        helperText="Alphanumeric key/value pairs ('.' and '-' accepted). Keys should be unique."
+      >
         <Button onClick={handleAddLabelButtonClick} variant="primary">
           Add Label
         </Button>
-        {labels.map((label, idx) => (
-          <Split hasGutter={true}>
-            <SplitItem isFilled>
+      </FormGroup>
+      {labels.map((label, idx) => (
+        <Split hasGutter={true}>
+          <SplitItem isFilled>
+            <FormGroup fieldId="label-key" helperText="Key">
               <TextInput
                 isRequired
                 type="text"
                 id="label-key-input"
                 name="label-key-input"
                 aria-describedby="label-key-input-helper"
+                aria-label="label key"
                 value={label.key}
                 onChange={(e) => handleKeyChange(idx, e)}
                 validated={labelValid}
               />
-            </SplitItem>
-            <SplitItem>
+            </FormGroup>
+          </SplitItem>
+          <SplitItem isFilled>
+            <FormGroup fieldId="label-key" helperText="Value">
               <TextInput
                 isRequired
                 type="text"
                 id="label-value-input"
                 name="label-value-input"
                 aria-describedby="label-value-input-helper"
+                aria-label="label value"
                 value={label.value}
                 onChange={(e) => handleValueChange(idx, e)}
                 validated={labelValid}
               />
-            </SplitItem>
-            <SplitItem>
-              <Button
-                onClick={() => handleDeleteLabelButtonClick(idx)}
-                variant="link"
-                icon={<CloseIcon color="gray" size="sm" />}
-              />
-            </SplitItem>
-          </Split>
-        ))}
-      </FormGroup>
+            </FormGroup>
+          </SplitItem>
+          <SplitItem>
+            <Button
+              onClick={() => handleDeleteLabelButtonClick(idx)}
+              variant="link"
+              icon={<CloseIcon color="gray" size="sm" />}
+            />
+          </SplitItem>
+        </Split>
+      ))}
     </ExpandableSection>
   );
 };
