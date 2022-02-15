@@ -45,7 +45,7 @@ import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, forkJoin, merge } from 'rxjs';
+import { Observable, forkJoin, merge, of } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
@@ -188,6 +188,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             recording={props.recording}
             index={props.index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
+            editMetadataFn={() => { return of(true)}}
           />
         </Tr>
       );

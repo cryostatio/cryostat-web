@@ -45,7 +45,7 @@ import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@p
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { combineLatest, forkJoin, Observable } from 'rxjs';
+import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -323,6 +323,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             index={props.index}
             recording={props.recording}
             uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
+            editMetadataFn={() => { return of(true)}}
           />
         </Tr>
       );
