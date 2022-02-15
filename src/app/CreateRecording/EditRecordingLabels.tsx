@@ -38,96 +38,99 @@
 import * as React from 'react';
 import { CloseIcon } from '@patternfly/react-icons';
 import {
+  ActionGroup,
   Button,
-  ExpandableSection,
   FormGroup,
   Split,
   SplitItem,
   Text,
   TextInput,
-  TextVariants,
   ValidatedOptions,
 } from '@patternfly/react-core';
+import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface RecordingLabel {
   key: string;
   value: string;
 }
 
+export interface EditRecordingLabelsProps {
+  labels: RecordingLabel[];
+  setLabels: (labels: RecordingLabel[]) => void;
+  showSaveButton?: boolean;
+  showForm?: (showForm: boolean) => void;
+}
+
 export const LabelPattern = /^[a-zA-Z0-9.-]+$/;
 
-export const EditRecordingLabels = ({ labels, setLabels }) => {
+export const EditRecordingLabels = (props) => {
+  const context = React.useContext(ServiceContext);
   const [labelValid, setLabelValid] = React.useState(ValidatedOptions.default);
 
   // TODO enforce unique key names and non-null key/values
+  // Only highlight the one field causing the error
   // Add hover error message tooltip on exclamation mark
 
   const handleKeyChange = (idx, key) => {
-    let updatedLabels = [...labels];
+    let updatedLabels = [...props.labels];
     updatedLabels[idx].key = key;
     setLabelValid(LabelPattern.test(key) ? ValidatedOptions.success : ValidatedOptions.error);
-    setLabels(updatedLabels);
+    props.setLabels(updatedLabels);
   };
 
   const handleValueChange = (idx, val) => {
-    let updatedLabels = [...labels];
+    let updatedLabels = [...props.labels];
     updatedLabels[idx].value = val;
     setLabelValid(LabelPattern.test(val) ? ValidatedOptions.success : ValidatedOptions.error);
-    setLabels(updatedLabels);
+    props.setLabels(updatedLabels);
   };
 
   const handleAddLabelButtonClick = () => {
-    setLabels([...labels, { key: '', value: '' } as RecordingLabel]);
+    props.setLabels([...props.labels, { key: '', value: '' } as RecordingLabel]);
   };
 
   const handleDeleteLabelButtonClick = (idx) => {
-    let updatedLabels = [...labels];
+    let updatedLabels = [...props.labels];
     updatedLabels.splice(idx, 1);
-    setLabels(updatedLabels);
+    props.setLabels(updatedLabels);
+  };
+
+  const handleSave = () => {
+    context.api.patchRecordingLabels(props.labels);
   };
 
   return (
-    <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
-      <FormGroup
-        label="Labels"
-        fieldId="labels"
-        helperText="Alphanumeric key/value pairs ('.' and '-' accepted). Keys should be unique."
-      >
-        <Button onClick={handleAddLabelButtonClick} variant="primary">
-          Add Label
-        </Button>
-      </FormGroup>
-      {labels.map((label, idx) => (
+    <>
+      <Button onClick={handleAddLabelButtonClick} variant="primary">
+        Add Label
+      </Button>
+      {props.labels.map((label, idx) => (
         <Split hasGutter={true}>
           <SplitItem isFilled>
-            <FormGroup fieldId="label-key" helperText="Key">
-              <TextInput
-                isRequired
-                type="text"
-                id="label-key-input"
-                name="label-key-input"
-                aria-describedby="label-key-input-helper"
-                aria-label="label key"
-                value={label.key}
-                onChange={(e) => handleKeyChange(idx, e)}
-                validated={labelValid}
-              />
-            </FormGroup>
+            <TextInput
+              isRequired
+              type="text"
+              id="label-key-input"
+              name="label-key-input"
+              aria-describedby="label-key-input-helper"
+              aria-label="label key"
+              value={label.key}
+              onChange={(e) => handleKeyChange(idx, e)}
+              validated={labelValid}
+            />
           </SplitItem>
           <SplitItem isFilled>
-            <FormGroup fieldId="label-key" helperText="Value">
-              <TextInput
-                isRequired
-                type="text"
-                id="label-value-input"
-                name="label-value-input"
-                aria-describedby="label-value-input-helper"
-                aria-label="label value"
-                value={label.value}
-                onChange={(e) => handleValueChange(idx, e)}
-                validated={labelValid}
-              />
-            </FormGroup>
+            <TextInput
+              isRequired
+              type="text"
+              id="label-value-input"
+              name="label-value-input"
+              aria-describedby="label-value-input-helper"
+              aria-label="label value"
+              value={label.value}
+              onChange={(e) => handleValueChange(idx, e)}
+              validated={labelValid}
+            />
           </SplitItem>
           <SplitItem>
             <Button
@@ -138,6 +141,12 @@ export const EditRecordingLabels = ({ labels, setLabels }) => {
           </SplitItem>
         </Split>
       ))}
-    </ExpandableSection>
+      { props.showSaveButton &&
+      <ActionGroup>
+        <Button variant="primary" onClick={handleSave} isDisabled={labelValid !== ValidatedOptions.success}>Save</Button>
+        <Button variant="secondary" onClick={() => props.showForm(false)}>Cancel</Button>
+      </ActionGroup>
+      }
+  </>
   );
 };

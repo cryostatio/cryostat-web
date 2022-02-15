@@ -48,7 +48,7 @@ export interface RecordingActionsProps {
   index: number;
   recording: ActiveRecording;
   uploadFn: () => Observable<boolean>;
-  editMetadataFn: () => Observable<boolean>;
+  editMetadataFn: () => void;
 }
 
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
@@ -85,12 +85,6 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
 
   const handleEditMetadata = React.useCallback(() => {
     props.editMetadataFn()
-    .pipe(first())
-      .subscribe(success => {
-        if (success) {
-          notifications.success('Metadata Updated', `Metadata for "${props.recording.name}" updated`);
-        }
-      });
   }, [context.api, props.recording]);
 
   const handleViewReport = React.useCallback(() => {

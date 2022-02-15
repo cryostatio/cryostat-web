@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { EditRecordingLabels, RecordingLabel } from '@app/CreateRecording/EditRecordingLabels';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -247,7 +248,17 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [refreshRecordingList, context, context.settings]);
 
   const RecordingRow = (props) => {
+    const parsedLabels = React.useMemo(() => {
+      const labels = JSON.parse(props.recording.labels);
+      return Object.entries(labels).map(([k, v]) => (
+           {key: k, value: v} as RecordingLabel
+          ));
+    }, [props.recording.labels]);
+
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
+    const [rowLabels, setRowLabels] = React.useState(parsedLabels);
+    const [editingMetadata, setEditingMetadata] = React.useState(false);
+    
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
@@ -272,12 +283,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       };
 
       const formattedLabels = React.useMemo(() => {
-        const labels = JSON.parse(props.recording.labels);
         return (
           <>
-            {Object.entries(labels).map(([k, v]) => (
+            {parsedLabels.map(l => (
               <Text>
-                {k}={v}
+                {l.key}={l.value}
               </Text>
             ))}
           </>
@@ -317,13 +327,21 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             {props.recording.state}
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
-            {formattedLabels || '-'}
+            {editingMetadata ? 
+              <EditRecordingLabels 
+                labels={rowLabels} 
+                setLabels={setRowLabels} 
+                showSaveButton={editingMetadata} 
+                showForm={setEditingMetadata}
+              />
+              : (formattedLabels || '-')
+            }
           </Td>
           <RecordingActions
             index={props.index}
             recording={props.recording}
             uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
-            editMetadataFn={() => { return of(true)}}
+            editMetadataFn={() => setEditingMetadata(true)}
           />
         </Tr>
       );

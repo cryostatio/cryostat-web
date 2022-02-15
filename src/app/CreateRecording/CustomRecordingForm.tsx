@@ -238,7 +238,15 @@ export const CustomRecordingForm = (props) => {
           onChange={handleTemplateChange}
         />
       </FormGroup>
-      <EditRecordingLabels labels={labels} setLabels={setLabels}/>
+      <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
+        <FormGroup
+          label="Labels"
+          fieldId="labels"
+          helperText="Alphanumeric key value pairs. Keys must be unique. '.' and '-' accepted."
+        >
+          <EditRecordingLabels labels={labels} setLabels={setLabels}/>
+        </FormGroup>
+      </ExpandableSection>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
           <Text component={TextVariants.small}>

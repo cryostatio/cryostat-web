@@ -500,6 +500,11 @@ export class ApiService {
     );
   }
 
+  patchRecordingLabels(labels: RecordingLabel[]): Observable<boolean> {
+    // TODO make PUT request when backend completed
+    return of(true);
+  }
+
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
     const req = () => this.login.getHeaders().pipe(
       concatMap(headers => {
