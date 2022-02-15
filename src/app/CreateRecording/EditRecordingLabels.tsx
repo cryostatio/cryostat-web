@@ -60,7 +60,7 @@ export const EditRecordingLabels = ({ labels, setLabels }) => {
   const [labelValid, setLabelValid] = React.useState(ValidatedOptions.default);
 
   // TODO enforce unique key names and non-null key/values
-  // add hover error message tooltip thing
+  // Add hover error message tooltip on exclamation mark
 
   const handleKeyChange = (idx, key) => {
     let updatedLabels = [...labels];

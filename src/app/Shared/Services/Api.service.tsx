@@ -587,6 +587,7 @@ export interface ActiveRecording extends ArchivedRecording {
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
+  labels: string;
 }
 
 export enum RecordingState {

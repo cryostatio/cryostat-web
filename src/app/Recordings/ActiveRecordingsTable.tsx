@@ -266,9 +266,22 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       };
 
       const RecordingDuration = (props) => {
-        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`
+        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`;
         return (<span>{str}</span>);
       };
+
+      const formattedLabels = React.useMemo(() => {
+        const labels = JSON.parse(props.recording.labels);
+        return (
+          <>
+            {Object.entries(labels).map(([k, v]) => (
+              <Text>
+                {k}={v}
+              </Text>
+            ))}
+          </>
+        );
+      }, [props.recording.labels]);
 
       return (
         <Tr key={`${props.index}_parent`}>
@@ -302,13 +315,16 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           <Td key={`active-table-row-${props.index}_5`} dataLabel={tableColumns[3]}>
             {props.recording.state}
           </Td>
+          <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
+            {formattedLabels || '-'}
+          </Td>
           <RecordingActions
             index={props.index}
             recording={props.recording}
             uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
           />
         </Tr>
-      )
+      );
     }, [
       props.duration,
       props.index,
@@ -318,12 +334,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       props.recording.startTime,
       props.recording.state,
       props.timeStr,
+      props.recording.labels,
       context.api,
       checkedIndices,
       handleCheck,
       handleToggle,
       isExpanded,
-      tableColumns
+      tableColumns,
     ]);
 
     const childRow = React.useMemo(() => {
