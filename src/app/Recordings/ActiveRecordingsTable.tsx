@@ -72,6 +72,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     'Start Time',
     'Duration',
     'State',
+    'Labels',
   ];
 
   const addSubscription = useSubscriptions();
