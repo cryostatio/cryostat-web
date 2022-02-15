@@ -47,25 +47,21 @@ jest.mock('@patternfly/react-core', () => {
   return {
     Card: jest.fn().mockImplementation(({children}) => {
       return <div>
-                MockCard
                 {children}
-              </div>
+             </div>
     }),
     CardBody: jest.fn().mockImplementation(({children}) => {
       return <div>
-                MockCardBody
                 {children}
-              </div>
+             </div>
     }),
     CardHeader: jest.fn().mockImplementation(({children}) => {
       return <div>
-                MockCardHeader
                 {children}
-              </div>
+             </div>
     }),
     Tabs: jest.fn().mockImplementation(({activeKey, onSelect, children}) => {
       return <div>
-                MockTabs
                 {children}
              </div>
     }),
