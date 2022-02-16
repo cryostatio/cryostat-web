@@ -346,8 +346,8 @@ export class ApiService {
 
   downloadReport(recording: ArchivedRecording): void {
     const body = new window.FormData();
-    body.append('resource', recording.reportUrl.replace('/api/v1', '/api/beta'));
-    this.sendRequest('beta', 'auth/token', {
+    body.append('resource', recording.reportUrl.replace('/api/v1', '/api/v2.1'));
+    this.sendRequest('v2.1', 'auth/token', {
       method: 'POST',
       body,
     })
@@ -365,8 +365,8 @@ export class ApiService {
 
   downloadRecording(recording: ArchivedRecording): void {
     const body = new window.FormData();
-    body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/beta'));
-    this.sendRequest('beta', 'auth/token', {
+    body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/v2.1'));
+    this.sendRequest('v2.1', 'auth/token', {
       method: 'POST',
       body,
     })
@@ -384,12 +384,12 @@ export class ApiService {
   downloadTemplate(template: EventTemplate): void {
     this.target.target()
     .pipe(first(), map(target =>
-      `${this.login.authority}/api/beta/targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
+      `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
     ))
     .subscribe(resource => {
       const body = new window.FormData();
       body.append('resource', resource);
-      this.sendRequest('beta', 'auth/token', {
+      this.sendRequest('v2.1', 'auth/token', {
         method: 'POST',
         body,
       })
