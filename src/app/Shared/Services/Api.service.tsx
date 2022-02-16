@@ -42,6 +42,7 @@ import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import {Rule} from '@app/Rules/Rules';
+import { RecordingLabel } from '@app/CreateRecording/EditRecordingLabels';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
 
@@ -500,9 +501,23 @@ export class ApiService {
     );
   }
 
-  patchRecordingLabels(labels: RecordingLabel[]): Observable<boolean> {
-    // TODO make PUT request when backend completed
-    return of(true);
+  patchRecordingLabels(recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
+    const form = new window.FormData();
+    form.append('recordingName', recordingName);
+    form.append('labels', JSON.stringify(labels));
+
+    return this.target.target().pipe(concatMap(target =>
+        this.sendRequest(
+          'v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          {
+            method: 'PATCH',
+            body: form,
+          }
+        ).pipe(
+          map(resp => resp.ok),
+          first(),
+        )
+      ));
   }
 
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {

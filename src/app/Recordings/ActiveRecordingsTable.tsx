@@ -332,6 +332,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
                 labels={rowLabels} 
                 setLabels={setRowLabels} 
                 showSaveButton={editingMetadata} 
+                recordingName={props.recording.name}
                 showForm={setEditingMetadata}
               />
               : (formattedLabels || '-')

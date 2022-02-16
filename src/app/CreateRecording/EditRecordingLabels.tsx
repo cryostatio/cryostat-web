@@ -58,6 +58,7 @@ export interface EditRecordingLabelsProps {
   labels: RecordingLabel[];
   setLabels: (labels: RecordingLabel[]) => void;
   showSaveButton?: boolean;
+  savedRecordingName?: string;
   showForm?: (showForm: boolean) => void;
 }
 
@@ -96,7 +97,8 @@ export const EditRecordingLabels = (props) => {
   };
 
   const handleSave = () => {
-    context.api.patchRecordingLabels(props.labels);
+    context.api.patchRecordingLabels(props.recordingName, props.labels);
+    props.showForm(false);
   };
 
   return (
