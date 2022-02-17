@@ -340,8 +340,8 @@ export class ApiService {
     return this.grafanaDashboardUrlSubject.asObservable();
   }
 
-  doGet<T>(path: string): Observable<T> {
-    return this.sendRequest('v1', path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
+  doGet<T>(path: string, apiVersion: ApiVersion = 'v1'): Observable<T> {
+    return this.sendRequest(apiVersion, path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
   downloadReport(recording: ArchivedRecording): void {
