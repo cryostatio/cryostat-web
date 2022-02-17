@@ -81,7 +81,7 @@ export const Rules = () => {
       title: 'Archival Period',
       transforms: [
         info({
-          tooltip: 'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives.'
+          tooltip: 'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.'
         })
       ],
     },
@@ -89,7 +89,7 @@ export const Rules = () => {
       title: 'Preserved Archives',
       transforms: [
         info({
-          tooltip: 'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit.'
+          tooltip: 'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.'
         })
       ],
     },
