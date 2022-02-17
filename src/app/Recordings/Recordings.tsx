@@ -53,7 +53,6 @@ export const Recordings = () => {
   }, [context.api]);
 
   const cardBody = React.useMemo(() => {
-    const component = 'h4' as TextVariants.h4;
     return archiveEnabled ? (
       <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
         <Tab eventKey={0} title="Active Recordings">
@@ -65,7 +64,7 @@ export const Recordings = () => {
       </Tabs>
     ) : (
       <>
-        <CardHeader><Text component={component}>Active Recordings</Text></CardHeader>
+        <CardHeader><Text component={"h4" as TextVariants.h4}>Active Recordings</Text></CardHeader>
         <ActiveRecordingsTable archiveEnabled={false}/>
       </>
     );
