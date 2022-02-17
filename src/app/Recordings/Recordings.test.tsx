@@ -153,7 +153,3 @@ describe('<Recordings />', () => {
     expect(screen.queryByText("Archived Recordings")).not.toBeInTheDocument();
   });
 });
-
-
-
-
