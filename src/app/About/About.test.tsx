@@ -36,11 +36,11 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { of } from 'rxjs';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { of } from 'rxjs';
-import { About } from './About';
 import { CRYOSTAT_TRADEMARK } from './AboutDescription';
+import { About } from './About';
 
 jest.mock('@app/Shared/Services/Api.service', () => {
     return {
