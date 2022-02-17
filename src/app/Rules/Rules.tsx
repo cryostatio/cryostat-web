@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { Card, CardBody, EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable } from '@patternfly/react-table';
+import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable } from '@patternfly/react-table';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -151,10 +151,18 @@ export const Rules = () => {
     setSortBy({ index, direction });
   };
 
-  const displayRules = React.useMemo(
-    () => rules.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ])),
-    [rules]
-  );
+  const displayRules = React.useMemo(() => {
+    const { index, direction } = sortBy;
+    let sorted = [...rules];
+    if (typeof index === 'number') {
+      const keys = ['name'];
+      const key = keys[index];
+      sorted = rules
+        .sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+      sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
+    }
+    return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
+  }, [rules, sortBy]);
 
   const viewContent = () => {
     if (rules.length === 0) {
