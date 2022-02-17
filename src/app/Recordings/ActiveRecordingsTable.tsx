@@ -251,11 +251,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     const parsedLabels = React.useMemo(() => {
       if(!props.recording.labels) return [];
 
-      console.log(props.recording.labels);
       const labels = JSON.parse(props.recording.labels);
-      return Object.entries(labels).map(([k, v]) => (
-           {key: k, value: v} as RecordingLabel
-          ));
+      return Object.entries(labels).map(([k, v]) => {
+        let val = v as string[];
+        return {key: val[0], value: val[1]} as RecordingLabel;
+      });
     }, [props.recording.labels]);
 
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
