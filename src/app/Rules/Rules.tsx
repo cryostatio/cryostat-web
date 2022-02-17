@@ -97,7 +97,7 @@ export const Rules = () => {
       title: 'Maximum Age',
       transforms: [
         info({
-          tooltip: 'The maximum age in seconds for data kept in the JFR recordings started by this rule.'
+          tooltip: 'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.'
         })
       ],
     },
@@ -105,7 +105,7 @@ export const Rules = () => {
       title: 'Maximum Size',
       transforms: [
         info({
-          tooltip: 'The maximum size in bytes for JFR recordings started by this rule.'
+          tooltip: 'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.'
         })
       ],
     },
