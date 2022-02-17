@@ -249,6 +249,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
+      if(!props.recording.labels) return [];
+
+      console.log(props.recording.labels);
       const labels = JSON.parse(props.recording.labels);
       return Object.entries(labels).map(([k, v]) => (
            {key: k, value: v} as RecordingLabel

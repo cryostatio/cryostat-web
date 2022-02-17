@@ -104,16 +104,13 @@ export const CustomRecordingForm = (props) => {
   };
 
   const getFormattedLabels = () => {
-    let str = '';
-    labels.forEach((label, idx) => {
-      str += `${label.key}=${label.value}`;
+    let arr = [] as Map<string, string>[];
+  
+      labels.forEach(l => { 
+        arr[l.key] = l.value;
+      });
 
-      if (idx !== labels.length - 1) {
-        str += `,`;
-      }
-    });
-
-    return str;
+    return JSON.stringify(Object.entries(arr));
   }
 
   const handleRecordingNameChange = (name) => {

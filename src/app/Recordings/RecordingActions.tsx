@@ -83,10 +83,6 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     context.api.downloadRecording(props.recording);
   }, [context.api, props.recording]);
 
-  const handleEditMetadata = React.useCallback(() => {
-    props.editMetadataFn()
-  }, [context.api, props.recording]);
-
   const handleViewReport = React.useCallback(() => {
     context.api.downloadReport(props.recording);
   }, [context.api, props.recording]);
@@ -99,7 +95,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       },
       {
         title: "Edit Metadata",
-        onClick: handleEditMetadata
+        onClick: props.editMetadataFn
       },
       {
         title: "View Report ...",

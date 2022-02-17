@@ -503,8 +503,16 @@ export class ApiService {
 
   patchRecordingLabels(recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
     const form = new window.FormData();
+    let arr = [] as Map<string, string>[];
+  
+      labels.forEach(l => { 
+        arr[l.key] = l.value;
+      });
+
+    const stringLabels = JSON.stringify(Object.entries(arr));
+
     form.append('recordingName', recordingName);
-    form.append('labels', JSON.stringify(labels));
+    form.append('labels', stringLabels);
 
     return this.target.target().pipe(concatMap(target =>
         this.sendRequest(
