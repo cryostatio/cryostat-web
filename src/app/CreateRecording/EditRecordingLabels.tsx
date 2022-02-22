@@ -97,7 +97,7 @@ export const EditRecordingLabels = (props) => {
   };
 
   const handleSave = () => {
-    context.api.patchRecordingLabels(props.recordingName, props.labels);
+    context.api.patchRecordingLabels(props.recordingName, props.labels).subscribe(l => props.setLabels(l));
     props.showForm(false);
   };
 

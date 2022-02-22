@@ -501,7 +501,7 @@ export class ApiService {
     );
   }
 
-  patchRecordingLabels(recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
+  patchRecordingLabels(recordingName: string, labels: RecordingLabel[]): Observable<string> {
     const form = new window.FormData();
     let arr = [] as Map<string, string>[];
   
@@ -511,19 +511,22 @@ export class ApiService {
 
     const stringLabels = JSON.stringify(Object.entries(arr));
 
-    form.append('recordingName', recordingName);
     form.append('labels', stringLabels);
 
     return this.target.target().pipe(concatMap(target =>
         this.sendRequest(
-          'v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          'v2.1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
           {
             method: 'PATCH',
             body: form,
           }
         ).pipe(
-          map(resp => resp.ok),
-          first(),
+          concatMap(resp => {
+            if (resp.ok) {
+            return from(resp.text());
+          }
+          throw resp.text();
+          })        
         )
       ));
   }
