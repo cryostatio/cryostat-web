@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { CloseIcon } from '@patternfly/react-icons';
+import { CloseIcon, PlusIcon } from '@patternfly/react-icons';
 import {
   ActionGroup,
   Button,
@@ -57,7 +57,7 @@ export interface RecordingLabel {
 export interface EditRecordingLabelsProps {
   labels: RecordingLabel[];
   setLabels: (labels: RecordingLabel[]) => void;
-  showSaveButton?: boolean;
+  usePatchForm?: boolean;
   savedRecordingName?: string;
   showForm?: (showForm: boolean) => void;
 }
@@ -103,11 +103,15 @@ export const EditRecordingLabels = (props) => {
 
   return (
     <>
-      <Button onClick={handleAddLabelButtonClick} variant="primary">
-        Add Label
-      </Button>
+      {props.usePatchForm ? (
+        <Button onClick={handleAddLabelButtonClick} variant="link" icon={<PlusIcon color="gray" size="sm" />} />
+      ) : (
+        <Button onClick={handleAddLabelButtonClick} variant="primary">
+          Add Label
+        </Button>
+      )}
       {props.labels.map((label, idx) => (
-        <Split hasGutter={true}>
+        <Split hasGutter>
           <SplitItem isFilled>
             <TextInput
               isRequired
@@ -143,12 +147,20 @@ export const EditRecordingLabels = (props) => {
           </SplitItem>
         </Split>
       ))}
-      { props.showSaveButton &&
-      <ActionGroup>
-        <Button variant="primary" onClick={handleSave} isDisabled={labelValid !== ValidatedOptions.success}>Save</Button>
-        <Button variant="secondary" onClick={() => props.showForm(false)}>Cancel</Button>
-      </ActionGroup>
-      }
-  </>
+      {props.usePatchForm && (
+        <Split hasGutter>
+          <SplitItem>
+            <Button variant="primary" onClick={handleSave} isDisabled={labelValid !== ValidatedOptions.success}>
+              Save
+            </Button>
+          </SplitItem>
+          <SplitItem>
+            <Button variant="secondary" onClick={() => props.showForm(false)}>
+              Cancel
+            </Button>
+          </SplitItem>
+        </Split>
+      )}
+    </>
   );
 };
