@@ -39,7 +39,7 @@ import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon, StroopwafelIcon } from '@patternfly/react-icons';
+import { HelpIcon, OutlinedQuestionCircleIcon, StroopwafelIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
 import { EventTemplate, TemplateType } from './CreateRecording';
@@ -239,7 +239,14 @@ export const CustomRecordingForm = (props) => {
         <FormGroup
           label="Labels"
           fieldId="labels"
-          helperText="Alphanumeric key value pairs. Keys must be unique. '.' and '-' accepted."
+          labelIcon={
+            <Tooltip
+              content={
+                <div>Alphanumeric key value pairs. Keys must be unique.'.' and '-' accepted.</div>
+              }>
+                <HelpIcon noVerticalAlign/>
+            </Tooltip>
+          }
         >
           <EditRecordingLabels labels={labels} setLabels={setLabels}/>
         </FormGroup>

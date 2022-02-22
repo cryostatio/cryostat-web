@@ -124,7 +124,8 @@ export const EditRecordingLabels = (props) => {
               onChange={(e) => handleKeyChange(idx, e)}
               validated={labelValid}
             />
-          </SplitItem>
+            <Text>Key</Text>
+           </SplitItem>
           <SplitItem isFilled>
             <TextInput
               isRequired
@@ -137,6 +138,7 @@ export const EditRecordingLabels = (props) => {
               onChange={(e) => handleValueChange(idx, e)}
               validated={labelValid}
             />
+            <Text>Value</Text>
           </SplitItem>
           <SplitItem>
             <Button
