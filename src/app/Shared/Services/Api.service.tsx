@@ -502,20 +502,30 @@ export class ApiService {
   }
 
   patchRecordingLabels(recordingName: string, labels: RecordingLabel[]): Observable<string> {
-    const form = new window.FormData();
-    let arr = [] as Map<string, string>[];
-  
-      labels.forEach(l => { 
-        arr[l.key] = l.value;
-      });
+    const form = this.createLabelsPatchForm(labels);
 
-    const stringLabels = JSON.stringify(Object.entries(arr));
+    return this.sendRequest(
+      'v2.1', `recordings/${encodeURIComponent(recordingName)}/labels`,
+      {
+        method: 'PATCH',
+        body: form,
+      }
+    ).pipe(
+      concatMap(resp => {
+        if (resp.ok) {
+        return from(resp.text());
+      }
+      throw resp.text();
+      })        
+    );
+  }
 
-    form.append('labels', stringLabels);
+  patchTargetRecordingLabels(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+    const form = this.createLabelsPatchForm(labels);
 
     return this.target.target().pipe(concatMap(target =>
         this.sendRequest(
-          'v2.1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          'v2.1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/labels`,
           {
             method: 'PATCH',
             body: form,
@@ -583,6 +593,17 @@ export class ApiService {
     }
     this.notifications.danger(`Request failed`, error.message);
     throw error;
+  }
+
+  private createLabelsPatchForm(labels: RecordingLabel[]) {
+    const form = new window.FormData();
+    let arr = [] as Map<string, string>[];
+    labels.forEach(l => { 
+      arr[l.key] = l.value;
+    });
+    const stringLabels = JSON.stringify(Object.entries(arr));
+    form.append('labels', stringLabels);
+    return form;
   }
 
 }

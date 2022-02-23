@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { EditRecordingLabels, RecordingLabel } from '@app/CreateRecording/EditRecordingLabels';
+import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -249,13 +249,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
-      if(!props.recording.labels) return [];
-
-      const labels = JSON.parse(props.recording.labels);
-      return Object.entries(labels).map(([k, v]) => {
-        let val = v as string[];
-        return {key: val[0], value: val[1]} as RecordingLabel;
-      });
+      return parseLabels(props.recording.labels);
     }, [props.recording.labels]);
 
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
@@ -274,6 +268,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleRowCheck(checked, props.index);
     };
 
+    const handleSubmitLabelPatch = React.useMemo(() => {
+      if (!!!props.labels) {
+        return;
+      }
+
+      context.api.patchTargetRecordingLabels(props.recordingName, props.labels).subscribe((l) => props.setLabels(l));
+      props.showForm(false);
+    }, [props.recordingName, props.labels]);
+
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
         const fmt = new Date(props.timeStr).toISOString();
@@ -284,18 +287,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`;
         return (<span>{str}</span>);
       };
-
-      const formattedLabels = React.useMemo(() => {
-        return (
-          <>
-            {parsedLabels.map(l => (
-              <Text>
-                {l.key}={l.value}
-              </Text>
-            ))}
-          </>
-        );
-      }, [props.recording.labels]);
 
       return (
         <Tr key={`${props.index}_parent`}>
@@ -337,8 +328,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
                 usePatchForm={editingMetadata} 
                 recordingName={props.recording.name}
                 showForm={setEditingMetadata}
+                onPatchSubmit={handleSubmitLabelPatch}
               />
-              : (formattedLabels || '-')
+              : rowLabels.map(l => (
+                <Text>
+                  {l.key}={l.value}
+                </Text>
+              ))
             }
           </Td>
           <RecordingActions
