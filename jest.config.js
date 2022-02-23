@@ -51,13 +51,5 @@ module.exports = {
   // A map from regular expressions to paths to transformers
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest"
-  },
-
-  globals: {
-    'ts-jest': {
-        isolatedModules: true
-    }
-  },
-
-  transformIgnorePatterns: ["/node_modules/(?!@patternfly)"]
+  }
 };

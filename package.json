@@ -10,7 +10,7 @@
     "build": "webpack --config webpack.prod.js",
     "clean": "rimraf dist",
     "start:dev": "webpack serve --hot --color --progress --config webpack.dev.js",
-    "test": "./node_modules/jest/bin/jest.js --maxWorkers=1",
+    "test": "jest",
     "eslint": "eslint --ext .tsx,.js ./src/",
     "license:check": "license-check-and-add check -f license-config.json",
     "lint": "npm run license-check-and-add && npm run eslint",
@@ -74,7 +74,7 @@
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^5.8.0",
-    "yarn": "^1.22.17"
+    "yarn": "^1.22.13"
   },
   "dependencies": {
     "@patternfly/react-core": "^4.157.3",
