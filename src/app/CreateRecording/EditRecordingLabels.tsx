@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { CloseIcon, PlusIcon } from '@patternfly/react-icons';
+import { CloseIcon, HelpIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import {
   ActionGroup,
   Button,
@@ -45,6 +45,7 @@ import {
   SplitItem,
   Text,
   TextInput,
+  Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -66,23 +67,25 @@ export const LabelPattern = /^[a-zA-Z0-9.-]+$/;
 
 export const EditRecordingLabels = (props) => {
   const context = React.useContext(ServiceContext);
-  const [labelValid, setLabelValid] = React.useState(ValidatedOptions.default);
+  const [validKeys, setValidKeys] = React.useState(Array(props.labels.size).fill(ValidatedOptions.default));
+  const [validValues, setValidVals] = React.useState(Array(props.labels.size).fill(ValidatedOptions.default));
 
   // TODO enforce unique key names and non-null key/values
-  // Only highlight the one field causing the error
-  // Add hover error message tooltip on exclamation mark
-
   const handleKeyChange = (idx, key) => {
     let updatedLabels = [...props.labels];
     updatedLabels[idx].key = key;
-    setLabelValid(LabelPattern.test(key) ? ValidatedOptions.success : ValidatedOptions.error);
+    const valid = validKeys;
+    valid[idx] = LabelPattern.test(key) ? ValidatedOptions.success : ValidatedOptions.error;
+    setValidKeys(valid);
     props.setLabels(updatedLabels);
   };
 
   const handleValueChange = (idx, val) => {
     let updatedLabels = [...props.labels];
     updatedLabels[idx].value = val;
-    setLabelValid(LabelPattern.test(val) ? ValidatedOptions.success : ValidatedOptions.error);
+    const valid = validValues;
+    valid[idx] = LabelPattern.test(val) ? ValidatedOptions.success : ValidatedOptions.error;
+    setValidVals(valid);
     props.setLabels(updatedLabels);
   };
 
@@ -93,23 +96,50 @@ export const EditRecordingLabels = (props) => {
   const handleDeleteLabelButtonClick = (idx) => {
     let updatedLabels = [...props.labels];
     updatedLabels.splice(idx, 1);
+    validateAllLabels();
     props.setLabels(updatedLabels);
   };
 
   const handleSave = () => {
-    context.api.patchRecordingLabels(props.recordingName, props.labels).subscribe(l => props.setLabels(l));
+    context.api.patchRecordingLabels(props.recordingName, props.labels).subscribe((l) => props.setLabels(l));
     props.showForm(false);
   };
 
+  const validateAllLabels = () => {
+    let updatedValidKeys = validKeys;
+    let updatedValidVals = validValues;
+
+    updatedValidKeys = validKeys.map((unused, idx) => {
+      LabelPattern.test(props.labels[idx].key) ? ValidatedOptions.success : ValidatedOptions.error;
+    });
+
+    updatedValidVals = validKeys.map((unused, idx) => {
+      LabelPattern.test(props.labels[idx].value) ? ValidatedOptions.success : ValidatedOptions.error;
+    });
+
+    setValidKeys(updatedValidKeys);
+    setValidVals(updatedValidVals);
+  };
+
   return (
-    <>
-      {props.usePatchForm ? (
-        <Button onClick={handleAddLabelButtonClick} variant="link" icon={<PlusIcon color="gray" size="sm" />} />
-      ) : (
-        <Button onClick={handleAddLabelButtonClick} variant="primary">
-          Add Label
-        </Button>
-      )}
+    <FormGroup
+      label="Labels"
+      fieldId="labels"
+      labelIcon={
+        <Tooltip content={<div>Alphanumeric key value pairs. Keys must be unique.'.' and '-' accepted.</div>}>
+          <HelpIcon noVerticalAlign />
+        </Tooltip>
+      }
+      helperTextInvalid={"Enter a valid label. Letters, numbers, '.' and '-' accepted."}
+      validated={
+        !!validKeys.concat(validValues).find((valid) => valid == ValidatedOptions.error)
+          ? ValidatedOptions.error
+          : ValidatedOptions.success
+      }
+    >
+      <Button onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon/>}>
+        Add Label
+      </Button>
       {props.labels.map((label, idx) => (
         <Split hasGutter>
           <SplitItem isFilled>
@@ -122,10 +152,10 @@ export const EditRecordingLabels = (props) => {
               aria-label="label key"
               value={label.key}
               onChange={(e) => handleKeyChange(idx, e)}
-              validated={labelValid}
+              validated={validKeys[idx]}
             />
             <Text>Key</Text>
-           </SplitItem>
+          </SplitItem>
           <SplitItem isFilled>
             <TextInput
               isRequired
@@ -136,7 +166,7 @@ export const EditRecordingLabels = (props) => {
               aria-label="label value"
               value={label.value}
               onChange={(e) => handleValueChange(idx, e)}
-              validated={labelValid}
+              validated={validValues[idx]}
             />
             <Text>Value</Text>
           </SplitItem>
@@ -152,7 +182,11 @@ export const EditRecordingLabels = (props) => {
       {props.usePatchForm && (
         <Split hasGutter>
           <SplitItem>
-            <Button variant="primary" onClick={handleSave} isDisabled={labelValid !== ValidatedOptions.success}>
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              isDisabled={!!validKeys.concat(validValues).find((valid) => valid == ValidatedOptions.error)}
+            >
               Save
             </Button>
           </SplitItem>
@@ -163,6 +197,6 @@ export const EditRecordingLabels = (props) => {
           </SplitItem>
         </Split>
       )}
-    </>
+    </FormGroup>
   );
 };

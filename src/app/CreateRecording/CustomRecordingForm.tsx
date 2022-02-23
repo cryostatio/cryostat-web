@@ -107,7 +107,9 @@ export const CustomRecordingForm = (props) => {
     let arr = [] as Map<string, string>[];
   
       labels.forEach(l => { 
-        arr[l.key] = l.value;
+        if(!!l.key && !!l.value) {
+          arr[l.key] = l.value;
+        }
       });
 
     return JSON.stringify(Object.entries(arr));
@@ -151,11 +153,13 @@ export const CustomRecordingForm = (props) => {
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
     }
+
     if (notificationMessages.length > 0) {
       const message = notificationMessages.join('. ').trim() + '.';
       notifications.warning('Invalid form data', message);
       return;
     }
+
     const options: RecordingOptions = {
       toDisk: toDisk,
       maxAge: toDisk? continuous? maxAge * maxAgeUnits : undefined : undefined,
@@ -236,20 +240,7 @@ export const CustomRecordingForm = (props) => {
         />
       </FormGroup>
       <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
-        <FormGroup
-          label="Labels"
-          fieldId="labels"
-          labelIcon={
-            <Tooltip
-              content={
-                <div>Alphanumeric key value pairs. Keys must be unique.'.' and '-' accepted.</div>
-              }>
-                <HelpIcon noVerticalAlign/>
-            </Tooltip>
-          }
-        >
           <EditRecordingLabels labels={labels} setLabels={setLabels}/>
-        </FormGroup>
       </ExpandableSection>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
