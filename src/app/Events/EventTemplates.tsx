@@ -264,7 +264,7 @@ export const EventTemplates = () => {
           </ToolbarGroup>
           <ToolbarGroup variant="icon-button-group">
             <ToolbarItem>
-              <Button variant="plain" aria-label="add" onClick={handleModalToggle}><PlusIcon /></Button>
+              <Button key="create" variant="primary" onClick={handleModalToggle}>Upload</Button>
             </ToolbarItem>
           </ToolbarGroup>
         </ToolbarContent>
