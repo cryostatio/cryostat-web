@@ -258,7 +258,7 @@ const Comp = () => {
             <FormGroup
               label="Maximum Size"
               fieldId="maxSize"
-              helperText="The maximum size of recording data retained in the applictarget application's recording buffer."
+              helperText="The maximum size of recording data retained in the target application's recording buffer."
             >
               <Split hasGutter={true}>
                 <SplitItem isFilled>
