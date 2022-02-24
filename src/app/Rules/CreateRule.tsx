@@ -190,9 +190,10 @@ const Comp = () => {
         <CardBody>
           <Form isHorizontal>
             <Text component={TextVariants.small}>
-              Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications
-              with specified parameters for which Event Template to use, how much data should be kept in the application recording buffer, and
-              how frequently Cryostat should copy the application recording buffer into Cryostat's own archived storage.
+              Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
+              target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
+              much data should be kept in the application recording buffer, and how frequently Cryostat should copy the
+              application recording buffer into Cryostat's own archived storage.
             </Text>
             <FormGroup
               label="Name"
