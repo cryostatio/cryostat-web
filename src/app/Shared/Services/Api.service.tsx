@@ -177,6 +177,15 @@ export class ApiService {
       );
   }
 
+  deleteRule(name: string): Observable<boolean> {
+    return this.sendRequest('v2', `rules/${name}`, {
+        method: 'DELETE',
+      }).pipe(
+        map(resp => resp.ok),
+        first(),
+      );
+  }
+
   createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {
     const form = new window.FormData();
     form.append('recordingName', recordingAttributes.name);

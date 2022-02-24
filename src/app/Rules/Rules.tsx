@@ -38,8 +38,9 @@
 import * as React from 'react';
 import { Button, Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable } from '@patternfly/react-table';
+import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -180,6 +181,24 @@ export const Rules = () => {
     return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
   }, [rules, sortBy]);
 
+  const handleDelete = (rowData) => {
+    addSubscription(
+      context.api.deleteRule(rowData[0])
+      .pipe(first())
+      .subscribe(() => {} /* do nothing - notification will handle updating state */)
+    );
+  };
+
+  const actionResolver = (rowData: IRowData, extraData: IExtraData): IAction[] => {
+    if (typeof extraData.rowIndex == 'undefined') {
+      return [];
+    }
+    return [{
+      title: 'Delete',
+      onClick: (event, rowId, rowData) => handleDelete(rowData)
+    }]
+  };
+
   const viewContent = () => {
     if (rules.length === 0) {
       return (<>
@@ -198,6 +217,7 @@ export const Rules = () => {
           variant={TableVariant.compact}
           cells={tableColumns}
           rows={displayRules}
+          actionResolver={actionResolver}
           sortBy={sortBy}
           onSort={handleSort}
         >
