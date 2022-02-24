@@ -45,6 +45,7 @@ import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbP
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { EventTemplate } from '../CreateRecording/CreateRecording';
 import { Rule } from './Rules';
+import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -167,23 +168,6 @@ const Comp = () => {
     }
   ];
 
-  const templatesOptionGroups = React.useMemo(() => {
-    const offset = templates.filter(t => t.type === "CUSTOM").length;
-    return (<>
-      <FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder />
-      <FormSelectOptionGroup key="-2" label="Custom Templates">
-        {
-          templates.filter(t => t.type === "CUSTOM").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx} value={`${t.name},${t.type}`} label={t.name} />))
-        }
-      </FormSelectOptionGroup>
-      <FormSelectOptionGroup key="-3" label="Target Templates">
-        {
-          templates.filter(t => t.type === "TARGET").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx+offset} value={`${t.name},${t.type}`} label={t.name} />))
-        }
-      </FormSelectOptionGroup>
-    </>);
-  }, [templates]);
-
   return (
     <BreadcrumbPage pageTitle='Create' breadcrumbs={breadcrumbs} >
       <Card>
@@ -248,13 +232,11 @@ const Comp = () => {
               helperText="The Event Template to be applied by this Rule against matching target applications."
               helperTextInvalid="A Template must be selected"
             >
-              <FormSelect
-                value={`${template},${templateType}`}
+              <FormSelectTemplateSelector
+                selected={`${template},${templateType}`}
+                templates={templates}
                 onChange={handleTemplateChange}
-                aria-label="Event Template Input"
-              >
-                { templatesOptionGroups }
-              </FormSelect>
+              />
             </FormGroup>
             <FormGroup
               label="Maximum Size"

@@ -45,6 +45,7 @@ import { concatMap } from 'rxjs/operators';
 import { EventTemplate, TemplateType } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes, ActiveRecording } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
+import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 
 export interface CustomRecordingFormProps {
   onSubmit: (recordingAttributes: RecordingAttributes) => void;
@@ -169,23 +170,6 @@ export const CustomRecordingForm = (props) => {
     return () => sub.unsubscribe();
   }, []);
 
-  const templatesOptionGroups = React.useMemo(() => {
-    const offset = templates.filter(t => t.type === "CUSTOM").length;
-    return (<>
-      <FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder />
-      <FormSelectOptionGroup key="-2" label="Custom Templates">
-        {
-          templates.filter(t => t.type === "CUSTOM").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx} value={`${t.name},${t.type}`} label={t.name} />))
-        }
-      </FormSelectOptionGroup>
-      <FormSelectOptionGroup key="-3" label="Target Templates">
-        {
-          templates.filter(t => t.type === "TARGET").map((t: EventTemplate, idx: number) => (<FormSelectOption key={idx+offset} value={`${t.name},${t.type}`} label={t.name} />))
-        }
-      </FormSelectOptionGroup>
-    </>);
-  }, [templates]);
-
   return (<>
     <Text component={TextVariants.small}>
       JDK Flight Recordings are compact records of events which have occurred within the target JVM.
@@ -232,13 +216,11 @@ export const CustomRecordingForm = (props) => {
         validated={template === null ? ValidatedOptions.default : !!template ? ValidatedOptions.success : ValidatedOptions.error}
         helperTextInvalid="A Template must be selected"
       >
-        <FormSelect
-          value={`${template},${templateType}`}
+        <FormSelectTemplateSelector
+          selected={`${template},${templateType}`}
+          templates={templates}
           onChange={handleTemplateChange}
-          aria-label="Event Template Input"
-        >
-          { templatesOptionGroups }
-        </FormSelect>
+        />
       </FormGroup>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
