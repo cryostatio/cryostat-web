@@ -55,6 +55,8 @@ export enum NotificationCategory {
   ArchivedRecordingDeleted = 'ArchivedRecordingDeleted',
   TemplateCreated = 'TemplateUploaded',
   TemplateDeleted = 'TemplateDeleted',
+  RuleCreated = 'RuleCreated',
+  RuleDeleted = 'RuleDeleted',
 }
 
 export enum CloseStatus {
@@ -141,6 +143,20 @@ const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Template Deleted',
       body: evt => `${evt.message.template.name} was deleted`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.RuleCreated, {
+      variant: AlertVariant.success,
+      title: 'Automated Rule Created',
+      body: evt => `${evt.message.name} was created`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.RuleDeleted, {
+      variant: AlertVariant.success,
+      title: 'Automated Rule Deleted',
+      body: evt => `${evt.message.name} was deleted`
     } as NotificationMessageMapper
   ],
 ]);
