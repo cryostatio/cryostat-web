@@ -178,7 +178,7 @@ export class ApiService {
   }
 
   deleteRule(name: string): Observable<boolean> {
-    return this.sendRequest('v2', `rules/${name}`, {
+    return this.sendRequest('v2', `rules/${name}?clean=true`, {
         method: 'DELETE',
       }).pipe(
         map(resp => resp.ok),
