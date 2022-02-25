@@ -100,10 +100,12 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     } else {
       body = `target.alias == '${target?.alias}' || target.annotations.cryostat['PORT'] == ${target?.annotations?.cryostat['PORT']}`;
     }
+    body = JSON.stringify(body, null, 2);
+    body = body.substring(1, body.length - 1);
     return (<>
       <CodeBlock>
         <CodeBlockCode>
-          { JSON.stringify(body, null, 2) }
+          { body }
         </CodeBlockCode>
       </CodeBlock>
     </>);
