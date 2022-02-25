@@ -83,9 +83,9 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   const statusLabel = React.useMemo(() => {
     switch (valid) {
       case ValidatedOptions.success:
-        return (<Label color="green" icon={<CheckCircleIcon />}>Expression Matches Selected Target</Label>);
+        return (<Label color="green" icon={<CheckCircleIcon />}>Match Expression Matches Selected Target</Label>);
       case ValidatedOptions.warning:
-        return (<Label color="orange" icon={<QuestionCircleIcon />}>Expression Valid, No Match</Label>);
+        return (<Label color="orange" icon={<QuestionCircleIcon />}>Match Expression Valid, Does Not Match Selected Target</Label>);
       case ValidatedOptions.error:
         return (<Label color="red" icon={<WarningTriangleIcon />}>Invalid Match Expression</Label>);
       default:
