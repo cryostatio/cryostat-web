@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ActionGroup, Button, Card, CardBody, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
+import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, Title, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -361,6 +361,13 @@ const Comp = () => {
         </GridItem>
         <GridItem xl={5}>
           <Card>
+            <CardHeader>
+              <CardHeaderMain>
+                <Text component={TextVariants.h4}>
+                  Match Expression Evaluator
+                </Text>
+              </CardHeaderMain>
+            </CardHeader>
             <CardBody>
               <MatchExpressionEvaluator matchExpression={matchExpression} />
             </CardBody>
