@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, Title, ValidatedOptions } from '@patternfly/react-core';
+import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -60,8 +60,8 @@ const Comp = () => {
   const [name, setName] = React.useState('');
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [description, setDescription] = React.useState('');
-  // TODO validate and evaluate match expressions
   const [matchExpression, setMatchExpression] = React.useState('');
+  const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState(null as string | null);
   const [templateType, setTemplateType] = React.useState(null as string | null);
@@ -219,9 +219,10 @@ const Comp = () => {
                   helperText={
                     <Text component={TextVariants.small}>
                       Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.
-                      Select a target from the dropdown to view the context object available within the match expression context and test if the expression matches.
+                      Select a target from the dropdown on the right to view the context object available within the match expression context and test if the expression matches.
                     </Text>
                   }
+                  validated={matchExpressionValid}
                 >
                   <TextInput
                     value={matchExpression}
@@ -230,6 +231,7 @@ const Comp = () => {
                     id="rule-matchexpr"
                     aria-describedby="rule-matchexpr-helper"
                     onChange={setMatchExpression}
+                    validated={matchExpressionValid}
                   />
                 </FormGroup>
                 <FormGroup
@@ -369,7 +371,7 @@ const Comp = () => {
               </CardHeaderMain>
             </CardHeader>
             <CardBody>
-              <MatchExpressionEvaluator matchExpression={matchExpression} />
+              <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
             </CardBody>
           </Card>
         </GridItem>

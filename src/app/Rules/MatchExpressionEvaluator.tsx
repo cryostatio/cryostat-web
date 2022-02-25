@@ -46,6 +46,7 @@ import {CheckCircleIcon, InfoCircleIcon, QuestionCircleIcon, WarningTriangleIcon
 
 export interface MatchExpressionEvaluatorProps {
   matchExpression?: string;
+  onChange?: (validated: ValidatedOptions) => void;
 }
 
 export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEvaluatorProps> = (props) => {
@@ -79,6 +80,12 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
       return;
     }
   }, [target, props.matchExpression]);
+
+  React.useEffect(() => {
+    if (!!props.onChange) {
+      props.onChange(valid);
+    }
+  }, [props.onChange, valid]);
 
   const statusLabel = React.useMemo(() => {
     switch (valid) {
