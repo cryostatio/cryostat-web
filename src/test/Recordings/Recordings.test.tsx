@@ -43,7 +43,23 @@ import { of } from 'rxjs';
 import { Recordings } from '../../app/Recordings/Recordings';
 import { ServiceContext, defaultServices } from '../../app/Shared/Services/Services'
 
+let defaultTabsMock;
+let alternateTabsMock;
+
 jest.mock('@patternfly/react-core', () => {
+  defaultTabsMock = jest.fn(({activeKey, onSelect, children}) => {
+    return <div>
+              {children}
+           </div>
+  });
+  
+  alternateTabsMock = jest.fn(({activeKey, onSelect, children}) => {
+    onSelect(1);
+    return <div>
+            {children}
+           </div>
+  });
+
   return {
     Card: jest.fn().mockImplementation(({children}) => {
       return <div>
@@ -60,11 +76,9 @@ jest.mock('@patternfly/react-core', () => {
                 {children}
              </div>
     }),
-    Tabs: jest.fn().mockImplementation(({activeKey, onSelect, children}) => {
-      return <div>
-                {children}
-             </div>
-    }),
+    Tabs: jest.fn().mockImplementationOnce(defaultTabsMock)
+                   .mockImplementationOnce(alternateTabsMock)
+                   .mockImplementation(defaultTabsMock),
     Tab: jest.fn().mockImplementation(({eventKey, title, children}) => {
       return <div>
                 MockTab 
@@ -140,6 +154,24 @@ describe('<Recordings />', () => {
       .toJSON();
     expect(tree).toMatchSnapshot();
   });
+
+  it ('handles updating the activeTab state', () => {
+    render(
+      <ServiceContext.Provider value = {defaultServices}>
+				<Recordings />
+			</ServiceContext.Provider>
+		);
+
+    expect(alternateTabsMock).toHaveBeenCalledWith(0, expect.anything(), expect.anything());
+
+    render(
+      <ServiceContext.Provider value = {defaultServices}>
+				<Recordings />
+			</ServiceContext.Provider>
+		);
+
+    expect(defaultTabsMock).toHaveBeenCalledWith(1, expect.anything(), expect.anything());
+  })
 
   it('handles the case where archiving is enabled', () => {
     render(
