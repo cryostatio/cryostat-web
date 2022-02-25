@@ -112,7 +112,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   return (<>
     <Stack hasGutter>
       <StackItem>
-        <TargetSelect isCompact />
+        <TargetSelect/>
       </StackItem>
       <StackItem>
         { statusLabel }

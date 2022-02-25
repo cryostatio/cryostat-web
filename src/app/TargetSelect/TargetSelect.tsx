@@ -49,7 +49,6 @@ import { CreateTargetModal } from './CreateTargetModal';
 import _ from 'lodash';
 
 export interface TargetSelectProps {
-  isCompact?: boolean;
 }
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
