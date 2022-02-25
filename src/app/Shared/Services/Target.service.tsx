@@ -42,6 +42,11 @@ export const NO_TARGET = {} as Target;
 export interface Target {
   connectUrl: string;
   alias: string;
+  labels?: Map<string, string>;
+  annotations?: {
+    cryostat: Map<string, string>;
+    platform: Map<string, string>;
+  }
 }
 
 class TargetService {
