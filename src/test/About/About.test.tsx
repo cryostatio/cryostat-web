@@ -37,10 +37,11 @@
  */
 import * as React from 'react';
 import { of } from 'rxjs';
+import renderer from 'react-test-renderer'
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { CRYOSTAT_TRADEMARK } from './AboutDescription';
-import { About } from './About';
+import { CRYOSTAT_TRADEMARK } from '../../app/About/AboutDescription';
+import { About } from '../../app/About/About';
 
 jest.mock('@app/Shared/Services/Api.service', () => {
     return {
@@ -53,6 +54,11 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   });
 
 describe('<About />', () => {
+    it('renders correctly', () => {
+      const tree = renderer.create(<About />).toJSON();
+      expect(tree).toMatchSnapshot();
+    })
+
     it('renders correctly', () => {
         render(<About />);
         expect(screen.getByText("About")).toBeInTheDocument();

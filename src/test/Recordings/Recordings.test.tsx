@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import renderer from 'react-test-renderer'
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { Recordings } from './Recordings';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
-import { ApiService } from '@app/Shared/Services/Api.service'
+import { Recordings } from '../../app/Recordings/Recordings';
+import { ServiceContext, defaultServices } from '../../app/Shared/Services/Services'
 
 jest.mock('@patternfly/react-core', () => {
   return {
@@ -131,7 +131,17 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 
 
 describe('<Recordings />', () => {
-  it('renders correctly when archiving is enabled', () => {
+  it('renders correctly', () => {
+    const tree = renderer
+      .create(
+        <ServiceContext.Provider value = {defaultServices}>
+          <Recordings />
+        </ServiceContext.Provider>)
+      .toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('handles the case where archiving is enabled', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
 				<Recordings />
@@ -142,7 +152,7 @@ describe('<Recordings />', () => {
 		expect(screen.getByText("Archived Recordings")).toBeInTheDocument()
   });
 
-  it ('renders correctly when archiving is disabled', () => {
+  it ('handles the case where archiving is disabled', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
 				<Recordings />

@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Recordings /> renders correctly 1`] = `
+<div>
+  Recordings
+  <div>
+    <div>
+      <div>
+        <div>
+          Active Recordings
+        </div>
+      </div>
+      <div>
+        false
+      </div>
+    </div>
+  </div>
+</div>
+`;
