@@ -40,9 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Grid,
-  GridItem, Select, SelectOption, SelectVariant, Text, TextVariants
-} from '@patternfly/react-core';
+import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
@@ -190,71 +188,67 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   }, [context.api, selected, setLoading, addSubscription, notifications, selectNone]);
 
   return (<>
-      <Grid>
-        <GridItem span={props.isCompact ? 4 : 8}>
-          <Card>
-            <CardHeader>
-              <CardHeaderMain>
-                <Text component={TextVariants.h4}>
-                  Target JVM
-                </Text>
-              </CardHeaderMain>
-              <CardActions>
-                <Button
-                  isDisabled={isLoading}
-                  onClick={showCreateTargetModal}
-                  variant="control"
-                  icon={<PlusCircleIcon />}
-                />
-                <Button
-                  isDisabled={isLoading || (selected == NO_TARGET)}
-                  onClick={deleteTarget}
-                  variant="control"
-                  icon={<TrashIcon />}
-                />
-                <Button
-                  isDisabled={isLoading}
-                  onClick={refreshTargetList}
-                  variant="control"
-                  icon={<Spinner2Icon />}
-                />
-              </CardActions>
-            </CardHeader>
-            <CardBody>
-              <Select
-                toggleIcon={<ContainerNodeIcon />}
-                variant={SelectVariant.single}
-                selections={selected.alias || selected.connectUrl}
-                onSelect={onSelect}
-                onToggle={setExpanded}
-                isDisabled={isLoading}
-                isOpen={expanded}
-                aria-label="Select Input"
-              >
-              {
-                ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />])
-                  .concat(
-                    targets.map((t: Target) => (
-                      (t.alias == t.connectUrl) || !t.alias ?
-                        <SelectOption
-                          key={t.connectUrl}
-                          value={t}
-                          isPlaceholder={false}
-                        >{`${t.connectUrl}`}</SelectOption>
-                      :
-                        <SelectOption
-                          key={t.connectUrl}
-                          value={t}
-                          isPlaceholder={false}
-                        >{`${t.alias} (${t.connectUrl})`}</SelectOption>
-                    ))
-                )
-              }
-              </Select>
-            </CardBody>
-          </Card>
-        </GridItem>
-      </Grid>
+      <Card>
+        <CardHeader>
+          <CardHeaderMain>
+            <Text component={TextVariants.h4}>
+              Target JVM
+            </Text>
+          </CardHeaderMain>
+          <CardActions>
+            <Button
+              isDisabled={isLoading}
+              onClick={showCreateTargetModal}
+              variant="control"
+              icon={<PlusCircleIcon />}
+            />
+            <Button
+              isDisabled={isLoading || (selected == NO_TARGET)}
+              onClick={deleteTarget}
+              variant="control"
+              icon={<TrashIcon />}
+            />
+            <Button
+              isDisabled={isLoading}
+              onClick={refreshTargetList}
+              variant="control"
+              icon={<Spinner2Icon />}
+            />
+          </CardActions>
+        </CardHeader>
+        <CardBody>
+          <Select
+            toggleIcon={<ContainerNodeIcon />}
+            variant={SelectVariant.single}
+            selections={selected.alias || selected.connectUrl}
+            onSelect={onSelect}
+            onToggle={setExpanded}
+            isDisabled={isLoading}
+            isOpen={expanded}
+            aria-label="Select Input"
+          >
+          {
+            ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />])
+              .concat(
+                targets.map((t: Target) => (
+                  (t.alias == t.connectUrl) || !t.alias ?
+                    <SelectOption
+                      key={t.connectUrl}
+                      value={t}
+                      isPlaceholder={false}
+                    >{`${t.connectUrl}`}</SelectOption>
+                  :
+                    <SelectOption
+                      key={t.connectUrl}
+                      value={t}
+                      isPlaceholder={false}
+                    >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+                ))
+            )
+          }
+          </Select>
+        </CardBody>
+      </Card>
       <CreateTargetModal
         visible={isModalOpen}
         onSubmit={(target) => createTarget(target)}

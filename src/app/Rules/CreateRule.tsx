@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ActionGroup, Button, Card, CardBody, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
+import { ActionGroup, Button, Card, CardBody, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -45,6 +45,7 @@ import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbP
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { EventTemplate } from '../CreateRecording/CreateRecording';
 import { Rule } from './Rules';
+import { TargetJson } from './TargetJson';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 
 // FIXME check if this is correct/matches backend name validation
@@ -170,186 +171,202 @@ const Comp = () => {
 
   return (
     <BreadcrumbPage pageTitle='Create' breadcrumbs={breadcrumbs} >
-      <Card>
-        <CardBody>
-          <Form isHorizontal>
-            <Text component={TextVariants.small}>
-              Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
-              target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
-              much data should be kept in the application recording buffer, and how frequently Cryostat should copy the
-              application recording buffer into Cryostat's own archived storage.
-            </Text>
-            <FormGroup
-              label="Name"
-              isRequired
-              fieldId="rule-name"
-              helperText="Enter a rule name."
-              validated={nameValid}
-            >
-              <TextInput
-                value={name}
-                isRequired
-                type="text"
-                id="rule-name"
-                aria-describedby="rule-name-helper"
-                onChange={handleNameChange}
-                validated={nameValid}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Description"
-              fieldId="rule-description"
-              helperText="Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions."
-            >
-              <TextInput
-                value={description}
-                type="text"
-                id="rule-description"
-                aria-describedby="rule-description-helper"
-                onChange={setDescription}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Match Expression"
-              isRequired
-              fieldId="rule-matchexpr"
-              helperText="Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether rule should be applied."
-            >
-              <TextInput
-                value={matchExpression}
-                isRequired
-                type="text"
-                id="rule-matchexpr"
-                aria-describedby="rule-matchexpr-helper"
-                onChange={setMatchExpression}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Template"
-              isRequired
-              fieldId="recording-template"
-              validated={template === null ? ValidatedOptions.default : !!template ? ValidatedOptions.success : ValidatedOptions.error}
-              helperText="The Event Template to be applied by this Rule against matching target applications."
-              helperTextInvalid="A Template must be selected"
-            >
-              <FormSelectTemplateSelector
-                selected={`${template},${templateType}`}
-                templates={templates}
-                onChange={handleTemplateChange}
-              />
-            </FormGroup>
-            <FormGroup
-              label="Maximum Size"
-              fieldId="maxSize"
-              helperText="The maximum size of recording data retained in the target application's recording buffer."
-            >
-              <Split hasGutter={true}>
-                <SplitItem isFilled>
-                    <TextInput
-                      value={maxSize}
-                      isRequired
-                      type="number"
-                      id="maxSize"
-                      aria-label="max size value"
-                      onChange={handleMaxSizeChange}
-                      min="0"
-                    />
-                  </SplitItem>
-                  <SplitItem>
-                    <FormSelect
-                      value={maxSizeUnits}
-                      onChange={handleMaxSizeUnitChange}
-                      aria-label="Max size units input"
-                    >
-                      <FormSelectOption key="1" value="1" label="B" />
-                      <FormSelectOption key="2" value={1024} label="KiB" />
-                      <FormSelectOption key="3" value={1024*1024} label="MiB" />
-                    </FormSelect>
-                  </SplitItem>
-              </Split>
-            </FormGroup>
-            <FormGroup
-              label="Maximum Age"
-              fieldId="maxAge"
-              helperText="The maximum age of recording data retained in the target application's recording buffer."
-            >
-              <Split hasGutter={true}>
-                <SplitItem isFilled>
+      <Grid hasGutter>
+        <GridItem xl={7}>
+          <Card>
+            <CardBody>
+              <Form>
+                <Text component={TextVariants.small}>
+                  Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
+                  target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
+                  much data should be kept in the application recording buffer, and how frequently Cryostat should copy the
+                  application recording buffer into Cryostat's own archived storage.
+                </Text>
+                <FormGroup
+                  label="Name"
+                  isRequired
+                  fieldId="rule-name"
+                  helperText="Enter a rule name."
+                  validated={nameValid}
+                >
                   <TextInput
-                    value={maxAge}
+                    value={name}
+                    isRequired
+                    type="text"
+                    id="rule-name"
+                    aria-describedby="rule-name-helper"
+                    onChange={handleNameChange}
+                    validated={nameValid}
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Description"
+                  fieldId="rule-description"
+                  helperText="Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions."
+                >
+                  <TextInput
+                    value={description}
+                    type="text"
+                    id="rule-description"
+                    aria-describedby="rule-description-helper"
+                    onChange={setDescription}
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Match Expression"
+                  isRequired
+                  fieldId="rule-matchexpr"
+                  helperText={
+                    <Text component={TextVariants.small}>
+                      Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.
+                      Select a target from the dropdown to view the context object available within the match expression context and test if the expression matches.
+                    </Text>
+                  }
+                >
+                  <TextInput
+                    value={matchExpression}
+                    isRequired
+                    type="text"
+                    id="rule-matchexpr"
+                    aria-describedby="rule-matchexpr-helper"
+                    onChange={setMatchExpression}
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Template"
+                  isRequired
+                  fieldId="recording-template"
+                  validated={template === null ? ValidatedOptions.default : !!template ? ValidatedOptions.success : ValidatedOptions.error}
+                  helperText="The Event Template to be applied by this Rule against matching target applications."
+                  helperTextInvalid="A Template must be selected"
+                >
+                  <FormSelectTemplateSelector
+                    selected={`${template},${templateType}`}
+                    templates={templates}
+                    onChange={handleTemplateChange}
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Maximum Size"
+                  fieldId="maxSize"
+                  helperText="The maximum size of recording data retained in the target application's recording buffer."
+                >
+                  <Split hasGutter={true}>
+                    <SplitItem isFilled>
+                        <TextInput
+                          value={maxSize}
+                          isRequired
+                          type="number"
+                          id="maxSize"
+                          aria-label="max size value"
+                          onChange={handleMaxSizeChange}
+                          min="0"
+                        />
+                      </SplitItem>
+                      <SplitItem>
+                        <FormSelect
+                          value={maxSizeUnits}
+                          onChange={handleMaxSizeUnitChange}
+                          aria-label="Max size units input"
+                        >
+                          <FormSelectOption key="1" value="1" label="B" />
+                          <FormSelectOption key="2" value={1024} label="KiB" />
+                          <FormSelectOption key="3" value={1024*1024} label="MiB" />
+                        </FormSelect>
+                      </SplitItem>
+                  </Split>
+                </FormGroup>
+                <FormGroup
+                  label="Maximum Age"
+                  fieldId="maxAge"
+                  helperText="The maximum age of recording data retained in the target application's recording buffer."
+                >
+                  <Split hasGutter={true}>
+                    <SplitItem isFilled>
+                      <TextInput
+                        value={maxAge}
+                        isRequired
+                        type="number"
+                        id="maxAgeDuration"
+                        aria-label="Max age duration"
+                        onChange={handleMaxAgeChange}
+                        min="0"
+                      />
+                    </SplitItem>
+                    <SplitItem>
+                      <FormSelect
+                        value={maxAgeUnits}
+                        onChange={handleMaxAgeUnitChange}
+                        aria-label="Max Age units Input"
+                      >
+                        <FormSelectOption key="1" value="1" label="Seconds" />
+                        <FormSelectOption key="2" value={60} label="Minutes" />
+                        <FormSelectOption key="3" value={60*60} label="Hours" />
+                      </FormSelect>
+                    </SplitItem>
+                  </Split>
+                </FormGroup>
+                <FormGroup
+                  label="Archival Period"
+                  fieldId="archivalPeriod"
+                  helperText="Time between copies of active recording data being pulled into Cryostat archive storage."
+                >
+                  <Split hasGutter={true}>
+                    <SplitItem isFilled>
+                      <TextInput
+                        value={archivalPeriod}
+                        isRequired
+                        type="number"
+                        id="archivalPeriod"
+                        aria-label="archival period"
+                        onChange={handleArchivalPeriodChange}
+                        min="0"
+                      />
+                    </SplitItem>
+                    <SplitItem>
+                      <FormSelect
+                        value={archivalPeriodUnits}
+                        onChange={handleArchivalPeriodUnitsChange}
+                        aria-label="archival period units input"
+                      >
+                        <FormSelectOption key="1" value="1" label="Seconds" />
+                        <FormSelectOption key="2" value={60} label="Minutes" />
+                        <FormSelectOption key="3" value={60*60} label="Hours" />
+                      </FormSelect>
+                    </SplitItem>
+                  </Split>
+                </FormGroup>
+                <FormGroup
+                  label="Preserved Archives"
+                  fieldId="preservedArchives"
+                  helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
+                >
+                  <TextInput
+                    value={preservedArchives}
                     isRequired
                     type="number"
-                    id="maxAgeDuration"
-                    aria-label="Max age duration"
-                    onChange={handleMaxAgeChange}
+                    id="preservedArchives"
+                    aria-label="prserved archives"
+                    onChange={handleSetPreservedArchives}
                     min="0"
                   />
-                </SplitItem>
-                <SplitItem>
-                  <FormSelect
-                    value={maxAgeUnits}
-                    onChange={handleMaxAgeUnitChange}
-                    aria-label="Max Age units Input"
-                  >
-                    <FormSelectOption key="1" value="1" label="Seconds" />
-                    <FormSelectOption key="2" value={60} label="Minutes" />
-                    <FormSelectOption key="3" value={60*60} label="Hours" />
-                  </FormSelect>
-                </SplitItem>
-              </Split>
-            </FormGroup>
-            <FormGroup
-              label="Archival Period"
-              fieldId="archivalPeriod"
-              helperText="Time between copies of active recording data being pulled into Cryostat archive storage."
-            >
-              <Split hasGutter={true}>
-                <SplitItem isFilled>
-                  <TextInput
-                    value={archivalPeriod}
-                    isRequired
-                    type="number"
-                    id="archivalPeriod"
-                    aria-label="archival period"
-                    onChange={handleArchivalPeriodChange}
-                    min="0"
-                  />
-                </SplitItem>
-                <SplitItem>
-                  <FormSelect
-                    value={archivalPeriodUnits}
-                    onChange={handleArchivalPeriodUnitsChange}
-                    aria-label="archival period units input"
-                  >
-                    <FormSelectOption key="1" value="1" label="Seconds" />
-                    <FormSelectOption key="2" value={60} label="Minutes" />
-                    <FormSelectOption key="3" value={60*60} label="Hours" />
-                  </FormSelect>
-                </SplitItem>
-              </Split>
-            </FormGroup>
-            <FormGroup
-              label="Preserved Archives"
-              fieldId="preservedArchives"
-              helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
-            >
-              <TextInput
-                value={preservedArchives}
-                isRequired
-                type="number"
-                id="preservedArchives"
-                aria-label="prserved archives"
-                onChange={handleSetPreservedArchives}
-                min="0"
-              />
-            </FormGroup>
-            <ActionGroup>
-              <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType || !matchExpression}>Create</Button>
-              <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
-            </ActionGroup>
-          </Form>
-        </CardBody>
-      </Card>
+                </FormGroup>
+                <ActionGroup>
+                  <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType || !matchExpression}>Create</Button>
+                  <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
+                </ActionGroup>
+              </Form>
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xl={5}>
+          <Card>
+            <CardBody>
+              <TargetJson matchExpression={matchExpression} />
+            </CardBody>
+          </Card>
+        </GridItem>
+      </Grid>
     </BreadcrumbPage>
   );
 };
