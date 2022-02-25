@@ -44,11 +44,11 @@ import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import {CheckCircleIcon, InfoCircleIcon, QuestionCircleIcon, WarningTriangleIcon} from '@patternfly/react-icons';
 
-export interface TargetJsonProps {
+export interface MatchExpressionEvaluatorProps {
   matchExpression?: string;
 }
 
-export const TargetJson: React.FunctionComponent<TargetJsonProps> = (props) => {
+export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEvaluatorProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [target, setTarget] = React.useState(undefined as Target | undefined);

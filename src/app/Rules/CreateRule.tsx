@@ -45,7 +45,7 @@ import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbP
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { EventTemplate } from '../CreateRecording/CreateRecording';
 import { Rule } from './Rules';
-import { TargetJson } from './TargetJson';
+import { MatchExpressionEvaluator } from './MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 
 // FIXME check if this is correct/matches backend name validation
@@ -362,7 +362,7 @@ const Comp = () => {
         <GridItem xl={5}>
           <Card>
             <CardBody>
-              <TargetJson matchExpression={matchExpression} />
+              <MatchExpressionEvaluator matchExpression={matchExpression} />
             </CardBody>
           </Card>
         </GridItem>
