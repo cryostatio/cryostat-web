@@ -42,7 +42,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
-import {CheckCircleIcon, InfoCircleIcon, QuestionCircleIcon, WarningTriangleIcon} from '@patternfly/react-icons';
+import {CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangleIcon} from '@patternfly/react-icons';
 
 export interface MatchExpressionEvaluatorProps {
   matchExpression?: string;
@@ -92,9 +92,9 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
       case ValidatedOptions.success:
         return (<Label color="green" icon={<CheckCircleIcon />}>Match Expression Matches Selected Target</Label>);
       case ValidatedOptions.warning:
-        return (<Label color="orange" icon={<QuestionCircleIcon />}>Match Expression Valid, Does Not Match Selected Target</Label>);
+        return (<Label color="orange" icon={<WarningTriangleIcon />}>Match Expression Valid, Does Not Match Selected Target</Label>);
       case ValidatedOptions.error:
-        return (<Label color="red" icon={<WarningTriangleIcon />}>Invalid Match Expression</Label>);
+        return (<Label color="red" icon={<ExclamationCircleIcon />}>Invalid Match Expression</Label>);
       default:
         return (<Label color="grey" icon={<InfoCircleIcon />}>No Match Expression</Label>);
     }
