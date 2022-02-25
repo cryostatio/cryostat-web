@@ -41,6 +41,7 @@ import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
+import {Rule} from '@app/Rules/Rules';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
 
@@ -161,6 +162,28 @@ export class ApiService {
       map(resp => resp.ok),
       first(),
     );
+  }
+
+  createRule(rule: Rule): Observable<boolean> {
+    return this.sendRequest('v2', 'rules', {
+        method: 'POST',
+        body: JSON.stringify(rule),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).pipe(
+        map(resp => resp.ok),
+        first(),
+      );
+  }
+
+  deleteRule(name: string): Observable<boolean> {
+    return this.sendRequest('v2', `rules/${name}?clean=true`, {
+        method: 'DELETE',
+      }).pipe(
+        map(resp => resp.ok),
+        first(),
+      );
   }
 
   createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {

@@ -36,19 +36,22 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Card, CardBody, EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
+import { Button, Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable } from '@patternfly/react-table';
+import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
+import { useHistory, useRouteMatch } from 'react-router-dom';
+import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 
-interface Rule {
+export interface Rule {
   name: string;
   description: string;
   matchExpression: string;
+  eventSpecifier: string;
   archivalPeriodSeconds: number;
   preservedArchives: number;
   maxAgeSeconds: number;
@@ -57,8 +60,10 @@ interface Rule {
 
 export const Rules = () => {
   const context = React.useContext(ServiceContext);
+  const routerHistory = useHistory();
   const addSubscription = useSubscriptions();
 
+  const { url } = useRouteMatch();
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [rules, setRules] = React.useState([] as Rule[]);
@@ -74,6 +79,14 @@ export const Rules = () => {
       transforms: [
         info({
           tooltip: 'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.'
+        })
+      ],
+    },
+    {
+      title: 'Event Specifier',
+      transforms: [
+        info({
+          tooltip: 'The name and location of the Event Template applied by this rule.'
         })
       ],
     },
@@ -151,6 +164,10 @@ export const Rules = () => {
     setSortBy({ index, direction });
   };
 
+  const handleCreateRule = React.useCallback(() => {
+    routerHistory.push(`${url}/create`);
+  }, [routerHistory]);
+
   const displayRules = React.useMemo(() => {
     const { index, direction } = sortBy;
     let sorted = [...rules];
@@ -161,8 +178,26 @@ export const Rules = () => {
         .sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
       sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
     }
-    return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
+    return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
   }, [rules, sortBy]);
+
+  const handleDelete = (rowData) => {
+    addSubscription(
+      context.api.deleteRule(rowData[0])
+      .pipe(first())
+      .subscribe(() => {} /* do nothing - notification will handle updating state */)
+    );
+  };
+
+  const actionResolver = (rowData: IRowData, extraData: IExtraData): IAction[] => {
+    if (typeof extraData.rowIndex == 'undefined') {
+      return [];
+    }
+    return [{
+      title: 'Delete',
+      onClick: (event, rowId, rowData) => handleDelete(rowData)
+    }]
+  };
 
   const viewContent = () => {
     if (rules.length === 0) {
@@ -182,6 +217,7 @@ export const Rules = () => {
           variant={TableVariant.compact}
           cells={tableColumns}
           rows={displayRules}
+          actionResolver={actionResolver}
           sortBy={sortBy}
           onSort={handleSort}
         >
@@ -196,6 +232,15 @@ export const Rules = () => {
     <BreadcrumbPage pageTitle='Automated Rules' >
       <Card>
         <CardBody>
+        <Toolbar id="event-templates-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="icon-button-group">
+              <ToolbarItem>
+                <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
           {viewContent()}
         </CardBody>
       </Card>

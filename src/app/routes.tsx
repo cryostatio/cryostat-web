@@ -43,6 +43,7 @@ import { Login } from '@app/Login/Login';
 import { NotFound } from '@app/NotFound/NotFound';
 import { Recordings } from '@app/Recordings/Recordings';
 import { Rules } from '@app/Rules/Rules';
+import { CreateRule } from '@app/Rules/CreateRule';
 import { Settings } from '@app/Settings/Settings';
 import { SecurityPanel } from '@app/SecurityPanel/SecurityPanel';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -95,6 +96,14 @@ const routes: IAppRoute[] = [
     path: '/rules',
     title: 'Automated Rules',
     navGroup: CONSOLE,
+    children: [
+      {
+        component: CreateRule,
+        exact: true,
+        path: '/rules/create',
+        title: 'Create Automated Rule',
+      },
+    ],
   },
   {
     component: Recordings,
