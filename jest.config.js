@@ -57,5 +57,7 @@ module.exports = {
     'ts-jest': {
         isolatedModules: true
     }
-  }
+  },
+
+  transformIgnorePatterns: ["/node_modules/(?!@patternfly)"]
 };
