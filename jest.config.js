@@ -53,11 +53,14 @@ module.exports = {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
 
+  // A set of global variables that need to be available in all test environments
   globals: {
     'ts-jest': {
         isolatedModules: true
     }
   },
 
+  // An array of regexp pattern strings that are matched against all source file paths before transformation. 
+  // If the file path matches any of the patterns, it will not be transformed.
   transformIgnorePatterns: ["/node_modules/(?!@patternfly)"]
 };
