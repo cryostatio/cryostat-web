@@ -268,14 +268,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleRowCheck(checked, props.index);
     };
 
-    const handleSubmitLabelPatch = React.useMemo(() => {
-      if (!!!props.labels) {
-        return;
-      }
-
-      context.api.patchTargetRecordingLabels(props.recordingName, props.labels).subscribe((l) => props.setLabels(l));
-      props.showForm(false);
-    }, [props.recordingName, props.labels]);
+    const handleSubmitLabelPatch = () => {
+      context.api.patchTargetRecordingLabels(props.recording.name, rowLabels).subscribe((l) => props.setLabels(l));
+      setEditingMetadata(false);
+    };
 
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {

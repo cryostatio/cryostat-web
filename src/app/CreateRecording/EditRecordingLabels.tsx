@@ -38,7 +38,6 @@
 import * as React from 'react';
 import { CloseIcon, HelpIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import {
-  ActionGroup,
   Button,
   FormGroup,
   Split,
@@ -48,7 +47,6 @@ import {
   Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface RecordingLabel {
   key: string;
@@ -61,16 +59,16 @@ export interface EditRecordingLabelsProps {
   usePatchForm?: boolean;
   savedRecordingName?: string;
   showForm?: (showForm: boolean) => void;
+  onPatchSubmit?: () => void;
 }
 
 export const LabelPattern = /^[a-zA-Z0-9.-]+$/;
 
 export const EditRecordingLabels = (props) => {
-  const context = React.useContext(ServiceContext);
   const [validKeys, setValidKeys] = React.useState(Array(props.labels.size).fill(ValidatedOptions.default));
   const [validValues, setValidVals] = React.useState(Array(props.labels.size).fill(ValidatedOptions.default));
+  const [patchFormValid, setPatchFormValid] = React.useState(ValidatedOptions.default);
 
-  // TODO enforce unique key names and non-null key/values
   const handleKeyChange = (idx, key) => {
     let updatedLabels = [...props.labels];
     updatedLabels[idx].key = key;
@@ -90,35 +88,42 @@ export const EditRecordingLabels = (props) => {
   };
 
   const handleAddLabelButtonClick = () => {
-    props.setLabels([...props.labels, { key: '', value: '' } as RecordingLabel]);
+    props.setLabels([...props.labels, { key: "", value: "" } as RecordingLabel]);
   };
 
   const handleDeleteLabelButtonClick = (idx) => {
     let updatedLabels = [...props.labels];
     updatedLabels.splice(idx, 1);
-    validateAllLabels();
     props.setLabels(updatedLabels);
-  };
-
-  const handleSave = () => {
-    context.api.patchRecordingLabels(props.recordingName, props.labels).subscribe((l) => props.setLabels(l));
-    props.showForm(false);
   };
 
   const validateAllLabels = () => {
     let updatedValidKeys = validKeys;
     let updatedValidVals = validValues;
+    let keys = [] as string[];
+    let isValid = true;
 
-    updatedValidKeys = validKeys.map((unused, idx) => {
-      LabelPattern.test(props.labels[idx].key) ? ValidatedOptions.success : ValidatedOptions.error;
-    });
+    props.labels.map((l, idx) => {
+      let hasValidKey = LabelPattern.test(l.key);
+      const hasValidValue = LabelPattern.test(l.value);
 
-    updatedValidVals = validKeys.map((unused, idx) => {
-      LabelPattern.test(props.labels[idx].value) ? ValidatedOptions.success : ValidatedOptions.error;
+      if (keys.indexOf(l.key) !== -1) {
+        hasValidKey = false;
+      } else {
+        keys.push(l.key);
+      }
+
+      isValid = hasValidKey && hasValidValue;
+
+      updatedValidKeys[idx] = hasValidKey ? ValidatedOptions.success : ValidatedOptions.error;
+      updatedValidVals[idx] = hasValidValue ? ValidatedOptions.success : ValidatedOptions.error;
     });
 
     setValidKeys(updatedValidKeys);
     setValidVals(updatedValidVals);
+    setPatchFormValid(isValid ? ValidatedOptions.success : ValidatedOptions.error);
+
+    return isValid;
   };
 
   return (
@@ -130,18 +135,14 @@ export const EditRecordingLabels = (props) => {
           <HelpIcon noVerticalAlign />
         </Tooltip>
       }
-      helperTextInvalid={"Enter a valid label. Letters, numbers, '.' and '-' accepted."}
-      validated={
-        !!validKeys.concat(validValues).find((valid) => valid == ValidatedOptions.error)
-          ? ValidatedOptions.error
-          : ValidatedOptions.success
-      }
+      helperTextInvalid={"Enter a valid label. Letters, numbers, '.' and '-' accepted. Keys must be unique."}
+      validated={patchFormValid}
     >
       <Button onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon/>}>
         Add Label
       </Button>
       {props.labels.map((label, idx) => (
-        <Split hasGutter>
+        <Split hasGutter key={`${label.key}-${idx}`}>
           <SplitItem isFilled>
             <TextInput
               isRequired
@@ -184,8 +185,12 @@ export const EditRecordingLabels = (props) => {
           <SplitItem>
             <Button
               variant="primary"
-              onClick={handleSave}
-              isDisabled={!!validKeys.concat(validValues).find((valid) => valid == ValidatedOptions.error)}
+              onClick={() => { 
+                if(validateAllLabels()) {
+                  props.onPatchSubmit();
+                }
+              }}
+              isDisabled={!patchFormValid}
             >
               Save
             </Button>

@@ -168,14 +168,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       handleRowCheck(checked, props.index);
     };
 
-    const handleSubmitLabelPatch = React.useMemo(() => {
-      if (!!!props.labels) {
-        return;
-      }
-
-      context.api.patchRecordingLabels(props.recordingName, props.labels).subscribe((l) => props.setLabels(l));
-      props.showForm(false);
-  }, [props.recordingName, props.labels]);
+    const handleSubmitLabelPatch = () => {
+      context.api.patchRecordingLabels(props.recording.name, rowLabels).subscribe((l) => props.setLabels(l));
+      setEditingMetadata(false);
+    };
 
     const parentRow = React.useMemo(() => {
       return(
