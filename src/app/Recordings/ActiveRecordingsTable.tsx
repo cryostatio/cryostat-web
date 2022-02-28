@@ -191,6 +191,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return () => sub.unsubscribe();
   }, [context, context.target, setErrorMessage]);
 
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
+        .subscribe(v => setRecordings(old => old.map(o => o.name == v.message.recordingName ? { ...o, labels: v.message.labels } : o)))
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
   const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
     recordings.forEach((r: ActiveRecording, idx) => {
@@ -269,9 +276,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     };
 
     const handleSubmitLabelPatch = () => {
-      context.api.patchTargetRecordingLabels(props.recording.name, rowLabels).subscribe((l) => props.setLabels(l));
+      context.api.patchTargetRecordingLabels(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
       setEditingMetadata(false);
     };
+
+    const handleCancelLabelPatch = () => {
+      setRowLabels(parseLabels(props.recording.labels));
+      setEditingMetadata(false);
+    }
 
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
@@ -321,10 +333,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
               <EditRecordingLabels 
                 labels={rowLabels} 
                 setLabels={setRowLabels} 
-                usePatchForm={editingMetadata} 
-                recordingName={props.recording.name}
-                showForm={setEditingMetadata}
+                usePatchForm={editingMetadata}
+                patchRecordingName={props.recording.name} 
                 onPatchSubmit={handleSubmitLabelPatch}
+                onPatchCancel={handleCancelLabelPatch}
               />
               : rowLabels.map(l => (
                 <Text>

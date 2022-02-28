@@ -119,6 +119,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     )
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
+        .subscribe(v => setRecordings(old => old.map(o => o.name == v.message.recordingName ? { ...o, labels: v.message.labels } : o)))
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
+
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
     recordings.forEach((r: ArchivedRecording, idx) => {
@@ -169,9 +177,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     };
 
     const handleSubmitLabelPatch = () => {
-      context.api.patchRecordingLabels(props.recording.name, rowLabels).subscribe((l) => props.setLabels(l));
+      context.api.patchRecordingLabels(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
       setEditingMetadata(false);
     };
+
+    const handleCancelLabelPatch = () => {
+      setRowLabels(parseLabels(props.recording.labels));
+      setEditingMetadata(false);
+    }
 
     const parentRow = React.useMemo(() => {
       return(
@@ -203,9 +216,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
                 labels={rowLabels} 
                 setLabels={setRowLabels} 
                 usePatchForm={editingMetadata} 
-                recordingName={props.recording.name}
-                showForm={setEditingMetadata}
+                patchRecordingName={props.recording.name}
                 onPatchSubmit={handleSubmitLabelPatch}
+                onPatchCancel={handleCancelLabelPatch}
               />
               : rowLabels.map(l => (
                 <Text>

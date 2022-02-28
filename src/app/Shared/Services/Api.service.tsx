@@ -621,6 +621,7 @@ export interface ArchivedRecording {
   name: string;
   downloadUrl: string;
   reportUrl: string;
+  labels: string;
 }
 
 export interface ActiveRecording extends ArchivedRecording {
@@ -632,7 +633,6 @@ export interface ActiveRecording extends ArchivedRecording {
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
-  labels: string;
 }
 
 export enum RecordingState {

@@ -57,9 +57,9 @@ export interface EditRecordingLabelsProps {
   labels: RecordingLabel[];
   setLabels: (labels: RecordingLabel[]) => void;
   usePatchForm?: boolean;
-  savedRecordingName?: string;
-  showForm?: (showForm: boolean) => void;
+  patchRecordingName?: string;
   onPatchSubmit?: () => void;
+  onPatchCancel?: () => void;
 }
 
 export const LabelPattern = /^[a-zA-Z0-9.-]+$/;
@@ -196,7 +196,7 @@ export const EditRecordingLabels = (props) => {
             </Button>
           </SplitItem>
           <SplitItem>
-            <Button variant="secondary" onClick={() => props.showForm(false)}>
+            <Button variant="secondary" onClick={() => props.onPatchCancel()}>
               Cancel
             </Button>
           </SplitItem>
