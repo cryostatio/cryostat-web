@@ -69,35 +69,35 @@ export const EditRecordingLabels = (props) => {
   const [validValues, setValidVals] = React.useState(Array(props.labels.size).fill(ValidatedOptions.default));
   const [patchFormValid, setPatchFormValid] = React.useState(ValidatedOptions.default);
 
-  const handleKeyChange = (idx, key) => {
+  const handleKeyChange = React.useCallback((idx, key) => {
     let updatedLabels = [...props.labels];
     updatedLabels[idx].key = key;
     const valid = validKeys;
     valid[idx] = LabelPattern.test(key) ? ValidatedOptions.success : ValidatedOptions.error;
     setValidKeys(valid);
     props.setLabels(updatedLabels);
-  };
+  }, [props.labels, props.setLabels]);
 
-  const handleValueChange = (idx, val) => {
+  const handleValueChange = React.useCallback((idx, val) => {
     let updatedLabels = [...props.labels];
     updatedLabels[idx].value = val;
     const valid = validValues;
     valid[idx] = LabelPattern.test(val) ? ValidatedOptions.success : ValidatedOptions.error;
     setValidVals(valid);
     props.setLabels(updatedLabels);
-  };
+  }, [props.labels, props.setLabels]);
 
-  const handleAddLabelButtonClick = () => {
+  const handleAddLabelButtonClick = React.useCallback(() => {
     props.setLabels([...props.labels, { key: "", value: "" } as RecordingLabel]);
-  };
+  }, [props.labels, props.setLabels]);
 
-  const handleDeleteLabelButtonClick = (idx) => {
+  const handleDeleteLabelButtonClick = React.useCallback((idx) => {
     let updatedLabels = [...props.labels];
     updatedLabels.splice(idx, 1);
     props.setLabels(updatedLabels);
-  };
+  }, [props.labels, props.setLabels]);
 
-  const validateAllLabels = () => {
+  const validateAllLabels = React.useCallback(() => {
     let updatedValidKeys = validKeys;
     let updatedValidVals = validValues;
     let keys = [] as string[];
@@ -124,7 +124,7 @@ export const EditRecordingLabels = (props) => {
     setPatchFormValid(isValid ? ValidatedOptions.success : ValidatedOptions.error);
 
     return isValid;
-  };
+  }, [props.labels]);
 
   return (
     <FormGroup
@@ -142,7 +142,7 @@ export const EditRecordingLabels = (props) => {
         Add Label
       </Button>
       {props.labels.map((label, idx) => (
-        <Split hasGutter key={`${label.key}-${idx}`}>
+        <Split hasGutter key={idx}>
           <SplitItem isFilled>
             <TextInput
               isRequired
@@ -175,6 +175,7 @@ export const EditRecordingLabels = (props) => {
             <Button
               onClick={() => handleDeleteLabelButtonClick(idx)}
               variant="link"
+              aria-label="remove label"
               icon={<CloseIcon color="gray" size="sm" />}
             />
           </SplitItem>

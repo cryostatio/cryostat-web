@@ -275,15 +275,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleRowCheck(checked, props.index);
     };
 
-    const handleSubmitLabelPatch = () => {
+    const handleSubmitLabelPatch = React.useCallback(() => {
       context.api.patchTargetRecordingLabels(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
       setEditingMetadata(false);
-    };
+    }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
 
-    const handleCancelLabelPatch = () => {
+    const handleCancelLabelPatch = React.useCallback(() => {
       setRowLabels(parseLabels(props.recording.labels));
       setEditingMetadata(false);
-    }
+    }, [props.recording.labels, setRowLabels, setEditingMetadata]);
 
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
