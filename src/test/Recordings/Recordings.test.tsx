@@ -38,41 +38,51 @@
 import * as React from 'react';
 import renderer from 'react-test-renderer'
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { Recordings } from '../../app/Recordings/Recordings';
+import { Tabs } from '@patternfly/react-core';
 import { ServiceContext, defaultServices } from '../../app/Shared/Services/Services'
-
-let defaultTabsMock;
-let alternateTabsMock;
+import { Recordings } from '../../app/Recordings/Recordings';
 
 jest.mock('@patternfly/react-core', () => {
-  defaultTabsMock = jest.fn(({activeKey, onSelect, children}) => {
+  const defaultTabsMock = ({activeKey, onSelect, children}) => {
     return <div>
+              Tabs
               {children}
            </div>
-  });
+  };
   
-  alternateTabsMock = jest.fn(({activeKey, onSelect, children}) => {
-    onSelect(1);
+  const alternateTabsMock = ({activeKey, onSelect, children}) => {
     return <div>
-            {children}
+              Tabs
+              <button 
+                onClick={(evt) => {
+                  onSelect(evt, 1)
+                }}
+              >
+              Simulate Tab Selection
+              </button> 
+              {children}
            </div>
-  });
+  };
 
   return {
     Card: jest.fn().mockImplementation(({children}) => {
       return <div>
+                Card
                 {children}
              </div>
     }),
     CardBody: jest.fn().mockImplementation(({children}) => {
       return <div>
+                CardBody
                 {children}
              </div>
     }),
     CardHeader: jest.fn().mockImplementation(({children}) => {
       return <div>
+                CardHeader
                 {children}
              </div>
     }),
@@ -81,16 +91,18 @@ jest.mock('@patternfly/react-core', () => {
                    .mockImplementation(defaultTabsMock),
     Tab: jest.fn().mockImplementation(({eventKey, title, children}) => {
       return <div>
-                MockTab 
-                eventKey: {eventKey} 
-                title: {title} 
+                Tab
+                <div> 
+                  {title}
+                </div>
                 {children}             
              </div>
     }),
     Text: jest.fn().mockImplementation(({component, children}) => {
-      return <div> 
-                MockText
-                component: {component}
+      return <div>
+                <div> 
+                  Text
+                </div>
                 {children}   
              </div>
     })
@@ -101,8 +113,7 @@ jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
     ActiveRecordingsTable: jest.fn().mockImplementation(({archiveEnabled, onArchive}) => {
       return <div>
-                MockActiveRecordingsTable
-                archiveEnabled: {archiveEnabled.toString()}
+                Table
              </div>
     })
   }
@@ -110,9 +121,9 @@ jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
-    ArchivedRecordingsTable: jest.fn().mockImplementation(({updater}) => {
+    ArchivedRecordingsTable: jest.fn().mockImplementation(() => {
       return <div>
-                MockArchivedRecordingsTable
+                Table
              </div>
     })
   }
@@ -122,8 +133,10 @@ jest.mock('@app/TargetView/TargetView', () => {
   return {
     TargetView: jest.fn().mockImplementation(({pageTitle, children}) => {
       return <div>
-                MockTargetView
-                pageTitle: {pageTitle}
+                TargetView
+                <div>
+                  {pageTitle}
+                </div>
                 {children}
              </div>
     })
@@ -143,6 +156,9 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   };
 });
 
+beforeEach(() => {
+  jest.clearAllMocks();
+})
 
 describe('<Recordings />', () => {
   it('renders correctly', () => {
@@ -155,24 +171,6 @@ describe('<Recordings />', () => {
     expect(tree).toMatchSnapshot();
   });
 
-  it ('handles updating the activeTab state', () => {
-    render(
-      <ServiceContext.Provider value = {defaultServices}>
-				<Recordings />
-			</ServiceContext.Provider>
-		);
-
-    expect(alternateTabsMock).toHaveBeenCalledWith(0, expect.anything(), expect.anything());
-
-    render(
-      <ServiceContext.Provider value = {defaultServices}>
-				<Recordings />
-			</ServiceContext.Provider>
-		);
-
-    expect(defaultTabsMock).toHaveBeenCalledWith(1, expect.anything(), expect.anything());
-  })
-
   it('handles the case where archiving is enabled', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
@@ -180,11 +178,11 @@ describe('<Recordings />', () => {
 			</ServiceContext.Provider>
 		);
 
-    expect(screen.getByText("MockTargetView pageTitle:")).toBeInTheDocument()
+    expect(screen.getByText("Active Recordings")).toBeInTheDocument()
 		expect(screen.getByText("Archived Recordings")).toBeInTheDocument()
   });
 
-  it ('handles the case where archiving is disabled', () => {
+  it('handles the case where archiving is disabled', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
 				<Recordings />
@@ -194,4 +192,30 @@ describe('<Recordings />', () => {
 		expect(screen.getByText("Active Recordings")).toBeInTheDocument()
     expect(screen.queryByText("Archived Recordings")).not.toBeInTheDocument();
   });
+
+  it('handles updating the activeTab state', () => {
+    render(
+      <ServiceContext.Provider value = {defaultServices}>
+				<Recordings />
+			</ServiceContext.Provider>
+		);
+
+    const alternateTabsMock = Tabs as unknown as jest.Mock;
+    expect(alternateTabsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        activeKey: 0,
+      }),
+      expect.anything()
+    );
+
+    userEvent.click(screen.getByText('Simulate Tab Selection'));
+
+    const defaultTabsMock = Tabs as unknown as jest.Mock;
+    expect(defaultTabsMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        activeKey: 1,
+      }),
+      expect.anything()
+    );
+  })
 });
