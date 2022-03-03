@@ -2,18 +2,35 @@
 
 exports[`<Recordings /> renders correctly 1`] = `
 <div>
+  TargetView
   Recordings
-  <div>
-    <div>
-      <div>
-        <div>
+  <article
+    className="pf-c-card"
+    data-ouia-component-id="OUIA-Generated-Card-1"
+    data-ouia-component-type="PF4/Card"
+    data-ouia-safe={true}
+    id=""
+  >
+    <div
+      className="pf-c-card__body"
+    >
+      <div
+        className="pf-c-card__header"
+      >
+        <h4
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-1"
+          data-ouia-component-type="PF4/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+        >
           Active Recordings
-        </div>
+        </h4>
       </div>
       <div>
-        false
+        Table
       </div>
     </div>
-  </div>
+  </article>
 </div>
 `;

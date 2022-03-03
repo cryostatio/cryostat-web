@@ -45,69 +45,65 @@ import { Tabs } from '@patternfly/react-core';
 import { ServiceContext, defaultServices } from '../../app/Shared/Services/Services'
 import { Recordings } from '../../app/Recordings/Recordings';
 
-jest.mock('@patternfly/react-core', () => {
-  const defaultTabsMock = ({activeKey, onSelect, children}) => {
-    return <div>
-              Tabs
-              {children}
-           </div>
-  };
+// jest.mock('@patternfly/react-core', () => {
+//   const defaultTabsMock = ({activeKey, onSelect, children}) => {
+//     return <div>
+//               Tabs
+//               {children}
+//            </div>
+//   };
   
-  const alternateTabsMock = ({activeKey, onSelect, children}) => {
-    return <div>
-              Tabs
-              <button 
-                onClick={(evt) => {
-                  onSelect(evt, 1)
-                }}
-              >
-              Simulate Tab Selection
-              </button> 
-              {children}
-           </div>
-  };
+//   const alternateTabsMock = ({activeKey, onSelect, children}) => {
+//     return <div>
+//               Tabs
+//               <button 
+//                 onClick={(evt) => {
+//                   onSelect(evt, 1)
+//                 }}
+//               >
+//               Simulate Tab Selection
+//               </button> 
+//               {children}
+//            </div>
+//   };
 
-  return {
-    Card: jest.fn().mockImplementation(({children}) => {
-      return <div>
-                Card
-                {children}
-             </div>
-    }),
-    CardBody: jest.fn().mockImplementation(({children}) => {
-      return <div>
-                CardBody
-                {children}
-             </div>
-    }),
-    CardHeader: jest.fn().mockImplementation(({children}) => {
-      return <div>
-                CardHeader
-                {children}
-             </div>
-    }),
-    Tabs: jest.fn().mockImplementationOnce(defaultTabsMock)
-                   .mockImplementationOnce(alternateTabsMock)
-                   .mockImplementation(defaultTabsMock),
-    Tab: jest.fn().mockImplementation(({eventKey, title, children}) => {
-      return <div>
-                Tab
-                <div> 
-                  {title}
-                </div>
-                {children}             
-             </div>
-    }),
-    Text: jest.fn().mockImplementation(({component, children}) => {
-      return <div>
-                <div> 
-                  Text
-                </div>
-                {children}   
-             </div>
-    })
-  }
-}) 
+//   return {
+//     Card: jest.fn().mockImplementation(({children}) => {
+//       return <div>
+//                 Card
+//                 {children}
+//              </div>
+//     }),
+//     CardBody: jest.fn().mockImplementation(({children}) => {
+//       return <div>
+//                 CardBody
+//                 {children}
+//              </div>
+//     }),
+//     CardHeader: jest.fn().mockImplementation(({children}) => {
+//       return <div>
+//                 CardHeader
+//                 {children}
+//              </div>
+//     }),
+//     Tabs: jest.fn().mockImplementationOnce(defaultTabsMock)
+//                    .mockImplementationOnce(alternateTabsMock)
+//                    .mockImplementation(defaultTabsMock),
+//     Tab: jest.fn().mockImplementation(({eventKey, title, children}) => {
+//       return <div>
+//                 Tab
+//                 {title}
+//                 {children}             
+//              </div>
+//     }),
+//     Text: jest.fn().mockImplementation(({component, children}) => {
+//       return <div>
+//                 Text
+//                 {children}   
+//              </div>
+//     })
+//   }
+// }) 
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
@@ -134,9 +130,7 @@ jest.mock('@app/TargetView/TargetView', () => {
     TargetView: jest.fn().mockImplementation(({pageTitle, children}) => {
       return <div>
                 TargetView
-                <div>
-                  {pageTitle}
-                </div>
+                {pageTitle}
                 {children}
              </div>
     })
@@ -200,22 +194,8 @@ describe('<Recordings />', () => {
 			</ServiceContext.Provider>
 		);
 
-    const alternateTabsMock = Tabs as unknown as jest.Mock;
-    expect(alternateTabsMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        activeKey: 0,
-      }),
-      expect.anything()
-    );
+    userEvent.click(screen.getByText('Archived Recordings'));
 
-    userEvent.click(screen.getByText('Simulate Tab Selection'));
-
-    const defaultTabsMock = Tabs as unknown as jest.Mock;
-    expect(defaultTabsMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        activeKey: 1,
-      }),
-      expect.anything()
-    );
+    screen.debug();
   })
 });
