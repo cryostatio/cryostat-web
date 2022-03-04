@@ -501,9 +501,9 @@ export class ApiService {
     );
   }
 
-  patchRecordingLabels(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+  patchRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
     return this.sendRequest(
-      'v2.1', `recordings/${encodeURIComponent(recordingName)}/labels`,
+      'beta', `recordings/${encodeURIComponent(recordingName)}/metadata`,
       {
         method: 'PATCH',
         body: this.stringifyRecordingLabels(labels),
@@ -518,10 +518,10 @@ export class ApiService {
     );
   }
 
-  patchTargetRecordingLabels(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+  patchTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
     return this.target.target().pipe(concatMap(target =>
         this.sendRequest(
-          'v2.1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/labels`,
+          'beta', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/metadata`,
           {
             method: 'PATCH',
             body: this.stringifyRecordingLabels(labels),
@@ -621,7 +621,7 @@ export interface ArchivedRecording {
   name: string;
   downloadUrl: string;
   reportUrl: string;
-  labels: string;
+  labels: Object;
 }
 
 export interface ActiveRecording extends ArchivedRecording {

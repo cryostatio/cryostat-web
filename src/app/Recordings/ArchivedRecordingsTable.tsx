@@ -177,7 +177,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     };
 
     const handleSubmitLabelPatch = React.useCallback(() => {
-      context.api.patchRecordingLabels(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
+      context.api.patchRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
       setEditingMetadata(false);
     }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
 

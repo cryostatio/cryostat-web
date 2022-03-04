@@ -210,9 +210,7 @@ export const EditRecordingLabels = (props) => {
 export const parseLabels = (jsonLabels) => {
   if(!jsonLabels) return [];
 
-  const labels = JSON.parse(jsonLabels);
-  return Object.entries(labels).map(([k, v]) => {
-    let val = v as string[];
-    return {key: val[0], value: val[1]} as RecordingLabel;
+  return Object.entries(jsonLabels).map(([k, v]) => {
+    return {key: k, value: v} as RecordingLabel;
   });
 };
