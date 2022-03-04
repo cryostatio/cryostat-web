@@ -41,8 +41,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { ServiceContext, defaultServices } from '../../app/Shared/Services/Services'
-import { Recordings } from '../../app/Recordings/Recordings';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
+import { Recordings } from '@app/Recordings/Recordings';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {

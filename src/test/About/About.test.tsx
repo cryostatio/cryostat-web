@@ -40,8 +40,8 @@ import { of } from 'rxjs';
 import renderer from 'react-test-renderer'
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { CRYOSTAT_TRADEMARK } from '../../app/About/AboutDescription';
-import { About } from '../../app/About/About';
+import { CRYOSTAT_TRADEMARK } from '@app/About/AboutDescription';
+import { About } from '@app/About/About';
 
 jest.mock('@app/Shared/Services/Api.service', () => {
     return {
@@ -60,9 +60,9 @@ describe('<About />', () => {
     })
 
     it('contains the correct information', () => {
-        render(<About />);
-        expect(screen.getByText("About")).toBeInTheDocument();
-        expect(screen.getByAltText("Cryostat")).toBeInTheDocument();
-        expect(screen.getByText(CRYOSTAT_TRADEMARK)).toBeInTheDocument();
+      render(<About />);
+      expect(screen.getByText("About")).toBeInTheDocument();
+      expect(screen.getByAltText("Cryostat")).toBeInTheDocument();
+      expect(screen.getByText(CRYOSTAT_TRADEMARK)).toBeInTheDocument();
     })
 })
