@@ -72,6 +72,7 @@ describe('<About />', () => {
 
     it('contains the correct information', () => {
       render(<About />);
+      
       expect(screen.getByText('About')).toBeInTheDocument();
       const logo = screen.getByRole('img');
       expect(logo).toHaveClass('pf-c-brand cryostat-logo');

@@ -10,7 +10,7 @@
     "build": "webpack --config webpack.prod.js",
     "clean": "rimraf dist",
     "start:dev": "webpack serve --hot --color --progress --config webpack.dev.js",
-    "test": "jest --maxWorkers=1 -u",
+    "test": "jest --maxWorkers=1",
     "eslint": "eslint --ext .tsx,.js ./src/",
     "license:check": "license-check-and-add check -f license-config.json",
     "lint": "npm run license-check-and-add && npm run eslint",

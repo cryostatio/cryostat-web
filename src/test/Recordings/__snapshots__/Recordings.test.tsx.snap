@@ -2,7 +2,6 @@
 
 exports[`<Recordings /> renders correctly 1`] = `
 <div>
-  TargetView
   Recordings
   <article
     className="pf-c-card"

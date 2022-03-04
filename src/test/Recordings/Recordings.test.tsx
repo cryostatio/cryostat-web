@@ -46,7 +46,7 @@ import { Recordings } from '@app/Recordings/Recordings';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
-    ActiveRecordingsTable: jest.fn().mockImplementation(({archiveEnabled, onArchive}) => {
+    ActiveRecordingsTable: jest.fn(({archiveEnabled}) => {
       return <div>
                 Active Recordings Table
              </div>
@@ -56,7 +56,7 @@ jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
-    ArchivedRecordingsTable: jest.fn().mockImplementation(() => {
+    ArchivedRecordingsTable: jest.fn(() => {
       return <div>
                 Archived Recordings Table
              </div>
@@ -66,9 +66,8 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
 
 jest.mock('@app/TargetView/TargetView', () => {
   return {
-    TargetView: jest.fn().mockImplementation(({pageTitle, children}) => {
+    TargetView: jest.fn(({pageTitle, children}) => {
       return <div>
-                TargetView
                 {pageTitle}
                 {children}
              </div>
@@ -78,9 +77,10 @@ jest.mock('@app/TargetView/TargetView', () => {
 
 jest.mock('@app/Shared/Services/Api.service', () => {
   return {
-    ApiService: jest.fn().mockImplementation(() => {
+    ApiService: jest.fn(() => {
       return {
         isArchiveEnabled: jest.fn()
+                          .mockReturnValueOnce(of(true))
                           .mockReturnValueOnce(of(true))
                           .mockReturnValueOnce(of(false))
                           .mockReturnValue(of(true))
@@ -88,10 +88,6 @@ jest.mock('@app/Shared/Services/Api.service', () => {
     })
   };
 });
-
-beforeEach(() => {
-  jest.clearAllMocks();
-})
 
 describe('<Recordings />', () => {
   it('renders correctly', () => {
@@ -104,6 +100,16 @@ describe('<Recordings />', () => {
     expect(tree).toMatchSnapshot();
   });
 
+  it('has the correct title in the TargetView', () => {
+    render(
+      <ServiceContext.Provider value = {defaultServices}>
+				<Recordings />
+			</ServiceContext.Provider>
+		);
+
+    expect(screen.getByText('Recordings')).toBeInTheDocument();
+  })
+
   it('handles the case where archiving is enabled', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
@@ -111,8 +117,8 @@ describe('<Recordings />', () => {
 			</ServiceContext.Provider>
 		);
 
-    expect(screen.getByText("Active Recordings")).toBeInTheDocument()
-		expect(screen.getByText("Archived Recordings")).toBeInTheDocument()
+    expect(screen.getByText('Active Recordings')).toBeInTheDocument()
+		expect(screen.getByText('Archived Recordings')).toBeInTheDocument()
   });
 
   it('handles the case where archiving is disabled', () => {
@@ -122,8 +128,8 @@ describe('<Recordings />', () => {
 			</ServiceContext.Provider>
 		);
 
-		expect(screen.getByText("Active Recordings")).toBeInTheDocument()
-    expect(screen.queryByText("Archived Recordings")).not.toBeInTheDocument();
+		expect(screen.getByText('Active Recordings')).toBeInTheDocument()
+    expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
   });
 
   it('handles updating the activeTab state', () => {
