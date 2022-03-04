@@ -36,22 +36,33 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { of } from 'rxjs';
 import renderer from 'react-test-renderer'
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CRYOSTAT_TRADEMARK } from '@app/About/AboutDescription';
 import { About } from '@app/About/About';
 
-jest.mock('@app/Shared/Services/Api.service', () => {
-    return {
-      ApiService: jest.fn().mockImplementation(() => {
-        return {
-          cryostatVersion: jest.fn().mockReturnValue(of("some_version"))
-        };
-      })
-    };
-  });
+jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
+  return {
+    BreadcrumbPage: jest.fn(({pageTitle, children}) => {
+      return <div>
+                {pageTitle}
+                {children}
+             </div>
+    })
+  }
+})
+
+jest.mock('@app/About/AboutDescription', () => {
+  return {
+    ...jest.requireActual('@app/About/AboutDescription'),
+    AboutDescription: jest.fn(() => {
+      return <div>
+                AboutDescription
+             </div>
+    })
+  }
+})
 
 describe('<About />', () => {
     it('renders correctly', () => {
@@ -61,8 +72,11 @@ describe('<About />', () => {
 
     it('contains the correct information', () => {
       render(<About />);
-      expect(screen.getByText("About")).toBeInTheDocument();
-      expect(screen.getByAltText("Cryostat")).toBeInTheDocument();
+      expect(screen.getByText('About')).toBeInTheDocument();
+      const logo = screen.getByRole('img');
+      expect(logo).toHaveClass('pf-c-brand cryostat-logo');
+      expect(logo).toHaveAttribute('alt', 'Cryostat');
+      expect(logo).toHaveAttribute('src', 'test-file-stub');
       expect(screen.getByText(CRYOSTAT_TRADEMARK)).toBeInTheDocument();
     })
 })
