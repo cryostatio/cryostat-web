@@ -108,19 +108,43 @@ export class ApiService {
       });
     health
       .pipe(concatMap((jsonResp: any) => {
-        if (jsonResp.datasourceAvailable && jsonResp.dashboardAvailable) {
-          return forkJoin([getDatasourceURL, getDashboardURL]);
+        const toFetch: Observable<any>[] = [];
+        const unconfigured: string[] = [];
+        const unavailable: string[] = [];
+        // if datasource or dashboard are not configured, display a warning
+        // if either is configured but not available, display an error
+        // if both configured and available then display nothing and just retrieve the URLs
+        if (jsonResp.datasourceConfigured) {
+          if (jsonResp.datasourceAvailable) {
+            toFetch.push(getDatasourceURL);
+          } else {
+            unavailable.push('datasource URL');
+          }
         } else {
-          const missing: string[] = [];
-          if (!jsonResp.dashboardAvailable) {
-            missing.push('dashboard URL');
-          }
-          if (!jsonResp.datasourceAvailable) {
-            missing.push('datasource URL');
-          }
-          const message = missing.join(', ') + ' unavailable';
-          return throwError(() => message);
+          unconfigured.push('datasource URL');
         }
+        if (jsonResp.dashboardConfigured) {
+          if (jsonResp.dashboardAvailable) {
+            toFetch.push(getDashboardURL);
+          } else {
+            unavailable.push('dashboard URL');
+          }
+        } else {
+          unconfigured.push('dashboard URL');
+        }
+        if (unconfigured.length > 0) {
+          return throwError(() => ({
+            state: 'not configured',
+            message: unconfigured.join(', ') + ' unconfigured',
+          }));
+        }
+        if (unavailable.length > 0) {
+          return throwError(() => ({
+            state: 'unavailable',
+            message: unavailable.join(', ') + ' unavailable',
+          }));
+        }
+        return forkJoin(toFetch);
       }))
       .subscribe({
         next: (parts: any) => {
@@ -129,7 +153,11 @@ export class ApiService {
         },
         error: err => {
           window.console.error(err);
-          this.notifications.danger('Grafana configuration not found', err);
+          if (err.state === 'unavailable') {
+            this.notifications.danger(`Grafana ${err.state}`, err.message);
+          } else {
+            this.notifications.warning(`Grafana ${err.state}`, err.message);
+          }
         }
       });
   }
