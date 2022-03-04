@@ -37,79 +37,18 @@
  */
 import * as React from 'react';
 import renderer from 'react-test-renderer'
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { Tabs } from '@patternfly/react-core';
 import { ServiceContext, defaultServices } from '../../app/Shared/Services/Services'
 import { Recordings } from '../../app/Recordings/Recordings';
-
-// jest.mock('@patternfly/react-core', () => {
-//   const defaultTabsMock = ({activeKey, onSelect, children}) => {
-//     return <div>
-//               Tabs
-//               {children}
-//            </div>
-//   };
-  
-//   const alternateTabsMock = ({activeKey, onSelect, children}) => {
-//     return <div>
-//               Tabs
-//               <button 
-//                 onClick={(evt) => {
-//                   onSelect(evt, 1)
-//                 }}
-//               >
-//               Simulate Tab Selection
-//               </button> 
-//               {children}
-//            </div>
-//   };
-
-//   return {
-//     Card: jest.fn().mockImplementation(({children}) => {
-//       return <div>
-//                 Card
-//                 {children}
-//              </div>
-//     }),
-//     CardBody: jest.fn().mockImplementation(({children}) => {
-//       return <div>
-//                 CardBody
-//                 {children}
-//              </div>
-//     }),
-//     CardHeader: jest.fn().mockImplementation(({children}) => {
-//       return <div>
-//                 CardHeader
-//                 {children}
-//              </div>
-//     }),
-//     Tabs: jest.fn().mockImplementationOnce(defaultTabsMock)
-//                    .mockImplementationOnce(alternateTabsMock)
-//                    .mockImplementation(defaultTabsMock),
-//     Tab: jest.fn().mockImplementation(({eventKey, title, children}) => {
-//       return <div>
-//                 Tab
-//                 {title}
-//                 {children}             
-//              </div>
-//     }),
-//     Text: jest.fn().mockImplementation(({component, children}) => {
-//       return <div>
-//                 Text
-//                 {children}   
-//              </div>
-//     })
-//   }
-// }) 
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
     ActiveRecordingsTable: jest.fn().mockImplementation(({archiveEnabled, onArchive}) => {
       return <div>
-                Table
+                Active Recordings Table
              </div>
     })
   }
@@ -119,7 +58,7 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
     ArchivedRecordingsTable: jest.fn().mockImplementation(() => {
       return <div>
-                Table
+                Archived Recordings Table
              </div>
     })
   }
@@ -194,8 +133,29 @@ describe('<Recordings />', () => {
 			</ServiceContext.Provider>
 		);
 
+    // Assert that the active recordings tab is currently selected (default behaviour)
+    let tabsList = screen.getAllByRole('listitem');
+    
+    let firstTab = tabsList[0];
+    expect(firstTab).toHaveClass('pf-c-tabs__item pf-m-current');
+    expect(within(firstTab).getByText('Active Recordings')).toBeTruthy();
+
+    let secondTab = tabsList[1];
+    expect(secondTab).toHaveClass('pf-c-tabs__item');
+    expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
+
+    // Click the archived recordings tab
     userEvent.click(screen.getByText('Archived Recordings'));
 
-    screen.debug();
+    // Assert that the archived recordings tab is now selected
+    tabsList = screen.getAllByRole('listitem');
+    
+    firstTab = tabsList[0];
+    expect(firstTab).toHaveClass('pf-c-tabs__item');
+    expect(within(firstTab).getByText('Active Recordings')).toBeTruthy();
+
+    secondTab = tabsList[1];
+    expect(secondTab).toHaveClass('pf-c-tabs__item pf-m-current');
+    expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
   })
 });

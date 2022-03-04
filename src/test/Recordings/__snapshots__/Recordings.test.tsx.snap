@@ -28,7 +28,7 @@ exports[`<Recordings /> renders correctly 1`] = `
         </h4>
       </div>
       <div>
-        Table
+        Active Recordings Table
       </div>
     </div>
   </article>

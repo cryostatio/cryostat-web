@@ -59,7 +59,7 @@ describe('<About />', () => {
       expect(tree).toMatchSnapshot();
     })
 
-    it('renders correctly', () => {
+    it('contains the correct information', () => {
         render(<About />);
         expect(screen.getByText("About")).toBeInTheDocument();
         expect(screen.getByAltText("Cryostat")).toBeInTheDocument();
