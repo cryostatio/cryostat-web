@@ -42,7 +42,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -338,11 +338,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
                 onPatchSubmit={handleSubmitLabelPatch}
                 onPatchCancel={handleCancelLabelPatch}
               />
-              : rowLabels.map(l => (
-                <Text>
-                  {l.key}={l.value}
-                </Text>
-              ))
+              : rowLabels.length ? rowLabels.map(l => (
+                <Label color="grey">
+                  {`${l.key}: ${l.value}`}
+                </Label>
+                ))
+              : <Text>-</Text>
             }
           </Td>
           <RecordingActions

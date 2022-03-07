@@ -40,7 +40,7 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -215,16 +215,17 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               <EditRecordingLabels 
                 labels={rowLabels} 
                 setLabels={setRowLabels} 
-                usePatchForm={editingMetadata} 
-                patchRecordingName={props.recording.name}
+                usePatchForm={editingMetadata}
+                patchRecordingName={props.recording.name} 
                 onPatchSubmit={handleSubmitLabelPatch}
                 onPatchCancel={handleCancelLabelPatch}
               />
-              : rowLabels.map(l => (
-                <Text>
-                  {l.key}={l.value}
-                </Text>
-              ))
+              : rowLabels.length ? rowLabels.map(l => (
+                <Label color="grey">
+                  {`${l.key}: ${l.value}`}
+                </Label>
+                ))
+              : <Text>-</Text>
             }
           </Td>
           <RecordingActions
