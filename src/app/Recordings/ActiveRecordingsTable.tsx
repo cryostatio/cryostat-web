@@ -276,7 +276,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     };
 
     const handleSubmitLabelPatch = React.useCallback(() => {
-      context.api.patchTargetRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
+      context.api.postTargetRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
       setEditingMetadata(false);
     }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
 

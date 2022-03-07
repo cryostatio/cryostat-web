@@ -501,11 +501,11 @@ export class ApiService {
     );
   }
 
-  patchRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+  postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
     return this.sendRequest(
-      'beta', `recordings/${encodeURIComponent(recordingName)}/metadata`,
+      'beta', `recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
       {
-        method: 'PATCH',
+        method: 'POST',
         body: this.stringifyRecordingLabels(labels),
       }
     ).pipe(
@@ -518,12 +518,12 @@ export class ApiService {
     );
   }
 
-  patchTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+  postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
     return this.target.target().pipe(concatMap(target =>
         this.sendRequest(
-          'beta', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/metadata`,
+          'beta', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
           {
-            method: 'PATCH',
+            method: 'POST',
             body: this.stringifyRecordingLabels(labels),
           }
         ).pipe(
