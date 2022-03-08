@@ -194,7 +194,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
-        .subscribe(v => setRecordings(old => old.map(o => o.name == v.message.recordingName ? { ...o, labels: v.message.labels } : o)))
+        .subscribe(v => setRecordings(old => old.map(
+          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.labels } } : o)))
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -256,8 +257,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
-      return parseLabels(props.recording.labels);
-    }, [props.recording.labels]);
+      return parseLabels(props.recording.metadata.labels);
+    }, [props.recording.metadata.labels]);
 
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
     const [rowLabels, setRowLabels] = React.useState(parsedLabels);
@@ -281,9 +282,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
 
     const handleCancelLabelPatch = React.useCallback(() => {
-      setRowLabels(parseLabels(props.recording.labels));
+      setRowLabels(parseLabels(props.recording.metadata.labels));
       setEditingMetadata(false);
-    }, [props.recording.labels, setRowLabels, setEditingMetadata]);
+    }, [props.recording.metadata.labels, setRowLabels, setEditingMetadata]);
 
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
@@ -363,7 +364,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       props.recording.startTime,
       props.recording.state,
       props.timeStr,
-      props.recording.labels,
+      props.recording.metadata.labels,
       context.api,
       checkedIndices,
       handleCheck,

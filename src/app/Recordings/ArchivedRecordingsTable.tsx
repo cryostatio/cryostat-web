@@ -122,7 +122,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
-        .subscribe(v => setRecordings(old => old.map(o => o.name == v.message.recordingName ? { ...o, labels: v.message.labels } : o)))
+        .subscribe(v => setRecordings(old => old.map(
+          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.labels } } : o)))
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -158,8 +159,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
-      return parseLabels(props.recording.labels);
-    }, [props.recording.labels]);
+      return parseLabels(props.recording.metadata.labels);
+    }, [props.recording.metadata.labels]);
 
     const expandedRowId =`archived-table-row-${props.index}-exp`;
     const handleToggle = () => {
@@ -182,9 +183,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
 
     const handleCancelLabelPatch = React.useCallback(() => {
-      setRowLabels(parseLabels(props.recording.labels));
+      setRowLabels(parseLabels(props.recording.metadata.labels));
       setEditingMetadata(false);
-    }, [props.recording.labels, setRowLabels, setEditingMetadata]);
+    }, [props.recording.metadata.labels, setRowLabels, setEditingMetadata]);
 
     const parentRow = React.useMemo(() => {
       return(
@@ -236,7 +237,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           />
         </Tr>
       );
-    }, [props.recording, props.recording.labels, props.recording.name, props.index, handleCheck, checkedIndices, isExpanded, handleToggle, tableColumns, context.api]);
+    }, [props.recording, props.recording.metadata.labels, props.recording.name, props.index, handleCheck, checkedIndices, isExpanded, handleToggle, tableColumns, context.api]);
 
     const childRow = React.useMemo(() => {
       return (

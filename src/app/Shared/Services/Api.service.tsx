@@ -621,7 +621,7 @@ export interface ArchivedRecording {
   name: string;
   downloadUrl: string;
   reportUrl: string;
-  labels: Object;
+  metadata: Metadata;
 }
 
 export interface ActiveRecording extends ArchivedRecording {
@@ -665,4 +665,8 @@ export interface RecordingAttributes {
   duration?: number;
   options?: RecordingOptions;
   labels?: string;
+}
+
+export interface Metadata {
+  labels: Object;
 }
