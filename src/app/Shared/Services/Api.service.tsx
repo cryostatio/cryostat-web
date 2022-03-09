@@ -233,8 +233,8 @@ export class ApiService {
         form.append('maxSize', String(recordingAttributes.options.maxSize));
       }
     }
-    if (!!recordingAttributes.labels) {
-      form.append('labels', recordingAttributes.labels);
+    if (!!recordingAttributes.metadata) {
+      form.append('metadata', JSON.stringify(recordingAttributes.metadata));
     }
 
     return this.target.target().pipe(concatMap(target =>
@@ -664,7 +664,7 @@ export interface RecordingAttributes {
   events: string;
   duration?: number;
   options?: RecordingOptions;
-  labels?: string;
+  metadata?: Metadata;
 }
 
 export interface Metadata {

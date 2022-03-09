@@ -104,15 +104,15 @@ export const CustomRecordingForm = (props) => {
   };
 
   const getFormattedLabels = () => {
-    let arr = [] as Map<string, string>[];
+    let obj = {};
   
       labels.forEach(l => { 
         if(!!l.key && !!l.value) {
-          arr[l.key] = l.value;
+          obj[l.key] = l.value;
         }
       });
 
-    return JSON.stringify(Object.entries(arr));
+    return obj;
   }
 
   const handleRecordingNameChange = (name) => {
@@ -170,7 +170,7 @@ export const CustomRecordingForm = (props) => {
       events: getEventString(),
       duration: continuous ? undefined : duration * (durationUnit/1000),
       options: options,
-      labels: getFormattedLabels()
+      metadata: { labels: getFormattedLabels() }
     }
     props.onSubmit(recordingAttributes);
   };
