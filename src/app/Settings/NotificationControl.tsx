@@ -35,36 +35,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService, TargetInstance } from './Target.service';
-import { TargetsService } from './Targets.service';
-import { ApiService } from './Api.service';
-import { NotificationChannel } from './NotificationChannel.service';
-import { ReportService } from './Report.service';
-import { SettingsService, SettingsServiceInstance } from './Settings.service';
-import { LoginService } from './Login.service';
 
-export interface Services {
-  target: TargetService;
-  targets: TargetsService;
-  api: ApiService;
-  notificationChannel: NotificationChannel;
-  reports: ReportService;
-  settings: SettingsService;
-  login: LoginService;
+import * as React from 'react';
+import { Checkbox } from '@patternfly/react-core';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { UserSetting } from './Settings';
+
+const Component = () => {
+  const context = React.useContext(ServiceContext);
+  const [state, setState] = React.useState(new Map());
+
+  React.useLayoutEffect(() => {
+    setState(context.settings.notificationsEnabled());
+  }, [setState, context.settings]);
+
+  const handleCheckboxChange = React.useCallback((checked, element) => {
+    state.set(NotificationCategory[element.target.id], checked);
+    context.settings.setNotificationsEnabled(state);
+    setState(new Map(state));
+  }, [state, setState, context.settings]);
+
+  const boxes = React.useMemo(() => {
+    return Array.from(state.entries(), ([key, value]) => <Checkbox id={key} label={key} isChecked={value} onChange={handleCheckboxChange} />);
+  }, [state]);
+
+  return (<>
+    { boxes }
+  </>);
 }
 
-const settings = SettingsServiceInstance;
-const login = new LoginService(TargetInstance, settings);
-const api = new ApiService(TargetInstance, NotificationsInstance, login);
-const notificationChannel = new NotificationChannel(NotificationsInstance, login);
-const reports = new ReportService(login, NotificationsInstance);
-const targets = new TargetsService(api, NotificationsInstance, login, notificationChannel);
-
-const defaultServices: Services = { target: TargetInstance, targets, api, notificationChannel, reports, settings, login };
-
-const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
-
-export { ServiceContext, defaultServices };
-
+export const NotificationControl: UserSetting = {
+  title: 'Notifications',
+  description: 'Enable or disable categories of notification pop-up.',
+  content: Component,
+}

@@ -37,7 +37,7 @@
  */
 
 import * as React from 'react';
-import { Checkbox, Text, TextVariants } from '@patternfly/react-core';
+import { Checkbox } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { UserSetting } from './Settings';

@@ -46,14 +46,14 @@ import { AuthMethod, LoginService, SessionState } from './Login.service';
 
 export enum NotificationCategory {
   WsClientActivity = 'WsClientActivity',
-  JvmDiscovery = 'TargetJvmDiscovery',
+  TargetJvmDiscovery = 'TargetJvmDiscovery',
   ActiveRecordingCreated = 'ActiveRecordingCreated',
   ActiveRecordingStopped = 'ActiveRecordingStopped',
   ActiveRecordingSaved = 'ActiveRecordingSaved',
   ActiveRecordingDeleted = 'ActiveRecordingDeleted',
   ArchivedRecordingCreated = 'ArchivedRecordingCreated',
   ArchivedRecordingDeleted = 'ArchivedRecordingDeleted',
-  TemplateCreated = 'TemplateUploaded',
+  TemplateUploaded = 'TemplateUploaded',
   TemplateDeleted = 'TemplateDeleted',
   RuleCreated = 'RuleCreated',
   RuleDeleted = 'RuleDeleted',
@@ -77,7 +77,7 @@ const messageKeys = new Map([
     // explicitly configure this category with a null mapper.
     // This is a special case because we do not want to display an alert,
     // the Targets.service already handles this
-    NotificationCategory.JvmDiscovery, null
+    NotificationCategory.TargetJvmDiscovery, null
   ],
   [
     NotificationCategory.WsClientActivity, {
@@ -133,7 +133,7 @@ const messageKeys = new Map([
     } as NotificationMessageMapper
   ],
   [
-    NotificationCategory.TemplateCreated, {
+    NotificationCategory.TemplateUploaded, {
       variant: AlertVariant.success,
       title: 'Template Created',
       body: evt => `${evt.message.template.name} was created`
@@ -202,7 +202,7 @@ export class NotificationChannel {
       var variant: AlertVariant;
       if (category == NotificationCategory.WsClientActivity) {
         variant = AlertVariant.info;
-      } else if (category == NotificationCategory.JvmDiscovery) {
+      } else if (category == NotificationCategory.TargetJvmDiscovery) {
         variant = AlertVariant.info;
       } else {
         variant = AlertVariant.success;

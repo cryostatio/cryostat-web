@@ -65,21 +65,21 @@ export class TargetsService {
       .subscribe(() => {
       ; // just trigger a startup query
     });
-    notificationChannel.messages(NotificationCategory.JvmDiscovery)
+    notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
       .subscribe(v => {
         const evt: TargetDiscoveryEvent = v.message.event;
         const target: Target = evt.serviceRef;
         switch (evt.kind) {
           case 'FOUND':
             this._targets$.next(_.unionBy(this._targets$.getValue(), [evt.serviceRef], t => t.connectUrl));
-            notifications.info('Target Appeared', `Target "${target.alias}" appeared (${target.connectUrl})"`, NotificationCategory.JvmDiscovery);
+            notifications.info('Target Appeared', `Target "${target.alias}" appeared (${target.connectUrl})"`, NotificationCategory.TargetJvmDiscovery);
             break;
           case 'LOST':
             this._targets$.next(_.filter(this._targets$.getValue(), t => t.connectUrl !== evt.serviceRef.connectUrl));
-            notifications.info('Target Disappeared', `Target "${target.alias}" disappeared (${target.connectUrl})"`, NotificationCategory.JvmDiscovery);
+            notifications.info('Target Disappeared', `Target "${target.alias}" disappeared (${target.connectUrl})"`, NotificationCategory.TargetJvmDiscovery);
             break;
           default:
-            notifications.danger(`Invalid Message Received`, `Received a notification with category ${NotificationCategory.JvmDiscovery} and unrecognized kind ${evt.kind}`);
+            notifications.danger(`Invalid Message Received`, `Received a notification with category ${NotificationCategory.TargetJvmDiscovery} and unrecognized kind ${evt.kind}`);
             break;
         }
       });

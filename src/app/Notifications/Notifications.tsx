@@ -41,6 +41,7 @@ import { map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { SettingsService, SettingsServiceInstance } from '@app/Shared/Services/Settings.service';
 
 export interface Notification {
   read?: boolean;
@@ -57,7 +58,12 @@ export class Notifications {
   private readonly _notifications: Notification[] = [];
   private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>(this._notifications);
 
+  constructor(private readonly settings: SettingsService) {}
+
   notify(notification: Notification): void {
+    if (!this.settings.notificationsEnabledFor(NotificationCategory[notification.category || ''])) {
+      return;
+    }
     if (!notification.key) {
       notification.key = nanoid();
     }
@@ -160,7 +166,7 @@ export class Notifications {
   }
 
   private isJvmDiscovery(n: Notification): boolean {
-    return (n.category === NotificationCategory.JvmDiscovery);
+    return (n.category === NotificationCategory.TargetJvmDiscovery);
   }
 
   static isProblemNotification(n: Notification): boolean {
@@ -168,7 +174,7 @@ export class Notifications {
   }
 }
 
-const NotificationsInstance = new Notifications();
+const NotificationsInstance = new Notifications(SettingsServiceInstance);
 
 const NotificationsContext = React.createContext(NotificationsInstance);
 

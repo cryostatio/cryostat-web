@@ -36,11 +36,18 @@
  * SOFTWARE.
  */
 
+import { NotificationCategory } from './NotificationChannel.service';
+
 enum StorageKeys {
-  AutoRefreshEnabled = "auto-refresh-enabled",
-  AutoRefreshPeriod = "auto-refresh-period",
-  AutoRefreshUnits = "auto-refresh-units",
-  WebSocketDebounceMs = "web-socket-debounce-ms",
+  AutoRefreshEnabled = 'auto-refresh-enabled',
+  AutoRefreshPeriod = 'auto-refresh-period',
+  AutoRefreshUnits = 'auto-refresh-units',
+  NotificationsEnabled = 'notifications-enabled',
+  WebSocketDebounceMs = 'web-socket-debounce-ms',
+}
+
+export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
+  return Object.keys(obj).filter(k => Number.isNaN(+k)) as K[];
 }
 
 export class SettingsService {
@@ -79,6 +86,44 @@ export class SettingsService {
     return defaultUnits;
   }
 
+  notificationsEnabled(): Map<NotificationCategory, boolean> {
+    const raw = window.localStorage.getItem(StorageKeys.NotificationsEnabled);
+    if (!!raw) {
+      try {
+        const map = JSON.parse(raw);
+        if (typeof map === 'object') {
+          const obj = new Map(Array.from(Object.entries(map)));
+          const res = new Map<NotificationCategory, boolean>();
+          obj.forEach((v: any) => {
+            res.set(v[0] as NotificationCategory, v[1] as boolean);
+          });
+          return res;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const map = new Map<NotificationCategory, boolean>();
+    for (const cat in NotificationCategory) {
+      map.set(NotificationCategory[cat], true);
+    }
+    this.setNotificationsEnabled(map);
+    return map;
+  }
+
+  notificationsEnabledFor(category: NotificationCategory): boolean {
+    const res = this.notificationsEnabled().get(category);
+    if (typeof res != 'boolean') {
+      return true;
+    }
+    return res;
+  }
+
+  setNotificationsEnabled(map: Map<NotificationCategory, boolean>): void {
+    const raw = JSON.stringify(Array.from(map.entries()));
+    window.localStorage.setItem(StorageKeys.NotificationsEnabled, raw);
+  }
+
   webSocketDebounceMs(defaultWebSocketDebounceMs = 100): number {
     const raw = window.localStorage.getItem(StorageKeys.WebSocketDebounceMs)
     if (raw) {
@@ -93,3 +138,5 @@ export class SettingsService {
   }
 
 }
+
+export const SettingsServiceInstance = new SettingsService();

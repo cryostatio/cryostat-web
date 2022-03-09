@@ -124,7 +124,7 @@ export const EventTemplates = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TemplateCreated)
+      context.notificationChannel.messages(NotificationCategory.TemplateUploaded)
         .subscribe(v => setTemplates(old => old.concat(v.message.template)))
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
