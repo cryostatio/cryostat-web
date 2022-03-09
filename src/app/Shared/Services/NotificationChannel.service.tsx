@@ -58,6 +58,7 @@ export enum NotificationCategory {
   RuleCreated = 'RuleCreated',
   RuleDeleted = 'RuleDeleted',
   RecordingMetadataUpdated  = 'RecordingMetadataUpdated',
+  GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
 }
 
 export enum CloseStatus {
@@ -72,12 +73,22 @@ interface ReadyState {
   code?: CloseStatus;
 }
 
-const messageKeys = new Map([
+export const messageKeys = new Map([
   [
     // explicitly configure this category with a null mapper.
     // This is a special case because we do not want to display an alert,
     // the Targets.service already handles this
-    NotificationCategory.TargetJvmDiscovery, null
+    NotificationCategory.TargetJvmDiscovery, {
+      title: 'Target JVM Discovery',
+    },
+  ],
+  [
+    // explicitly configure this category with a null mapper.
+    // This is a special case because this is generated client-side,
+    // not sent by the backend
+    NotificationCategory.GrafanaConfiguration, {
+      title: 'Grafana Configuration',
+    },
   ],
   [
     NotificationCategory.WsClientActivity, {
@@ -171,8 +182,8 @@ const messageKeys = new Map([
 
 interface NotificationMessageMapper {
   title: string;
-  body: (evt: NotificationMessage) => string;
-  variant: AlertVariant;
+  body?: (evt: NotificationMessage) => string;
+  variant?: AlertVariant;
 }
 
 export class NotificationChannel {
@@ -186,10 +197,13 @@ export class NotificationChannel {
     private readonly login: LoginService
   ) {
     messageKeys.forEach((value, key) => {
-      if (!value) {
+      if (!value || !value.body || !value.variant) {
         return;
       }
       this.messages(key).subscribe((msg: NotificationMessage) => {
+        if (!value || !value.body || !value.variant) {
+          return;
+        }
         const message = value.body(msg);
         notifications.notify({ title: value.title, message, category: key, variant: value.variant })
       });

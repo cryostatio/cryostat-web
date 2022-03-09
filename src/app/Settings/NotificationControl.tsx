@@ -39,16 +39,12 @@
 import * as React from 'react';
 import { Switch, Stack, StackItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
-  const [state, setState] = React.useState(new Map());
-
-  React.useLayoutEffect(() => {
-    setState(context.settings.notificationsEnabled());
-  }, [setState, context.settings]);
+  const [state, setState] = React.useState(context.settings.notificationsEnabled());
 
   const handleCheckboxChange = React.useCallback((checked, element) => {
     state.set(NotificationCategory[element.target.id], checked);
@@ -56,9 +52,17 @@ const Component = () => {
     setState(new Map(state));
   }, [state, setState, context.settings]);
 
+  const labels = React.useMemo(() => {
+    const result = new Map<NotificationCategory, string>();
+    messageKeys.forEach((v, k) => {
+      result.set(k, v?.title || k);
+    });
+    return result;
+  }, [messageKeys]);
+
   const boxes = React.useMemo(() => {
-    return Array.from(state.entries(), ([key, value]) => <StackItem><Switch id={key} label={key} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
-  }, [state]);
+    return Array.from(state.entries(), ([key, value]) => <StackItem><Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
+  }, [state, labels]);
 
   return (<>
     <Stack hasGutter>
@@ -69,6 +73,6 @@ const Component = () => {
 
 export const NotificationControl: UserSetting = {
   title: 'Notifications',
-  description: 'Enable or disable categories of notification pop-up.',
+  description: 'Enable or disable notifications by category.',
   content: Component,
 }

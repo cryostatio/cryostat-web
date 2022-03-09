@@ -97,6 +97,11 @@ export class SettingsService {
           obj.forEach((v: any) => {
             res.set(v[0] as NotificationCategory, v[1] as boolean);
           });
+          for (const c in NotificationCategory) {
+            if (!res.has(NotificationCategory[c])) {
+              res.set(NotificationCategory[c], true);
+            }
+          }
           return res;
         }
       } catch (e) {
