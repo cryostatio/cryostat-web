@@ -37,7 +37,7 @@
  */
 
 import * as React from 'react';
-import { Switch, Stack, StackItem } from '@patternfly/react-core';
+import { Divider, Switch, Stack, StackItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
@@ -51,6 +51,17 @@ const Component = () => {
     context.settings.setNotificationsEnabled(state);
     setState(new Map(state));
   }, [state, setState, context.settings]);
+
+  const handleCheckAll = React.useCallback(checked => {
+    const newState = new Map();
+    Array.from(state.entries()).forEach(v => newState.set(v[0], checked));
+    context.settings.setNotificationsEnabled(newState);
+    setState(newState);
+  }, [state, setState]);
+
+  const allChecked = React.useMemo(() => {
+    return Array.from(state.entries()).map(e => e[1]).reduce((a, b) => a && b);
+  }, [state]);
 
   const labels = React.useMemo(() => {
     const result = new Map<NotificationCategory, string>();
@@ -66,6 +77,8 @@ const Component = () => {
 
   return (<>
     <Stack hasGutter>
+      <StackItem><Switch id='all-notifications' label='All Notifications' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
+      <Divider />
       { boxes }
     </Stack>
   </>);
