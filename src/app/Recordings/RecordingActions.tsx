@@ -48,6 +48,7 @@ export interface RecordingActionsProps {
   index: number;
   recording: ActiveRecording;
   uploadFn: () => Observable<boolean>;
+  editMetadataFn: () => void;
 }
 
 export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = (props) => {
@@ -91,6 +92,10 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
       {
         title: "Download Recording",
         onClick: handleDownloadRecording
+      },
+      {
+        title: "Edit Metadata",
+        onClick: props.editMetadataFn
       },
       {
         title: "View Report ...",

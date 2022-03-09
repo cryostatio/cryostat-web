@@ -36,16 +36,17 @@
  * SOFTWARE.
  */
 
+import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { combineLatest, forkJoin, Observable } from 'rxjs';
+import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -72,6 +73,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     'Start Time',
     'Duration',
     'State',
+    'Labels',
   ];
 
   const addSubscription = useSubscriptions();
@@ -189,6 +191,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return () => sub.unsubscribe();
   }, [context, context.target, setErrorMessage]);
 
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
+        .subscribe(v => setRecordings(old => old.map(
+          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.labels } } : o)))
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
   const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
     recordings.forEach((r: ActiveRecording, idx) => {
@@ -246,7 +256,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [refreshRecordingList, context, context.settings]);
 
   const RecordingRow = (props) => {
+    const parsedLabels = React.useMemo(() => {
+      return parseLabels(props.recording.metadata.labels);
+    }, [props.recording.metadata.labels]);
+
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
+    const [rowLabels, setRowLabels] = React.useState(parsedLabels);
+    const [editingMetadata, setEditingMetadata] = React.useState(false);
+    
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
@@ -259,6 +276,16 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleRowCheck(checked, props.index);
     };
 
+    const handleSubmitLabelPatch = React.useCallback(() => {
+      context.api.postTargetRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
+      setEditingMetadata(false);
+    }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
+
+    const handleCancelLabelPatch = React.useCallback(() => {
+      setRowLabels(parseLabels(props.recording.metadata.labels));
+      setEditingMetadata(false);
+    }, [props.recording.metadata.labels, setRowLabels, setEditingMetadata]);
+
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
         const fmt = new Date(props.timeStr).toISOString();
@@ -266,7 +293,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       };
 
       const RecordingDuration = (props) => {
-        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`
+        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`;
         return (<span>{str}</span>);
       };
 
@@ -302,13 +329,32 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           <Td key={`active-table-row-${props.index}_5`} dataLabel={tableColumns[3]}>
             {props.recording.state}
           </Td>
+          <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
+            {editingMetadata ? 
+              <EditRecordingLabels 
+                labels={rowLabels} 
+                setLabels={setRowLabels} 
+                usePatchForm={editingMetadata}
+                patchRecordingName={props.recording.name} 
+                onPatchSubmit={handleSubmitLabelPatch}
+                onPatchCancel={handleCancelLabelPatch}
+              />
+              : rowLabels.length ? rowLabels.map(l => (
+                <Label color="grey">
+                  {`${l.key}: ${l.value}`}
+                </Label>
+                ))
+              : <Text>-</Text>
+            }
+          </Td>
           <RecordingActions
             index={props.index}
             recording={props.recording}
             uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
+            editMetadataFn={() => setEditingMetadata(true)}
           />
         </Tr>
-      )
+      );
     }, [
       props.duration,
       props.index,
@@ -318,12 +364,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       props.recording.startTime,
       props.recording.state,
       props.timeStr,
+      props.recording.metadata.labels,
       context.api,
       checkedIndices,
       handleCheck,
       handleToggle,
       isExpanded,
-      tableColumns
+      tableColumns,
     ]);
 
     const childRow = React.useMemo(() => {

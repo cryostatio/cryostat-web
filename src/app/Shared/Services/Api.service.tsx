@@ -42,6 +42,7 @@ import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import {Rule} from '@app/Rules/Rules';
+import { RecordingLabel } from '@app/CreateRecording/EditRecordingLabels';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
 
@@ -231,6 +232,9 @@ export class ApiService {
       if (!!recordingAttributes.options.maxSize && recordingAttributes.options.maxSize >= 0) {
         form.append('maxSize', String(recordingAttributes.options.maxSize));
       }
+    }
+    if (!!recordingAttributes.metadata) {
+      form.append('metadata', JSON.stringify(recordingAttributes.metadata));
     }
 
     return this.target.target().pipe(concatMap(target =>
@@ -497,6 +501,42 @@ export class ApiService {
     );
   }
 
+  postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+    return this.sendRequest(
+      'beta', `recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
+      {
+        method: 'POST',
+        body: this.stringifyRecordingLabels(labels),
+      }
+    ).pipe(
+      concatMap(resp => {
+        if (resp.ok) {
+        return from(resp.text());
+      }
+      throw resp.text();
+      })        
+    );
+  }
+
+  postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+    return this.target.target().pipe(concatMap(target =>
+        this.sendRequest(
+          'beta', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
+          {
+            method: 'POST',
+            body: this.stringifyRecordingLabels(labels),
+          }
+        ).pipe(
+          concatMap(resp => {
+            if (resp.ok) {
+            return from(resp.text());
+          }
+          throw resp.text();
+          })        
+        )
+      ));
+  }
+
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
     const req = () => this.login.getHeaders().pipe(
       concatMap(headers => {
@@ -551,6 +591,14 @@ export class ApiService {
     throw error;
   }
 
+  private stringifyRecordingLabels(labels: RecordingLabel[]): string {
+    let arr = [] as Map<string, string>[];
+    labels.forEach(l => { 
+      arr[l.key] = l.value;
+    });
+    return JSON.stringify(Object.entries(arr));
+  }
+
 }
 
 export interface ApiV2Response {
@@ -573,6 +621,7 @@ export interface ArchivedRecording {
   name: string;
   downloadUrl: string;
   reportUrl: string;
+  metadata: Metadata;
 }
 
 export interface ActiveRecording extends ArchivedRecording {
@@ -615,4 +664,9 @@ export interface RecordingAttributes {
   events: string;
   duration?: number;
   options?: RecordingOptions;
+  metadata?: Metadata;
+}
+
+export interface Metadata {
+  labels: Object;
 }

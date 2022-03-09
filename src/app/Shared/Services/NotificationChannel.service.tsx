@@ -57,6 +57,7 @@ export enum NotificationCategory {
   TemplateDeleted = 'TemplateDeleted',
   RuleCreated = 'RuleCreated',
   RuleDeleted = 'RuleDeleted',
+  RecordingMetadataUpdated  = 'RecordingMetadataUpdated',
 }
 
 export enum CloseStatus {
@@ -157,6 +158,13 @@ const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Automated Rule Deleted',
       body: evt => `${evt.message.name} was deleted`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.RecordingMetadataUpdated, {
+      variant: AlertVariant.success,
+      title: 'Recording Metadata Updated',
+      body: evt => `${evt.message.recordingName} metadata was updated`
     } as NotificationMessageMapper
   ],
 ]);

@@ -39,13 +39,14 @@ import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
+import { HelpIcon, OutlinedQuestionCircleIcon, StroopwafelIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
 import { EventTemplate, TemplateType } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes, ActiveRecording } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
+import { EditRecordingLabels, RecordingLabel } from './EditRecordingLabels';
 
 export interface CustomRecordingFormProps {
   onSubmit: (recordingAttributes: RecordingAttributes) => void;
@@ -71,6 +72,7 @@ export const CustomRecordingForm = (props) => {
   const [maxSize, setMaxSize] = React.useState(0);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [toDisk, setToDisk] = React.useState(true);
+  const [labels, setLabels] = React.useState([] as RecordingLabel[]);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -100,6 +102,18 @@ export const CustomRecordingForm = (props) => {
     }
     return str;
   };
+
+  const getFormattedLabels = () => {
+    let obj = {};
+  
+      labels.forEach(l => { 
+        if(!!l.key && !!l.value) {
+          obj[l.key] = l.value;
+        }
+      });
+
+    return obj;
+  }
 
   const handleRecordingNameChange = (name) => {
     setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
@@ -139,11 +153,13 @@ export const CustomRecordingForm = (props) => {
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
     }
+
     if (notificationMessages.length > 0) {
       const message = notificationMessages.join('. ').trim() + '.';
       notifications.warning('Invalid form data', message);
       return;
     }
+
     const options: RecordingOptions = {
       toDisk: toDisk,
       maxAge: toDisk? continuous? maxAge * maxAgeUnits : undefined : undefined,
@@ -153,7 +169,8 @@ export const CustomRecordingForm = (props) => {
       name: recordingName,
       events: getEventString(),
       duration: continuous ? undefined : duration * (durationUnit/1000),
-      options: options
+      options: options,
+      metadata: { labels: getFormattedLabels() }
     }
     props.onSubmit(recordingAttributes);
   };
@@ -222,6 +239,9 @@ export const CustomRecordingForm = (props) => {
           onChange={handleTemplateChange}
         />
       </FormGroup>
+      <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
+          <EditRecordingLabels labels={labels} setLabels={setLabels}/>
+      </ExpandableSection>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
           <Text component={TextVariants.small}>
