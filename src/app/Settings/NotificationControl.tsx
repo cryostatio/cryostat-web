@@ -37,7 +37,7 @@
  */
 
 import * as React from 'react';
-import { Checkbox } from '@patternfly/react-core';
+import { Switch, Stack, StackItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
@@ -57,11 +57,13 @@ const Component = () => {
   }, [state, setState, context.settings]);
 
   const boxes = React.useMemo(() => {
-    return Array.from(state.entries(), ([key, value]) => <Checkbox id={key} label={key} isChecked={value} onChange={handleCheckboxChange} />);
+    return Array.from(state.entries(), ([key, value]) => <StackItem><Switch id={key} label={key} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
   }, [state]);
 
   return (<>
-    { boxes }
+    <Stack hasGutter>
+      { boxes }
+    </Stack>
   </>);
 }
 
