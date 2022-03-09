@@ -143,5 +143,3 @@ export class SettingsService {
   }
 
 }
-
-export const SettingsServiceInstance = new SettingsService();

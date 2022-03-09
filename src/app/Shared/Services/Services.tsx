@@ -42,7 +42,7 @@ import { TargetsService } from './Targets.service';
 import { ApiService } from './Api.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { ReportService } from './Report.service';
-import { SettingsService, SettingsServiceInstance } from './Settings.service';
+import { SettingsService } from './Settings.service';
 import { LoginService } from './Login.service';
 
 export interface Services {
@@ -55,7 +55,7 @@ export interface Services {
   login: LoginService;
 }
 
-const settings = SettingsServiceInstance;
+const settings = new SettingsService();
 const login = new LoginService(TargetInstance, settings);
 const api = new ApiService(TargetInstance, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
