@@ -37,7 +37,7 @@
  */
 
 import * as React from 'react';
-import { Divider, Switch, Stack, StackItem } from '@patternfly/react-core';
+import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
@@ -45,6 +45,7 @@ import { UserSetting } from './Settings';
 const Component = () => {
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
+  const [expanded, setExpanded] = React.useState(false);
 
   const handleCheckboxChange = React.useCallback((checked, element) => {
     state.set(NotificationCategory[element.target.id], checked);
@@ -79,7 +80,13 @@ const Component = () => {
     <Stack hasGutter>
       <StackItem><Switch id='all-notifications' label='All Notifications' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
       <Divider />
-      { boxes }
+      <ExpandableSection
+        toggleText={expanded ? 'Show less' : 'Show more'}
+        onToggle={setExpanded}
+        isExpanded={expanded}
+      >
+        { boxes }
+      </ExpandableSection>
     </Stack>
   </>);
 }
