@@ -144,14 +144,14 @@ export const messageKeys = new Map([
   [
     NotificationCategory.ArchivedRecordingCreated, {
       variant: AlertVariant.success,
-      title: 'Recording Archived',
+      title: 'Archived Recording Uploaded',
       body: evt => `${evt.message.recording.name} was uploaded into archives`
     } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ArchivedRecordingDeleted, {
       variant: AlertVariant.success,
-      title: 'Recording Deleted',
+      title: 'Archived Recording Deleted',
       body: evt => `${evt.message.recording.name} was deleted`
     } as NotificationMessageMapper
   ],
