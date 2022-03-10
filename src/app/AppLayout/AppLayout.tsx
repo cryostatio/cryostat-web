@@ -285,7 +285,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <AlertGroup isToast>
       {
         notifications
-          .filter(n => !n.read && (Notifications.isProblemNotification(n) || n.variant === AlertVariant.success))
+          .filter(n => !n.read)
           .filter(n => serviceContext.settings.notificationsEnabledFor(NotificationCategory[n.category || '']))
           .sort((prev, curr) => {
             if(!prev.timestamp) return -1;
