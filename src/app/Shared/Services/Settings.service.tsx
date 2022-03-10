@@ -92,10 +92,9 @@ export class SettingsService {
       try {
         const map = JSON.parse(raw);
         if (typeof map === 'object') {
-          const obj = new Map(Array.from(Object.entries(map)));
           const res = new Map<NotificationCategory, boolean>();
-          obj.forEach((v: any) => {
-            res.set(v[0] as NotificationCategory, v[1] as boolean);
+          Object.entries(map).forEach((v: any) => {
+            res.set(v[1][0] as NotificationCategory, v[1][1] as boolean);
           });
           for (const c in NotificationCategory) {
             if (!res.has(NotificationCategory[c])) {
