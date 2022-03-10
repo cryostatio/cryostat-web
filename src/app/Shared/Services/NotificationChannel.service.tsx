@@ -79,6 +79,7 @@ export const messageKeys = new Map([
     // This is a special case because we do not want to display an alert,
     // the Targets.service already handles this
     NotificationCategory.TargetJvmDiscovery, {
+      variant: AlertVariant.info,
       title: 'Target JVM Discovery',
     },
   ],
@@ -208,20 +209,13 @@ export class NotificationChannel {
         notifications.notify({ title: value.title, message, category: key, variant: value.variant })
       });
     });
+
+    // fallback handler for unknown categories of message
     this._messages.pipe(
       filter(msg => !messageKeys.has(msg.meta.category as NotificationCategory))
     ).subscribe(msg => {
       const category = NotificationCategory[msg.meta.category as keyof typeof NotificationCategory];
-
-      var variant: AlertVariant;
-      if (category == NotificationCategory.WsClientActivity) {
-        variant = AlertVariant.info;
-      } else if (category == NotificationCategory.TargetJvmDiscovery) {
-        variant = AlertVariant.info;
-      } else {
-        variant = AlertVariant.success;
-      }
-      notifications.notify({ title: msg.meta.category, message: msg.message, category, variant });
+      notifications.notify({ title: msg.meta.category, message: msg.message, category, variant: AlertVariant.success });
     });
 
     const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)
