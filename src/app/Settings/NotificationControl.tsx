@@ -72,7 +72,7 @@ const Component = () => {
     return result;
   }, [messageKeys]);
 
-  const boxes = React.useMemo(() => {
+  const switches = React.useMemo(() => {
     return Array.from(state.entries(), ([key, value]) => <StackItem><Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
   }, [state, labels]);
 
@@ -85,7 +85,7 @@ const Component = () => {
         onToggle={setExpanded}
         isExpanded={expanded}
       >
-        { boxes }
+        { switches }
       </ExpandableSection>
     </Stack>
   </>);
