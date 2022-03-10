@@ -43,6 +43,8 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { AlertVariant } from '@patternfly/react-core';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
+import { Target } from './Target.service';
+import { TargetDiscoveryEvent } from './Targets.service';
 
 export enum NotificationCategory {
   WsClientActivity = 'WsClientActivity',
@@ -75,21 +77,30 @@ interface ReadyState {
 
 export const messageKeys = new Map([
   [
-    // explicitly configure this category with a null mapper.
-    // This is a special case because we do not want to display an alert,
-    // the Targets.service already handles this
-    NotificationCategory.TargetJvmDiscovery, {
-      variant: AlertVariant.info,
-      title: 'Target JVM Discovery',
-    },
-  ],
-  [
-    // explicitly configure this category with a null mapper.
+    // explicitly configure this category with a null message body mapper.
     // This is a special case because this is generated client-side,
     // not sent by the backend
     NotificationCategory.GrafanaConfiguration, {
       title: 'Grafana Configuration',
     },
+  ],
+  [
+    NotificationCategory.TargetJvmDiscovery, {
+      variant: AlertVariant.info,
+      title: 'Target JVM Discovery',
+      body: v => {
+        const evt: TargetDiscoveryEvent = v.message.event;
+        const target: Target = evt.serviceRef;
+        switch (evt.kind) {
+          case 'FOUND':
+           return `Target "${target.alias}" appeared (${target.connectUrl})"`;
+          case 'LOST':
+            return `Target "${target.alias}" disappeared (${target.connectUrl})"`;
+          default:
+            return `Received a notification with category ${NotificationCategory.TargetJvmDiscovery} and unrecognized kind ${evt.kind}`;
+        }
+      }
+    } as NotificationMessageMapper,
   ],
   [
     NotificationCategory.WsClientActivity, {
