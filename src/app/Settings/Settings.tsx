@@ -41,6 +41,7 @@ import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
 import { AutoRefresh } from './AutoRefresh';
+import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
 
 export const Settings: React.FunctionComponent<{}> = () => {
@@ -48,6 +49,7 @@ export const Settings: React.FunctionComponent<{}> = () => {
   const settings =
     [
       AutoRefresh,
+      NotificationControl,
       WebSocketDebounce,
     ].map(c => ({
       title: c.title,

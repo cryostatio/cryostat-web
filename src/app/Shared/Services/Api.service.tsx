@@ -41,8 +41,9 @@ import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
-import {Rule} from '@app/Rules/Rules';
 import { RecordingLabel } from '@app/CreateRecording/EditRecordingLabels';
+import { Rule } from '@app/Rules/Rules';
+import { NotificationCategory } from './NotificationChannel.service';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
 
@@ -155,9 +156,9 @@ export class ApiService {
         error: err => {
           window.console.error(err);
           if (err.state === 'unavailable') {
-            this.notifications.danger(`Grafana ${err.state}`, err.message);
+            this.notifications.danger(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
           } else {
-            this.notifications.warning(`Grafana ${err.state}`, err.message);
+            this.notifications.warning(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
           }
         }
       });
@@ -514,7 +515,7 @@ export class ApiService {
         return from(resp.text());
       }
       throw resp.text();
-      })        
+      })
     );
   }
 
@@ -532,7 +533,7 @@ export class ApiService {
             return from(resp.text());
           }
           throw resp.text();
-          })        
+          })
         )
       ));
   }
@@ -593,7 +594,7 @@ export class ApiService {
 
   private stringifyRecordingLabels(labels: RecordingLabel[]): string {
     let arr = [] as Map<string, string>[];
-    labels.forEach(l => { 
+    labels.forEach(l => {
       arr[l.key] = l.value;
     });
     return JSON.stringify(Object.entries(arr));

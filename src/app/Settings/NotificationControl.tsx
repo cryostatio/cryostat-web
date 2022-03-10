@@ -37,58 +37,62 @@
  */
 
 import * as React from 'react';
-import { Checkbox } from '@patternfly/react-core';
+import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { DurationPicker } from '@app/DurationPicker/DurationPicker';
+import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
-
-const defaultPreferences = {
-  autoRefreshEnabled: true,
-  autoRefreshPeriod: 30,
-  autoRefreshUnits: 1_000,
-}
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
-  const [state, setState] = React.useState(defaultPreferences);
+  const [state, setState] = React.useState(context.settings.notificationsEnabled());
+  const [expanded, setExpanded] = React.useState(false);
 
-  React.useLayoutEffect(() => {
-    setState({
-      autoRefreshEnabled: context.settings.autoRefreshEnabled(),
-      autoRefreshPeriod: context.settings.autoRefreshPeriod(),
-      autoRefreshUnits: context.settings.autoRefreshUnits(),
+  const handleCheckboxChange = React.useCallback((checked, element) => {
+    state.set(NotificationCategory[element.target.id], checked);
+    context.settings.setNotificationsEnabled(state);
+    setState(new Map(state));
+  }, [state, setState, context.settings]);
+
+  const handleCheckAll = React.useCallback(checked => {
+    const newState = new Map();
+    Array.from(state.entries()).forEach(v => newState.set(v[0], checked));
+    context.settings.setNotificationsEnabled(newState);
+    setState(newState);
+  }, [state, setState]);
+
+  const allChecked = React.useMemo(() => {
+    return Array.from(state.entries()).map(e => e[1]).reduce((a, b) => a && b);
+  }, [state]);
+
+  const labels = React.useMemo(() => {
+    const result = new Map<NotificationCategory, string>();
+    messageKeys.forEach((v, k) => {
+      result.set(k, v?.title || k);
     });
-  }, [setState, context.settings]);
+    return result;
+  }, [messageKeys]);
 
-  const handleAutoRefreshEnabledChange = React.useCallback(autoRefreshEnabled => {
-    setState(state => ({ ...state, autoRefreshEnabled }));
-    context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
-  }, [setState, context.settings]);
-
-  const handleAutoRefreshPeriodChange = React.useCallback(autoRefreshPeriod => {
-    setState(state => ({ ...state, autoRefreshPeriod }));
-    context.settings.setAutoRefreshPeriod(autoRefreshPeriod);
-  }, [setState, context.settings]);
-
-  const handleAutoRefreshUnitScalarChange = React.useCallback(autoRefreshUnits => {
-    setState(state => ({ ...state, autoRefreshUnits }));
-    context.settings.setAutoRefreshUnits(autoRefreshUnits);
-  }, [setState, context.settings]);
+  const switches = React.useMemo(() => {
+    return Array.from(state.entries(), ([key, value]) => <StackItem><Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
+  }, [state, labels]);
 
   return (<>
-    <DurationPicker
-      enabled={state.autoRefreshEnabled}
-      period={state.autoRefreshPeriod}
-      onPeriodChange={handleAutoRefreshPeriodChange}
-      unitScalar={state.autoRefreshUnits}
-      onUnitScalarChange={handleAutoRefreshUnitScalarChange}
-    />
-    <Checkbox id="auto-refresh-enabled" label="Enabled" isChecked={state.autoRefreshEnabled} onChange={handleAutoRefreshEnabledChange} />
+    <Stack hasGutter>
+      <StackItem><Switch id='all-notifications' label='All Notifications' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
+      <Divider />
+      <ExpandableSection
+        toggleText={expanded ? 'Show less' : 'Show more'}
+        onToggle={setExpanded}
+        isExpanded={expanded}
+      >
+        { switches }
+      </ExpandableSection>
+    </Stack>
   </>);
 }
 
-export const AutoRefresh: UserSetting = {
-  title: 'Auto-Refresh',
-  description: 'Set the refresh period for content views.',
+export const NotificationControl: UserSetting = {
+  title: 'Notifications',
+  description: 'Enable or disable notifications by category.',
   content: Component,
 }

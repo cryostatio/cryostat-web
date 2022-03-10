@@ -160,7 +160,7 @@ export class Notifications {
   }
 
   private isJvmDiscovery(n: Notification): boolean {
-    return (n.category === NotificationCategory.JvmDiscovery);
+    return (n.category === NotificationCategory.TargetJvmDiscovery);
   }
 
   static isProblemNotification(n: Notification): boolean {
