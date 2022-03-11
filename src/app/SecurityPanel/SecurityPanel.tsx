@@ -39,13 +39,24 @@ import * as React from 'react';
 import { Button, Card, CardBody, CardHeader, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { CertificateUploadModal } from './CertificateUploadModal';
+import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
+import { AuthModal } from '@app/AppLayout/AuthModal';
+import { TargetCredentialsTable } from './TargetCredentialsTable';
 
 export const SecurityPanel = () => {
     const [showModal, setShowModal] = React.useState(false);
+    const [showAuthModal, setShowAuthModal] = React.useState(false);
+
 
     const handleModalClose = () => {
         setShowModal(false);
     }
+
+    const handleDismissAuthModal = () => {
+        setShowAuthModal(false);
+      };
+
+    // TODO extract like settings panel
 
     return (<>
         <BreadcrumbPage pageTitle='Security'>
@@ -64,8 +75,20 @@ export const SecurityPanel = () => {
                     </Text>
                 </CardBody>
             </Card>
+            <Card>
+                <CardHeader>
+                    <Text component={TextVariants.h4}>
+                        Store JMX Credentials
+                    </Text>
+                </CardHeader>
+                <CardBody>
+                    <TargetCredentialsTable addCredentials={() => setShowAuthModal(true)}/>
+                </CardBody>
+            </Card>
         </BreadcrumbPage>
 
         <CertificateUploadModal visible={showModal} onClose={handleModalClose}/>
+        <CreateJmxCredentialModal visible={showAuthModal} onClose={handleDismissAuthModal}/>
+
     </>);
 }
