@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import renderer from 'react-test-renderer'
+import renderer, { act } from 'react-test-renderer'
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom';
@@ -82,6 +82,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
         isArchiveEnabled: jest.fn()
                           .mockReturnValueOnce(of(true))
                           .mockReturnValueOnce(of(true))
+                          .mockReturnValueOnce(of(true))
                           .mockReturnValueOnce(of(false))
                           .mockReturnValue(of(true))
       };
@@ -90,14 +91,16 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 });
 
 describe('<Recordings />', () => {
-  it('renders correctly', () => {
-    const tree = renderer
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer
       .create(
         <ServiceContext.Provider value = {defaultServices}>
           <Recordings />
         </ServiceContext.Provider>)
-      .toJSON();
-    expect(tree).toMatchSnapshot();
+    })
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('has the correct title in the TargetView', () => {
