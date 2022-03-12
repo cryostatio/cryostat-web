@@ -66,8 +66,8 @@ jest.mock('@app/About/AboutDescription', () => {
 
 describe('<About />', () => {
     it('renders correctly', () => {
-      const tree = renderer.create(<About />).toJSON();
-      expect(tree).toMatchSnapshot();
+      const tree = renderer.create(<About />);
+      expect(tree.toJSON()).toMatchSnapshot();
     })
 
     it('contains the correct information', () => {
