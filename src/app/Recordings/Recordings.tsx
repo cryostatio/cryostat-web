@@ -54,11 +54,11 @@ export const Recordings = () => {
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
-      <Tabs id='tabs-id'activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-        <Tab id='tabs-1' eventKey={0} title="Active Recordings">
+      <Tabs id='recordings'activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+        <Tab id='active-recordings' eventKey={0} title="Active Recordings">
           <ActiveRecordingsTable archiveEnabled={true} />
         </Tab>
-        <Tab id='tabs-2' eventKey={1} title="Archived Recordings">
+        <Tab id='archived-recordings' eventKey={1} title="Archived Recordings">
           <ArchivedRecordingsTable />
         </Tab>
       </Tabs>
