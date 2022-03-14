@@ -60,26 +60,27 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { ContainerNodeIcon, PlusCircleIcon, SearchIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
-import { Observable, of } from 'rxjs';
-import { catchError, first } from 'rxjs/operators';
+import { SearchIcon } from '@patternfly/react-icons';
+import { forkJoin, Observable, of } from 'rxjs';
 
 import _ from 'lodash';
 import { Caption, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 
 export interface TargetCredentialsTableProps {
-  addCredentials: () => void;
 }
 
 export const TargetCredentialsTable: React.FunctionComponent<TargetCredentialsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
   const [targets, setTargets] = React.useState([] as Target[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [isEmpty, setIsEmpty] = React.useState(false); //TODO init
+  const [showAuthModal, setShowAuthModal] = React.useState(false);
 
-  const tableColumns: string[] = ['Connect Url', 'Alias'];
+  const tableColumns: string[] = ['Target', 'Alias'];
   const tableTitle = 'Stored Credentials';
 
   // TODO subscribe to "targets that have credentials stored" state
@@ -112,34 +113,31 @@ export const TargetCredentialsTable: React.FunctionComponent<TargetCredentialsTa
     [setHeaderChecked, setCheckedIndices, targets]
   );
 
-  const handleAddCredentials = React.useCallback(() => {
-    props.addCredentials(); // TODO update table. notification?
-  }, [props.addCredentials]);
-
-  const handleDeleteTargetCredentials = () => {
-    // const tasks: Observable<any>[] = [];
-    // targets.forEach((t: Target, idx) => {
-    //   if (checkedIndices.includes(idx)) {
-    //     handleRowCheck(false, idx);
-    //     tasks.push(context.target.deleteCredentials(t.connectUrl)); // TODO make call to backend
-    //   }
-    // });
-    // addSubscription(forkJoin(tasks).subscribe());
+  const handleDeleteCredentials = () => {
+    const tasks: Observable<any>[] = [];
+    targets.forEach((t: Target, idx) => {
+      if (checkedIndices.includes(idx)) {
+        handleRowCheck(false, idx);
+        tasks.push(context.api.deleteTargetCredentials(t));
+        context.target.deleteCredentials(t.connectUrl);
+      }
+    });
+    addSubscription(forkJoin(tasks).subscribe());
   };
 
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
-        <Button variant="primary" aria-label="import" onClick={() => handleAddCredentials()}>
-          Add Credentials
+        <Button variant="primary" aria-label="import" onClick={() => setShowAuthModal(true)}>
+          Add
         </Button>,
         <Button
           key="delete"
           variant="danger"
-          onClick={handleDeleteTargetCredentials}
+          onClick={handleDeleteCredentials}
           isDisabled={!checkedIndices.length}
         >
-          Delete Credentials
+          Delete
         </Button>,
       ];
 
@@ -226,6 +224,7 @@ export const TargetCredentialsTable: React.FunctionComponent<TargetCredentialsTa
           </TableComposable>
         </>
       )}
+        <CreateJmxCredentialModal visible={showAuthModal} onClose={() => setShowAuthModal(false)}/>
     </>
   );
 };

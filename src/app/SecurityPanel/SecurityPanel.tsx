@@ -45,16 +45,10 @@ import { TargetCredentialsTable } from './TargetCredentialsTable';
 
 export const SecurityPanel = () => {
     const [showModal, setShowModal] = React.useState(false);
-    const [showAuthModal, setShowAuthModal] = React.useState(false);
-
 
     const handleModalClose = () => {
         setShowModal(false);
     }
-
-    const handleDismissAuthModal = () => {
-        setShowAuthModal(false);
-      };
 
     // TODO extract like settings panel
 
@@ -82,13 +76,11 @@ export const SecurityPanel = () => {
                     </Text>
                 </CardHeader>
                 <CardBody>
-                    <TargetCredentialsTable addCredentials={() => setShowAuthModal(true)}/>
+                    <TargetCredentialsTable />
                 </CardBody>
             </Card>
         </BreadcrumbPage>
 
         <CertificateUploadModal visible={showModal} onClose={handleModalClose}/>
-        <CreateJmxCredentialModal visible={showAuthModal} onClose={handleDismissAuthModal}/>
-
     </>);
 }

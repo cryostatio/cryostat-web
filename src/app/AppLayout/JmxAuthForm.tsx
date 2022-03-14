@@ -67,6 +67,10 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
         clear();
         props.onSave();
       });
+
+    context.api.postTargetCredentials(username, password)
+      .pipe(first())
+      .subscribe();
   };
 
   const handleDeleteCredentials = () => {
@@ -76,7 +80,6 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
       .subscribe((target) => {
         context.target.deleteCredentials(target.connectUrl);
         clear();
-        props.onSave();
       });
   };
 
