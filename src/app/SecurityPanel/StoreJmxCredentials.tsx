@@ -37,61 +37,78 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
-  Card,
-  CardActions,
-  CardBody,
-  CardHeader,
-  CardHeaderMain,
   Checkbox,
   EmptyState,
   EmptyStateIcon,
-  Select,
-  SelectOption,
-  SelectVariant,
-  Text,
-  TextVariants,
   Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 
-import _ from 'lodash';
-import { Caption, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from './SecurityPanel';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
-export interface TargetCredentialsTableProps {}
-
-const Component: React.FunctionComponent<TargetCredentialsTableProps> = (props) => {
+const Component = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
   const [targets, setTargets] = React.useState([] as Target[]);
+  const [storedTargets, setStoredTargets] = React.useState([] as Target[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const [isEmpty, setIsEmpty] = React.useState(false); //TODO init
+  const [isEmpty, setIsEmpty] = React.useState(false);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
 
   const tableColumns: string[] = ['Target Alias', 'Connect URL'];
   const tableTitle = 'Stored Credentials';
 
-  // TODO subscribe to "targets that have credentials stored" state
-  // or somehow filter targets list
-  // and setTargets()
+  const handleStoredTargets = React.useCallback(
+    (targets) => {
+      setStoredTargets(targets);
+      setIsEmpty(targets.length === 0);
+    },
+    [setStoredTargets, setIsEmpty]
+  );
+
+  const refreshStoredTargetsList = React.useCallback(() => {
+    addSubscription(context.api.getTargetsWithStoredJmxCredentials().subscribe(handleStoredTargets));
+  }, [context, context.api, context.targets, handleStoredTargets]);
+
   React.useEffect(() => {
     const sub = context.targets.targets().subscribe((targets) => {
       setTargets(targets);
+      refreshStoredTargetsList();
     });
     return () => sub.unsubscribe();
-  }, [context, context.targets, setTargets]);
+  }, [context, context.targets, setTargets, refreshStoredTargetsList]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored).subscribe((v) => {
+        const updatedTarget = targets.filter((t) => t.connectUrl === v.message.target).pop();
+        const shouldAppendTarget = !!updatedTarget && storedTargets.includes(updatedTarget);
+        setStoredTargets((old) => (shouldAppendTarget ? old.concat(updatedTarget) : old));
+      })
+    );
+  }, [addSubscription, targets, storedTargets, setStoredTargets]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
+        const updatedTargets = storedTargets.filter((o) => o.connectUrl !== v.message.target);
+        handleStoredTargets(updatedTargets);
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setStoredTargets]);
 
   const handleRowCheck = React.useCallback(
     (checked, index) => {
@@ -108,14 +125,14 @@ const Component: React.FunctionComponent<TargetCredentialsTableProps> = (props) 
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
       setHeaderChecked(checked);
-      setCheckedIndices(checked ? Array.from(new Array(targets.length), (x, i) => i) : []);
+      setCheckedIndices(checked ? Array.from(new Array(storedTargets.length), (x, i) => i) : []);
     },
-    [setHeaderChecked, setCheckedIndices, targets]
+    [setHeaderChecked, setCheckedIndices, storedTargets]
   );
 
   const handleDeleteCredentials = () => {
     const tasks: Observable<any>[] = [];
-    targets.forEach((t: Target, idx) => {
+    storedTargets.forEach((t: Target, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(context.api.deleteTargetCredentials(t));
@@ -125,18 +142,18 @@ const Component: React.FunctionComponent<TargetCredentialsTableProps> = (props) 
     addSubscription(forkJoin(tasks).subscribe());
   };
 
+  const handleModalClose = () => {
+    refreshStoredTargetsList();
+    setShowAuthModal(false);
+  };
+
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
         <Button variant="primary" aria-label="import" onClick={() => setShowAuthModal(true)}>
           Add
         </Button>,
-        <Button
-          key="delete"
-          variant="danger"
-          onClick={handleDeleteCredentials}
-          isDisabled={!checkedIndices.length}
-        >
+        <Button key="delete" variant="danger" onClick={handleDeleteCredentials} isDisabled={!checkedIndices.length}>
           Delete
         </Button>,
       ];
@@ -184,8 +201,8 @@ const Component: React.FunctionComponent<TargetCredentialsTableProps> = (props) 
     );
   };
   const targetRows = React.useMemo(() => {
-    return targets.map((t, idx) => <TargetCredentialsTableRow key={idx} target={t} index={idx} />);
-  }, [targets, checkedIndices]);
+    return storedTargets.map((t, idx) => <TargetCredentialsTableRow key={idx} target={t} index={idx} />);
+  }, [storedTargets, checkedIndices]);
 
   return (
     <>
@@ -221,7 +238,7 @@ const Component: React.FunctionComponent<TargetCredentialsTableProps> = (props) 
           </TableComposable>
         </>
       )}
-      <CreateJmxCredentialModal visible={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <CreateJmxCredentialModal visible={showAuthModal} onClose={handleModalClose} />
     </>
   );
 };

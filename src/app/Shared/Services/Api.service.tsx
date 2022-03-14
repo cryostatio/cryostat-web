@@ -557,6 +557,18 @@ export class ApiService {
     ));
   }
 
+  getTargetsWithStoredJmxCredentials() : Observable<Target[]> {
+    return this.sendRequest(
+      'beta', `credentials`,
+      {
+        method: 'GET'        
+      }
+    ).pipe(
+      concatMap(resp => from(resp.json())),
+      first()
+    );
+  }
+
   deleteTargetCredentials(t: Target): Observable<boolean> {
     return this.sendRequest(
       'v2', `targets/${encodeURIComponent(t.connectUrl)}/credentials`, 
