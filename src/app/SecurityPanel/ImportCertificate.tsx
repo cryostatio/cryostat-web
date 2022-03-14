@@ -35,36 +35,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { StoreJmxCredentials } from './StoreJmxCredentials';
-import { ImportCertificate } from './ImportCertificate';
 
-export const SecurityPanel = () => {
-  const securityCards = [ImportCertificate, StoreJmxCredentials].map((c) => ({
-    title: c.title,
-    description: c.description,
-    element: React.createElement(c.content, null),
-  }));
+import * as React from 'react';
+import { Button } from '@patternfly/react-core';
+import { CertificateUploadModal } from './CertificateUploadModal';
+import { SecurityCard } from './SecurityPanel';
+
+const Component = () => {
+  const [showModal, setShowModal] = React.useState(false);
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
 
   return (
-    <BreadcrumbPage pageTitle="Security">
-      {securityCards.map((s) => (
-        <Card>
-          <CardTitle>
-            <Text component={TextVariants.h1}>{s.title}</Text>
-            <Text component={TextVariants.small}>{s.description}</Text>
-          </CardTitle>
-          <CardBody>{s.element}</CardBody>
-        </Card>
-      ))}
-    </BreadcrumbPage>
+    <>
+      <Button variant="primary" aria-label="import" onClick={() => setShowModal(true)}>
+        Upload
+      </Button>
+      <CertificateUploadModal visible={showModal} onClose={handleModalClose} />
+    </>
   );
 };
 
-export interface SecurityCard {
-  title: string;
-  description: string;
-  content: React.FunctionComponent;
-}
+export const ImportCertificate: SecurityCard = {
+  title: 'Import SSL Certificates',
+  description: 'Restart is needed to apply changes.',
+  content: Component,
+};

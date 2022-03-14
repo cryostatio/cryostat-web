@@ -66,11 +66,11 @@ import { forkJoin, Observable, of } from 'rxjs';
 import _ from 'lodash';
 import { Caption, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
+import { SecurityCard } from './SecurityPanel';
 
-export interface TargetCredentialsTableProps {
-}
+export interface TargetCredentialsTableProps {}
 
-export const TargetCredentialsTable: React.FunctionComponent<TargetCredentialsTableProps> = (props) => {
+const Component: React.FunctionComponent<TargetCredentialsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -203,9 +203,6 @@ export const TargetCredentialsTable: React.FunctionComponent<TargetCredentialsTa
         <>
           <TargetCredentialsToolbar />
           <TableComposable aria-label={tableTitle}>
-            <Caption>Targets for which Cryostat has stored JMX credentials. 
-              These credentials are used for automated rules processing - if a Target JVM requires JMX authentication, 
-              Cryostat will use stored credentials when attempting to open JMX connections to the target.</Caption>
             <Thead>
               <Tr>
                 <Th
@@ -224,7 +221,15 @@ export const TargetCredentialsTable: React.FunctionComponent<TargetCredentialsTa
           </TableComposable>
         </>
       )}
-        <CreateJmxCredentialModal visible={showAuthModal} onClose={() => setShowAuthModal(false)}/>
+      <CreateJmxCredentialModal visible={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   );
+};
+
+export const StoreJmxCredentials: SecurityCard = {
+  title: 'Store JMX Credentials',
+  description: `Targets for which Cryostat has stored JMX credentials are listed here. 
+    If a Target JVM requires JMX authentication, Cryostat will use stored credentials 
+    when attempting to open JMX connections to the target.`,
+  content: Component,
 };
