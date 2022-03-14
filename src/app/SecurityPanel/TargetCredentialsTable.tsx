@@ -80,7 +80,7 @@ export const TargetCredentialsTable: React.FunctionComponent<TargetCredentialsTa
   const [isEmpty, setIsEmpty] = React.useState(false); //TODO init
   const [showAuthModal, setShowAuthModal] = React.useState(false);
 
-  const tableColumns: string[] = ['Target', 'Alias'];
+  const tableColumns: string[] = ['Target Alias', 'Connect URL'];
   const tableTitle = 'Stored Credentials';
 
   // TODO subscribe to "targets that have credentials stored" state
@@ -174,10 +174,10 @@ export const TargetCredentialsTable: React.FunctionComponent<TargetCredentialsTa
             />
           </Td>
           <Td key={`active-table-row-${props.index}_1`} dataLabel={tableColumns[0]}>
-            {props.target.connectUrl}
+            {props.target.alias}
           </Td>
           <Td key={`active-table-row-${props.index}_2`} dataLabel={tableColumns[1]}>
-            {props.target.alias}
+            {props.target.connectUrl}
           </Td>
         </Tr>
       </Tbody>
