@@ -73,16 +73,6 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
       .subscribe();
   };
 
-  const handleDeleteCredentials = () => {
-    context.target
-      .target()
-      .pipe(first())
-      .subscribe((target) => {
-        context.target.deleteCredentials(target.connectUrl);
-        clear();
-      });
-  };
-
   const handleDismiss = () => {
     clear();
     props.onDismiss();
@@ -120,9 +110,6 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
       <ActionGroup>
         <Button variant="primary" onClick={handleSave}>
           Save
-        </Button>
-        <Button variant="danger" onClick={handleDeleteCredentials}>
-          Delete
         </Button>
         <Button variant="secondary" onClick={handleDismiss}>
           Cancel
