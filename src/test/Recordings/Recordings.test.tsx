@@ -46,7 +46,7 @@ import { Recordings } from '@app/Recordings/Recordings';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
-    ActiveRecordingsTable: jest.fn(({archiveEnabled}) => {
+    ActiveRecordingsTable: jest.fn((props) => {
       return <div>
                 Active Recordings Table
              </div>
@@ -66,10 +66,10 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
 
 jest.mock('@app/TargetView/TargetView', () => {
   return {
-    TargetView: jest.fn(({pageTitle, children}) => {
+    TargetView: jest.fn((props) => {
       return <div>
-                {pageTitle}
-                {children}
+                {props.pageTitle}
+                {props.children}
              </div>
     })
   }

@@ -41,13 +41,14 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CRYOSTAT_TRADEMARK } from '@app/About/AboutDescription';
 import { About } from '@app/About/About';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   return {
-    BreadcrumbPage: jest.fn(({pageTitle, children}) => {
+    BreadcrumbPage: jest.fn((props) => {
       return <div>
-                {pageTitle}
-                {children}
+                {props.pageTitle}
+                {props.children}
              </div>
     })
   }
@@ -72,7 +73,7 @@ describe('<About />', () => {
 
     it('contains the correct information', () => {
       render(<About />);
-      
+
       expect(screen.getByText('About')).toBeInTheDocument();
       const logo = screen.getByRole('img');
       expect(logo).toHaveClass('pf-c-brand cryostat-logo');
