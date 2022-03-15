@@ -182,18 +182,19 @@ const Component = () => {
     return (
       <Tbody key={props.index}>
         <Tr key={`${props.index}`}>
-          <Td key={`active-table-row-${props.index}_0`}>
+          <Td key={`credentials-table-row-${props.index}_0`}>
             <Checkbox
-              name={`active-table-row-${props.index}-check`}
+              name={`credentials-table-row-${props.index}-check`}
               onChange={handleCheck}
               isChecked={checkedIndices.includes(props.index)}
-              id={`active-table-row-${props.index}-check`}
+              id={`credentials-table-row-${props.index}-check`}
+              aria-label={`credentials-table-row-${props.index}-check`}
             />
           </Td>
-          <Td key={`active-table-row-${props.index}_1`} dataLabel={tableColumns[0]}>
+          <Td key={`credentials-table-row-${props.index}_1`} dataLabel={tableColumns[0]}>
             {props.target.alias}
           </Td>
-          <Td key={`active-table-row-${props.index}_2`} dataLabel={tableColumns[1]}>
+          <Td key={`credentials-table-row-${props.index}_2`} dataLabel={tableColumns[1]}>
             {props.target.connectUrl}
           </Td>
         </Tr>
