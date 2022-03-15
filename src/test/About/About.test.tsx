@@ -41,7 +41,6 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CRYOSTAT_TRADEMARK } from '@app/About/AboutDescription';
 import { About } from '@app/About/About';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   return {
