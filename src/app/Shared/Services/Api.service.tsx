@@ -559,12 +559,13 @@ export class ApiService {
 
   getTargetsWithStoredJmxCredentials() : Observable<Target[]> {
     return this.sendRequest(
-      'beta', `credentials`,
+      'v2.1', `credentials`,
       {
         method: 'GET'        
       }
     ).pipe(
-      concatMap(resp => from(resp.json())),
+      concatMap(resp => resp.json()),
+      map((response: TargetCredentialsResponse) => response.data.result),
       first()
     );
   }
@@ -658,6 +659,12 @@ interface AssetJwtResponse extends ApiV2Response {
     result: {
       resourceUrl: string;
     }
+  }
+}
+
+interface TargetCredentialsResponse extends ApiV2Response {
+  data: {
+    result: Target[];
   }
 }
 
