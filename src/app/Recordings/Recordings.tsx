@@ -64,7 +64,7 @@ export const Recordings = () => {
       </Tabs>
     ) : (
       <>
-        <CardHeader><Text component={"h4" as TextVariants.h4}>Active Recordings</Text></CardHeader>
+        <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
         <ActiveRecordingsTable archiveEnabled={false}/>
       </>
     );
