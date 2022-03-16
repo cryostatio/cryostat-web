@@ -36,39 +36,61 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant } from '@patternfly/react-core';
-import { JmxAuthForm } from './JmxAuthForm';
+import { Form, FormGroup, Modal, ModalVariant, ValidatedOptions } from '@patternfly/react-core';
+import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
+import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { first } from 'rxjs';
 
-export interface AuthModalProps {
+export interface CreateJmxCredentialModalProps {
   visible: boolean;
-  onDismiss: () => void;
-  onSave: () => void;
+  onClose: () => void;
 }
 
-export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
+export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredentialModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const [validTarget, setValidTarget] = React.useState(ValidatedOptions.default);
 
-  const handleDismiss = () => {
-    props.onDismiss();
-  };
+  const onSave = React.useCallback((username: string, password: string) => {
+    let isValid;
+    context.target.target().subscribe((t) => {
+      isValid = t == NO_TARGET ? ValidatedOptions.error : ValidatedOptions.success;
+      setValidTarget(isValid);
+    });
 
-  const onSave = (username: string, password: string) => {
-    context.api.postTargetCredentials(username, password).pipe(first()).subscribe();
-    props.onSave();
-  };
+    if (isValid == ValidatedOptions.success) {
+      context.api.postTargetCredentials(username, password)
+      .pipe(first())
+      .subscribe();
+      props.onClose();
+    }
+  }, [props.onClose, context, context.target, context.api, validTarget, setValidTarget]);
 
   return (
     <Modal
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}
-      onClose={handleDismiss}
-      title="Authentication Required"
-      description="This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections."
+      onClose={props.onClose}
+      title="Store JMX Credentials"
+      description="Creates stored credentials for a given target. 
+        If a Target JVM requires JMX authentication, Cryostat will use stored credentials 
+        when attempting to open JMX connections to the target."
     >
-      <JmxAuthForm onSave={onSave} onDismiss={handleDismiss} />
+      <Form>
+        <FormGroup
+          label="Target"
+          isRequired
+          fieldId="target-select"
+          helperTextInvalid="Select a target"
+          validated={validTarget}
+        >
+          <TargetSelect />
+        </FormGroup>
+      </Form>
+      <br/>
+      <JmxAuthForm onSave={onSave} onDismiss={props.onClose} />
     </Modal>
   );
 };

@@ -538,6 +538,50 @@ export class ApiService {
       ));
   }
 
+  postTargetCredentials(username: string, password: string): Observable<boolean> {
+    const body = new window.FormData();
+    body.append('username', username);
+    body.append('password', password);
+
+    return this.target.target().pipe(concatMap(target =>
+      this.sendRequest(
+        'v2', `targets/${encodeURIComponent(target.connectUrl)}/credentials`,
+        {
+          method: 'POST',
+          body,
+        }
+      ).pipe(
+        map(resp => resp.ok),
+        first()
+      )
+    ));
+  }
+
+  getTargetsWithStoredJmxCredentials() : Observable<Target[]> {
+    return this.sendRequest(
+      'v2.1', `credentials`,
+      {
+        method: 'GET'        
+      }
+    ).pipe(
+      concatMap(resp => resp.json()),
+      map((response: TargetCredentialsResponse) => response.data.result),
+      first()
+    );
+  }
+
+  deleteTargetCredentials(t: Target): Observable<boolean> {
+    return this.sendRequest(
+      'v2', `targets/${encodeURIComponent(t.connectUrl)}/credentials`, 
+      {
+        method: 'DELETE'
+      }
+    ).pipe(
+      map(resp => resp.ok),
+      first(),
+    );
+  }
+
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
     const req = () => this.login.getHeaders().pipe(
       concatMap(headers => {
@@ -615,6 +659,12 @@ interface AssetJwtResponse extends ApiV2Response {
     result: {
       resourceUrl: string;
     }
+  }
+}
+
+interface TargetCredentialsResponse extends ApiV2Response {
+  data: {
+    result: Target[];
   }
 }
 

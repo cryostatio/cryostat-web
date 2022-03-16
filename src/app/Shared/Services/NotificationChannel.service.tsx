@@ -61,6 +61,8 @@ export enum NotificationCategory {
   RuleDeleted = 'RuleDeleted',
   RecordingMetadataUpdated  = 'RecordingMetadataUpdated',
   GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
+  TargetCredentialsStored = 'TargetCredentialsStored',
+  TargetCredentialsDeleted = 'TargetCredentialsDeleted',
 }
 
 export enum CloseStatus {
@@ -188,6 +190,20 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Recording Metadata Updated',
       body: evt => `${evt.message.recordingName} metadata was updated`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.TargetCredentialsStored, {
+      variant: AlertVariant.success,
+      title: 'Target Credentials Stored',
+      body: evt => `Credentials stored for target: ${evt.message.target}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.TargetCredentialsDeleted, {
+      variant: AlertVariant.success,
+      title: 'Target Credentials Deleted',
+      body: evt => `Credentials deleted for target: ${evt.message.target}`
     } as NotificationMessageMapper
   ],
 ]);

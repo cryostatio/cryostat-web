@@ -36,39 +36,81 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant } from '@patternfly/react-core';
-import { JmxAuthForm } from './JmxAuthForm';
+import { first } from 'rxjs/operators';
+import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { first } from 'rxjs';
 
-export interface AuthModalProps {
-  visible: boolean;
+export interface JmxAuthFormProps {
   onDismiss: () => void;
-  onSave: () => void;
+  onSave: (username: string, password: string) => void;
 }
 
-export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
+const EnterKeyCode = 13;
+
+export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const clear = () => {
+    setUsername('');
+    setPassword('');
+  };
+
+  const handleSave = () => {
+    context.target
+      .target()
+      .pipe(first())
+      .subscribe((target) => {
+        context.target.setCredentials(target.connectUrl, `${username}:${password}`);
+        context.target.setAuthRetry();
+        clear();
+        props.onSave(username, password);
+      });
+  };
 
   const handleDismiss = () => {
+    clear();
     props.onDismiss();
   };
 
-  const onSave = (username: string, password: string) => {
-    context.api.postTargetCredentials(username, password).pipe(first()).subscribe();
-    props.onSave();
+  const handleKeyUp = (event: React.KeyboardEvent): void => {
+    if (event.keyCode === EnterKeyCode) {
+      handleSave();
+    }
   };
 
   return (
-    <Modal
-      isOpen={props.visible}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={handleDismiss}
-      title="Authentication Required"
-      description="This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections."
-    >
-      <JmxAuthForm onSave={onSave} onDismiss={handleDismiss} />
-    </Modal>
+    <Form>
+      <FormGroup isRequired label="Username" fieldId="username">
+        <TextInput
+          value={username}
+          isRequired
+          type="text"
+          id="username"
+          onChange={setUsername}
+          onKeyUp={handleKeyUp}
+          autoFocus
+        />
+      </FormGroup>
+      <FormGroup isRequired label="Password" fieldId="password">
+        <TextInput
+          value={password}
+          isRequired
+          type="password"
+          id="password"
+          onChange={setPassword}
+          onKeyUp={handleKeyUp}
+        />
+      </FormGroup>
+      <ActionGroup>
+        <Button variant="primary" onClick={handleSave}>
+          Save
+        </Button>
+        <Button variant="secondary" onClick={handleDismiss}>
+          Cancel
+        </Button>
+      </ActionGroup>
+    </Form>
   );
 };
