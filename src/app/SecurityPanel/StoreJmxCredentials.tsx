@@ -150,10 +150,10 @@ const Component = () => {
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
-        <Button variant="primary" aria-label="import" onClick={() => setShowAuthModal(true)}>
+        <Button variant="primary" aria-label="add-jmx-credential" onClick={() => setShowAuthModal(true)}>
           Add
         </Button>,
-        <Button key="delete" variant="danger" onClick={handleDeleteCredentials} isDisabled={!checkedIndices.length}>
+        <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={handleDeleteCredentials} isDisabled={!checkedIndices.length}>
           Delete
         </Button>,
       ];

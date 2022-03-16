@@ -42,7 +42,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface JmxAuthFormProps {
   onDismiss: () => void;
-  onSave: () => void;
+  onSave: (username: string, password: string) => void;
 }
 
 const EnterKeyCode = 13;
@@ -65,12 +65,8 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
         context.target.setCredentials(target.connectUrl, `${username}:${password}`);
         context.target.setAuthRetry();
         clear();
-        props.onSave();
+        props.onSave(username, password);
       });
-
-    context.api.postTargetCredentials(username, password)
-      .pipe(first())
-      .subscribe();
   };
 
   const handleDismiss = () => {
