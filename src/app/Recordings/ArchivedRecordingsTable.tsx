@@ -123,7 +123,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
         .subscribe(v => setRecordings(old => old.map(
-          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.labels } } : o)))
+          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.metadata.labels } } : o)))
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -212,12 +212,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            {editingMetadata ? 
-              <EditRecordingLabels 
-                labels={rowLabels} 
-                setLabels={setRowLabels} 
+            {editingMetadata ?
+              <EditRecordingLabels
+                labels={rowLabels}
+                setLabels={setRowLabels}
                 usePatchForm={editingMetadata}
-                patchRecordingName={props.recording.name} 
+                patchRecordingName={props.recording.name}
                 onPatchSubmit={handleSubmitLabelPatch}
                 onPatchCancel={handleCancelLabelPatch}
               />

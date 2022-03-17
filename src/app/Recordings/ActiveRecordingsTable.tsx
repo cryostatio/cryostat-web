@@ -195,7 +195,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
         .subscribe(v => setRecordings(old => old.map(
-          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.labels } } : o)))
+          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.metadata.labels } } : o)))
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -263,7 +263,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
     const [rowLabels, setRowLabels] = React.useState(parsedLabels);
     const [editingMetadata, setEditingMetadata] = React.useState(false);
-    
+
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
@@ -330,12 +330,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             {props.recording.state}
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
-            {editingMetadata ? 
-              <EditRecordingLabels 
-                labels={rowLabels} 
-                setLabels={setRowLabels} 
+            {editingMetadata ?
+              <EditRecordingLabels
+                labels={rowLabels}
+                setLabels={setRowLabels}
                 usePatchForm={editingMetadata}
-                patchRecordingName={props.recording.name} 
+                patchRecordingName={props.recording.name}
                 onPatchSubmit={handleSubmitLabelPatch}
                 onPatchCancel={handleCancelLabelPatch}
               />
