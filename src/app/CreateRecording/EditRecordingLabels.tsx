@@ -62,7 +62,7 @@ export interface EditRecordingLabelsProps {
   onPatchCancel?: () => void;
 }
 
-export const LabelPattern = /^[a-zA-Z0-9.-]+$/;
+export const LabelPattern = /^\S+$/;
 
 export const EditRecordingLabels = (props) => {
   const [validKeys, setValidKeys] = React.useState(Array(props.labels.size).fill(ValidatedOptions.default));
@@ -131,11 +131,11 @@ export const EditRecordingLabels = (props) => {
       label="Labels"
       fieldId="labels"
       labelIcon={
-        <Tooltip content={<div>Alphanumeric key value pairs. Keys must be unique.'.' and '-' accepted.</div>}>
+        <Tooltip content={<div>Unique key-value pairs containing information about the recording.</div>}>
           <HelpIcon noVerticalAlign />
         </Tooltip>
       }
-      helperTextInvalid={"Enter a valid label. Letters, numbers, '.' and '-' accepted. Keys must be unique."}
+      helperTextInvalid={"Enter a valid label. Keys must be unique. Labels should not contain whitespace."}
       validated={patchFormValid}
     >
       <Button onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon/>}>
