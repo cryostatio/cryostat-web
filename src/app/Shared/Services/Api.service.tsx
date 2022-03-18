@@ -44,6 +44,7 @@ import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { RecordingLabel } from '@app/CreateRecording/EditRecordingLabels';
 import { Rule } from '@app/Rules/Rules';
 import { NotificationCategory } from './NotificationChannel.service';
+import _ from 'lodash';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
 
@@ -585,18 +586,24 @@ export class ApiService {
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
     const req = () => this.login.getHeaders().pipe(
       concatMap(headers => {
-        if(!!config && !!config.headers) {
-          Object.entries(config.headers).forEach(([k, v]) => {
-            headers.set(k, v);
-          });
-        }
-
-        return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
+        const defaultReq = {
           credentials: 'include',
           mode: 'cors',
-          ...config,
           headers,
-        });
+        } as RequestInit;
+
+        function customizer(dest, src) {
+          if (dest instanceof Headers && src instanceof Headers) {
+            Object.entries(src).forEach(([k, v]) => {
+              dest.set(k, v);
+            });
+          }
+          return dest;
+        }
+
+        _.mergeWith(config, defaultReq, customizer);
+
+        return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, config);
       }),
       map(resp => {
         if (resp.ok) return resp;
