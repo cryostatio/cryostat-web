@@ -52,7 +52,7 @@ jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
              </div>
     })
   }
-});
+})
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
@@ -62,7 +62,7 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
              </div>
     })
   }
-});
+})
 
 jest.mock('@app/TargetView/TargetView', () => {
   return {
@@ -73,7 +73,7 @@ jest.mock('@app/TargetView/TargetView', () => {
              </div>
     })
   }
-});
+})
 
 jest.mock('@app/Shared/Services/Api.service', () => {
   return {
@@ -85,10 +85,10 @@ jest.mock('@app/Shared/Services/Api.service', () => {
                           .mockReturnValueOnce(of(true))
                           .mockReturnValueOnce(of(false))
                           .mockReturnValue(of(true))
-      };
+      }
     })
-  };
-});
+  }
+})
 
 describe('<Recordings />', () => {
   it('renders correctly', async () => {
@@ -99,9 +99,9 @@ describe('<Recordings />', () => {
         <ServiceContext.Provider value = {defaultServices}>
           <Recordings />
         </ServiceContext.Provider>)
-    })
+    });
     expect(tree.toJSON()).toMatchSnapshot();
-  });
+  })
 
   it('has the correct title in the TargetView', () => {
     render(
@@ -122,7 +122,7 @@ describe('<Recordings />', () => {
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
 		expect(screen.getByText('Archived Recordings')).toBeInTheDocument();
-  });
+  })
 
   it('handles the case where archiving is disabled', () => {
     render(
@@ -133,7 +133,7 @@ describe('<Recordings />', () => {
 
 		expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
-  });
+  })
 
   it('handles updating the activeTab state', () => {
     render(
