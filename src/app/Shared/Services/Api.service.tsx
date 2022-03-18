@@ -585,11 +585,17 @@ export class ApiService {
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
     const req = () => this.login.getHeaders().pipe(
       concatMap(headers => {
+        if(!!config && !!config.headers) {
+          Object.entries(config.headers).forEach(([k, v]) => {
+            headers.set(k, v);
+          });
+        }
+
         return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
           credentials: 'include',
           mode: 'cors',
-          headers,
           ...config,
+          headers,
         });
       }),
       map(resp => {
