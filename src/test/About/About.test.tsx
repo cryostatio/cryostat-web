@@ -50,8 +50,8 @@ jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
                 {props.children}
              </div>
     })
-  }
-})
+  };
+});
 
 jest.mock('@app/About/AboutDescription', () => {
   return {
@@ -61,23 +61,23 @@ jest.mock('@app/About/AboutDescription', () => {
                 AboutDescription
              </div>
     })
-  }
-})
+  };
+});
 
 describe('<About />', () => {
-    it('renders correctly', () => {
-      const tree = renderer.create(<About />);
-      expect(tree.toJSON()).toMatchSnapshot();
-    })
+  it('renders correctly', () => {
+    const tree = renderer.create(<About />);
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
 
-    it('contains the correct information', () => {
-      render(<About />);
+  it('contains the correct information', () => {
+    render(<About />);
 
-      expect(screen.getByText('About')).toBeInTheDocument();
-      const logo = screen.getByRole('img');
-      expect(logo).toHaveClass('pf-c-brand cryostat-logo');
-      expect(logo).toHaveAttribute('alt', 'Cryostat');
-      expect(logo).toHaveAttribute('src', 'test-file-stub');
-      expect(screen.getByText(CRYOSTAT_TRADEMARK)).toBeInTheDocument();
-    })
-})
+    expect(screen.getByText('About')).toBeInTheDocument();
+    const logo = screen.getByRole('img');
+    expect(logo).toHaveClass('pf-c-brand cryostat-logo');
+    expect(logo).toHaveAttribute('alt', 'Cryostat');
+    expect(logo).toHaveAttribute('src', 'test-file-stub');
+    expect(screen.getByText(CRYOSTAT_TRADEMARK)).toBeInTheDocument();
+  });
+});

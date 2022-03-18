@@ -51,8 +51,8 @@ jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
                 Active Recordings Table
              </div>
     })
-  }
-})
+  };
+});
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
@@ -61,8 +61,8 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
                 Archived Recordings Table
              </div>
     })
-  }
-})
+  };
+});
 
 jest.mock('@app/TargetView/TargetView', () => {
   return {
@@ -72,8 +72,8 @@ jest.mock('@app/TargetView/TargetView', () => {
                 {props.children}
              </div>
     })
-  }
-})
+  };
+});
 
 jest.mock('@app/Shared/Services/Api.service', () => {
   return {
@@ -85,10 +85,10 @@ jest.mock('@app/Shared/Services/Api.service', () => {
                           .mockReturnValueOnce(of(true))
                           .mockReturnValueOnce(of(false))
                           .mockReturnValue(of(true))
-      }
+      };
     })
-  }
-})
+  };
+});
 
 describe('<Recordings />', () => {
   it('renders correctly', async () => {
@@ -101,46 +101,46 @@ describe('<Recordings />', () => {
         </ServiceContext.Provider>)
     });
     expect(tree.toJSON()).toMatchSnapshot();
-  })
+  });
 
   it('has the correct title in the TargetView', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
-				<Recordings />
-			</ServiceContext.Provider>
-		);
+        <Recordings />
+      </ServiceContext.Provider>
+    );
 
     expect(screen.getByText('Recordings')).toBeInTheDocument();
-  })
+  });
 
   it('handles the case where archiving is enabled', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
-				<Recordings />
-			</ServiceContext.Provider>
-		);
+        <Recordings />
+      </ServiceContext.Provider>
+    );
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
-		expect(screen.getByText('Archived Recordings')).toBeInTheDocument();
-  })
+    expect(screen.getByText('Archived Recordings')).toBeInTheDocument();
+  });
 
   it('handles the case where archiving is disabled', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
-				<Recordings />
-			</ServiceContext.Provider>
-		);
+        <Recordings />
+      </ServiceContext.Provider>
+    );
 
-		expect(screen.getByText('Active Recordings')).toBeInTheDocument();
+    expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
-  })
+  });
 
   it('handles updating the activeTab state', () => {
     render(
       <ServiceContext.Provider value = {defaultServices}>
-				<Recordings />
-			</ServiceContext.Provider>
-		);
+        <Recordings />
+      </ServiceContext.Provider>
+    );
 
     // Assert that the active recordings tab is currently selected (default behaviour)
     let tabsList = screen.getAllByRole('listitem');
@@ -166,5 +166,5 @@ describe('<Recordings />', () => {
     secondTab = tabsList[1];
     expect(secondTab).toHaveClass('pf-c-tabs__item pf-m-current');
     expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
-  })
+  });
 });
