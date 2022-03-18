@@ -120,8 +120,8 @@ describe('<Recordings />', () => {
 			</ServiceContext.Provider>
 		);
 
-    expect(screen.getByText('Active Recordings')).toBeInTheDocument()
-		expect(screen.getByText('Archived Recordings')).toBeInTheDocument()
+    expect(screen.getByText('Active Recordings')).toBeInTheDocument();
+		expect(screen.getByText('Archived Recordings')).toBeInTheDocument();
   });
 
   it('handles the case where archiving is disabled', () => {
@@ -131,7 +131,7 @@ describe('<Recordings />', () => {
 			</ServiceContext.Provider>
 		);
 
-		expect(screen.getByText('Active Recordings')).toBeInTheDocument()
+		expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
   });
 
