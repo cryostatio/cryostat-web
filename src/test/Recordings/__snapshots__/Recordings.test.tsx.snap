@@ -22,10 +22,10 @@ exports[`<Recordings /> renders correctly 1`] = `
         onSelect={[Function]}
       >
         <button
-          aria-hidden={true}
+          aria-hidden={false}
           aria-label="Scroll left"
           className="pf-c-tabs__scroll-button"
-          disabled={true}
+          disabled={false}
           onClick={[Function]}
         >
           <svg
@@ -81,10 +81,10 @@ exports[`<Recordings /> renders correctly 1`] = `
           </li>
         </ul>
         <button
-          aria-hidden={true}
+          aria-hidden={false}
           aria-label="Scroll right"
           className="pf-c-tabs__scroll-button"
-          disabled={true}
+          disabled={false}
           onClick={[Function]}
         >
           <svg
