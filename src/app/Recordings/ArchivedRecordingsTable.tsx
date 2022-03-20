@@ -46,16 +46,18 @@ import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { Observable, forkJoin, merge, of } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 
 export interface ArchivedRecordingsTableProps { }
 
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
+  const [target, setTarget] = React.useState(NO_TARGET);
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
@@ -88,20 +90,44 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     setIsLoading(false);
   }, [setRecordings, setIsLoading]);
 
-  const refreshRecordingList = React.useCallback(() => {
+  const refreshRecordingList = React.useCallback((target = NO_TARGET) => {
+    if (target === NO_TARGET) {
+      return;
+    }
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<ArchivedRecording[]>(`recordings`)
-      .pipe(first())
+      context.api.graphql<any>(`
+        query {
+          targetNodes(filter: { name: "${target.connectUrl}" }) {
+            recordings {
+              archived {
+                name
+                downloadUrl
+                reportUrl
+                metadata {
+                  labels
+                }
+              }
+            }
+          }
+        }`)
+      .pipe(
+        first(),
+        map(v => v.data.targetNodes[0].recordings.archived),
+        tap(v => console.log( { v } )),
+      )
       .subscribe(handleRecordings)
     );
-  }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
+  }, [addSubscription, context, context.api, target, setIsLoading, handleRecordings]);
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(refreshRecordingList)
+      context.target.target().subscribe(target => {
+        setTarget(target);
+        refreshRecordingList(target);
+      })
     );
-  }, [addSubscription, context, context.target, refreshRecordingList]);
+  }, [addSubscription, context, context.target, setTarget, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(
