@@ -480,13 +480,22 @@ export class ApiService {
           method: 'POST',
           body,
           headers,
-          selector: response => response.text(),
           signal,
         });
       }),
+      concatMap(v => {
+        if (v.ok) {
+          return from(v.text());
+        }
+        throw from(v.text());
+      }),
       tap({
         next: () => window.onbeforeunload = null,
-        error: () => window.onbeforeunload = null,
+        error: (err) => {
+          window.onbeforeunload = null;
+          err.subscribe(msg => this.notifications.danger('Upload Failed', msg, NotificationCategory.ArchivedRecordingCreated));
+        },
+        complete: () => window.onbeforeunload = null,
       }),
     );
   }
