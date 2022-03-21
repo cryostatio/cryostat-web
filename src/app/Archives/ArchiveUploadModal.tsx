@@ -41,7 +41,7 @@ import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant }
 import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { CancelUploadModal } from '../Recordings/CancelUploadModal';
+import { CancelUploadModal } from './CancelUploadModal';
 
 export interface ArchiveUploadModalProps {
   visible: boolean;
