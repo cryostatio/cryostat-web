@@ -12,15 +12,29 @@ Refer to this document for information on how to unit test Cryostat Web.
 
 ## CONFIGURATION
 
-* `jest.config.js` contains various configurations [options](https://jestjs.io/docs/configuration) for Jest.
+* `jest.config.js` contains various configuration [options](https://jestjs.io/docs/configuration) for Jest.
 
 * `test-setup.js` allows you to set up the testing framework before any tests are run. This file is designated by the `setupFilesAfterEnv` flag in `jest.config.js`. 
 
 * `package.json` contains the `test` and `test:ci` scripts which run the Jest test suite with different CLI options for local and Github CI testing, respectively.
 
-## HOW TO TEST
+## UNIT TESTING
 
-house in describe/it calls, use render from RTL to render components, how to pass in context?, render then use RTL queries to assert, userEvent to simulate user actions such as clicking on a tab 
+### Overview
+
+Use Jest's [`describe`](https://jestjs.io/docs/api#describename-fn) function to group related unit tests into a single block. The tests themselves are denoted using the [`test`](https://jestjs.io/docs/api#testname-fn-timeout) or its alias `it`. Jest also provides an extensive list of ["matchers"](https://jestjs.io/docs/expect) for making assertions. These Jest utilities do not need to be imported.
+
+In order to render the component under test into its HTML DOM representation and perform queries on this representation, use RTL's `render` function in conjunction with `screen`, both of which can be imported from `@testing-library/react`. After the `render` call, the `screen` object can be [`queried`](https://testing-library.com/docs/queries/about) for DOM nodes/elements, which in turn can be asserted on using the aforementioned Jest matchers. There is typically one `render` call per unit test. 
+
+### Tips
+
+* If you insert `screen.debug()` after the `render` call for the component under test and then run the test suite, the HTML DOM representation of the component will be output to the CLI. 
+
+* The `toBeInTheDocument` matcher is convenient for when you want to simply assert on the presence of an element in the HTML DOM. However, it is not offered by Jest but instead imported from `@testing-library/jest-dom`.
+
+* The `within` function from `@testing-library/react` can be used to perform queries within nested elements in the HTML DOM.
+
+* Import [`userEvent`](https://testing-library.com/docs/ecosystem-user-event) from RTL's companion library `@testing-library/user-event` in order to simulate user actions such as clicking a button. 
 
 ## MOCKING
 
@@ -54,9 +68,10 @@ npm run test -- -u -t=”SPEC_NAME”
 
 Where the `-u` flag tells Jest to update the snapshot and the `-t` flag specifies which test to update it for. `SPEC_NAME` is matched against the string passed into the `describe` call of the test file in question. For example, in `Recordings.test.tsx` the unit tests are housed inside of the `describe(‘<Recordings />’, ….)` block so in order to update the snapshot for the `Recordings` component, you would pass `-t=”<Recordings />”` to the above command. 
 
-
 ### Tips
 
 * Use the `create` function from the `react-test-renderer` library to render components into their React virtual DOM representation for snapshot testing. See [here](https://javascript.plainenglish.io/react-the-virtual-dom-comprehensive-guide-acd19c5e327a) for a more detailed discussion on the virtual DOM. 
 
-* If the component you would like to snapshot test uses `React.useEffect`, you may need to use the asyncrhonous `act` function from the `react-test-renderer` library to ensure the snapshot of the component is accurate. `React.useEffect` calls are run only after the render of a component is committed or "painted" to the screen. However, the nature of the virtual DOM is such that nothing is painted to the screen. Fortunately, the `act` function ensures that any state updates and enqueued effects will be executed alongside the render. 
+* If the component you would like to snapshot test uses `React.useEffect`, you may need to use the asynchronous `act` function from the `react-test-renderer` library to ensure the snapshot of the component is accurate. `React.useEffect` calls are run only after the render of a component is committed or "painted" to the screen. However, the nature of the virtual DOM is such that nothing is painted to the screen. Fortunately, the `act` function ensures that any state updates and enqueued effects will be executed alongside the render. 
+
+* Some PatternFly components use random, dynamic strings as `ids` which will then be displayed as elements in the rendered React virtual DOM. These strings change upon every render, causing snapshots to fail even though the component under test is still functionally the same. This can be remedied by supplying [custom `ids` as props](https://github.com/patternfly/patternfly-react/issues/3518) to the culprit PatternFly child components inside the source file of the component under test. 
