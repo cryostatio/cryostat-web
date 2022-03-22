@@ -54,6 +54,8 @@ The decision to mock out a component during testing should adhere to RTL's guidi
 
 * Unlike `jest.mock`, [`jest.doMock`](https://jestjs.io/docs/jest-object#jestdomockmodulename-factory-options) calls are not hoisted to the top of files. This is useful for when you want to mock a module differently across tests in the same file. 
 
+* Even though it is possible to test props directly by interacting with the mock instances receiving them, props should instead be indirectly tested by querying the rendered HTML DOM. Remember, from the user perspective all they see is this render result while having no knowledge of the underlying props used.
+
 ## SNAPSHOT TESTING
 
 ### Overview
