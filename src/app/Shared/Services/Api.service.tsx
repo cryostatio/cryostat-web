@@ -196,12 +196,12 @@ export class ApiService {
   }
 
   createRule(rule: Rule): Observable<boolean> {
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
     return this.sendRequest('v2', 'rules', {
         method: 'POST',
         body: JSON.stringify(rule),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }).pipe(
         map(resp => resp.ok),
         first(),
@@ -599,33 +599,32 @@ export class ApiService {
   }
 
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
-    const req = () => this.login.getHeaders().pipe(
-      concatMap(headers => {
-        const defaultReq = {
-          credentials: 'include',
-          mode: 'cors',
-          headers,
-        } as RequestInit;
+    const req = () =>
+      this.login.getHeaders().pipe(
+        concatMap((headers) => {
+          const defaultReq = {
+            credentials: 'include',
+            mode: 'cors',
+            headers: headers,
+          } as RequestInit;
 
-        function customizer(dest, src) {
-          if (dest instanceof Headers && src instanceof Headers) {
-            Object.entries(src).forEach(([k, v]) => {
-              dest.set(k, v);
-            });
+          function customizer(dest, src) {
+            if (dest instanceof Headers && src instanceof Headers) {
+              src.forEach((v, k) => dest.set(k, v));
+            }
+            return dest;
           }
-          return dest;
-        }
 
-        _.mergeWith(config, defaultReq, customizer);
+          _.mergeWith(config, defaultReq, customizer);
 
-        return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, config);
-      }),
-      map(resp => {
-        if (resp.ok) return resp;
-        throw new HttpError(resp);
-      }),
-      catchError(err => this.handleError<Response>(err, req)),
-    );
+          return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, config);
+        }),
+        map((resp) => {
+          if (resp.ok) return resp;
+          throw new HttpError(resp);
+        }),
+        catchError((err) => this.handleError<Response>(err, req))
+      );
     return req();
   }
 
