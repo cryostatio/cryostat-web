@@ -196,12 +196,12 @@ export class ApiService {
   }
 
   createRule(rule: Rule): Observable<boolean> {
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
     return this.sendRequest('v2', 'rules', {
         method: 'POST',
         body: JSON.stringify(rule),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }).pipe(
         map(resp => resp.ok),
         first(),
@@ -401,6 +401,12 @@ export class ApiService {
     return this.sendRequest(apiVersion, path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
+  graphql<T>(query: string): Observable<T> {
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/graphql');
+    return this.sendRequest('beta', 'graphql', { method: 'POST', body: query, headers }).pipe(map(resp => resp.json()), concatMap(from), first());
+  }
+
   downloadReport(recording: ArchivedRecording): void {
     const body = new window.FormData();
     body.append('resource', recording.reportUrl.replace('/api/v1', '/api/v2.1'));
@@ -474,13 +480,22 @@ export class ApiService {
           method: 'POST',
           body,
           headers,
-          selector: response => response.text(),
           signal,
         });
       }),
+      concatMap(v => {
+        if (v.ok) {
+          return from(v.text());
+        }
+        throw from(v.text());
+      }),
       tap({
         next: () => window.onbeforeunload = null,
-        error: () => window.onbeforeunload = null,
+        error: (err) => {
+          window.onbeforeunload = null;
+          err.subscribe(msg => this.notifications.danger('Upload Failed', msg, NotificationCategory.ArchivedRecordingCreated));
+        },
+        complete: () => window.onbeforeunload = null,
       }),
     );
   }
@@ -562,7 +577,7 @@ export class ApiService {
     return this.sendRequest(
       'v2.1', `credentials`,
       {
-        method: 'GET'        
+        method: 'GET'
       }
     ).pipe(
       concatMap(resp => resp.json()),
@@ -573,7 +588,7 @@ export class ApiService {
 
   deleteTargetCredentials(t: Target): Observable<boolean> {
     return this.sendRequest(
-      'v2', `targets/${encodeURIComponent(t.connectUrl)}/credentials`, 
+      'v2', `targets/${encodeURIComponent(t.connectUrl)}/credentials`,
       {
         method: 'DELETE'
       }
@@ -584,33 +599,32 @@ export class ApiService {
   }
 
   private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
-    const req = () => this.login.getHeaders().pipe(
-      concatMap(headers => {
-        const defaultReq = {
-          credentials: 'include',
-          mode: 'cors',
-          headers,
-        } as RequestInit;
+    const req = () =>
+      this.login.getHeaders().pipe(
+        concatMap((headers) => {
+          const defaultReq = {
+            credentials: 'include',
+            mode: 'cors',
+            headers: headers,
+          } as RequestInit;
 
-        function customizer(dest, src) {
-          if (dest instanceof Headers && src instanceof Headers) {
-            Object.entries(src).forEach(([k, v]) => {
-              dest.set(k, v);
-            });
+          function customizer(dest, src) {
+            if (dest instanceof Headers && src instanceof Headers) {
+              src.forEach((v, k) => dest.set(k, v));
+            }
+            return dest;
           }
-          return dest;
-        }
 
-        _.mergeWith(config, defaultReq, customizer);
+          _.mergeWith(config, defaultReq, customizer);
 
-        return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, config);
-      }),
-      map(resp => {
-        if (resp.ok) return resp;
-        throw new HttpError(resp);
-      }),
-      catchError(err => this.handleError<Response>(err, req)),
-    );
+          return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, config);
+        }),
+        map((resp) => {
+          if (resp.ok) return resp;
+          throw new HttpError(resp);
+        }),
+        catchError((err) => this.handleError<Response>(err, req))
+      );
     return req();
   }
 

@@ -42,6 +42,7 @@ import { Events } from '@app/Events/Events';
 import { Login } from '@app/Login/Login';
 import { NotFound } from '@app/NotFound/NotFound';
 import { Recordings } from '@app/Recordings/Recordings';
+import { Archives } from '@app/Archives/Archives';
 import { Rules } from '@app/Rules/Rules';
 import { CreateRule } from '@app/Rules/CreateRule';
 import { Settings } from '@app/Settings/Settings';
@@ -120,6 +121,14 @@ const routes: IAppRoute[] = [
         title: 'Create Recording',
       },
     ],
+  },
+  {
+    component: Archives,
+    exact: true,
+    label: 'Archives',
+    path: '/archives',
+    title: 'Archives',
+    navGroup: CONSOLE,
   },
   {
     component: Events,
