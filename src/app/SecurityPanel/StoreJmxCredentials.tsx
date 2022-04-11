@@ -65,23 +65,14 @@ const Component = () => {
   const [storedTargets, setStoredTargets] = React.useState([] as Target[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const [isEmpty, setIsEmpty] = React.useState(false);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
 
   const tableColumns: string[] = ['Target Alias', 'Connect URL'];
   const tableTitle = 'Stored Credentials';
 
-  const handleStoredTargets = React.useCallback(
-    (targets) => {
-      setStoredTargets(targets);
-      setIsEmpty(targets.length === 0);
-    },
-    [setStoredTargets, setIsEmpty]
-  );
-
   const refreshStoredTargetsList = React.useCallback(() => {
-    addSubscription(context.api.getTargetsWithStoredJmxCredentials().subscribe(handleStoredTargets));
-  }, [context, context.api, context.targets, handleStoredTargets]);
+    addSubscription(context.api.getTargetsWithStoredJmxCredentials().subscribe(t => setStoredTargets(t)));
+  }, [context, context.api, context.targets, setStoredTargets]);
 
   React.useEffect(() => {
     const sub = context.targets.targets().subscribe((targets) => {
@@ -92,23 +83,22 @@ const Component = () => {
   }, [context, context.targets, setTargets, refreshStoredTargetsList]);
 
   React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored).subscribe((v) => {
-        const updatedTarget = targets.filter((t) => t.connectUrl === v.message.target).pop();
-        const shouldAppendTarget = !!updatedTarget && storedTargets.includes(updatedTarget);
-        setStoredTargets((old) => (shouldAppendTarget ? old.concat(updatedTarget) : old));
-      })
-    );
-  }, [addSubscription, targets, storedTargets, setStoredTargets]);
+    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored).subscribe((v) => {
+      const updatedTarget = targets.filter((t) => t.connectUrl === v.message.target).pop();
+      if(!updatedTarget) {
+        return;
+      }
+      setStoredTargets(old => old.concat([updatedTarget]));
+    });
+    return () => sub.unsubscribe();
+  }, [context, context.notificationChannel, targets, setStoredTargets]);
 
   React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
-        const updatedTargets = storedTargets.filter((o) => o.connectUrl !== v.message.target);
-        handleStoredTargets(updatedTargets);
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setStoredTargets]);
+    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
+      setStoredTargets(old => old.filter(t => t.connectUrl !== v.message.target));
+    });
+    return () => sub.unsubscribe();
+  }, [context, context.notificationChannel, setStoredTargets]);
 
   const handleRowCheck = React.useCallback(
     (checked, index) => {
@@ -143,7 +133,6 @@ const Component = () => {
   };
 
   const handleModalClose = () => {
-    refreshStoredTargetsList();
     setShowAuthModal(false);
   };
 
@@ -207,7 +196,7 @@ const Component = () => {
 
   return (
     <>
-      {isEmpty ? (
+      {storedTargets.length === 0 ? (
         <>
           <TargetCredentialsToolbar />
           <EmptyState>
