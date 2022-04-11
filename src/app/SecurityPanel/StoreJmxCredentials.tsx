@@ -58,7 +58,7 @@ import { SecurityCard } from './SecurityPanel';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 
-const Component = () => {
+export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -89,7 +89,7 @@ const Component = () => {
   }, [context, context.targets, setTargets, refreshStoredTargetsList]);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored).subscribe((v) => {
+    const sub = context.notificationChannel.messages('TargetCredentialsStored' as NotificationCategory.TargetCredentialsStored).subscribe((v) => {
       const updatedTarget = targets.filter((t) => t.connectUrl === v.message.target).pop();
       if(!updatedTarget) {
         return;
@@ -100,7 +100,7 @@ const Component = () => {
   }, [context, context.notificationChannel, targets, setStoredTargets]);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
+    const sub = context.notificationChannel.messages('TargetCredentialsDeleted' as NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
       setStoredTargets(old => old.filter(t => t.connectUrl !== v.message.target));
     });
     return () => sub.unsubscribe();
@@ -197,7 +197,7 @@ const Component = () => {
     );
   };
   const targetRows = React.useMemo(() => {
-    return storedTargets.map((t, idx) => <TargetCredentialsTableRow key={idx} target={t} index={idx} />);
+    return storedTargets.map((t: Target, idx) => <TargetCredentialsTableRow key={idx} target={t} index={idx} />);
   }, [storedTargets, checkedIndices]);
 
   let content: JSX.Element;
@@ -243,10 +243,10 @@ const Component = () => {
   </>);
 };
 
-export const StoreJmxCredentials: SecurityCard = {
+export const StoreJmxCredentialsCard: SecurityCard = {
   title: 'Store JMX Credentials',
   description: `Targets for which Cryostat has stored JMX credentials are listed here.
     If a Target JVM requires JMX authentication, Cryostat will use stored credentials
     when attempting to open JMX connections to the target.`,
-  content: Component,
+  content: StoreJmxCredentials,
 };
