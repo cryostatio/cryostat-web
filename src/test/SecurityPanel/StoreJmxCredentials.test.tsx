@@ -44,7 +44,6 @@ import { of } from 'rxjs';
 import '@testing-library/jest-dom';
 import { StoreJmxCredentials } from '@app/SecurityPanel/StoreJmxCredentials';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
@@ -68,11 +67,11 @@ const anotherMockTarget = { connectUrl: 'service:jmx:rmi://anotherUrl', alias: '
       return {
         getTargetsWithStoredJmxCredentials: jest.fn()
         .mockReturnValueOnce(of([mockTarget]))
+        .mockReturnValueOnce(of([mockTarget, anotherMockTarget]))
+        .mockReturnValueOnce(of([mockTarget, anotherMockTarget]))
         .mockReturnValueOnce(of([]))
         .mockReturnValueOnce(of([mockTarget]))
-        .mockReturnValueOnce(of([mockTarget]))
-        .mockReturnValueOnce(of([mockTarget, anotherMockTarget]))
-        .mockReturnValueOnce(of([mockTarget, anotherMockTarget])),
+        .mockReturnValueOnce(of([mockTarget])),
         deleteTargetCredentials: jest.fn().mockReturnValue(of(true)),
       };
     }),
@@ -87,30 +86,20 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
     NotificationChannel: jest.fn(() => {
       return {
         messages: jest.fn()
-        .mockReturnValueOnce(of()) // '<StoreJmxCredentials />'
+        .mockReturnValueOnce(of()) // snapshot
         .mockReturnValueOnce(of())
         .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of()) 
-        .mockReturnValueOnce(of()) // 'displays empty state text when the table is empty'
+        .mockReturnValueOnce(of())
+
+        .mockReturnValueOnce(of(mockNotification)) // 'removes a single table entry when the selected credentials are deleted'
         .mockReturnValueOnce(of())
         .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of())  
-        .mockReturnValueOnce(of()) // 'opens the JMX auth modal when Add is clicked'
         .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of()) 
-        .mockReturnValueOnce(of()) // 'renders a table entry when credentials are stored'
-        .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of()) 
-        .mockReturnValueOnce(of()) // 'removes a single table entry when the selected credentials are deleted'
-        .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of(mockNotification))
+
         .mockReturnValueOnce(of()) // 'removes all table entries when all credentials are deleted'
-        .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of())
-        .mockReturnValueOnce(of(mockNotification, anotherMockNotification)),
+        .mockReturnValueOnce(of(anotherMockNotification))
+        .mockReturnValueOnce(of(mockNotification)) //works for one target but not two
+        .mockReturnValue(of()),
       };
     }),
   };
@@ -151,6 +140,41 @@ describe('<StoreJmxCredentials />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
+  it('removes the correct table entry when deleting one credential', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <StoreJmxCredentials />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('fooTarget')).toBeInTheDocument();
+    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
+
+    userEvent.click(screen.getByLabelText('credentials-table-row-0-check'));
+    userEvent.click(screen.getByText('Delete'));
+
+    expect(screen.queryByText('fooTarget')).not.toBeInTheDocument();
+    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
+
+  });
+
+  it('removes all table entries when all credentials are deleted', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <StoreJmxCredentials />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
+    expect(screen.queryByText('fooTarget')).toBeInTheDocument();
+
+    userEvent.click(screen.getByLabelText('table-header-check-all'));
+    userEvent.click(screen.getByText('Delete'));
+
+    expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
+
+  });
+
   it('displays empty state text when the table is empty', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
@@ -182,41 +206,6 @@ describe('<StoreJmxCredentials />', () => {
 
     expect(screen.getByText('service:jmx:rmi://someUrl')).toBeInTheDocument();
     expect(screen.getByText('fooTarget')).toBeInTheDocument();
-
-  });
-
-  it('removes a single table entry when the selected credentials are deleted', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <StoreJmxCredentials />
-      </ServiceContext.Provider>
-    );
-
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
-    expect(screen.getByText('fooTarget')).toBeInTheDocument();
-    
-    userEvent.click(screen.getByLabelText('credentials-table-row-0-check'));
-    userEvent.click(screen.getByText('Delete'));
-
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
-    expect(screen.getByText('fooTarget')).not.toBeInTheDocument();
-
-  });
-
-  it('removes all table entries when all credentials are deleted', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <StoreJmxCredentials />
-      </ServiceContext.Provider>
-    );
-
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
-    expect(screen.getByText('fooTarget')).toBeInTheDocument();
-
-    userEvent.click(screen.getByLabelText('table-header-check-all'));
-    userEvent.click(screen.getByText('Delete'));
-
-    expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
 
   });
 });
