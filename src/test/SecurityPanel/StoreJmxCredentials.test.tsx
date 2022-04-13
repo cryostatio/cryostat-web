@@ -46,6 +46,7 @@ import { StoreJmxCredentials } from '@app/SecurityPanel/StoreJmxCredentials';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { Target } from '@app/Shared/Services/Target.service';
 
 jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
   return {
@@ -107,6 +108,7 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
 
 jest.mock('@app/Shared/Services/Target.service', () => {
   return {
+    ...jest.requireActual('@app/Shared/Services/Target.service'),
     TargetService: jest.fn(() => {
       return {
         deleteCredentials: jest.fn(),
