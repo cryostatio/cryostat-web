@@ -40,6 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Card, CardBody, CardHeader, EmptyState, EmptyStateIcon, Text, TextVariants, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
+import { AllArchivedRecordingsTreeView } from './AllArchivedRecordingsTreeView';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
 export const Archives = () => {
@@ -64,7 +65,7 @@ export const Archives = () => {
     }
     return (<>
       <CardHeader><Text component={TextVariants.h4}>Archived Recordings (All Targets)</Text></CardHeader>
-      <AllArchivedRecordingsTable />
+      <AllArchivedRecordingsTreeView />
     </>);
   }, [archiveEnabled]);
 
