@@ -77,10 +77,10 @@ jest.mock('@app/Shared/Services/Api.service', () => {
           .fn()
           .mockReturnValueOnce(of([MOCK_TARGET]))
           .mockReturnValueOnce(of([]))
-          .mockReturnValueOnce(of([]))
-          .mockReturnValueOnce(of([]))
           .mockReturnValueOnce(of([MOCK_TARGET, ANOTHER_MOCK_TARGET]))
           .mockReturnValueOnce(of([MOCK_TARGET]))
+          .mockReturnValueOnce(of([]))
+          .mockReturnValueOnce(of([]))
           .mockReturnValueOnce(of([MOCK_TARGET, ANOTHER_MOCK_TARGET]))
           .mockReturnValueOnce(of([MOCK_TARGET, ANOTHER_MOCK_TARGET])),
         deleteTargetCredentials: jest.fn(() => {
@@ -100,14 +100,6 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
         messages: jest
           .fn()
           .mockReturnValueOnce(of()) // 'renders correctly'
-          .mockReturnValueOnce(of())
-          .mockReturnValueOnce(of())
-
-          .mockReturnValueOnce(of()) // 'displays empty state text when the table is empty'
-          .mockReturnValueOnce(of())
-          .mockReturnValueOnce(of())
-
-          .mockReturnValueOnce(of()) // 'opens the JMX auth modal when Add is clicked'
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
 
@@ -169,31 +161,6 @@ describe('<StoreJmxCredentials />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('displays empty state text when the table is empty', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <StoreJmxCredentials />
-      </ServiceContext.Provider>
-    );
-
-    expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
-  });
-
-  it('opens the JMX auth modal when Add is clicked', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <StoreJmxCredentials />
-      </ServiceContext.Provider>
-    );
-    userEvent.click(screen.getByText('Add'));
-    expect(screen.getByText('CreateJmxCredentialModal')).toBeInTheDocument();
-
-    screen.debug();
-
-    userEvent.click(screen.getByLabelText('Close'));
-    expect(screen.queryByText('CreateJmxCredentialModal')).not.toBeInTheDocument();
-  });
-
   it('adds the correct table entry when a stored notification is received', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
@@ -224,6 +191,29 @@ describe('<StoreJmxCredentials />', () => {
 
     expect(screen.queryByText('fooTarget')).not.toBeInTheDocument();
     expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
+  });
+
+  it('displays empty state text when the table is empty', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <StoreJmxCredentials />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
+  });
+
+  it('opens the JMX auth modal when Add is clicked', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <StoreJmxCredentials />
+      </ServiceContext.Provider>
+    );
+    userEvent.click(screen.getByText('Add'));
+    expect(screen.getByText('CreateJmxCredentialModal')).toBeInTheDocument();
+
+    userEvent.click(screen.getByLabelText('Close'));
+    expect(screen.queryByText('CreateJmxCredentialModal')).not.toBeInTheDocument();
   });
 
   it('makes a delete request when deleting one credential', () => {
