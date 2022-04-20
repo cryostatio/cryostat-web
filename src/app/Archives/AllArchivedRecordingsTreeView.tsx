@@ -65,7 +65,7 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
     const sub = context.targets.targets().subscribe((targets) => {
       targets.map((t: Target) => (
         (t.alias == t.connectUrl) || !t.alias ?
-          setTargets(old => old.concat([{ name: `${t.connectUrl}`}]))
+          setTargets(old => old.concat([{ name: `${t.connectUrl}` }]))
         : 
           setTargets(old => old.concat([{ name: `${t.alias} (${t.connectUrl})` }]))
       ))
