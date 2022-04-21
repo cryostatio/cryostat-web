@@ -249,26 +249,32 @@ export const EventTemplates = () => {
     setSortBy({ index, direction });
   };
 
+  const toolbar: JSX.Element = (<>
+    <Toolbar id="event-templates-toolbar">
+      <ToolbarContent>
+        <ToolbarGroup variant="filter-group">
+          <ToolbarItem>
+            <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
+          </ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarGroup variant="icon-button-group">
+          <ToolbarItem>
+            <Button key="create" variant="primary" onClick={handleModalToggle}>Upload</Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+      </ToolbarContent>
+    </Toolbar>
+  </>);
   if (errorMessage != '') {
-    return (<ErrorView message={errorMessage}/>)
+    return (<ErrorView message={errorMessage}/>);
   } else if (isLoading) {
-    return (<LoadingView/>)
+    return (<>
+      { toolbar }
+      <LoadingView/>
+    </>);
   } else {
     return (<>
-      <Toolbar id="event-templates-toolbar">
-        <ToolbarContent>
-          <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-              <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
-            </ToolbarItem>
-          </ToolbarGroup>
-          <ToolbarGroup variant="icon-button-group">
-            <ToolbarItem>
-              <Button key="create" variant="primary" onClick={handleModalToggle}>Upload</Button>
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
+      { toolbar }
       <Table aria-label="Event Templates table"
         variant={TableVariant.compact}
         cells={tableColumns}
