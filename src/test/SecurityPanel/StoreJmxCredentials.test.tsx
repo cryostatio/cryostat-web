@@ -95,6 +95,7 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
   const mockNotification = { message: { target: 'service:jmx:rmi://someUrl' } } as NotificationMessage;
 
   return {
+    ...jest.requireActual('@app/Shared/Services/NotificationChannel.service'),
     NotificationChannel: jest.fn(() => {
       return {
         messages: jest

@@ -89,7 +89,7 @@ export const StoreJmxCredentials = () => {
   }, [context, context.targets, setTargets, refreshStoredTargetsList]);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.messages('TargetCredentialsStored' as NotificationCategory.TargetCredentialsStored).subscribe((v) => {
+    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored).subscribe((v) => {
       const updatedTarget = targets.filter((t) => t.connectUrl === v.message.target).pop();
       if(!updatedTarget) {
         return;
@@ -100,7 +100,7 @@ export const StoreJmxCredentials = () => {
   }, [context, context.notificationChannel, targets, setStoredTargets]);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.messages('TargetCredentialsDeleted' as NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
+    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
       setStoredTargets(old => old.filter(t => t.connectUrl !== v.message.target));
     });
     return () => sub.unsubscribe();
