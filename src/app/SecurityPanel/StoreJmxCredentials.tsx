@@ -56,6 +56,7 @@ import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-tab
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from './SecurityPanel';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
@@ -66,12 +67,17 @@ const Component = () => {
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const tableColumns: string[] = ['Target Alias', 'Connect URL'];
   const tableTitle = 'Stored Credentials';
 
   const refreshStoredTargetsList = React.useCallback(() => {
-    addSubscription(context.api.getTargetsWithStoredJmxCredentials().subscribe(t => setStoredTargets(t)));
+    setIsLoading(true);
+    addSubscription(context.api.getTargetsWithStoredJmxCredentials().subscribe((t: Target[]) => {
+      setStoredTargets(t);
+      setIsLoading(false);
+    }));
   }, [context, context.api, context.targets, setStoredTargets]);
 
   React.useEffect(() => {
@@ -194,49 +200,53 @@ const Component = () => {
     return storedTargets.map((t, idx) => <TargetCredentialsTableRow key={idx} target={t} index={idx} />);
   }, [storedTargets, checkedIndices]);
 
-  return (
-    <>
-      {storedTargets.length === 0 ? (
-        <>
-          <TargetCredentialsToolbar />
-          <EmptyState>
-            <EmptyStateIcon icon={SearchIcon} />
-            <Title headingLevel="h4" size="lg">
-              No {tableTitle}
-            </Title>
-          </EmptyState>
-        </>
-      ) : (
-        <>
-          <TargetCredentialsToolbar />
-          <TableComposable aria-label={tableTitle}>
-            <Thead>
-              <Tr>
-                <Th
-                  key="table-header-check-all"
-                  select={{
-                    onSelect: handleHeaderCheck,
-                    isSelected: headerChecked,
-                  }}
-                />
-                {tableColumns.map((key, idx) => (
-                  <Th key={`table-header-${key}`}>{key}</Th>
-                ))}
-              </Tr>
-            </Thead>
-            {targetRows}
-          </TableComposable>
-        </>
-      )}
-      <CreateJmxCredentialModal visible={showAuthModal} onClose={handleModalClose} />
-    </>
-  );
+  let content: JSX.Element;
+  if (isLoading) {
+    content = (<>
+      <LoadingView />
+    </>);
+  } else if (storedTargets.length === 0) {
+    content = (<>
+      <EmptyState>
+        <EmptyStateIcon icon={SearchIcon} />
+        <Title headingLevel="h4" size="lg">
+          No {tableTitle}
+        </Title>
+      </EmptyState>
+    </>);
+  } else {
+    content = (<>
+      <TableComposable aria-label={tableTitle}>
+        <Thead>
+          <Tr>
+            <Th
+              key="table-header-check-all"
+              select={{
+                onSelect: handleHeaderCheck,
+                  isSelected: headerChecked,
+              }}
+            />
+            {tableColumns.map((key, idx) => (
+              <Th key={`table-header-${key}`}>{key}</Th>
+            ))}
+          </Tr>
+        </Thead>
+        {targetRows}
+      </TableComposable>
+    </>);
+  }
+
+  return (<>
+    <TargetCredentialsToolbar />
+    { content }
+    <CreateJmxCredentialModal visible={showAuthModal} onClose={handleModalClose} />
+  </>);
 };
 
 export const StoreJmxCredentials: SecurityCard = {
   title: 'Store JMX Credentials',
-  description: `Targets for which Cryostat has stored JMX credentials are listed here. 
-    If a Target JVM requires JMX authentication, Cryostat will use stored credentials 
+  description: `Targets for which Cryostat has stored JMX credentials are listed here.
+    If a Target JVM requires JMX authentication, Cryostat will use stored credentials
     when attempting to open JMX connections to the target.`,
   content: Component,
 };
