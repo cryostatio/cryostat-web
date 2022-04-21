@@ -200,7 +200,9 @@ export const Rules = () => {
   };
 
   const viewContent = () => {
-    if (rules.length === 0) {
+    if (isLoading) {
+      return <LoadingView />;
+    } else if (rules.length === 0) {
       return (<>
         <EmptyState>
           <EmptyStateIcon icon={SearchIcon}/>
@@ -209,8 +211,6 @@ export const Rules = () => {
           </Title>
         </EmptyState>
       </>);
-    } else if (isLoading) {
-      return <LoadingView />;
     } else {
       return (<>
         <Table aria-label="Automated Rules table"
