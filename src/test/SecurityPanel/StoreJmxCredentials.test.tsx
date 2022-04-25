@@ -136,7 +136,9 @@ jest.doMock('@app/Shared/Services/Targets.service', () => {
     ...jest.requireActual('@app/Shared/Services/Targets.service'),
     TargetsService: jest.fn(() => {
       return {
-        targets: jest.fn().mockReturnValue(of([mockTarget, mockAnotherTarget])),
+        targets: jest.fn(() => {
+          return of([mockTarget, mockAnotherTarget]);
+        }),
       };
     }),
   };
