@@ -110,7 +110,6 @@ jest.mock('@app/Shared/Services/Target.service', () => {
 
 jest.doMock('@app/Shared/Services/Api.service', () => {
   return {
-    ...jest.requireActual('@app/Shared/Services/Api.service'),
     ApiService: jest.fn(() => {
       return {
         getTargetsWithStoredJmxCredentials: jest
@@ -133,7 +132,6 @@ jest.doMock('@app/Shared/Services/Api.service', () => {
 
 jest.doMock('@app/Shared/Services/Targets.service', () => {
   return {
-    ...jest.requireActual('@app/Shared/Services/Targets.service'),
     TargetsService: jest.fn(() => {
       return {
         targets: jest.fn(() => {
