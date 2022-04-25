@@ -40,13 +40,14 @@ import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
 import { render, screen } from '@testing-library/react';
 import { of } from 'rxjs';
+import { Target } from '@app/Shared/Services/Target.service';
 
 import '@testing-library/jest-dom';
-import { StoreJmxCredentials } from '@app/SecurityPanel/StoreJmxCredentials';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
-import { Target } from '@app/Shared/Services/Target.service';
+
+const mockTarget: Target = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+const mockAnotherTarget: Target = { connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' };
 
 jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
   return {
@@ -66,34 +67,8 @@ jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
   };
 });
 
-jest.mock('@app/Shared/Services/Api.service', () => {
-  const MOCK_TARGET = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' } as Target;
-  const ANOTHER_MOCK_TARGET = { connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' } as Target;
-
-  return {
-    ApiService: jest.fn(() => {
-      return {
-        getTargetsWithStoredJmxCredentials: jest
-          .fn()
-          .mockReturnValueOnce(of([MOCK_TARGET]))
-          .mockReturnValueOnce(of([]))
-          .mockReturnValueOnce(of([MOCK_TARGET, ANOTHER_MOCK_TARGET]))
-          .mockReturnValueOnce(of([MOCK_TARGET]))
-          .mockReturnValueOnce(of([]))
-          .mockReturnValueOnce(of([]))
-          .mockReturnValueOnce(of([MOCK_TARGET, ANOTHER_MOCK_TARGET]))
-          .mockReturnValueOnce(of([MOCK_TARGET, ANOTHER_MOCK_TARGET])),
-        deleteTargetCredentials: jest.fn(() => {
-          return of(true);
-        }),
-      };
-    }),
-  };
-});
-
 jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
   const mockNotification = { message: { target: 'service:jmx:rmi://someUrl' } } as NotificationMessage;
-
   return {
     ...jest.requireActual('@app/Shared/Services/NotificationChannel.service'),
     NotificationChannel: jest.fn(() => {
@@ -133,23 +108,44 @@ jest.mock('@app/Shared/Services/Target.service', () => {
   };
 });
 
-jest.mock('@app/Shared/Services/Targets.service', () => {
-  const MOCK_TARGET = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' } as Target;
-  const ANOTHER_MOCK_TARGET = { connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' } as Target;
-
+jest.doMock('@app/Shared/Services/Api.service', () => {
   return {
-    TargetsService: jest.fn(() => {
+    ...jest.requireActual('@app/Shared/Services/Api.service'),
+    ApiService: jest.fn(() => {
       return {
-        targets: jest.fn().mockReturnValue(of([MOCK_TARGET, ANOTHER_MOCK_TARGET])),
+        getTargetsWithStoredJmxCredentials: jest
+          .fn()
+          .mockReturnValueOnce(of([mockTarget]))
+          .mockReturnValueOnce(of([]))
+          .mockReturnValueOnce(of([mockTarget, mockAnotherTarget]))
+          .mockReturnValueOnce(of([mockTarget]))
+          .mockReturnValueOnce(of([]))
+          .mockReturnValueOnce(of([]))
+          .mockReturnValueOnce(of([mockTarget, mockAnotherTarget]))
+          .mockReturnValueOnce(of([mockTarget, mockAnotherTarget])),
+        deleteTargetCredentials: jest.fn(() => {
+          return of(true);
+        }),
       };
     }),
   };
 });
 
-describe('<StoreJmxCredentials />', () => {
-  const MOCK_TARGET = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' } as Target;
-  const ANOTHER_MOCK_TARGET = { connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' } as Target;
+jest.doMock('@app/Shared/Services/Targets.service', () => {
+  return {
+    ...jest.requireActual('@app/Shared/Services/Targets.service'),
+    TargetsService: jest.fn(() => {
+      return {
+        targets: jest.fn().mockReturnValue(of([mockTarget, mockAnotherTarget])),
+      };
+    }),
+  };
+});
 
+import { StoreJmxCredentials } from '@app/SecurityPanel/StoreJmxCredentials';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+
+describe('<StoreJmxCredentials />', () => {
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
@@ -233,7 +229,7 @@ describe('<StoreJmxCredentials />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(MOCK_TARGET);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockTarget);
   });
 
   it('makes multiple delete requests when all credentials are deleted at once', () => {
@@ -254,7 +250,7 @@ describe('<StoreJmxCredentials />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(2);
-    expect(deleteRequestSpy).nthCalledWith(1, MOCK_TARGET);
-    expect(deleteRequestSpy).nthCalledWith(2, ANOTHER_MOCK_TARGET);
+    expect(deleteRequestSpy).nthCalledWith(1, mockTarget);
+    expect(deleteRequestSpy).nthCalledWith(2, mockAnotherTarget);
   });
 });
