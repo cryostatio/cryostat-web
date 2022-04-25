@@ -108,7 +108,7 @@ jest.mock('@app/Shared/Services/Target.service', () => {
   };
 });
 
-jest.doMock('@app/Shared/Services/Api.service', () => {
+jest.mock('@app/Shared/Services/Api.service', () => {
   return {
     ApiService: jest.fn(() => {
       return {
@@ -130,7 +130,7 @@ jest.doMock('@app/Shared/Services/Api.service', () => {
   };
 });
 
-jest.doMock('@app/Shared/Services/Targets.service', () => {
+jest.mock('@app/Shared/Services/Targets.service', () => {
   return {
     TargetsService: jest.fn(() => {
       return {
