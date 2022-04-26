@@ -47,7 +47,8 @@ import {
   Title
 } from '@patternfly/react-core';
 import '@app/app.css'
-import MapIcon from '@patternfly/react-icons/dist/esm/icons/map-marked-alt-icon';
+import { } from 'patternfly/react-core';
+import { ArchiveIcon, AutomationIcon, DotCircleIcon, MapIcon, OutlinedQuestionCircleIcon, SecurityIcon, PficonTemplateIcon } from '@patternfly/react-icons/';
 
 const NotFound: React.FunctionComponent = () => (
   <EmptyState>
@@ -66,10 +67,22 @@ const NotFound: React.FunctionComponent = () => (
         linkPath='/about'
       />
       <NotFoundCard
+        title='Automated Rules'
+        bodyText='placeholder'
+        linkText='View automated rules'
+        linkPath='/rules'
+      />
+      <NotFoundCard
         title='Recordings'
         bodyText='Create, view and archive JFR recordings on target JVMs.'
         linkText='View recordings'
         linkPath='/recordings'
+      />
+      <NotFoundCard
+        title='Archives'
+        bodyText='placeholder'
+        linkText='View archives'
+        linkPath='/archives'
       />
       <NotFoundCard
         title='Events'
