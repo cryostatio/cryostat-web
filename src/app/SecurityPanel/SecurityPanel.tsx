@@ -38,11 +38,11 @@
 import * as React from 'react';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { StoreJmxCredentials } from './StoreJmxCredentials';
+import { StoreJmxCredentialsCard } from './StoreJmxCredentials';
 import { ImportCertificate } from './ImportCertificate';
 
 export const SecurityPanel = () => {
-  const securityCards = [ImportCertificate, StoreJmxCredentials].map((c) => ({
+  const securityCards = [ImportCertificate, StoreJmxCredentialsCard].map((c) => ({
     title: c.title,
     description: c.description,
     element: React.createElement(c.content, null),

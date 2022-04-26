@@ -58,7 +58,7 @@ import { SecurityCard } from './SecurityPanel';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 
-const Component = () => {
+export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -197,7 +197,7 @@ const Component = () => {
     );
   };
   const targetRows = React.useMemo(() => {
-    return storedTargets.map((t, idx) => <TargetCredentialsTableRow key={idx} target={t} index={idx} />);
+    return storedTargets.map((t: Target, idx) => <TargetCredentialsTableRow key={idx} target={t} index={idx} />);
   }, [storedTargets, checkedIndices]);
 
   let content: JSX.Element;
@@ -243,10 +243,10 @@ const Component = () => {
   </>);
 };
 
-export const StoreJmxCredentials: SecurityCard = {
+export const StoreJmxCredentialsCard: SecurityCard = {
   title: 'Store JMX Credentials',
   description: `Targets for which Cryostat has stored JMX credentials are listed here.
     If a Target JVM requires JMX authentication, Cryostat will use stored credentials
     when attempting to open JMX connections to the target.`,
-  content: Component,
+  content: StoreJmxCredentials,
 };
