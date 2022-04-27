@@ -68,6 +68,7 @@ export interface IAppRoute {
   exact?: boolean;
   path: string;
   title: string;
+  description?: string; //non-empty description is used to filter routes for the NotFound page
   isAsync?: boolean;
   navGroup?: string;
   children?: IAppRoute[];
@@ -88,6 +89,7 @@ const routes: IAppRoute[] = [
     label: 'About',
     path: '/about',
     title: 'About',
+    description: 'Get information, help, or support for Cryostat.',
     navGroup: OVERVIEW,
   },
   {
@@ -96,6 +98,7 @@ const routes: IAppRoute[] = [
     label: 'Automated Rules',
     path: '/rules',
     title: 'Automated Rules',
+    description: 'Create recordings on multiple target JVMs at once using Automated Rules consisting of a name, match expression, template, archival period, and more.',
     navGroup: CONSOLE,
     children: [
       {
@@ -112,6 +115,7 @@ const routes: IAppRoute[] = [
     label: 'Recordings',
     path: '/recordings',
     title: 'Recordings',
+    description: 'Create, view and archive JFR recordings on single target JVMs.',
     navGroup: CONSOLE,
     children: [
       {
@@ -128,6 +132,7 @@ const routes: IAppRoute[] = [
     label: 'Archives',
     path: '/archives',
     title: 'Archives',
+    description: 'View archived recordings across all target JVMs, as well as upload recordings directly to the archive.',
     navGroup: CONSOLE,
   },
   {
@@ -136,6 +141,7 @@ const routes: IAppRoute[] = [
     label: 'Events',
     path: '/events',
     title: 'Events',
+    description: 'View available JFR event templates and types for target JVMs, as well as upload custom templates.',
     navGroup: CONSOLE,
   },
   {
@@ -144,6 +150,7 @@ const routes: IAppRoute[] = [
     label: 'Security',
     path: '/security',
     title: 'Security',
+    description: 'Upload SSL certificates for Cryostat to trust when communicating with target applications.',
     navGroup: CONSOLE,
   },
   {
@@ -151,6 +158,7 @@ const routes: IAppRoute[] = [
     exact: true,
     path: '/settings',
     title: 'Settings',
+    description: 'View or modify Cryostat web-client application settings.',
   },
 ];
 
@@ -230,4 +238,4 @@ const AppRoutes = () => {
   );
 };
 
-export { AppRoutes, routes, navGroups };
+export { AppRoutes, routes, navGroups, flatten };
