@@ -45,7 +45,7 @@ import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, forkJoin, merge } from 'rxjs';
+import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
@@ -124,28 +124,60 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   React.useEffect(() => {
     addSubscription(
-      merge(
-        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
-        context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
-      ).subscribe(v => setRecordings(old => old.concat(v.message.recording)))
+      combineLatest([
+        context.target.target(),
+        merge(
+          context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
+        ),
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.concat(event.message.recording));
+      })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
-        .subscribe(v => setRecordings(old => old.filter(o => o.name != v.message.recording.name)))
-    )
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
+      ])
+        .subscribe(parts => {
+          const currentTarget = parts[0];
+          const event = parts[1];
+          if (currentTarget.connectUrl != event.message.target) {
+            return;
+          }
+          setRecordings(old => old.filter(o => o.name != event.message.recording.name));
+      })
+    );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
-        .subscribe(v => setRecordings(old => old.map(
-          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.metadata.labels } } : o)))
+      combineLatest([
+      context.target.target(),
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
+    ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.map(
+          o => o.name == event.message.recordingName 
+            ? { ...o, metadata: { labels: event.message.metadata.labels } } 
+            : o));
+      })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
-
 
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
