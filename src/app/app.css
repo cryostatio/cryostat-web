@@ -53,6 +53,10 @@ html, body, #root {
   padding-top: 2rem;
 }
 
+.pf-c-empty-state-not-found {
+  padding-left: 10rem;
+  padding-right: 10rem;
+}
 .cryostat-logo {
   height: 2em;
 }

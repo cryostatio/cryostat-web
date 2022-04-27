@@ -47,11 +47,11 @@ import {
   Title
 } from '@patternfly/react-core';
 import '@app/app.css'
-import MapIcon from '@patternfly/react-icons/dist/esm/icons/map-marked-alt-icon';
+import { MapMarkedAltIcon } from '@patternfly/react-icons';
 
 const NotFound: React.FunctionComponent = () => (
-  <EmptyState>
-    <EmptyStateIcon icon={MapIcon} />
+  <EmptyState className='pf-c-empty-state-not-found'>
+    <EmptyStateIcon icon={MapMarkedAltIcon} />
     <Title headingLevel="h4" size="lg" >
       404: We couldn't find that page
     </Title>
@@ -66,10 +66,22 @@ const NotFound: React.FunctionComponent = () => (
         linkPath='/about'
       />
       <NotFoundCard
+        title='Automated Rules'
+        bodyText='Create recordings on multiple target JVMs at once using Automated Rules consisting of a name, match expression, template, archival period, and more.'
+        linkText='View automated rules'
+        linkPath='/rules'
+      />
+      <NotFoundCard
         title='Recordings'
-        bodyText='Create, view and archive JFR recordings on target JVMs.'
+        bodyText='Create, view and archive JFR recordings on single target JVMs.'
         linkText='View recordings'
         linkPath='/recordings'
+      />
+      <NotFoundCard
+        title='Archives'
+        bodyText='View archived recordings across all target JVMs, as well as upload recordings directly to the archive.'
+        linkText='View archives'
+        linkPath='/archives'
       />
       <NotFoundCard
         title='Events'
