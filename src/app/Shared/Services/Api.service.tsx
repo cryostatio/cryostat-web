@@ -536,7 +536,9 @@ export class ApiService {
   }
 
   postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
-    return this.target.target().pipe(concatMap(target =>
+    return this.target.target().pipe(
+      first(),
+      concatMap(target =>
         this.sendRequest(
           'beta', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
           {

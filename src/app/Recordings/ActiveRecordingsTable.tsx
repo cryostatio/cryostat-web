@@ -193,9 +193,21 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
-        .subscribe(v => setRecordings(old => old.map(
-          o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.metadata.labels } } : o)))
+      combineLatest([
+      context.target.target(),
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
+    ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.map(
+          o => o.name == event.message.recordingName 
+            ? { ...o, metadata: { labels: event.message.metadata.labels } } 
+            : o));
+      })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
