@@ -47,8 +47,9 @@ import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
-import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
+import { EditableLabelCell } from './EditableLabelCell';
 
 export interface ArchivedRecordingsTableProps { }
 
@@ -263,22 +264,13 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            {editingMetadata ?
-              <EditRecordingLabels
-                labels={rowLabels}
-                setLabels={setRowLabels}
-                usePatchForm={editingMetadata}
-                patchRecordingName={props.recording.name}
-                onPatchSubmit={handleSubmitLabelPatch}
-                onPatchCancel={handleCancelLabelPatch}
-              />
-              : rowLabels.length ? rowLabels.map(l => (
-                <Label color="grey">
-                  {`${l.key}: ${l.value}`}
-                </Label>
-                ))
-              : <Text>-</Text>
-            }
+            <EditableLabelCell 
+              isEditing={editingMetadata} 
+              labels={rowLabels} 
+              setLabels={setRowLabels} 
+              onPatchSubmit={handleSubmitLabelPatch} 
+              onPatchCancel={handleCancelLabelPatch}
+            />
           </Td>
           <RecordingActions
             recording={props.recording}

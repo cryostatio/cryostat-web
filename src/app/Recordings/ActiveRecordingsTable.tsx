@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
+import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -48,6 +48,7 @@ import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
+import { EditableLabelCell } from './EditableLabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
@@ -348,22 +349,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             {props.recording.state}
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
-            {editingMetadata ?
-              <EditRecordingLabels
-                labels={rowLabels}
-                setLabels={setRowLabels}
-                usePatchForm={editingMetadata}
-                patchRecordingName={props.recording.name}
-                onPatchSubmit={handleSubmitLabelPatch}
-                onPatchCancel={handleCancelLabelPatch}
-              />
-              : rowLabels.length ? rowLabels.map(l => (
-                <Label color="grey">
-                  {`${l.key}: ${l.value}`}
-                </Label>
-                ))
-              : <Text>-</Text>
-            }
+            <EditableLabelCell 
+              isEditing={editingMetadata} 
+              labels={rowLabels} 
+              setLabels={setRowLabels} 
+              onPatchSubmit={handleSubmitLabelPatch} 
+              onPatchCancel={handleCancelLabelPatch}
+            />
           </Td>
           <RecordingActions
             index={props.index}

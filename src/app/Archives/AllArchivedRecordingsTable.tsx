@@ -49,7 +49,8 @@ import { Observable, forkJoin, merge } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
-import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
+import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
+import { EditableLabelCell } from '@app/Recordings/EditableLabelCell';
 
 export interface AllArchivedRecordingsTableProps { }
 
@@ -211,22 +212,13 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            {editingMetadata ?
-              <EditRecordingLabels
-                labels={rowLabels}
-                setLabels={setRowLabels}
-                usePatchForm={editingMetadata}
-                patchRecordingName={props.recording.name}
-                onPatchSubmit={handleSubmitLabelPatch}
-                onPatchCancel={handleCancelLabelPatch}
-              />
-              : rowLabels.length ? rowLabels.map(l => (
-                <Label color="grey">
-                  {`${l.key}: ${l.value}`}
-                </Label>
-                ))
-              : <Text>-</Text>
-            }
+            <EditableLabelCell 
+              isEditing={editingMetadata} 
+              labels={rowLabels} 
+              setLabels={setRowLabels} 
+              onPatchSubmit={handleSubmitLabelPatch} 
+              onPatchCancel={handleCancelLabelPatch}
+            />
           </Td>
           <RecordingActions
             recording={props.recording}
