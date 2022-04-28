@@ -43,10 +43,10 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
 import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
-import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { combineLatest, forkJoin, Observable, of } from 'rxjs';
+import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -129,8 +129,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       combineLatest([
         context.target.target(),
-        context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
-        context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
+        merge(
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+          context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
+        ),
       ])
       .subscribe(parts => {
         const currentTarget = parts[0];
@@ -147,8 +149,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       combineLatest([
         context.target.target(),
-        context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
-        context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
+        merge(
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
+          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted),
+        ),
       ])
       .subscribe(parts => {
         const currentTarget = parts[0];
