@@ -37,8 +37,18 @@
  */
 import * as React from 'react';
 import { CloseIcon, PlusCircleIcon } from '@patternfly/react-icons';
-import { Button, Split, SplitItem, Text, TextInput, ValidatedOptions } from '@patternfly/react-core';
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import {
+  Button,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  Split,
+  SplitItem,
+  Text,
+  TextInput,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { labelHelperText, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 
 export interface EditRecordingLabelsProps {
   labels: RecordingLabel[];
@@ -174,6 +184,11 @@ export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsPro
               validated={validKeys[idx]}
             />
             <Text>Key</Text>
+            <FormHelperText isHidden={!((validKeys[idx] == ValidatedOptions.error) || (validValues[idx] == ValidatedOptions.error))} component="div">
+              <HelperText id="helper-text1">
+                <HelperTextItem variant={'error'}>{labelHelperText}</HelperTextItem>
+              </HelperText>
+            </FormHelperText>
           </SplitItem>
           <SplitItem isFilled>
             <TextInput

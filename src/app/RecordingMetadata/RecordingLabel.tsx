@@ -48,3 +48,5 @@ export const parseLabels = (jsonLabels) => {
     return { key: k, value: v } as RecordingLabel;
   });
 };
+
+export const labelHelperText = 'Enter a key-value pair. Keys must be unique. Labels should not contain whitespace.';

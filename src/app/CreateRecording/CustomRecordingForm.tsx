@@ -46,7 +46,7 @@ import { EventTemplate, TemplateType } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { labelHelperText, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { EditRecordingLabels } from '@app/RecordingMetadata/EditRecordingLabels';
 
 export interface CustomRecordingFormProps {
@@ -250,8 +250,6 @@ export const CustomRecordingForm = (props) => {
           <HelpIcon noVerticalAlign />
         </Tooltip>
       }
-      helperTextInvalid={"Enter a key-value pair. Keys must be unique. Labels should not contain whitespace."}
-      validated={labelsValid}
     >
       <EditRecordingLabels labels={labels} setLabels={setLabels} valid={labelsValid} setValid={setLabelsValid}/>
     </FormGroup>
