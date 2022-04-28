@@ -44,7 +44,7 @@ import { RecordingLabel } from '../RecordingMetadata/RecordingLabel';
 export interface EditableLabelCellProps {
   isEditing: boolean;
   labels: RecordingLabel[];
-  setLabels: React.Dispatch<any>;
+  setLabels: (labels: RecordingLabel[]) => void;
   onPatchSubmit: () => void;
   onPatchCancel: () => void;
 }
@@ -67,9 +67,9 @@ export const EditableLabelCell: React.FunctionComponent<EditableLabelCellProps> 
         </SplitItem>
       </Split>
     ),
-    [props.onPatchSubmit, props.onPatchCancel, valid]
+    [props.onPatchSubmit, props.onPatchCancel, valid, setValid]
   );
-
+  
   return (
     <>
       {props.isEditing ? (
@@ -78,7 +78,7 @@ export const EditableLabelCell: React.FunctionComponent<EditableLabelCellProps> 
           {buttons}
         </>
       ) : props.labels.length ? (
-        props.labels.map((l) => <Label color="grey">{`${l.key}: ${l.value}`}</Label>)
+        props.labels.map((l) => <Label key={l.key} color="grey">{`${l.key}: ${l.value}`}</Label>)
       ) : (
         <Text>-</Text>
       )}

@@ -49,4 +49,10 @@ export const parseLabels = (jsonLabels) => {
   });
 };
 
-export const labelHelperText = 'Enter a key-value pair. Keys must be unique. Labels should not contain whitespace.';
+export const includesLabel = (arr, searchLabel) => {
+  return arr.some(l => isEqualLabel(searchLabel, l));
+}
+
+const isEqualLabel = (a, b) => {
+  return (a.key === b.key) && (a.value === b.value);
+}

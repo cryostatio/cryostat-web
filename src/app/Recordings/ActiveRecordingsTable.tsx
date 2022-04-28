@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -65,6 +66,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [labelButtonText, setLabelButtonText] = React.useState('Show Label Options');
+  const [showMetadataOptions, setShowMetadataOptions] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -422,6 +425,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
+  const handleToggleLabelOptions = React.useCallback(() => {
+    setShowMetadataOptions(!showMetadataOptions);
+    setLabelButtonText(showMetadataOptions ? 'Show Label Options': 'Hide Label Options');
+  }, [showMetadataOptions, setShowMetadataOptions, setLabelButtonText]);
+
+
   const RecordingsToolbar = () => {
     const isStopDisabled = React.useMemo(() => {
       if (!checkedIndices.length) {
@@ -441,6 +450,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
         ));
       }
+      arr.push((
+        <Button key="showLabelOptions" variant="secondary" onClick={handleToggleLabelOptions} isDisabled={!checkedIndices.length}>{labelButtonText}</Button>
+      ));
       arr.push((
         <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
       ));
@@ -471,7 +483,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
-  return (
+  return (<>
+    { showMetadataOptions && <BulkEditLabels isTargetRecording={true} checkedIndices={checkedIndices} recordings={recordings} hideForm={handleToggleLabelOptions} />}
     <RecordingsTable
         tableTitle="Active Flight Recordings"
         toolbar={<RecordingsToolbar />}
@@ -484,5 +497,5 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     >
       {recordingRows}
     </RecordingsTable>
-  );
+  </>);
 };

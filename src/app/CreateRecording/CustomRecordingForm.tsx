@@ -46,7 +46,7 @@ import { EventTemplate, TemplateType } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
-import { labelHelperText, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { EditRecordingLabels } from '@app/RecordingMetadata/EditRecordingLabels';
 
 export interface CustomRecordingFormProps {

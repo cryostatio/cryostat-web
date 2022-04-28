@@ -48,7 +48,7 @@ import {
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { labelHelperText, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 
 export interface EditRecordingLabelsProps {
   labels: RecordingLabel[];
@@ -71,6 +71,7 @@ export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsPro
       let updatedKeys = [...uniqueKeys];
       updatedKeys[idx] = key;
       setUniqueKeys(updatedKeys);
+      props.setLabels(updatedLabels);
       props.setLabels(updatedLabels);
     },
     [props.labels, props.setLabels, uniqueKeys, setUniqueKeys]
@@ -108,14 +109,13 @@ export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsPro
       const pairedValueIsEmpty = !props.labels[idx].value;
       if (pairedValueIsEmpty) {
         let updatedValidValues = [...validValues];
-        updatedValidValues[idx] = ValidatedOptions.warning;
         setValidVals(updatedValidValues);
       }
 
       updatedValidKeys[idx] = isValid ? ValidatedOptions.success : ValidatedOptions.error;
       setValidKeys(updatedValidKeys);
     },
-    [props.labels, validKeys, setValidKeys, validValues, setValidVals]
+    [props.labels, setValidKeys, setValidVals]
   );
 
   const validateValue = React.useCallback(
@@ -133,33 +133,26 @@ export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsPro
       updatedValidValues[idx] = hasValidSyntax ? ValidatedOptions.success : ValidatedOptions.error;
       setValidVals(updatedValidValues);
     },
-    [props.labels, validValues, setValidVals, validKeys, setValidKeys]
+    [props.labels, setValidVals, setValidKeys]
   );
 
   const isAllLabelsValid = React.useCallback(() => {
-    const initialKeyValid =
-      validKeys[0] == ValidatedOptions.success || (validKeys[0] == ValidatedOptions.default && !!props.labels[0].key);
-    const initialValueValid =
-      validValues[0] == ValidatedOptions.success ||
-      (validKeys[0] == ValidatedOptions.default && !!props.labels[0].value);
+    const initialKeyValid = !!props.labels[0] && !!props.labels[0].key;
+    const initialValueValid = !!props.labels[0] && !!props.labels[0].value;
 
     const allKeysValid = validKeys.reduce(
-      (prev, curr) => (curr != ValidatedOptions.success && curr != ValidatedOptions.default ? false : prev),
+      (prev, curr) => ((curr != ValidatedOptions.success) && (curr != ValidatedOptions.default) ? false : prev),
       initialKeyValid
     );
     const allValuesValid = validValues.reduce(
-      (prev, curr) => (curr != ValidatedOptions.success && curr != ValidatedOptions.default ? false : prev),
+      (prev, curr) => ((curr != ValidatedOptions.success) && (curr != ValidatedOptions.default) ? false : prev),
       initialValueValid
     );
 
     return allKeysValid && allValuesValid;
-  }, [validKeys, validValues, props.labels[0]]);
+  }, [validKeys, validValues]);
 
   React.useEffect(() => {
-    if (!validKeys.length || !validValues.length) {
-      return;
-    }
-
     props.setValid(isAllLabelsValid() ? ValidatedOptions.success : ValidatedOptions.error);
   }, [validKeys, validValues]);
 
@@ -178,7 +171,7 @@ export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsPro
               name="label-key-input"
               aria-describedby="label-key-input-helper"
               aria-label="label key"
-              value={label.key}
+              value={label.key ?? ''}
               onChange={(e) => handleKeyChange(idx, e)}
               onBlur={(e) => validateKey(idx, e.target.value)}
               validated={validKeys[idx]}
@@ -186,7 +179,7 @@ export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsPro
             <Text>Key</Text>
             <FormHelperText isHidden={!((validKeys[idx] == ValidatedOptions.error) || (validValues[idx] == ValidatedOptions.error))} component="div">
               <HelperText id="helper-text1">
-                <HelperTextItem variant={'error'}>{labelHelperText}</HelperTextItem>
+                <HelperTextItem variant={'error'}>Enter a key-value pair. Keys must be unique. Labels should not contain whitespace.</HelperTextItem>
               </HelperText>
             </FormHelperText>
           </SplitItem>
@@ -198,7 +191,7 @@ export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsPro
               name="label-value-input"
               aria-describedby="label-value-input-helper"
               aria-label="label value"
-              value={label.value}
+              value={label.value ?? ''}
               onChange={(e) => handleValueChange(idx, e)}
               onBlur={(e) => validateValue(idx, e.target.value)}
               validated={validValues[idx]}
