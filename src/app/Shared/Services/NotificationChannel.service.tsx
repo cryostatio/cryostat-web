@@ -53,6 +53,8 @@ export enum NotificationCategory {
   ActiveRecordingStopped = 'ActiveRecordingStopped',
   ActiveRecordingSaved = 'ActiveRecordingSaved',
   ActiveRecordingDeleted = 'ActiveRecordingDeleted',
+  SnapshotCreated = 'SnapshotCreated',
+  SnapshotDeleted = 'SnapshotDeleted',
   ArchivedRecordingCreated = 'ArchivedRecordingCreated',
   ArchivedRecordingDeleted = 'ArchivedRecordingDeleted',
   TemplateUploaded = 'TemplateUploaded',
@@ -119,7 +121,7 @@ export const messageKeys = new Map([
     NotificationCategory.ActiveRecordingCreated, {
       variant: AlertVariant.success,
       title: 'Recording Created',
-      body: evt => `${evt.message.recording.name} created in target: ${evt.message.target}`,
+      body: evt => `${evt.message.recording.name} created in target: ${evt.message.target}`
     } as NotificationMessageMapper
   ],
   [
@@ -140,6 +142,20 @@ export const messageKeys = new Map([
     NotificationCategory.ActiveRecordingDeleted, {
       variant: AlertVariant.success,
       title: 'Recording Deleted',
+      body: evt => `${evt.message.recording.name} was deleted`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.SnapshotCreated, {
+      variant: AlertVariant.success,
+      title: 'Snapshot Created',
+      body: evt => `${evt.message.recording.name} was created in target: ${evt.message.target}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.SnapshotDeleted, {
+      variant: AlertVariant.success,
+      title: 'Snapshot Deleted',
       body: evt => `${evt.message.recording.name} was deleted`
     } as NotificationMessageMapper
   ],

@@ -130,6 +130,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       combineLatest([
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+        context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
       ])
       .subscribe(parts => {
         const currentTarget = parts[0];
@@ -147,6 +148,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       combineLatest([
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
+        context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
       ])
       .subscribe(parts => {
         const currentTarget = parts[0];
