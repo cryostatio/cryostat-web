@@ -36,10 +36,10 @@
  * SOFTWARE.
  */
 
-import { EditRecordingLabels } from '@app/RecordingMetadata/EditRecordingLabels';
+import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { Button, Label, Split, SplitItem, Text, ValidatedOptions } from '@patternfly/react-core';
 import React from 'react';
-import { RecordingLabel } from '../RecordingMetadata/RecordingLabel';
+import { RecordingLabel } from './RecordingLabel';
 
 export interface EditableLabelCellProps {
   isEditing: boolean;
@@ -74,7 +74,7 @@ export const EditableLabelCell: React.FunctionComponent<EditableLabelCellProps> 
     <>
       {props.isEditing ? (
         <>
-          <EditRecordingLabels labels={props.labels} setLabels={props.setLabels} valid={valid} setValid={setValid} />
+          <RecordingLabelFields labels={props.labels} setLabels={props.setLabels} valid={valid} setValid={setValid} />
           {buttons}
         </>
       ) : props.labels.length ? (

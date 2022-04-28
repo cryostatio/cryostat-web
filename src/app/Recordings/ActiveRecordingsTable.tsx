@@ -49,7 +49,7 @@ import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
-import { EditableLabelCell } from './EditableLabelCell';
+import { EditableLabelCell } from '../RecordingMetadata/EditableLabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';

@@ -50,7 +50,7 @@ import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
-import { EditableLabelCell } from '@app/Recordings/EditableLabelCell';
+import { EditableLabelCell } from '@app/RecordingMetadata/EditableLabelCell';
 
 export interface AllArchivedRecordingsTableProps { }
 

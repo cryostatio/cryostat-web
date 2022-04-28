@@ -51,7 +51,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
 import { first, forkJoin, Observable } from 'rxjs';
-import { EditableLabelCell } from '@app/Recordings/EditableLabelCell';
+import { EditableLabelCell } from '@app/RecordingMetadata/EditableLabelCell';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;

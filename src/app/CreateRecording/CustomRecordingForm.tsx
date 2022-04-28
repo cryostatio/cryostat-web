@@ -47,7 +47,7 @@ import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { EditRecordingLabels } from '@app/RecordingMetadata/EditRecordingLabels';
+import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 
 export interface CustomRecordingFormProps {
   onSubmit: (recordingAttributes: RecordingAttributes) => void;
@@ -251,7 +251,7 @@ export const CustomRecordingForm = (props) => {
         </Tooltip>
       }
     >
-      <EditRecordingLabels labels={labels} setLabels={setLabels} valid={labelsValid} setValid={setLabelsValid}/>
+      <RecordingLabelFields labels={labels} setLabels={setLabels} valid={labelsValid} setValid={setLabelsValid}/>
     </FormGroup>
       </ExpandableSection>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">

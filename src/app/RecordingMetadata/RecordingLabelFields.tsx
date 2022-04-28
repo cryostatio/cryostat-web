@@ -50,7 +50,7 @@ import {
 } from '@patternfly/react-core';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 
-export interface EditRecordingLabelsProps {
+export interface RecordingLabelFieldsProps {
   labels: RecordingLabel[];
   setLabels: (labels: RecordingLabel[]) => void;
   valid: ValidatedOptions;
@@ -59,7 +59,7 @@ export interface EditRecordingLabelsProps {
 
 export const LabelPattern = /^\S+$/;
 
-export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsProps> = (props) => {
+export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = (props) => {
   const [validKeys, setValidKeys] = React.useState(Array(props.labels.length).fill(ValidatedOptions.default));
   const [validValues, setValidVals] = React.useState(Array(props.labels.length).fill(ValidatedOptions.default));
   const [uniqueKeys, setUniqueKeys] = React.useState(Array.from(props.labels, (v) => v.key));
@@ -71,7 +71,6 @@ export const EditRecordingLabels: React.FunctionComponent<EditRecordingLabelsPro
       let updatedKeys = [...uniqueKeys];
       updatedKeys[idx] = key;
       setUniqueKeys(updatedKeys);
-      props.setLabels(updatedLabels);
       props.setLabels(updatedLabels);
     },
     [props.labels, props.setLabels, uniqueKeys, setUniqueKeys]
