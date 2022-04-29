@@ -37,6 +37,7 @@
  */
 import * as React from 'react';
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -62,7 +63,8 @@ export interface BulkEditLabelsProps {
 
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const [commonLabels, setCommonLabels] = React.useState([props.recordings[0].metadata.labels] as RecordingLabel[] || []);
+  const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
+  const [editing, setEditing] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const handleUpdateLabelsForSelected = React.useCallback(() => {
@@ -70,13 +72,27 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     props.recordings.forEach((r: ArchivedRecording, idx) => {
       if (props.checkedIndices.includes(idx)) {
         const updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
-        tasks.push(props.isTargetRecording 
-          ? context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first())
-          : context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first()));
+        tasks.push(
+          props.isTargetRecording
+            ? context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first())
+            : context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first())
+        );
       }
     });
     addSubscription(forkJoin(tasks).subscribe(props.hideForm));
-  }, [props.recordings, props.checkedIndices, props.isTargetRecording, commonLabels, parseLabels, context, context.api]);
+  }, [
+    props.recordings,
+    props.checkedIndices,
+    props.isTargetRecording,
+    commonLabels,
+    parseLabels,
+    context,
+    context.api,
+  ]);
+
+  const handleEditLabels = React.useCallback(() => {
+    setEditing(!editing);
+  }, [setEditing]);
 
   React.useEffect(() => {
     let allRecordingLabels = [] as RecordingLabel[][];
@@ -97,24 +113,31 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     <Card>
       <CardHeader>
         <CardHeaderMain>
-          <Text>Edit labels for all selected recordings</Text>
+          <Text>Edit labels common to all selected recordings</Text>
+          <Text component={TextVariants.small}>
+              Labels present on all selected recordings will appear here. Any changes to the labels below will apply to
+              all selected recordings.
+            </Text>
         </CardHeaderMain>
       </CardHeader>
       <CardBody>
         <Stack hasGutter>
+          {!editing && (
+            <StackItem>
+              <Button key="archive" variant="secondary" onClick={handleEditLabels}>
+                Edit Labels
+              </Button>
+            </StackItem>
+          )}
           <StackItem>
-            <Text component={TextVariants.small}>
-              Labels present on all selected recordings will appear here. Any changes to the labels below will apply to
-              all selected recordings.
-            </Text>
           </StackItem>
           <StackItem>
             <EditableLabelCell
-              isEditing={true}
+              isEditing={editing}
               labels={commonLabels}
               setLabels={setCommonLabels}
               onPatchSubmit={handleUpdateLabelsForSelected}
-              onPatchCancel={props.hideForm}
+              onPatchCancel={() => setEditing(false)}
             />
           </StackItem>
         </Stack>
