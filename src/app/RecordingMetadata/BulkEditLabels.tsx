@@ -113,22 +113,15 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     <Card>
       <CardHeader>
         <CardHeaderMain>
-          <Text>Edit labels common to all selected recordings</Text>
+          <Text>Edit labels for all selected recordings</Text>
           <Text component={TextVariants.small}>
-              Labels present on all selected recordings will appear here. Any changes to the labels below will apply to
+              Only labels present on all selected recordings will appear here. Any changes to the labels below will apply to
               all selected recordings.
             </Text>
         </CardHeaderMain>
       </CardHeader>
       <CardBody>
         <Stack hasGutter>
-          {!editing && (
-            <StackItem>
-              <Button key="archive" variant="secondary" onClick={handleEditLabels}>
-                Edit Labels
-              </Button>
-            </StackItem>
-          )}
           <StackItem>
           </StackItem>
           <StackItem>
@@ -140,6 +133,13 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
               onPatchCancel={() => setEditing(false)}
             />
           </StackItem>
+          {!editing && (
+            <StackItem>
+              <Button key="archive" variant="secondary" onClick={handleEditLabels}>
+                Edit Labels
+              </Button>
+            </StackItem>
+          )}
         </Stack>
       </CardBody>
     </Card>
