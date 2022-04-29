@@ -87,7 +87,10 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
 
   const handleAddLabelButtonClick = React.useCallback(() => {
     props.setLabels([...props.labels, { key: '', value: '' } as RecordingLabel]);
-  }, [props.labels, props.setLabels]);
+    setValidKeys([...validKeys, ValidatedOptions.default]);
+    setValidVals([...validValues, ValidatedOptions.default]);
+    props.setValid(ValidatedOptions.default);
+  }, [props.labels, validKeys, validValues, props.setLabels, props.setValid, setValidKeys, setValidVals]);
 
   const handleDeleteLabelButtonClick = React.useCallback(
     (idx) => {
@@ -143,21 +146,37 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     [props.labels, setValidVals, setValidKeys]
   );
 
+  const isLabelInvalid = React.useCallback(
+    (validationState: ValidatedOptions, idx: number) => {
+      switch (validationState) {
+        case ValidatedOptions.success:
+          return false;
+        case ValidatedOptions.default:
+          if (!!props.labels[idx].key && !!props.labels[idx].value) {
+            return false;
+          }
+        default:
+          return true;
+      }
+    },
+    [props.labels]
+  );
+
   const isAllLabelsValid = React.useCallback(() => {
     const initialKeyValid = !!props.labels[0] && !!props.labels[0].key;
     const initialValueValid = !!props.labels[0] && !!props.labels[0].value;
 
     const allKeysValid = validKeys.reduce(
-      (prev, curr) => ((curr != ValidatedOptions.success) && (curr != ValidatedOptions.default) ? false : prev),
+      (prev, curr, idx) => (isLabelInvalid(curr, idx) ? false : prev),
       initialKeyValid
     );
     const allValuesValid = validValues.reduce(
-      (prev, curr) => ((curr != ValidatedOptions.success) && (curr != ValidatedOptions.default) ? false : prev),
+      (prev, curr, idx) => (isLabelInvalid(curr, idx) ? false : prev),
       initialValueValid
     );
 
     return allKeysValid && allValuesValid;
-  }, [validKeys, validValues]);
+  }, [props.labels, validKeys, validValues, isLabelInvalid]);
 
   React.useEffect(() => {
     props.setValid(isAllLabelsValid() ? ValidatedOptions.success : ValidatedOptions.error);
@@ -184,9 +203,14 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               validated={validKeys[idx]}
             />
             <Text>Key</Text>
-            <FormHelperText isHidden={!((validKeys[idx] == ValidatedOptions.error) || (validValues[idx] == ValidatedOptions.error))} component="div">
+            <FormHelperText
+              isHidden={!(validKeys[idx] == ValidatedOptions.error || validValues[idx] == ValidatedOptions.error)}
+              component="div"
+            >
               <HelperText id="helper-text1">
-                <HelperTextItem variant={'error'}>Enter a key-value pair. Keys must be unique. Labels should not contain whitespace.</HelperTextItem>
+                <HelperTextItem variant={'error'}>
+                  Enter a key-value pair. Keys must be unique. Labels should not contain whitespace.
+                </HelperTextItem>
               </HelperText>
             </FormHelperText>
           </SplitItem>
