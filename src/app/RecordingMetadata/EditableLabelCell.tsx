@@ -69,7 +69,7 @@ export const EditableLabelCell: React.FunctionComponent<EditableLabelCellProps> 
     ),
     [props.onPatchSubmit, props.onPatchCancel, valid, setValid]
   );
-  
+
   return (
     <>
       {props.isEditing ? (
@@ -77,7 +77,7 @@ export const EditableLabelCell: React.FunctionComponent<EditableLabelCellProps> 
           <RecordingLabelFields labels={props.labels} setLabels={props.setLabels} valid={valid} setValid={setValid} />
           {buttons}
         </>
-      ) : props.labels.length ? (
+      ) : !!props.labels && props.labels.length ? (
         props.labels.map((l) => <Label key={l.key} color="grey">{`${l.key}: ${l.value}`}</Label>)
       ) : (
         <Text>-</Text>
