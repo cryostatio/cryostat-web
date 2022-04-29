@@ -36,12 +36,16 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
 
+import '@testing-library/jest-dom';
 import { EditableLabelCell } from '@app/RecordingMetadata/EditableLabelCell';
+
+const mockLabel = {
+  key: 'someLabel',
+  value: 'someValue',
+};
 
 describe('<EditableLabelCell />', () => {
   const minProps = {
@@ -58,5 +62,23 @@ describe('<EditableLabelCell />', () => {
       tree = renderer.create(<EditableLabelCell {...minProps} />);
     });
     expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('displays labels in read-only mode', () => {
+    render(<EditableLabelCell {...minProps} labels={[mockLabel]} />);
+    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
+    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+  });
+
+  it('renders an editable form in edit mode', () => {
+    render(<EditableLabelCell {...minProps} isEditing={true} labels={[mockLabel]} />);
+    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
+    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
+
+    expect(screen.getByText('Add Label')).toBeInTheDocument();
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(screen.getByText('Save')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 });
