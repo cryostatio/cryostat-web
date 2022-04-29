@@ -64,14 +64,21 @@ export interface BulkEditLabelsProps {
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
+  const [prevCommonLabels, setPrevCommonLabels] = React.useState([] as RecordingLabel[]);
   const [editing, setEditing] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const handleUpdateLabelsForSelected = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
+    const toDelete = prevCommonLabels.filter((label) => !includesLabel(commonLabels, label));
+
     props.recordings.forEach((r: ArchivedRecording, idx) => {
       if (props.checkedIndices.includes(idx)) {
-        const updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
+        let updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
+        updatedLabels = updatedLabels.filter((label) => {
+          return !includesLabel(toDelete, label);
+        });
+
         tasks.push(
           props.isTargetRecording
             ? context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first())
@@ -94,20 +101,28 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     setEditing(!editing);
   }, [setEditing]);
 
-  React.useEffect(() => {
-    let allRecordingLabels = [] as RecordingLabel[][];
-    props.recordings.forEach((r: ArchivedRecording, idx) => {
-      if (props.checkedIndices.includes(idx)) {
-        allRecordingLabels.push(parseLabels(r.metadata.labels));
-      }
-    });
+  const updateCommonLabels = React.useCallback(
+    (setLabels: (l: RecordingLabel[]) => void) => {
+      let allRecordingLabels = [] as RecordingLabel[][];
+      props.recordings.forEach((r: ArchivedRecording, idx) => {
+        if (props.checkedIndices.includes(idx)) {
+          allRecordingLabels.push(parseLabels(r.metadata.labels));
+        }
+      });
 
-    const updatedCommonLabels = allRecordingLabels.reduce(
-      (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
-      allRecordingLabels[0]
-    );
-    setCommonLabels(updatedCommonLabels);
-  }, [props.recordings, props.checkedIndices, setCommonLabels, parseLabels]);
+      const updatedCommonLabels = allRecordingLabels.reduce(
+        (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
+        allRecordingLabels[0]
+      );
+      setLabels(updatedCommonLabels);
+    },
+    [props.recordings, props.checkedIndices]
+  );
+
+  React.useEffect(() => {
+    updateCommonLabels(setCommonLabels);
+    updateCommonLabels(setPrevCommonLabels);
+  }, [props.recordings, props.checkedIndices, setCommonLabels]);
 
   return (
     <Card>
@@ -115,15 +130,14 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         <CardHeaderMain>
           <Text>Edit labels for all selected recordings</Text>
           <Text component={TextVariants.small}>
-              Only labels present on all selected recordings will appear here. Any changes to the labels below will apply to
-              all selected recordings.
-            </Text>
+            Only labels present on all selected recordings will appear here. Any changes to the labels below will apply
+            to all selected recordings.
+          </Text>
         </CardHeaderMain>
       </CardHeader>
       <CardBody>
         <Stack hasGutter>
-          <StackItem>
-          </StackItem>
+          <StackItem></StackItem>
           <StackItem>
             <EditableLabelCell
               isEditing={editing}
