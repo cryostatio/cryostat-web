@@ -163,6 +163,10 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
   );
 
   const isAllLabelsValid = React.useCallback(() => {
+    if (!props.labels.length) {
+      return true;
+    }
+
     const initialKeyValid = !!props.labels[0] && !!props.labels[0].key;
     const initialValueValid = !!props.labels[0] && !!props.labels[0].value;
 
