@@ -92,10 +92,18 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
   const handleDeleteLabelButtonClick = React.useCallback(
     (idx) => {
       let updatedLabels = [...props.labels];
+      let updatedValidKeys = [...validKeys];
+      let updatedValidValues = [...validValues];
+
       updatedLabels.splice(idx, 1);
+      updatedValidKeys.splice(idx, 1);
+      updatedValidValues.splice(idx, 1);
+
       props.setLabels(updatedLabels);
+      setValidKeys(updatedValidKeys);
+      setValidVals(updatedValidValues);
     },
-    [props.labels, props.setLabels]
+    [props.labels, validKeys, validValues, props.setLabels, setValidKeys, setValidVals]
   );
 
   const validateKey = React.useCallback(
