@@ -38,7 +38,7 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 
 import '@testing-library/jest-dom';
@@ -60,12 +60,26 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+
+const mockRecordingLabels = {
+  someLabel: 'someValue',
+};
+
+const mockRecording: ArchivedRecording = {
+  name: 'someRecording',
+  downloadUrl: 'http://downloadUrl',
+  reportUrl: 'http://reportUrl',
+  metadata: { labels: mockRecordingLabels },
+};
 
 describe('<BulkEditLabels />', () => {
+  const mockRecordings = [mockRecording];
+
   const minProps = {
     isTargetRecording: true,
-    checkedIndices: [],
-    recordings: [],
+    checkedIndices: [0],
+    recordings: mockRecordings,
     hideForm: () => {},
   };
 
@@ -79,5 +93,123 @@ describe('<BulkEditLabels />', () => {
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('displays labels from selected recordings in read-only mode', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
+    expect(screen.getByText('Edit Labels')).toBeInTheDocument();
+    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+  });
+
+  it('does not display labels for unchecked recordings', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} checkedIndices={[]} />
+      </ServiceContext.Provider>
+    );
+    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(screen.queryByText('Key')).not.toBeInTheDocument();
+    expect(screen.queryByText('Value')).not.toBeInTheDocument();
+  });
+
+  it('displays editable labels form when in edit mode', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByText('Edit Labels'));
+
+    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
+    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
+
+    expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
+    expect(screen.queryByText('Edit Labels')).not.toBeInTheDocument();
+
+    expect(screen.getByText('Add Label')).toBeInTheDocument();
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(screen.getByText('Save')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+  });
+
+  it('reverts to read-only view after leaving label editing form', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByText('Edit Labels'));
+
+    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
+    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+
+    userEvent.click(screen.getByText('Cancel'));
+
+    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
+    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+  });
+
+  it('returns to read-only labels view when edited labels are cancelled', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByText('Edit Labels'));
+
+    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
+    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+
+    expect(screen.queryByText('Edit Labels')).not.toBeInTheDocument();
+    expect(screen.getByText('Add Label')).toBeInTheDocument();
+
+    userEvent.click(screen.getByText('Cancel'));
+
+    expect(screen.getByText('Edit Labels')).toBeInTheDocument();
+    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+  });
+
+  it('saves target recording labels when Save is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByText('Edit Labels'));
+
+    userEvent.click(screen.getByText('Save'));
+
+    const saveRequestSpy = jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata');
+    expect(saveRequestSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('saves archived recording labels when Save is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} isTargetRecording={false} />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByText('Edit Labels'));
+
+    userEvent.click(screen.getByText('Save'));
+
+    const saveRequestSpy = jest.spyOn(defaultServices.api, 'postRecordingMetadata');
+    expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
 });

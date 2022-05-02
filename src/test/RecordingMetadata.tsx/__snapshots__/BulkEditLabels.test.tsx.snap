@@ -46,15 +46,15 @@ exports[`<BulkEditLabels /> renders correctly 1`] = `
       <div
         className="pf-l-stack__item"
       >
-        <p
-          className=""
-          data-ouia-component-id="OUIA-Generated-Text-3"
-          data-ouia-component-type="PF4/Text"
-          data-ouia-safe={true}
-          data-pf-content={true}
+        <span
+          className="pf-c-label"
         >
-          -
-        </p>
+          <span
+            className="pf-c-label__content"
+          >
+            someLabel: someValue
+          </span>
+        </span>
       </div>
       <div
         className="pf-l-stack__item"
