@@ -57,9 +57,15 @@ export interface AllArchivedRecordingsTreeViewProps { }
 
 export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedRecordingsTreeViewProps> = () => {
   const context = React.useContext(ServiceContext);
+
   const [targets, setTargets] = React.useState([] as Target[]);
+  const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [isLoading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
+
+  const tableColumns: string[] = [
+    'Target',
+  ];
 
   React.useEffect(() => {
     const sub = context.targets.targets().subscribe((targets) => {
@@ -83,28 +89,53 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetList]);
 
-  let name;
+  const toggleExpanded = (id) => {
+    const idx = expandedRows.indexOf(id);
+    setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
+  };
+
+  const TargetRow = (props) => {
+    const expandedRowId =`target-table-row-${props.index}-exp`;
+    const handleToggle = () => {
+      toggleExpanded(expandedRowId);
+    };
+
+    const isExpanded = React.useMemo(() => {
+      return expandedRows.includes(expandedRowId);
+    }, [expandedRows, expandedRowId]);
+
+    const parentRow = React.useMemo(() => {
+      return(
+        <Tr>
+          <Td> 
+            
+          </Td>
+          <Td>
+            {(t.alias == t.connectUrl) || !t.alias ?
+              `${t.connectUrl}`
+            : 
+              `${t.alias} (${t.connectUrl})`}
+          </Td>
+        </Tr> 
+      );
+    }, [props.target, props.index, isExpanded, ]);
+  }
+
+  const targetRows = React.useMemo(() => {
+    return targets.map((t, idx) => <TargetRow key={idx} target={t} index={idx}/>)
+  }, [targets, expandedRows]);
+
   return (<>
     <TableComposable aria-label="all-archives">
       <Thead>
         <Tr>
-          <Th key="table-header-target">
-            Target 
-          </Th>
+          <Th key="table-header-expand"/>
+          {tableColumns.map((key , idx) => (
+            <Th key={`table-header-${key}`}>{key}</Th>
+          ))}
         </Tr>
       </Thead>
-      <Tbody>
-        {targets.map((t: Target) => (
-          <Tr>
-            <Td>
-              {(t.alias == t.connectUrl) || !t.alias ?
-                `${t.connectUrl}`
-              : 
-                `${t.alias} (${t.connectUrl})`}
-            </Td>
-          </Tr> 
-        ))}
-      </Tbody>
+      {targetRows}
     </TableComposable>
   </>);
 };
