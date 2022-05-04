@@ -86,13 +86,15 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         );
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(props.hideForm));
+    addSubscription(forkJoin(tasks).subscribe(() => setEditing(!editing)));
   }, [
     props.recordings,
     props.checkedIndices,
     props.isTargetRecording,
     commonLabels,
     parseLabels,
+    editing,
+    setEditing,
     context,
     context.api,
   ]);

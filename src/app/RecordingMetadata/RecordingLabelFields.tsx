@@ -110,7 +110,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
   const validateKeyUniqueness = React.useCallback(
     (idx, key) => {
       const isUniqueKey = validKeys.indexOf(key) === validKeys.lastIndexOf(key);
-      const isValid = isUniqueKey && validKeys[idx] == ValidatedOptions.success;
+      const isValid = isUniqueKey && validKeys[idx] != ValidatedOptions.error;
       updateValidState(idx, getValidatedOption(isValid), validKeys, setValidKeys)
 
       const pairedValueIsEmpty = !props.labels[idx].value;
