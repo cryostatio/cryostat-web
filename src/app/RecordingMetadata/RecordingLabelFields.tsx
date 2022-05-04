@@ -62,18 +62,16 @@ export const LabelPattern = /^\S+$/;
 export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = (props) => {
   const [validKeys, setValidKeys] = React.useState(Array(props.labels.length).fill(ValidatedOptions.default));
   const [validValues, setValidVals] = React.useState(Array(props.labels.length).fill(ValidatedOptions.default));
-  const [uniqueKeys, setUniqueKeys] = React.useState(Array.from(props.labels, (v) => v.key));
 
   const handleKeyChange = React.useCallback(
     (idx, key) => {
       let updatedLabels = [...props.labels];
       updatedLabels[idx].key = key;
-      let updatedKeys = [...uniqueKeys];
-      updatedKeys[idx] = key;
-      setUniqueKeys(updatedKeys);
       props.setLabels(updatedLabels);
+      
+      updateValidState(idx, getValidatedOption(LabelPattern.test(key)), validKeys, setValidKeys)
     },
-    [props.labels, props.setLabels, uniqueKeys, setUniqueKeys]
+    [props.labels, props.setLabels, validKeys, setValidKeys]
   );
 
   const handleValueChange = React.useCallback(
@@ -81,70 +79,63 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       let updatedLabels = [...props.labels];
       updatedLabels[idx].value = value;
       props.setLabels(updatedLabels);
+      
+      updateValidState(idx, getValidatedOption(LabelPattern.test(value)), validValues, setValidVals)
     },
-    [props.labels, props.setLabels]
+    [props.labels, props.setLabels, validValues, setValidVals]
   );
 
   const handleAddLabelButtonClick = React.useCallback(() => {
     props.setLabels([...props.labels, { key: '', value: '' } as RecordingLabel]);
+    props.setValid(ValidatedOptions.default);
     setValidKeys([...validKeys, ValidatedOptions.default]);
     setValidVals([...validValues, ValidatedOptions.default]);
-    props.setValid(ValidatedOptions.default);
   }, [props.labels, validKeys, validValues, props.setLabels, props.setValid, setValidKeys, setValidVals]);
 
   const handleDeleteLabelButtonClick = React.useCallback(
     (idx) => {
-      let updatedLabels = [...props.labels];
-      let updatedValidKeys = [...validKeys];
-      let updatedValidValues = [...validValues];
-
-      updatedLabels.splice(idx, 1);
-      updatedValidKeys.splice(idx, 1);
-      updatedValidValues.splice(idx, 1);
-
-      props.setLabels(updatedLabels);
-      setValidKeys(updatedValidKeys);
-      setValidVals(updatedValidValues);
+      removeAtIndex(idx, props.labels, props.setLabels);
+      removeAtIndex(idx, validKeys, setValidKeys);
+      removeAtIndex(idx, validValues, setValidVals);
     },
     [props.labels, validKeys, validValues, props.setLabels, setValidKeys, setValidVals]
   );
 
-  const validateKey = React.useCallback(
+  const removeAtIndex = (idx, arr, setArr) => {
+    let updated = [...arr];
+    updated.splice(idx, 1);
+    setArr(updated);
+  };
+
+  const validateKeyUniqueness = React.useCallback(
     (idx, key) => {
-      let updatedValidKeys = [...validKeys];
-      const hasValidSyntax = LabelPattern.test(key);
-      const isUniqueKey = uniqueKeys.indexOf(key) == uniqueKeys.lastIndexOf(key);
-      const isValid = hasValidSyntax && isUniqueKey;
+      const isUniqueKey = validKeys.indexOf(key) === validKeys.lastIndexOf(key);
+      const isValid = isUniqueKey && validKeys[idx] == ValidatedOptions.success;
+      updateValidState(idx, getValidatedOption(isValid), validKeys, setValidKeys)
 
       const pairedValueIsEmpty = !props.labels[idx].value;
       if (pairedValueIsEmpty) {
-        let updatedValidValues = [...validValues];
-        setValidVals(updatedValidValues);
+        updateValidState(idx, ValidatedOptions.warning, validValues, setValidVals);
       }
-
-      updatedValidKeys[idx] = isValid ? ValidatedOptions.success : ValidatedOptions.error;
-      setValidKeys(updatedValidKeys);
     },
     [props.labels, setValidKeys, setValidVals]
   );
 
-  const validateValue = React.useCallback(
-    (idx, value) => {
-      let updatedValidValues = [...validValues];
-      const hasValidSyntax = LabelPattern.test(value);
-
+  const validateKeyPairExists = React.useCallback(
+    (idx) => {
       const pairedKeyIsEmpty = !props.labels[idx].key;
       if (pairedKeyIsEmpty) {
-        let updatedValidKeys = [...validKeys];
-        updatedValidKeys[idx] = ValidatedOptions.warning;
-        setValidKeys(updatedValidKeys);
+        updateValidState(idx, ValidatedOptions.warning, validKeys, setValidKeys)
       }
-
-      updatedValidValues[idx] = hasValidSyntax ? ValidatedOptions.success : ValidatedOptions.error;
-      setValidVals(updatedValidValues);
     },
-    [props.labels, setValidVals, setValidKeys]
+    [props.labels, validKeys, setValidKeys]
   );
+
+  const updateValidState = (idx, newVal, arr, setArr) => {
+    let updated = [...arr];
+    updated[idx] = newVal;
+    setArr(updated);
+  };
 
   const isLabelInvalid = React.useCallback(
     (validationState: ValidatedOptions, idx: number) => {
@@ -152,7 +143,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
         case ValidatedOptions.success:
           return false;
         case ValidatedOptions.default:
-          if (!!props.labels[idx].key && !!props.labels[idx].value) {
+          if (matchesLabelSyntax(props.labels[idx])) {
             return false;
           }
         default:
@@ -166,24 +157,24 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     if (!props.labels.length) {
       return true;
     }
+    const firstLabelValid = matchesLabelSyntax(props.labels[0]);
 
-    const initialKeyValid = !!props.labels[0] && !!props.labels[0].key;
-    const initialValueValid = !!props.labels[0] && !!props.labels[0].value;
-
-    const allKeysValid = validKeys.reduce(
+    return validKeys.reduce(
       (prev, curr, idx) => (isLabelInvalid(curr, idx) ? false : prev),
-      initialKeyValid
+      firstLabelValid
     );
-    const allValuesValid = validValues.reduce(
-      (prev, curr, idx) => (isLabelInvalid(curr, idx) ? false : prev),
-      initialValueValid
-    );
-
-    return allKeysValid && allValuesValid;
   }, [props.labels, validKeys, validValues, isLabelInvalid]);
 
+  const matchesLabelSyntax = React.useCallback((label: RecordingLabel) => {
+    return !!label && LabelPattern.test(label.key) && LabelPattern.test(label.value);
+  }, [LabelPattern]);
+
+  const getValidatedOption = (isValid: boolean) => {
+    return isValid ? ValidatedOptions.success : ValidatedOptions.error;
+  }
+
   React.useEffect(() => {
-    props.setValid(isAllLabelsValid() ? ValidatedOptions.success : ValidatedOptions.error);
+    props.setValid(getValidatedOption(isAllLabelsValid()));
   }, [validKeys, validValues]);
 
   return (
@@ -202,8 +193,8 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               aria-describedby="label-key-input-helper"
               aria-label="label key"
               value={label.key ?? ''}
-              onChange={(e) => handleKeyChange(idx, e)}
-              onBlur={(e) => validateKey(idx, e.target.value)}
+              onChange={(key) => handleKeyChange(idx, key)}
+              onBlur={(e) => validateKeyUniqueness(idx, e.target.value)}
               validated={validKeys[idx]}
             />
             <Text>Key</Text>
@@ -227,8 +218,8 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               aria-describedby="label-value-input-helper"
               aria-label="label value"
               value={label.value ?? ''}
-              onChange={(e) => handleValueChange(idx, e)}
-              onBlur={(e) => validateValue(idx, e.target.value)}
+              onChange={(value) => handleValueChange(idx, value)}
+              onBlur={() => validateKeyPairExists(idx)}
               validated={validValues[idx]}
             />
             <Text>Value</Text>
@@ -237,6 +228,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
             <Button
               onClick={() => handleDeleteLabelButtonClick(idx)}
               variant="link"
+              data-testid="remove-label-button"
               aria-label="remove label"
               icon={<CloseIcon color="gray" size="sm" />}
             />
