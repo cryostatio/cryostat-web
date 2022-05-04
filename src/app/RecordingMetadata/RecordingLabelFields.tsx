@@ -60,8 +60,8 @@ export interface RecordingLabelFieldsProps {
 export const LabelPattern = /^\S+$/;
 
 export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = (props) => {
-  const [validKeys, setValidKeys] = React.useState(Array(props.labels.length).fill(ValidatedOptions.default));
-  const [validValues, setValidVals] = React.useState(Array(props.labels.length).fill(ValidatedOptions.default));
+  const [validKeys, setValidKeys] = React.useState(Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default));
+  const [validValues, setValidVals] = React.useState(Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default));
 
   const handleKeyChange = React.useCallback(
     (idx, key) => {
@@ -182,7 +182,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       <Button onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
         Add Label
       </Button>
-      {props.labels.map((label, idx) => (
+      {!!props.labels && props.labels.map((label, idx) => (
         <Split hasGutter key={idx}>
           <SplitItem isFilled>
             <TextInput

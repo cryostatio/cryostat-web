@@ -76,11 +76,12 @@ const mockRecording: ArchivedRecording = {
 describe('<BulkEditLabels />', () => {
   const mockRecordings = [mockRecording];
 
-  const minProps = {
+  const mockProps = {
     isTargetRecording: true,
     checkedIndices: [0],
     recordings: mockRecordings,
-    hideForm: () => {},
+    editing: true,
+    setEditing: jest.fn(() => (editing: boolean) => {}),
   };
 
   it('renders correctly', async () => {
@@ -88,7 +89,7 @@ describe('<BulkEditLabels />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <BulkEditLabels {...minProps} />
+          <BulkEditLabels {...mockProps} />
         </ServiceContext.Provider>
       );
     });
@@ -98,22 +99,21 @@ describe('<BulkEditLabels />', () => {
   it('displays labels from selected recordings in read-only mode', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} />
+        <BulkEditLabels {...mockProps} editing={false} />
       </ServiceContext.Provider>
     );
 
     expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
-    expect(screen.getByText('Edit Labels')).toBeInTheDocument();
     expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
   });
 
   it('does not display labels for unchecked recordings', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} checkedIndices={[]} />
+        <BulkEditLabels {...mockProps} checkedIndices={[]} />
       </ServiceContext.Provider>
     );
-    expect(screen.getByText('-')).toBeInTheDocument();
+
     expect(screen.queryByText('Key')).not.toBeInTheDocument();
     expect(screen.queryByText('Value')).not.toBeInTheDocument();
   });
@@ -121,17 +121,14 @@ describe('<BulkEditLabels />', () => {
   it('displays editable labels form when in edit mode', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} />
+        <BulkEditLabels {...mockProps} />
       </ServiceContext.Provider>
     );
-
-    userEvent.click(screen.getByText('Edit Labels'));
 
     const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
     const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
 
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
-    expect(screen.queryByText('Edit Labels')).not.toBeInTheDocument();
 
     expect(screen.getByText('Add Label')).toBeInTheDocument();
     expect(labelKeyInput).toHaveClass('pf-c-form-control');
@@ -140,87 +137,64 @@ describe('<BulkEditLabels />', () => {
     expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
-  it('reverts to read-only view after leaving label editing form', () => {
+  it('returns to read-only view when edited labels are cancelled', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} />
+        <BulkEditLabels {...mockProps} />
       </ServiceContext.Provider>
     );
-
-    userEvent.click(screen.getByText('Edit Labels'));
 
     const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
     const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
     expect(labelKeyInput).toHaveClass('pf-c-form-control');
     expect(labelValueInput).toHaveClass('pf-c-form-control');
 
-    userEvent.click(screen.getByText('Cancel'));
-
-    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
-    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
-  });
-
-  it('returns to read-only labels view when edited labels are cancelled', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} />
-      </ServiceContext.Provider>
-    );
-
-    userEvent.click(screen.getByText('Edit Labels'));
-
-    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
-    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-
-    expect(screen.queryByText('Edit Labels')).not.toBeInTheDocument();
     expect(screen.getByText('Add Label')).toBeInTheDocument();
 
     userEvent.click(screen.getByText('Cancel'));
 
-    expect(screen.getByText('Edit Labels')).toBeInTheDocument();
-    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+    expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
+    expect(mockProps.setEditing).toHaveBeenCalledWith(false);
   });
 
   it('saves target recording labels when Save is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} />
+        <BulkEditLabels {...mockProps} />
       </ServiceContext.Provider>
     );
-
-    userEvent.click(screen.getByText('Edit Labels'));
 
     userEvent.click(screen.getByText('Save'));
 
     const saveRequestSpy = jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata');
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
+
+    expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
+    expect(mockProps.setEditing).toHaveBeenCalledWith(false);
   });
 
   it('saves archived recording labels when Save is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} isTargetRecording={false} />
+        <BulkEditLabels {...mockProps} isTargetRecording={false} />
       </ServiceContext.Provider>
     );
-
-    userEvent.click(screen.getByText('Edit Labels'));
 
     userEvent.click(screen.getByText('Save'));
 
     const saveRequestSpy = jest.spyOn(defaultServices.api, 'postRecordingMetadata');
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
+
+    expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
+    expect(mockProps.setEditing).toHaveBeenCalledWith(false);
   });
 
   it('adds a label when Add Label is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} isTargetRecording={false} />
+        <BulkEditLabels {...mockProps} isTargetRecording={false} />
       </ServiceContext.Provider>
     );
-
-    userEvent.click(screen.getByText('Edit Labels'));
 
     expect(screen.getAllByLabelText('label key').length).toBe(1);
     expect(screen.getAllByLabelText('label value').length).toBe(1);
@@ -234,11 +208,9 @@ describe('<BulkEditLabels />', () => {
   it('removes a label when Delete button is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...minProps} isTargetRecording={false} />
+        <BulkEditLabels {...mockProps} isTargetRecording={false} />
       </ServiceContext.Provider>
     );
-
-    userEvent.click(screen.getByText('Edit Labels'));
 
     expect(screen.getAllByLabelText('label key').length).toBe(1);
     expect(screen.getAllByLabelText('label value').length).toBe(1);

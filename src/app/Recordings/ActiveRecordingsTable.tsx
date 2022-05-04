@@ -66,8 +66,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [labelButtonText, setLabelButtonText] = React.useState('Show Label Options');
-  const [showMetadataOptions, setShowMetadataOptions] = React.useState(false);
+  const [editingLabels, setEditingLabels] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -99,6 +98,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const handleCreateRecording = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
   }, [routerHistory]);
+
+  const handleEditLabels = React.useCallback(() => {
+    setEditingLabels(editing => !editing);
+  }, [editingLabels, setEditingLabels]);
 
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
@@ -425,12 +428,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
-  const handleToggleLabelOptions = React.useCallback(() => {
-    setShowMetadataOptions(!showMetadataOptions);
-    setLabelButtonText(showMetadataOptions ? 'Show Label Options': 'Hide Label Options');
-  }, [showMetadataOptions, setShowMetadataOptions, setLabelButtonText]);
-
-
   const RecordingsToolbar = () => {
     const isStopDisabled = React.useMemo(() => {
       if (!checkedIndices.length) {
@@ -451,7 +448,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         ));
       }
       arr.push((
-        <Button key="showLabelOptions" variant="secondary" onClick={handleToggleLabelOptions} isDisabled={!checkedIndices.length}>{labelButtonText}</Button>
+        <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
       ));
       arr.push((
         <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
@@ -484,7 +481,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [recordings, expandedRows, checkedIndices]);
 
   return (<>
-    { showMetadataOptions && <BulkEditLabels isTargetRecording={true} checkedIndices={checkedIndices} recordings={recordings} hideForm={handleToggleLabelOptions} />}
+    <BulkEditLabels isTargetRecording={true} checkedIndices={checkedIndices} recordings={recordings} editing={editingLabels} setEditing={setEditingLabels}/>
     <RecordingsTable
         tableTitle="Active Flight Recordings"
         toolbar={<RecordingsToolbar />}

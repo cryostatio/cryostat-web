@@ -58,14 +58,14 @@ export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
   checkedIndices: number[];
   recordings: ArchivedRecording[];
-  hideForm: () => void;
+  editing: boolean;
+  setEditing: (editing: boolean) => void;
 }
 
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
   const [prevCommonLabels, setPrevCommonLabels] = React.useState([] as RecordingLabel[]);
-  const [editing, setEditing] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const handleUpdateLabelsForSelected = React.useCallback(() => {
@@ -86,22 +86,22 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         );
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(() => setEditing(!editing)));
+    addSubscription(forkJoin(tasks).subscribe(() => props.setEditing(!props.editing)));
   }, [
     props.recordings,
     props.checkedIndices,
     props.isTargetRecording,
+    props.editing,
+    props.setEditing,
     commonLabels,
     parseLabels,
-    editing,
-    setEditing,
     context,
     context.api,
   ]);
 
   const handleEditLabels = React.useCallback(() => {
-    setEditing(!editing);
-  }, [setEditing]);
+    props.setEditing(!props.editing);
+  }, [props.setEditing]);
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
@@ -130,10 +130,9 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     <Card>
       <CardHeader>
         <CardHeaderMain>
-          <Text>Edit labels for all selected recordings</Text>
+          <Text>Labels present on all selected recordings</Text>
           <Text component={TextVariants.small}>
-            Only labels present on all selected recordings will appear here. Any changes to the labels below will apply
-            to all selected recordings.
+            Editing the labels below will affect all selected recordings.
           </Text>
         </CardHeaderMain>
       </CardHeader>
@@ -142,20 +141,13 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           <StackItem></StackItem>
           <StackItem>
             <EditableLabelCell
-              isEditing={editing}
+              isEditing={props.editing}
               labels={commonLabels}
               setLabels={setCommonLabels}
               onPatchSubmit={handleUpdateLabelsForSelected}
-              onPatchCancel={() => setEditing(false)}
+              onPatchCancel={() => props.setEditing(false)}
             />
           </StackItem>
-          {!editing && (
-            <StackItem>
-              <Button key="archive" variant="secondary" onClick={handleEditLabels}>
-                Edit Labels
-              </Button>
-            </StackItem>
-          )}
         </Stack>
       </CardBody>
     </Card>

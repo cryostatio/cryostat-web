@@ -61,8 +61,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [labelButtonText, setLabelButtonText] = React.useState('Show Label Options');
-  const [showMetadataOptions, setShowMetadataOptions] = React.useState(false);
+  const [editingLabels, setEditingLabels] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -84,6 +83,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       setCheckedIndices(ci => ci.filter(v => v !== index));
     }
   }, [setCheckedIndices, setHeaderChecked]);
+
+  const handleEditLabels = React.useCallback(() => {
+    setEditingLabels(editing => !editing);
+  }, [editingLabels, setEditingLabels]);
 
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
@@ -198,12 +201,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       forkJoin(tasks).subscribe()
     );
   };
-
-  const handleToggleLabelOptions = React.useCallback(() => {
-    setShowMetadataOptions(!showMetadataOptions);
-    setLabelButtonText(showMetadataOptions ? 'Show Label Options': 'Hide Label Options');
-  }, [showMetadataOptions, setShowMetadataOptions, setLabelButtonText]);
-
+ 
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
@@ -320,7 +318,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         <ToolbarContent>
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
-              <Button key="showLabelOptions" variant="secondary" onClick={handleToggleLabelOptions} isDisabled={!checkedIndices.length}>{labelButtonText}</Button>
+              <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
             </ToolbarItem>
             <ToolbarItem>
               <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
@@ -336,7 +334,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [recordings, expandedRows, checkedIndices]);
 
   return (<>
-    { showMetadataOptions && <BulkEditLabels isTargetRecording={false} checkedIndices={checkedIndices} recordings={recordings} hideForm={handleToggleLabelOptions} />}
+    <BulkEditLabels isTargetRecording={false} checkedIndices={checkedIndices} recordings={recordings} editing={editingLabels} setEditing={setEditingLabels}/>
     <RecordingsTable
         tableTitle="Archived Flight Recordings"
         toolbar={<RecordingsToolbar />}
