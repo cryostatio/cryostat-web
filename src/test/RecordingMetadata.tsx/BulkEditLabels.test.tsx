@@ -212,4 +212,40 @@ describe('<BulkEditLabels />', () => {
     const saveRequestSpy = jest.spyOn(defaultServices.api, 'postRecordingMetadata');
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
+
+  it('adds a label when Add Label is clicked', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} isTargetRecording={false} />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByText('Edit Labels'));
+
+    expect(screen.getAllByLabelText('label key').length).toBe(1);
+    expect(screen.getAllByLabelText('label value').length).toBe(1);
+
+    userEvent.click(screen.getByText('Add Label'));
+
+    expect(screen.getAllByLabelText('label key').length).toBe(2);
+    expect(screen.getAllByLabelText('label value').length).toBe(2);
+  });
+
+  it('removes a label when Delete button is clicked', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...minProps} isTargetRecording={false} />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByText('Edit Labels'));
+
+    expect(screen.getAllByLabelText('label key').length).toBe(1);
+    expect(screen.getAllByLabelText('label value').length).toBe(1);
+
+    userEvent.click(screen.getAllByTestId('remove-label-button')[0]);
+
+    expect(screen.queryByLabelText('label key')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('label value')).not.toBeInTheDocument();
+  });
 });

@@ -56,6 +56,11 @@ const mockLabel2 = {
   value: 'anotherValue',
 } as RecordingLabel;
 
+const mockEmptyLabel = {
+  key: '',
+  value: '',
+} as RecordingLabel;
+
 let mockLabels = [mockLabel1, mockLabel2];
 let mockValid = ValidatedOptions.default;
 
@@ -67,9 +72,9 @@ describe('<RecordingLabelFields />', () => {
 
   let mockProps = {
     labels: mockLabels,
-    setLabels: (l: RecordingLabel[]) => {
+    setLabels: jest.fn(() => (l: RecordingLabel[]) => {
       mockLabels = l.slice();
-    },
+    }),
     valid: mockValid,
     setValid: (state: ValidatedOptions) => {
       mockValid = state;
@@ -130,8 +135,8 @@ describe('<RecordingLabelFields />', () => {
 
     userEvent.click(screen.getByText('Add Label'));
 
-    expect(screen.getAllByLabelText('label key').length).toBe(3);
-    expect(screen.getAllByLabelText('label value').length).toBe(3);
+    expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
+    expect(mockProps.setLabels).toHaveBeenCalledWith([mockLabel1, mockLabel2, mockEmptyLabel]);
   });
 
   it('removes the correct label when Delete button is clicked', () => {
@@ -142,13 +147,8 @@ describe('<RecordingLabelFields />', () => {
 
     userEvent.click(screen.getAllByTestId('remove-label-button')[0]);
 
-    expect(screen.getAllByLabelText('label key').length).toBe(1);
-    expect(screen.getAllByLabelText('label value').length).toBe(1);
-
-    expect(screen.getAllByDisplayValue('someLabel').length).toBe(0);
-    expect(screen.getAllByDisplayValue('someValue').length).toBe(0);
-    expect(screen.getAllByDisplayValue('anotherLabel')[0]).toBeInTheDocument();
-    expect(screen.getAllByDisplayValue('anotherValue')[0]).toBeInTheDocument();
+    expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
+    expect(mockProps.setLabels).toHaveBeenCalledWith([mockLabel2]);
   });
 
   it('validates labels on initial render', () => {
@@ -182,7 +182,7 @@ describe('<RecordingLabelFields />', () => {
   });
 
   it('invalidates form when the label key is invalid', () => {
-    const invalidLabels = [{key: 'label with whitespace', value: 'someValue'}];
+    const invalidLabels = [{ key: 'label with whitespace', value: 'someValue' }];
 
     render(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
 
@@ -190,7 +190,7 @@ describe('<RecordingLabelFields />', () => {
   });
 
   it('invalidates form when the label value is invalid', () => {
-    const invalidLabels = [{key: 'someLabel', value: 'value with whitespace'}];
+    const invalidLabels = [{ key: 'someLabel', value: 'value with whitespace' }];
 
     render(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
 
