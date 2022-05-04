@@ -38,26 +38,162 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
-import { of } from 'rxjs';
+import { render, screen, waitFor } from '@testing-library/react';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 
 import '@testing-library/jest-dom';
 
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { ValidatedOptions } from '@patternfly/react-core';
 
+const mockLabel1 = {
+  key: 'someLabel',
+  value: 'someValue',
+} as RecordingLabel;
+
+const mockLabel2 = {
+  key: 'anotherLabel',
+  value: 'anotherValue',
+} as RecordingLabel;
+
+let mockLabels = [mockLabel1, mockLabel2];
+let mockValid = ValidatedOptions.default;
+
 describe('<RecordingLabelFields />', () => {
-  const minProps = {
-    labels: [],
-    setLabels: () => {},
-    valid: ValidatedOptions.success,
-    setValid: () => {},
+  beforeEach(() => {
+    mockLabels = [mockLabel1, mockLabel2];
+    mockValid = ValidatedOptions.default;
+  });
+
+  let mockProps = {
+    labels: mockLabels,
+    setLabels: jest.fn(() => (l: RecordingLabel[]) => {
+      mockLabels = l.slice();
+    }),
+    valid: mockValid,
+    setValid: (state: ValidatedOptions) => {
+      mockValid = state;
+    },
   };
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
-      tree = renderer.create(<RecordingLabelFields {...minProps} />);
+      tree = renderer.create(<RecordingLabelFields {...mockProps} />);
     });
     expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('displays all labels in form fields', () => {
+    render(<RecordingLabelFields {...mockProps} />);
+
+    const label1KeyInput = screen.getAllByDisplayValue('someLabel')[0];
+    const label1ValueInput = screen.getAllByDisplayValue('someValue')[0];
+    const label2KeyInput = screen.getAllByDisplayValue('anotherLabel')[0];
+    const label2ValueInput = screen.getAllByDisplayValue('anotherValue')[0];
+
+    expect(label1KeyInput).toHaveClass('pf-c-form-control');
+    expect(label1ValueInput).toHaveClass('pf-c-form-control');
+    expect(label2KeyInput).toHaveClass('pf-c-form-control');
+    expect(label2ValueInput).toHaveClass('pf-c-form-control');
+
+    expect(screen.getByText('Add Label')).toBeInTheDocument();
+  });
+
+  it('updates the label key when entering text into the Key input', () => {
+    render(<RecordingLabelFields {...mockProps} />);
+
+    const labelKeyInput = screen.getAllByLabelText('label key')[0];
+    userEvent.clear(labelKeyInput);
+
+    userEvent.type(labelKeyInput, 'someEditedKey');
+    expect(mockProps.labels[0].key).toBe('someEditedKey');
+  });
+
+  it('updates the label value when entering text into the Value input', () => {
+    render(<RecordingLabelFields {...mockProps} />);
+
+    const labelValueInput = screen.getAllByLabelText('label value')[0];
+
+    userEvent.clear(labelValueInput);
+
+    userEvent.type(labelValueInput, 'someEditedValue');
+
+    expect(mockProps.labels[0].value).toBe('someEditedValue');
+  });
+
+  it('adds a label when Add Label is clicked', () => {
+    render(<RecordingLabelFields {...mockProps} />);
+
+    expect(screen.getAllByLabelText('label key').length).toBe(2);
+    expect(screen.getAllByLabelText('label value').length).toBe(2);
+
+    userEvent.click(screen.getByText('Add Label'));
+
+    expect(screen.getAllByLabelText('label key').length).toBe(3);
+    expect(screen.getAllByLabelText('label value').length).toBe(3);
+  });
+
+  it('removes the correct label when Delete button is clicked', () => {
+    render(<RecordingLabelFields {...mockProps} />);
+
+    expect(screen.getAllByLabelText('label key').length).toBe(2);
+    expect(screen.getAllByLabelText('label value').length).toBe(2);
+
+    userEvent.click(screen.getAllByTestId('remove-label-button')[0]);
+
+    expect(screen.getAllByLabelText('label key').length).toBe(1);
+    expect(screen.getAllByLabelText('label value').length).toBe(1);
+
+    expect(screen.getAllByDisplayValue('someLabel').length).toBe(0);
+    expect(screen.getAllByDisplayValue('someValue').length).toBe(0);
+    expect(screen.getAllByDisplayValue('anotherLabel')[0]).toBeInTheDocument();
+    expect(screen.getAllByDisplayValue('anotherValue')[0]).toBeInTheDocument();
+  });
+
+  it('validates labels on initial render', () => {
+    render(<RecordingLabelFields {...mockProps} />);
+
+    expect(mockValid).toBe(ValidatedOptions.success);
+  });
+
+  it('validates the label key when leaving the input field', () => {
+    render(<RecordingLabelFields {...mockProps} />);
+
+    const labelKeyInput = screen.getAllByLabelText('label key')[0];
+    userEvent.click(labelKeyInput);
+
+    // click somewhere else to leave the input field and trigger validation
+    userEvent.click(screen.getAllByLabelText('label value')[0]);
+
+    expect(mockValid).toBe(ValidatedOptions.success);
+  });
+
+  it('validates the label value when leaving the input field', () => {
+    render(<RecordingLabelFields {...mockProps} />);
+
+    const labelValueInput = screen.getAllByLabelText('label value')[0];
+    userEvent.click(labelValueInput);
+
+    // click somewhere else to leave the input field and trigger validation
+    userEvent.click(screen.getAllByLabelText('label key')[0]);
+
+    expect(mockValid).toBe(ValidatedOptions.success);
+  });
+
+  it('invalidates form when the label key is invalid', () => {
+    const invalidLabels = [{key: 'label with whitespace', value: 'someValue'}];
+
+    render(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
+
+    expect(mockValid).toBe(ValidatedOptions.error);
+  });
+
+  it('invalidates form when the label value is invalid', () => {
+    const invalidLabels = [{key: 'someLabel', value: 'value with whitespace'}];
+
+    render(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
+
+    expect(mockValid).toBe(ValidatedOptions.error);
   });
 });
