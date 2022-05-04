@@ -43,7 +43,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
-import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from '@app/Recordings/RecordingActions';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
 import { ReportFrame } from '@app/Recordings/ReportFrame';
@@ -57,18 +57,13 @@ export interface AllArchivedRecordingsTreeViewProps { }
 
 export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedRecordingsTreeViewProps> = () => {
   const context = React.useContext(ServiceContext);
-  const [targets, setTargets] = React.useState([{name : 'Uploaded'}] as TreeViewDataItem[]);
+  const [targets, setTargets] = React.useState([] as Target[]);
   const [isLoading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
     const sub = context.targets.targets().subscribe((targets) => {
-      targets.map((t: Target) => (
-        (t.alias == t.connectUrl) || !t.alias ?
-          setTargets(old => old.concat([{ name: `${t.connectUrl}` }]))
-        : 
-          setTargets(old => old.concat([{ name: `${t.alias} (${t.connectUrl})` }]))
-      ))
+      setTargets(targets);
     });
     return () => sub.unsubscribe();
   }, [context, context.targets, setTargets]);
@@ -88,7 +83,28 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetList]);
 
+  let name;
   return (<>
-    <TreeView data={targets}></TreeView>
+    <TableComposable aria-label="all-archives">
+      <Thead>
+        <Tr>
+          <Th key="table-header-target">
+            Target 
+          </Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {targets.map((t: Target) => (
+          <Tr>
+            <Td>
+              {(t.alias == t.connectUrl) || !t.alias ?
+                `${t.connectUrl}`
+              : 
+                `${t.alias} (${t.connectUrl})`}
+            </Td>
+          </Tr> 
+        ))}
+      </Tbody>
+    </TableComposable>
   </>);
 };
