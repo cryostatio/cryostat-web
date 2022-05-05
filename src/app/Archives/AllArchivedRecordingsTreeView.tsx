@@ -94,6 +94,10 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
+  const RecordingRow = (props) => {
+
+  }
+
   const TargetRow = (props) => {
     const expandedRowId =`target-table-row-${props.index}-exp`;
     const handleToggle = () => {
@@ -107,18 +111,31 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
     const parentRow = React.useMemo(() => {
       return(
         <Tr>
-          <Td> 
-            
-          </Td>
-          <Td>
-            {(t.alias == t.connectUrl) || !t.alias ?
-              `${t.connectUrl}`
+          <Td
+              key={`target-table-row-${props.index}_1`}
+              id={`target-ex-toggle-${props.index}`}
+              aria-controls={`target-ex-expand-${props.index}`}
+              expand={{
+                rowIndex: props.index,
+                isExpanded: isExpanded,
+                onToggle: handleToggle,
+              }}
+            />
+          <Td key={`target-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
+            {(props.target.alias == props.target.connectUrl) || !props.target.alias ?
+              `${props.target.connectUrl}`
             : 
-              `${t.alias} (${t.connectUrl})`}
+              `${props.target.alias} (${props.target.connectUrl})`}
           </Td>
         </Tr> 
       );
-    }, [props.target, props.index, isExpanded, ]);
+    }, [props.target, props.target.alias, props.target.connectUrl, props.index, isExpanded, handleToggle, tableColumns]);
+
+    return (
+      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
+        {parentRow}
+      </Tbody>
+    );
   }
 
   const targetRows = React.useMemo(() => {
