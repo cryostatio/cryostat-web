@@ -52,6 +52,7 @@ import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
+import { NestedArchivedRecordingsTable } from './NestedArchivedRecordingsTable';
 
 export interface AllArchivedRecordingsTreeViewProps { }
 
@@ -60,7 +61,7 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
 
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [isLoading, setLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
@@ -75,11 +76,11 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
   }, [context, context.targets, setTargets]);
 
   const refreshTargetList = React.useCallback(() => {
-    setLoading(true);
+    setIsLoading(true);
     addSubscription(
-      context.targets.queryForTargets().subscribe(() => setLoading(false))
+      context.targets.queryForTargets().subscribe(() => setIsLoading(false))
     );
-  }, [setLoading, addSubscription, context.targets]);
+  }, [setIsLoading, addSubscription, context.targets]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -93,10 +94,6 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
-
-  const RecordingRow = (props) => {
-
-  }
 
   const TargetRow = (props) => {
     const expandedRowId =`target-table-row-${props.index}-exp`;
@@ -131,9 +128,26 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
       );
     }, [props.target, props.target.alias, props.target.connectUrl, props.index, isExpanded, handleToggle, tableColumns]);
 
+    const childRow = React.useMemo(() => {
+      return (
+        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
+          <Td
+            key={`target-ex-expand-${props.index}`}
+            dataLabel={"Content Details"}
+            colSpan={tableColumns.length + 3}
+          >
+          <ExpandableRowContent>
+            <NestedArchivedRecordingsTable target={props.target}/>
+          </ExpandableRowContent>
+          </Td>
+        </Tr>
+      )
+    }, [props.target, props.index, isExpanded, tableColumns]);
+
     return (
       <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
         {parentRow}
+        {childRow}
       </Tbody>
     );
   }
