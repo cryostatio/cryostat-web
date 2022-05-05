@@ -168,16 +168,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   React.useEffect(() => {
     addSubscription(
-      combineLatest([
-      context.target.target(),
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
-    ])
-      .subscribe(parts => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
+      .subscribe(event => {
         setRecordings(old => old.map(
           o => o.name == event.message.recordingName 
             ? { ...o, metadata: { labels: event.message.metadata.labels } } 
