@@ -42,17 +42,21 @@ import {
   CardBody,
   CardHeader,
   CardHeaderMain,
+  Split,
+  SplitItem,
   Stack,
   StackItem,
   Text,
   TextVariants,
+  ValidatedOptions,
 } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
 import { first, forkJoin, Observable } from 'rxjs';
-import { EditableLabelCell } from '@app/RecordingMetadata/EditableLabelCell';
+import { LabelCell } from '@app/RecordingMetadata/LabelCell';
+import { RecordingLabelFields } from './RecordingLabelFields';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -66,6 +70,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const context = React.useContext(ServiceContext);
   const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
   const [prevCommonLabels, setPrevCommonLabels] = React.useState([] as RecordingLabel[]);
+  const [valid, setValid] = React.useState(ValidatedOptions.default);
   const addSubscription = useSubscriptions();
 
   const handleUpdateLabelsForSelected = React.useCallback(() => {
@@ -99,10 +104,6 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     context.api,
   ]);
 
-  const handleEditLabels = React.useCallback(() => {
-    props.setEditing(!props.editing);
-  }, [props.setEditing]);
-
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
       let allRecordingLabels = [] as RecordingLabel[][];
@@ -131,22 +132,40 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
       <CardHeader>
         <CardHeaderMain>
           <Text>Labels present on all selected recordings</Text>
-          <Text component={TextVariants.small}>
-            Editing the labels below will affect all selected recordings.
-          </Text>
+          <Text component={TextVariants.small}>Editing the labels below will affect all selected recordings.</Text>
         </CardHeaderMain>
       </CardHeader>
       <CardBody>
         <Stack hasGutter>
-          <StackItem></StackItem>
           <StackItem>
-            <EditableLabelCell
-              isEditing={props.editing}
-              labels={commonLabels}
-              setLabels={setCommonLabels}
-              onPatchSubmit={handleUpdateLabelsForSelected}
-              onPatchCancel={() => props.setEditing(false)}
-            />
+            {props.editing ? (
+              <>
+                <RecordingLabelFields
+                  labels={commonLabels}
+                  setLabels={setCommonLabels}
+                  valid={valid}
+                  setValid={setValid}
+                />
+                <Split hasGutter>
+                  <SplitItem>
+                    <Button
+                      variant="primary"
+                      onClick={handleUpdateLabelsForSelected}
+                      isDisabled={valid != ValidatedOptions.success}
+                    >
+                      Save
+                    </Button>
+                  </SplitItem>
+                  <SplitItem>
+                    <Button variant="secondary" onClick={() => props.setEditing(false)}>
+                      Cancel
+                    </Button>
+                  </SplitItem>
+                </Split>
+              </>
+            ) : (
+              <LabelCell labels={commonLabels} />
+            )}
           </StackItem>
         </Stack>
       </CardBody>

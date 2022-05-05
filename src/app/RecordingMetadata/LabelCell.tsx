@@ -35,50 +35,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
 
-import '@testing-library/jest-dom';
-import { EditableLabelCell } from '@app/RecordingMetadata/EditableLabelCell';
+import { Label, Text } from '@patternfly/react-core';
+import React from 'react';
+import { RecordingLabel } from './RecordingLabel';
 
-const mockLabel = {
-  key: 'someLabel',
-  value: 'someValue',
+export interface LabelCellProps {
+  labels: RecordingLabel[];
+}
+
+export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
+  // TODO make labels clickable to select multiple recordings with the same label
+  return (
+    <>
+      {!!props.labels && props.labels.length ? (
+        props.labels.map((l) => <Label key={l.key} color="grey">{`${l.key}: ${l.value}`}</Label>)
+      ) : (
+        <Text>-</Text>
+      )}
+    </>
+  );
 };
-
-describe('<EditableLabelCell />', () => {
-  const minProps = {
-    isEditing: false,
-    labels: [],
-    setLabels: () => {},
-    onPatchSubmit: () => {},
-    onPatchCancel: () => {},
-  };
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(<EditableLabelCell {...minProps} />);
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
-
-  it('displays labels in read-only mode', () => {
-    render(<EditableLabelCell {...minProps} labels={[mockLabel]} />);
-    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
-    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
-  });
-
-  it('renders an editable form in edit mode', () => {
-    render(<EditableLabelCell {...minProps} isEditing={true} labels={[mockLabel]} />);
-    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
-    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
-
-    expect(screen.getByText('Add Label')).toBeInTheDocument();
-    expect(labelKeyInput).toHaveClass('pf-c-form-control');
-    expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(screen.getByText('Save')).toBeInTheDocument();
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
-  });
-});

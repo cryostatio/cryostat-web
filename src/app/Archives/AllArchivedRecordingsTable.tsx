@@ -50,7 +50,7 @@ import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
-import { EditableLabelCell } from '@app/RecordingMetadata/EditableLabelCell';
+import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 
 export interface AllArchivedRecordingsTableProps { }
 
@@ -201,12 +201,8 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            <EditableLabelCell 
-              isEditing={false} 
+            <LabelCell 
               labels={rowLabels} 
-              setLabels={setRowLabels} 
-              onPatchSubmit={() => {/* never called */}} 
-              onPatchCancel={() => {/* never called */}}
             />
           </Td>
           <RecordingActions

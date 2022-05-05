@@ -49,7 +49,7 @@ import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
-import { EditableLabelCell } from '../RecordingMetadata/EditableLabelCell';
+import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 
 export interface ArchivedRecordingsTableProps { }
@@ -251,12 +251,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            <EditableLabelCell 
-              isEditing={false} 
+            <LabelCell 
               labels={rowLabels} 
-              setLabels={setRowLabels} 
-              onPatchSubmit={() => {/* never called */}} 
-              onPatchCancel={() => {/* never called */}}
             />
           </Td>
           <RecordingActions

@@ -42,9 +42,6 @@ exports[`<BulkEditLabels /> renders correctly 1`] = `
     >
       <div
         className="pf-l-stack__item"
-      />
-      <div
-        className="pf-l-stack__item"
       >
         <button
           aria-disabled={false}

@@ -35,53 +35,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { render, screen } from '@testing-library/react';
 
-import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
-import { Button, Label, Split, SplitItem, Text, ValidatedOptions } from '@patternfly/react-core';
-import React from 'react';
-import { RecordingLabel } from './RecordingLabel';
+import '@testing-library/jest-dom';
+import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 
-export interface EditableLabelCellProps {
-  isEditing: boolean;
-  labels: RecordingLabel[];
-  setLabels: (labels: RecordingLabel[]) => void;
-  onPatchSubmit: () => void;
-  onPatchCancel: () => void;
-}
-
-export const EditableLabelCell: React.FunctionComponent<EditableLabelCellProps> = (props) => {
-  const [valid, setValid] = React.useState(ValidatedOptions.default);
-
-  const buttons = React.useMemo(
-    () => (
-      <Split hasGutter>
-        <SplitItem>
-          <Button variant="primary" onClick={props.onPatchSubmit} isDisabled={valid != ValidatedOptions.success}>
-            Save
-          </Button>
-        </SplitItem>
-        <SplitItem>
-          <Button variant="secondary" onClick={() => props.onPatchCancel()}>
-            Cancel
-          </Button>
-        </SplitItem>
-      </Split>
-    ),
-    [props.onPatchSubmit, props.onPatchCancel, valid, setValid]
-  );
-
-  return (
-    <>
-      {props.isEditing ? (
-        <>
-          <RecordingLabelFields labels={props.labels} setLabels={props.setLabels} valid={valid} setValid={setValid} />
-          {buttons}
-        </>
-      ) : !!props.labels && props.labels.length ? (
-        props.labels.map((l) => <Label key={l.key} color="grey">{`${l.key}: ${l.value}`}</Label>)
-      ) : (
-        <Text>-</Text>
-      )}
-    </>
-  );
+const mockLabel = {
+  key: 'someLabel',
+  value: 'someValue',
 };
+
+describe('<EditableLabelCell />', () => {
+
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(<LabelCell labels={[mockLabel]} />);
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('displays read-only labels', () => {
+    render(<LabelCell labels={[mockLabel]} />);
+    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
+    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+  });
+});

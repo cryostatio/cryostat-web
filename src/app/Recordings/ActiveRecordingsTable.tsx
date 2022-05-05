@@ -49,7 +49,7 @@ import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
-import { EditableLabelCell } from '../RecordingMetadata/EditableLabelCell';
+import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
@@ -344,12 +344,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             {props.recording.state}
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
-            <EditableLabelCell 
-              isEditing={false} 
+            <LabelCell 
               labels={rowLabels} 
-              setLabels={setRowLabels} 
-              onPatchSubmit={() => {/* never called */}} 
-              onPatchCancel={() => {/* never called */}}
             />
           </Td>
           <RecordingActions
