@@ -216,7 +216,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
-    const [rowLabels, setRowLabels] = React.useState(parsedLabels);
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
@@ -252,7 +251,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <LabelCell 
-              labels={rowLabels} 
+              labels={parsedLabels} 
             />
           </Td>
           <RecordingActions

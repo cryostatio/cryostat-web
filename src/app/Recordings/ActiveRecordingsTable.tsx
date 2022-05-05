@@ -286,7 +286,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     }, [props.recording.metadata.labels]);
 
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
-    const [rowLabels, setRowLabels] = React.useState(parsedLabels);
 
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
@@ -345,7 +344,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
             <LabelCell 
-              labels={rowLabels} 
+              labels={parsedLabels} 
             />
           </Td>
           <RecordingActions
