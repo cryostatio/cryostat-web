@@ -63,7 +63,7 @@ export interface BulkEditLabelsProps {
   checkedIndices: number[];
   recordings: ArchivedRecording[];
   editing: boolean;
-  setEditing: (editing: boolean) => void;
+  setEditing: (editing: React.SetStateAction<boolean>) => void;
 }
 
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
@@ -91,7 +91,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         );
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(() => props.setEditing(!props.editing)));
+    addSubscription(forkJoin(tasks).subscribe(() => props.setEditing(editing => !editing)));
   }, [
     props.recordings,
     props.checkedIndices,

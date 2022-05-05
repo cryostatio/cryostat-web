@@ -154,7 +154,6 @@ describe('<BulkEditLabels />', () => {
     userEvent.click(screen.getByText('Cancel'));
 
     expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
-    expect(mockProps.setEditing).toHaveBeenCalledWith(false);
   });
 
   it('saves target recording labels when Save is clicked', async () => {
@@ -170,7 +169,6 @@ describe('<BulkEditLabels />', () => {
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
 
     expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
-    expect(mockProps.setEditing).toHaveBeenCalledWith(false);
   });
 
   it('saves archived recording labels when Save is clicked', async () => {
@@ -186,7 +184,6 @@ describe('<BulkEditLabels />', () => {
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
 
     expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
-    expect(mockProps.setEditing).toHaveBeenCalledWith(false);
   });
 
   it('adds a label when Add Label is clicked', () => {
