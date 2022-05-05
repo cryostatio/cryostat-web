@@ -44,11 +44,12 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { RecordingActions } from '@app/Recordings/RecordingActions';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
 import { ReportFrame } from '@app/Recordings/ReportFrame';
-import { Observable, forkJoin, merge } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { Observable, forkJoin, merge, of } from 'rxjs';
+import { first, map } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
@@ -96,10 +97,39 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
   };
 
   const TargetRow = (props) => {
+    const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
+
+    const handleRecordings = React.useCallback((recordings) => {
+      setRecordings(recordings);
+      setIsLoading(false);
+      toggleExpanded(expandedRowId)
+    }, [setRecordings, setIsLoading]);
+
     const expandedRowId =`target-table-row-${props.index}-exp`;
     const handleToggle = () => {
-      toggleExpanded(expandedRowId);
-    };
+      addSubscription(
+        context.api.graphql<any>(`
+          query {
+            targetNodes(filter: { name: "${props.target.connectUrl}" }) {
+              recordings {
+                archived {
+                  name
+                  downloadUrl
+                  reportUrl
+                  metadata {
+                    labels
+                  }
+                }
+              }
+            }
+          }`)
+          .pipe(
+            map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+          )
+        .subscribe(recordings => (
+          handleRecordings(recordings)
+        ))
+      )};
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
@@ -137,12 +167,12 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
             colSpan={tableColumns.length + 3}
           >
           <ExpandableRowContent>
-            <NestedArchivedRecordingsTable target={props.target}/>
+            <ArchivedRecordingsTable target={of(props.target)}/>
           </ExpandableRowContent>
           </Td>
         </Tr>
       )
-    }, [props.target, props.index, isExpanded, tableColumns]);
+    }, [props.target, props.index, context.api, recordings,isExpanded, tableColumns]);
 
     return (
       <Tbody key={props.index} isExpanded={isExpanded[props.index]}>

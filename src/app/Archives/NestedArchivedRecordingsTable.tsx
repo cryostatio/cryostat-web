@@ -51,7 +51,7 @@ import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecor
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 
 export interface NestedArchivedRecordingsTableProps {
-  target: Target;
+  target: Observable<Target>;
 }
 
 export const NestedArchivedRecordingsTable: React.FunctionComponent<NestedArchivedRecordingsTableProps> = (props) => {
@@ -91,39 +91,52 @@ export const NestedArchivedRecordingsTable: React.FunctionComponent<NestedArchiv
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.graphql<any>(`
-        query {
-          targetNodes(filter: { name: "${props.target.connectUrl}" }) {
-            recordings {
-              archived {
-                name
-                downloadUrl
-                reportUrl
-                metadata {
-                  labels
+      props.target
+      .pipe(
+        filter(target => target !== NO_TARGET),
+        first(),
+        concatMap(target =>
+          context.api.graphql<any>(`
+            query {
+              targetNodes(filter: { name: "${target.connectUrl}" }) {
+                recordings {
+                  archived {
+                    name
+                    downloadUrl
+                    reportUrl
+                    metadata {
+                      labels
+                    }
+                  }
                 }
               }
-            }
-          }
-        }`)
-        .pipe(
-          map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
-        )
+            }`)
+        ),
+        map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+      )
       .subscribe(handleRecordings)
     );
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
   React.useEffect(() => {
     addSubscription(
+      props.target.subscribe(refreshRecordingList)
+    );
+  }, [addSubscription, context, context.target, refreshRecordingList]);
+
+  React.useEffect(() => {
+    addSubscription(
       combineLatest([
+        props.target,
         merge(
           context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
         ),
       ])
       .subscribe(parts => {
-        const event = parts[0];
-        if (props.target.connectUrl != event.message.target) {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
           return;
         }
         setRecordings(old => old.concat(event.message.recording));
@@ -134,14 +147,16 @@ export const NestedArchivedRecordingsTable: React.FunctionComponent<NestedArchiv
   React.useEffect(() => {
     addSubscription(
       combineLatest([
+        props.target,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ])
-        .subscribe(parts => {
-          const event = parts[0];
-          if (props.target.connectUrl != event.message.target) {
-            return;
-          }
-          setRecordings(old => old.filter(o => o.name != event.message.recording.name));
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.filter(o => o.name != event.message.recording.name));
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
@@ -149,11 +164,13 @@ export const NestedArchivedRecordingsTable: React.FunctionComponent<NestedArchiv
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
-    ])
+        props.target,
+        context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
+      ])
       .subscribe(parts => {
-        const event = parts[0];
-        if (props.target.connectUrl != event.message.target) {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
           return;
         }
         setRecordings(old => old.map(

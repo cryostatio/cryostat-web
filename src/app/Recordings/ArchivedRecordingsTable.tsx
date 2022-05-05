@@ -56,11 +56,14 @@ import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { filterRecordings, RecordingFilters } from './RecordingFilters';
 
-export interface ArchivedRecordingsTableProps { }
+export interface ArchivedRecordingsTableProps { 
+  target?: Observable<Target>;
+}
 
-export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = () => {
+export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
+  const target = (typeof props.target === 'undefined' || props.target === null) ? context.target.target() : props.target;
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -106,7 +109,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.target.target()
+      target
       .pipe(
         filter(target => target !== NO_TARGET),
         first(),
@@ -131,7 +134,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       )
       .subscribe(handleRecordings)
     );
-  }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
+  }, [addSubscription, context, context.api, target, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
     setFilters({
@@ -142,14 +145,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(refreshRecordingList)
+      target.subscribe(refreshRecordingList)
     );
-  }, [addSubscription, context, context.target, refreshRecordingList]);
+  }, [addSubscription, target, refreshRecordingList]);
 
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        target,
         merge(
           context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
@@ -169,7 +172,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        target,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ])
         .subscribe(parts => {
