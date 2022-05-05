@@ -217,7 +217,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       toggleExpanded(expandedRowId);
     };
     const [rowLabels, setRowLabels] = React.useState(parsedLabels);
-    const [editingMetadata, setEditingMetadata] = React.useState(false);
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
@@ -226,16 +225,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);
     };
-
-    const handleSubmitLabelPatch = React.useCallback(() => {
-      context.api.postRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
-      setEditingMetadata(false);
-    }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
-
-    const handleCancelLabelPatch = React.useCallback(() => {
-      setRowLabels(parseLabels(props.recording.metadata.labels));
-      setEditingMetadata(false);
-    }, [props.recording.metadata.labels, setRowLabels, setEditingMetadata]);
 
     const parentRow = React.useMemo(() => {
       return(
@@ -263,18 +252,17 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <EditableLabelCell 
-              isEditing={editingMetadata} 
+              isEditing={false} 
               labels={rowLabels} 
               setLabels={setRowLabels} 
-              onPatchSubmit={handleSubmitLabelPatch} 
-              onPatchCancel={handleCancelLabelPatch}
+              onPatchSubmit={() => {/* never called */}} 
+              onPatchCancel={() => {/* never called */}}
             />
           </Td>
           <RecordingActions
             recording={props.recording}
             index={props.index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
-            editMetadataFn={() => setEditingMetadata(true)}
           />
         </Tr>
       );

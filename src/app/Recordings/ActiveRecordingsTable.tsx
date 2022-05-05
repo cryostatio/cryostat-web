@@ -287,7 +287,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
     const [rowLabels, setRowLabels] = React.useState(parsedLabels);
-    const [editingMetadata, setEditingMetadata] = React.useState(false);
 
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
@@ -300,16 +299,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);
     };
-
-    const handleSubmitLabelPatch = React.useCallback(() => {
-      context.api.postTargetRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
-      setEditingMetadata(false);
-    }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
-
-    const handleCancelLabelPatch = React.useCallback(() => {
-      setRowLabels(parseLabels(props.recording.metadata.labels));
-      setEditingMetadata(false);
-    }, [props.recording.metadata.labels, setRowLabels, setEditingMetadata]);
 
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
@@ -356,18 +345,17 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
             <EditableLabelCell 
-              isEditing={editingMetadata} 
+              isEditing={false} 
               labels={rowLabels} 
               setLabels={setRowLabels} 
-              onPatchSubmit={handleSubmitLabelPatch} 
-              onPatchCancel={handleCancelLabelPatch}
+              onPatchSubmit={() => {/* never called */}} 
+              onPatchCancel={() => {/* never called */}}
             />
           </Td>
           <RecordingActions
             index={props.index}
             recording={props.recording}
             uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
-            editMetadataFn={() => setEditingMetadata(true)}
           />
         </Tr>
       );
