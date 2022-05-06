@@ -73,7 +73,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const addSubscription = useSubscriptions();
 
-  const handleUpdateLabelsForSelected = React.useCallback(() => {
+  const handleUpdateLabels = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
     const toDelete = prevCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
@@ -99,10 +99,16 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     props.editing,
     props.setEditing,
     commonLabels,
+    prevCommonLabels,
     parseLabels,
     context,
     context.api,
   ]);
+
+  const handleCancel = React.useCallback(() => {
+    props.setEditing(false);
+    setCommonLabels(prevCommonLabels);
+  }, [props.setEditing, prevCommonLabels]);
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
@@ -125,7 +131,15 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
     updateCommonLabels(setPrevCommonLabels);
-  }, [props.recordings, props.checkedIndices, setCommonLabels]);
+  }, [props.recordings, props.checkedIndices, setCommonLabels, setPrevCommonLabels]);
+
+  React.useEffect(() => {
+    console.log('prev: ', prevCommonLabels)
+  }, [prevCommonLabels]);
+
+  React.useEffect(() => {
+    console.log('curr: ', commonLabels)
+  }, [commonLabels]);
 
   return (
     <Card>
@@ -150,14 +164,14 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
                   <SplitItem>
                     <Button
                       variant="primary"
-                      onClick={handleUpdateLabelsForSelected}
+                      onClick={handleUpdateLabels}
                       isDisabled={valid != ValidatedOptions.success}
                     >
                       Save
                     </Button>
                   </SplitItem>
                   <SplitItem>
-                    <Button variant="secondary" onClick={() => props.setEditing(false)}>
+                    <Button variant="secondary" onClick={handleCancel}>
                       Cancel
                     </Button>
                   </SplitItem>
