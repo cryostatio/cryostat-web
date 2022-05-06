@@ -97,39 +97,10 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
   };
 
   const TargetRow = (props) => {
-    const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
-
-    const handleRecordings = React.useCallback((recordings) => {
-      setRecordings(recordings);
-      setIsLoading(false);
-      toggleExpanded(expandedRowId)
-    }, [setRecordings, setIsLoading]);
-
     const expandedRowId =`target-table-row-${props.index}-exp`;
     const handleToggle = () => {
-      addSubscription(
-        context.api.graphql<any>(`
-          query {
-            targetNodes(filter: { name: "${props.target.connectUrl}" }) {
-              recordings {
-                archived {
-                  name
-                  downloadUrl
-                  reportUrl
-                  metadata {
-                    labels
-                  }
-                }
-              }
-            }
-          }`)
-          .pipe(
-            map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
-          )
-        .subscribe(recordings => (
-          handleRecordings(recordings)
-        ))
-      )};
+      toggleExpanded(expandedRowId);
+    };
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
@@ -167,12 +138,12 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
             colSpan={tableColumns.length + 3}
           >
           <ExpandableRowContent>
-            <ArchivedRecordingsTable target={of(props.target)}/>
+            <NestedArchivedRecordingsTable target={of(props.target)}/>
           </ExpandableRowContent>
           </Td>
         </Tr>
       )
-    }, [props.target, props.index, context.api, recordings,isExpanded, tableColumns]);
+    }, [props.target, props.index, context.api, isExpanded, tableColumns]);
 
     return (
       <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
