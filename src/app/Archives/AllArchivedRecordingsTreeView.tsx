@@ -53,7 +53,6 @@ import { first, map } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
-import { NestedArchivedRecordingsTable } from './NestedArchivedRecordingsTable';
 
 export interface AllArchivedRecordingsTreeViewProps { }
 
@@ -135,10 +134,10 @@ export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedR
           <Td
             key={`target-ex-expand-${props.index}`}
             dataLabel={"Content Details"}
-            colSpan={tableColumns.length + 3}
+            colSpan={tableColumns.length + 1}
           >
           <ExpandableRowContent>
-            <NestedArchivedRecordingsTable target={of(props.target)}/>
+            <ArchivedRecordingsTable target={of(props.target)}/>
           </ExpandableRowContent>
           </Td>
         </Tr>

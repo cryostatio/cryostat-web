@@ -56,9 +56,11 @@ import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { filterRecordings, RecordingFilters } from './RecordingFilters';
 
-export interface ArchivedRecordingsTableProps { }
+export interface ArchivedRecordingsTableProps { 
+  target?: Observable<Target>;
+}
 
-export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = () => {
+export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
@@ -103,34 +105,51 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     setIsLoading(false);
   }, [setRecordings, setIsLoading]);
 
+  const queryTargetRecordings = (connectUrl: string) => {
+    return context.api.graphql<any>(`
+      query {
+        targetNodes(filter: { name: "${connectUrl}" }) {
+          recordings {
+            archived {
+              name
+              downloadUrl
+              reportUrl
+              metadata {
+                labels
+              }
+            }
+          }
+        }
+      }`)
+  }
+
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
-    addSubscription(
-      context.target.target()
-      .pipe(
-        filter(target => target !== NO_TARGET),
-        first(),
-        concatMap(target =>
-          context.api.graphql<any>(`
-            query {
-              targetNodes(filter: { name: "${target.connectUrl}" }) {
-                recordings {
-                  archived {
-                    name
-                    downloadUrl
-                    reportUrl
-                    metadata {
-                      labels
-                    }
-                  }
-                }
-              }
-            }`)
-        ),
-        map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
-      )
-      .subscribe(handleRecordings)
-    );
+    if (typeof props.target === 'undefined' || props.target === null) {
+      addSubscription(
+        context.target.target()
+        .pipe(
+          filter(target => target !== NO_TARGET),
+          first(),
+          concatMap(target =>
+            queryTargetRecordings(target.connectUrl)
+          ),
+          map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+        )
+        .subscribe(handleRecordings)
+      );
+    } else {
+      addSubscription(
+        props.target
+        .pipe(
+          concatMap(target =>
+            queryTargetRecordings(target.connectUrl)
+          ),
+          map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+        )
+        .subscribe(handleRecordings)
+      );
+    }
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
@@ -149,7 +168,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        (typeof props.target === 'undefined' || props.target === null) ? context.target.target() : props.target,
         merge(
           context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
@@ -169,7 +188,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        (typeof props.target === 'undefined' || props.target === null) ? context.target.target() : props.target,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ])
         .subscribe(parts => {
