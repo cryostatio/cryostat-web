@@ -43,7 +43,8 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Drawer, DrawerActions, DrawerContent, DrawerContentBody, DrawerHead, DrawerPanelBody, DrawerPanelContent, Label, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { AngleRightIcon } from '@patternfly/react-icons';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -66,6 +67,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [showTableActionsPanel, setShowTableActionsPanel] = React.useState(false);
   const [editingLabels, setEditingLabels] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -101,6 +103,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleEditLabels = React.useCallback(() => {
     setEditingLabels(editing => !editing);
+    setShowTableActionsPanel(true);
   }, [editingLabels, setEditingLabels]);
 
   const handleRecordings = React.useCallback((recordings) => {
@@ -463,19 +466,44 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
+  // TODO extract into another component and fix padding
+  const TableActionsPanel = React.useMemo(() => (
+    <DrawerPanelContent isResizable>
+      <DrawerPanelBody>
+        <Button
+          onClick={() => setShowTableActionsPanel(false)}
+          variant="link"
+          data-testid="hide-table-actions-panel"
+          aria-label="hide table actions panel"
+          icon={<AngleRightIcon color="gray" size="md" />}
+        />
+        {/* TODO fix validations, text styling and Save/Cancel editing toggle */}
+        <BulkEditLabels isTargetRecording={true} checkedIndices={checkedIndices} recordings={recordings} editing={editingLabels} setEditing={setEditingLabels}/>
+      </DrawerPanelBody>
+    </DrawerPanelContent>
+  ), [checkedIndices, recordings, editingLabels]);
   return (<>
-    <BulkEditLabels isTargetRecording={true} checkedIndices={checkedIndices} recordings={recordings} editing={editingLabels} setEditing={setEditingLabels}/>
-    <RecordingsTable
-        tableTitle="Active Flight Recordings"
-        toolbar={<RecordingsToolbar />}
-        tableColumns={tableColumns}
-        isHeaderChecked={headerChecked}
-        onHeaderCheck={handleHeaderCheck}
-        isEmpty={!recordings.length}
-        isLoading ={isLoading}
-        errorMessage ={errorMessage}
-    >
-      {recordingRows}
-    </RecordingsTable>
+    
+    <Drawer isExpanded={showTableActionsPanel} isInline>
+      {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
+      <DrawerContent panelContent={
+        TableActionsPanel
+      }>
+        <DrawerContentBody>
+          <RecordingsTable
+          tableTitle="Active Flight Recordings"
+          toolbar={<RecordingsToolbar />}
+          tableColumns={tableColumns}
+          isHeaderChecked={headerChecked}
+          onHeaderCheck={handleHeaderCheck}
+          isEmpty={!recordings.length}
+          isLoading ={isLoading}
+          errorMessage ={errorMessage}
+          >
+            {recordingRows}
+          </RecordingsTable>
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
   </>);
 };

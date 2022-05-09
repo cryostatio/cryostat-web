@@ -91,7 +91,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         );
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(() => props.setEditing(editing => !editing)));
+    addSubscription(forkJoin(tasks).subscribe(() => props.setEditing((editing) => !editing)));
   }, [
     props.recordings,
     props.checkedIndices,
@@ -133,56 +133,44 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     updateCommonLabels(setPrevCommonLabels);
   }, [props.recordings, props.checkedIndices, setCommonLabels, setPrevCommonLabels]);
 
-  React.useEffect(() => {
-    console.log('prev: ', prevCommonLabels)
-  }, [prevCommonLabels]);
-
-  React.useEffect(() => {
-    console.log('curr: ', commonLabels)
-  }, [commonLabels]);
-
   return (
-    <Card>
-      <CardHeader>
-        <CardHeaderMain>
-          <Text>Labels present on all selected recordings</Text>
-          <Text component={TextVariants.small}>Editing the labels below will affect all selected recordings.</Text>
-        </CardHeaderMain>
-      </CardHeader>
-      <CardBody>
-        <Stack hasGutter>
-          <StackItem>
-            {props.editing ? (
-              <>
-                <RecordingLabelFields
-                  labels={commonLabels}
-                  setLabels={setCommonLabels}
-                  valid={valid}
-                  setValid={setValid}
-                />
-                <Split hasGutter>
-                  <SplitItem>
-                    <Button
-                      variant="primary"
-                      onClick={handleUpdateLabels}
-                      isDisabled={valid != ValidatedOptions.success}
-                    >
-                      Save
-                    </Button>
-                  </SplitItem>
-                  <SplitItem>
-                    <Button variant="secondary" onClick={handleCancel}>
-                      Cancel
-                    </Button>
-                  </SplitItem>
-                </Split>
-              </>
-            ) : (
-              <LabelCell labels={commonLabels} />
-            )}
-          </StackItem>
-        </Stack>
-      </CardBody>
-    </Card>
+    <>
+      <Stack hasGutter>
+        <StackItem>
+          <Text>Edit Recording Labels</Text>
+          <Text component={TextVariants.small}>
+            Labels present on all selected recordings will appear here. Editing the labels will affect ALL selected
+            recordings.
+          </Text>
+        </StackItem>
+        <StackItem>
+          <LabelCell labels={commonLabels} />
+        </StackItem>
+        <StackItem>
+          {props.editing && (
+            <>
+              <RecordingLabelFields
+                labels={commonLabels}
+                setLabels={setCommonLabels}
+                valid={valid}
+                setValid={setValid}
+              />
+              <Split hasGutter>
+                <SplitItem>
+                  <Button variant="primary" onClick={handleUpdateLabels} isDisabled={valid != ValidatedOptions.success}>
+                    Save
+                  </Button>
+                </SplitItem>
+                <SplitItem>
+                  <Button variant="secondary" onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                </SplitItem>
+              </Split>
+            </>
+          )}
+        </StackItem>
+      </Stack>
+    </>
   );
 };
