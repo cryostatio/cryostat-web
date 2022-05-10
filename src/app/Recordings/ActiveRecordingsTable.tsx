@@ -36,15 +36,13 @@
  * SOFTWARE.
  */
 
-import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Drawer, DrawerActions, DrawerContent, DrawerContentBody, DrawerHead, DrawerPanelBody, DrawerPanelContent, Label, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
-import { AngleRightIcon } from '@patternfly/react-icons';
+import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -474,7 +472,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     />
   ), [checkedIndices, recordings]);
 
-  return (<>
+  return (
     <Drawer isExpanded={showDetailsPanel} isInline>
       {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
       <DrawerContent panelContent={LabelsPanel}>
@@ -494,5 +492,5 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         </DrawerContentBody>
       </DrawerContent>
     </Drawer>
-  </>);
+  );
 };

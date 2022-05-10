@@ -40,7 +40,7 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -51,6 +51,7 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
+import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 
 export interface ArchivedRecordingsTableProps { }
 
@@ -61,7 +62,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [editingLabels, setEditingLabels] = React.useState(false);
+  const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -85,8 +86,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [setCheckedIndices, setHeaderChecked]);
 
   const handleEditLabels = React.useCallback(() => {
-    setEditingLabels(editing => !editing);
-  }, [editingLabels, setEditingLabels]);
+    setShowDetailsPanel(true);
+  }, [setShowDetailsPanel]);
 
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
@@ -308,19 +309,34 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
-  return (<>
-    <BulkEditLabels isTargetRecording={false} checkedIndices={checkedIndices} recordings={recordings} />
-    <RecordingsTable
-        tableTitle="Archived Flight Recordings"
-        toolbar={<RecordingsToolbar />}
-        tableColumns={tableColumns}
-        isHeaderChecked={headerChecked}
-        onHeaderCheck={handleHeaderCheck}
-        isLoading={isLoading}
-        isEmpty={!recordings.length}
-        errorMessage=''
-    >
-      {recordingRows}
-    </RecordingsTable>
-  </>);
+  const LabelsPanel = React.useMemo(() => (
+    <RecordingLabelsPanel
+      setShowPanel={setShowDetailsPanel}  
+      isTargetRecording={true}
+      checkedIndices={checkedIndices}
+      recordings={recordings}
+    />
+  ), [checkedIndices, recordings]);
+
+  return (
+    <Drawer isExpanded={showDetailsPanel} isInline>
+      {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
+      <DrawerContent panelContent={LabelsPanel}>
+        <DrawerContentBody>
+          <RecordingsTable
+              tableTitle="Archived Flight Recordings"
+              toolbar={<RecordingsToolbar />}
+              tableColumns={tableColumns}
+              isHeaderChecked={headerChecked}
+              onHeaderCheck={handleHeaderCheck}
+              isLoading={isLoading}
+              isEmpty={!recordings.length}
+              errorMessage=''
+          >
+            {recordingRows}
+            </RecordingsTable>
+          </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
+  );
 };
