@@ -108,16 +108,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const queryTargetRecordings = (connectUrl: string) => {
     return context.api.graphql<any>(`
       query {
-        targetNodes(filter: { name: "${connectUrl}" }) {
-          recordings {
-            archived {
-              name
-              downloadUrl
-              reportUrl
-              metadata {
-                labels
-              }
-            }
+        archivedRecordings(filter: { sourceTarget: "${connectUrl}" }) {
+          name
+          downloadUrl
+          reportUrl
+          metadata {
+            labels
           }
         }
       }`)
@@ -134,7 +130,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           concatMap(target =>
             queryTargetRecordings(target.connectUrl)
           ),
-          map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+          map(v => v.data.archivedRecordings as ArchivedRecording[]),
         )
         .subscribe(handleRecordings)
       );
@@ -145,7 +141,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           concatMap(target =>
             queryTargetRecordings(target.connectUrl)
           ),
-          map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+          map(v => v.data.archivedRecordings as ArchivedRecording[]),
         )
         .subscribe(handleRecordings)
       );
