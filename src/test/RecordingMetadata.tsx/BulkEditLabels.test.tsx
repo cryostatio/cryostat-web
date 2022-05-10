@@ -80,8 +80,6 @@ describe('<BulkEditLabels />', () => {
     isTargetRecording: true,
     checkedIndices: [0],
     recordings: mockRecordings,
-    editing: true,
-    setEditing: jest.fn(() => (editing: boolean) => {}),
   };
 
   it('renders correctly', async () => {
@@ -96,15 +94,17 @@ describe('<BulkEditLabels />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('displays labels from selected recordings in read-only mode', () => {
+  it('displays read-only labels from selected recordings', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} editing={false} />
+        <BulkEditLabels {...mockProps} />
       </ServiceContext.Provider>
     );
 
     expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
     expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+    expect(screen.getByText('Edit')).toBeInTheDocument();
+
   });
 
   it('does not display labels for unchecked recordings', () => {
@@ -114,8 +114,8 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
-    expect(screen.queryByText('Key')).not.toBeInTheDocument();
-    expect(screen.queryByText('Value')).not.toBeInTheDocument();
+    expect(screen.queryByText('someLabel')).not.toBeInTheDocument();
+    expect(screen.queryByText('someValue')).not.toBeInTheDocument();
   });
 
   it('displays editable labels form when in edit mode', () => {
@@ -125,10 +125,10 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
+    userEvent.click(screen.getByText('Edit'));
+
     const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
     const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
-
-    expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
 
     expect(screen.getByText('Add Label')).toBeInTheDocument();
     expect(labelKeyInput).toHaveClass('pf-c-form-control');
@@ -144,6 +144,8 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
+    userEvent.click(screen.getByText('Edit'));
+
     const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
     const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
     expect(labelKeyInput).toHaveClass('pf-c-form-control');
@@ -153,7 +155,8 @@ describe('<BulkEditLabels />', () => {
 
     userEvent.click(screen.getByText('Cancel'));
 
-    expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('Edit')).toBeInTheDocument();
+    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
   });
 
   it('saves target recording labels when Save is clicked', async () => {
@@ -163,12 +166,11 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
+    userEvent.click(screen.getByText('Edit'));
     userEvent.click(screen.getByText('Save'));
 
     const saveRequestSpy = jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata');
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
-
-    expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
   });
 
   it('saves archived recording labels when Save is clicked', async () => {
@@ -178,12 +180,11 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
+    userEvent.click(screen.getByText('Edit'));
     userEvent.click(screen.getByText('Save'));
 
     const saveRequestSpy = jest.spyOn(defaultServices.api, 'postRecordingMetadata');
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
-
-    expect(mockProps.setEditing).toHaveBeenCalledTimes(1);
   });
 
   it('adds a label when Add Label is clicked', () => {
@@ -192,6 +193,8 @@ describe('<BulkEditLabels />', () => {
         <BulkEditLabels {...mockProps} isTargetRecording={false} />
       </ServiceContext.Provider>
     );
+
+    userEvent.click(screen.getByText('Edit'));
 
     expect(screen.getAllByLabelText('label key').length).toBe(1);
     expect(screen.getAllByLabelText('label value').length).toBe(1);
@@ -208,6 +211,8 @@ describe('<BulkEditLabels />', () => {
         <BulkEditLabels {...mockProps} isTargetRecording={false} />
       </ServiceContext.Provider>
     );
+    
+    userEvent.click(screen.getByText('Edit'));
 
     expect(screen.getAllByLabelText('label key').length).toBe(1);
     expect(screen.getAllByLabelText('label value').length).toBe(1);

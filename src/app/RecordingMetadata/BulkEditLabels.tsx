@@ -38,10 +38,6 @@
 import * as React from 'react';
 import {
   Button,
-  Card,
-  CardBody,
-  CardHeader,
-  CardHeaderMain,
   Split,
   SplitItem,
   Stack,
@@ -62,12 +58,11 @@ export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
   checkedIndices: number[];
   recordings: ArchivedRecording[];
-  editing: boolean;
-  setEditing: (editing: React.SetStateAction<boolean>) => void;
 }
 
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const [editing, setEditing] = React.useState(false);
   const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
   const [prevCommonLabels, setPrevCommonLabels] = React.useState([] as RecordingLabel[]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
@@ -91,13 +86,13 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         );
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(() => props.setEditing((editing) => !editing)));
+    addSubscription(forkJoin(tasks).subscribe(() => setEditing((editing) => !editing)));
   }, [
     props.recordings,
     props.checkedIndices,
     props.isTargetRecording,
-    props.editing,
-    props.setEditing,
+    editing,
+    setEditing,
     commonLabels,
     prevCommonLabels,
     parseLabels,
@@ -105,10 +100,14 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     context.api,
   ]);
 
+  const handleEditLabels = React.useCallback(() => {
+    setEditing(true);
+  }, [setEditing])
+
   const handleCancel = React.useCallback(() => {
-    props.setEditing(false);
+    setEditing(false);
     setCommonLabels(prevCommonLabels);
-  }, [props.setEditing, prevCommonLabels]);
+  }, [setEditing, prevCommonLabels]);
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
@@ -133,6 +132,12 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     updateCommonLabels(setPrevCommonLabels);
   }, [props.recordings, props.checkedIndices, setCommonLabels, setPrevCommonLabels]);
 
+  React.useEffect(() => {
+    if (!props.checkedIndices.length) {
+      setEditing(false);
+    }
+  }, [props.checkedIndices]);
+
   return (
     <>
       <Stack hasGutter>
@@ -147,7 +152,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           <LabelCell labels={commonLabels} />
         </StackItem>
         <StackItem>
-          {props.editing && (
+          {editing ? (
             <>
               <RecordingLabelFields
                 labels={commonLabels}
@@ -168,6 +173,15 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
                 </SplitItem>
               </Split>
             </>
+          ) : (
+            <Button
+              key="edit labels"
+              variant="secondary"
+              onClick={handleEditLabels}
+              isDisabled={!props.checkedIndices.length}
+            >
+              Edit
+            </Button>
           )}
         </StackItem>
       </Stack>

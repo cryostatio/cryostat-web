@@ -68,8 +68,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [showTableActionsPanel, setShowTableActionsPanel] = React.useState(false);
-  const [editingLabels, setEditingLabels] = React.useState(false);
+  const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -103,9 +102,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [routerHistory]);
 
   const handleEditLabels = React.useCallback(() => {
-    setEditingLabels(editing => !editing);
-    setShowTableActionsPanel(true);
-  }, [editingLabels, setEditingLabels]);
+    setShowDetailsPanel(true);
+  }, [setShowDetailsPanel]);
 
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
@@ -469,17 +467,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
-      setShowPanel={setShowTableActionsPanel}  
+      setShowPanel={setShowDetailsPanel}  
       isTargetRecording={true}
       checkedIndices={checkedIndices}
       recordings={recordings}
-      editingLabels={editingLabels}
-      setEditingLabels={setEditingLabels}
     />
-  ), [checkedIndices, recordings, editingLabels]);
+  ), [checkedIndices, recordings]);
 
   return (<>
-    <Drawer isExpanded={showTableActionsPanel} isInline>
+    <Drawer isExpanded={showDetailsPanel} isInline>
       {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
       <DrawerContent panelContent={LabelsPanel}>
         <DrawerContentBody>

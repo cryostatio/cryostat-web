@@ -309,7 +309,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [recordings, expandedRows, checkedIndices]);
 
   return (<>
-    <BulkEditLabels isTargetRecording={false} checkedIndices={checkedIndices} recordings={recordings} editing={editingLabels} setEditing={setEditingLabels}/>
+    <BulkEditLabels isTargetRecording={false} checkedIndices={checkedIndices} recordings={recordings} />
     <RecordingsTable
         tableTitle="Archived Flight Recordings"
         toolbar={<RecordingsToolbar />}
