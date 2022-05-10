@@ -52,6 +52,7 @@ import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
+import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 
@@ -466,29 +467,21 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
-  // TODO extract into another component and fix padding
-  const TableActionsPanel = React.useMemo(() => (
-    <DrawerPanelContent isResizable>
-      <DrawerPanelBody>
-        <Button
-          onClick={() => setShowTableActionsPanel(false)}
-          variant="link"
-          data-testid="hide-table-actions-panel"
-          aria-label="hide table actions panel"
-          icon={<AngleRightIcon color="gray" size="md" />}
-        />
-        {/* TODO fix validations, text styling and Save/Cancel editing toggle */}
-        <BulkEditLabels isTargetRecording={true} checkedIndices={checkedIndices} recordings={recordings} editing={editingLabels} setEditing={setEditingLabels}/>
-      </DrawerPanelBody>
-    </DrawerPanelContent>
+  const LabelsPanel = React.useMemo(() => (
+    <RecordingLabelsPanel
+      setShowPanel={setShowTableActionsPanel}  
+      isTargetRecording={true}
+      checkedIndices={checkedIndices}
+      recordings={recordings}
+      editingLabels={editingLabels}
+      setEditingLabels={setEditingLabels}
+    />
   ), [checkedIndices, recordings, editingLabels]);
+
   return (<>
-    
     <Drawer isExpanded={showTableActionsPanel} isInline>
       {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
-      <DrawerContent panelContent={
-        TableActionsPanel
-      }>
+      <DrawerContent panelContent={LabelsPanel}>
         <DrawerContentBody>
           <RecordingsTable
           tableTitle="Active Flight Recordings"
