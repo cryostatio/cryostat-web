@@ -54,9 +54,9 @@ import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
-export interface AllArchivedRecordingsTableProps { }
+export interface UploadedArchivedRecordingsTableProps { }
 
-export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedRecordingsTableProps> = () => {
+export const UploadedArchivedRecordingsTable: React.FunctionComponent<UploadedArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
@@ -95,8 +95,18 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet<ArchivedRecording[]>('recordings', 'v1')
-      .subscribe(handleRecordings)
+      context.api.graphql<any>(`
+        query {
+          archivedRecordings(filter: { sourceTarget: "uploads" }) {
+            name
+            downloadUrl
+            reportUrl
+            metadata {
+              labels
+            }
+          }
+        }`)
+      .subscribe(v => handleRecordings(v.data.archivedRecordings as ArchivedRecording[]))
     );
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 

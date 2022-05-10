@@ -54,9 +54,9 @@ import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
 
-export interface AllArchivedRecordingsTreeViewProps { }
+export interface AllTargetsArchivedRecordingsTableProps { }
 
-export const AllArchivedRecordingsTreeView: React.FunctionComponent<AllArchivedRecordingsTreeViewProps> = () => {
+export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTargetsArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
   const [targets, setTargets] = React.useState([] as Target[]);
