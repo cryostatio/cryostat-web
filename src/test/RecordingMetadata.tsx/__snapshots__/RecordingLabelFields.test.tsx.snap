@@ -85,7 +85,7 @@ Array [
             <span
               className="pf-c-helper-text__item-text"
             >
-              Enter a key-value pair. Keys must be unique. Labels should not contain whitespace.
+              Keys must be unique. Labels should not contain whitespace.
             </span>
           </div>
         </div>
@@ -211,7 +211,7 @@ Array [
             <span
               className="pf-c-helper-text__item-text"
             >
-              Enter a key-value pair. Keys must be unique. Labels should not contain whitespace.
+              Keys must be unique. Labels should not contain whitespace.
             </span>
           </div>
         </div>

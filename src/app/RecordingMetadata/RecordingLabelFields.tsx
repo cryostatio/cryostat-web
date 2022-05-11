@@ -62,6 +62,7 @@ export const LabelPattern = /^\S+$/;
 export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = (props) => {
   const [validKeys, setValidKeys] = React.useState(Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default));
   const [validValues, setValidVals] = React.useState(Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default));
+  const [keys, setKeys] = React.useState(!!props.labels ? props.labels.map(l => l.key) : []);
 
   const handleKeyChange = React.useCallback(
     (idx, key) => {
@@ -69,24 +70,29 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       updatedLabels[idx].key = key;
       props.setLabels(updatedLabels);
       
-      updateValidState(idx, getValidatedOption(LabelPattern.test(key)), validKeys, setValidKeys)
+      let updatedKeys = [...keys];
+      updatedKeys[idx] = key;
+      setKeys(updatedKeys);
+
+      updateValidState(idx, LabelPattern.test(key) && (updatedKeys.indexOf(key) == idx), validKeys, setValidKeys);
     },
-    [props.labels, props.setLabels, validKeys, setValidKeys]
+    [keys, props.labels, props.setLabels, validKeys, setValidKeys]
   );
 
   const handleValueChange = React.useCallback(
     (idx, value) => {
       let updatedLabels = [...props.labels];
       updatedLabels[idx].value = value;
-      props.setLabels(updatedLabels);
-      
-      updateValidState(idx, getValidatedOption(LabelPattern.test(value)), validValues, setValidVals)
+      props.setLabels(updatedLabels); 
+
+      updateValidState(idx, LabelPattern.test(value), validValues, setValidVals);
     },
     [props.labels, props.setLabels, validValues, setValidVals]
   );
 
   const handleAddLabelButtonClick = React.useCallback(() => {
     props.setLabels([...props.labels, { key: '', value: '' } as RecordingLabel]);
+    setKeys([...keys, '']);
     props.setValid(ValidatedOptions.default);
     setValidKeys([...validKeys, ValidatedOptions.default]);
     setValidVals([...validValues, ValidatedOptions.default]);
@@ -95,6 +101,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
   const handleDeleteLabelButtonClick = React.useCallback(
     (idx) => {
       removeAtIndex(idx, props.labels, props.setLabels);
+      removeAtIndex(idx, keys, setKeys);
       removeAtIndex(idx, validKeys, setValidKeys);
       removeAtIndex(idx, validValues, setValidVals);
     },
@@ -107,74 +114,50 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     setArr(updated);
   };
 
-  const validateKeyUniqueness = React.useCallback(
-    (idx, key) => {
-      const isUniqueKey = validKeys.indexOf(key) === validKeys.lastIndexOf(key);
-      const isValid = isUniqueKey && validKeys[idx] != ValidatedOptions.error;
-      updateValidState(idx, getValidatedOption(isValid), validKeys, setValidKeys)
-
-      const pairedValueIsEmpty = !props.labels[idx].value;
-      if (pairedValueIsEmpty) {
-        updateValidState(idx, ValidatedOptions.warning, validValues, setValidVals);
-      }
-    },
-    [props.labels, setValidKeys, setValidVals]
-  );
-
-  const validateKeyPairExists = React.useCallback(
-    (idx) => {
-      const pairedKeyIsEmpty = !props.labels[idx].key;
-      if (pairedKeyIsEmpty) {
-        updateValidState(idx, ValidatedOptions.warning, validKeys, setValidKeys)
-      }
-    },
-    [props.labels, validKeys, setValidKeys]
-  );
-
-  const updateValidState = (idx, newVal, arr, setArr) => {
+  const updateValidState = (idx, isValid, arr, setArr) => {
     let updated = [...arr];
-    updated[idx] = newVal;
+    updated[idx] = getValidatedOption(isValid);
     setArr(updated);
   };
 
-  const isLabelInvalid = React.useCallback(
-    (validationState: ValidatedOptions, idx: number) => {
-      switch (validationState) {
-        case ValidatedOptions.success:
-          return false;
-        case ValidatedOptions.default:
-          if (matchesLabelSyntax(props.labels[idx])) {
-            return false;
-          }
-        default:
-          return true;
-      }
-    },
-    [props.labels]
-  );
+  const getValidatedOption = (isValid: boolean) => {
+    return isValid ? ValidatedOptions.success: ValidatedOptions.error;
+  }
 
-  const isAllLabelsValid = React.useCallback(() => {
-    if (!props.labels.length) {
-      return true;
+  const matchesLabelSyntax = React.useCallback((l: RecordingLabel) => {
+    return !!l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
+  }, [LabelPattern]);
+
+  const isLabelInvalid = React.useCallback((validState: ValidatedOptions, idx: number) => {
+    switch (validState) {
+      case ValidatedOptions.error:
+      case ValidatedOptions.warning:
+        return true;
+      case ValidatedOptions.default:
+        if(!props.labels || !matchesLabelSyntax(props.labels[idx])) {
+          return true;
+        }
+      default: return false;
     }
+  }, [props.labels]);
+
+  const allLabelsValid = React.useMemo(() => {
     const firstLabelValid = matchesLabelSyntax(props.labels[0]);
 
-    return validKeys.reduce(
+    const allKeysValid = validKeys.reduce(
       (prev, curr, idx) => (isLabelInvalid(curr, idx) ? false : prev),
       firstLabelValid
     );
-  }, [props.labels, validKeys, validValues, isLabelInvalid]);
 
-  const matchesLabelSyntax = React.useCallback((label: RecordingLabel) => {
-    return !!label && LabelPattern.test(label.key) && LabelPattern.test(label.value);
-  }, [LabelPattern]);
-
-  const getValidatedOption = (isValid: boolean) => {
-    return isValid ? ValidatedOptions.success : ValidatedOptions.error;
-  }
+    const allValuesValid = validValues.reduce(
+      (prev, curr, idx) => (isLabelInvalid(curr, idx) ? false : prev),
+      firstLabelValid
+    );
+    return allKeysValid && allValuesValid;
+  }, [validKeys, validValues]);
 
   React.useEffect(() => {
-    props.setValid(getValidatedOption(isAllLabelsValid()));
+    props.setValid(getValidatedOption(allLabelsValid));
   }, [validKeys, validValues]);
 
   return (
@@ -194,7 +177,6 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               aria-label="label key"
               value={label.key ?? ''}
               onChange={(key) => handleKeyChange(idx, key)}
-              onBlur={(e) => validateKeyUniqueness(idx, e.target.value)}
               validated={validKeys[idx]}
             />
             <Text>Key</Text>
@@ -204,7 +186,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
             >
               <HelperText id="helper-text1">
                 <HelperTextItem variant={'error'}>
-                  Enter a key-value pair. Keys must be unique. Labels should not contain whitespace.
+                  Keys must be unique. Labels should not contain whitespace.
                 </HelperTextItem>
               </HelperText>
             </FormHelperText>
@@ -219,7 +201,6 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               aria-label="label value"
               value={label.value ?? ''}
               onChange={(value) => handleValueChange(idx, value)}
-              onBlur={() => validateKeyPairExists(idx)}
               validated={validValues[idx]}
             />
             <Text>Value</Text>
