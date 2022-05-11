@@ -142,6 +142,11 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
   }, [props.labels]);
 
   const allLabelsValid = React.useMemo(() => {
+
+    if(!!props.labels && !props.labels.length) {
+      return true;
+    }
+
     const firstLabelValid = matchesLabelSyntax(props.labels[0]);
 
     const allKeysValid = validKeys.reduce(
