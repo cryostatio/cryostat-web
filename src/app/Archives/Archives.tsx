@@ -52,7 +52,7 @@ export const Archives = () => {
     return () => sub.unsubscribe();
   }, [context.api]);
 
-  const cardBody = React.useMemo(() => {
+  const allTargetsCardBody = React.useMemo(() => {
     if (!archiveEnabled) {
       return (<>
         <EmptyState>
@@ -69,17 +69,23 @@ export const Archives = () => {
     </>);
   }, [archiveEnabled]);
 
+  const uploadedCardBody = React.useMemo(() => {
+    return (<> 
+      <CardHeader><Text component={TextVariants.h4}>Archived Recordings (Uploads)</Text></CardHeader>
+      <UploadedArchivedRecordingsTable />
+    </>);
+  },[]);
+
   return (
     <BreadcrumbPage pageTitle='Archives'>
       <Card>
         <CardBody>
-          { cardBody }
+          { allTargetsCardBody }
         </CardBody>
       </Card>
       <Card>
         <CardBody>
-          <CardHeader><Text component={TextVariants.h4}>Archived Recordings (Uploads)</Text></CardHeader>
-          <UploadedArchivedRecordingsTable />
+          { uploadedCardBody }
         </CardBody>
       </Card>
     </BreadcrumbPage>

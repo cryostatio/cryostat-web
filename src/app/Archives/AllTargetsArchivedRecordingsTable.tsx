@@ -61,7 +61,6 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
@@ -76,11 +75,10 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   }, [context, context.targets, setTargets]);
 
   const refreshTargetList = React.useCallback(() => {
-    setIsLoading(true);
     addSubscription(
-      context.targets.queryForTargets().subscribe(() => setIsLoading(false))
+      context.targets.queryForTargets().subscribe(() => {} /* do nothing */)
     );
-  }, [setIsLoading, addSubscription, context.targets]);
+  }, [addSubscription, context.targets]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
