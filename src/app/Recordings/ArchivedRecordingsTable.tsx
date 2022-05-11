@@ -322,7 +322,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     <Drawer isExpanded={showDetailsPanel} isInline>
       {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
       <DrawerContent panelContent={LabelsPanel}>
-        <DrawerContentBody>
+        <DrawerContentBody hasPadding>
           <RecordingsTable
               tableTitle="Archived Flight Recordings"
               toolbar={<RecordingsToolbar />}
