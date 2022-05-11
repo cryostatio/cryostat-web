@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ArchivedRecordingsTable /> renders correctly 1`] = `
+<div
+  className="pf-c-drawer pf-m-inline"
+>
+  <div
+    className="pf-c-drawer__main"
+  >
+    <div
+      className="pf-c-drawer__content"
+    >
+      <div
+        className="pf-c-drawer__body pf-m-padding"
+      >
+        <div>
+          Archived Flight Recordings
+        </div>
+      </div>
+    </div>
+    <div
+      className="pf-c-drawer__panel pf-m-resizable"
+      hidden={true}
+      onTransitionEnd={[Function]}
+    />
+  </div>
+</div>
+`;
