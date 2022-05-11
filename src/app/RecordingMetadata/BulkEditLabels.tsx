@@ -44,6 +44,7 @@ import {
   StackItem,
   Text,
   TextVariants,
+  Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -53,6 +54,7 @@ import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
 import { first, forkJoin, Observable } from 'rxjs';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { RecordingLabelFields } from './RecordingLabelFields';
+import { HelpIcon } from '@patternfly/react-icons';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -102,7 +104,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
 
   const handleEditLabels = React.useCallback(() => {
     setEditing(true);
-  }, [setEditing])
+  }, [setEditing]);
 
   const handleCancel = React.useCallback(() => {
     setEditing(false);
@@ -142,11 +144,23 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     <>
       <Stack hasGutter>
         <StackItem>
-          <Text>Edit Recording Labels</Text>
-          <Text component={TextVariants.small}>
-            Labels present on all selected recordings will appear here. Editing the labels will affect ALL selected
-            recordings.
-          </Text>
+          <Split hasGutter>
+            <SplitItem>
+              <Text>Edit Recording Labels</Text>
+            </SplitItem>
+            <SplitItem>
+              <Tooltip
+                content={
+                  <div>
+                    Labels present on all selected recordings will appear here. Editing the labels will affect ALL
+                    selected recordings.
+                  </div>
+                }
+              >
+                <HelpIcon noVerticalAlign />
+              </Tooltip>
+            </SplitItem>
+          </Split>
         </StackItem>
         <StackItem>
           <LabelCell labels={savedCommonLabels} />

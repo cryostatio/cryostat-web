@@ -58,6 +58,11 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   };
 });
 
+jest.mock('@patternfly/react-core', () => ({
+  ...jest.requireActual('@patternfly/react-core'),
+  Tooltip: ({ t }) => <>{t}</>,
+}));
+
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
@@ -104,7 +109,6 @@ describe('<BulkEditLabels />', () => {
     expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
     expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
     expect(screen.getByText('Edit')).toBeInTheDocument();
-
   });
 
   it('does not display labels for unchecked recordings', () => {
@@ -211,7 +215,7 @@ describe('<BulkEditLabels />', () => {
         <BulkEditLabels {...mockProps} isTargetRecording={false} />
       </ServiceContext.Provider>
     );
-    
+
     userEvent.click(screen.getByText('Edit'));
 
     expect(screen.getAllByLabelText('label key').length).toBe(1);

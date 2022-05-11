@@ -7,24 +7,26 @@ exports[`<BulkEditLabels /> renders correctly 1`] = `
   <div
     className="pf-l-stack__item"
   >
-    <p
-      className=""
-      data-ouia-component-id="OUIA-Generated-Text-1"
-      data-ouia-component-type="PF4/Text"
-      data-ouia-safe={true}
-      data-pf-content={true}
+    <div
+      className="pf-l-split pf-m-gutter"
     >
-      Edit Recording Labels
-    </p>
-    <small
-      className=""
-      data-ouia-component-id="OUIA-Generated-Text-2"
-      data-ouia-component-type="PF4/Text"
-      data-ouia-safe={true}
-      data-pf-content={true}
-    >
-      Labels present on all selected recordings will appear here. Editing the labels will affect ALL selected recordings.
-    </small>
+      <div
+        className="pf-l-split__item"
+      >
+        <p
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-1"
+          data-ouia-component-type="PF4/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+        >
+          Edit Recording Labels
+        </p>
+      </div>
+      <div
+        className="pf-l-split__item"
+      />
+    </div>
   </div>
   <div
     className="pf-l-stack__item"
