@@ -53,6 +53,7 @@ import { first, map } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 export interface AllTargetsArchivedRecordingsTableProps { }
 
@@ -87,6 +88,21 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetList]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
+        .subscribe(v => {
+          const evt: TargetDiscoveryEvent = v.message.event;
+          const target: Target = evt.serviceRef;
+          if (evt.kind === 'FOUND') {
+            setTargets(old => old.concat(target));
+          } else if (evt.kind === 'LOST') {
+            setTargets(old => old.filter(o => o.alias != target.alias && o.connectUrl != target.connectUrl))
+          }
+        })
+    );
+  }, [addSubscription, context, context.notificationChannel, setTargets]);
 
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
