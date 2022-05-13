@@ -8,7 +8,7 @@ exports[`<ArchivedRecordingsTable /> renders correctly 1`] = `
     className="pf-c-drawer__main"
   >
     <div
-      className="pf-c-drawer__content"
+      className="pf-c-drawer__content recordings-table-drawer-content"
     >
       <div
         className="pf-c-drawer__body pf-m-padding"

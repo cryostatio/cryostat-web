@@ -60,3 +60,7 @@ html, body, #root {
 .cryostat-logo {
   height: 2em;
 }
+
+.recordings-table-drawer-content {
+  min-height: 23rem;
+}
