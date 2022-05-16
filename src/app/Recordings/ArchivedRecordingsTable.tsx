@@ -40,7 +40,7 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -50,7 +50,6 @@ import { concatMap, filter, first, map } from 'rxjs/operators';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
-import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 
 export interface ArchivedRecordingsTableProps { }
