@@ -40,15 +40,17 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
-import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
+import { LabelCell } from '../RecordingMetadata/LabelCell';
+import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 
 export interface ArchivedRecordingsTableProps { }
 
@@ -59,6 +61,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -80,6 +83,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       setCheckedIndices(ci => ci.filter(v => v !== index));
     }
   }, [setCheckedIndices, setHeaderChecked]);
+
+  const handleEditLabels = React.useCallback(() => {
+    setShowDetailsPanel(true);
+  }, [setShowDetailsPanel]);
 
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
@@ -169,16 +176,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   React.useEffect(() => {
     addSubscription(
-      combineLatest([
-      context.target.target(),
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
-    ])
-      .subscribe(parts => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
+      .subscribe(event => {
         setRecordings(old => old.map(
           o => o.name == event.message.recordingName 
             ? { ...o, metadata: { labels: event.message.metadata.labels } } 
@@ -202,7 +201,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       forkJoin(tasks).subscribe()
     );
   };
-
+ 
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
@@ -225,8 +224,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
-    const [rowLabels, setRowLabels] = React.useState(parsedLabels);
-    const [editingMetadata, setEditingMetadata] = React.useState(false);
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
@@ -235,16 +232,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);
     };
-
-    const handleSubmitLabelPatch = React.useCallback(() => {
-      context.api.postRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
-      setEditingMetadata(false);
-    }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
-
-    const handleCancelLabelPatch = React.useCallback(() => {
-      setRowLabels(parseLabels(props.recording.metadata.labels));
-      setEditingMetadata(false);
-    }, [props.recording.metadata.labels, setRowLabels, setEditingMetadata]);
 
     const parentRow = React.useMemo(() => {
       return(
@@ -271,28 +258,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            {editingMetadata ?
-              <EditRecordingLabels
-                labels={rowLabels}
-                setLabels={setRowLabels}
-                usePatchForm={editingMetadata}
-                patchRecordingName={props.recording.name}
-                onPatchSubmit={handleSubmitLabelPatch}
-                onPatchCancel={handleCancelLabelPatch}
-              />
-              : rowLabels.length ? rowLabels.map(l => (
-                <Label color="grey">
-                  {`${l.key}: ${l.value}`}
-                </Label>
-                ))
-              : <Text>-</Text>
-            }
+            <LabelCell 
+              labels={parsedLabels} 
+            />
           </Td>
           <RecordingActions
             recording={props.recording}
             index={props.index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
-            editMetadataFn={() => setEditingMetadata(true)}
           />
         </Tr>
       );
@@ -328,6 +301,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         <ToolbarContent>
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
+              <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
+            </ToolbarItem>
+            <ToolbarItem>
               <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
             </ToolbarItem>
           </ToolbarGroup>
@@ -340,18 +316,33 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
-  return (<>
-    <RecordingsTable
-        tableTitle="Archived Flight Recordings"
-        toolbar={<RecordingsToolbar />}
-        tableColumns={tableColumns}
-        isHeaderChecked={headerChecked}
-        onHeaderCheck={handleHeaderCheck}
-        isLoading={isLoading}
-        isEmpty={!recordings.length}
-        errorMessage=''
-    >
-      {recordingRows}
-    </RecordingsTable>
-  </>);
+  const LabelsPanel = React.useMemo(() => (
+    <RecordingLabelsPanel
+      setShowPanel={setShowDetailsPanel}  
+      isTargetRecording={true}
+      checkedIndices={checkedIndices}
+    />
+  ), [checkedIndices]);
+
+  return (
+    <Drawer isExpanded={showDetailsPanel} isInline>
+      {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
+      <DrawerContent panelContent={LabelsPanel} className='recordings-table-drawer-content'>
+        <DrawerContentBody hasPadding>
+          <RecordingsTable
+              tableTitle="Archived Flight Recordings"
+              toolbar={<RecordingsToolbar />}
+              tableColumns={tableColumns}
+              isHeaderChecked={headerChecked}
+              onHeaderCheck={handleHeaderCheck}
+              isLoading={isLoading}
+              isEmpty={!recordings.length}
+              errorMessage=''
+          >
+            {recordingRows}
+            </RecordingsTable>
+          </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
+  );
 };

@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<EditableLabelCell /> renders correctly 1`] = `
+<span
+  className="pf-c-label"
+>
+  <span
+    className="pf-c-label__content"
+  >
+    someLabel: someValue
+  </span>
+</span>
+`;

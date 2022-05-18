@@ -39,14 +39,15 @@ import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
-import { HelpIcon, OutlinedQuestionCircleIcon, StroopwafelIcon } from '@patternfly/react-icons';
+import { HelpIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
 import { EventTemplate, TemplateType } from './CreateRecording';
-import { RecordingOptions, RecordingAttributes, ActiveRecording } from '@app/Shared/Services/Api.service';
+import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
-import { EditRecordingLabels, RecordingLabel } from './EditRecordingLabels';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 
 export interface CustomRecordingFormProps {
   onSubmit: (recordingAttributes: RecordingAttributes) => void;
@@ -73,6 +74,7 @@ export const CustomRecordingForm = (props) => {
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [toDisk, setToDisk] = React.useState(true);
   const [labels, setLabels] = React.useState([] as RecordingLabel[]);
+  const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
 
   const handleContinuousChange = (checked, evt) => {
     setContinuous(evt.target.checked);
@@ -240,7 +242,17 @@ export const CustomRecordingForm = (props) => {
         />
       </FormGroup>
       <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
-          <EditRecordingLabels labels={labels} setLabels={setLabels}/>
+      <FormGroup
+      label="Labels"
+      fieldId="labels"
+      labelIcon={
+        <Tooltip content={<div>Unique key-value pairs containing information about the recording.</div>}>
+          <HelpIcon noVerticalAlign />
+        </Tooltip>
+      }
+    >
+      <RecordingLabelFields labels={labels} setLabels={setLabels} valid={labelsValid} setValid={setLabelsValid}/>
+    </FormGroup>
       </ExpandableSection>
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
@@ -324,7 +336,7 @@ export const CustomRecordingForm = (props) => {
         </Form>
       </ExpandableSection>
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType}>Create</Button>
+        <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType || labelsValid !== ValidatedOptions.success}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>

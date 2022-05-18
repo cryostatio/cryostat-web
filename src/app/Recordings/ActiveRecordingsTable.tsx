@@ -36,19 +36,21 @@
  * SOFTWARE.
  */
 
-import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
+import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
+import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
+import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 
@@ -64,6 +66,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -95,6 +98,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const handleCreateRecording = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
   }, [routerHistory]);
+
+  const handleEditLabels = React.useCallback(() => {
+    setShowDetailsPanel(true);
+  }, [setShowDetailsPanel]);
 
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
@@ -287,8 +294,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     }, [props.recording.metadata.labels]);
 
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
-    const [rowLabels, setRowLabels] = React.useState(parsedLabels);
-    const [editingMetadata, setEditingMetadata] = React.useState(false);
 
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
@@ -301,16 +306,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);
     };
-
-    const handleSubmitLabelPatch = React.useCallback(() => {
-      context.api.postTargetRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
-      setEditingMetadata(false);
-    }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
-
-    const handleCancelLabelPatch = React.useCallback(() => {
-      setRowLabels(parseLabels(props.recording.metadata.labels));
-      setEditingMetadata(false);
-    }, [props.recording.metadata.labels, setRowLabels, setEditingMetadata]);
 
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
@@ -356,28 +351,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             {props.recording.state}
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
-            {editingMetadata ?
-              <EditRecordingLabels
-                labels={rowLabels}
-                setLabels={setRowLabels}
-                usePatchForm={editingMetadata}
-                patchRecordingName={props.recording.name}
-                onPatchSubmit={handleSubmitLabelPatch}
-                onPatchCancel={handleCancelLabelPatch}
-              />
-              : rowLabels.length ? rowLabels.map(l => (
-                <Label color="grey">
-                  {`${l.key}: ${l.value}`}
-                </Label>
-                ))
-              : <Text>-</Text>
-            }
+            <LabelCell 
+              labels={parsedLabels} 
+            />
           </Td>
           <RecordingActions
             index={props.index}
             recording={props.recording}
             uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
-            editMetadataFn={() => setEditingMetadata(true)}
           />
         </Tr>
       );
@@ -458,6 +439,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         ));
       }
       arr.push((
+        <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
+      ));
+      arr.push((
         <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
       ));
       arr.push((
@@ -487,18 +471,33 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
+  const LabelsPanel = React.useMemo(() => (
+    <RecordingLabelsPanel
+      setShowPanel={setShowDetailsPanel}  
+      isTargetRecording={true}
+      checkedIndices={checkedIndices}
+    />
+  ), [checkedIndices]);
+
   return (
-    <RecordingsTable
-        tableTitle="Active Flight Recordings"
-        toolbar={<RecordingsToolbar />}
-        tableColumns={tableColumns}
-        isHeaderChecked={headerChecked}
-        onHeaderCheck={handleHeaderCheck}
-        isEmpty={!recordings.length}
-        isLoading ={isLoading}
-        errorMessage ={errorMessage}
-    >
-      {recordingRows}
-    </RecordingsTable>
+    <Drawer isExpanded={showDetailsPanel} isInline>
+      {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
+      <DrawerContent panelContent={LabelsPanel} className='recordings-table-drawer-content'>
+        <DrawerContentBody hasPadding>
+          <RecordingsTable
+          tableTitle="Active Flight Recordings"
+          toolbar={<RecordingsToolbar />}
+          tableColumns={tableColumns}
+          isHeaderChecked={headerChecked}
+          onHeaderCheck={handleHeaderCheck}
+          isEmpty={!recordings.length}
+          isLoading ={isLoading}
+          errorMessage ={errorMessage}
+          >
+            {recordingRows}
+          </RecordingsTable>
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
   );
 };

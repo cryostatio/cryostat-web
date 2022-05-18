@@ -49,7 +49,8 @@ import { Observable, forkJoin, merge } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { PlusIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
-import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
+import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
+import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 
 export interface AllArchivedRecordingsTableProps { }
 
@@ -165,8 +166,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
-    const [rowLabels, setRowLabels] = React.useState(parsedLabels);
-    const [editingMetadata, setEditingMetadata] = React.useState(false);
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
@@ -175,16 +174,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);
     };
-
-    const handleSubmitLabelPatch = React.useCallback(() => {
-      context.api.postRecordingMetadata(props.recording.name, rowLabels).subscribe(() => {} /* do nothing */);
-      setEditingMetadata(false);
-    }, [props.recording.name, rowLabels, context, context.api, setEditingMetadata]);
-
-    const handleCancelLabelPatch = React.useCallback(() => {
-      setRowLabels(parseLabels(props.recording.metadata.labels));
-      setEditingMetadata(false);
-    }, [props.recording.metadata.labels, setRowLabels, setEditingMetadata]);
 
     const parentRow = React.useMemo(() => {
       return(
@@ -211,28 +200,14 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            {editingMetadata ?
-              <EditRecordingLabels
-                labels={rowLabels}
-                setLabels={setRowLabels}
-                usePatchForm={editingMetadata}
-                patchRecordingName={props.recording.name}
-                onPatchSubmit={handleSubmitLabelPatch}
-                onPatchCancel={handleCancelLabelPatch}
-              />
-              : rowLabels.length ? rowLabels.map(l => (
-                <Label color="grey">
-                  {`${l.key}: ${l.value}`}
-                </Label>
-                ))
-              : <Text>-</Text>
-            }
+            <LabelCell 
+              labels={parsedLabels} 
+            />
           </Td>
           <RecordingActions
             recording={props.recording}
             index={props.index}
             uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
-            editMetadataFn={() => setEditingMetadata(true)}
           />
         </Tr>
       );

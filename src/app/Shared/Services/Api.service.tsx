@@ -41,7 +41,7 @@ import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
-import { RecordingLabel } from '@app/CreateRecording/EditRecordingLabels';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
 import { NotificationCategory } from './NotificationChannel.service';
 import _ from 'lodash';
