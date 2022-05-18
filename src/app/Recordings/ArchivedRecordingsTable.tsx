@@ -161,7 +161,15 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           if (currentTarget.connectUrl != event.message.target) {
             return;
           }
-          setRecordings(old => old.filter(o => o.name != event.message.recording.name));
+          
+          setRecordings(old => old.filter((r, idx) => {
+            if (r.name == event.message.recording.name) {
+              handleRowCheck(false, idx);
+              return false;
+            } else {
+              return true;
+            } 
+          }));
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
