@@ -36,34 +36,26 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import {
-  Button,
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
-  Text,
-  TextVariants,
-  Tooltip,
-  ValidatedOptions,
-} from '@patternfly/react-core';
+import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
-import { first, forkJoin, Observable } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, merge, Observable } from 'rxjs';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { RecordingLabelFields } from './RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
   checkedIndices: number[];
-  recordings: ArchivedRecording[];
 }
 
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
   const [editing, setEditing] = React.useState(false);
   const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
   const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as RecordingLabel[]);
@@ -74,7 +66,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     const tasks: Observable<any>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
-    props.recordings.forEach((r: ArchivedRecording, idx) => {
+    recordings.forEach((r: ArchivedRecording, idx) => {
       if (props.checkedIndices.includes(idx)) {
         let updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
         updatedLabels = updatedLabels.filter((label) => {
@@ -90,7 +82,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     });
     addSubscription(forkJoin(tasks).subscribe(() => setEditing((editing) => !editing)));
   }, [
-    props.recordings,
+    recordings,
     props.checkedIndices,
     props.isTargetRecording,
     editing,
@@ -114,7 +106,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
       let allRecordingLabels = [] as RecordingLabel[][];
-      props.recordings.forEach((r: ArchivedRecording, idx) => {
+      recordings.forEach((r: ArchivedRecording, idx) => {
         if (props.checkedIndices.includes(idx)) {
           allRecordingLabels.push(parseLabels(r.metadata.labels));
         }
@@ -126,13 +118,75 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
       );
       setLabels(updatedCommonLabels);
     },
-    [props.recordings, props.checkedIndices]
+    [recordings, props.checkedIndices]
   );
+
+  const refreshRecordingList = React.useCallback(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((target) => target !== NO_TARGET),
+          concatMap((target) =>
+            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+          ),
+          first()
+        )
+        .subscribe((value) => setRecordings(value))
+    );
+  }, [addSubscription, context, context.target, context.api, setRecordings]);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe(refreshRecordingList));
+  }, [addSubscription, context, context.target, refreshRecordingList]);
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        context.target.target(),
+        merge(
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
+          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
+        ),
+      ]).subscribe((parts) => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings((old) => old.filter((r) => r.name != event.message.recording.name));
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
+      ]).subscribe((parts) => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings((old) =>
+          old.map((o) =>
+            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o
+          )
+        );
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
     updateCommonLabels(setSavedCommonLabels);
-  }, [props.recordings, props.checkedIndices, setCommonLabels, setSavedCommonLabels]);
+
+    if (!recordings.length && editing) {
+      setEditing(false);
+    }
+  }, [recordings, props.checkedIndices, setCommonLabels, setSavedCommonLabels]);
 
   React.useEffect(() => {
     if (!props.checkedIndices.length) {

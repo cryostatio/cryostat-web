@@ -37,16 +37,19 @@
  */
 
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
-import { Button, DrawerActions, DrawerCloseButton, DrawerHead, DrawerPanelBody, DrawerPanelContent } from '@patternfly/react-core';
-import { AngleRightIcon } from '@patternfly/react-icons';
+import {
+  DrawerActions,
+  DrawerCloseButton,
+  DrawerHead,
+  DrawerPanelBody,
+  DrawerPanelContent,
+} from '@patternfly/react-core';
 import React from 'react';
 
 export interface RecordingLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
   isTargetRecording: boolean;
   checkedIndices: number[];
-  recordings: ArchivedRecording[];
 }
 
 export const RecordingLabelsPanel: React.FunctionComponent<RecordingLabelsPanelProps> = (props) => {
@@ -54,20 +57,15 @@ export const RecordingLabelsPanel: React.FunctionComponent<RecordingLabelsPanelP
     <DrawerPanelContent isResizable>
       <DrawerHead>
         <DrawerActions>
-        <DrawerCloseButton
-          onClick={() => props.setShowPanel(false)}
-          data-testid="hide-table-actions-panel"
-          aria-label="hide table actions panel"
-        />
+          <DrawerCloseButton
+            onClick={() => props.setShowPanel(false)}
+            data-testid="hide-table-actions-panel"
+            aria-label="hide table actions panel"
+          />
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelBody>
-        <BulkEditLabels
-          isTargetRecording={props.isTargetRecording}
-          checkedIndices={props.checkedIndices}
-          recordings={props.recordings}
-        />
-        {/* TODO fix validations, text styling and Save/Cancel editing toggle */}
+        <BulkEditLabels isTargetRecording={props.isTargetRecording} checkedIndices={props.checkedIndices} />
       </DrawerPanelBody>
     </DrawerPanelContent>
   );

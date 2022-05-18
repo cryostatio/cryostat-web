@@ -313,9 +313,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       setShowPanel={setShowDetailsPanel}  
       isTargetRecording={true}
       checkedIndices={checkedIndices}
-      recordings={recordings}
     />
-  ), [checkedIndices, recordings]);
+  ), [checkedIndices]);
 
   return (
     <Drawer isExpanded={showDetailsPanel} isInline>

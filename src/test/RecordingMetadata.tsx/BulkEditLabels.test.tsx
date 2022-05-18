@@ -38,53 +38,62 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { of } from 'rxjs';
-
 import '@testing-library/jest-dom';
-
-jest.mock('@app/Shared/Services/Api.service', () => {
-  return {
-    ApiService: jest.fn(() => {
-      return {
-        postTargetRecordingMetadata: jest.fn(() => {
-          return of(true);
-        }),
-        postRecordingMetadata: jest.fn(() => {
-          return of(true);
-        }),
-      };
-    }),
-  };
-});
+import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 jest.mock('@patternfly/react-core', () => ({
   ...jest.requireActual('@patternfly/react-core'),
   Tooltip: ({ t }) => <>{t}</>,
 }));
 
-import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
-
 const mockRecordingLabels = {
   someLabel: 'someValue',
 };
-
+const mockConnectUrl = 'service:jmx:rmi://someUrl';
+const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
 };
+const mockLabelsNotification = {
+  message: {
+    target: mockConnectUrl,
+    recordingName: 'someRecording',
+    metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
+  },
+} as NotificationMessage;
+const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
+
+jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockRecording]));
+jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata').mockReturnValue(of('updatedLabels'));
+jest.spyOn(defaultServices.api, 'postRecordingMetadata').mockReturnValue(of('updatedLabels'));
+jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
+jest
+  .spyOn(defaultServices.notificationChannel, 'messages')
+  .mockReturnValueOnce(of()) // renders correctly
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // updates the recording labels after receiving a notification
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockLabelsNotification))
+
+  .mockReturnValueOnce(of()) // removes applicable recording labels after receiving a notification
+  .mockReturnValueOnce(of(mockDeleteNotification))
+  .mockReturnValue(of());
 
 describe('<BulkEditLabels />', () => {
-  const mockRecordings = [mockRecording];
-
   const mockProps = {
     isTargetRecording: true,
     checkedIndices: [0],
-    recordings: mockRecordings,
   };
 
   it('renders correctly', async () => {
@@ -97,6 +106,28 @@ describe('<BulkEditLabels />', () => {
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('updates the recording labels after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...mockProps} />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('someNewLabel: someNewValue')).toBeInTheDocument();
+    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
+  });
+
+  it('removes applicable recording labels after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels {...mockProps} />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
+    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
   });
 
   it('displays read-only labels from selected recordings', () => {

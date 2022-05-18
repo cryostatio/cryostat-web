@@ -468,9 +468,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       setShowPanel={setShowDetailsPanel}  
       isTargetRecording={true}
       checkedIndices={checkedIndices}
-      recordings={recordings}
     />
-  ), [checkedIndices, recordings]);
+  ), [checkedIndices]);
 
   return (
     <Drawer isExpanded={showDetailsPanel} isInline>

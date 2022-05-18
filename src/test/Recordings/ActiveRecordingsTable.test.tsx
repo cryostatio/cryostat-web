@@ -137,7 +137,7 @@ jest
   .mockReturnValueOnce(of()) // removes a recording after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockDeleteNotification))
-  .mockReturnValue(of()), // all other tests
+  .mockReturnValue(of()); // all other tests
 
   describe('<ActiveRecordingsTable />', () => {
     beforeEach(() => {
