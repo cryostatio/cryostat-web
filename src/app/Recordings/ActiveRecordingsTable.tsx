@@ -160,7 +160,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        setRecordings(old => old.filter(r => r.name != event.message.recording.name));
+        
+        setRecordings(old => old.filter((r, idx) => {
+          if (r.name == event.message.recording.name) {
+            handleRowCheck(false, idx);
+            return false;
+          } else {
+            return true;
+          } 
+        }));
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
