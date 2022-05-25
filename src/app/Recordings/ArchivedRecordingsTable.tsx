@@ -161,18 +161,24 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           if (currentTarget.connectUrl != event.message.target) {
             return;
           }
-          
-          setRecordings(old => old.filter((r, idx) => {
-            if (r.name == event.message.recording.name) {
-              handleRowCheck(false, idx);
-              return false;
-            } else {
+          let deleted;
+
+          setRecordings((old) => {
+            return old.filter((r, i) => {
+              if (r.name == event.message.recording.name) {
+                deleted = i;
+                return false;
+              }
               return true;
-            } 
-          }));
+            });
+          });
+          setCheckedIndices(old => old
+            .filter((v) => v !== deleted)
+            .map(ci => ci > deleted ? ci - 1 : ci)
+          );
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
@@ -186,11 +192,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
-  const handleDeleteRecordings = () => {
+  const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
     recordings.forEach((r: ArchivedRecording, idx) => {
       if (checkedIndices.includes(idx)) {
-        handleRowCheck(false, idx);
         context.reports.delete(r);
         tasks.push(
           context.api.deleteArchivedRecording(r.name).pipe(first())
@@ -200,7 +205,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     addSubscription(
       forkJoin(tasks).subscribe()
     );
-  };
+  }, [recordings, checkedIndices, context.reports, context.api, addSubscription]);
  
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
