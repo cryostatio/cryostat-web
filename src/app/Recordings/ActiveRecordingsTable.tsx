@@ -167,18 +167,24 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        
-        setRecordings(old => old.filter((r, idx) => {
-          if (r.name == event.message.recording.name) {
-            handleRowCheck(false, idx);
-            return false;
-          } else {
+        let deleted;
+
+        setRecordings((old) => {
+          return old.filter((r, i) => {
+            if (r.name == event.message.recording.name) {
+              deleted = i;
+              return false;
+            }
             return true;
-          } 
-        }));
+          });
+        });
+        setCheckedIndices(old => old
+          .filter((v) => v !== deleted)
+          .map(ci => ci > deleted ? ci - 1 : ci)
+        );
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
@@ -268,7 +274,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     const tasks: Observable<{}>[] = [];
     recordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
-        handleRowCheck(false, idx);
         context.reports.delete(r);
         tasks.push(
           context.api.deleteRecording(r.name).pipe(first())
@@ -278,7 +283,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.reports, context.api, addSubscription]);
+  }, [recordings, checkedIndices, context.reports, context.api, addSubscription]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
