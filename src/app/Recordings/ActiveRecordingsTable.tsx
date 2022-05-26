@@ -51,11 +51,15 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
+import { RecordingSearchFilters } from './RecordingSearchFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
+export enum PanelContent {
+  LABELS,
+}
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
 }
@@ -65,11 +69,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const routerHistory = useHistory();
 
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
+  const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -95,8 +101,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
-    setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
-  }, [setHeaderChecked, setCheckedIndices, recordings]);
+    setCheckedIndices(checked ? Array.from(new Array(filteredRecordings.length), (x, i) => i) : []);
+  }, [setHeaderChecked, setCheckedIndices, filteredRecordings]);
 
   const handleCreateRecording = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
@@ -104,6 +110,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleEditLabels = React.useCallback(() => {
     setShowDetailsPanel(true);
+    setPanelContent(PanelContent.LABELS);
   }, [setShowDetailsPanel]);
 
   const handleRecordings = React.useCallback((recordings) => {
@@ -243,7 +250,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
-    recordings.forEach((r: ActiveRecording, idx) => {
+    filteredRecordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
@@ -254,11 +261,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
+  }, [filteredRecordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleStopRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
-    recordings.forEach((r: ActiveRecording, idx) => {
+    filteredRecordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
@@ -271,11 +278,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
+  }, [filteredRecordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<{}>[] = [];
-    recordings.forEach((r: ActiveRecording, idx) => {
+    filteredRecordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         context.reports.delete(r);
         tasks.push(
@@ -286,7 +293,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, context.reports, context.api, addSubscription]);
+  }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -491,6 +498,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return (
       <Toolbar id="active-recordings-toolbar">
         <ToolbarContent>
+        <RecordingSearchFilters recordings={recordings} setFilteredRecordings={setFilteredRecordings} />
         { buttons }
         { deleteActiveWarningModal }
         </ToolbarContent>
@@ -499,8 +507,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   };
 
   const recordingRows = React.useMemo(() => {
-    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
-  }, [recordings, expandedRows, checkedIndices]);
+    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+  }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
@@ -512,8 +520,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   return (
     <Drawer isExpanded={showDetailsPanel} isInline>
-      {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
-      <DrawerContent panelContent={LabelsPanel} className='recordings-table-drawer-content'>
+      <DrawerContent panelContent={
+        {
+          [PanelContent.LABELS]: LabelsPanel,
+        }[panelContent]
+      } className='recordings-table-drawer-content'>
         <DrawerContentBody hasPadding>
           <RecordingsTable
           tableTitle="Active Flight Recordings"
@@ -522,6 +533,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           isHeaderChecked={headerChecked}
           onHeaderCheck={handleHeaderCheck}
           isEmpty={!recordings.length}
+          isEmptyFilterResult={!filteredRecordings.length}
+          clearFilters={() => {/* TODO connect to filters */}}
           isLoading ={isLoading}
           errorMessage ={errorMessage}
           >

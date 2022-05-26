@@ -301,6 +301,8 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
         onHeaderCheck={handleHeaderCheck}
         isLoading={isLoading}
         isEmpty={!recordings.length}
+        isEmptyFilterResult={false}
+        clearFilters={() => {/** TODO */}}
         errorMessage=''
     >
       {recordingRows}

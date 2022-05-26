@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Title, EmptyState, EmptyStateIcon } from '@patternfly/react-core';
+import { Title, EmptyState, EmptyStateIcon, EmptyStateBody, Button, EmptyStateSecondaryActions } from '@patternfly/react-core';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { TableComposable, Thead, Tr, Th } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
@@ -47,10 +47,12 @@ export interface RecordingsTableProps {
   tableColumns: string[];
   tableTitle: string;
   isEmpty: boolean;
+  isEmptyFilterResult: boolean;
   isHeaderChecked: boolean;
   isLoading: boolean;
   errorMessage: string;
   onHeaderCheck: (event, checked: boolean) => void;
+  clearFilters: (filterType) => void;
 }
 
 export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
@@ -66,6 +68,24 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
         <Title headingLevel="h4" size="lg">
           No {props.tableTitle}
         </Title>
+      </EmptyState>
+    </>);
+  } else if (props.isEmptyFilterResult) {
+    view = (<>
+      <EmptyState>
+        <EmptyStateIcon icon={SearchIcon}/>
+        <Title headingLevel="h4" size="lg">
+          No {props.tableTitle} found
+        </Title>
+        <EmptyStateBody>
+          No results match this filter criteria. 
+          Remove all filters or clear all filters to show results.
+        </EmptyStateBody>
+        <EmptyStateSecondaryActions>
+          <Button variant="link" onClick={() => props.clearFilters(null)}>
+            Clear all filters
+          </Button>
+        </EmptyStateSecondaryActions>
       </EmptyState>
     </>);
   } else {
