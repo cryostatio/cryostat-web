@@ -38,25 +38,34 @@
 
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import {
+  Bullseye,
   Button,
   ButtonVariant,
+  CalendarMonth,
   Checkbox,
   DatePicker,
   Dropdown,
   DropdownItem,
   DropdownPosition,
   DropdownToggle,
+  Flex,
+  FlexItem,
   InputGroup,
+  Level,
+  Popover,
   Select,
+  SelectOption,
   SelectVariant,
   Text,
   TextInput,
+  TimePicker,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
   ToolbarToggleGroup,
+  yyyyMMddFormat,
 } from '@patternfly/react-core';
-import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import { FilterIcon, OutlinedCalendarAltIcon, OutlinedClockIcon, SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export interface RecordingSearchFiltersProps {
@@ -70,7 +79,7 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
   const [filters, setFilters] = React.useState({
     Name: [] as string[],
-    Datetime: [],
+    TimeRange: [],
     Duration: [],
     State: [] as RecordingState[],
     Labels: [],
@@ -108,15 +117,108 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
     [searchName]
   );
 
-  const onRecordingStateSelect = React.useCallback((state: RecordingState) => {
-    setFilters((old) => {
-      return { ...old, ['State']: old.State.includes(state) ? old.State : [...old.State, state] };
-    });
-  }, [RecordingState]);
+  const onRecordingStateSelect = React.useCallback(
+    (state: RecordingState) => {
+      setFilters((old) => {
+        return { ...old, ['State']: old.State.includes(state) ? old.State : [...old.State, state] };
+      });
+    },
+    [RecordingState]
+  );
 
   React.useEffect(() => {
     props.setFilteredRecordings(props.recordings); //TODO actually filter recordings
   }, [props.recordings, filters]);
+
+  const onStartDateChange = React.useCallback(() => {}, []);
+  const onStartTimeChange = React.useCallback(() => {}, []);
+  const onStopDateChange = React.useCallback(() => {}, []);
+  const onStopTimeChange = React.useCallback(() => {}, []);
+
+  const isValidDate = React.useCallback((date) => {
+    return true;
+  }, []);
+
+  const stopTimeValidator = React.useCallback((date: Date) => {
+    return ''; //or return 'descriptive error message string'
+  }, []);
+
+  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
+  const [isTimeOpen, setIsTimeOpen] = React.useState(false);
+
+  const [startDate, setStartDate] = React.useState('MM-DD-YYYY');
+  // const [stopDate, setStopDate] = React.useState('MM-DD-YYYY');
+
+  const [startTime, setStartTime] = React.useState('HH:MM');
+  // const [stopTime, setStopTime] = React.useState('HH:MM');
+
+  // fix time options hacky
+  const hours = Array.from(new Array(24), (_, i) => i === 0 ? "00" : i);
+  const minutes = Array.from(new Array(4), (_, i) => i === 0 ? "00" : i*15);
+  const defaultTime = '0:00';
+  const dateFormat = (date: Date) =>
+    date.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+
+  const onToggleCalendar = () => {
+    setIsCalendarOpen(!isCalendarOpen);
+    setIsTimeOpen(false);
+  };
+
+  const onToggleTime = (isOpen) => {
+    setIsTimeOpen(isOpen);
+    setIsCalendarOpen(false);
+  };
+
+  const onSelectCalendar = (newValueDate: Date) => {
+    const newValue = dateFormat(newValueDate);
+    setStartDate(newValue);
+    setIsCalendarOpen(!isCalendarOpen);
+    // setting default time when it is not picked
+    if (startTime === 'HH:MM') {
+      setStartTime(defaultTime);
+    }
+  };
+
+  const onSelectTime = (e) => {
+    setStartTime(e.currentTarget.textContent);
+    setIsTimeOpen(!isTimeOpen);
+  };
+
+  const timeOptions = hours.map((hrs) =>
+    minutes.map((mins) => (
+      <DropdownItem key={`${hrs}${mins}`} component="button" value={`${hrs}:${mins}`}>
+        {`${hrs}:${mins}`}
+      </DropdownItem>
+    ))
+  );
+
+  const calendar = <CalendarMonth date={new Date(startDate)} onChange={onSelectCalendar} />;
+
+  const timeSelector = (
+    <Dropdown
+      onSelect={onSelectTime}
+      toggle={
+        <DropdownToggle
+          aria-label="Toggle the time picker menu"
+          toggleIndicator={null}
+          onToggle={onToggleTime}
+          style={{ padding: '6px 16px' }}
+        >
+          <OutlinedClockIcon />
+        </DropdownToggle>
+      }
+      isOpen={isTimeOpen}
+      dropdownItems={timeOptions}
+    />
+  );
+
+  const calendarButton = React.useMemo(() => {
+    return (
+      <Button variant="control" aria-label="Toggle the calendar" onClick={onToggleCalendar}>
+        <OutlinedCalendarAltIcon />
+      </Button>
+    );
+  }, []);
 
   const categoryDropdown = React.useMemo(() => {
     return (
@@ -124,13 +226,18 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
         <Dropdown
           position={DropdownPosition.left}
           toggle={
-            <DropdownToggle onToggle={onCategoryToggle} style={{ width: '100%' }}>
+            <DropdownToggle onToggle={onCategoryToggle}>
               <FilterIcon /> {currentCategory}
             </DropdownToggle>
           }
           isOpen={isCategoryDropdownOpen}
-          dropdownItems={[Object.keys(filters).map((cat) => <DropdownItem key={cat} onClick={() => onCategorySelect(cat)}>{cat}</DropdownItem>)]}
-          style={{ width: '100%' }}
+          dropdownItems={[
+            Object.keys(filters).map((cat) => (
+              <DropdownItem key={cat} onClick={() => onCategorySelect(cat)}>
+                {cat}
+              </DropdownItem>
+            )),
+          ]}
         ></Dropdown>
       </ToolbarItem>
     );
@@ -153,37 +260,50 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
           <SearchIcon />
         </Button>
       </InputGroup>,
+      <Popover
+        position="bottom"
+        bodyContent={calendar}
+        showClose={false}
+        isVisible={isCalendarOpen}
+        hasNoPadding
+        hasAutoWidth
+      >
+        <InputGroup>
+          <TextInput
+            type="text"
+            id="startTimeAfter"
+            label="Started After"
+            aria-label="Started after time picker"
+            value={startDate + ' ' + startTime}
+            isReadOnly
+          />
+          {calendarButton}
+          {timeSelector}
+        </InputGroup>
+      </Popover>,
       <InputGroup>
-        <DatePicker
-          id="startTimeInput1"
-          aria-label="start time filter"
-          helperText="Start"
-          onChange={(str, date) => console.log('onChange', str, date)}
-        />
-        <DatePicker
-          id="endTimeInput1"
-          aria-label="end time filter"
-          helperText="End"
-          onChange={(str, date) => console.log('onChange', str, date)}
-        />
-      </InputGroup>,
-      <InputGroup>
-        <Checkbox
-          label="Continuous"
-          id="continuous-checkbox"
-          isChecked={continuous}
-          onChange={(checked) => setContinuous(checked)}
-        />
-        <TextInput
-          value={duration}
-          isRequired
-          type="number"
-          id="durationInput1"
-          aria-label="duration filter"
-          onChange={(e) => setDuration(Number(e))}
-          min="0"
-          isDisabled={continuous}
-        />
+        <Flex>
+          <FlexItem>
+            <TextInput
+              value={duration}
+              isRequired
+              type="number"
+              id="durationInput1"
+              aria-label="duration filter"
+              onChange={(e) => setDuration(Number(e))}
+              min="0"
+              isDisabled={continuous}
+            />
+          </FlexItem>
+          <FlexItem>
+            <Checkbox
+              label="Continuous"
+              id="continuous-checkbox"
+              isChecked={continuous}
+              onChange={(checked) => setContinuous(checked)}
+            />
+          </FlexItem>
+        </Flex>
       </InputGroup>,
       <Select
         variant={SelectVariant.checkbox}
@@ -194,7 +314,9 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
         placeholderText="Filter by state"
       >
         {Object.values(RecordingState).map((rs) => (
-          <DropdownItem key={rs} onClick={() => onRecordingStateSelect(rs)}>{rs}</DropdownItem>
+          <SelectOption key={rs} onClick={() => onRecordingStateSelect(rs)}>
+            {String(rs)}
+          </SelectOption>
         ))}
       </Select>,
       <InputGroup>
