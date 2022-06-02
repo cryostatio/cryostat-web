@@ -111,7 +111,7 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
       }
 
       setFilters((old) => {
-        return { ...old, ['Name']: old.Name.includes(searchName) ? old.Name : [...old.Name, searchName] };
+        return { ...old, Name: old.Name.includes(searchName) ? old.Name : [...old.Name, searchName] };
       });
     },
     [searchName]
@@ -342,14 +342,14 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
     <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
       <ToolbarGroup variant="filter-group">
         {categoryDropdown}
-        {filterDropdownItems.map((inputField, i) => (
+        {Object.keys(filters).map((filterKey, i) => (
           <ToolbarFilter
-            chips={filters[i]}
+            chips={filters[filterKey]}
             deleteChip={onDelete}
-            categoryName={Object.keys(filters)[i]}
-            showToolbarItem={currentCategory === Object.keys(filters)[i]}
+            categoryName={filterKey}
+            showToolbarItem={currentCategory === filterKey}
           >
-            {inputField}
+            {filterDropdownItems[i]}
           </ToolbarFilter>
         ))}
       </ToolbarGroup>
