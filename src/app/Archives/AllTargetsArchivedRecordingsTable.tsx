@@ -42,8 +42,8 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
-import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput } from '@patternfly/react-core';
+import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, ISortBy } from '@patternfly/react-table';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { RecordingActions } from '@app/Recordings/RecordingActions';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
@@ -60,7 +60,9 @@ export interface AllTargetsArchivedRecordingsTableProps { }
 export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTargetsArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
+  const [search, setSearch] = React.useState('');
   const [targets, setTargets] = React.useState([] as Target[]);
+  const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const addSubscription = useSubscriptions();
 
@@ -88,6 +90,17 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetList]);
+
+  React.useEffect(() => {
+    let searched;
+    if (!search) {
+      searched = targets;
+    } else {
+      const searchText = search.trim().toLowerCase();
+      searched = targets.filter((t: Target) => t.alias.toLowerCase().includes(searchText) || t.connectUrl.toLowerCase().includes(searchText))
+    }
+    setSearchedTargets([...searched]);
+  }, [search, targets]);
 
   React.useEffect(() => {
     addSubscription(
@@ -170,10 +183,16 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   }
 
   const targetRows = React.useMemo(() => {
-    return targets.map((t, idx) => <TargetRow key={idx} target={t} index={idx}/>)
-  }, [targets, expandedRows]);
+    return searchedTargets.map((t, idx) => <TargetRow key={idx} target={t} index={idx}/>)
+  }, [searchedTargets, expandedRows]);
 
   return (<>
+    <SearchInput
+      placeholder="Find target by alias or connect URL"
+      value={search}
+      onChange={setSearch}
+      onClear={evt => setSearch('')}
+    />
     <TableComposable aria-label="all-archives">
       <Thead>
         <Tr>
