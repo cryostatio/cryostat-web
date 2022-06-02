@@ -141,7 +141,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </Tr> 
       );
     }, [props.target, props.target.alias, props.target.connectUrl, props.index, isExpanded, handleToggle, tableColumns]);
-
+    
     const childRow = React.useMemo(() => {
       return (
         <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
@@ -150,9 +150,12 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             dataLabel={"Content Details"}
             colSpan={tableColumns.length + 1}
           >
-          <ExpandableRowContent>
-            <ArchivedRecordingsTable target={of(props.target)}/>
-          </ExpandableRowContent>
+            {isExpanded ?
+              <ExpandableRowContent>
+                <ArchivedRecordingsTable target={of(props.target)}/>
+              </ExpandableRowContent>
+            :
+              null}
           </Td>
         </Tr>
       )
