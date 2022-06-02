@@ -81,7 +81,7 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
   const [filters, setFilters] = React.useState({
     Name: [] as string[],
     TimeRange: [],
-    Duration: [],
+    Duration: [] as string[],
     State: [] as RecordingState[],
     Labels: [],
   });
@@ -134,6 +134,19 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
     [searchName]
   );
 
+  const onDurationInput = React.useCallback(
+    (e) => {
+      if (e.key && e.key !== 'Enter') {
+        return;
+      }
+
+      setFilters((old) => {
+        return { ...old, Duration: [duration.toString()] };
+      });
+    },
+    [duration]
+  );
+
   const onRecordingStateSelect = React.useCallback(
     (state: RecordingState) => {
       setFilters((old) => {
@@ -150,6 +163,12 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
   React.useEffect(() => {
     props.setFilteredRecordings(props.recordings); //TODO actually filter recordings
   }, [props.recordings, filters]);
+
+  React.useEffect(() => {
+    setFilters((old) => {
+      return { ...old, Duration: continuous ? ['continuous'] : [] };
+    });
+  }, [continuous])
 
   const onStartDateChange = React.useCallback(() => {}, []);
   const onStartTimeChange = React.useCallback(() => {}, []);
@@ -314,6 +333,7 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
               onChange={(e) => setDuration(Number(e))}
               min="0"
               isDisabled={continuous}
+              onKeyDown={onDurationInput}
             />
           </FlexItem>
           <FlexItem>
