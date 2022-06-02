@@ -71,6 +71,7 @@ import React from 'react';
 export interface RecordingSearchFiltersProps {
   recordings: ActiveRecording[];
   setFilteredRecordings: (recordings: ActiveRecording[]) => void;
+  clearFiltersToggle: boolean;
 }
 
 export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFiltersProps> = (props) => {
@@ -102,7 +103,23 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
     setIsFilterDropdownOpen((opened) => !opened);
   }, [setIsFilterDropdownOpen]);
 
-  const onDelete = React.useCallback(() => {}, []);
+  const onDelete = React.useCallback((type = '', id = '') => {
+    if (type) {
+      setFilters(old => {
+        return { ...old, [type]: old[type].filter(val => val !== id) };
+      });
+    } else {
+      setFilters(() => {
+        return {
+          Name: [],
+          TimeRange: [],
+          Duration: [],
+          State: [],
+          Labels: [],
+        }
+      });
+    }
+  }, []);
 
   const onNameInput = React.useCallback(
     (e) => {
@@ -125,6 +142,10 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
     },
     [RecordingState]
   );
+
+  React.useEffect(() => {
+    onDelete(null);
+  }, [props.clearFiltersToggle]);
 
   React.useEffect(() => {
     props.setFilteredRecordings(props.recordings); //TODO actually filter recordings

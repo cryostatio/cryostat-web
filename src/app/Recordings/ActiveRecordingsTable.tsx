@@ -76,6 +76,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
+  const [clearFiltersToggle, setClearFiltersToggle] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -496,9 +497,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     }, [recordings, checkedIndices]);
 
     return (
-      <Toolbar id="active-recordings-toolbar">
+      <Toolbar id="active-recordings-toolbar" clearAllFilters={() => setClearFiltersToggle(v => !v)}>
         <ToolbarContent>
-        <RecordingSearchFilters recordings={recordings} setFilteredRecordings={setFilteredRecordings} />
+        <RecordingSearchFilters recordings={recordings} setFilteredRecordings={setFilteredRecordings} clearFiltersToggle={clearFiltersToggle}/>
         { buttons }
         { deleteActiveWarningModal }
         </ToolbarContent>
@@ -534,7 +535,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           onHeaderCheck={handleHeaderCheck}
           isEmpty={!recordings.length}
           isEmptyFilterResult={!filteredRecordings.length}
-          clearFilters={() => {/* TODO connect to filters */}}
+          clearFilters={() => setClearFiltersToggle(v => !v)}
           isLoading ={isLoading}
           errorMessage ={errorMessage}
           >
