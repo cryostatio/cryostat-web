@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Card, CardBody, CardHeader, EmptyState, EmptyStateIcon, Text, TextVariants, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardHeader, EmptyState, EmptyStateIcon, Tab, Tabs, Text, TextVariants, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
 import { UploadedArchivedRecordingsTable } from './UploadedArchivedRecordingsTable';
@@ -45,6 +45,7 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
 export const Archives = () => {
   const context = React.useContext(ServiceContext);
+  const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
@@ -52,7 +53,7 @@ export const Archives = () => {
     return () => sub.unsubscribe();
   }, [context.api]);
 
-  const allTargetsCardBody = React.useMemo(() => {
+  const allTargets = React.useMemo(() => {
     if (!archiveEnabled) {
       return (<>
         <EmptyState>
@@ -64,14 +65,12 @@ export const Archives = () => {
       </>);
     }
     return (<>
-      <CardHeader><Text component={TextVariants.h4}>Archived Recordings (All Targets)</Text></CardHeader>
       <AllTargetsArchivedRecordingsTable />
     </>);
   }, [archiveEnabled]);
 
-  const uploadedCardBody = React.useMemo(() => {
+  const uploads = React.useMemo(() => {
     return (<> 
-      <CardHeader><Text component={TextVariants.h4}>Archived Recordings (Uploads)</Text></CardHeader>
       <UploadedArchivedRecordingsTable />
     </>);
   },[]);
@@ -80,12 +79,14 @@ export const Archives = () => {
     <BreadcrumbPage pageTitle='Archives'>
       <Card>
         <CardBody>
-          { allTargetsCardBody }
-        </CardBody>
-      </Card>
-      <Card>
-        <CardBody>
-          { uploadedCardBody }
+          <Tabs id='archives' activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+            <Tab id='all-targets' eventKey={0} title="All Targets">
+              { allTargets }
+            </Tab>
+            <Tab id='uploads' eventKey={1} title="Uploads">
+              { uploads }
+            </Tab>
+          </Tabs>
         </CardBody>
       </Card>
     </BreadcrumbPage>
