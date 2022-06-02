@@ -187,12 +187,20 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   }, [searchedTargets, expandedRows]);
 
   return (<>
-    <SearchInput
-      placeholder="Find target by alias or connect URL"
-      value={search}
-      onChange={setSearch}
-      onClear={evt => setSearch('')}
-    />
+    <Toolbar id="all-archives-toolbar">
+      <ToolbarContent>
+        <ToolbarGroup variant="filter-group">
+          <ToolbarItem> 
+            <SearchInput
+              placeholder="Search"
+              value={search}
+              onChange={setSearch}
+              onClear={evt => setSearch('')}
+            />
+          </ToolbarItem>
+        </ToolbarGroup>
+      </ToolbarContent>
+    </Toolbar>
     <TableComposable aria-label="all-archives">
       <Thead>
         <Tr>
