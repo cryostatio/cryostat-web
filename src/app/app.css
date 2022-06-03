@@ -64,3 +64,16 @@ html, body, #root {
 .recordings-table-drawer-content {
   min-height: 23rem;
 }
+
+.time-picker {
+  width: 10rem;
+}
+
+.pf-c-chip-group	{
+  max-width: 100ch;
+}
+
+.pf-c-chip {
+  --pf-c-chip__text--MaxWidth: 100ch;
+}
+
