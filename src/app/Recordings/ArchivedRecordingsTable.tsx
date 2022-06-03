@@ -158,7 +158,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         .subscribe(handleRecordings)
       );
     }
-  }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
+  }, [addSubscription, target, props.isUploadsTable, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
     setFilters({
@@ -167,46 +167,48 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     } as RecordingFiltersCategories);
   }, [setFilters]);
 
-  if (!props.isUploadsTable) {
-    React.useEffect(() => {
+  React.useEffect(() => {
+    if (!props.isUploadsTable) {
       addSubscription(
         target.subscribe(refreshRecordingList)
       );
-    }, [addSubscription, context, context.target, refreshRecordingList]);
-  }
+    }
+  }, [addSubscription, target, props.isUploadsTable, refreshRecordingList]);
 
   React.useEffect(() => {
-    addSubscription(
-      combineLatest([
-        target,
+    if (props.isUploadsTable) {
+      addSubscription(
         merge(
           context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
-        ),
-      ])
-      .subscribe(parts => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
-        setRecordings(old => old.concat(event.message.recording));
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
-
-  React.useEffect(() => {
-    addSubscription(
-      combineLatest([
-        target,
-        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
-      ])
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
+        ).subscribe(v => setRecordings(old => old.concat(v.message.recording)))
+      );
+    } else {
+      addSubscription(
+        combineLatest([
+          target,
+          merge(
+            context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
+            context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
+          ),
+        ])
         .subscribe(parts => {
           const currentTarget = parts[0];
           const event = parts[1];
           if (currentTarget.connectUrl != event.message.target) {
             return;
           }
+          setRecordings(old => old.concat(event.message.recording));
+        })
+      );
+    }
+  }, [addSubscription, context, context.notificationChannel, target, props.isUploadsTable, setRecordings]);
+
+  React.useEffect(() => {
+    if (props.isUploadsTable) {
+      addSubscription(
+        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
+        .subscribe(event => {
           let deleted;
 
           setRecordings((old) => {
@@ -222,9 +224,39 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             .filter((v) => v !== deleted)
             .map(ci => ci > deleted ? ci - 1 : ci)
           );
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
+        })
+      );
+    } else {
+      addSubscription(
+        combineLatest([
+          target,
+          context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
+        ])
+          .subscribe(parts => {
+            const currentTarget = parts[0];
+            const event = parts[1];
+            if (currentTarget.connectUrl != event.message.target) {
+              return;
+            }
+            let deleted;
+  
+            setRecordings((old) => {
+              return old.filter((r, i) => {
+                if (r.name == event.message.recording.name) {
+                  deleted = i;
+                  return false;
+                }
+                return true;
+              });
+            });
+            setCheckedIndices(old => old
+              .filter((v) => v !== deleted)
+              .map(ci => ci > deleted ? ci - 1 : ci)
+            );
+        })
+      );
+    }
+  }, [addSubscription, context, context.notificationChannel, target, props.isUploadsTable, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
