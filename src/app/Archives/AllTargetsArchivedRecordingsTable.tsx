@@ -156,7 +156,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           >
             {isExpanded ?
               <ExpandableRowContent>
-                <ArchivedRecordingsTable target={of(props.target)}/>
+                <ArchivedRecordingsTable target={of(props.target)} isUploadsTable={false}/>
               </ExpandableRowContent>
             :
               null}

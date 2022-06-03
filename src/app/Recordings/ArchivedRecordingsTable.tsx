@@ -42,6 +42,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { PlusIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
@@ -55,19 +56,23 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { filterRecordings, RecordingFilters } from './RecordingFilters';
+import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 
 export interface ArchivedRecordingsTableProps { 
   target?: Observable<Target>;
+  isUploadsTable?: boolean;
 }
 
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
+  const [target, setTarget] = React.useState(((props.target === null || props.target === undefined) ? context.target.target() : props.target) as Observable<Target>)
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [filters, setFilters] = React.useState({
@@ -119,25 +124,32 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       }`)
   }
 
+  const queryUploadedRecordings = () => {
+    return context.api.graphql<any>(`
+      query {
+        archivedRecordings(filter: { sourceTarget: "uploads" }) {
+          name
+          downloadUrl
+          reportUrl
+          metadata {
+            labels
+          }
+        }
+      }`)
+  }
+
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
-    if (typeof props.target === 'undefined' || props.target === null) {
+    if (props.isUploadsTable) {
       addSubscription(
-        context.target.target()
-        .pipe(
-          filter(target => target !== NO_TARGET),
-          first(),
-          concatMap(target =>
-            queryTargetRecordings(target.connectUrl)
-          ),
-          map(v => v.data.archivedRecordings as ArchivedRecording[]),
-        )
-        .subscribe(handleRecordings)
+        queryUploadedRecordings().subscribe(v => handleRecordings(v.data.archivedRecordings as ArchivedRecording[]))
       );
     } else {
       addSubscription(
-        props.target
+        target
         .pipe(
+          filter(target => target !== NO_TARGET),
+          first(),
           concatMap(target =>
             queryTargetRecordings(target.connectUrl)
           ),
@@ -155,16 +167,18 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     } as RecordingFiltersCategories);
   }, [setFilters]);
 
-  React.useEffect(() => {
-    addSubscription(
-      context.target.target().subscribe(refreshRecordingList)
-    );
-  }, [addSubscription, context, context.target, refreshRecordingList]);
+  if (!props.isUploadsTable) {
+    React.useEffect(() => {
+      addSubscription(
+        target.subscribe(refreshRecordingList)
+      );
+    }, [addSubscription, context, context.target, refreshRecordingList]);
+  }
 
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        (typeof props.target === 'undefined' || props.target === null) ? context.target.target() : props.target,
+        target,
         merge(
           context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
@@ -184,7 +198,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        (typeof props.target === 'undefined' || props.target === null) ? context.target.target() : props.target,
+        target,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ])
         .subscribe(parts => {
@@ -372,6 +386,15 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             </ToolbarItem>
           </ToolbarGroup>
           { deleteArchivedWarningModal }
+          {props.isUploadsTable ? 
+            <ToolbarGroup variant="icon-button-group">
+              <ToolbarItem>
+                <Button variant="plain" aria-label="add" onClick={() => setShowUploadModal(true)}><PlusIcon /></Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+          :
+            null
+          }
         </ToolbarContent>
       </Toolbar>
     );
@@ -380,6 +403,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const recordingRows = React.useMemo(() => {
     return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [filteredRecordings, expandedRows, checkedIndices]);
+
+  const handleModalClose = React.useCallback(() => {
+    setShowUploadModal(false);
+    refreshRecordingList();
+  }, [setShowUploadModal, refreshRecordingList]);
 
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
@@ -407,6 +435,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           >
             {recordingRows}
           </RecordingsTable>
+
+          {props.isUploadsTable ?
+            <ArchiveUploadModal visible={showUploadModal} onClose={handleModalClose}/>
+          :
+            null
+          }
         </DrawerContentBody>
       </DrawerContent>
     </Drawer>
