@@ -36,23 +36,14 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { TreeView , TreeViewDataItem } from '@patternfly/react-core';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput } from '@patternfly/react-core';
+import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput } from '@patternfly/react-core';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, ISortBy } from '@patternfly/react-table';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { RecordingActions } from '@app/Recordings/RecordingActions';
-import { RecordingsTable } from '@app/Recordings/RecordingsTable';
-import { ReportFrame } from '@app/Recordings/ReportFrame';
-import { Observable, forkJoin, merge, of } from 'rxjs';
-import { first, map } from 'rxjs/operators';
-import { PlusIcon } from '@patternfly/react-icons';
-import { ArchiveUploadModal } from './ArchiveUploadModal';
-import { EditRecordingLabels, parseLabels } from '@app/CreateRecording/EditRecordingLabels';
+import { of } from 'rxjs';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 export interface AllTargetsArchivedRecordingsTableProps { }
