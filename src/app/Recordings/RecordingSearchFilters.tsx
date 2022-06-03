@@ -148,12 +148,12 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
   );
 
   const onRecordingStateSelect = React.useCallback(
-    (state: RecordingState) => {
+    (e, state) => {
       setFilters((old) => {
-        return { ...old, ['State']: old.State.includes(state) ? old.State : [...old.State, state] };
+        return { ...old, ['State']: old.State.includes(state) ? old.State.filter((v) => v != state) : [...old.State, state] };
       });
     },
-    [RecordingState]
+    [setFilters]
   );
 
   React.useEffect(() => {
@@ -348,16 +348,15 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
       </InputGroup>,
       <Select
         variant={SelectVariant.checkbox}
-        aria-label={Object.keys(filters)[2]}
+        aria-label={'State'}
         onToggle={onFilterToggle}
-        selections={filters[2]}
+        onSelect={onRecordingStateSelect}
+        selections={filters.State}
         isOpen={isFilterDropdownOpen}
         placeholderText="Filter by state"
       >
         {Object.values(RecordingState).map((rs) => (
-          <SelectOption key={rs} onClick={() => onRecordingStateSelect(rs)}>
-            {String(rs)}
-          </SelectOption>
+          <SelectOption key={rs} value={rs} />
         ))}
       </Select>,
       <InputGroup>
