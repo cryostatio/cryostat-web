@@ -158,7 +158,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         .subscribe(handleRecordings)
       );
     }
-  }, [addSubscription, target, props.isUploadsTable, setIsLoading, handleRecordings]);
+  }, [addSubscription, context, context.api, target, props.isUploadsTable, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
     setFilters({
@@ -172,8 +172,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       addSubscription(
         target.subscribe(refreshRecordingList)
       );
+    } else {
+      // If this is an instance of the uploads table, then there is no target to subscribe to.
+      // In this case, simply refresh the recordings list after the render completes. 
+      refreshRecordingList();
     }
-  }, [addSubscription, target, props.isUploadsTable, refreshRecordingList]);
+  }, [addSubscription, context, target, props.isUploadsTable, refreshRecordingList]);
 
   React.useEffect(() => {
     if (props.isUploadsTable) {
