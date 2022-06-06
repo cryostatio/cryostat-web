@@ -80,8 +80,8 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
   const [filters, setFilters] = React.useState({
     Name: [] as string[],
-    TimeRange: [],
-    Duration: [] as string[],
+    DateRangeUTC: [] as string[],
+    DurationSeconds: [] as string[],
     State: [] as RecordingState[],
     Labels: [],
   });
@@ -112,8 +112,8 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
       setFilters(() => {
         return {
           Name: [],
-          TimeRange: [],
-          Duration: [],
+          DateRangeUTC: [],
+          DurationSeconds: [],
           State: [],
           Labels: [],
         }
@@ -134,6 +134,12 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
     [searchName]
   );
 
+  const onDateRangeInput = React.useCallback(() => {
+    setFilters((old) => {
+      return { ...old, DateRangeUTC: [duration.toString()] };
+    });
+  }, [duration]);
+
   const onDurationInput = React.useCallback(
     (e) => {
       if (e.key && e.key !== 'Enter') {
@@ -141,7 +147,7 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
       }
 
       setFilters((old) => {
-        return { ...old, Duration: [duration.toString()] };
+        return { ...old, DurationSeconds: [`${duration.toString()} s`] };
       });
     },
     [duration]
@@ -166,7 +172,7 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
 
   React.useEffect(() => {
     setFilters((old) => {
-      return { ...old, Duration: continuous ? ['continuous'] : [] };
+      return { ...old, DurationSeconds: continuous ? ['continuous'] : [] };
     });
   }, [continuous])
 
