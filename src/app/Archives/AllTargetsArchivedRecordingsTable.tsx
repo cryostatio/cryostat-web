@@ -41,7 +41,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput } from '@patternfly/react-core';
-import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, ISortBy } from '@patternfly/react-table';
+import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';

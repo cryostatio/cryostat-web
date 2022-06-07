@@ -37,10 +37,9 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Card, CardBody, CardHeader, EmptyState, EmptyStateIcon, Tab, Tabs, Text, TextVariants, Title } from '@patternfly/react-core';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
-import { UploadedArchivedRecordingsTable } from './UploadedArchivedRecordingsTable';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 
