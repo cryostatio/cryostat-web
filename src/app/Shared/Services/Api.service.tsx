@@ -46,7 +46,7 @@ import { Rule } from '@app/Rules/Rules';
 import { NotificationCategory } from './NotificationChannel.service';
 import _ from 'lodash';
 
-type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
+type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
 export class HttpError extends Error {
   readonly httpResponse: Response;
@@ -402,7 +402,7 @@ export class ApiService {
   graphql<T>(query: string): Observable<T> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/graphql');
-    return this.sendRequest('beta', 'graphql', { method: 'POST', body: query, headers }).pipe(map(resp => resp.json()), concatMap(from), first());
+    return this.sendRequest('v2.2', 'graphql', { method: 'POST', body: query, headers }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
   downloadReport(recording: ArchivedRecording): void {
