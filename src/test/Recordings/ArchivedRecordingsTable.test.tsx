@@ -55,17 +55,13 @@ const mockRecording: ArchivedRecording = {
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
 };
+
 const mockArchivedRecordingsResponse = {
   data: {
-    targetNodes: [
-      {
-        recordings: {
-          archived: [mockRecording] as ArchivedRecording[],
-        },
-      },
-    ],
+    archivedRecordings: [mockRecording] as ArchivedRecording[],
   },
-};
+}
+
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
 const mockCreateNotification = {
   message: { target: mockConnectUrl, recording: mockAnotherRecording },
@@ -134,7 +130,7 @@ describe('<ArchivedRecordingsTable />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <ArchivedRecordingsTable />
+          <ArchivedRecordingsTable isUploadsTable={false}/>
         </ServiceContext.Provider>
       );
     });
@@ -144,7 +140,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('adds a recording after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
     expect(screen.getByText('someRecording')).toBeInTheDocument();
@@ -154,7 +150,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('updates the recording labels after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
     expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
@@ -164,7 +160,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('removes a recording after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
     expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
@@ -173,7 +169,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('displays the toolbar buttons', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -184,7 +180,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('opens the labels drawer when Edit Labels is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -223,7 +219,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('deletes the recording when Delete is clicked w/o popup warning', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -242,7 +238,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('downloads a recording when Download Recording is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -258,7 +254,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('displays the automated analysis report when View Report is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -273,7 +269,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('uploads a recording to Grafana when View in Grafana is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable isUploadsTable={false}/>
       </ServiceContext.Provider>
     );
 

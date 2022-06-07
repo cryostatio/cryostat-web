@@ -60,7 +60,7 @@ import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 
 export interface ArchivedRecordingsTableProps { 
   target?: Observable<Target>;
-  isUploadsTable?: boolean;
+  isUploadsTable: boolean;
 }
 
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
