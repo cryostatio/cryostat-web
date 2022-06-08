@@ -46,6 +46,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
+import { RuleUploadModal } from './RulesUploadModal';
 
 export interface Rule {
   name: string;
@@ -67,6 +68,7 @@ export const Rules = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [rules, setRules] = React.useState([] as Rule[]);
+  const [showUploadModal, setShowUploadModal] = React.useState(false);
 
   const tableColumns = [
     {
@@ -228,6 +230,11 @@ export const Rules = () => {
     }
   };
 
+  const handleModalClose = React.useCallback(() => {
+    setShowUploadModal(false);
+    refreshRules();
+  }, [setShowUploadModal, refreshRules]);
+
   return (<>
     <BreadcrumbPage pageTitle='Automated Rules' >
       <Card>
@@ -237,6 +244,8 @@ export const Rules = () => {
             <ToolbarGroup variant="icon-button-group">
               <ToolbarItem>
                 <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
+                {' '}
+                <Button key="upload" variant="primary" onClick={() => {setShowUploadModal(true)}}>Upload</Button>
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
@@ -245,6 +254,6 @@ export const Rules = () => {
         </CardBody>
       </Card>
     </BreadcrumbPage>
+    <RuleUploadModal visible={showUploadModal} onClose={handleModalClose}></RuleUploadModal>
   </>);
-
 };
