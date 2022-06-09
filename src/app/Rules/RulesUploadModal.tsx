@@ -42,7 +42,10 @@ import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { HelpIcon } from '@patternfly/react-icons';
+import { parseRule, Rule } from './Rules';
+import { RuleNamePattern } from './CreateRule';
 
 export interface RuleUploadModalProps {
   visible: boolean;
@@ -58,6 +61,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
   const [rejected, setRejected] = React.useState(false);
   const [showCancelPrompt, setShowCancelPrompt] = React.useState(false);
   const [abort, setAbort] = React.useState(new AbortController());
+  const addSubscription = useSubscriptions();
 
   const reset = React.useCallback(() => {
     setUploadFile(undefined);
@@ -93,16 +97,32 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
     if (!uploadFile) {
       notifications.warning('Attempted to submit JFR upload without a file selected');
       return;
-    }
+    } 
     setUploading(true);
-    // TODO: Upload rule file
-  }, [context.api, notifications, setUploading, uploadFile, abort, handleClose, reset]);
+    parseRule(uploadFile, 
+      (rule) => {
+        addSubscription(
+          context.api.createRule(rule)
+          .pipe(first())
+          .subscribe(success => {
+            if (success) {
+              handleClose();
+            } else {
+              notifications.warning("Cannot upload rule. Please try again.");
+            }
+          })
+        );
+      }, 
+      (error) => {
+        notifications.warning("Invalid rule format: " + error);
+    });
+  }, [context.api, notifications, setUploading, uploadFile, handleClose]);
 
   const handleAbort = React.useCallback(() => {
     abort.abort();
     reset();
     props.onClose();
-  }, [abort, reset, handleClose]);
+  }, [abort, reset]);
 
   return (<>
     <Prompt
