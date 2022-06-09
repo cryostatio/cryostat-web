@@ -26,7 +26,7 @@ module.exports = merge(common('development'), {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'), 
-    hashFunction: "xxhash64"
+    hashFunction: "xxhash64",
   },
   module: {
     rules: [
