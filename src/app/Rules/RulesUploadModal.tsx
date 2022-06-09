@@ -37,11 +37,12 @@
  */
 import * as React from 'react';
 import { Prompt } from 'react-router-dom';
-import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
+import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
+import { HelpIcon } from '@patternfly/react-icons';
 
 export interface RuleUploadModalProps {
   visible: boolean;
@@ -115,6 +116,19 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
       onClose={handleClose}
       title="Upload Automatic Rules"
       description="Select an Automatic Rules definition file to upload. File must be in JSON format and filename will be used as rule name."
+      help = {
+        <Popover 
+          headerContent={<div>What's this?</div>}
+          bodyContent={<div>
+            Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications. 
+            Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application recording buffer, 
+            and how frequently Cryostat should copy the application recording buffer into Cryostat's own archived storage.
+          </div>}>
+          <Button variant="plain" aria-label="Help">
+              <HelpIcon />
+          </Button>
+        </Popover>
+      }
       >
       <CancelUploadModal
         visible={showCancelPrompt}
