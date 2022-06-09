@@ -51,7 +51,7 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import { RecordingSearchFilters } from './RecordingSearchFilters';
+import { RecordingFilters } from './RecordingFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
@@ -499,7 +499,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return (
       <Toolbar id="active-recordings-toolbar" clearAllFilters={() => setClearFiltersToggle(v => !v)}>
         <ToolbarContent>
-        <RecordingSearchFilters recordings={recordings} setFilteredRecordings={setFilteredRecordings} clearFiltersToggle={clearFiltersToggle}/>
+        <RecordingFilters recordings={recordings} setFilteredRecordings={setFilteredRecordings} clearFiltersToggle={clearFiltersToggle}/>
         { buttons }
         { deleteActiveWarningModal }
         </ToolbarContent>

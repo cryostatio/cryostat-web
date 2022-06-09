@@ -61,13 +61,13 @@ import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { DateTimePicker } from './DateTimePicker';
 
-export interface RecordingSearchFiltersProps {
+export interface RecordingFiltersProps {
   recordings: ActiveRecording[];
   setFilteredRecordings: (recordings: ActiveRecording[]) => void;
   clearFiltersToggle: boolean;
 }
 
-export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFiltersProps> = (props) => {
+export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
   const [currentCategory, setCurrentCategory] = React.useState('Name');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
@@ -90,7 +90,6 @@ export const RecordingSearchFilters: React.FunctionComponent<RecordingSearchFilt
   }, [setIsCategoryDropdownOpen]);
 
   const onCategorySelect = React.useCallback((curr) => {
-    console.log(curr);
     setCurrentCategory(curr);
   }, []);
 
