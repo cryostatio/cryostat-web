@@ -91,7 +91,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
   const onCategorySelect = React.useCallback((curr) => {
     setCurrentCategory(curr);
-  }, []);
+  }, [setCurrentCategory]);
 
   const onFilterToggle = React.useCallback(() => {
     setIsFilterDropdownOpen((opened) => !opened);
@@ -113,7 +113,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         };
       });
     }
-  }, []);
+  }, [setFilters]);
 
   const onNameInput = React.useCallback(
     (e) => {
@@ -125,7 +125,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         return { ...old, Name: old.Name.includes(searchName) ? old.Name : [...old.Name, searchName] };
       });
     },
-    [searchName]
+    [searchName, setFilters]
   );
 
   const onDateRangeInput = React.useCallback(() => {
@@ -133,7 +133,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
       const newRange = `${startDateTime.toISOString()} to ${stopDateTime.toString()}`;
       return { ...old, DateRange: old.DateRange.includes(newRange) ? old.DateRange : [...old.DateRange, newRange] };
     });
-  }, [startDateTime, stopDateTime]);
+  }, [startDateTime, stopDateTime, setFilters]);
 
   const onDurationInput = React.useCallback(
     (e) => {
@@ -145,7 +145,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         return { ...old, DurationSeconds: [`${duration.toString()} s`] };
       });
     },
-    [duration]
+    [duration, setFilters]
   );
 
   const onRecordingStateSelect = React.useCallback(
@@ -159,17 +159,17 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
   React.useEffect(() => {
     onDelete(null);
-  }, [props.clearFiltersToggle]);
+  }, [props.clearFiltersToggle, onDelete]);
 
   React.useEffect(() => {
     props.setFilteredRecordings(props.recordings); //TODO actually filter recordings
-  }, [props.recordings, filters]);
+  }, [props.recordings, filters, props.setFilteredRecordings]);
 
   React.useEffect(() => {
     setFilters((old) => {
       return { ...old, DurationSeconds: continuous ? ['continuous'] : [] };
     });
-  }, [continuous]);
+  }, [continuous, setFilters]);
 
   const categoryDropdown = React.useMemo(() => {
     return (

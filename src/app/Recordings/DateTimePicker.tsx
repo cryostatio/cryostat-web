@@ -59,45 +59,64 @@ export interface DateTimePickerProps {
 }
 
 export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
-  const toValidator = (date) => {
-    return isValidDate(props.start) && yyyyMMddFormat(date) >= yyyyMMddFormat(props.start)
-      ? ''
-      : 'End date must be after start date';
-  };
+  const toValidator = React.useCallback(
+    (date) => {
+      return isValidDate(props.start) && yyyyMMddFormat(date) >= yyyyMMddFormat(props.start)
+        ? ''
+        : 'End date must be after start date';
+    },
+    [props.start, isValidDate, yyyyMMddFormat]
+  );
 
-  const onStartDateChange = (inputDate, newFromDate) => {
-    if (isValidDate(props.start) && isValidDate(newFromDate) && inputDate === yyyyMMddFormat(newFromDate)) {
-      newFromDate.setHours(props.start.getHours());
-      newFromDate.setMinutes(props.start.getMinutes());
-    }
-    if (isValidDate(newFromDate) && inputDate === yyyyMMddFormat(newFromDate)) {
-      props.setStart(new Date(newFromDate));
-    }
-  };
+  const onStartDateChange = React.useCallback(
+    (inputDate, newFromDate) => {
+      if (isValidDate(props.start) && isValidDate(newFromDate) && inputDate === yyyyMMddFormat(newFromDate)) {
+        newFromDate.setHours(props.start.getHours());
+        newFromDate.setMinutes(props.start.getMinutes());
+      }
+      if (isValidDate(newFromDate) && inputDate === yyyyMMddFormat(newFromDate)) {
+        props.setStart(new Date(newFromDate));
+      }
+    },
+    [props.start, isValidDate, yyyyMMddFormat]
+  );
 
-  const onStartTimeChange = (hour, minute) => {
-    const updatedDate = isValidDate(props.start) ? new Date(props.start) : new Date();
-    updatedDate.setHours(hour);
-    updatedDate.setMinutes(minute);
-    props.setStart(updatedDate);
-  };
+  const onStartTimeChange = React.useCallback(
+    (hour, minute) => {
+      if (isValidDate(props.start)) {
+        const updated = new Date(props.start);
+        updated.setHours(hour);
+        updated.setMinutes(minute);
+        props.setStart(updated);
+      }
+    },
+    [props.setStart, isValidDate]
+  );
 
-  const onEndDateChange = (inputDate, newToDate) => {
-    if (isValidDate(props.end) && isValidDate(newToDate) && inputDate === yyyyMMddFormat(newToDate)) {
-      newToDate.setHours(props.end.getHours());
-      newToDate.setMinutes(props.end.getMinutes());
-    }
-    if (isValidDate(newToDate) && inputDate === yyyyMMddFormat(newToDate)) {
-      props.setEnd(newToDate);
-    }
-  };
+  const onEndDateChange = React.useCallback(
+    (inputDate, newToDate) => {
+      if (isValidDate(newToDate) && inputDate === yyyyMMddFormat(newToDate)) {
+        props.setEnd((end) => {
+          newToDate.setHours(end.getHours());
+          newToDate.setMinutes(end.getMinutes());
+          return newToDate;
+        });
+      }
+    },
+    [props.setEnd, isValidDate]
+  );
 
-  const onEndTimeChange = (hour, minute) => {
-    const updatedDate = isValidDate(props.end) ? new Date(props.end) : new Date();
-    updatedDate.setHours(hour);
-    updatedDate.setMinutes(minute);
-    props.setEnd(updatedDate);
-  };
+  const onEndTimeChange = React.useCallback(
+    (hour, minute) => {
+      if (isValidDate(props.end)) {
+        const updated = new Date(props.end);
+        updated.setHours(hour);
+        updated.setMinutes(minute);
+        props.setEnd(updated);
+      }
+    },
+    [props.end, props.setEnd, isValidDate]
+  );
 
   return (
     <Flex>
@@ -111,7 +130,6 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
       <FlexItem>
         <InputGroup>
           <DatePicker
-            value={isValidDate(props.end) ? yyyyMMddFormat(props.end) : yyyyMMddFormat(props.start)}
             onChange={onEndDateChange}
             isDisabled={!isValidDate(props.start)}
             rangeStart={props.start}
@@ -126,7 +144,7 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
             onChange={onEndTimeChange}
             isDisabled={!isValidDate(props.start)}
           />
-          <Button variant={ButtonVariant.control} aria-label="search button for date range" onClick={props.onSubmit}>
+          <Button variant={ButtonVariant.control} aria-label="search button for date range" isDisabled={!isValidDate(props.start) || !isValidDate(props.end)} onClick={props.onSubmit}>
             <SearchIcon />
           </Button>
         </InputGroup>
