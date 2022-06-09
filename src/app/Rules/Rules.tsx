@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Button, Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { Button, Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem } from '@patternfly/react-core';
+import { PlusIcon, SearchIcon } from '@patternfly/react-icons';
 import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
@@ -68,7 +68,8 @@ export const Rules = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [rules, setRules] = React.useState([] as Rule[]);
-  const [showUploadModal, setShowUploadModal] = React.useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
   const tableColumns = [
     {
@@ -170,6 +171,10 @@ export const Rules = () => {
     routerHistory.push(`${url}/create`);
   }, [routerHistory]);
 
+  const handleUploadRule = React.useCallback(() => {
+    setIsUploadModalOpen(true);
+  }, [setIsUploadModalOpen]);
+
   const displayRules = React.useMemo(() => {
     const { index, direction } = sortBy;
     let sorted = [...rules];
@@ -201,6 +206,20 @@ export const Rules = () => {
     }]
   };
 
+  const handleUploadModalClose = React.useCallback(() => {
+    setIsUploadModalOpen(false);
+    refreshRules();
+  }, [setIsUploadModalOpen, refreshRules]);
+
+  const onRuleGenerationMenuToggle = React.useCallback((isOpen: boolean) => {
+    setIsDropdownOpen(isOpen);
+  }, [setIsDropdownOpen]);
+
+  const ruleGenerationActionItems = [
+    <DropdownItem key="create" onClick={handleCreateRule}>Create</DropdownItem>,
+    <DropdownItem key="upload"onClick={handleUploadRule}>Upload</DropdownItem>,
+  ];
+
   const viewContent = () => {
     if (isLoading) {
       return <LoadingView />;
@@ -230,11 +249,6 @@ export const Rules = () => {
     }
   };
 
-  const handleModalClose = React.useCallback(() => {
-    setShowUploadModal(false);
-    refreshRules();
-  }, [setShowUploadModal, refreshRules]);
-
   return (<>
     <BreadcrumbPage pageTitle='Automated Rules' >
       <Card>
@@ -243,9 +257,20 @@ export const Rules = () => {
           <ToolbarContent>
             <ToolbarGroup variant="icon-button-group">
               <ToolbarItem>
-                <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
-                {' '}
-                <Button key="upload" variant="primary" onClick={() => {setShowUploadModal(true)}}>Upload</Button>
+                <Dropdown 
+                  onSelect= {()=>setIsDropdownOpen(false)} 
+                  toggle={
+                    <DropdownToggle
+                      toggleIndicator={null}
+                      onToggle={onRuleGenerationMenuToggle} 
+                      id="toggle-rule-generate-action">
+                    <PlusIcon/>
+                  </DropdownToggle>
+                  }
+                  isOpen={isDropdownOpen}
+                  isPlain
+                  dropdownItems={ruleGenerationActionItems}
+                />
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
@@ -254,6 +279,6 @@ export const Rules = () => {
         </CardBody>
       </Card>
     </BreadcrumbPage>
-    <RuleUploadModal visible={showUploadModal} onClose={handleModalClose}></RuleUploadModal>
+    <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
   </>);
 };
