@@ -10,14 +10,11 @@ module.exports = merge(common('development'), {
   mode: 'development',
   devtool: 'eval-source-map',
   devServer: {
-    contentBase: './dist',
     compress: true,
     historyApiFallback: true,
     host: HOST,
     hot: true,
-    inline: true,
     open: true,
-    overlay: true,
     port: PORT,
   },
   plugins: [
