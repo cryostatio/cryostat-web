@@ -28,10 +28,11 @@ module.exports = merge(common('production'), {
       path: './.env.prod',
     }),
   ],
-  // output: {
-  //   filename: '[name].[contenthash].bundle.js',
-  //   path: path.resolve(__dirname, 'dist')
-  // },
+  output: {
+    // filename: '[name].[contenthash].bundle.js',
+    // path: path.resolve(__dirname, 'dist'),
+    hashFunction: "xxhash64",
+  },
   module: {
     rules: [
       {
