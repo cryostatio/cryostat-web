@@ -61,6 +61,7 @@ import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
 import React, { Dispatch, SetStateAction } from 'react';
 import { ActiveRecordingFilters } from './ActiveRecordingsTable';
 import { DateTimePicker } from './DateTimePicker';
+import { NameFilter } from './NameFilter';
 
 export interface RecordingFiltersProps {
   filters: ActiveRecordingFilters;
@@ -71,7 +72,6 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const [currentCategory, setCurrentCategory] = React.useState('Name');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
-  const [searchName, setSearchName] = React.useState('');
   const [searchLabel, setSearchLabel] = React.useState('');
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
@@ -115,16 +115,12 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 
   const onNameInput = React.useCallback(
-    (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
-      }
-
+    (inputName) => {
       props.setFilters((old) => {
-        return { ...old, Name: old.Name.includes(searchName) ? old.Name : [...old.Name, searchName] };
+        return { ...old, Name: old.Name.includes(inputName) ? old.Name : [...old.Name, inputName] };
       });
     },
-    [searchName, props.setFilters]
+    [props.setFilters]
   );
 
   const onDateRangeInput = React.useCallback(() => {
@@ -204,19 +200,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const filterDropdownItems = React.useMemo(
     () => [
       <InputGroup>
-        <TextInput
-          name="nameInput"
-          id="nameInput1"
-          type="search"
-          aria-label="name filter"
-          onChange={(name) => setSearchName(name)}
-          value={searchName}
-          placeholder="Filter by name..."
-          onKeyDown={onNameInput}
-        />
-        <Button variant={ButtonVariant.control} aria-label="search button for name search input" onClick={onNameInput}>
-          <SearchIcon />
-        </Button>
+        <NameFilter onSubmit={onNameInput} />
       </InputGroup>,
       <InputGroup>
         <DateTimePicker
@@ -270,7 +254,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
           type="search"
           aria-label="label filter"
           onChange={(label) => setSearchLabel(label)}
-          value={searchName}
+          value={searchLabel}
           placeholder="Filter by label..."
           onKeyDown={onNameInput}
         />
