@@ -38,14 +38,14 @@
 import * as React from 'react';
 import { Prompt } from 'react-router-dom';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
-import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { HelpIcon } from '@patternfly/react-icons';
 import { parseRule, Rule } from './Rules';
-import { RuleNamePattern } from './CreateRule';
+import { mergeMap } from 'rxjs';
+import { first} from 'rxjs/operators';
 
 export interface RuleUploadModalProps {
   visible: boolean;
@@ -99,23 +99,21 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
       return;
     } 
     setUploading(true);
-    parseRule(uploadFile, 
-      (rule) => {
-        addSubscription(
-          context.api.createRule(rule)
-          .pipe(first())
-          .subscribe(success => {
-            if (success) {
-              handleClose();
-            } else {
-              notifications.warning("Cannot upload rule. Please try again.");
-            }
-          })
-        );
-      }, 
-      (error) => {
-        notifications.warning("Invalid rule format: " + error);
-    });
+    addSubscription(
+      parseRule(uploadFile)
+      .pipe(
+        first(),
+        mergeMap(rule => context.api.createRule(rule))
+      )
+      .subscribe(success => {
+        setUploading(false);
+        if (success) {
+          handleClose();
+        } else {
+          notifications.warning("Cannot upload rule. Please try again.");
+        }
+      })
+    );
   }, [context.api, notifications, setUploading, uploadFile, handleClose]);
 
   const handleAbort = React.useCallback(() => {

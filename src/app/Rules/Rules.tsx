@@ -47,6 +47,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RuleUploadModal } from './RulesUploadModal';
+import { from, Observable } from 'rxjs';
 
 export interface Rule {
   name: string;
@@ -59,9 +60,10 @@ export interface Rule {
   maxSizeBytes: number;
 }
 
-export const parseRule = (file: File, onSuccess: (rule: Rule) => void, onFailure: (err: any) => void): void => {
-  file.text()
-    .then((content) => {
+export const parseRule = (file: File): Observable<Rule> => {
+  return from(
+    file.text()
+    .then(content => {
       const ruleConfig = JSON.parse(content);
       const rule: Rule = {
         name: ruleConfig.name,
@@ -73,8 +75,10 @@ export const parseRule = (file: File, onSuccess: (rule: Rule) => void, onFailure
         maxAgeSeconds: ruleConfig.maxAgeSeconds,
         maxSizeBytes: ruleConfig.maxSizeBytes
       };
-      onSuccess(rule);
-    }).catch((err) => onFailure(err));
+      return rule;
+    }
+    )
+  );
 };
 
 export const Rules = () => {
