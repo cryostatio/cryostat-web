@@ -64,6 +64,14 @@ export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
 }
 
+export interface ActiveRecordingFilters {
+    Name: string[],
+    DateRange: string[],
+    DurationSeconds: string[],
+    State: RecordingState[],
+    Labels: string[],
+}
+
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
@@ -76,7 +84,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
-  const [clearFiltersToggle, setClearFiltersToggle] = React.useState(false);
+  const [filters, setFilters] = React.useState({
+    Name: [],
+    DateRange: [],
+    DurationSeconds: [],
+    State: [],
+    Labels: [],
+  } as ActiveRecordingFilters);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -296,6 +310,60 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     );
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
+
+  const handleClearFilters = React.useCallback(() => {
+    setFilters({
+      Name: [],
+      DateRange: [],
+      DurationSeconds: [],
+      State: [],
+      Labels: [],
+    } as ActiveRecordingFilters);
+  }, [setFilters]);
+
+  React.useEffect(() => {
+    if (!recordings || !recordings.length) {
+      return;
+    }
+    let filtered = recordings;
+
+    if (!!filters.Name.length) {
+      filtered = filtered.filter((r) => filters.Name.includes(r.name));
+    }
+    if (!!filters.State.length) {
+      filtered = filtered.filter((r) => filters.State.includes(r.state));
+    }
+    if (!!filters.DurationSeconds.length) {
+      filtered = filtered.filter(
+        (r) =>
+          filters.DurationSeconds.includes(`${r.duration / 1000} s`) ||
+          (filters.DurationSeconds.includes('continuous') && r.continuous)
+      );
+    }
+    // FIXME how to determine if a manually stopped continuous recording was running?
+    if (!!filters.DateRange.length) {
+      filtered = filtered.filter((rec) => {
+        const start = rec.startTime;
+        const stop = rec.state === RecordingState.RUNNING ? new Date().getTime() : rec.startTime + rec.duration;
+        return !!filters.DateRange.filter((range) => {
+          const window = range.split(' to ');
+          const beginning = new Date(window[0]).getTime();
+          const end = new Date(window[1]).getTime();
+          const isInDateRange =
+            (start >= beginning && start <= end) || // starts in date range
+            (stop >= beginning && stop <= end) || // stops in date range
+            (start <= beginning && stop >= end); // runs throughout date range
+          return isInDateRange;
+        });
+      });
+    }
+    if (!!filters.Labels.length) {
+      filtered = filtered.filter((r) => !!Object.keys(r.metadata.labels).filter((l) => filters.Labels.includes(l)));
+    }
+
+    setFilteredRecordings(filtered);
+  }, [recordings, filters]);
+
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
@@ -497,9 +565,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     }, [recordings, checkedIndices]);
 
     return (
-      <Toolbar id="active-recordings-toolbar" clearAllFilters={() => setClearFiltersToggle(v => !v)}>
+      <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-        <RecordingFilters recordings={recordings} setFilteredRecordings={setFilteredRecordings} clearFiltersToggle={clearFiltersToggle}/>
+        <RecordingFilters filters={filters} setFilters={setFilters} />
         { buttons }
         { deleteActiveWarningModal }
         </ToolbarContent>
@@ -535,7 +603,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           onHeaderCheck={handleHeaderCheck}
           isEmpty={!recordings.length}
           isEmptyFilterResult={!filteredRecordings.length}
-          clearFilters={() => setClearFiltersToggle(v => !v)}
+          clearFilters={handleClearFilters}
           isLoading ={isLoading}
           errorMessage ={errorMessage}
           >

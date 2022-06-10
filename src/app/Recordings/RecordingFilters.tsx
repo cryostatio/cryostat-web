@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
+import { RecordingState } from '@app/Shared/Services/Api.service';
 import {
   Button,
   ButtonVariant,
@@ -58,26 +58,19 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
+import { ActiveRecordingFilters } from './ActiveRecordingsTable';
 import { DateTimePicker } from './DateTimePicker';
 
 export interface RecordingFiltersProps {
-  recordings: ActiveRecording[];
-  setFilteredRecordings: (recordings: ActiveRecording[]) => void;
-  clearFiltersToggle: boolean;
+  filters: ActiveRecordingFilters;
+  setFilters: Dispatch<SetStateAction<ActiveRecordingFilters>>;
 }
 
 export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
   const [currentCategory, setCurrentCategory] = React.useState('Name');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
-  const [filters, setFilters] = React.useState({
-    Name: [] as string[],
-    DateRange: [] as string[],
-    DurationSeconds: [] as string[],
-    State: [] as RecordingState[],
-    Labels: [],
-  });
   const [searchName, setSearchName] = React.useState('');
   const [searchLabel, setSearchLabel] = React.useState('');
   const [continuous, setContinuous] = React.useState(false);
@@ -89,31 +82,37 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     setIsCategoryDropdownOpen((opened) => !opened);
   }, [setIsCategoryDropdownOpen]);
 
-  const onCategorySelect = React.useCallback((curr) => {
-    setCurrentCategory(curr);
-  }, [setCurrentCategory]);
+  const onCategorySelect = React.useCallback(
+    (curr) => {
+      setCurrentCategory(curr);
+    },
+    [setCurrentCategory]
+  );
 
   const onFilterToggle = React.useCallback(() => {
     setIsFilterDropdownOpen((opened) => !opened);
   }, [setIsFilterDropdownOpen]);
 
-  const onDelete = React.useCallback((type = '', id = '') => {
-    if (type) {
-      setFilters((old) => {
-        return { ...old, [type]: old[type].filter((val) => val !== id) };
-      });
-    } else {
-      setFilters(() => {
-        return {
-          Name: [],
-          DateRange: [],
-          DurationSeconds: [],
-          State: [],
-          Labels: [],
-        };
-      });
-    }
-  }, [setFilters]);
+  const onDelete = React.useCallback(
+    (type = '', id = '') => {
+      if (type) {
+        props.setFilters((old) => {
+          return { ...old, [type]: old[type].filter((val) => val !== id) };
+        });
+      } else {
+        props.setFilters(() => {
+          return {
+            Name: [],
+            DateRange: [],
+            DurationSeconds: [],
+            State: [],
+            Labels: [],
+          };
+        });
+      }
+    },
+    [props.setFilters]
+  );
 
   const onNameInput = React.useCallback(
     (e) => {
@@ -121,19 +120,19 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         return;
       }
 
-      setFilters((old) => {
+      props.setFilters((old) => {
         return { ...old, Name: old.Name.includes(searchName) ? old.Name : [...old.Name, searchName] };
       });
     },
-    [searchName, setFilters]
+    [searchName, props.setFilters]
   );
 
   const onDateRangeInput = React.useCallback(() => {
-    setFilters((old) => {
-      const newRange = `${startDateTime.toISOString()} to ${stopDateTime.toString()}`;
+    props.setFilters((old) => {
+      const newRange = `${startDateTime.toISOString()} to ${stopDateTime.toISOString()}`;
       return { ...old, DateRange: old.DateRange.includes(newRange) ? old.DateRange : [...old.DateRange, newRange] };
     });
-  }, [startDateTime, stopDateTime, setFilters]);
+  }, [startDateTime, stopDateTime, props.setFilters]);
 
   const onDurationInput = React.useCallback(
     (e) => {
@@ -141,35 +140,43 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         return;
       }
 
-      setFilters((old) => {
-        return { ...old, DurationSeconds: [`${duration.toString()} s`] };
+      props.setFilters((old) => {
+        const dur = `${duration.toString()} s`;
+        return {
+          ...old,
+          DurationSeconds: old.DurationSeconds.includes(dur) ? old.DurationSeconds : [...old.DurationSeconds, dur],
+        };
       });
     },
-    [duration, setFilters]
+    [duration, props.setFilters]
   );
 
   const onRecordingStateSelect = React.useCallback(
     (e, state) => {
-      setFilters((old) => {
-        return { ...old, State: old.State.includes(state) ? old.State.filter((v) => v != state) : [...old.State, state] };
+      props.setFilters((old) => {
+        return {
+          ...old,
+          State: old.State.includes(state) ? old.State.filter((v) => v != state) : [...old.State, state],
+        };
       });
     },
-    [setFilters]
+    [props.setFilters]
   );
 
-  React.useEffect(() => {
-    onDelete(null);
-  }, [props.clearFiltersToggle, onDelete]);
-
-  React.useEffect(() => {
-    props.setFilteredRecordings(props.recordings); //TODO actually filter recordings
-  }, [props.recordings, filters, props.setFilteredRecordings]);
-
-  React.useEffect(() => {
-    setFilters((old) => {
-      return { ...old, DurationSeconds: continuous ? ['continuous'] : [] };
-    });
-  }, [continuous, setFilters]);
+  const onContinuousDurationSelect = React.useCallback(
+    (cont) => {
+      setContinuous(cont);
+      props.setFilters((old) => {
+        return {
+          ...old,
+          DurationSeconds: cont
+            ? [...old.DurationSeconds, 'continuous']
+            : old.DurationSeconds.filter((v) => v != 'continuous'),
+        };
+      });
+    },
+    [setContinuous, props.setFilters]
+  );
 
   const categoryDropdown = React.useMemo(() => {
     return (
@@ -183,7 +190,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
           }
           isOpen={isCategoryDropdownOpen}
           dropdownItems={[
-            Object.keys(filters).map((cat) => (
+            Object.keys(props.filters).map((cat) => (
               <DropdownItem key={cat} onClick={() => onCategorySelect(cat)}>
                 {cat}
               </DropdownItem>
@@ -192,7 +199,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         ></Dropdown>
       </ToolbarItem>
     );
-  }, [isCategoryDropdownOpen, onCategoryToggle, onCategorySelect]);
+  }, [Object.keys(props.filters), isCategoryDropdownOpen, onCategoryToggle, onCategorySelect]);
 
   const filterDropdownItems = React.useMemo(
     () => [
@@ -224,13 +231,12 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <Flex>
           <FlexItem>
             <TextInput
-              type='number'
+              type="number"
               value={duration}
               id="durationInput1"
               aria-label="duration filter"
               onChange={(e) => setDuration(Number(e))}
-              min='0'
-              isDisabled={continuous}
+              min="0"
               onKeyDown={onDurationInput}
             />
           </FlexItem>
@@ -239,7 +245,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
               label="Continuous"
               id="continuous-checkbox"
               isChecked={continuous}
-              onChange={(checked) => setContinuous(checked)}
+              onChange={(checked) => onContinuousDurationSelect(checked)}
             />
           </FlexItem>
         </Flex>
@@ -249,7 +255,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         aria-label={'State'}
         onToggle={onFilterToggle}
         onSelect={onRecordingStateSelect}
-        selections={filters.State}
+        selections={props.filters.State}
         isOpen={isFilterDropdownOpen}
         placeholderText="Filter by state"
       >
@@ -273,16 +279,16 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         </Button>
       </InputGroup>,
     ],
-    [Object.keys(filters)]
+    [Object.keys(props.filters)]
   );
 
   return (
     <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
       <ToolbarGroup variant="filter-group">
         {categoryDropdown}
-        {Object.keys(filters).map((filterKey, i) => (
+        {Object.keys(props.filters).map((filterKey, i) => (
           <ToolbarFilter
-            chips={filters[filterKey]}
+            chips={props.filters[filterKey]}
             deleteChip={onDelete}
             categoryName={filterKey}
             showToolbarItem={currentCategory === filterKey}
