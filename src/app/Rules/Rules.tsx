@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Button, Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem } from '@patternfly/react-core';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem } from '@patternfly/react-core';
 import { PlusIcon, SearchIcon } from '@patternfly/react-icons';
 import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -47,7 +47,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RuleUploadModal } from './RulesUploadModal';
-import { from, Observable } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 
 export interface Rule {
   name: string;
@@ -210,7 +210,7 @@ export const Rules = () => {
     return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
   }, [rules, sortBy]);
 
-  const handleDelete = (rowData) => {
+  const handleDelete = (rowData: IRowData) => {
     addSubscription(
       context.api.deleteRule(rowData[0])
       .pipe(first())
@@ -218,14 +218,24 @@ export const Rules = () => {
     );
   };
 
+  const handleDownload = (rowData: IRowData) => {
+    context.api.downloadRule(rowData[0]);
+  }
+
   const actionResolver = (rowData: IRowData, extraData: IExtraData): IAction[] => {
     if (typeof extraData.rowIndex == 'undefined') {
       return [];
     }
-    return [{
-      title: 'Delete',
-      onClick: (event, rowId, rowData) => handleDelete(rowData)
-    }]
+    return [
+      {
+        title: 'Delete',
+        onClick: (event, rowId, rowData) => handleDelete(rowData)
+      }, 
+      {
+        title: 'Download',
+        onClick: (event, rowId, rowData) => handleDownload(rowData)
+      }
+    ]
   };
 
   const handleUploadModalClose = React.useCallback(() => {

@@ -466,6 +466,24 @@ export class ApiService {
     });
   }
 
+  downloadRule(name: string): void {
+    this.doGet<any>('rules/' + name, 'v2')
+      .pipe(
+        first(),
+        map((resp) => resp.data.result)
+      )
+      .subscribe(rule => {
+        const filename = `${rule.name}.json`;
+        const file = new File([JSON.stringify(rule)], filename);
+        const resourceUrl = URL.createObjectURL(file)
+        this.downloadFile(
+          resourceUrl,
+          filename
+        );
+        setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
+      });
+  }
+
   uploadRecording(file: File, signal?: AbortSignal): Observable<string> {
     window.onbeforeunload = () => true;
     return this.login.getHeaders().pipe(
