@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem } from '@patternfly/react-core';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem, Button } from '@patternfly/react-core';
 import { PlusIcon, SearchIcon } from '@patternfly/react-icons';
 import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -222,15 +222,6 @@ export const Rules = () => {
     refreshRules();
   }, [setIsUploadModalOpen, refreshRules]);
 
-  const onRuleGenerationMenuToggle = React.useCallback((isOpen: boolean) => {
-    setIsDropdownOpen(isOpen);
-  }, [setIsDropdownOpen]);
-
-  const ruleGenerationActionItems = [
-    <DropdownItem key="create" onClick={handleCreateRule}>Create</DropdownItem>,
-    <DropdownItem key="upload"onClick={handleUploadRule}>Upload</DropdownItem>,
-  ];
-
   const viewContent = () => {
     if (isLoading) {
       return <LoadingView />;
@@ -268,20 +259,9 @@ export const Rules = () => {
           <ToolbarContent>
             <ToolbarGroup variant="icon-button-group">
               <ToolbarItem>
-                <Dropdown 
-                  onSelect= {()=>setIsDropdownOpen(false)} 
-                  toggle={
-                    <DropdownToggle
-                      toggleIndicator={null}
-                      onToggle={onRuleGenerationMenuToggle} 
-                      id="toggle-rule-generate-action">
-                    <PlusIcon/>
-                  </DropdownToggle>
-                  }
-                  isOpen={isDropdownOpen}
-                  isPlain
-                  dropdownItems={ruleGenerationActionItems}
-                />
+                <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
+                {' '}
+                <Button key="upload" variant="secondary" onClick={() => {setIsUploadModalOpen(true)}}>Upload</Button>
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
