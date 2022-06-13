@@ -43,14 +43,20 @@ import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { HelpIcon } from '@patternfly/react-icons';
-import { parseRule, Rule } from './Rules';
-import { mergeMap, of } from 'rxjs';
+import { Rule } from './Rules';
+import { from, mergeMap, Observable, of } from 'rxjs';
 import { catchError, first} from 'rxjs/operators';
 
 export interface RuleUploadModalProps {
   visible: boolean;
   onClose: () => void;
 }
+
+export const parseRule = (file: File): Observable<Rule> => {
+  return from(
+    file.text().then(JSON.parse)
+  );
+};
 
 export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = props => {
   const context = React.useContext(ServiceContext);

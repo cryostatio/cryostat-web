@@ -60,27 +60,6 @@ export interface Rule {
   maxSizeBytes: number;
 }
 
-export const parseRule = (file: File): Observable<Rule> => {
-  return from(
-    file.text()
-    .then(content => {
-      const ruleConfig = JSON.parse(content);
-      const rule: Rule = {
-        name: ruleConfig.name,
-        description: ruleConfig.description,
-        matchExpression: ruleConfig.matchExpression,
-        eventSpecifier: ruleConfig.eventSpecifier,
-        archivalPeriodSeconds: ruleConfig.archivalPeriodSeconds,
-        preservedArchives: ruleConfig.preservedArchives,
-        maxAgeSeconds: ruleConfig.maxAgeSeconds,
-        maxSizeBytes: ruleConfig.maxSizeBytes
-      };
-      return rule;
-    }
-    )
-  );
-};
-
 export const Rules = () => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
