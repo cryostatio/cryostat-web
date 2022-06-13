@@ -161,7 +161,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
       />
       <Form>
         <FormGroup
-          label="JSON/TEXT File"
+          label="JSON File"
           isRequired
           fieldId="file"
           validated={rejected ? 'error' : 'default'}
