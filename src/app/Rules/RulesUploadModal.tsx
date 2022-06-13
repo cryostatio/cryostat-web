@@ -44,8 +44,8 @@ import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { HelpIcon } from '@patternfly/react-icons';
 import { parseRule, Rule } from './Rules';
-import { mergeMap } from 'rxjs';
-import { first} from 'rxjs/operators';
+import { mergeMap, of } from 'rxjs';
+import { catchError, first} from 'rxjs/operators';
 
 export interface RuleUploadModalProps {
   visible: boolean;
@@ -95,22 +95,26 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
 
   const handleSubmit = React.useCallback(() => {
     if (!uploadFile) {
-      notifications.warning('Attempted to submit JFR upload without a file selected');
+      notifications.warning('Attempted to submit automated rule without a file selected');
       return;
     } 
     setUploading(true);
     addSubscription(
       parseRule(uploadFile)
-      .pipe(
+      .pipe(  
         first(),
-        mergeMap(rule => context.api.createRule(rule))
+        mergeMap(rule => context.api.createRule(rule)),
+      catchError((err, _) => {
+        if (err instanceof SyntaxError) {
+          notifications.danger('Automated rule upload failed', err.message);
+        }
+        return of(false);
+      })
       )
       .subscribe(success => {
         setUploading(false);
         if (success) {
           handleClose();
-        } else {
-          notifications.warning("Cannot upload rule. Please try again.");
         }
       })
     );
