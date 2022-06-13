@@ -207,12 +207,15 @@ export const Rules = () => {
     }
     return [
       {
-        title: 'Delete',
-        onClick: (event, rowId, rowData) => handleDelete(rowData)
-      }, 
-      {
         title: 'Download',
         onClick: (event, rowId, rowData) => handleDownload(rowData)
+      },
+      {
+        isSeparator: true,
+      },
+      {
+        title: 'Delete',
+        onClick: (event, rowId, rowData) => handleDelete(rowData)
       }
     ]
   };
