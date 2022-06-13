@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem, Button } from '@patternfly/react-core';
-import { PlusIcon, SearchIcon } from '@patternfly/react-icons';
+import { PlusIcon, SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
@@ -264,7 +264,9 @@ export const Rules = () => {
               <ToolbarItem>
                 <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
                 {' '}
-                <Button key="upload" variant="secondary" onClick={() => {setIsUploadModalOpen(true)}}>Upload</Button>
+                <Button key="upload" variant="secondary" onClick={() => {setIsUploadModalOpen(true)}}>
+                  <UploadIcon/>
+                </Button>
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
