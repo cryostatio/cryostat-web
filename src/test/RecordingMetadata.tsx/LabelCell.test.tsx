@@ -48,7 +48,6 @@ const mockLabel = {
 };
 
 describe('<EditableLabelCell />', () => {
-
   it('renders correctly', async () => {
     let tree;
     await act(async () => {

@@ -98,7 +98,8 @@ const routes: IAppRoute[] = [
     label: 'Automated Rules',
     path: '/rules',
     title: 'Automated Rules',
-    description: 'Create recordings on multiple target JVMs at once using Automated Rules consisting of a name, match expression, template, archival period, and more.',
+    description:
+      'Create recordings on multiple target JVMs at once using Automated Rules consisting of a name, match expression, template, archival period, and more.',
     navGroup: CONSOLE,
     children: [
       {
@@ -132,7 +133,8 @@ const routes: IAppRoute[] = [
     label: 'Archives',
     path: '/archives',
     title: 'Archives',
-    description: 'View archived recordings across all target JVMs, as well as upload recordings directly to the archive.',
+    description:
+      'View archived recordings across all target JVMs, as well as upload recordings directly to the archive.',
     navGroup: CONSOLE,
   },
   {

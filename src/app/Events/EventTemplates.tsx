@@ -42,7 +42,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
-import { PlusIcon } from '@patternfly/react-icons';
+import { PlusIcon, UploadIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
@@ -259,7 +259,9 @@ export const EventTemplates = () => {
         </ToolbarGroup>
         <ToolbarGroup variant="icon-button-group">
           <ToolbarItem>
-            <Button key="create" variant="primary" onClick={handleModalToggle}>Upload</Button>
+            <Button key="upload" variant="secondary" onClick={handleModalToggle}>
+              <UploadIcon/>
+            </Button>
           </ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>

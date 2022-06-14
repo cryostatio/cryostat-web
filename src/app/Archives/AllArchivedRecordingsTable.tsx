@@ -47,7 +47,7 @@ import { RecordingsTable } from '@app/Recordings/RecordingsTable';
 import { ReportFrame } from '@app/Recordings/ReportFrame';
 import { Observable, forkJoin, merge } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { PlusIcon } from '@patternfly/react-icons';
+import { PlusIcon, UploadIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
@@ -248,7 +248,9 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
           </ToolbarGroup>
           <ToolbarGroup variant="icon-button-group">
             <ToolbarItem>
-              <Button variant="plain" aria-label="add" onClick={() => setShowUploadModal(true)}><PlusIcon /></Button>
+                <Button key="upload" variant="secondary" onClick={() => setShowUploadModal(true)}>
+                  <UploadIcon/>
+                </Button>
             </ToolbarItem>
           </ToolbarGroup>
         </ToolbarContent>

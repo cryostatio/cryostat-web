@@ -37,18 +37,28 @@
  */
 import * as React from 'react';
 import { Prompt } from 'react-router-dom';
-import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
-import { first } from 'rxjs/operators';
+import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { HelpIcon } from '@patternfly/react-icons';
+import { Rule } from './Rules';
+import { from, mergeMap, Observable, of } from 'rxjs';
+import { catchError, first} from 'rxjs/operators';
 
-export interface ArchiveUploadModalProps {
+export interface RuleUploadModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
-export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps> = props => {
+export const parseRule = (file: File): Observable<Rule> => {
+  return from(
+    file.text().then(JSON.parse)
+  );
+};
+
+export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = props => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
@@ -57,6 +67,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
   const [rejected, setRejected] = React.useState(false);
   const [showCancelPrompt, setShowCancelPrompt] = React.useState(false);
   const [abort, setAbort] = React.useState(new AbortController());
+  const addSubscription = useSubscriptions();
 
   const reset = React.useCallback(() => {
     setUploadFile(undefined);
@@ -90,20 +101,36 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
 
   const handleSubmit = React.useCallback(() => {
     if (!uploadFile) {
-      notifications.warning('Attempted to submit JFR upload without a file selected');
+      notifications.warning('Attempted to submit automated rule without a file selected');
       return;
-    }
+    } 
     setUploading(true);
-    context.api.uploadRecording(uploadFile, abort.signal)
-      .pipe(first())
-      .subscribe(handleClose, reset);
-  }, [context.api, notifications, setUploading, uploadFile, abort, handleClose, reset]);
+    addSubscription(
+      parseRule(uploadFile)
+      .pipe(  
+        first(),
+        mergeMap(rule => context.api.createRule(rule)),
+      catchError((err, _) => {
+        if (err instanceof SyntaxError) {
+          notifications.danger('Automated rule upload failed', err.message);
+        }
+        return of(false);
+      })
+      )
+      .subscribe(success => {
+        setUploading(false);
+        if (success) {
+          handleClose();
+        }
+      })
+    );
+  }, [context.api, notifications, setUploading, uploadFile, handleClose]);
 
   const handleAbort = React.useCallback(() => {
     abort.abort();
     reset();
     props.onClose();
-  }, [abort, reset, handleClose]);
+  }, [abort, reset]);
 
   return (<>
     <Prompt
@@ -115,8 +142,21 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title="Re-Upload Archived Recording"
-      description="Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming convention used by Cryostat when archiving recordings."
+      title="Upload Automatic Rules"
+      description="Select an Automatic Rules definition file to upload. File must be in JSON format and filename will be used as rule name."
+      help = {
+        <Popover 
+          headerContent={<div>What's this?</div>}
+          bodyContent={<div>
+            Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications. 
+            Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application recording buffer, 
+            and how frequently Cryostat should copy the application recording buffer into Cryostat's own archived storage.
+          </div>}>
+          <Button variant="plain" aria-label="Help">
+              <HelpIcon />
+          </Button>
+        </Popover>
+      }
       >
       <CancelUploadModal
         visible={showCancelPrompt}
@@ -127,7 +167,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
       />
       <Form>
         <FormGroup
-          label="JFR File"
+          label="JSON File"
           isRequired
           fieldId="file"
           validated={rejected ? 'error' : 'default'}
@@ -140,7 +180,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
             isLoading={uploading}
             validated={rejected ? 'error' : 'default'}
             dropzoneProps={{
-              accept: '.jfr',
+              accept: '.json, .txt',
               onDropRejected: handleReject
             }}
           />

@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Button, Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem, Button } from '@patternfly/react-core';
+import { PlusIcon, SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
@@ -46,6 +46,8 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
+import { RuleUploadModal } from './RulesUploadModal';
+import { from, Observable, of } from 'rxjs';
 
 export interface Rule {
   name: string;
@@ -67,6 +69,8 @@ export const Rules = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [rules, setRules] = React.useState([] as Rule[]);
+  const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
   const tableColumns = [
     {
@@ -168,6 +172,10 @@ export const Rules = () => {
     routerHistory.push(`${url}/create`);
   }, [routerHistory]);
 
+  const handleUploadRule = React.useCallback(() => {
+    setIsUploadModalOpen(true);
+  }, [setIsUploadModalOpen]);
+
   const displayRules = React.useMemo(() => {
     const { index, direction } = sortBy;
     let sorted = [...rules];
@@ -181,7 +189,7 @@ export const Rules = () => {
     return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
   }, [rules, sortBy]);
 
-  const handleDelete = (rowData) => {
+  const handleDelete = (rowData: IRowData) => {
     addSubscription(
       context.api.deleteRule(rowData[0])
       .pipe(first())
@@ -189,15 +197,33 @@ export const Rules = () => {
     );
   };
 
+  const handleDownload = (rowData: IRowData) => {
+    context.api.downloadRule(rowData[0]);
+  }
+
   const actionResolver = (rowData: IRowData, extraData: IExtraData): IAction[] => {
     if (typeof extraData.rowIndex == 'undefined') {
       return [];
     }
-    return [{
-      title: 'Delete',
-      onClick: (event, rowId, rowData) => handleDelete(rowData)
-    }]
+    return [
+      {
+        title: 'Download',
+        onClick: (event, rowId, rowData) => handleDownload(rowData)
+      },
+      {
+        isSeparator: true,
+      },
+      {
+        title: 'Delete',
+        onClick: (event, rowId, rowData) => handleDelete(rowData)
+      }
+    ]
   };
+
+  const handleUploadModalClose = React.useCallback(() => {
+    setIsUploadModalOpen(false);
+    refreshRules();
+  }, [setIsUploadModalOpen, refreshRules]);
 
   const viewContent = () => {
     if (isLoading) {
@@ -237,6 +263,10 @@ export const Rules = () => {
             <ToolbarGroup variant="icon-button-group">
               <ToolbarItem>
                 <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
+                {' '}
+                <Button key="upload" variant="secondary" onClick={() => {setIsUploadModalOpen(true)}}>
+                  <UploadIcon/>
+                </Button>
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarContent>
@@ -245,6 +275,6 @@ export const Rules = () => {
         </CardBody>
       </Card>
     </BreadcrumbPage>
+    <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
   </>);
-
 };
