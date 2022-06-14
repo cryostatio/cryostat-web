@@ -248,7 +248,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
           </ToolbarGroup>
           <ToolbarGroup variant="icon-button-group">
             <ToolbarItem>
-                <Button key="upload" variant="secondary" onClick={() => () => setShowUploadModal(true)}>
+                <Button key="upload" variant="secondary" onClick={() => setShowUploadModal(true)}>
                   <UploadIcon/>
                 </Button>
             </ToolbarItem>
