@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem, Button } from '@patternfly/react-core';
-import { PlusIcon, SearchIcon, UploadIcon } from '@patternfly/react-icons';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Button } from '@patternfly/react-core';
+import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
@@ -47,7 +47,6 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RuleUploadModal } from './RulesUploadModal';
-import { from, Observable, of } from 'rxjs';
 
 export interface Rule {
   name: string;
@@ -70,7 +69,6 @@ export const Rules = () => {
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [rules, setRules] = React.useState([] as Rule[]);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
   const tableColumns = [
     {
