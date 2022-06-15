@@ -40,12 +40,12 @@ jobs:
     - run: yarn test:ci
 
   update-submodule:
-    if: ${{ github.event_name == 'push' && github.repository_owner == 'cryostatio' }}
+    if: ${{ github.event_name == 'push' && github.repository_owner == 'ebaron' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with: 
-        repository: cryostatio/cryostat
+        repository: ebaron/cryostat
         token: "${{ secrets.SUBMODULE_TOKEN }}"
         ref: "${GITHUB_REF_NAME}"
     - name: Check remote submodule branch
