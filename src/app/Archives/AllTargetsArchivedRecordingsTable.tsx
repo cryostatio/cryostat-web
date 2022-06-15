@@ -67,7 +67,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     for (const node of targetNodes) {
       const target: Target = {
         connectUrl: node.target.serviceUri,
-        alias: node.alias,
+        alias: node.target.alias,
       }
       updated.set(target, node.recordings.archived.aggregate.count as number);
     }
@@ -168,7 +168,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
               `${props.target.alias} (${props.target.connectUrl})`}
           </Td>
           <Td> 
-            <Badge key={props.index} isRead>
+            <Badge key={props.index}>
               {targetsAndCounts.get(props.target)}
             </Badge>
           </Td>
