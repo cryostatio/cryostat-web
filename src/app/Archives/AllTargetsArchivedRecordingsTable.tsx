@@ -96,6 +96,36 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     );
   }, [addSubscription, context, context.api]);
 
+  const getDeepCopyOfTargetsAndCounts = () => {
+    return new Map<Target, number>(JSON.parse(
+      JSON.stringify(Array.from(targetsAndCounts))
+    ));
+  }
+
+  const handleNewTargetAndCount = React.useCallback((target: Target, count: number) => {
+    const deepCopy = getDeepCopyOfTargetsAndCounts();
+    deepCopy.set(target, count);
+    setTargetsAndCounts(deepCopy);
+  },[targetsAndCounts, setTargetsAndCounts])
+
+  const getCountForNewTarget = React.useCallback((target: Target) => {
+    addSubscription(
+      context.api.graphql<any>(`
+        query {
+          targetNodes(filter: { name: "${target.connectUrl}" }) {
+            recordings {
+              archived {
+                aggregate {
+                  count
+                }
+              }
+            }
+          }
+        }`)
+      .subscribe(v => handleNewTargetAndCount(target, v.data.targetNodes.recordings.archived.aggregate.count))
+    );
+  },[addSubscription, context, context.api]);
+
   React.useEffect(() => {
     refreshTargetsAndCounts();
   }, [refreshTargetsAndCounts]);
@@ -125,13 +155,52 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
         .subscribe(v => {
           const evt: TargetDiscoveryEvent = v.message.event;
-          const target: Target = evt.serviceRef;
-          if (evt.kind === 'FOUND' || evt.kind === 'LOST') {
-            refreshTargetsAndCounts();
-          } 
+          const target: Target = {
+            connectUrl: evt.serviceRef.connectUrl,
+            alias: evt.serviceRef.alias,
+          }
+          if (evt.kind === 'FOUND') {
+            getCountForNewTarget(target);
+          } else if (evt.kind === 'LOST') {
+            const deepCopy = getDeepCopyOfTargetsAndCounts();
+            deepCopy.delete(target);
+            setTargetsAndCounts(deepCopy);
+          }
         })
     );
   }, [addSubscription, context, context.notificationChannel, refreshTargetsAndCounts]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
+        .subscribe(v => {
+          const target: Target = {
+            connectUrl: v.message.target.connectUrl,
+            alias: v.message.target.alias,
+          }
+          const deepCopy = getDeepCopyOfTargetsAndCounts();
+          if (deepCopy.has(target)) {
+            setTargetsAndCounts(deepCopy.set(target, deepCopy.get(target)!+1));
+          } 
+        }) 
+    );
+  },[addSubscription, context, context.notificationChannel, targetsAndCounts,setTargetsAndCounts]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
+        .subscribe(v => {
+          const target: Target = {
+            connectUrl: v.message.target.connectUrl,
+            alias: v.message.target.alias,
+          }
+          const deepCopy = getDeepCopyOfTargetsAndCounts();
+          if (deepCopy.has(target)) {
+            setTargetsAndCounts(deepCopy.set(target, deepCopy.get(target)!-1));
+          } 
+        }) 
+    );
+  },[addSubscription, context, context.notificationChannel, targetsAndCounts,setTargetsAndCounts]);
 
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
