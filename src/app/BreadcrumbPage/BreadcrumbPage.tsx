@@ -55,7 +55,7 @@ export const BreadcrumbPage: React.FunctionComponent<BreadcrumbPageProps> = (pro
       <Breadcrumb>
         {
         (props.breadcrumbs || []).map(
-            ({ title, path }) => <BreadcrumbItem key={path} to={path} render={() => (<><Link to={path}>{title}</Link></>)}></BreadcrumbItem>)
+            ({ title, path }) => <BreadcrumbItem key={path} render={() => (<><Link to={path}>{title}</Link></>)}></BreadcrumbItem>)
         }
         <BreadcrumbHeading>{props.pageTitle}</BreadcrumbHeading>
       </Breadcrumb>
