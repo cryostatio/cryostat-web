@@ -43,7 +43,6 @@ import { Rules, Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { render, cleanup, screen } from '@testing-library/react';
 
 const mockRule: Rule =  {
@@ -56,6 +55,8 @@ const mockRule: Rule =  {
   maxAgeSeconds: 0,
   maxSizeBytes: 0
 };
+const mockRuleListResponse = { data: { result: [mockRule] as Rule[] } };
+const mockRuleListEmptyResponse = { data: { result: [] as Rule[] } };
 const history = createMemoryHistory();
 
 jest.mock('react-router-dom', () => ({
@@ -66,19 +67,22 @@ jest.mock('react-router-dom', () => ({
 
 jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockRule]));
+jest.spyOn(defaultServices.api, 'doGet')
+  .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
+  .mockReturnValue(of(mockRuleListResponse));
 
 jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
   
-  .mockReturnValue(of({ message: {...mockRule}} as NotificationMessage));
+  .mockReturnValue(of()); // other tests
 
 describe('<Rules/>', () => {
   beforeEach(() => {
     history.go(-history.length);
     history.push('/rules');
   });
+
   afterEach(cleanup);
 
   it('renders correctly', async () => {
