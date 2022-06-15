@@ -40,10 +40,10 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput } from '@patternfly/react-core';
+import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Badge } from '@patternfly/react-core';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { of } from 'rxjs';
+import { count, of } from 'rxjs';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 export interface AllTargetsArchivedRecordingsTableProps { }
@@ -52,46 +52,73 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   const context = React.useContext(ServiceContext);
 
   const [search, setSearch] = React.useState('');
-  const [targets, setTargets] = React.useState([] as Target[]);
+  const [targetsAndCounts, setTargetsAndCounts] = React.useState(new Map<Target, number>());
   const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
     'Target',
+    'Count'
   ];
 
-  React.useEffect(() => {
-    const sub = context.targets.targets().subscribe((targets) => {
-      setTargets(targets);
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.targets, setTargets]);
+  const handleTargetsAndCounts = React.useCallback((targetNodes) => {
+    let updated = new Map<Target, number>();
+    for (const node of targetNodes) {
+      const target: Target = {
+        connectUrl: node.target.serviceUri,
+        alias: node.alias,
+      }
+      updated.set(target, node.recordings.archived.aggregate.count as number);
+    }
+    setTargetsAndCounts(updated);
+  },[setTargetsAndCounts]);
 
-  const refreshTargetList = React.useCallback(() => {
+  const refreshTargetsAndCounts = React.useCallback(() => {
     addSubscription(
-      context.targets.queryForTargets().subscribe(() => {} /* do nothing */)
+      context.api.graphql<any>(`
+        query {
+          targetNodes {
+            target {
+              serviceUri
+              alias
+            }
+            recordings {
+              archived {
+                aggregate {
+                  count
+                }
+              }
+            }
+          }
+        }`)
+      .subscribe(v => handleTargetsAndCounts(v.data.targetNodes))
     );
-  }, [addSubscription, context.targets]);
+  }, [addSubscription, context, context.api]);
+
+  React.useEffect(() => {
+    refreshTargetsAndCounts();
+  }, [refreshTargetsAndCounts]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
-    const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    const id = window.setInterval(() => refreshTargetsAndCounts(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
-  }, [context.target, context.settings, refreshTargetList]);
+  }, [context.target, context.settings, refreshTargetsAndCounts]);
 
   React.useEffect(() => {
+    let targets = Array.from(targetsAndCounts.keys());
     let searched;
     if (!search) {
-      searched = targets;
+      searched = [...targets];
     } else {
       const searchText = search.trim().toLowerCase();
       searched = targets.filter((t: Target) => t.alias.toLowerCase().includes(searchText) || t.connectUrl.toLowerCase().includes(searchText))
     }
     setSearchedTargets([...searched]);
-  }, [search, targets]);
+  }, [search, targetsAndCounts]);
 
   React.useEffect(() => {
     addSubscription(
@@ -99,14 +126,12 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         .subscribe(v => {
           const evt: TargetDiscoveryEvent = v.message.event;
           const target: Target = evt.serviceRef;
-          if (evt.kind === 'FOUND') {
-            setTargets(old => old.concat(target));
-          } else if (evt.kind === 'LOST') {
-            setTargets(old => old.filter(o => o.alias != target.alias && o.connectUrl != target.connectUrl))
-          }
+          if (evt.kind === 'FOUND' || evt.kind === 'LOST') {
+            refreshTargetsAndCounts();
+          } 
         })
     );
-  }, [addSubscription, context, context.notificationChannel, setTargets]);
+  }, [addSubscription, context, context.notificationChannel, refreshTargetsAndCounts]);
 
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
@@ -142,6 +167,11 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             : 
               `${props.target.alias} (${props.target.connectUrl})`}
           </Td>
+          <Td> 
+            <Badge key={props.index} isRead>
+              {targetsAndCounts.get(props.target)}
+            </Badge>
+          </Td>
         </Tr> 
       );
     }, [props.target, props.target.alias, props.target.connectUrl, props.index, isExpanded, handleToggle, tableColumns]);
@@ -162,7 +192,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
               null}
           </Td>
         </Tr>
-      )
+      );
     }, [props.target, props.index, context.api, isExpanded, tableColumns]);
 
     return (
