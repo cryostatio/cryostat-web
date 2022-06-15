@@ -106,7 +106,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     const deepCopy = getDeepCopyOfTargetsAndCounts();
     deepCopy.set(target, count);
     setTargetsAndCounts(deepCopy);
-  },[targetsAndCounts, setTargetsAndCounts])
+  },[getDeepCopyOfTargetsAndCounts, setTargetsAndCounts])
 
   const getCountForNewTarget = React.useCallback((target: Target) => {
     addSubscription(
@@ -124,7 +124,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         }`)
       .subscribe(v => handleNewTargetAndCount(target, v.data.targetNodes.recordings.archived.aggregate.count))
     );
-  },[addSubscription, context, context.api]);
+  },[addSubscription, context, context.api, handleNewTargetAndCount]);
 
   React.useEffect(() => {
     refreshTargetsAndCounts();
@@ -168,7 +168,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           }
         })
     );
-  }, [addSubscription, context, context.notificationChannel, refreshTargetsAndCounts]);
+  }, [addSubscription, context, context.notificationChannel, getCountForNewTarget, getDeepCopyOfTargetsAndCounts, setTargetsAndCounts]);
 
   React.useEffect(() => {
     addSubscription(
@@ -184,7 +184,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           } 
         }) 
     );
-  },[addSubscription, context, context.notificationChannel, targetsAndCounts,setTargetsAndCounts]);
+  },[addSubscription, context, context.notificationChannel, getDeepCopyOfTargetsAndCounts, setTargetsAndCounts]);
 
   React.useEffect(() => {
     addSubscription(
@@ -200,7 +200,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           } 
         }) 
     );
-  },[addSubscription, context, context.notificationChannel, targetsAndCounts,setTargetsAndCounts]);
+  },[addSubscription, context, context.notificationChannel, getDeepCopyOfTargetsAndCounts, setTargetsAndCounts]);
 
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
