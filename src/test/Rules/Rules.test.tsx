@@ -60,10 +60,8 @@ const history = createMemoryHistory();
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: '/baseUrl' }),
-  useHistory: () => ({
-    push: jest.fn((route) => history.push(route)),
-  }),
+  useRouteMatch: () => ({ url: history.location.pathname }),
+  useHistory: () => history,
 }));
 
 jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
