@@ -44,6 +44,7 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 import { render, cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 const mockRule: Rule =  {
   name: 'mockRule',
@@ -74,6 +75,9 @@ jest.spyOn(defaultServices.api, 'doGet')
 jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // open view to create rules
+  .mockReturnValueOnce(of())
   
   .mockReturnValue(of()); // other tests
 
@@ -99,7 +103,19 @@ describe('<Rules/>', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('opens create rule view when Create is clicked', async () => {});
+  it('opens create rule view when Create is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+          <Router location={history.location} history={history}>
+            <Rules/>
+          </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByRole('button', { name: /Create/ }));
+
+    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/', '/rules', '/rules/create']);
+  });
 
   it('opens upload modal when upload icon is clicked', () => {});
 
