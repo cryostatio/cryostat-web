@@ -43,7 +43,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Badge } from '@patternfly/react-core';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { count, of } from 'rxjs';
+import { of } from 'rxjs';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 export interface AllTargetsArchivedRecordingsTableProps { }
@@ -61,6 +61,17 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     'Target',
     'Count'
   ];
+
+  const updateCount = (connectUrl: string, delta: number): void => {
+    const deepCopy = getDeepCopyOfTargetsAndCounts();
+    for (const [target, count] of Array.from(deepCopy.entries())) {
+      if (target.connectUrl === connectUrl) {
+        deepCopy.set(target, count+delta);
+        setTargetsAndCounts(deepCopy);
+        break;
+      }
+    }
+  }
 
   const handleTargetsAndCounts = React.useCallback((targetNodes) => {
     let updated = new Map<Target, number>();
@@ -94,7 +105,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         }`)
       .subscribe(v => handleTargetsAndCounts(v.data.targetNodes))
     );
-  }, [addSubscription, context, context.api]);
+  }, [addSubscription, context, context.api, handleTargetsAndCounts]);
 
   const getDeepCopyOfTargetsAndCounts = () => {
     return new Map<Target, number>(JSON.parse(
@@ -170,38 +181,6 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     );
   }, [addSubscription, context, context.notificationChannel, getCountForNewTarget, getDeepCopyOfTargetsAndCounts, setTargetsAndCounts]);
 
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
-        .subscribe(v => {
-          const target: Target = {
-            connectUrl: v.message.target.connectUrl,
-            alias: v.message.target.alias,
-          }
-          const deepCopy = getDeepCopyOfTargetsAndCounts();
-          if (deepCopy.has(target)) {
-            setTargetsAndCounts(deepCopy.set(target, deepCopy.get(target)!+1));
-          } 
-        }) 
-    );
-  },[addSubscription, context, context.notificationChannel, getDeepCopyOfTargetsAndCounts, setTargetsAndCounts]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
-        .subscribe(v => {
-          const target: Target = {
-            connectUrl: v.message.target.connectUrl,
-            alias: v.message.target.alias,
-          }
-          const deepCopy = getDeepCopyOfTargetsAndCounts();
-          if (deepCopy.has(target)) {
-            setTargetsAndCounts(deepCopy.set(target, deepCopy.get(target)!-1));
-          } 
-        }) 
-    );
-  },[addSubscription, context, context.notificationChannel, getDeepCopyOfTargetsAndCounts, setTargetsAndCounts]);
-
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
@@ -255,7 +234,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           >
             {isExpanded ?
               <ExpandableRowContent>
-                <ArchivedRecordingsTable target={of(props.target)} isUploadsTable={false}/>
+                <ArchivedRecordingsTable target={of(props.target)} isUploadsTable={false} updateCount={updateCount}/>
               </ExpandableRowContent>
             :
               null}
