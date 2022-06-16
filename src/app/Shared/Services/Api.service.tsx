@@ -37,8 +37,8 @@
  */
 import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators';
-import { Target, TargetService } from './Target.service';
+import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
+import { NO_TARGET, Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
@@ -535,41 +535,43 @@ export class ApiService {
   }
 
   postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
-    return this.sendRequest(
-      'beta', `recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
-      {
-        method: 'POST',
-        body: this.stringifyRecordingLabels(labels),
+    return this.graphql<any>(`
+    query {
+      targetNodes {
+        recordings {
+          archived(filter: { name: "${recordingName}" }) {
+            doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+              metadata {
+                labels
+              }
+            }
+          }
+        }
       }
-    ).pipe(
-      concatMap(resp => {
-        if (resp.ok) {
-        return from(resp.text());
-      }
-      throw resp.text();
-      })
-    );
+    }`);
   }
 
   postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
-    return this.target.target().pipe(
+    return this.target.target()
+    .pipe(
+      filter(target => target !== NO_TARGET),
       first(),
-      concatMap(target =>
-        this.sendRequest(
-          'beta', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
-          {
-            method: 'POST',
-            body: this.stringifyRecordingLabels(labels),
+      concatMap(target => this.graphql<any>(`
+        query {
+          targetNodes(filter: { name: "${target.connectUrl}" }) {
+            recordings {
+              active(filter: { name: "${recordingName}" }) {
+                doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+                  metadata {
+                    labels
+                  }
+                }
+              }
+            }
           }
-        ).pipe(
-          concatMap(resp => {
-            if (resp.ok) {
-            return from(resp.text());
-          }
-          throw resp.text();
-          })
-        )
-      ));
+        }`)
+      ),
+      )
   }
 
   postCredentials(matchExpression: string, username: string, password: string): Observable<boolean> {
@@ -694,11 +696,7 @@ export class ApiService {
   }
 
   private stringifyRecordingLabels(labels: RecordingLabel[]): string {
-    let arr = [] as Map<string, string>[];
-    labels.forEach(l => {
-      arr[l.key] = l.value;
-    });
-    return JSON.stringify(Object.entries(arr));
+    return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
   }
 
 }
