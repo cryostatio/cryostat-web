@@ -262,7 +262,7 @@ export const Rules = () => {
               <ToolbarItem>
                 <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
                 {' '}
-                <Button key="upload" variant="secondary" onClick={handleUploadRule}>
+                <Button key="upload" variant="secondary" aria-label='Upload' onClick={handleUploadRule}>
                   <UploadIcon/>
                 </Button>
               </ToolbarItem>
