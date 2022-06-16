@@ -147,10 +147,11 @@ describe('<Rules/>', () => {
 
     const modalTitle = await within(modal).findByText('Upload Automatic Rules');
     expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
 
     const form = await within(modal).findByLabelText('Drag a file here or browse to upload');
     expect(form).toBeInTheDocument();
-    expect(form).toBeVisible
+    expect(form).toBeVisible();
   });
 
   it('deletes a rule when Delete is clicked', async () => {
