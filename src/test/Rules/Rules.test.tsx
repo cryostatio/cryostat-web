@@ -45,6 +45,7 @@ import { render, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 const mockRule: Rule =  {
   name: 'mockRule',
@@ -58,6 +59,9 @@ const mockRule: Rule =  {
 };
 const mockRuleListResponse = { data: { result: [mockRule] as Rule[] } };
 const mockRuleListEmptyResponse = { data: { result: [] as Rule[] } };
+
+const mockDeleteNotification = { message: {...mockRule} } as NotificationMessage;
+
 const history = createMemoryHistory();
 
 jest.mock('react-router-dom', () => ({
@@ -66,11 +70,15 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
-jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
-jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
+const deleteSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
+const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
 jest.spyOn(defaultServices.api, 'doGet')
   .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
-  .mockReturnValue(of(mockRuleListResponse));
+  .mockReturnValueOnce(of(mockRuleListResponse)) // open view to create rules
+  .mockReturnValueOnce(of(mockRuleListResponse)) // open upload modal
+  .mockReturnValueOnce(of(mockRuleListResponse)) // delete a rule
+  .mockReturnValueOnce(of(mockRuleListResponse)) // remove a rule when receiving notification
+  .mockReturnValue(of());
 
 jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
@@ -79,8 +87,15 @@ jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // open view to create rules
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of())// opens upload modal
+  .mockReturnValueOnce(of()) // opens upload modal
   .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // delete a rule when clicked
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // remove a rule when receiving notification
+  .mockReturnValueOnce(of(mockDeleteNotification))
+  
 
   .mockReturnValue(of()); // other tests
 
@@ -143,7 +158,33 @@ describe('<Rules/>', () => {
     expect(form).toBeVisible
   });
 
-  it('deletes a rule when Delete is clicked', () => {});
+  it('deletes a rule when Delete is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+          <Router location={history.location} history={history}>
+            <Rules/>
+          </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByLabelText('Actions'));
+    userEvent.click(await screen.findByText('Delete'));
+
+    expect(deleteSpy).toHaveBeenCalledTimes(1);
+    expect(deleteSpy).toBeCalledWith(mockRule.name);
+  });
+
+  it('remove a rule when receiving a notification', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+          <Router location={history.location} history={history}>
+            <Rules/>
+          </Router>
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.queryByText(mockRule.name)).not.toBeInTheDocument();
+  });
 
   it('downloads a rule when Download is clicked', () => {})
 });
