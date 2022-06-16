@@ -53,6 +53,7 @@ import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
+import { DeleteWarningModal } from './DeleteWarningModal';
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
@@ -67,6 +68,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
+  const [showWarningModal, setShowWarningModal] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -450,7 +452,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
       ));
       arr.push((
-        <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+        <Button key="delete" variant="danger" onClick={() => setShowWarningModal(true)} isDisabled={!checkedIndices.length}>Delete</Button>
       ));
       return <>
         {
@@ -463,14 +465,26 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       </>;
     }, [checkedIndices]);
 
+    const handleWarningModalClose = () => {
+      setShowWarningModal(false);
+    };  
+
+    const deleteActiveWarningModal = React.useMemo(() => {
+      const filtered = recordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
+      return <DeleteWarningModal deleteWarningType={"Active Recording Delete"} recordings={filtered.map((r) => `${r.name}`)} visible={showWarningModal} onAccept={handleDeleteRecordings} onClose={handleWarningModalClose}/>
+    }, [recordings, checkedIndices]);
+
     return (
       <Toolbar id="active-recordings-toolbar">
         <ToolbarContent>
         { buttons }
         </ToolbarContent>
+        { deleteActiveWarningModal }
       </Toolbar>
     );
   };
+
+
 
   const recordingRows = React.useMemo(() => {
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
