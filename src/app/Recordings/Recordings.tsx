@@ -59,7 +59,7 @@ export const Recordings = () => {
           <ActiveRecordingsTable archiveEnabled={true} />
         </Tab>
         <Tab id='archived-recordings' eventKey={1} title="Archived Recordings">
-          <ArchivedRecordingsTable isUploadsTable={false}/>
+          <ArchivedRecordingsTable isUploadsTable={false} target={context.target.target()}/>
         </Tab>
       </Tabs>
     ) : (

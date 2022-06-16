@@ -42,6 +42,8 @@ import { SearchIcon } from '@patternfly/react-icons';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { Target } from '@app/Shared/Services/Target.service';
+import { of } from 'rxjs';
 
 export const Archives = () => {
   const context = React.useContext(ServiceContext);
@@ -70,8 +72,12 @@ export const Archives = () => {
   }, [archiveEnabled]);
 
   const uploads = React.useMemo(() => {
+    const target: Target = {
+      connectUrl: '',
+      alias: '',
+    }
     return (<> 
-      <ArchivedRecordingsTable isUploadsTable={true} />
+      <ArchivedRecordingsTable isUploadsTable={true} target={of(target)}/>
     </>);
   },[]);
 

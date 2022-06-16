@@ -59,7 +59,7 @@ import { filterRecordings, RecordingFilters } from './RecordingFilters';
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 
 export interface ArchivedRecordingsTableProps { 
-  target?: Observable<Target>;
+  target: Observable<Target>;
   isUploadsTable: boolean;
   updateCount?: Function;
 }
@@ -67,7 +67,6 @@ export interface ArchivedRecordingsTableProps {
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
-  const [target, setTarget] = React.useState(((props.target === null || props.target === undefined) ? context.target.target() : props.target) as Observable<Target>)
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -147,7 +146,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       );
     } else {
       addSubscription(
-        target
+        props.target
         .pipe(
           filter(target => target !== NO_TARGET),
           first(),
@@ -159,7 +158,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         .subscribe(handleRecordings)
       );
     }
-  }, [addSubscription, context, context.api, target, props.isUploadsTable, setIsLoading, handleRecordings]);
+  }, [addSubscription, context, context.api, props.target, props.isUploadsTable, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
     setFilters({
@@ -169,54 +168,47 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [setFilters]);
 
   React.useEffect(() => {
-    if (!props.isUploadsTable) {
-      addSubscription(
-        target.subscribe(refreshRecordingList)
-      );
-    } else {
-      // If this is an instance of the uploads table, then there is no target to subscribe to.
-      // In this case, simply refresh the recordings list after the render completes. 
-      refreshRecordingList();
-    }
-  }, [addSubscription, context, target, props.isUploadsTable, refreshRecordingList]);
+    addSubscription(
+      props.target.subscribe(refreshRecordingList)
+    );
+  }, [addSubscription, context, props.target, props.isUploadsTable, refreshRecordingList]);
 
   React.useEffect(() => {
-    if (props.isUploadsTable) {
-      addSubscription(
+    addSubscription(
+      combineLatest([
+        props.target,
         merge(
           context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
-        ).subscribe(v => setRecordings(old => old.concat(v.message.recording)))
-      );
-    } else {
-      addSubscription(
-        combineLatest([
-          target,
-          merge(
-            context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
-            context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
-          ),
-        ])
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
+        ),
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.concat(event.message.recording));
+        // If this is a nested instance in the All Targets table, update the recordings count for the parent row
+        if (currentTarget.connectUrl != '' && props.updateCount !== null && props.updateCount !== undefined) {
+          props.updateCount(currentTarget.connectUrl, 1)
+        }
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, props.target, props.isUploadsTable, setRecordings]);
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+        props.target,
+        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
+      ])
         .subscribe(parts => {
           const currentTarget = parts[0];
           const event = parts[1];
           if (currentTarget.connectUrl != event.message.target) {
             return;
           }
-          setRecordings(old => old.concat(event.message.recording));
-          if (currentTarget.connectUrl != '' && props.updateCount !== null && props.updateCount !== undefined) {
-            props.updateCount(currentTarget.connectUrl, 1)
-          }
-        })
-      );
-    }
-  }, [addSubscription, context, context.notificationChannel, target, props.isUploadsTable, setRecordings]);
-
-  React.useEffect(() => {
-    if (props.isUploadsTable) {
-      addSubscription(
-        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
-        .subscribe(event => {
           let deleted;
 
           setRecordings((old) => {
@@ -232,42 +224,13 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             .filter((v) => v !== deleted)
             .map(ci => ci > deleted ? ci - 1 : ci)
           );
-        })
-      );
-    } else {
-      addSubscription(
-        combineLatest([
-          target,
-          context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
-        ])
-          .subscribe(parts => {
-            const currentTarget = parts[0];
-            const event = parts[1];
-            if (currentTarget.connectUrl != event.message.target) {
-              return;
-            }
-            let deleted;
-  
-            setRecordings((old) => {
-              return old.filter((r, i) => {
-                if (r.name == event.message.recording.name) {
-                  deleted = i;
-                  return false;
-                }
-                return true;
-              });
-            });
-            setCheckedIndices(old => old
-              .filter((v) => v !== deleted)
-              .map(ci => ci > deleted ? ci - 1 : ci)
-            );
-            if (currentTarget.connectUrl != '' && props.updateCount !== null && props.updateCount !== undefined) {
-              props.updateCount(currentTarget.connectUrl, -1)
-            }
-        })
-      );
-    }
-  }, [addSubscription, context, context.notificationChannel, target, props.isUploadsTable, setRecordings, setCheckedIndices]);
+          // If this is a nested instance in the All Targets table, update the recordings count for the parent row
+          if (currentTarget.connectUrl != '' && props.updateCount !== null && props.updateCount !== undefined) {
+            props.updateCount(currentTarget.connectUrl, -1)
+          }
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, props.target, props.isUploadsTable, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
