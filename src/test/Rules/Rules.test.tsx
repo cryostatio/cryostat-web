@@ -36,15 +36,15 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import '@testing-library/jest-dom';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
+import '@testing-library/jest-dom';
+import renderer, { act } from 'react-test-renderer';
+import { render, cleanup, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
-import { render, cleanup, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 const mockRule: Rule =  {
   name: 'mockRule',
@@ -78,7 +78,10 @@ jest.spyOn(defaultServices.notificationChannel, 'messages')
 
   .mockReturnValueOnce(of()) // open view to create rules
   .mockReturnValueOnce(of())
-  
+
+  .mockReturnValueOnce(of())// opens upload modal
+  .mockReturnValueOnce(of())
+
   .mockReturnValue(of()); // other tests
 
 describe('<Rules/>', () => {
@@ -117,7 +120,28 @@ describe('<Rules/>', () => {
     expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/', '/rules', '/rules/create']);
   });
 
-  it('opens upload modal when upload icon is clicked', () => {});
+  it('opens upload modal when upload icon is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+          <Router location={history.location} history={history}>
+            <Rules/>
+          </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByRole('button', { name: 'Upload'}));
+
+    const modal = await screen.findByRole('dialog');
+    expect(modal).toBeInTheDocument();
+    expect(modal).toBeVisible();
+
+    const modalTitle = await within(modal).findByText('Upload Automatic Rules');
+    expect(modalTitle).toBeInTheDocument();
+
+    const form = await within(modal).findByLabelText('Drag a file here or browse to upload');
+    expect(form).toBeInTheDocument();
+    expect(form).toBeVisible
+  });
 
   it('deletes a rule when Delete is clicked', () => {});
 
