@@ -74,11 +74,7 @@ const deleteSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(
 const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
 jest.spyOn(defaultServices.api, 'doGet')
   .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
-  .mockReturnValueOnce(of(mockRuleListResponse)) // open view to create rules
-  .mockReturnValueOnce(of(mockRuleListResponse)) // open upload modal
-  .mockReturnValueOnce(of(mockRuleListResponse)) // delete a rule
-  .mockReturnValueOnce(of(mockRuleListResponse)) // remove a rule when receiving notification
-  .mockReturnValue(of());
+  .mockReturnValue(of(mockRuleListResponse));
 
 jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
@@ -95,7 +91,6 @@ jest.spyOn(defaultServices.notificationChannel, 'messages')
 
   .mockReturnValueOnce(of()) // remove a rule when receiving notification
   .mockReturnValueOnce(of(mockDeleteNotification))
-  
 
   .mockReturnValue(of()); // other tests
 
@@ -186,5 +181,19 @@ describe('<Rules/>', () => {
     expect(screen.queryByText(mockRule.name)).not.toBeInTheDocument();
   });
 
-  it('downloads a rule when Download is clicked', () => {})
+  it('downloads a rule when Download is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+          <Router location={history.location} history={history}>
+            <Rules/>
+          </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByLabelText('Actions'));
+    userEvent.click(await screen.findByText('Download'));
+
+    expect(downloadSpy).toHaveBeenCalledTimes(1);
+    expect(downloadSpy).toBeCalledWith(mockRule.name);
+  });
 });
