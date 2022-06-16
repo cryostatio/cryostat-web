@@ -14,6 +14,10 @@ on:
       - v[0-9]+.[0-9]+
       - cryostat-v[0-9]+.[0-9]+
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
 
@@ -40,22 +44,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-        with: 
-          repository: cryostatio/cryostat
-          token: "${{ secrets.GITHUB_BOT_TOKEN }}"
-          ref: "${GITHUB_REF_NAME}"
+      with: 
+        repository: cryostatio/cryostat
+        token: "${{ secrets.SUBMODULE_TOKEN }}"
+        ref: "${GITHUB_REF_NAME}"
+    - name: Check remote submodule branch
+      run: |
+        remote_branch="$(git config --get submodule.web-client.branch)"
+        if [[ "${remote_branch}" != "${GITHUB_REF_NAME}" ]]; then
+          printf "Expected remote branch %s, found branch %s\n" "${GITHUB_REF_NAME}" "${remote_branch}" >&2
+          exit 1
+        fi
     - name: Update submodule to latest commit
       run: |
         git submodule update --init
-        cd web-client
-        git fetch origin
-        git checkout "${GITHUB_SHA}"
+        git submodule update --remote
     - name: Commit and push submodule
       # User info comes from: https://github.community/t/github-actions-bot-email-address/17204/5
       run: |
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config user.name "github-actions[bot]"
         git add --all
-        git_hash=$(git rev-parse --short "$GITHUB_SHA")
+        git_hash=$(git rev-parse --short "${GITHUB_SHA}")
         git commit -m "build(web-client): update submodule to ${git_hash}" || echo "No changes to commit"
         git push
