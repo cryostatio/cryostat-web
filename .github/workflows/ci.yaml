@@ -47,12 +47,12 @@ jobs:
       with: 
         repository: ebaron/cryostat
         token: "${{ secrets.SUBMODULE_TOKEN }}"
-        ref: "${GITHUB_REF_NAME}"
+        ref: "${{ github.ref_name }}"
     - name: Check remote submodule branch
       run: |
         remote_branch="$(git config --get submodule.web-client.branch)"
-        if [[ "${remote_branch}" != "${GITHUB_REF_NAME}" ]]; then
-          printf "Expected remote branch %s, found branch %s\n" "${GITHUB_REF_NAME}" "${remote_branch}" >&2
+        if [[ "$remote_branch" != "${{ github.ref_name }}" ]]; then
+          printf "Expected remote branch %s, found branch %s\n" "${{ github.ref_name }}" "$remote_branch" >&2
           exit 1
         fi
     - name: Update submodule to latest commit
@@ -65,6 +65,6 @@ jobs:
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config user.name "github-actions[bot]"
         git add --all
-        git_hash=$(git rev-parse --short "${GITHUB_SHA}")
-        git commit -m "build(web-client): update submodule to ${git_hash}" || echo "No changes to commit"
+        git_hash=$(git rev-parse --short "${{ github.sha }}")
+        git commit -m "build(web-client): update submodule to $git_hash" || echo "No changes to commit"
         git push
