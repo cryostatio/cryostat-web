@@ -40,9 +40,10 @@ import React from 'react';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { concatMap, filter, first } from 'rxjs';
+import { combineLatest, concatMap, filter, first, merge } from 'rxjs';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActiveRecording } from '@app/Shared/Services/Api.service';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface NameFilterProps {
   onSubmit: (inputName) => void;
@@ -69,7 +70,7 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
     [props.onSubmit, setIsOpen, setSelected]
   );
 
-  // TODO fetch archived recordings and recording notificaiton update
+  // TODO fetch archived recordings
   const refreshRecordingList = React.useCallback(() => {
     addSubscription(
       context.target

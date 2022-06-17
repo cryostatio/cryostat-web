@@ -75,8 +75,6 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const [searchLabel, setSearchLabel] = React.useState('');
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
-  const [startDateTime, setStartDateTime] = React.useState(new Date());
-  const [stopDateTime, setStopDateTime] = React.useState(new Date());
 
   const onCategoryToggle = React.useCallback(() => {
     setIsCategoryDropdownOpen((opened) => !opened);
@@ -123,12 +121,11 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     [props.setFilters]
   );
 
-  const onDateRangeInput = React.useCallback(() => {
+  const onDateRangeInput = React.useCallback((dateRange) => {
     props.setFilters((old) => {
-      const newRange = `${startDateTime.toISOString()} to ${stopDateTime.toISOString()}`;
-      return { ...old, DateRange: old.DateRange.includes(newRange) ? old.DateRange : [...old.DateRange, newRange] };
+      return { ...old, DateRange: old.DateRange.includes(dateRange) ? old.DateRange : [...old.DateRange, dateRange] };
     });
-  }, [startDateTime, stopDateTime, props.setFilters]);
+  }, [props.setFilters]);
 
   const onDurationInput = React.useCallback(
     (e) => {
@@ -204,10 +201,6 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
       </InputGroup>,
       <InputGroup>
         <DateTimePicker
-          start={startDateTime}
-          setStart={setStartDateTime}
-          end={stopDateTime}
-          setEnd={setStopDateTime}
           onSubmit={onDateRangeInput}
         />
       </InputGroup>,

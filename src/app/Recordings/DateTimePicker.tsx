@@ -3,28 +3,28 @@
  *
  * The Universal Permissive License (UPL), Version 1.0
  *
- * Subject props.end the condition set forth below, permission is hereby granted props.end any
+ * Subject end the condition set forth below, permission is hereby granted end any
  * person obtaining a copy of this software, associated documentation and/or data
  * (collectively the "Software"), free of charge and under any and all copyright
  * rights in the Software, and any and all patent rights owned or freely
  * licensable by each licensor hereunder covering either (i) the unmodified
- * Software as contributed props.end or provided by such licensor, or (ii) the Larger
- * Works (as defined below), props.end deal in both
+ * Software as contributed end or provided by such licensor, or (ii) the Larger
+ * Works (as defined below), end deal in both
  *
  * (a) the Software, and
  * (b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
- * one is included with the Software (each a "Larger Work" props.end which the Software
+ * one is included with the Software (each a "Larger Work" end which the Software
  * is contributed by such licensors),
  *
- * without restriction, including without limitation the rights props.end copy, create
+ * without restriction, including without limitation the rights end copy, create
  * derivative works of, display, perform, and distribute the Software and make,
  * use, sell, offer for sale, import, export, have made, and have sold the
- * Software and the Larger Work(s), and props.end sublicense the foregoing rights on
+ * Software and the Larger Work(s), and end sublicense the foregoing rights on
  * either these or other terms.
  *
- * This license is subject props.end the following condition:
+ * This license is subject end the following condition:
  * The above copyright notice and either this complete permission notice or at
- * a minimum a reference props.end the UPL must be included in all copies or
+ * a minimum a reference end the UPL must be included in all copies or
  * substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -51,78 +51,88 @@ import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export interface DateTimePickerProps {
-  start: Date;
-  setStart: (datetime) => void;
-  end: Date;
-  setEnd: (datetime) => void;
-  onSubmit: () => void;
+  onSubmit: (dateRange) => void;
 }
 
 export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
-  const toValidator = React.useCallback(
+  const TOMORROW = new Date().getTime() + (24 * 60 * 60 * 1000);
+  const [start, setStart] = React.useState(new Date(0));
+  const [end, setEnd] = React.useState(new Date(TOMORROW));
+  const [searchDisabled, setSearchDisabled] = React.useState(true);
+
+  // FIXME trigger this when clicking search button
+  const endRangeValidator = React.useCallback(
     (date) => {
-      return isValidDate(props.start) && yyyyMMddFormat(date) >= yyyyMMddFormat(props.start)
+      return isValidDate(end) && yyyyMMddFormat(date) > yyyyMMddFormat(start)
         ? ''
         : 'End date must be after start date';
     },
-    [props.start, isValidDate, yyyyMMddFormat]
+    [start, isValidDate, yyyyMMddFormat]
   );
 
   const onStartDateChange = React.useCallback(
-    (inputDate, newFromDate) => {
-      if (isValidDate(props.start) && isValidDate(newFromDate) && inputDate === yyyyMMddFormat(newFromDate)) {
-        newFromDate.setHours(props.start.getHours());
-        newFromDate.setMinutes(props.start.getMinutes());
-      }
-      if (isValidDate(newFromDate) && inputDate === yyyyMMddFormat(newFromDate)) {
-        props.setStart(new Date(newFromDate));
+    (inputDate, newStartDate) => {
+      if (isValidDate(start) && isValidDate(newStartDate) && inputDate === yyyyMMddFormat(newStartDate)) {
+        newStartDate.setHours(start.getHours());
+        newStartDate.setMinutes(start.getMinutes());
+        setStart(new Date(newStartDate));
       }
     },
-    [props.start, isValidDate, yyyyMMddFormat]
+    [start, isValidDate, yyyyMMddFormat]
   );
 
   const onStartTimeChange = React.useCallback(
-    (hour, minute) => {
-      if (isValidDate(props.start)) {
-        const updated = new Date(props.start);
+    (time, hour, minute) => {
+      if (isValidDate(start)) {
+        const updated = new Date(start);
         updated.setHours(hour);
         updated.setMinutes(minute);
-        props.setStart(updated);
+        setStart(updated);
       }
     },
-    [props.setStart, isValidDate]
+    [start, setStart, isValidDate]
   );
 
   const onEndDateChange = React.useCallback(
-    (inputDate, newToDate) => {
-      if (isValidDate(newToDate) && inputDate === yyyyMMddFormat(newToDate)) {
-        props.setEnd((end) => {
-          newToDate.setHours(end.getHours());
-          newToDate.setMinutes(end.getMinutes());
-          return newToDate;
-        });
+    (inputDate, newEndDate) => {
+      if (isValidDate(newEndDate) && inputDate === yyyyMMddFormat(newEndDate)) {
+        newEndDate.setHours(end.getHours());
+        newEndDate.setMinutes(end.getMinutes());
+        setEnd(new Date(newEndDate));
       }
     },
-    [props.setEnd, isValidDate]
+    [end, setEnd, isValidDate]
   );
 
   const onEndTimeChange = React.useCallback(
-    (hour, minute) => {
-      if (isValidDate(props.end)) {
-        const updated = new Date(props.end);
+    (time, hour, minute) => {
+      if (isValidDate(end)) {
+        const updated = new Date(end);
         updated.setHours(hour);
         updated.setMinutes(minute);
-        props.setEnd(updated);
+        setEnd(updated);
       }
     },
-    [props.end, props.setEnd, isValidDate]
+    [end, setEnd, isValidDate]
   );
+
+  const handleSubmit = React.useCallback(() => {
+    props.onSubmit(`${start.toISOString()} to ${end.toISOString()}`);
+  }, [start, end, props.onSubmit]);
+
+  React.useEffect(() => {
+    setSearchDisabled(() =>
+      !isValidDate(start) || !isValidDate(end));
+  }, [end, start, setSearchDisabled]);
 
   return (
     <Flex>
       <FlexItem>
         <InputGroup>
-          <DatePicker onChange={onStartDateChange} aria-label="Start date" placeholder="YYYY-MM-DD" />
+          <DatePicker
+            onChange={onStartDateChange}
+            aria-label="Start date"
+            placeholder="YYYY-MM-DD" />
           <TimePicker is24Hour aria-label="Start time" className="time-picker" onChange={onStartTimeChange} />
         </InputGroup>
       </FlexItem>
@@ -131,9 +141,8 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
         <InputGroup>
           <DatePicker
             onChange={onEndDateChange}
-            isDisabled={!isValidDate(props.start)}
-            rangeStart={props.start}
-            validators={[toValidator]}
+            rangeStart={start}
+            validators={[endRangeValidator]}
             aria-label="End date"
             placeholder="YYYY-MM-DD"
           />
@@ -142,9 +151,8 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
             aria-label="End time"
             className="time-picker"
             onChange={onEndTimeChange}
-            isDisabled={!isValidDate(props.start)}
           />
-          <Button variant={ButtonVariant.control} aria-label="search button for date range" isDisabled={!isValidDate(props.start) || !isValidDate(props.end)} onClick={props.onSubmit}>
+          <Button variant={ButtonVariant.control} aria-label="search button for date range" isDisabled={searchDisabled} onClick={handleSubmit}>
             <SearchIcon />
           </Button>
         </InputGroup>

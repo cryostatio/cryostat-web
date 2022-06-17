@@ -345,16 +345,16 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       filtered = filtered.filter((rec) => {
         const start = rec.startTime;
         const stop = rec.state === RecordingState.RUNNING ? new Date().getTime() : rec.startTime + rec.duration;
-        return !!filters.DateRange.filter((range) => {
+        return filters.DateRange.filter((range) => {
           const window = range.split(' to ');
           const beginning = new Date(window[0]).getTime();
           const end = new Date(window[1]).getTime();
           const isInDateRange =
-            (start >= beginning && start <= end) || // starts in date range
-            (stop >= beginning && stop <= end) || // stops in date range
+            (start >= beginning && start <= end) || // starts within date range
+            (stop >= beginning && stop <= end) || // stops within date range
             (start <= beginning && stop >= end); // runs throughout date range
           return isInDateRange;
-        });
+        }).length;
       });
     }
     if (!!filters.Labels.length) {
