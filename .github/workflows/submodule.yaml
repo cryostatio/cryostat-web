@@ -14,12 +14,12 @@ defaults:
 
 jobs:
   update-submodule:
-    if: ${{ github.repository_owner == 'ebaron' }}
+    if: ${{ github.repository_owner == 'cryostatio' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       with:
-        repository: ebaron/cryostat
+        repository: cryostatio/cryostat
         token: "${{ secrets.SUBMODULE_TOKEN }}"
         ref: "${{ github.ref_name }}"
     - name: Check remote submodule branch
