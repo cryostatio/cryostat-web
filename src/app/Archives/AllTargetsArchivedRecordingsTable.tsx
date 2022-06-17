@@ -63,9 +63,9 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   ];
 
   const updateCount = (connectUrl: string, delta: number): void => {
-    for (const [target, count] of Array.from(targetsAndCounts.entries())) {
+    const deepCopy = getDeepCopyOfTargetsAndCounts();
+    for (const [target, count] of Array.from(deepCopy.entries())) {
       if (target.connectUrl === connectUrl) {
-        const deepCopy = getDeepCopyOfTargetsAndCounts();
         deepCopy.set(target, count+delta);
         setTargetsAndCounts(deepCopy);
         break;
