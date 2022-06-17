@@ -62,7 +62,13 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     'Count'
   ];
 
-  const updateCount = (connectUrl: string, delta: number): void => {
+  const getDeepCopyOfTargetsAndCounts = React.useCallback(() => {
+    return new Map<Target, number>(JSON.parse(
+      JSON.stringify(Array.from(targetsAndCounts))
+    ));
+  },[targetsAndCounts]);
+
+  const updateCount = React.useCallback((connectUrl: string, delta: number) => {
     const deepCopy = getDeepCopyOfTargetsAndCounts();
     for (const [target, count] of Array.from(deepCopy.entries())) {
       if (target.connectUrl === connectUrl) {
@@ -71,7 +77,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         break;
       }
     }
-  }
+  },[targetsAndCounts, setTargetsAndCounts, getDeepCopyOfTargetsAndCounts]);
 
   const handleTargetsAndCounts = React.useCallback((targetNodes) => {
     let updated = new Map<Target, number>();
@@ -106,12 +112,6 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       .subscribe(v => handleTargetsAndCounts(v.data.targetNodes))
     );
   }, [addSubscription, context, context.api, handleTargetsAndCounts]);
-
-  const getDeepCopyOfTargetsAndCounts = () => {
-    return new Map<Target, number>(JSON.parse(
-      JSON.stringify(Array.from(targetsAndCounts))
-    ));
-  }
 
   const handleNewTargetAndCount = React.useCallback((target: Target, count: number) => {
     const deepCopy = getDeepCopyOfTargetsAndCounts();
