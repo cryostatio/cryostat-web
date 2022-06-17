@@ -180,7 +180,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
             isLoading={uploading}
             validated={rejected ? 'error' : 'default'}
             dropzoneProps={{
-              accept: '.json, .txt',
+              accept: '.json',
               onDropRejected: handleReject
             }}
           />
