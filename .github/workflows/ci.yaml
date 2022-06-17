@@ -50,7 +50,7 @@ jobs:
         ref: "${{ github.ref_name }}"
     - name: Check remote submodule branch
       run: |
-        remote_branch="$(git config --get submodule.web-client.branch)"
+        remote_branch="$(git config --get -f .gitmodules submodule.web-client.branch)"
         if [[ "$remote_branch" != "${{ github.ref_name }}" ]]; then
           printf "Expected remote branch %s, found branch %s\n" "${{ github.ref_name }}" "$remote_branch" >&2
           exit 1
