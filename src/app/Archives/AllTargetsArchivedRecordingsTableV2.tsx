@@ -44,16 +44,19 @@ import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Badge 
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
-export interface AllTargetsArchivedRecordingsTableProps { }
+export interface AllTargetsArchivedRecordingsTableV2Props { }
 
-export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTargetsArchivedRecordingsTableProps> = () => {
+export const AllTargetsArchivedRecordingsTableV2: React.FunctionComponent<AllTargetsArchivedRecordingsTableV2Props> = () => {
   const context = React.useContext(ServiceContext);
 
+  const [targets, setTargets] = React.useState([] as Target[]);
+  const [counts, setCounts] = React.useState([] as number[]);
   const [search, setSearch] = React.useState('');
-  const [targetsAndCounts, setTargetsAndCounts] = React.useState(new Map<Target, number>());
   const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
+  const [searchedCounts, setSearchedCounts] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const addSubscription = useSubscriptions();
 
@@ -62,36 +65,33 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     'Count'
   ];
 
-  const getDeepCopyOfTargetsAndCounts = () => {
-    return new Map<Target, number>(JSON.parse(
-      JSON.stringify(Array.from(targetsAndCounts))
-    ));
-  };
-
   const updateCount = (connectUrl: string, delta: number) => {
-    const deepCopy = getDeepCopyOfTargetsAndCounts();
-    for (const [target, count] of Array.from(deepCopy.entries())) {
-      if (target.connectUrl === connectUrl) {
-        deepCopy.set(target, count+delta);
-        setTargetsAndCounts(deepCopy);
-        break;
-      }
-    }
+    // const deepCopy = getDeepCopyOfTargetsAndCounts();
+    // for (const [target, count] of Array.from(deepCopy.entries())) {
+    //   if (target.connectUrl === connectUrl) {
+    //     deepCopy.set(target, count+delta);
+    //     setTargetsAndCounts(deepCopy);
+    //     break;
+    //   }
+    // }
   };
 
   const handleTargetsAndCounts = React.useCallback((targetNodes) => {
-    let updated = new Map<Target, number>();
+    let updatedTargets: Target[] = [];
+    let updatedCounts: number[] = [];
     for (const node of targetNodes) {
       const target: Target = {
         connectUrl: node.target.serviceUri,
         alias: node.target.alias,
       }
-      updated.set(target, node.recordings.archived.aggregate.count as number);
+      updatedTargets.push(target);
+      updatedCounts.push(node.recordings.archived.aggregate.count as number);
     }
-    setTargetsAndCounts(updated);
-  },[setTargetsAndCounts]);
+    setTargets(updatedTargets);
+    setCounts(updatedCounts);
+  },[setTargets, setCounts]);
 
-  const refreshTargetsAndCounts = React.useCallback(() => {
+  const refreshTargetsAndCounts = () => {
     addSubscription(
       context.api.graphql<any>(`
         query {
@@ -109,15 +109,12 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             }
           }
         }`)
-      .subscribe(v => handleTargetsAndCounts(v.data.targetNodes))
+      .pipe(
+        map(v => v.data.targetNodes)
+      )
+      .subscribe(handleTargetsAndCounts)
     );
-  }, [addSubscription, context, context.api, handleTargetsAndCounts]);
-
-  const handleNewTargetAndCount = React.useCallback((target: Target, count: number) => {
-    const deepCopy = getDeepCopyOfTargetsAndCounts();
-    deepCopy.set(target, count);
-    setTargetsAndCounts(deepCopy);
-  },[getDeepCopyOfTargetsAndCounts, setTargetsAndCounts])
+  };
 
   const getCountForNewTarget = React.useCallback((target: Target) => {
     addSubscription(
@@ -133,9 +130,9 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             }
           }
         }`)
-      .subscribe(v => handleNewTargetAndCount(target, v.data.targetNodes.recordings.archived.aggregate.count))
+      .subscribe(v => setCounts(old => old.concat(v.data.targetNodes.recordings.archived.aggregate.count as number)))
     );
-  },[addSubscription, context, context.api, handleNewTargetAndCount]);
+  },[addSubscription, context, context.api, setCounts]);
 
   React.useEffect(() => {
     refreshTargetsAndCounts();
@@ -150,16 +147,22 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   }, [context.target, context.settings, refreshTargetsAndCounts]);
 
   React.useEffect(() => {
-    let targets = Array.from(targetsAndCounts.keys());
-    let searched;
+    let searchedTargets;
+    let correspondingCounts: number[] = [];
     if (!search) {
-      searched = [...targets];
+      searchedTargets = targets;
     } else {
       const searchText = search.trim().toLowerCase();
-      searched = targets.filter((t: Target) => t.alias.toLowerCase().includes(searchText) || t.connectUrl.toLowerCase().includes(searchText))
+      searchedTargets = targets.filter((t: Target) => t.alias.toLowerCase().includes(searchText) || t.connectUrl.toLowerCase().includes(searchText))
+      
+      for (const t of searchedTargets) {
+        const idx = targets.indexOf(t);
+        correspondingCounts.push(counts[idx]); 
+      }
     }
-    setSearchedTargets([...searched]);
-  }, [search, targetsAndCounts]);
+    setSearchedTargets([...searchedTargets]);
+    setSearchedCounts([...correspondingCounts])
+  }, [search, targets]);
 
   React.useEffect(() => {
     addSubscription(
@@ -171,15 +174,16 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             alias: evt.serviceRef.alias,
           }
           if (evt.kind === 'FOUND') {
+            setTargets(old => old.concat(target));
             getCountForNewTarget(target);
           } else if (evt.kind === 'LOST') {
-            const deepCopy = getDeepCopyOfTargetsAndCounts();
-            deepCopy.delete(target);
-            setTargetsAndCounts(deepCopy);
+            const idx = targets.indexOf(target);
+            setTargets(old => old.filter(o => o.connectUrl != target.connectUrl));
+            setCounts(old => old.splice(idx, 1));
           }
         })
     );
-  }, [addSubscription, context, context.notificationChannel, getCountForNewTarget, getDeepCopyOfTargetsAndCounts, setTargetsAndCounts]);
+  }, [addSubscription, context, context.notificationChannel, getCountForNewTarget, setTargets, setCounts]);
 
   React.useEffect(() => {
     addSubscription(
@@ -207,7 +211,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   const TargetRow = (props) => {
     const expandedRowId =`target-table-row-${props.index}-exp`;
     const handleToggle = () => {
-      if (targetsAndCounts.get(props.target) !== 0 || isExpanded) {
+      if (searchedCounts[props.index] !== 0 || isExpanded) {
         toggleExpanded(expandedRowId);
       }
     };
@@ -237,7 +241,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           </Td>
           <Td> 
             <Badge key={props.index}>
-              {targetsAndCounts.get(props.target)}
+              {searchedCounts[props.index]}
             </Badge>
           </Td>
         </Tr> 

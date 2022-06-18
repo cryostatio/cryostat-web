@@ -61,7 +61,6 @@ import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 export interface ArchivedRecordingsTableProps { 
   target: Observable<Target>;
   isUploadsTable: boolean;
-  updateCount?: Function;
 }
 
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
@@ -189,10 +188,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           return;
         }
         setRecordings(old => old.concat(event.message.recording));
-        // If this is a nested instance in the All Targets table, update the recordings count for the parent row
-        if (currentTarget.connectUrl != '' && props.updateCount !== null && props.updateCount !== undefined) {
-          props.updateCount(currentTarget.connectUrl, 1)
-        }
       })
     );
   }, [addSubscription, context, context.notificationChannel, props.target, props.isUploadsTable, setRecordings]);
@@ -224,10 +219,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             .filter((v) => v !== deleted)
             .map(ci => ci > deleted ? ci - 1 : ci)
           );
-          // If this is a nested instance in the All Targets table, update the recordings count for the parent row
-          if (currentTarget.connectUrl != '' && props.updateCount !== null && props.updateCount !== undefined) {
-            props.updateCount(currentTarget.connectUrl, -1)
-          }
       })
     );
   }, [addSubscription, context, context.notificationChannel, props.target, props.isUploadsTable, setRecordings, setCheckedIndices]);

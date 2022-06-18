@@ -40,6 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
+import { AllTargetsArchivedRecordingsTableV2 } from './AllTargetsArchivedRecordingsTableV2';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { Target } from '@app/Shared/Services/Target.service';
@@ -67,7 +68,8 @@ export const Archives = () => {
       </>);
     }
     return (<>
-      <AllTargetsArchivedRecordingsTable />
+      {/* <AllTargetsArchivedRecordingsTable /> */}
+      <AllTargetsArchivedRecordingsTableV2 />
     </>);
   }, [archiveEnabled]);
 
