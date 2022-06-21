@@ -41,7 +41,8 @@ import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, within } from '@testing-library/react';
+import { render, cleanup, screen, within, waitFor } from '@testing-library/react';
+import * as tlr from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
@@ -60,6 +61,9 @@ const mockRule: Rule =  {
 const mockRuleListResponse = { data: { result: [mockRule] as Rule[] } };
 const mockRuleListEmptyResponse = { data: { result: [] as Rule[] } };
 
+const mockFileUpload = new File([JSON.stringify(mockRule)], `${mockRule.name}.json`, {type: 'json'});
+mockFileUpload.text = jest.fn(() => new Promise( (resolve, _) => resolve(JSON.stringify(mockRule))));
+
 const mockDeleteNotification = { message: {...mockRule} } as NotificationMessage;
 
 const history = createMemoryHistory();
@@ -72,6 +76,7 @@ jest.mock('react-router-dom', () => ({
 
 const deleteSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
 const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
+const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'doGet')
   .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
   .mockReturnValue(of(mockRuleListResponse));
@@ -149,9 +154,9 @@ describe('<Rules/>', () => {
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
-    const form = await within(modal).findByLabelText('Drag a file here or browse to upload');
-    expect(form).toBeInTheDocument();
-    expect(form).toBeVisible();
+    const fileUploadDropZone = await within(modal).findByLabelText('Drag a file here or browse to upload');
+    expect(fileUploadDropZone).toBeInTheDocument();
+    expect(fileUploadDropZone).toBeVisible();
   });
 
   it('deletes a rule when Delete is clicked', async () => {
@@ -196,5 +201,54 @@ describe('<Rules/>', () => {
 
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toBeCalledWith(mockRule.name);
+  });
+
+  it('upload a rule file when Submit is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+          <Router location={history.location} history={history}>
+            <Rules/>
+          </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByRole('button', { name: 'Upload'}));
+
+    const modal = await screen.findByRole('dialog');
+    expect(modal).toBeInTheDocument();
+    expect(modal).toBeVisible();
+
+    const modalTitle = await within(modal).findByText('Upload Automatic Rules');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
+
+    const fileUploadDropZone = await within(modal).findByLabelText('Drag a file here or browse to upload') as HTMLInputElement;
+    expect(fileUploadDropZone).toBeInTheDocument();
+    expect(fileUploadDropZone).toBeVisible();
+
+    const browseButton = await within(modal).findByRole('button', { name: 'Browse...'});
+    expect(browseButton).toBeInTheDocument();
+    expect(browseButton).toBeVisible();
+
+    const submitButton = screen.getByRole('button', {name: 'Submit'}) as HTMLButtonElement;
+    userEvent.click(submitButton);
+
+    const uploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
+    expect(uploadInput).toBeInTheDocument();
+    expect(uploadInput).not.toBeVisible();
+    
+    userEvent.click(browseButton);
+    userEvent.upload(uploadInput, mockFileUpload);
+
+    expect(uploadInput.files).not.toBe(null);
+    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
+
+    await waitFor(() => expect(submitButton.disabled).toBe(false));
+    await tlr.act(async () => {
+      userEvent.click(submitButton)
+    });
+
+    expect(createSpy).toHaveBeenCalled();
+    expect(createSpy).toHaveBeenCalledWith(mockRule);
   });
 });
