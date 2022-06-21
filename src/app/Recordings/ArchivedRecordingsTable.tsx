@@ -141,7 +141,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     setIsLoading(true);
     if (props.isUploadsTable) {
       addSubscription(
-        queryUploadedRecordings().subscribe(v => handleRecordings(v.data.archivedRecordings as ArchivedRecording[]))
+        queryUploadedRecordings()
+          .pipe(
+            map(v => v.data.archivedRecordings as ArchivedRecording[])
+          )
+        .subscribe(handleRecordings)
       );
     } else {
       addSubscription(
@@ -173,7 +177,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [addSubscription, context, props.target, props.isUploadsTable, refreshRecordingList]);
 
   React.useEffect(() => {
-    addSubscription(
+    const sub =
       combineLatest([
         props.target,
         merge(
@@ -188,9 +192,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           return;
         }
         setRecordings(old => old.concat(event.message.recording));
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, props.target, props.isUploadsTable, setRecordings]);
+      });
+    return () => sub.unsubscribe();
+  }, [context, context.notificationChannel, props.target, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
@@ -221,7 +225,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           );
       })
     );
-  }, [addSubscription, context, context.notificationChannel, props.target, props.isUploadsTable, setRecordings, setCheckedIndices]);
+  }, [addSubscription, context, context.notificationChannel, props.target, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
