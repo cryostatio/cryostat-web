@@ -535,20 +535,26 @@ export class ApiService {
   }
 
   postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
-    return this.graphql<any>(`
-    query {
-      targetNodes {
-        recordings {
-          archived(filter: { name: "${recordingName}" }) {
-            doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
-              metadata {
-                labels
+    return this.target.target()
+    .pipe(
+      filter(target => target !== NO_TARGET),
+      first(),
+      concatMap(target => this.graphql<any>(`
+        query {
+          targetNodes(filter: { name: "${target.connectUrl}" }) {
+            recordings {
+              archived(filter: { name: "${recordingName}" }) {
+                doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+                  metadata {
+                    labels
+                  }
+                }
               }
             }
           }
-        }
-      }
-    }`);
+        }`)
+      ),
+    )
   }
 
   postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
@@ -571,7 +577,7 @@ export class ApiService {
           }
         }`)
       ),
-      )
+    )
   }
 
   postCredentials(matchExpression: string, username: string, password: string): Observable<boolean> {
