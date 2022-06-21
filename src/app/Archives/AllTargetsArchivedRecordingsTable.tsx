@@ -152,7 +152,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
   React.useEffect(() => {
     let searchedTargets;
-    let correspondingCounts;
+    let correspondingCounts: number[] = [];
     if (!search) {
       searchedTargets = targets;
       correspondingCounts = counts;
