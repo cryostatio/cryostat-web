@@ -46,6 +46,7 @@ import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 
 export interface AllTargetsArchivedRecordingsTableProps { }
 
@@ -58,6 +59,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
   const [searchedCounts, setSearchedCounts] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const tableColumns: string[] = [
@@ -93,9 +95,11 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     }
     setTargets(updatedTargets);
     setCounts(updatedCounts);
-  },[setTargets, setCounts]);
+    setIsLoading(false);
+  },[setTargets, setCounts, setIsLoading]);
 
   const refreshTargetsAndCounts = React.useCallback(() => {
+    setIsLoading(true);
     addSubscription(
       context.api.graphql<any>(`
         query {
@@ -118,7 +122,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       )
       .subscribe(handleTargetsAndCounts)
     );
-  }, [addSubscription, context, context.api, handleTargetsAndCounts]);
+  }, [addSubscription, context, context.api, setIsLoading, handleTargetsAndCounts]);
 
   const getCountForNewTarget = React.useCallback((target: Target) => {
     addSubscription(
@@ -284,6 +288,25 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     return searchedTargets.map((t, idx) => <TargetRow key={idx} target={t} index={idx}/>)
   }, [searchedTargets, expandedRows]);
 
+  let view: JSX.Element;
+  if (isLoading) {
+    view = (<LoadingView/>);
+  } else {
+    view = (<>
+      <TableComposable aria-label="all-archives">
+        <Thead>
+          <Tr>
+            <Th key="table-header-expand"/>
+            {tableColumns.map((key , idx) => (
+              <Th key={`table-header-${key}`}>{key}</Th>
+            ))}
+          </Tr>
+        </Thead>
+        {targetRows}
+      </TableComposable>
+    </>)
+  }
+
   return (<>
     <Toolbar id="all-archives-toolbar">
       <ToolbarContent>
@@ -299,16 +322,6 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </ToolbarGroup>
       </ToolbarContent>
     </Toolbar>
-    <TableComposable aria-label="all-archives">
-      <Thead>
-        <Tr>
-          <Th key="table-header-expand"/>
-          {tableColumns.map((key , idx) => (
-            <Th key={`table-header-${key}`}>{key}</Th>
-          ))}
-        </Tr>
-      </Thead>
-      {targetRows}
-    </TableComposable>
+    {view}
   </>);
 };
