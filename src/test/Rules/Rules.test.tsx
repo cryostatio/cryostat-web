@@ -243,7 +243,7 @@ describe('<Rules/>', () => {
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
 
-    await waitFor(() => expect(submitButton.disabled).toBe(false));
+    await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => {
       userEvent.click(submitButton)
     });
