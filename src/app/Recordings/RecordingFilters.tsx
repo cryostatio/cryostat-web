@@ -73,7 +73,6 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const [currentCategory, setCurrentCategory] = React.useState('Name');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
-  const [searchLabel, setSearchLabel] = React.useState('');
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
 
@@ -215,7 +214,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <NameFilter onSubmit={onNameInput} />
       </InputGroup>,
       <InputGroup>
-        <LabelFilter onSubmit={onLabelInput}/>
+        <LabelFilter onSubmit={onLabelInput} />
       </InputGroup>,
       <Select
         variant={SelectVariant.checkbox}
@@ -231,33 +230,31 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         ))}
       </Select>,
       <InputGroup>
-      <DateTimePicker
-        onSubmit={onDateRangeInput}
-      />
-    </InputGroup>,
-    <InputGroup>
-      <Flex>
-        <FlexItem>
-          <TextInput
-            type="number"
-            value={duration}
-            id="durationInput1"
-            aria-label="duration filter"
-            onChange={(e) => setDuration(Number(e))}
-            min="0"
-            onKeyDown={onDurationInput}
-          />
-        </FlexItem>
-        <FlexItem>
-          <Checkbox
-            label="Continuous"
-            id="continuous-checkbox"
-            isChecked={continuous}
-            onChange={(checked) => onContinuousDurationSelect(checked)}
-          />
-        </FlexItem>
-      </Flex>
-    </InputGroup>,
+        <DateTimePicker onSubmit={onDateRangeInput} />
+      </InputGroup>,
+      <InputGroup>
+        <Flex>
+          <FlexItem>
+            <TextInput
+              type="number"
+              value={duration}
+              id="durationInput1"
+              aria-label="duration filter"
+              onChange={(e) => setDuration(Number(e))}
+              min="0"
+              onKeyDown={onDurationInput}
+            />
+          </FlexItem>
+          <FlexItem>
+            <Checkbox
+              label="Continuous"
+              id="continuous-checkbox"
+              isChecked={continuous}
+              onChange={(checked) => onContinuousDurationSelect(checked)}
+            />
+          </FlexItem>
+        </Flex>
+      </InputGroup>,
     ],
     [Object.keys(props.filters)]
   );
