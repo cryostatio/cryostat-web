@@ -41,8 +41,7 @@ import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, within, waitFor } from '@testing-library/react';
-import * as tlr from '@testing-library/react';
+import { render, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
@@ -97,6 +96,13 @@ jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]))
 jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
 
 describe('<CreateRule/>', () => {
+  beforeEach(() => {
+    history.go(-history.length);
+    history.push('/rules');
+  });
+
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
