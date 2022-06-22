@@ -64,12 +64,12 @@ export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
 }
 
-export interface ActiveRecordingFilters {
+export interface RecordingFiltersCategories {
     Name: string[],
-    DateRange: string[],
-    DurationSeconds: string[],
-    State: RecordingState[],
     Labels: string[],
+    State?: RecordingState[],
+    DateRange?: string[],
+    DurationSeconds?: string[],
 }
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
@@ -86,11 +86,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
   const [filters, setFilters] = React.useState({
     Name: [],
+    Labels: [],
+    State: [],
     DateRange: [],
     DurationSeconds: [],
-    State: [],
-    Labels: [],
-  } as ActiveRecordingFilters);
+  } as RecordingFiltersCategories);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -314,11 +314,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const handleClearFilters = React.useCallback(() => {
     setFilters({
       Name: [],
+      Labels: [],
+      State: [],
       DateRange: [],
       DurationSeconds: [],
-      State: [],
-      Labels: [],
-    } as ActiveRecordingFilters);
+    } as RecordingFiltersCategories);
   }, [setFilters]);
 
   React.useEffect(() => {
@@ -330,21 +330,23 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     if (!!filters.Name.length) {
       filtered = filtered.filter((r) => filters.Name.includes(r.name));
     }
-    if (!!filters.State.length) {
-      filtered = filtered.filter((r) => filters.State.includes(r.state));
+    if (!!filters.State && !!filters.State.length) {
+      filtered = filtered.filter((r) => !!filters.State && filters.State.includes(r.state));
     }
-    if (!!filters.DurationSeconds.length) {
+    if (!!filters.DurationSeconds && !!filters.DurationSeconds.length) {
       filtered = filtered.filter(
-        (r) =>
-          filters.DurationSeconds.includes(`${r.duration / 1000} s`) ||
-          (filters.DurationSeconds.includes('continuous') && r.continuous)
-      );
+        (r) => {
+        if (!filters.DurationSeconds) return true;
+          return filters.DurationSeconds.includes(`${r.duration / 1000} s`) ||
+          (filters.DurationSeconds.includes('continuous') && r.continuous);
+        });
     }
     // FIXME how to determine if a manually stopped continuous recording was running?
-    if (!!filters.DateRange.length) {
+    if (!!filters.DateRange && !!filters.DateRange.length) {
       filtered = filtered.filter((rec) => {
         const start = rec.startTime;
         const stop = rec.state === RecordingState.RUNNING ? new Date().getTime() : rec.startTime + rec.duration;
+        if (!filters.DateRange) return true;
         return filters.DateRange.filter((range) => {
           const window = range.split(' to ');
           const beginning = new Date(window[0]).getTime();
@@ -358,7 +360,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       });
     }
     if (!!filters.Labels.length) {
-      filtered = filtered.filter((r) => !!Object.keys(r.metadata.labels).filter((l) => filters.Labels.includes(l)));
+      filtered = filtered.filter((r) =>
+        Object.entries(r.metadata.labels)
+          .filter(([k,v]) => filters.Labels.includes(`${k}:${v}`)).length
+        );
     }
 
     setFilteredRecordings(filtered);
@@ -521,10 +526,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       if (!checkedIndices.length) {
         return true;
       }
-      const filtered = recordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
+      const filtered = filteredRecordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
       const anyRunning = filtered.some((r: ActiveRecording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
       return !anyRunning;
-    }, [checkedIndices, recordings]);
+    }, [checkedIndices, filteredRecordings]);
 
     const buttons = React.useMemo(() => {
       const arr = [

@@ -57,15 +57,16 @@ import {
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { FilterIcon, SearchIcon } from '@patternfly/react-icons';
+import { FilterIcon, OldRepublicIcon, SearchIcon } from '@patternfly/react-icons';
 import React, { Dispatch, SetStateAction } from 'react';
-import { ActiveRecordingFilters } from './ActiveRecordingsTable';
+import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { DateTimePicker } from './DateTimePicker';
+import { LabelFilter } from './LabelFilter';
 import { NameFilter } from './NameFilter';
 
 export interface RecordingFiltersProps {
-  filters: ActiveRecordingFilters;
-  setFilters: Dispatch<SetStateAction<ActiveRecordingFilters>>;
+  filters: RecordingFiltersCategories;
+  setFilters: Dispatch<SetStateAction<RecordingFiltersCategories>>;
 }
 
 export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
@@ -101,10 +102,10 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         props.setFilters(() => {
           return {
             Name: [],
+            Labels: [],
+            State: [],
             DateRange: [],
             DurationSeconds: [],
-            State: [],
-            Labels: [],
           };
         });
       }
@@ -112,6 +113,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     [props.setFilters]
   );
 
+  // FIXME replace includes() with Set.add to improve performance
   const onNameInput = React.useCallback(
     (inputName) => {
       props.setFilters((old) => {
@@ -121,8 +123,18 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     [props.setFilters]
   );
 
+  const onLabelInput = React.useCallback(
+    (inputLabel) => {
+      props.setFilters((old) => {
+        return { ...old, Labels: old.Labels.includes(inputLabel) ? old.Labels : [...old.Labels, inputLabel] };
+      });
+    },
+    [props.setFilters]
+  );
+
   const onDateRangeInput = React.useCallback((dateRange) => {
     props.setFilters((old) => {
+      if (!old.DateRange) return old;
       return { ...old, DateRange: old.DateRange.includes(dateRange) ? old.DateRange : [...old.DateRange, dateRange] };
     });
   }, [props.setFilters]);
@@ -135,6 +147,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
       props.setFilters((old) => {
         const dur = `${duration.toString()} s`;
+        if (!old.DurationSeconds) return old;
         return {
           ...old,
           DurationSeconds: old.DurationSeconds.includes(dur) ? old.DurationSeconds : [...old.DurationSeconds, dur],
@@ -147,6 +160,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const onRecordingStateSelect = React.useCallback(
     (e, state) => {
       props.setFilters((old) => {
+        if (!old.State) return old;
         return {
           ...old,
           State: old.State.includes(state) ? old.State.filter((v) => v != state) : [...old.State, state],
@@ -160,6 +174,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     (cont) => {
       setContinuous(cont);
       props.setFilters((old) => {
+        if (!old.DurationSeconds) return old;
         return {
           ...old,
           DurationSeconds: cont
@@ -200,32 +215,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <NameFilter onSubmit={onNameInput} />
       </InputGroup>,
       <InputGroup>
-        <DateTimePicker
-          onSubmit={onDateRangeInput}
-        />
-      </InputGroup>,
-      <InputGroup>
-        <Flex>
-          <FlexItem>
-            <TextInput
-              type="number"
-              value={duration}
-              id="durationInput1"
-              aria-label="duration filter"
-              onChange={(e) => setDuration(Number(e))}
-              min="0"
-              onKeyDown={onDurationInput}
-            />
-          </FlexItem>
-          <FlexItem>
-            <Checkbox
-              label="Continuous"
-              id="continuous-checkbox"
-              isChecked={continuous}
-              onChange={(checked) => onContinuousDurationSelect(checked)}
-            />
-          </FlexItem>
-        </Flex>
+        <LabelFilter onSubmit={onLabelInput}/>
       </InputGroup>,
       <Select
         variant={SelectVariant.checkbox}
@@ -241,20 +231,33 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         ))}
       </Select>,
       <InputGroup>
-        <TextInput
-          name="labelInput"
-          id="labelInput1"
-          type="search"
-          aria-label="label filter"
-          onChange={(label) => setSearchLabel(label)}
-          value={searchLabel}
-          placeholder="Filter by label..."
-          onKeyDown={onNameInput}
-        />
-        <Button variant={ButtonVariant.control} aria-label="search button for label search input" onClick={onNameInput}>
-          <SearchIcon />
-        </Button>
-      </InputGroup>,
+      <DateTimePicker
+        onSubmit={onDateRangeInput}
+      />
+    </InputGroup>,
+    <InputGroup>
+      <Flex>
+        <FlexItem>
+          <TextInput
+            type="number"
+            value={duration}
+            id="durationInput1"
+            aria-label="duration filter"
+            onChange={(e) => setDuration(Number(e))}
+            min="0"
+            onKeyDown={onDurationInput}
+          />
+        </FlexItem>
+        <FlexItem>
+          <Checkbox
+            label="Continuous"
+            id="continuous-checkbox"
+            isChecked={continuous}
+            onChange={(checked) => onContinuousDurationSelect(checked)}
+          />
+        </FlexItem>
+      </Flex>
+    </InputGroup>,
     ],
     [Object.keys(props.filters)]
   );
