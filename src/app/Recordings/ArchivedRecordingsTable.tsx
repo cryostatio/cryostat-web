@@ -53,6 +53,8 @@ import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { RecordingFiltersCategories } from './ActiveRecordingsTable';
+import { RecordingFilters } from './RecordingFilters';
 
 export interface ArchivedRecordingsTableProps { }
 
@@ -60,11 +62,16 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const context = React.useContext(ServiceContext);
 
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
+  const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [filters, setFilters] = React.useState({
+    Name: [],
+    Labels: [],
+  } as RecordingFiltersCategories);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -75,8 +82,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
-    setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
-  }, [setHeaderChecked, setCheckedIndices, recordings]);
+    setCheckedIndices(checked ? Array.from(new Array(filteredRecordings.length), (x, i) => i) : []);
+  }, [setHeaderChecked, setCheckedIndices, filteredRecordings]);
 
   const handleRowCheck = React.useCallback((checked, index) => {
     if (checked) {
@@ -125,6 +132,13 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       .subscribe(handleRecordings)
     );
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
+
+  const handleClearFilters = React.useCallback(() => {
+    setFilters({
+      Name: [],
+      Labels: [],
+    } as RecordingFiltersCategories);
+  }, [setFilters]);
 
   React.useEffect(() => {
     addSubscription(
@@ -197,7 +211,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
-    recordings.forEach((r: ArchivedRecording, idx) => {
+    filteredRecordings.forEach((r: ArchivedRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         context.reports.delete(r);
         tasks.push(
@@ -208,12 +222,32 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     addSubscription(
       forkJoin(tasks).subscribe()
     );
-  }, [recordings, checkedIndices, context.reports, context.api, addSubscription]);
+  }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
  
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
+
+  React.useEffect(() => {
+    if (!recordings || !recordings.length) {
+      return;
+    }
+    let filtered = recordings;
+
+    if (!!filters.Name.length) {
+      filtered = filtered.filter((r) => filters.Name.includes(r.name));
+    }
+
+    if (!!filters.Labels.length) {
+      filtered = filtered.filter((r) =>
+        Object.entries(r.metadata.labels)
+          .filter(([k,v]) => filters.Labels.includes(`${k}:${v}`)).length
+        );
+    }
+
+    setFilteredRecordings(filtered);
+  }, [recordings, filters]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -327,8 +361,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     }, [recordings, checkedIndices]);
 
     return (
-      <Toolbar id="archived-recordings-toolbar">
+      <Toolbar id="archived-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
+          <RecordingFilters filters={filters} setFilters={setFilters} />
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
               <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
@@ -344,8 +379,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   };
 
   const recordingRows = React.useMemo(() => {
-    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
-  }, [recordings, expandedRows, checkedIndices]);
+    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+  }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
@@ -367,9 +402,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               isHeaderChecked={headerChecked}
               onHeaderCheck={handleHeaderCheck}
               isLoading={isLoading}
-              isEmpty={!recordings.length}
+              isEmpty={!filteredRecordings.length}
               isEmptyFilterResult={false}
-              clearFilters={() => {/*TODO*/}}
+              clearFilters={handleClearFilters}
               errorMessage=''
           >
             {recordingRows}

@@ -40,9 +40,9 @@ import React from 'react';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { combineLatest, concatMap, filter, first, merge } from 'rxjs';
+import { combineLatest, concatMap, filter, first, map, merge } from 'rxjs';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActiveRecording } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface NameFilterProps {
@@ -70,16 +70,29 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
     [props.onSubmit, setIsOpen, setSelected]
   );
 
-  // TODO fetch archived recordings
   const refreshRecordingList = React.useCallback(() => {
     addSubscription(
       context.target
         .target()
         .pipe(
           filter((target) => target !== NO_TARGET),
-          concatMap((target) =>
-            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+          concatMap(target =>
+            context.api.graphql<any>(`
+              query {
+                targetNodes(filter: { name: "${target.connectUrl}" }) {
+                  recordings {
+                    active {
+                      name
+                    }
+                    archived {
+                      name
+                    }
+                  }
+                }
+              }`)
           ),
+          map(v => [...v.data.targetNodes[0].recordings.active as ArchivedRecording[],
+          ...v.data.targetNodes[0].recordings.archived as ArchivedRecording[]]),
           first()
         )
         .subscribe((recordings) => setNames(recordings.map((r) => r.name)))
