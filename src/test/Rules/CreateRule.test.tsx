@@ -41,7 +41,7 @@ import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, within } from '@testing-library/react';
+import { render, cleanup, screen, within, waitFor } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rule } from '@app/Rules/Rules';
@@ -49,6 +49,10 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { CreateRule } from '@app/Rules/CreateRule';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { Target } from '@app/Shared/Services/Target.service';
+
+const escapeKeyboardInput = (value: string) => { 
+  return value.replace(/[{[]/g, '$&$&');
+}
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget: Target = { 
@@ -107,7 +111,7 @@ describe('<CreateRule/>', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('should submit form if form input is valid', () => {
+  it('should submit form if form input is valid', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
           <Router location={history.location} history={history}>
@@ -116,13 +120,56 @@ describe('<CreateRule/>', () => {
         </ServiceContext.Provider>
     );
 
-    const nameInput = screen.getByRole('inp')
+    const nameInput = screen.getByLabelText('Name *');
+    expect(nameInput).toBeInTheDocument();
+    expect(nameInput).toBeVisible();
 
+    const descriptionInput = screen.getByLabelText('Description');
+    expect(descriptionInput).toBeInTheDocument();
+    expect(descriptionInput).toBeVisible();
 
+    const matchExpressionInput = screen.getByLabelText('Match Expression *');
+    expect(matchExpressionInput).toBeInTheDocument();
+    expect(matchExpressionInput).toBeVisible();
 
-  });
+    const templateSelect = screen.getByLabelText('Template *');
+    expect(templateSelect).toBeInTheDocument();
+    expect(templateSelect).toBeVisible();
 
-  it ('should reject if form input is invalid', () => {
+    const maxSizeInput = screen.getByLabelText('Maximum Size');
+    expect(maxSizeInput).toBeInTheDocument();
+    expect(maxSizeInput).toBeVisible();
 
+    const maxAgeInput = screen.getByLabelText('Maximum Age');
+    expect(maxAgeInput).toBeInTheDocument();
+    expect(maxAgeInput).toBeVisible();
+
+    const archivalPeriodInput = screen.getByLabelText('Archival Period');
+    expect(archivalPeriodInput).toBeInTheDocument();
+    expect(archivalPeriodInput).toBeVisible();
+
+    const preservedArchivesInput = screen.getByLabelText('Preserved Archives');
+    expect(preservedArchivesInput).toBeInTheDocument();
+    expect(preservedArchivesInput).toBeVisible();
+
+    const createButton = screen.getByRole('button', {name: /create/i});
+    expect(createButton).toBeInTheDocument();
+    expect(createButton).toBeVisible();
+
+    userEvent.type(nameInput, mockRule.name);
+    userEvent.type(descriptionInput, mockRule.description);
+    userEvent.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
+    userEvent.selectOptions(templateSelect, [screen.getByText('Profiling')])
+    userEvent.type(maxSizeInput, `${mockRule.maxSizeBytes}`);
+    userEvent.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
+    userEvent.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);
+    userEvent.type(preservedArchivesInput, `${mockRule.preservedArchives}`);
+
+    await waitFor(() => expect(createButton).not.toBeDisabled());
+
+    userEvent.click(createButton);
+
+    expect(createSpy).toHaveBeenCalledTimes(1);
+    expect(createSpy).toHaveBeenCalledWith(mockRule);
   });
 });
