@@ -53,7 +53,8 @@ import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { DeleteWarningModal } from './DeleteWarningModal';
+import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
+import { DeleteWarningEnum } from '@app/Modal/DeleteWarningTypes';
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
@@ -465,26 +466,26 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       </>;
     }, [checkedIndices]);
 
-    const handleWarningModalClose = () => {
-      setShowWarningModal(false);
-    };  
-
     const deleteActiveWarningModal = React.useMemo(() => {
       const filtered = recordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
-      return <DeleteWarningModal deleteWarningType={"Active Recording Delete"} recordings={filtered.map((r) => `${r.name}`)} visible={showWarningModal} onAccept={handleDeleteRecordings} onClose={handleWarningModalClose}/>
+      return <DeleteWarningModal 
+        warningType={DeleteWarningEnum.DeleteActiveRecordings} 
+        items={filtered.map((r) => `${r.name}`)} 
+        visible={showWarningModal} 
+        onAccept={handleDeleteRecordings} 
+        onClose={() => {setShowWarningModal(false)}} 
+      />
     }, [recordings, checkedIndices]);
 
     return (
       <Toolbar id="active-recordings-toolbar">
         <ToolbarContent>
         { buttons }
-        </ToolbarContent>
         { deleteActiveWarningModal }
+        </ToolbarContent>
       </Toolbar>
     );
   };
-
-
 
   const recordingRows = React.useMemo(() => {
     return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)

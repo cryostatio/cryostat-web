@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import userEvent from '@testing-library/user-event';
@@ -192,7 +192,10 @@ describe('<ArchivedRecordingsTable />', () => {
     userEvent.click(selectAllCheck);
     userEvent.click(screen.getByText('Delete'));
 
+    expect(screen.getByLabelText("Recording delete warning"));
+
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
+    userEvent.click(within(screen.getByLabelText("Recording delete warning")).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someRecording');

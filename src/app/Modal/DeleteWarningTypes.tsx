@@ -35,48 +35,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Modal, ModalVariant, Button, Title, TitleSizes } from '@patternfly/react-core';
-import WarningTriangleIcon from '@patternfly/react-icons/dist/esm/icons/warning-triangle-icon';
-
-export interface DeleteWarningProps {
-  deleteWarningType: string;
-  recordings: Array<string>;
-  visible: boolean;
-  onAccept: () => void;
-  onClose: () => void;
+export enum DeleteWarningEnum {
+    DeleteActiveRecordings,
+    DeleteArchivedRecordings,
+    DeleteAutomatedRules,
+    DeleteEventTemplates,
+    DeleteJMXCredentials,
+    DeleteUndefined
 }
 
-export const DeleteWarningModal = ({ deleteWarningType, recordings, visible, onAccept, onClose }: DeleteWarningProps): JSX.Element => {
+export interface DeleteWarningType {
+    id: DeleteWarningEnum;
+    title: string;
+    description: string;
+    ariaLabel: string;
+}
 
-  const onAcceptClose = () => {
-    onAccept();
-    onClose();
-  }
+export const DeleteActiveRecordings: DeleteWarningType = {
+    id: DeleteWarningEnum.DeleteActiveRecordings,
+    title: 'Delete Active Recording',
+    description: `Delete Active Recording`,
+    ariaLabel: "Recording delete warning"
+}
 
-  const description = `Delete recording${recordings.length > 1 ? "s":""}: [${recordings.join(", ")}] ?`
-  
-  const footer = (
-    <Title headingLevel="h4" size={TitleSizes.md}>
-      <WarningTriangleIcon />
-      <span className="pf-u-pl-sm">This cannot be undone.</span>
-    </Title>
-  );
-  
-  return (
-      <Modal
-        isOpen={visible}
-        aria-label="Recording delete warning"
-        variant={ModalVariant.small}
-        titleIconVariant="warning"
-        showClose={true}
-        onClose={onClose}
-        title={deleteWarningType}
-        description={description}
-        footer={footer}>
-        
-        <Button variant="danger" onClick={onAcceptClose}>Delete</Button>
-        <Button variant="link" onClick={onClose}>Cancel</Button>
-      </Modal>  
-  );
-};
+export const DeleteArchivedRecordings: DeleteWarningType = {
+    id: DeleteWarningEnum.DeleteArchivedRecordings,
+    title: 'Delete Archived Recording',
+    description: `Delete Archived Recording`,
+    ariaLabel: "Recording delete warning"
+}
+
+export const DeleteAutomatedRules: DeleteWarningType = {
+    id: DeleteWarningEnum.DeleteAutomatedRules,
+    title: 'Delete Automated Rule',
+    description: `Delete Automated Rule`,
+    ariaLabel: "Automated rule delete warning"
+}
+
+export const DeleteEventTemplates: DeleteWarningType = {
+    id: DeleteWarningEnum.DeleteEventTemplates,
+    title: 'Delete Event Template',
+    description: `Delete Event Template`,
+    ariaLabel: "Event template delete warning"
+}
+
+export const DeleteJMXCredentials: DeleteWarningType = {
+    id: DeleteWarningEnum.DeleteJMXCredentials,
+    title: 'Delete JMX Credentials',
+    description: `Delete JMX Credentials`,
+    ariaLabel: "JMX Credential delete warning"
+}
+
+export const DeleteUndefined: DeleteWarningType = {
+    id: DeleteWarningEnum.DeleteUndefined,
+    title: 'Undefined',
+    description: 'Undefined',
+    ariaLabel: 'Undefined'
+}
