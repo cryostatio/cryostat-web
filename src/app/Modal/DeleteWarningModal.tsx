@@ -42,7 +42,7 @@ import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteEventTemplates,
 
 export interface DeleteWarningProps {
   warningType: DeleteWarningEnum;
-  items: Array<string>;
+  items?: Array<string>;
   visible: boolean;
   onAccept: () => void;
   onClose: () => void;
@@ -59,13 +59,14 @@ const delMap : DeleteWarningType[] = [
 function getFromWarningMap(warning: DeleteWarningEnum) : DeleteWarningType {
   const wt = delMap.find(t => t.id === warning);
   return (wt === undefined) ? DeleteUndefined : wt;
+  // return wt ?? DeleteUndefined
 }
 
 export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onClose }: DeleteWarningProps): JSX.Element => {
 
   const realWarningType : DeleteWarningType = getFromWarningMap(warningType);
 
-  const description = `${realWarningType.description}${items.length > 1 ? "s":""}: [${items.join(", ")}] ?`
+  const description = `${realWarningType.description}${(typeof items === 'undefined' || items.length <= 1) ?  "":"s"}: [${items?.join(", ")}] ?`
   
   const footer = (
     <Title headingLevel="h4" size={TitleSizes.md}>

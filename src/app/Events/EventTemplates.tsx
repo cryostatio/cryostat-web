@@ -48,6 +48,8 @@ import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
+import { DeleteWarningEnum } from '@app/Modal/DeleteWarningTypes';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
 export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
@@ -56,6 +58,7 @@ export const EventTemplates = () => {
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [filteredTemplates, setFilteredTemplates] = React.useState([] as EventTemplate[]);
   const [filterText, setFilterText] = React.useState('');
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
   const [uploadFilename, setUploadFilename] = React.useState('');
@@ -64,6 +67,7 @@ export const EventTemplates = () => {
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [rowTemplate, setRowTemplate] = React.useState({} as IRowData);
   const addSubscription = useSubscriptions();
 
   const tableColumns = [
@@ -155,6 +159,11 @@ export const EventTemplates = () => {
     () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),
     [filteredTemplates]
   );
+  
+  const handleWarningModal = (rowData) => {
+    setRowTemplate(rowData);
+    setWarningModalOpen(true);
+  }
 
   const handleDelete = (rowData) => {
     addSubscription(
@@ -191,7 +200,7 @@ export const EventTemplates = () => {
           },
           {
             title: 'Delete',
-            onClick: (event, rowId, rowData) => handleDelete(rowData)
+            onClick: (event, rowId, rowData) => handleWarningModal(rowData),
           }
       ]);
     }
@@ -264,9 +273,17 @@ export const EventTemplates = () => {
             </Button>
           </ToolbarItem>
         </ToolbarGroup>
+        <DeleteWarningModal 
+          warningType={DeleteWarningEnum.DeleteEventTemplates}
+          items={[rowTemplate[0]]}
+          visible={warningModalOpen} 
+          onAccept={() => handleDelete(rowTemplate)} 
+          onClose={() => setWarningModalOpen(false)} 
+        />
       </ToolbarContent>
     </Toolbar>
   </>);
+  
   if (errorMessage != '') {
     return (<ErrorView message={errorMessage}/>);
   } else if (isLoading) {
