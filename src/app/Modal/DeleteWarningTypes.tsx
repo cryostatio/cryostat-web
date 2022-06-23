@@ -82,7 +82,7 @@ export const DeleteEventTemplates: DeleteWarningType = {
 export const DeleteJMXCredentials: DeleteWarningType = {
     id: DeleteWarningEnum.DeleteJMXCredentials,
     title: 'Delete JMX Credentials',
-    description: `Delete JMX Credentials`,
+    description: `Delete JMX Credentials for target`,
     ariaLabel: "JMX Credential delete warning"
 }
 

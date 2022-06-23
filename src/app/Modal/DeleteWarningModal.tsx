@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant, Button, Title, TitleSizes } from '@patternfly/react-core';
+import { Modal, ModalVariant, Button, Title, TitleSizes, Checkbox } from '@patternfly/react-core';
 import WarningTriangleIcon from '@patternfly/react-icons/dist/esm/icons/warning-triangle-icon';
 import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteEventTemplates, DeleteAutomatedRules, DeleteJMXCredentials, DeleteWarningType, DeleteWarningEnum, DeleteUndefined } from './DeleteWarningTypes';
 
@@ -46,6 +46,8 @@ export interface DeleteWarningProps {
   visible: boolean;
   onAccept: () => void;
   onClose: () => void;
+  checkbox?: boolean;
+  setCheckbox?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const delMap : DeleteWarningType[] = [
@@ -59,11 +61,9 @@ const delMap : DeleteWarningType[] = [
 function getFromWarningMap(warning: DeleteWarningEnum) : DeleteWarningType {
   const wt = delMap.find(t => t.id === warning);
   return (wt === undefined) ? DeleteUndefined : wt;
-  // return wt ?? DeleteUndefined
 }
 
-export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onClose }: DeleteWarningProps): JSX.Element => {
-
+export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onClose, checkbox, setCheckbox}: DeleteWarningProps): JSX.Element => {
   const realWarningType : DeleteWarningType = getFromWarningMap(warningType);
 
   const description = `${realWarningType.description}${(typeof items === 'undefined' || items.length <= 1) ?  "":"s"}: [${items?.join(", ")}] ?`
@@ -94,6 +94,12 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
         
         <Button variant="danger" onClick={onAcceptClose}>Delete</Button>
         <Button variant="link" onClick={onClose}>Cancel</Button>
+        {(realWarningType === DeleteAutomatedRules) && (typeof setCheckbox !== 'undefined') &&
+          <Checkbox id="clean-rule-enabled" 
+            label="Enabled" 
+            isChecked={checkbox} 
+            onChange={(checked) => setCheckbox(checked)}/>
+        }
       </Modal>  
   );
 };

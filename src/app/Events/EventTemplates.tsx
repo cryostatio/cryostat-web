@@ -67,7 +67,7 @@ export const EventTemplates = () => {
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const [rowTemplate, setRowTemplate] = React.useState({} as IRowData);
+  const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
   const addSubscription = useSubscriptions();
 
   const tableColumns = [
@@ -160,11 +160,6 @@ export const EventTemplates = () => {
     [filteredTemplates]
   );
   
-  const handleWarningModal = (rowData) => {
-    setRowTemplate(rowData);
-    setWarningModalOpen(true);
-  }
-
   const handleDelete = (rowData) => {
     addSubscription(
       context.api.deleteCustomEventTemplate(rowData[0])
@@ -200,7 +195,10 @@ export const EventTemplates = () => {
           },
           {
             title: 'Delete',
-            onClick: (event, rowId, rowData) => handleWarningModal(rowData),
+            onClick: (event, rowId, rowData) => {
+              setRowDeleteData(rowData);
+              setWarningModalOpen(true);
+            },
           }
       ]);
     }
@@ -275,9 +273,9 @@ export const EventTemplates = () => {
         </ToolbarGroup>
         <DeleteWarningModal 
           warningType={DeleteWarningEnum.DeleteEventTemplates}
-          items={[rowTemplate[0]]}
+          items={[rowDeleteData[0]]}
           visible={warningModalOpen} 
-          onAccept={() => handleDelete(rowTemplate)} 
+          onAccept={() => handleDelete(rowDeleteData)} 
           onClose={() => setWarningModalOpen(false)} 
         />
       </ToolbarContent>

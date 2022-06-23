@@ -47,6 +47,8 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RuleUploadModal } from './RulesUploadModal';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteWarningEnum } from '@app/Modal/DeleteWarningTypes';
 
 export interface Rule {
   name: string;
@@ -68,7 +70,11 @@ export const Rules = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [rules, setRules] = React.useState([] as Rule[]);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+  const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
+  const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
 
   const tableColumns = [
     {
@@ -187,9 +193,10 @@ export const Rules = () => {
     return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
   }, [rules, sortBy]);
 
-  const handleDelete = (rowData: IRowData) => {
+  const handleDelete = (rowData: IRowData, clean: boolean=true) => {
+    console.log(`clean!: ${clean}`)
     addSubscription(
-      context.api.deleteRule(rowData[0])
+      context.api.deleteRule(rowData[0], clean)
       .pipe(first())
       .subscribe(() => {} /* do nothing - notification will handle updating state */)
     );
@@ -213,7 +220,10 @@ export const Rules = () => {
       },
       {
         title: 'Delete',
-        onClick: (event, rowId, rowData) => handleDelete(rowData)
+        onClick: (event, rowId, rowData) => {
+          setRowDeleteData(rowData);
+          setWarningModalOpen(true);
+        }
       }
     ]
   };
@@ -267,6 +277,15 @@ export const Rules = () => {
                 </Button>
               </ToolbarItem>
             </ToolbarGroup>
+            <DeleteWarningModal 
+              warningType={DeleteWarningEnum.DeleteAutomatedRules}
+              items={[rowDeleteData[0]]}
+              visible={warningModalOpen} 
+              onAccept={() => {handleDelete(rowDeleteData, cleanRuleEnabled)}}
+              onClose={() => {setWarningModalOpen(false)}}
+              checkbox={cleanRuleEnabled}
+              setCheckbox={setCleanRuleEnabled}
+            />
           </ToolbarContent>
         </Toolbar>
           {viewContent()}

@@ -44,7 +44,6 @@ import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { MessageMeta, MessageType, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { EventTemplates } from '@app/Events/EventTemplates';
-import { Events } from '@app/Events/Events';
 import userEvent from '@testing-library/user-event';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';

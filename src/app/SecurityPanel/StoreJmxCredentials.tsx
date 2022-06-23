@@ -58,6 +58,8 @@ import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from './SecurityPanel';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteWarningEnum } from '@app/Modal/DeleteWarningTypes';
 
 export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
@@ -67,6 +69,7 @@ export const StoreJmxCredentials = () => {
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
+  const [showWarningModal, setShowWarningModal] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const tableColumns: string[] = ['Target Alias', 'Connect URL'];
@@ -148,7 +151,7 @@ export const StoreJmxCredentials = () => {
         <Button variant="primary" aria-label="add-jmx-credential" onClick={() => setShowAuthModal(true)}>
           Add
         </Button>,
-        <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={handleDeleteCredentials} isDisabled={!checkedIndices.length}>
+        <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={() => setShowWarningModal(true)} isDisabled={!checkedIndices.length}>
           Delete
         </Button>,
       ];
@@ -165,6 +168,13 @@ export const StoreJmxCredentials = () => {
     return (
       <Toolbar id="target-credentials-toolbar">
         <ToolbarContent>{buttons}</ToolbarContent>
+        <DeleteWarningModal 
+          warningType={DeleteWarningEnum.DeleteJMXCredentials}
+          items={storedTargets.filter((t, i) => checkedIndices.indexOf(i) != -1).map((t) => t.alias)}
+          visible={showWarningModal} 
+          onAccept={handleDeleteCredentials} 
+          onClose={() => {setShowWarningModal(false)}} 
+        />
       </Toolbar>
     );
   };
