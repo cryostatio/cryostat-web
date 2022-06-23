@@ -41,13 +41,16 @@ import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { MessageMeta, MessageType, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { EventTemplates } from '@app/Events/EventTemplates';
 import { Events } from '@app/Events/Events';
+import userEvent from '@testing-library/user-event';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+
+const mockMessageType = {type: "application", subtype: "json"} as MessageType;
 
 const mockCustomEventTemplate: EventTemplate = {
     name: 'someEventTemplate',
@@ -56,7 +59,24 @@ const mockCustomEventTemplate: EventTemplate = {
     type: 'CUSTOM'
 };
 
-const mockCreateCustomEventTemplate = { message: { template: mockCustomEventTemplate } } as NotificationMessage;
+const mockAnotherTemplate = {...mockCustomEventTemplate, name: 'anotherEventTemplate'}
+
+const mockCreateTemplateNotification = { 
+  meta: {
+    category: 'TemplateCreated',
+    type: mockMessageType
+  } as MessageMeta,
+  message: { 
+    template: mockAnotherTemplate 
+  } 
+} as NotificationMessage;
+const mockDeleteTemplateNotification = 
+{...mockCreateTemplateNotification, 
+  meta: {
+  category: 'TemplateDeleted',
+  type: mockMessageType
+  }
+};
 
 const mockHistoryPush = jest.fn();
 
@@ -71,6 +91,9 @@ jest.mock('react-router-dom', () => ({
 
 jest.spyOn(defaultServices.api, 'addCustomEventTemplate').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate').mockReturnValue(of(true));
+jest.spyOn(defaultServices.api, 'downloadTemplate').mockReturnValue();
+
+jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockCustomEventTemplate]));
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
@@ -79,19 +102,15 @@ jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
+  
+  .mockReturnValueOnce(of(mockCreateTemplateNotification)) // adds a template after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of(mockCreateCustomEventTemplate)) // renders correctly
+
+  .mockReturnValueOnce(of(mockDeleteTemplateNotification)) // removes a template after receiving a notification
   .mockReturnValue(of()); // all other tests
 
   describe('<EventTemplates />', () => {
-    // beforeEach(() => {
-    // //   mockRecording.metadata.labels = mockRecordingLabels;
-    // //   mockRecording.state = RecordingState.RUNNING;
-    // });
-
     it('renders correctly', async () => {
       let tree;
       await act(async () => {
@@ -104,16 +123,92 @@ jest
       expect(tree.toJSON()).toMatchSnapshot();
     });
 
-    // it shows a popup window
-    it('deletes a recording when Delete is clicked', () => {
+    it('adds a recording after receiving a notification', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
           <EventTemplates />
         </ServiceContext.Provider>
       );
 
-      screen.logTestingPlaygroundURL()
+      expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
+      expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
+    });
+
+    it('removes a recording after receiving a notification', () => {
+      render(
+        <ServiceContext.Provider value={defaultServices}>
+          <EventTemplates />
+        </ServiceContext.Provider>
+      );
+      expect(screen.queryByText('anotherEventTemplate')).not.toBeInTheDocument();
+    });
+
+    it('displays the column header fields', () => {
+      render(
+        <ServiceContext.Provider value={defaultServices}>
+          <EventTemplates />
+        </ServiceContext.Provider>
+      );
+      expect(screen.getByText('Name')).toBeInTheDocument();
+      expect(screen.getByText('Description')).toBeInTheDocument();
+      expect(screen.getByText('Provider')).toBeInTheDocument();
+      expect(screen.getByText('Type')).toBeInTheDocument(); 
+    });
+
+    it('shows a popup when uploading', () => {
+      render(
+        <ServiceContext.Provider value={defaultServices}>
+          <EventTemplates />
+        </ServiceContext.Provider>
+      );
+      expect(screen.queryByLabelText('Create Custom Event Template')).not.toBeInTheDocument();
+
+      const buttons = screen.getAllByRole('button');
+      const uploadButton = buttons[0];
+      userEvent.click(uploadButton);
+
+      expect(screen.getByLabelText('Create Custom Event Template'));
 
     });
 
+    it('downloads an event template when Download is clicked on template action bar', () => {
+      render(
+        <ServiceContext.Provider value={defaultServices}>
+          <EventTemplates />
+        </ServiceContext.Provider>
+      );
+
+      userEvent.click(screen.getByLabelText('Actions'));
+      userEvent.click(screen.getByText('Download'));
+
+      const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadTemplate');
+
+      expect(downloadRequestSpy).toHaveBeenCalledTimes(1);
+      expect(downloadRequestSpy).toBeCalledWith(mockCustomEventTemplate);
+    });
+
+    it('shows a popup when Delete is clicked and then deletes the template after clicking confirmation Delete', () => {
+      render(
+        <ServiceContext.Provider value={defaultServices}>
+          <EventTemplates />
+        </ServiceContext.Provider>
+      );
+   
+      userEvent.click(screen.getByLabelText('Actions'));
+
+      expect(screen.getByText('Create Recording...'));
+      expect(screen.getByText('Download'));
+      expect(screen.getByText('Delete'));
+
+      const deleteAction = screen.getByText('Delete');
+      userEvent.click(deleteAction);
+
+      expect(screen.getByLabelText('Event template delete warning'));
+
+      const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
+      userEvent.click(within(screen.getByLabelText("Event template delete warning")).getByText('Delete'));
+
+      expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+      expect(deleteRequestSpy).toBeCalledWith('someEventTemplate');;
+    });
   });
