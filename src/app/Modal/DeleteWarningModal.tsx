@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant, Button, Title, TitleSizes, Checkbox } from '@patternfly/react-core';
+import { Modal, ModalVariant, Button, Title, TitleSizes, Checkbox, Stack, Split, ModalBoxBody } from '@patternfly/react-core';
 import WarningTriangleIcon from '@patternfly/react-icons/dist/esm/icons/warning-triangle-icon';
 import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteEventTemplates, DeleteAutomatedRules, DeleteJMXCredentials, DeleteWarningType, DeleteWarningEnum, DeleteUndefined } from './DeleteWarningTypes';
 
@@ -90,16 +90,31 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
         onClose={onClose}
         title={realWarningType.title}
         description={description}
-        footer={footer}>
-        
-        <Button variant="danger" onClick={onAcceptClose}>Delete</Button>
-        <Button variant="link" onClick={onClose}>Cancel</Button>
+        hasNoBodyWrapper={realWarningType !== DeleteAutomatedRules}
+        actions={[  
+          <Stack hasGutter={true}>
+            <Split>
+              <Button variant="danger" onClick={onAcceptClose}>
+                Delete
+              </Button>
+              <Button variant="link" onClick={onClose}>
+                Cancel
+              </Button>
+            </Split>
+            <Title headingLevel="h4" size={TitleSizes.md}>
+              <WarningTriangleIcon />
+                <span className="pf-u-pl-sm" >&nbsp;This cannot be undone.</span>
+            </Title>
+          </Stack> 
+        ]}
+      >
         {(realWarningType === DeleteAutomatedRules) && (typeof setCheckbox !== 'undefined') &&
-          <Checkbox id="clean-rule-enabled" 
-            label="Enabled" 
-            isChecked={checkbox} 
-            onChange={(checked) => setCheckbox(checked)}/>
-        }
+        <Checkbox id="clean-rule-enabled" 
+          label="Clean" 
+          description={`Clean will delete any Active Recordings that ${items![0]} created`}
+          isChecked={checkbox} 
+          onChange={(checked) => setCheckbox(checked)}
+        />}
       </Modal>  
   );
 };
