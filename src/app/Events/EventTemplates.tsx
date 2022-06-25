@@ -42,13 +42,13 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
-import { PlusIcon, UploadIcon } from '@patternfly/react-icons';
+import { UploadIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
-import { DeleteWarningEnum } from '@app/Modal/DeleteWarningTypes';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
 export const EventTemplates = () => {
@@ -197,7 +197,7 @@ export const EventTemplates = () => {
             title: 'Delete',
             onClick: (event, rowId, rowData) => {
               setRowDeleteData(rowData);
-              setWarningModalOpen(true);
+              handleDeleteButton();
             },
           }
       ]);
@@ -256,6 +256,15 @@ export const EventTemplates = () => {
     setSortBy({ index, direction });
   };
 
+  const handleDeleteButton = () => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDelete(rowDeleteData)
+    }
+  }
+
   const toolbar: JSX.Element = (<>
     <Toolbar id="event-templates-toolbar">
       <ToolbarContent>
@@ -272,13 +281,13 @@ export const EventTemplates = () => {
           </ToolbarItem>
         </ToolbarGroup>
         <DeleteWarningModal 
-          warningType={DeleteWarningEnum.DeleteEventTemplates}
+          warningType={DeleteWarningType.DeleteEventTemplates}
           items={[rowDeleteData[0]]}
-          visible={warningModalOpen} 
-          onAccept={() => handleDelete(rowDeleteData)} 
+          visible={warningModalOpen}
+          onAccept={() => handleDelete(rowDeleteData)}
           onClose={() => setWarningModalOpen(false)} 
-        />
-      </ToolbarContent>
+          setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates, false)}}/>
+          </ToolbarContent>
     </Toolbar>
   </>);
   

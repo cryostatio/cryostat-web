@@ -43,6 +43,7 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { AutoRefresh } from './AutoRefresh';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
+import { DeletionDialogControl } from './DeletionDialogControl';
 
 export const Settings: React.FunctionComponent<{}> = () => {
 
@@ -50,6 +51,7 @@ export const Settings: React.FunctionComponent<{}> = () => {
     [
       AutoRefresh,
       NotificationControl,
+      DeletionDialogControl,
       WebSocketDebounce,
     ].map(c => ({
       title: c.title,

@@ -54,7 +54,7 @@ import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
-import { DeleteWarningEnum } from '@app/Modal/DeleteWarningTypes';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
@@ -69,7 +69,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
-  const [showWarningModal, setShowWarningModal] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -427,6 +427,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
+  const handleDeleteButton = () => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings)) {
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDeleteRecordings();
+    }
+  }
+
   const RecordingsToolbar = () => {
     const isStopDisabled = React.useMemo(() => {
       if (!checkedIndices.length) {
@@ -453,7 +462,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
       ));
       arr.push((
-        <Button key="delete" variant="danger" onClick={() => setShowWarningModal(true)} isDisabled={!checkedIndices.length}>Delete</Button>
+        <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
       ));
       return <>
         {
@@ -469,11 +478,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     const deleteActiveWarningModal = React.useMemo(() => {
       const filtered = recordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
       return <DeleteWarningModal 
-        warningType={DeleteWarningEnum.DeleteActiveRecordings} 
-        items={filtered.map((r) => `${r.name}`)} 
-        visible={showWarningModal} 
-        onAccept={handleDeleteRecordings} 
-        onClose={() => {setShowWarningModal(false)}} 
+        warningType={DeleteWarningType.DeleteActiveRecordings}
+        items={filtered.map((r) => `${r.name}`)}
+        visible={warningModalOpen}
+        onAccept={handleDeleteRecordings}
+        onClose={() => { setWarningModalOpen(false); } } 
+        setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings, false)}}
       />
     }, [recordings, checkedIndices]);
 

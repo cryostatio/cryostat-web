@@ -59,7 +59,7 @@ import { SecurityCard } from './SecurityPanel';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteWarningEnum } from '@app/Modal/DeleteWarningTypes';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
@@ -69,7 +69,7 @@ export const StoreJmxCredentials = () => {
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
-  const [showWarningModal, setShowWarningModal] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const tableColumns: string[] = ['Target Alias', 'Connect URL'];
@@ -145,13 +145,22 @@ export const StoreJmxCredentials = () => {
     setShowAuthModal(false);
   };
 
+  const handleDeleteButton = () => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials)) {
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDeleteCredentials();
+    }
+  }
+
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
         <Button variant="primary" aria-label="add-jmx-credential" onClick={() => setShowAuthModal(true)}>
           Add
         </Button>,
-        <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={() => setShowWarningModal(true)} isDisabled={!checkedIndices.length}>
+        <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>
           Delete
         </Button>,
       ];
@@ -169,12 +178,13 @@ export const StoreJmxCredentials = () => {
       <Toolbar id="target-credentials-toolbar">
         <ToolbarContent>{buttons}</ToolbarContent>
         <DeleteWarningModal 
-          warningType={DeleteWarningEnum.DeleteJMXCredentials}
+          warningType={DeleteWarningType.DeleteJMXCredentials}
           items={storedTargets.filter((t, i) => checkedIndices.indexOf(i) != -1).map((t) => t.alias)}
-          visible={showWarningModal} 
+          visible={warningModalOpen} 
           onAccept={handleDeleteCredentials} 
-          onClose={() => {setShowWarningModal(false)}} 
-        />
+          onClose={() => {setWarningModalOpen(false)}}
+          setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials, false)}}
+          />
       </Toolbar>
     );
   };

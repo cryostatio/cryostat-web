@@ -36,65 +36,51 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant, Button, Title, TitleSizes, Checkbox, Stack, Split, ModalBoxBody } from '@patternfly/react-core';
+import { Modal, ModalVariant, Button, Title, TitleSizes, Checkbox, Stack, Split, } from '@patternfly/react-core';
 import WarningTriangleIcon from '@patternfly/react-icons/dist/esm/icons/warning-triangle-icon';
-import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteEventTemplates, DeleteAutomatedRules, DeleteJMXCredentials, DeleteWarningType, DeleteWarningEnum, DeleteUndefined } from './DeleteWarningTypes';
+import {  DeleteAutomatedRules, DeleteWarningType, getFromWarningMap } from './DeleteWarningUtils';
+import { useState } from 'react';
 
 export interface DeleteWarningProps {
-  warningType: DeleteWarningEnum;
+  warningType: DeleteWarningType;
   items?: Array<string>;
   visible: boolean;
   onAccept: () => void;
   onClose: () => void;
+  setShowDialog: () => void;
   checkbox?: boolean;
   setCheckbox?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const delMap : DeleteWarningType[] = [
-  DeleteActiveRecordings,
-  DeleteArchivedRecordings,
-  DeleteAutomatedRules,
-  DeleteEventTemplates,
-  DeleteJMXCredentials
-];
+export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onClose, setShowDialog, checkbox, setCheckbox}: DeleteWarningProps): JSX.Element => {
+  const [doNotAsk, setDoNotAsk] = useState(false);
+  const realWarningType = getFromWarningMap(warningType);
 
-function getFromWarningMap(warning: DeleteWarningEnum) : DeleteWarningType {
-  const wt = delMap.find(t => t.id === warning);
-  return (wt === undefined) ? DeleteUndefined : wt;
-}
-
-export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onClose, checkbox, setCheckbox}: DeleteWarningProps): JSX.Element => {
-  const realWarningType : DeleteWarningType = getFromWarningMap(warningType);
-
-  const description = `${realWarningType.description}${(typeof items === 'undefined' || items.length <= 1) ?  "":"s"}: [${items?.join(", ")}] ?`
-  
-  const footer = (
-    <Title headingLevel="h4" size={TitleSizes.md}>
-      <WarningTriangleIcon />
-      <span className="pf-u-pl-sm">This cannot be undone.</span>
-    </Title>
-  );
+  const description = `${realWarningType?.description}${(typeof items === 'undefined' || items.length <= 1) ?  "":"s"}: [${items?.join(", ")}] ?`
 
   const onAcceptClose = () => {
     onAccept();
     onClose();
+    console.log(doNotAsk)
+    if (doNotAsk) {
+      setShowDialog();
+    }
   }
   
   return (
       <Modal
-        isOpen={visible}
-        aria-label={realWarningType.ariaLabel}
-        variant={ModalVariant.small}
-        titleIconVariant="warning"
-        showClose={true}
-        onClose={onClose}
-        title={realWarningType.title}
+        title={realWarningType?.title}
         description={description}
-        hasNoBodyWrapper={realWarningType !== DeleteAutomatedRules}
+        aria-label={realWarningType?.ariaLabel}
+        titleIconVariant="warning"
+        variant={ModalVariant.small}
+        isOpen={visible}
+        showClose
+        onClose={onClose}
         actions={[  
-          <Stack hasGutter={true}>
-            <Split>
-              <Button variant="danger" onClick={onAcceptClose}>
+          <Stack hasGutter key="modal-footer-stack">
+            <Split key="modal-footer-split">
+              <Button variant="danger" onClick={() => onAcceptClose()}>
                 Delete
               </Button>
               <Button variant="link" onClick={onClose}>
@@ -115,6 +101,11 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
           isChecked={checkbox} 
           onChange={(checked) => setCheckbox(checked)}
         />}
+        <Checkbox id="do-not-ask-enabled" 
+          label="Don't ask me again" 
+          isChecked={doNotAsk} 
+          onChange={(checked) => setDoNotAsk(checked)}
+        />
       </Modal>  
   );
 };

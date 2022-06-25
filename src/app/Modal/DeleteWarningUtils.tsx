@@ -35,60 +35,65 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-export enum DeleteWarningEnum {
-    DeleteActiveRecordings,
-    DeleteArchivedRecordings,
-    DeleteAutomatedRules,
-    DeleteEventTemplates,
-    DeleteJMXCredentials,
-    DeleteUndefined
+export enum DeleteWarningType {
+    DeleteActiveRecordings='DeleteActiveRecordings',
+    DeleteArchivedRecordings='DeleteArchivedRecordings',
+    DeleteAutomatedRules='DeleteAutomatedRules',
+    DeleteEventTemplates='DeleteEventTemplates',
+    DeleteJMXCredentials='DeleteJMXCredentials',
 }
 
-export interface DeleteWarningType {
-    id: DeleteWarningEnum;
+export interface DeleteWarning {
+    id: DeleteWarningType;
     title: string;
     description: string;
     ariaLabel: string;
 }
 
-export const DeleteActiveRecordings: DeleteWarningType = {
-    id: DeleteWarningEnum.DeleteActiveRecordings,
+export const DeleteActiveRecordings: DeleteWarning = {
+    id: DeleteWarningType.DeleteActiveRecordings,
     title: 'Delete Active Recording',
     description: `Delete Active Recording`,
     ariaLabel: "Recording delete warning"
 }
 
-export const DeleteArchivedRecordings: DeleteWarningType = {
-    id: DeleteWarningEnum.DeleteArchivedRecordings,
+export const DeleteArchivedRecordings: DeleteWarning = {
+    id: DeleteWarningType.DeleteArchivedRecordings,
     title: 'Delete Archived Recording',
     description: `Delete Archived Recording`,
     ariaLabel: "Recording delete warning"
 }
 
-export const DeleteAutomatedRules: DeleteWarningType = {
-    id: DeleteWarningEnum.DeleteAutomatedRules,
+export const DeleteAutomatedRules: DeleteWarning = {
+    id: DeleteWarningType.DeleteAutomatedRules,
     title: 'Delete Automated Rule',
     description: `Delete Automated Rule`,
     ariaLabel: "Automated rule delete warning"
 }
 
-export const DeleteEventTemplates: DeleteWarningType = {
-    id: DeleteWarningEnum.DeleteEventTemplates,
+export const DeleteEventTemplates: DeleteWarning = {
+    id: DeleteWarningType.DeleteEventTemplates,
     title: 'Delete Event Template',
     description: `Delete Event Template`,
     ariaLabel: "Event template delete warning"
 }
 
-export const DeleteJMXCredentials: DeleteWarningType = {
-    id: DeleteWarningEnum.DeleteJMXCredentials,
+export const DeleteJMXCredentials: DeleteWarning = {
+    id: DeleteWarningType.DeleteJMXCredentials,
     title: 'Delete JMX Credentials',
     description: `Delete JMX Credentials for target`,
-    ariaLabel: "JMX Credential delete warning"
+    ariaLabel: "JMX Credentials delete warning"
 }
 
-export const DeleteUndefined: DeleteWarningType = {
-    id: DeleteWarningEnum.DeleteUndefined,
-    title: 'Undefined',
-    description: 'Undefined',
-    ariaLabel: 'Undefined'
+export const delMap : DeleteWarning[] = [
+    DeleteActiveRecordings,
+    DeleteArchivedRecordings,
+    DeleteAutomatedRules,
+    DeleteEventTemplates,
+    DeleteJMXCredentials
+];
+
+export const getFromWarningMap = (warning: DeleteWarningType): DeleteWarning | undefined => {
+    const wt = delMap.find(t => t.id === warning);
+    return wt;
 }
