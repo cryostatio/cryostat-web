@@ -68,7 +68,7 @@ export interface RecordingFiltersCategories {
     Name: string[],
     Labels: string[],
     State?: RecordingState[],
-    DateRange?: string[],
+    DateRangeUTC?: string[],
     DurationSeconds?: string[],
 }
 
@@ -88,7 +88,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     Name: [],
     Labels: [],
     State: [],
-    DateRange: [],
+    DateRangeUTC: [],
     DurationSeconds: [],
   } as RecordingFiltersCategories);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -316,7 +316,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       Name: [],
       Labels: [],
       State: [],
-      DateRange: [],
+      DateRangeUTC: [],
       DurationSeconds: [],
     } as RecordingFiltersCategories);
   }, [setFilters]);
@@ -342,12 +342,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         });
     }
     // FIXME how to determine if a manually stopped continuous recording was running?
-    if (!!filters.DateRange && !!filters.DateRange.length) {
+    if (!!filters.DateRangeUTC && !!filters.DateRangeUTC.length) {
       filtered = filtered.filter((rec) => {
         const start = rec.startTime;
         const stop = rec.state === RecordingState.RUNNING ? new Date().getTime() : rec.startTime + rec.duration;
-        if (!filters.DateRange) return true;
-        return filters.DateRange.filter((range) => {
+        if (!filters.DateRangeUTC) return true;
+        return filters.DateRangeUTC.filter((range) => {
           const window = range.split(' to ');
           const beginning = new Date(window[0]).getTime();
           const end = new Date(window[1]).getTime();

@@ -61,20 +61,20 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
   const [searchDisabled, setSearchDisabled] = React.useState(true);
 
   // FIXME trigger this when clicking search button
-  const endRangeValidator = React.useCallback(
-    (date) => {
-      return isValidDate(end) && yyyyMMddFormat(date) > yyyyMMddFormat(start)
+  const endRangeValidator = React.useMemo(
+    () => {
+      return isValidDate(end) && yyyyMMddFormat(end) > yyyyMMddFormat(start)
         ? ''
         : 'End date must be after start date';
     },
-    [start, isValidDate, yyyyMMddFormat]
+    [start, end, isValidDate, yyyyMMddFormat]
   );
 
   const onStartDateChange = React.useCallback(
     (inputDate, newStartDate) => {
       if (isValidDate(start) && isValidDate(newStartDate) && inputDate === yyyyMMddFormat(newStartDate)) {
-        newStartDate.setHours(start.getHours());
-        newStartDate.setMinutes(start.getMinutes());
+        newStartDate.setUTCHours(start.getHours());
+        newStartDate.setUTCMinutes(start.getMinutes());
         setStart(new Date(newStartDate));
       }
     },
@@ -85,8 +85,8 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
     (time, hour, minute) => {
       if (isValidDate(start)) {
         const updated = new Date(start);
-        updated.setHours(hour);
-        updated.setMinutes(minute);
+        updated.setUTCHours(hour);
+        updated.setUTCMinutes(minute);
         setStart(updated);
       }
     },
@@ -96,8 +96,8 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
   const onEndDateChange = React.useCallback(
     (inputDate, newEndDate) => {
       if (isValidDate(newEndDate) && inputDate === yyyyMMddFormat(newEndDate)) {
-        newEndDate.setHours(end.getHours());
-        newEndDate.setMinutes(end.getMinutes());
+        newEndDate.setUTCHours(end.getHours());
+        newEndDate.setUTCMinutes(end.getMinutes());
         setEnd(new Date(newEndDate));
       }
     },
@@ -108,8 +108,8 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
     (time, hour, minute) => {
       if (isValidDate(end)) {
         const updated = new Date(end);
-        updated.setHours(hour);
-        updated.setMinutes(minute);
+        updated.setUTCHours(hour);
+        updated.setUTCMinutes(minute);
         setEnd(updated);
       }
     },
@@ -141,10 +141,9 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
         <InputGroup>
           <DatePicker
             onChange={onEndDateChange}
-            rangeStart={start}
-            validators={[endRangeValidator]}
             aria-label="End date"
             placeholder="YYYY-MM-DD"
+            invalidFormatText={endRangeValidator}
           />
           <TimePicker
             is24Hour

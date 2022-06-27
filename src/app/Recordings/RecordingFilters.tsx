@@ -133,8 +133,8 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
   const onDateRangeInput = React.useCallback((dateRange) => {
     props.setFilters((old) => {
-      if (!old.DateRange) return old;
-      return { ...old, DateRange: old.DateRange.includes(dateRange) ? old.DateRange : [...old.DateRange, dateRange] };
+      if (!old.DateRangeUTC) return old;
+      return { ...old, DateRange: old.DateRangeUTC.includes(dateRange) ? old.DateRangeUTC : [...old.DateRangeUTC, dateRange] };
     });
   }, [props.setFilters]);
 
