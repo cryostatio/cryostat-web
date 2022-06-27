@@ -75,6 +75,7 @@ export const FormSelectTemplateSelector: React.FunctionComponent<FormSelectTempl
       value={specifier}
       onChange={handleTemplateChange}
       aria-label="Event Template Input"
+      id='recording-template'
     >
       <TemplateSelector
         placeholder={ <FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder /> }

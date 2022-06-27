@@ -289,7 +289,7 @@ const Comp = () => {
                         value={maxAge}
                         isRequired
                         type="number"
-                        id="maxAgeDuration"
+                        id="maxAge"
                         aria-label="Max age duration"
                         onChange={handleMaxAgeChange}
                         min="0"

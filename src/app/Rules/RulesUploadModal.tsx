@@ -143,7 +143,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
       showClose={true}
       onClose={handleClose}
       title="Upload Automatic Rules"
-      description="Select an Automatic Rules definition file to upload. File must be in JSON format and filename will be used as rule name."
+      description="Select an Automatic Rules definition file to upload. File must be in valid JSON format."
       help = {
         <Popover 
           headerContent={<div>What's this?</div>}
@@ -180,7 +180,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
             isLoading={uploading}
             validated={rejected ? 'error' : 'default'}
             dropzoneProps={{
-              accept: '.json, .txt',
+              accept: '.json',
               onDropRejected: handleReject
             }}
           />
