@@ -534,7 +534,7 @@ export class ApiService {
     );
   }
 
-  postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+  postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
     return this.target.target()
     .pipe(
       filter(target => target !== NO_TARGET),
@@ -554,10 +554,11 @@ export class ApiService {
           }
         }`)
       ),
+      map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
     )
   }
 
-  postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+  postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ActiveRecording[]> {
     return this.target.target()
     .pipe(
       filter(target => target !== NO_TARGET),
@@ -577,6 +578,7 @@ export class ApiService {
           }
         }`)
       ),
+      map(v => v.data.targetNodes[0].recordings.active as ActiveRecording[]),
     )
   }
 

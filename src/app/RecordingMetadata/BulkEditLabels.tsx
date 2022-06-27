@@ -151,7 +151,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         )
         .subscribe((value) => setRecordings(value))
     );
-  }, [addSubscription, context, context.target, context.api, setRecordings]);
+  }, [addSubscription, props.isTargetRecording, context, context.target, context.api, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshRecordingList));
