@@ -38,6 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
+import { StoredCredential } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -50,7 +51,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, merge, Observable } from 'rxjs';
 
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
@@ -62,8 +63,7 @@ export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const [targets, setTargets] = React.useState([] as Target[]);
-  const [storedTargets, setStoredTargets] = React.useState([] as Target[]);
+  const [credentials, setCredentials] = React.useState([] as StoredCredential[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
@@ -74,37 +74,31 @@ export const StoreJmxCredentials = () => {
 
   const refreshStoredTargetsList = React.useCallback(() => {
     setIsLoading(true);
-    addSubscription(context.api.getTargetsWithStoredJmxCredentials().subscribe((t: Target[]) => {
-      setStoredTargets(t);
+    addSubscription(context.api.getStoredJmxCredentials().subscribe((credentials: StoredCredential[]) => {
+      setCredentials(credentials);
       setIsLoading(false);
     }));
-  }, [context, context.api, context.targets, setStoredTargets]);
+  }, [context, context.api, setCredentials]);
 
   React.useEffect(() => {
-    const sub = context.targets.targets().subscribe((targets) => {
-      setTargets(targets);
+    refreshStoredTargetsList();
+  }, []);
+
+  React.useEffect(() => {
+    const targetsChanged = context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery);
+    const credentialAdd = context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored);
+    const sub = merge(targetsChanged, credentialAdd).subscribe(() => {
       refreshStoredTargetsList();
     });
     return () => sub.unsubscribe();
-  }, [context, context.targets, setTargets, refreshStoredTargetsList]);
-
-  React.useEffect(() => {
-    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored).subscribe((v) => {
-      const updatedTarget = targets.filter((t) => t.connectUrl === v.message.target).pop();
-      if(!updatedTarget) {
-        return;
-      }
-      setStoredTargets(old => old.concat([updatedTarget]));
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.notificationChannel, targets, setStoredTargets]);
+  }, [context, context.notificationChannel, refreshStoredTargetsList]);
 
   React.useEffect(() => {
     const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
-      setStoredTargets(old => old.filter(t => t.connectUrl !== v.message.target));
+      setCredentials(old => old.filter(c => c.matchExpression !== v.message.target));
     });
     return () => sub.unsubscribe();
-  }, [context, context.notificationChannel, setStoredTargets]);
+  }, [context, context.notificationChannel, setCredentials]);
 
   const handleRowCheck = React.useCallback(
     (checked, index) => {
@@ -121,18 +115,24 @@ export const StoreJmxCredentials = () => {
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
       setHeaderChecked(checked);
-      setCheckedIndices(checked ? Array.from(new Array(storedTargets.length), (x, i) => i) : []);
+      setCheckedIndices(checked ? Array.from(new Array(targetRows.length), (x, i) => i) : []);
     },
-    [setHeaderChecked, setCheckedIndices, storedTargets]
+    [setHeaderChecked, setCheckedIndices, credentials]
   );
 
   const handleDeleteCredentials = () => {
     const tasks: Observable<any>[] = [];
-    storedTargets.forEach((t: Target, idx) => {
+    const rows: [string, Target][] = [];
+    for (const credential of credentials) {
+      for (const target of credential.targets) {
+        rows.push([credential.matchExpression, target]);
+      }
+    }
+    rows.forEach((r: [string, Target], idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        tasks.push(context.api.deleteTargetCredentials(t));
-        context.target.deleteCredentials(t.connectUrl);
+        tasks.push(context.api.deleteTargetCredentials(r[1].connectUrl));
+        context.target.deleteCredentials(r[1].connectUrl);
       }
     });
     addSubscription(forkJoin(tasks).subscribe());
@@ -169,7 +169,7 @@ export const StoreJmxCredentials = () => {
     );
   };
 
-  const TargetCredentialsTableRow = (props) => {
+  const CredentialsTableRow = (props) => {
     const handleCheck = (checked) => {
       handleRowCheck(checked, props.index);
     };
@@ -196,16 +196,24 @@ export const StoreJmxCredentials = () => {
       </Tbody>
     );
   };
+
   const targetRows = React.useMemo(() => {
-    return storedTargets.map((t: Target, idx) => <TargetCredentialsTableRow key={idx} target={t} index={idx} />);
-  }, [storedTargets, checkedIndices]);
+    const rows: JSX.Element[] = [];
+    for (const credential of credentials) {
+      for (const target of credential.targets) {
+        const idx = rows.length;
+        rows.push(<CredentialsTableRow key={idx} matchExpression={credential.matchExpression} target={target} index={idx} />);
+      }
+    }
+    return rows;
+  }, [credentials, checkedIndices]);
 
   let content: JSX.Element;
   if (isLoading) {
     content = (<>
       <LoadingView />
     </>);
-  } else if (storedTargets.length === 0) {
+  } else if (credentials.length === 0) {
     content = (<>
       <EmptyState>
         <EmptyStateIcon icon={SearchIcon} />
