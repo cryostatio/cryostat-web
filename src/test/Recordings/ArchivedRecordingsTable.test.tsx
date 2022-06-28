@@ -209,7 +209,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteArchivedRecordings, false);
   });
 
-  it('does not show a popup when Delete is clicked and deletes the recording', () => {
+  it('deletes the recording when Delete is clicked w/o popup warning', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <ArchivedRecordingsTable />

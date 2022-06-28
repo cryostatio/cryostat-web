@@ -111,22 +111,6 @@ jest
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockDeleteTemplateNotification)) // removes a template after receiving a notification
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of(mockCreateTemplateNotification))
   .mockReturnValue(of()); // all other tests
 
   describe('<EventTemplates />', () => {
@@ -235,7 +219,7 @@ jest
       expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteEventTemplates, false);
     });
 
-    it('deletes template without warning', () => {
+    it('deletes the template when Delete is clicked w/o popup warning', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
           <EventTemplates />

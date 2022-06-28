@@ -38,7 +38,8 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
+
+import { render, screen, within } from '@testing-library/react';
 import { of, throwError } from 'rxjs';
 import { StoredCredential } from '@app/Shared/Services/Api.service';
 
@@ -140,6 +141,10 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 
 import { StoreJmxCredentials } from '@app/SecurityPanel/StoreJmxCredentials';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { DeleteJMXCredentials, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(true);
 
 describe('<StoreJmxCredentials />', () => {
   it('renders correctly', async () => {
@@ -199,7 +204,7 @@ describe('<StoreJmxCredentials />', () => {
     expect(screen.queryByText('CreateJmxCredentialModal')).not.toBeInTheDocument();
   });
 
-  it('makes a delete request when deleting one credential', () => {
+  it('shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -212,13 +217,20 @@ describe('<StoreJmxCredentials />', () => {
     userEvent.click(screen.getByLabelText('credentials-table-row-0-check'));
     userEvent.click(screen.getByText('Delete'));
 
+    expect(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).toBeInTheDocument();
+
+    const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
+    userEvent.click(screen.getByLabelText("Don't ask me again"));
+    userEvent.click(within(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledWith(mockCredential.targets[0].connectUrl);
+    expect(dialogWarningSpy).toBeCalledTimes(1);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteJMXCredentials, false);
   });
 
-  it('makes multiple delete requests when all credentials are deleted at once', () => {
+  it('makes multiple delete requests when all credentials are deleted at once w/o popup warning', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -235,6 +247,7 @@ describe('<StoreJmxCredentials />', () => {
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
 
+    expect(screen.queryByLabelText(DeleteJMXCredentials.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(2);
     expect(deleteRequestSpy).nthCalledWith(1, mockCredential.targets[0].connectUrl);
     expect(deleteRequestSpy).nthCalledWith(2, mockAnotherCredential.targets[0].connectUrl);

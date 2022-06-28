@@ -94,7 +94,10 @@ jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // opens upload modal
   .mockReturnValueOnce(of())
 
-  .mockReturnValueOnce(of()) // delete a rule when clicked
+  .mockReturnValueOnce(of()) // delete a rule when clicked with popup
+  .mockReturnValueOnce(of()) 
+
+  .mockReturnValueOnce(of()) // delete a rule when clicked w/o popup
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // remove a rule when receiving notification
@@ -162,7 +165,7 @@ describe('<Rules/>', () => {
     expect(fileUploadDropZone).toBeVisible();
   });
 
-  it('deletes a rule when Delete is clicked', async () => {
+  it('shows a popup when Delete is clicked and then deletes the Rule after clicking confirmation Delete', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
           <Router location={history.location} history={history}>
@@ -186,6 +189,25 @@ describe('<Rules/>', () => {
     expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
     expect(dialogWarningSpy).toBeCalledTimes(1);
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteAutomatedRules, false);
+  });
+
+  it('deletes a rule when Delete is clicked w/o popup warning', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+          <Router location={history.location} history={history}>
+            <Rules/>
+          </Router>
+      </ServiceContext.Provider>
+    );
+
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
+
+    userEvent.click(screen.getByLabelText('Actions'));
+    userEvent.click(await screen.findByText('Delete'));
+
+    expect(screen.queryByLabelText(DeleteAutomatedRules.ariaLabel)).not.toBeInTheDocument();
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
   });
 
   it('remove a rule when receiving a notification', async () => {

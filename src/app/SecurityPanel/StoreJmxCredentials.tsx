@@ -164,7 +164,6 @@ export const StoreJmxCredentials = () => {
           Delete
         </Button>,
       ];
-
       return (
         <>
           {arr.map((btn, idx) => (
@@ -174,17 +173,21 @@ export const StoreJmxCredentials = () => {
       );
     }, [checkedIndices]);
 
+    const deleteCredentialModal = React.useMemo(() => {
+      return <DeleteWarningModal 
+      warningType={DeleteWarningType.DeleteJMXCredentials}
+      items={storedTargets.filter((t, i) => checkedIndices.indexOf(i) != -1).map((t) => t.alias)}
+      visible={warningModalOpen} 
+      onAccept={handleDeleteCredentials} 
+      onClose={() => {setWarningModalOpen(false)}}
+      setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials, false)}}
+      />
+    }, [checkedIndices]);
+
     return (
       <Toolbar id="target-credentials-toolbar">
         <ToolbarContent>{buttons}</ToolbarContent>
-        <DeleteWarningModal 
-          warningType={DeleteWarningType.DeleteJMXCredentials}
-          items={storedTargets.filter((t, i) => checkedIndices.indexOf(i) != -1).map((t) => t.alias)}
-          visible={warningModalOpen} 
-          onAccept={handleDeleteCredentials} 
-          onClose={() => {setWarningModalOpen(false)}}
-          setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials, false)}}
-          />
+        { deleteCredentialModal }
       </Toolbar>
     );
   };

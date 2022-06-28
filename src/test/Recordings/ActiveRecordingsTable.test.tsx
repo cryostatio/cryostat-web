@@ -301,7 +301,7 @@ jest
       expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteActiveRecordings, false);
     });
 
-    it('does not show a popup when Delete is clicked and deletes the recording', () => {
+    it('deletes the recording when Delete is clicked w/o popup warning', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
           <ActiveRecordingsTable archiveEnabled={true} />
