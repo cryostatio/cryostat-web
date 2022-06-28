@@ -94,18 +94,20 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
           </Stack> 
         ]}
       >
-        {(realWarningType === DeleteAutomatedRules) && (typeof setCheckbox !== 'undefined') &&
-        <Checkbox id="clean-rule-enabled" 
-          label="Clean" 
-          description={`Clean will delete any Active Recordings that ${items![0]} created`}
-          isChecked={checkbox} 
-          onChange={(checked) => setCheckbox(checked)}
-        />}
-        <Checkbox id="do-not-ask-enabled" 
-          label="Don't ask me again" 
-          isChecked={doNotAsk} 
-          onChange={(checked) => setDoNotAsk(checked)}
-        />
+        <Stack hasGutter key="modal-checkboxes-stack">
+          {(realWarningType === DeleteAutomatedRules) && (typeof setCheckbox !== 'undefined') &&
+          <Checkbox id="clean-rule-enabled" 
+            label="Clean" 
+            description={`Clean will delete any Active Recordings that ${items![0]} created.`}
+            isChecked={checkbox} 
+            onChange={(checked) => setCheckbox(checked)}
+          />}
+          <Checkbox id="do-not-ask-enabled" 
+            label="Don't ask me again" 
+            isChecked={doNotAsk} 
+            onChange={(checked) => setDoNotAsk(checked)}
+          />
+        </Stack>
       </Modal>  
   );
 };

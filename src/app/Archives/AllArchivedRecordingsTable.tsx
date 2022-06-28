@@ -51,6 +51,8 @@ import { PlusIcon, UploadIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 export interface AllArchivedRecordingsTableProps { }
 
@@ -62,6 +64,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -237,13 +240,33 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     );
   };
 
+  const handleDeleteButton = () => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings)) {
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDeleteRecordings();
+    }
+  }
+
   const RecordingsToolbar = () => {
+    const deleteArchivedWarningModal = React.useMemo(() => {
+      const filtered = recordings.filter((r: ArchivedRecording, idx: number) => checkedIndices.includes(idx));
+      return <DeleteWarningModal 
+        warningType={DeleteWarningType.DeleteArchivedRecordings}
+        items={filtered.map((r) => `${r.name}`)}
+        visible={warningModalOpen}
+        onAccept={handleDeleteRecordings}
+        onClose={() => setWarningModalOpen(false)} 
+        setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings, false)}}
+        />
+    }, [recordings, checkedIndices]);
     return (
       <Toolbar id="archived-recordings-toolbar">
         <ToolbarContent>
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
-              <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+              <Button variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
             </ToolbarItem>
           </ToolbarGroup>
           <ToolbarGroup variant="icon-button-group">
@@ -253,6 +276,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
                 </Button>
             </ToolbarItem>
           </ToolbarGroup>
+          { deleteArchivedWarningModal }
         </ToolbarContent>
       </Toolbar>
     );

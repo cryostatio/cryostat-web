@@ -89,6 +89,7 @@ jest.mock('react-router-dom', () => ({
 
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { DeleteActiveRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
@@ -103,6 +104,9 @@ jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
 jest.spyOn(defaultServices.reports, 'delete').mockReturnValue();
+
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(true);
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -272,8 +276,7 @@ jest
       expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
     });
 
-    // it shows a popup window
-    it('deletes a recording when Delete is clicked', () => {
+    it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
           <ActiveRecordingsTable archiveEnabled={true} />
@@ -285,11 +288,34 @@ jest
       userEvent.click(selectAllCheck);
       userEvent.click(screen.getByText('Delete'));
 
-      expect(screen.getByLabelText("Recording delete warning"));
+      expect(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).toBeInTheDocument();
 
       const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRecording');
-      userEvent.click(within(screen.getByLabelText("Recording delete warning")).getByText('Delete'));
+      const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
+      userEvent.click(screen.getByLabelText("Don't ask me again"));
+      userEvent.click(within(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).getByText('Delete'));
   
+      expect(deleteRequestSpy).toBeCalledTimes(1);
+      expect(deleteRequestSpy).toBeCalledWith('someRecording');
+      expect(dialogWarningSpy).toBeCalledTimes(1);
+      expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteActiveRecordings, false);
+    });
+
+    it('does not show a popup when Delete is clicked and deletes the recording', () => {
+      render(
+        <ServiceContext.Provider value={defaultServices}>
+          <ActiveRecordingsTable archiveEnabled={true} />
+        </ServiceContext.Provider>
+      );
+
+      const checkboxes = screen.getAllByRole('checkbox');
+      const selectAllCheck = checkboxes[0];
+      userEvent.click(selectAllCheck);
+      userEvent.click(screen.getByText('Delete'));
+
+      const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRecording');
+
+      expect(screen.queryByLabelText(DeleteActiveRecordings.ariaLabel)).not.toBeInTheDocument();
       expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
       expect(deleteRequestSpy).toBeCalledWith('someRecording');
     });

@@ -47,6 +47,7 @@ import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteAutomatedRules, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 const mockRule: Rule =  {
   name: 'mockRule',
@@ -74,12 +75,14 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
-const deleteSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
 const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
 const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'doGet')
   .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
   .mockReturnValue(of(mockRuleListResponse));
+
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(true);
 
 jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
@@ -168,11 +171,21 @@ describe('<Rules/>', () => {
       </ServiceContext.Provider>
     );
 
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
+    const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
+
     userEvent.click(screen.getByLabelText('Actions'));
     userEvent.click(await screen.findByText('Delete'));
 
-    expect(deleteSpy).toHaveBeenCalledTimes(1);
-    expect(deleteSpy).toBeCalledWith(mockRule.name);
+    expect(screen.getByLabelText(DeleteAutomatedRules.ariaLabel));
+
+    userEvent.click(screen.getByLabelText("Don't ask me again"));
+    userEvent.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
+
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
+    expect(dialogWarningSpy).toBeCalledTimes(1);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteAutomatedRules, false);
   });
 
   it('remove a rule when receiving a notification', async () => {

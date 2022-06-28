@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Dropdown, DropdownToggle, DropdownToggleAction, DropdownItem, Button, Checkbox } from '@patternfly/react-core';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Button } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -72,10 +72,8 @@ export const Rules = () => {
   const [rules, setRules] = React.useState([] as Rule[]);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
-  const [showDeletionDialog, setShowDeletionDialog] = React.useState(true);
 
   const tableColumns = [
     {

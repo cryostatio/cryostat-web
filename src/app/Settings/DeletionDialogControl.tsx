@@ -65,7 +65,7 @@ const Component = () => {
   }, [state]);
 
   const switches = React.useMemo(() => {
-    return Array.from(state.entries(), ([key, value]) => <StackItem><Switch id={key} label={getFromWarningMap(key)?.title} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
+    return Array.from(state.entries(), ([key, value]) => <StackItem><Switch id={key} label={getFromWarningMap(key)?.title || key.toString()} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
   }, [state]);
 
   return (<>

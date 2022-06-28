@@ -45,6 +45,7 @@ import { MessageMeta, MessageType, NotificationMessage } from '@app/Shared/Servi
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { EventTemplates } from '@app/Events/EventTemplates';
 import userEvent from '@testing-library/user-event';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -87,6 +88,9 @@ jest.mock('react-router-dom', () => ({
   }),
 }));
 
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(true) // show deletion warning
+  .mockReturnValue(false); // don't ask again
 
 jest.spyOn(defaultServices.api, 'addCustomEventTemplate').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate').mockReturnValue(of(true));
@@ -107,6 +111,22 @@ jest
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockDeleteTemplateNotification)) // removes a template after receiving a notification
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of(mockCreateTemplateNotification))
   .mockReturnValue(of()); // all other tests
 
   describe('<EventTemplates />', () => {
@@ -205,9 +225,34 @@ jest
       expect(screen.getByLabelText('Event template delete warning'));
 
       const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
+      const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
+      userEvent.click(screen.getByLabelText("Don't ask me again"));
       userEvent.click(within(screen.getByLabelText("Event template delete warning")).getByText('Delete'));
 
       expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
       expect(deleteRequestSpy).toBeCalledWith('someEventTemplate');;
+      expect(dialogWarningSpy).toBeCalledTimes(1);
+      expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteEventTemplates, false);
+    });
+
+    it('deletes template without warning', () => {
+      render(
+        <ServiceContext.Provider value={defaultServices}>
+          <EventTemplates />
+        </ServiceContext.Provider>
+      );
+   
+      userEvent.click(screen.getByLabelText('Actions'));
+
+      expect(screen.getByText('Create Recording...'));
+      expect(screen.getByText('Download'));
+      expect(screen.getByText('Delete'));
+
+      const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomEventTemplate');
+      const deleteAction = screen.getByText('Delete');
+      userEvent.click(deleteAction);
+   
+      expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+      expect(screen.queryByLabelText("Event template delete warning")).not.toBeInTheDocument();
     });
   });

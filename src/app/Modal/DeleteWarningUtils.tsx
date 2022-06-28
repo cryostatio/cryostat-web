@@ -85,7 +85,7 @@ export const DeleteJMXCredentials: DeleteWarning = {
     ariaLabel: "JMX Credentials delete warning"
 }
 
-export const delMap : DeleteWarning[] = [
+export const DeleteWarningKinds : DeleteWarning[] = [
     DeleteActiveRecordings,
     DeleteArchivedRecordings,
     DeleteAutomatedRules,
@@ -94,6 +94,6 @@ export const delMap : DeleteWarning[] = [
 ];
 
 export const getFromWarningMap = (warning: DeleteWarningType): DeleteWarning | undefined => {
-    const wt = delMap.find(t => t.id === warning);
+    const wt = DeleteWarningKinds.find(t => t.id === warning);
     return wt;
 }
