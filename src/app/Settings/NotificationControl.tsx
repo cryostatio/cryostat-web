@@ -73,12 +73,12 @@ const Component = () => {
   }, [messageKeys]);
 
   const switches = React.useMemo(() => {
-    return Array.from(state.entries(), ([key, value]) => <StackItem><Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
+    return Array.from(state.entries(), ([key, value]) => <StackItem key={key}><Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
   }, [state, labels]);
 
   return (<>
     <Stack hasGutter>
-      <StackItem><Switch id='all-notifications' label='All Notifications' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
+      <StackItem key='all-notifications'><Switch id='all-notifications' label='All Notifications' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
       <Divider />
       <ExpandableSection
         toggleText={expanded ? 'Show less' : 'Show more'}

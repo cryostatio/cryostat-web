@@ -303,25 +303,34 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     );
   };
 
-  const handleDeleteButton = () => {
+  const handleDeleteButton = React.useCallback(() => {
     if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings)) {
       setWarningModalOpen(true);
     }
     else {
       handleDeleteRecordings();
     }
-  }
+  }, [handleDeleteRecordings])
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const disableDeletionDialog = () => {
+    context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings, false);
+  };
 
   const RecordingsToolbar = () => {
     const deleteArchivedWarningModal = React.useMemo(() => {
       const filtered = recordings.filter((r: ArchivedRecording, idx: number) => checkedIndices.includes(idx));
+      const items = filtered.map((r) => `${r.name}`);
       return <DeleteWarningModal 
         warningType={DeleteWarningType.DeleteArchivedRecordings}
-        items={filtered.map((r) => `${r.name}`)}
+        items={items}
         visible={warningModalOpen}
         onAccept={handleDeleteRecordings}
-        onClose={() => setWarningModalOpen(false)} 
-        setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings, false)}}
+        onClose={handleWarningModalClose} 
+        disableDialog={disableDeletionDialog}
         />
     }, [recordings, checkedIndices]);
 

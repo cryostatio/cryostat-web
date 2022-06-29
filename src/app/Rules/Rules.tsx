@@ -47,8 +47,8 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RuleUploadModal } from './RulesUploadModal';
-import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 
 export interface Rule {
   name: string;
@@ -226,19 +226,19 @@ export const Rules = () => {
     ]
   };
 
-  const handleUploadModalClose = React.useCallback(() => {
-    setIsUploadModalOpen(false);
-    refreshRules();
-  }, [setIsUploadModalOpen, refreshRules]);
-
-  const handleDeleteButton = (rowData) => {
+  const handleDeleteButton = React.useCallback((rowData) => {
     if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules)) {
       setWarningModalOpen(true);
     }
     else {
       handleDelete(rowData, cleanRuleEnabled)
     }
-  }
+  }, [cleanRuleEnabled]);
+
+  const handleUploadModalClose = React.useCallback(() => {
+    setIsUploadModalOpen(false);
+    refreshRules();
+  }, [setIsUploadModalOpen, refreshRules]);
 
   const viewContent = () => {
     if (isLoading) {
@@ -269,6 +269,18 @@ export const Rules = () => {
     }
   };
 
+  const handleWarningModalAccept = React.useCallback(() => {
+    handleDelete(rowDeleteData, cleanRuleEnabled);
+  }, [rowDeleteData, cleanRuleEnabled]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const disableDeletionDialog = () => {
+    context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules, false);
+  };
+
   return (<>
     <BreadcrumbPage pageTitle='Automated Rules' >
       <Card>
@@ -284,15 +296,15 @@ export const Rules = () => {
                 </Button>
               </ToolbarItem>
             </ToolbarGroup>
-            <DeleteWarningModal 
-                warningType={DeleteWarningType.DeleteAutomatedRules}
-                items={[rowDeleteData[0]]}
-                visible={warningModalOpen}
-                onAccept={() => { handleDelete(rowDeleteData, cleanRuleEnabled); } }
-                onClose={() => { setWarningModalOpen(false); } }
-                checkbox={cleanRuleEnabled}
-                setCheckbox={setCleanRuleEnabled}
-                setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules, false)}}
+            <RuleDeleteWarningModal 
+              warningType={DeleteWarningType.DeleteAutomatedRules}
+              items={[rowDeleteData[0]]}
+              visible={warningModalOpen}
+              onAccept={handleWarningModalAccept}
+              onClose={handleWarningModalClose}
+              clean={cleanRuleEnabled}
+              setClean={setCleanRuleEnabled}
+              disableDialog={disableDeletionDialog}
             />
           </ToolbarContent>
         </Toolbar>

@@ -141,18 +141,26 @@ export const StoreJmxCredentials = () => {
     addSubscription(forkJoin(tasks).subscribe());
   };
 
-  const handleModalClose = () => {
+  const handleAuthModalClose = () => {
     setShowAuthModal(false);
   };
 
-  const handleDeleteButton = () => {
+  const handleDeleteButton = React.useCallback(() => {
     if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials)) {
       setWarningModalOpen(true);
     }
     else {
       handleDeleteCredentials();
     }
-  }
+  }, [handleDeleteCredentials]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const disableDeletionDialog = () => {
+    context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials, false);
+  };
 
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
@@ -173,14 +181,16 @@ export const StoreJmxCredentials = () => {
       );
     }, [checkedIndices]);
 
+    const items = storedTargets.filter((t, i) => checkedIndices.indexOf(i) != -1).map((t) => t.alias);
+
     const deleteCredentialModal = React.useMemo(() => {
       return <DeleteWarningModal 
       warningType={DeleteWarningType.DeleteJMXCredentials}
-      items={storedTargets.filter((t, i) => checkedIndices.indexOf(i) != -1).map((t) => t.alias)}
+      items={items}
       visible={warningModalOpen} 
       onAccept={handleDeleteCredentials} 
-      onClose={() => {setWarningModalOpen(false)}}
-      setShowDialog={() => {context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials, false)}}
+      onClose={handleWarningModalClose}
+      disableDialog={disableDeletionDialog}
       />
     }, [checkedIndices]);
 
@@ -270,7 +280,7 @@ export const StoreJmxCredentials = () => {
   return (<>
     <TargetCredentialsToolbar />
     { content }
-    <CreateJmxCredentialModal visible={showAuthModal} onClose={handleModalClose} />
+    <CreateJmxCredentialModal visible={showAuthModal} onClose={handleAuthModalClose} />
   </>);
 };
 

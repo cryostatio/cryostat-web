@@ -37,30 +37,26 @@
  */
 import * as React from 'react';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split, Text, TextContent } from '@patternfly/react-core';
-import { DeleteWarningType, getFromWarningMap } from './DeleteWarningUtils';
+import { DeleteAutomatedRules } from '../Modal/DeleteWarningUtils';
 import { useState } from 'react';
+import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
 
-export interface DeleteWarningProps {
-  warningType: DeleteWarningType;
-  items?: Array<string>;
-  visible: boolean;
-  onAccept: () => void;
-  onClose: () => void;
-  disableDialog: () => void;
+export interface RuleDeleteWarningProps extends DeleteWarningProps {
+  clean: boolean;
+  setClean: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onClose, disableDialog}: DeleteWarningProps): JSX.Element => {
+export const RuleDeleteWarningModal = ({ items, visible, onAccept, onClose, disableDialog, clean, setClean}: RuleDeleteWarningProps): JSX.Element => {
   const [doNotAsk, setDoNotAsk] = useState(false);
-  const realWarningType = getFromWarningMap(warningType);
 
   const description = 
-    <TextContent>
-      <Text>
-        {realWarningType?.description}{(typeof items === 'undefined' || items.length <= 1) ?  "":"s"}: [{items?.join(", ")}]
-        <br />       
-        {realWarningType?.descriptionPartTwo}
-      </Text>
-    </TextContent>
+  <TextContent>
+    <Text>
+      {DeleteAutomatedRules.description}: [{items?.join(", ")}]
+      <br />       
+      {DeleteAutomatedRules.descriptionPartTwo}
+    </Text>
+  </TextContent>
 
   const onAcceptClose = () => {
     onAccept();
@@ -68,15 +64,14 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
     if (doNotAsk) {
       disableDialog();
     }
-  }
-  
+  } 
   return (
     <Modal
-      title={`Permanently ${realWarningType?.title}?`}
+      title={`Permanently ${DeleteAutomatedRules.title}?`}
       description={description}
-      aria-label={realWarningType?.ariaLabel}
+      aria-label={DeleteAutomatedRules.ariaLabel}
       titleIconVariant="warning"
-      variant={ModalVariant.medium}
+      variant={ModalVariant.small}
       isOpen={visible}
       showClose
       onClose={onClose}
@@ -93,11 +88,19 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
         </Stack> 
       ]}
     >
-      <Checkbox id="do-not-ask-enabled" 
-        label="Don't ask me again" 
-        isChecked={doNotAsk} 
-        onChange={setDoNotAsk}
-      />
+      <Stack hasGutter key="modal-checkboxes-stack">
+        <Checkbox id="clean-rule-enabled" 
+          label="Clean" 
+          description={`Clean will stop any Active Recordings that ${items![0]} created.`}
+          isChecked={clean} 
+          onChange={setClean}
+        />
+        <Checkbox id="do-not-ask-enabled" 
+          label="Don't ask me again" 
+          isChecked={doNotAsk} 
+          onChange={setDoNotAsk}
+        />
+      </Stack>
     </Modal>  
-  );
+);
 };
