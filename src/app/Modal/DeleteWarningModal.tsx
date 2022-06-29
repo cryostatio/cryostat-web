@@ -55,7 +55,7 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
   const [doNotAsk, setDoNotAsk] = useState(false);
   const realWarningType = getFromWarningMap(warningType);
 
-  const description = `${realWarningType?.description}${(typeof items === 'undefined' || items.length <= 1) ?  "":"s"}: [${items?.join(", ")}] ?`
+  const description = `${realWarningType?.description}${(typeof items === 'undefined' || items.length <= 1) ?  "":"s"}: [${items?.join(", ")}]. ${realWarningType?.descriptionPartTwo}`
 
   const onAcceptClose = () => {
     onAccept();
