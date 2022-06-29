@@ -36,8 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant, Button, Title, TitleSizes, Checkbox, Stack, Split, } from '@patternfly/react-core';
-import WarningTriangleIcon from '@patternfly/react-icons/dist/esm/icons/warning-triangle-icon';
+import { Modal, ModalVariant, Button, Checkbox, Stack, Split, } from '@patternfly/react-core';
 import {  DeleteAutomatedRules, DeleteWarningType, getFromWarningMap } from './DeleteWarningUtils';
 import { useState } from 'react';
 
@@ -61,7 +60,6 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
   const onAcceptClose = () => {
     onAccept();
     onClose();
-    console.log(doNotAsk)
     if (doNotAsk) {
       setShowDialog();
     }
@@ -69,7 +67,7 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
   
   return (
       <Modal
-        title={realWarningType?.title}
+        title={`Permanently ${realWarningType?.title}?`}
         description={description}
         aria-label={realWarningType?.ariaLabel}
         titleIconVariant="warning"
@@ -87,10 +85,6 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
                 Cancel
               </Button>
             </Split>
-            <Title headingLevel="h4" size={TitleSizes.md}>
-              <WarningTriangleIcon />
-                <span className="pf-u-pl-sm" >&nbsp;This cannot be undone.</span>
-            </Title>
           </Stack> 
         ]}
       >
@@ -98,7 +92,7 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
           {(realWarningType === DeleteAutomatedRules) && (typeof setCheckbox !== 'undefined') &&
           <Checkbox id="clean-rule-enabled" 
             label="Clean" 
-            description={`Clean will delete any Active Recordings that ${items![0]} created.`}
+            description={`Clean will stop any Active Recordings that ${items![0]} created.`}
             isChecked={checkbox} 
             onChange={(checked) => setCheckbox(checked)}
           />}

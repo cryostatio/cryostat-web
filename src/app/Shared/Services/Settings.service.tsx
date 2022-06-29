@@ -128,7 +128,6 @@ export class SettingsService {
 
   setDeletionDialogsEnabled(map: Map<DeleteWarningType, boolean>): void {
     const raw = JSON.stringify(Array.from(map.entries()));
-    console.log(`setDeletionDialogsEnabled: ${raw}`)
     window.localStorage.setItem(StorageKeys.DeletionDialogsEnabled, raw);
   }
 

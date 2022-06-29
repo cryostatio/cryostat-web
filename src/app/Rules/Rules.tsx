@@ -193,7 +193,6 @@ export const Rules = () => {
   }, [rules, sortBy]);
 
   const handleDelete = (rowData: IRowData, clean: boolean=true) => {
-    console.log(`clean!: ${clean}`)
     addSubscription(
       context.api.deleteRule(rowData[0], clean)
       .pipe(first())
