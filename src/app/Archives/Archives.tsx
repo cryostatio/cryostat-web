@@ -90,10 +90,7 @@ export const Archives = () => {
               { allTargets }
             </Tab>
             <Tab id='uploads' eventKey={1} title="Uploads">
-              {activeTab == 1 ?
-                uploads
-              :
-                null}
+              { uploads }
             </Tab>
           </Tabs>
         </CardBody>
