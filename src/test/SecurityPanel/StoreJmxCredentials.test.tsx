@@ -39,15 +39,15 @@ import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
 import { render, screen } from '@testing-library/react';
-import { of } from 'rxjs';
-import { Target } from '@app/Shared/Services/Target.service';
+import { of, throwError } from 'rxjs';
+import { StoredCredential } from '@app/Shared/Services/Api.service';
 
 import '@testing-library/jest-dom';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
-const mockTarget: Target = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
-const mockAnotherTarget: Target = { connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' };
+const mockCredential: StoredCredential = { matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"', targets: [{ connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' }] };
+const mockAnotherCredential: StoredCredential = { matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"', targets: [{ connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' }] };
 
 jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
   return {
@@ -68,7 +68,7 @@ jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
 });
 
 jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
-  const mockNotification = { message: { target: 'service:jmx:rmi://someUrl' } } as NotificationMessage;
+  const mockNotification = { message: { target: 'target.connectUrl == "service:jmx:rmi://someUrl"' } } as NotificationMessage;
   return {
     ...jest.requireActual('@app/Shared/Services/NotificationChannel.service'),
     NotificationChannel: jest.fn(() => {
@@ -80,16 +80,16 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
           .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'adds the correct table entry when a stored notification is received'
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of(mockNotification))
+          .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'removes the correct table entry when a deletion notification is received'
-          .mockReturnValueOnce(of(mockNotification))
           .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of(mockNotification))
 
           .mockReturnValueOnce(of()) // 'renders an empty table after receiving deletion notifications for all credentials'
-          .mockReturnValueOnce(of(mockNotification))
           .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of(mockNotification))
 
           .mockReturnValue(of()), // all other tests
       };
@@ -112,30 +112,26 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   return {
     ApiService: jest.fn(() => {
       return {
-        getTargetsWithStoredJmxCredentials: jest
+        getStoredJmxCredentials: jest
           .fn()
-          .mockReturnValueOnce(of([mockTarget]))
-          .mockReturnValueOnce(of([]))
-          .mockReturnValueOnce(of([mockTarget, mockAnotherTarget]))
-          .mockReturnValueOnce(of([mockTarget]))
-          .mockReturnValueOnce(of([]))
-          .mockReturnValueOnce(of([]))
-          .mockReturnValueOnce(of([mockTarget, mockAnotherTarget]))
-          .mockReturnValueOnce(of([mockTarget, mockAnotherTarget])),
+          .mockReturnValueOnce(of([mockCredential])) // 'renders correectly'
+
+          .mockReturnValueOnce(of([mockCredential])) // 'adds the correct table entry when a stored notification is received'
+          .mockReturnValueOnce(of([mockCredential]))
+
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'removes the correct table entry when a deletion notification is received'
+
+          .mockReturnValueOnce(of([mockCredential])) // 'renders an empty table after receiving deletion notifications for all credentials'
+
+          .mockReturnValueOnce(of([])) // 'opens the JMX auth modal when Add is clicked'
+
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'makes a delete request when deleting one credential'
+
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'makes multiple delete requests when all credentials are deleted at once'
+
+          .mockReturnValue(throwError(() => new Error('Too many calls'))),
         deleteTargetCredentials: jest.fn(() => {
           return of(true);
-        }),
-      };
-    }),
-  };
-});
-
-jest.mock('@app/Shared/Services/Targets.service', () => {
-  return {
-    TargetsService: jest.fn(() => {
-      return {
-        targets: jest.fn(() => {
-          return of([mockTarget, mockAnotherTarget]);
         }),
       };
     }),
@@ -190,16 +186,6 @@ describe('<StoreJmxCredentials />', () => {
     expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
   });
 
-  it('displays empty state text when the table is empty', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <StoreJmxCredentials />
-      </ServiceContext.Provider>
-    );
-
-    expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
-  });
-
   it('opens the JMX auth modal when Add is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
@@ -229,7 +215,7 @@ describe('<StoreJmxCredentials />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockTarget);
+    expect(deleteRequestSpy).toHaveBeenCalledWith(mockCredential.targets[0].connectUrl);
   });
 
   it('makes multiple delete requests when all credentials are deleted at once', () => {
@@ -250,7 +236,7 @@ describe('<StoreJmxCredentials />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(2);
-    expect(deleteRequestSpy).nthCalledWith(1, mockTarget);
-    expect(deleteRequestSpy).nthCalledWith(2, mockAnotherTarget);
+    expect(deleteRequestSpy).nthCalledWith(1, mockCredential.targets[0].connectUrl);
+    expect(deleteRequestSpy).nthCalledWith(2, mockAnotherCredential.targets[0].connectUrl);
   });
 });

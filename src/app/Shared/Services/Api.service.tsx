@@ -591,22 +591,22 @@ export class ApiService {
     ));
   }
 
-  getTargetsWithStoredJmxCredentials() : Observable<Target[]> {
+  getStoredJmxCredentials() : Observable<StoredCredential[]> {
     return this.sendRequest(
-      'v2.1', `credentials`,
+      'v2.2', `credentials`,
       {
         method: 'GET'
       }
     ).pipe(
       concatMap(resp => resp.json()),
-      map((response: TargetCredentialsResponse) => response.data.result),
+      map((response: CredentialsResponse) => response.data.result),
       first()
     );
   }
 
-  deleteTargetCredentials(t: Target): Observable<boolean> {
+  deleteTargetCredentials(targetId: string): Observable<boolean> {
     return this.sendRequest(
-      'v2', `targets/${encodeURIComponent(t.connectUrl)}/credentials`,
+      'v2', `targets/${encodeURIComponent(targetId)}/credentials`,
       {
         method: 'DELETE'
       }
@@ -707,9 +707,9 @@ interface AssetJwtResponse extends ApiV2Response {
   }
 }
 
-interface TargetCredentialsResponse extends ApiV2Response {
+interface CredentialsResponse extends ApiV2Response {
   data: {
-    result: Target[];
+    result: StoredCredential[];
   }
 }
 
@@ -765,4 +765,9 @@ export interface RecordingAttributes {
 
 export interface Metadata {
   labels: Object;
+}
+
+export interface StoredCredential {
+  matchExpression: string;
+  targets: Target[];
 }
