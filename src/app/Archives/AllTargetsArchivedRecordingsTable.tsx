@@ -146,6 +146,10 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   },[addSubscription, context, context.api, setCounts]);
 
   React.useEffect(() => {
+    searchedTargetsRef.current = searchedTargets;
+  });
+
+  React.useEffect(() => {
     refreshTargetsAndCounts();
   }, []);
 
@@ -156,10 +160,6 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     const id = window.setInterval(() => refreshTargetsAndCounts(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
   }, [context.target, context.settings, refreshTargetsAndCounts]);
-
-  React.useEffect(() => {
-    searchedTargetsRef.current = searchedTargets;
-  });
 
   React.useEffect(() => {
     let updatedSearchedTargets;
@@ -177,13 +177,10 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       }
     }
 
-    setSearchedTargets([...updatedSearchedTargets]);
+    if (!_.isEqual(searchedTargetsRef.current, updatedSearchedTargets)) {
+      setSearchedTargets([...updatedSearchedTargets]);
+    }
     setSearchedCounts([...updatedSearchedCounts]);
-
-    // if (_.isEqual(searchedTargetsRef.current, updatedSearchedTargets) || !_.isEqual(searchedTargetsRef.current, updatedSearchedTargets)) {
-    //   setSearchedTargets([...updatedSearchedTargets]);
-    // }
-    // setSearchedCounts([...updatedSearchedCounts]);
   }, [search, targets, counts]);
 
   React.useEffect(() => {
@@ -225,135 +222,90 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     );
   }, [addSubscription, context, context.notificationChannel, updateCount]);
 
-  const toggleExpanded = (id) => {
+  const isExpanded = React.useMemo(() => {
+    return searchedTargets.map((target, idx) => {
+      const expandedRowId =`target-table-row-${idx}-exp`;
+      return expandedRows.includes(expandedRowId);
+    });
+  }, [searchedTargets, expandedRows]);
+
+  const isExpandable = React.useMemo(() => {
+    return searchedTargets.map((target, idx) => searchedCounts[idx] !== 0 || isExpanded[idx]);
+  }, [searchedTargets, searchedCounts, isExpanded]);
+
+  const toggleExpanded = React.useCallback((id) => {
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
-  };
+  }, [expandedRows]);
 
-  const countBadges = React.useMemo(() => {
-    return searchedCounts.map(c => <Badge>{c}</Badge>);
-  }, [searchedCounts]);
+  const parentRows = React.useMemo(() => {
+    return searchedTargets.map((target, idx) => {
+      const handleToggle = () => {
+        if (isExpandable[idx]) {
+          const expandedRowId =`target-table-row-${idx}-exp`; 
+          toggleExpanded(expandedRowId);
+        }
+      };
 
-  const TargetRow = (props) => {
-    const expandedRowId =`target-table-row-${props.index}-exp`;
-
-    const isExpanded = React.useMemo(() => {
-      return expandedRows.includes(expandedRowId);
-    }, [expandedRows, expandedRowId]);
-
-    const isExpandable = React.useMemo(() => {
-      return searchedCounts[props.index] !== 0 || isExpanded;
-    }, [searchedCounts]);
-
-    const handleToggle = () => {
-      if (isExpandable) {
-        toggleExpanded(expandedRowId);
-      }
-    };
-
-    const parentRow = React.useMemo(() => {
-      return(
+      return (
         <Tr>
           <Td
-              key={`target-table-row-${props.index}_1`}
-              id={`target-ex-toggle-${props.index}`}
-              aria-controls={`target-ex-expand-${props.index}`}
+              key={`target-table-row-${idx}_1`}
+              id={`target-ex-toggle-${idx}`}
+              aria-controls={`target-ex-expand-${idx}`}
               expand={{
-                rowIndex: props.index,
-                isExpanded: isExpanded,
+                rowIndex: idx,
+                isExpanded: isExpanded[idx],
                 onToggle: handleToggle,
               }}
             />
-          <Td key={`target-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
-            {(props.target.alias == props.target.connectUrl) || !props.target.alias ?
-              `${props.target.connectUrl}`
+          <Td key={`target-table-row-${idx}_2`} dataLabel={tableColumns[0]}>
+            {(target.alias == target.connectUrl) || !target.alias ?
+              `${target.connectUrl}`
             : 
-              `${props.target.alias} (${props.target.connectUrl})`}
+              `${target.alias} (${target.connectUrl})`}
           </Td>
-          <Td> 
-            {countBadges[props.index]}
+          <Td>
+            <Badge key={idx}> 
+              {searchedCounts[idx]}
+            </Badge>          
           </Td>
-        </Tr> 
-      );
-    }, [props.target, props.target.alias, props.target.connectUrl, props.index, isExpanded, handleToggle, tableColumns]);
-    
-    const childRow = React.useMemo(() => {
+        </Tr>
+      )
+    });
+  }, [searchedTargets, searchedCounts, isExpandable]);
+
+  const childRows = React.useMemo(() => {
+    return searchedTargets.map((target, idx) => {
       return (
-        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
+        <Tr key={`${idx}_child`} isExpanded={isExpanded[idx]}>
           <Td
-            key={`target-ex-expand-${props.index}`}
+            key={`target-ex-expand-${idx}`}
             dataLabel={"Content Details"}
             colSpan={tableColumns.length + 1}
           >
-            {isExpanded ?
+            {isExpanded[idx] ?
               <ExpandableRowContent>
-                <ArchivedRecordingsTable target={of(props.target)} isUploadsTable={false} />
+                <ArchivedRecordingsTable target={of(target)} isUploadsTable={false} />
               </ExpandableRowContent>
             :
               null}
           </Td>
         </Tr>
       );
-    }, [props.target, props.index, context.api, isExpanded, tableColumns]);
-
-    return (
-      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
-        {parentRow}
-        {childRow}
-      </Tbody>
-    );
-  }
-
-  const parentRows = React.useMemo(() => {
-    return searchedTargets.map((target, idx) => {
-      <Tr>
-        <Td
-            key={`target-table-row-${idx}_1`}
-            id={`target-ex-toggle-${idx}`}
-            aria-controls={`target-ex-expand-${idx}`}
-            expand={{
-              rowIndex: idx,
-              isExpanded: isExpanded,
-              onToggle: handleToggle,
-            }}
-          />
-        <Td key={`target-table-row-${idx}_2`} dataLabel={tableColumns[0]}>
-          {(target.alias == target.connectUrl) || !target.alias ?
-            `${target.connectUrl}`
-          : 
-            `${target.alias} (${target.connectUrl})`}
-        </Td>
-        <Td>
-          <Badge isRead> 
-            {searchedCounts[idx]}
-          </Badge>          
-        </Td>
-      </Tr> 
     });
-  }, [searchedTargets, searchedCounts]);
+  }, [searchedTargets, isExpanded]);
 
-  const childRows = React.useMemo(() => {
-    return searchedTargets.map((target, idx) => {
-      <Tr key={`${idx}_child`} isExpanded={isExpanded}>
-        <Td
-          key={`target-ex-expand-${idx}`}
-          dataLabel={"Content Details"}
-          colSpan={tableColumns.length + 1}
-        >
-          {isExpanded ?
-            <ExpandableRowContent>
-              <ArchivedRecordingsTable target={of(target)} isUploadsTable={false} />
-            </ExpandableRowContent>
-          :
-            null}
-        </Td>
-      </Tr>
+  const tableRows = React.useMemo(() => {
+    return parentRows.map((parentRow, idx) => {
+      return (
+        <Tbody key={idx} isExpanded={isExpanded[idx]}>
+          {parentRow}
+          {childRows[idx]}
+        </Tbody>
+      )
     });
-  }, [searchedTargets]);
-
-  const targetRows = React.useMemo(() => {
-    return searchedTargets.map((t, idx) => <TargetRow key={idx} target={t} index={idx}/>)
-  }, [searchedTargets, expandedRows]);
+  }, [parentRows, childRows]);
 
   let view: JSX.Element;
   if (isLoading) {
@@ -369,7 +321,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             ))}
           </Tr>
         </Thead>
-        { targetRows }
+        { tableRows }
       </TableComposable>
     </>)
   }
