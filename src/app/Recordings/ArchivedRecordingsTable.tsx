@@ -310,15 +310,15 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     else {
       handleDeleteRecordings();
     }
-  }, [handleDeleteRecordings])
+  }, [context, context.settings, setWarningModalOpen, handleDeleteRecordings])
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const disableDeletionDialog = () => {
+  const disableDeletionDialog = React.useCallback(() => {
     context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings, false);
-  };
+  }, [context, context.settings]);
 
   const RecordingsToolbar = () => {
     const deleteArchivedWarningModal = React.useMemo(() => {

@@ -141,9 +141,9 @@ export const StoreJmxCredentials = () => {
     addSubscription(forkJoin(tasks).subscribe());
   };
 
-  const handleAuthModalClose = () => {
+  const handleAuthModalClose = React.useCallback(() => {
     setShowAuthModal(false);
-  };
+  }, [setShowAuthModal]);
 
   const handleDeleteButton = React.useCallback(() => {
     if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials)) {
@@ -152,15 +152,15 @@ export const StoreJmxCredentials = () => {
     else {
       handleDeleteCredentials();
     }
-  }, [handleDeleteCredentials]);
+  }, [context, context.settings, setWarningModalOpen, handleDeleteCredentials]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const disableDeletionDialog = () => {
+  const disableDeletionDialog = React.useCallback(() => {
     context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials, false);
-  };
+  }, [context, context.settings]);
 
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {

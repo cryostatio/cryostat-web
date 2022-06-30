@@ -47,47 +47,41 @@ export interface DeleteWarning {
     id: DeleteWarningType;
     title: string;
     description: string;
-    descriptionPartTwo: string;
     ariaLabel: string;
 }
 
 export const DeleteActiveRecordings: DeleteWarning = {
     id: DeleteWarningType.DeleteActiveRecordings,
-    title: 'Delete Active Recording',
-    description: `Delete Active Recording`,
-    descriptionPartTwo: `Recording and report data will be lost.`,
+    title: 'Permanently Delete Active Recording?',
+    description: `Recording and report data will be lost: `,
     ariaLabel: "Recording delete warning"
 }
 
 export const DeleteArchivedRecordings: DeleteWarning = {
     id: DeleteWarningType.DeleteArchivedRecordings,
-    title: 'Delete Archived Recording',
-    description: `Delete Archived Recording`,
-    descriptionPartTwo: `Recording and report data will be lost.`,
+    title: 'Permanently Delete Archived Recording?',
+    description: `Recording and report data will be lost: `,
     ariaLabel: "Recording delete warning"
 }
 
 export const DeleteAutomatedRules: DeleteWarning = {
     id: DeleteWarningType.DeleteAutomatedRules,
-    title: 'Delete Automated Rule',
-    description: `Delete Automated Rule`,
-    descriptionPartTwo: `Rule data will be lost.`,
+    title: 'Permanently Delete Automated Rule?',
+    description: `Rule data will be lost: `,
     ariaLabel: "Automated rule delete warning"
 }
 
 export const DeleteEventTemplates: DeleteWarning = {
     id: DeleteWarningType.DeleteEventTemplates,
-    title: 'Delete Event Template',
-    description: `Delete Event Template`,
-    descriptionPartTwo: `Template data will be lost.`,
+    title: 'Permanently Delete Event Template?',
+    description: `Template data will be lost: `,
     ariaLabel: "Event template delete warning"
 }
 
 export const DeleteJMXCredentials: DeleteWarning = {
     id: DeleteWarningType.DeleteJMXCredentials,
-    title: 'Delete JMX Credentials',
-    description: `Delete JMX Credentials for target`,
-    descriptionPartTwo: `Credential data for this target will be lost.`,
+    title: 'Permanently Delete JMX Credentials?',
+    description: `Credential data for this target will be lost: `,
     ariaLabel: "JMX Credentials delete warning"
 }
 

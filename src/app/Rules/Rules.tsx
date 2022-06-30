@@ -233,7 +233,7 @@ export const Rules = () => {
     else {
       handleDelete(rowData, cleanRuleEnabled)
     }
-  }, [cleanRuleEnabled]);
+  }, [context, context.settings, setWarningModalOpen, handleDelete, cleanRuleEnabled]);
 
   const handleUploadModalClose = React.useCallback(() => {
     setIsUploadModalOpen(false);
@@ -271,15 +271,15 @@ export const Rules = () => {
 
   const handleWarningModalAccept = React.useCallback(() => {
     handleDelete(rowDeleteData, cleanRuleEnabled);
-  }, [rowDeleteData, cleanRuleEnabled]);
+  }, [handleDelete, rowDeleteData, cleanRuleEnabled]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const disableDeletionDialog = () => {
+  const disableDeletionDialog = React.useCallback(() => {
     context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules, false);
-  };
+  }, [context, context.settings]);
 
   return (<>
     <BreadcrumbPage pageTitle='Automated Rules' >

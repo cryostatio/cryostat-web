@@ -56,9 +56,7 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
   const description = 
     <TextContent>
       <Text>
-        {realWarningType?.description}{(typeof items === 'undefined' || items.length <= 1) ?  "":"s"}: [{items?.join(", ")}]
-        <br />       
-        {realWarningType?.descriptionPartTwo}
+        {realWarningType?.description}[{items?.join(", ")}]
       </Text>
     </TextContent>
 
@@ -72,7 +70,7 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
   
   return (
     <Modal
-      title={`Permanently ${realWarningType?.title}?`}
+      title={`${realWarningType?.title}`}
       description={description}
       aria-label={realWarningType?.ariaLabel}
       titleIconVariant="warning"

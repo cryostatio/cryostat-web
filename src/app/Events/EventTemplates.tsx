@@ -255,7 +255,7 @@ export const EventTemplates = () => {
     setSortBy({ index, direction });
   };
 
-  const handleDeleteButton = (rowData) => {
+  const handleDeleteButton = React.useCallback((rowData) => {
     if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
       setRowDeleteData(rowData);
       setWarningModalOpen(true);
@@ -263,19 +263,19 @@ export const EventTemplates = () => {
     else {
       handleDelete(rowData);
     }
-  };
+  }, [context, context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]);
 
   const handleWarningModalAccept = React.useCallback(() => {
     handleDelete(rowDeleteData);
-  }, [rowDeleteData]);
+  }, [handleDelete, rowDeleteData]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const disableDeletionDialog = () => {
+  const disableDeletionDialog = React.useCallback(() => {
     context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates, false);
-  };
+  }, [context, context.settings]);
 
   const toolbar: JSX.Element = (<>
     <Toolbar id="event-templates-toolbar">

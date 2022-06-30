@@ -434,15 +434,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     else {
       handleDeleteRecordings();
     }
-  }, [handleDeleteRecordings]);
+  }, [context, context.settings, setWarningModalOpen, handleDeleteRecordings]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const disableDeletionDialog = () => {
+  const disableDeletionDialog = React.useCallback(() => {
     context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings, false);
-  };
+  }, [context, context.settings]);
 
   const RecordingsToolbar = () => {
     const isStopDisabled = React.useMemo(() => {

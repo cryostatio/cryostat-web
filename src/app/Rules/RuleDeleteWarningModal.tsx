@@ -53,8 +53,6 @@ export const RuleDeleteWarningModal = ({ items, visible, onAccept, onClose, disa
   <TextContent>
     <Text>
       {DeleteAutomatedRules.description}: [{items?.join(", ")}]
-      <br />       
-      {DeleteAutomatedRules.descriptionPartTwo}
     </Text>
   </TextContent>
 
