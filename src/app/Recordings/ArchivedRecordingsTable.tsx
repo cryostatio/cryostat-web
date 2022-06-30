@@ -161,7 +161,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         .subscribe(handleRecordings)
       );
     }
-  }, [addSubscription, context, context.api, props.target, props.isUploadsTable, setIsLoading, handleRecordings]);
+  }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
     setFilters({
@@ -174,10 +174,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     addSubscription(
       props.target.subscribe(refreshRecordingList)
     );
-  }, [addSubscription, context, props.target, props.isUploadsTable, refreshRecordingList]);
+  }, [addSubscription, refreshRecordingList]);
 
   React.useEffect(() => {
-    const sub =
+    addSubscription(
       combineLatest([
         props.target,
         merge(
@@ -192,9 +192,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           return;
         }
         setRecordings(old => old.concat(event.message.recording));
-      });
-    return () => sub.unsubscribe();
-  }, [context, context.notificationChannel, props.target, setRecordings]);
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
@@ -225,7 +225,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           );
       })
     );
-  }, [addSubscription, context, context.notificationChannel, props.target, setRecordings, setCheckedIndices]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
