@@ -56,6 +56,7 @@ export interface Rule {
   matchExpression: string;
   eventSpecifier: string;
   archivalPeriodSeconds: number;
+  initialDelaySeconds: number;
   preservedArchives: number;
   maxAgeSeconds: number;
   maxSizeBytes: number;
@@ -101,7 +102,15 @@ export const Rules = () => {
       title: 'Archival Period',
       transforms: [
         info({
-          tooltip: 'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.'
+          tooltip: 'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.'
+        })
+      ],
+    },
+    {
+      title: 'Initial Delay',
+      transforms: [
+        info({
+          tooltip: 'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.'
         })
       ],
     },
@@ -167,9 +176,9 @@ export const Rules = () => {
     return () => window.clearInterval(id);
   }, []);
 
-  const handleSort = (event, index, direction) => {
+  const handleSort = React.useCallback((event, index, direction) => {
     setSortBy({ index, direction });
-  };
+  }, [setSortBy]);
 
   const handleCreateRule = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
@@ -189,20 +198,20 @@ export const Rules = () => {
         .sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
       sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
     }
-    return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
+    return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.initialDelaySeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
   }, [rules, sortBy]);
 
-  const handleDelete = (rowData: IRowData, clean: boolean=true) => {
+  const handleDelete = React.useCallback((rowData: IRowData, clean: boolean = true) => {
     addSubscription(
       context.api.deleteRule(rowData[0], clean)
       .pipe(first())
       .subscribe(() => {} /* do nothing - notification will handle updating state */)
     );
-  };
+  }, [addSubscription, context, context.api]);
 
-  const handleDownload = (rowData: IRowData) => {
+  const handleDownload = React.useCallback((rowData: IRowData) => {
     context.api.downloadRule(rowData[0]);
-  }
+  }, [context, context.api]);
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData): IAction[] => {
     if (typeof extraData.rowIndex == 'undefined') {

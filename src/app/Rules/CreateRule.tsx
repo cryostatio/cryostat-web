@@ -71,14 +71,16 @@ const Comp = () => {
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [archivalPeriod, setArchivalPeriod] = React.useState(0);
   const [archivalPeriodUnits, setArchivalPeriodUnits] = React.useState(1);
+  const [initialDelay, setInitialDelay] = React.useState(0);
+  const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
 
-  const handleNameChange = (evt) => {
+  const handleNameChange = React.useCallback((evt) => {
     setNameValid(RuleNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
     setName(evt);
-  };
+  }, [setNameValid, name, setName]);
 
-  const getEventString = () => {
+  const eventSpecifierString = React.useMemo(() => {
     var str = '';
     if (!!template) {
       str += `template=${template}`;
@@ -87,43 +89,51 @@ const Comp = () => {
       str += `,type=${templateType}`;
     }
     return str;
-  };
+  }, [template]);
 
-  const handleTemplateChange = (template) => {
+  const handleTemplateChange = React.useCallback((template) => {
     const parts: string[] = template.split(',');
     setTemplate(parts[0]);
     setTemplateType(parts[1]);
-  };
+  }, [setTemplate, setTemplateType]);
 
-  const handleMaxAgeChange = (evt) => {
+  const handleMaxAgeChange = React.useCallback((evt) => {
     setMaxAge(Number(evt));
-  };
+  }, [setMaxAge]);
 
-  const handleMaxAgeUnitChange = (evt) => {
+  const handleMaxAgeUnitChange = React.useCallback((evt) => {
     setMaxAgeUnits(Number(evt));
-  };
+  }, [setMaxAgeUnits]);
 
-  const handleMaxSizeChange = (evt) => {
+  const handleMaxSizeChange = React.useCallback((evt) => {
     setMaxSize(Number(evt));
-  };
+  }, [setMaxSize]);
 
-  const handleMaxSizeUnitChange = (evt) => {
+  const handleMaxSizeUnitChange = React.useCallback((evt) => {
     setMaxSizeUnits(Number(evt));
-  };
+  }, [setMaxSizeUnits]);
 
-  const handleArchivalPeriodChange = (evt) => {
+  const handleArchivalPeriodChange = React.useCallback((evt) => {
     setArchivalPeriod(Number(evt));
-  };
+  }, [setArchivalPeriod]);
 
-  const handleArchivalPeriodUnitsChange = (evt) => {
+  const handleArchivalPeriodUnitsChange = React.useCallback((evt) => {
     setArchivalPeriodUnits(Number(evt));
-  };
+  }, [setArchivalPeriodUnits]);
 
-  const handleSetPreservedArchives = (evt) => {
+  const handleInitialDelayChange = React.useCallback((evt) => {
+    setInitialDelay(Number(evt));
+  }, [setInitialDelay]);
+
+  const handleInitialDelayUnitsChanged = React.useCallback((evt) => {
+    setInitialDelayUnits(Number(evt));
+  }, [setInitialDelayUnits]);
+
+  const handleSetPreservedArchives = React.useCallback((evt) => {
     setPreservedArchives(Number(evt));
-  };
+  }, [setPreservedArchives]);
 
-  const handleSubmit = (): void => {
+  const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Rule name ${name} is invalid`);
@@ -137,8 +147,9 @@ const Comp = () => {
       name,
       description,
       matchExpression,
-      eventSpecifier: getEventString(),
+      eventSpecifier: eventSpecifierString,
       archivalPeriodSeconds: archivalPeriod * archivalPeriodUnits,
+      initialDelaySeconds: initialDelay * initialDelayUnits,
       preservedArchives,
       maxAgeSeconds: maxAge * maxAgeUnits,
       maxSizeBytes: maxSize * maxSizeUnits
@@ -152,7 +163,10 @@ const Comp = () => {
         }
       })
     );
-  };
+  }, [addSubscription, context, context.api, history,
+    name, nameValid, description, matchExpression, eventSpecifierString,
+    archivalPeriod, archivalPeriodUnits, initialDelay, initialDelayUnits,
+    preservedArchives, maxAge, maxAgeUnits, maxSize, maxSizeUnits]);
 
   // FIXME we query ourselves to populate the list of templates, since Rules can apply to any target. Is this better than making the user write the event specifier manually,
   // or at least make them write the name manually and choose TARGET/CUSTOM from a dropdown?
@@ -160,7 +174,7 @@ const Comp = () => {
     addSubscription(
       context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).subscribe(setTemplates)
     );
-  }, []);
+  }, [addSubscription, context, context.api]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
@@ -330,6 +344,36 @@ const Comp = () => {
                         value={archivalPeriodUnits}
                         onChange={handleArchivalPeriodUnitsChange}
                         aria-label="archival period units input"
+                      >
+                        <FormSelectOption key="1" value="1" label="Seconds" />
+                        <FormSelectOption key="2" value={60} label="Minutes" />
+                        <FormSelectOption key="3" value={60*60} label="Hours" />
+                      </FormSelect>
+                    </SplitItem>
+                  </Split>
+                </FormGroup>
+                <FormGroup
+                  label="Initial Delay"
+                  fieldId="initialDelay"
+                  helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival Period later."
+                >
+                  <Split hasGutter={true}>
+                    <SplitItem isFilled>
+                      <TextInput
+                        value={initialDelay}
+                        isRequired
+                        type="number"
+                        id="initialDelay"
+                        aria-label="initial delay"
+                        onChange={handleInitialDelayChange}
+                        min="0"
+                      />
+                    </SplitItem>
+                    <SplitItem>
+                      <FormSelect
+                        value={initialDelayUnits}
+                        onChange={handleInitialDelayUnitsChanged}
+                        aria-label="initial delay units input"
                       >
                         <FormSelectOption key="1" value="1" label="Seconds" />
                         <FormSelectOption key="2" value={60} label="Minutes" />

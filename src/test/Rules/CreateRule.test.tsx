@@ -49,13 +49,13 @@ import { CreateRule } from '@app/Rules/CreateRule';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { Target } from '@app/Shared/Services/Target.service';
 
-const escapeKeyboardInput = (value: string) => { 
+const escapeKeyboardInput = (value: string) => {
   return value.replace(/[{[]/g, '$&$&');
 }
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget: Target = { 
-  connectUrl: mockConnectUrl, 
+const mockTarget: Target = {
+  connectUrl: mockConnectUrl,
   alias: 'io.cryostat.Cryostat',
   annotations: {
     cryostat: new Map<string, string>(
@@ -76,6 +76,7 @@ const mockRule: Rule =  {
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
   eventSpecifier: "template=Profiling,type=TARGET",
   archivalPeriodSeconds: 0,
+  initialDelaySeconds: 0,
   preservedArchives: 0,
   maxAgeSeconds: 0,
   maxSizeBytes: 0
