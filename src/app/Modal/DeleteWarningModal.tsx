@@ -36,49 +36,41 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant, Button, Checkbox, Stack, Split, Text, TextContent } from '@patternfly/react-core';
+import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import { DeleteWarningType, getFromWarningMap } from './DeleteWarningUtils';
 import { useState } from 'react';
 
 export interface DeleteWarningProps {
   warningType: DeleteWarningType;
-  items?: Array<string>;
   visible: boolean;
   onAccept: () => void;
   onClose: () => void;
   disableDialog: () => void;
 }
 
-export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onClose, disableDialog}: DeleteWarningProps): JSX.Element => {
+export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose, disableDialog }: DeleteWarningProps): JSX.Element => {
   const [doNotAsk, setDoNotAsk] = useState(false);
   const realWarningType = getFromWarningMap(warningType);
 
-  const description = 
-    <TextContent>
-      <Text>
-        {realWarningType?.description}[{items?.join(", ")}]
-      </Text>
-    </TextContent>
-
-  const onAcceptClose = () => {
+  const onAcceptClose = React.useCallback(() => {
     onAccept();
     onClose();
     if (doNotAsk) {
       disableDialog();
     }
-  }
-  
+  }, [onAccept, onClose, disableDialog, doNotAsk]);
+
   return (
     <Modal
       title={`${realWarningType?.title}`}
-      description={description}
+      description={realWarningType?.description}
       aria-label={realWarningType?.ariaLabel}
       titleIconVariant="warning"
       variant={ModalVariant.medium}
       isOpen={visible}
       showClose
       onClose={onClose}
-      actions={[  
+      actions={[
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
@@ -88,14 +80,14 @@ export const DeleteWarningModal = ({ warningType , items, visible, onAccept, onC
               Cancel
             </Button>
           </Split>
-        </Stack> 
+        </Stack>
       ]}
     >
-      <Checkbox id="do-not-ask-enabled" 
-        label="Don't ask me again" 
-        isChecked={doNotAsk} 
+      <Checkbox id="do-not-ask-enabled"
+        label="Don't ask me again"
+        isChecked={doNotAsk}
         onChange={setDoNotAsk}
       />
-    </Modal>  
+    </Modal>
   );
 };

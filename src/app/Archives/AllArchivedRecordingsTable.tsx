@@ -40,14 +40,14 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from '@app/Recordings/RecordingActions';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
 import { ReportFrame } from '@app/Recordings/ReportFrame';
 import { Observable, forkJoin, merge } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { PlusIcon, UploadIcon } from '@patternfly/react-icons';
+import { UploadIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
@@ -96,7 +96,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     setIsLoading(true);
     addSubscription(
       context.api.doGet<ArchivedRecording[]>('recordings', 'v1')
-      .subscribe(handleRecordings)
+        .subscribe(handleRecordings)
     );
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
@@ -129,7 +129,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
           o => o.name == v.message.recordingName ? { ...o, metadata: { labels: v.message.metadata.labels } } : o)))
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
-
 
   const handleDeleteRecordings = () => {
     const tasks: Observable<any>[] = [];
@@ -165,7 +164,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
       return parseLabels(props.recording.metadata.labels);
     }, [props.recording.metadata.labels]);
 
-    const expandedRowId =`archived-table-row-${props.index}-exp`;
+    const expandedRowId = `archived-table-row-${props.index}-exp`;
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
@@ -179,7 +178,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     };
 
     const parentRow = React.useMemo(() => {
-      return(
+      return (
         <Tr key={`${props.index}_parent`}>
           <Td key={`archived-table-row-${props.index}_0`}>
             <Checkbox
@@ -190,21 +189,21 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
             />
           </Td>
           <Td
-              key={`archived-table-row-${props.index}_1`}
-              id={`archived-ex-toggle-${props.index}`}
-              aria-controls={`archived-ex-expand-${props.index}`}
-              expand={{
-                rowIndex: props.index,
-                isExpanded: isExpanded,
-                onToggle: handleToggle,
-              }}
-            />
+            key={`archived-table-row-${props.index}_1`}
+            id={`archived-ex-toggle-${props.index}`}
+            aria-controls={`archived-ex-expand-${props.index}`}
+            expand={{
+              rowIndex: props.index,
+              isExpanded: isExpanded,
+              onToggle: handleToggle,
+            }}
+          />
           <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            <LabelCell 
-              labels={parsedLabels} 
+            <LabelCell
+              labels={parsedLabels}
             />
           </Td>
           <RecordingActions
@@ -224,9 +223,9 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
             dataLabel={"Content Details"}
             colSpan={tableColumns.length + 3}
           >
-          <ExpandableRowContent>
-            <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-          </ExpandableRowContent>
+            <ExpandableRowContent>
+              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
+            </ExpandableRowContent>
           </Td>
         </Tr>
       )
@@ -259,16 +258,13 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   const RecordingsToolbar = () => {
     const deleteArchivedWarningModal = React.useMemo(() => {
-      const filtered = recordings.filter((r: ArchivedRecording, idx: number) => checkedIndices.includes(idx));
-      const items = filtered.map((r) => `${r.name}`);
-      return <DeleteWarningModal 
+      return <DeleteWarningModal
         warningType={DeleteWarningType.DeleteArchivedRecordings}
-        items={items}
         visible={warningModalOpen}
         onAccept={handleDeleteRecordings}
-        onClose={handleWarningModalClose} 
+        onClose={handleWarningModalClose}
         disableDialog={disableDeletionDialog}
-        />
+      />
     }, [recordings, checkedIndices]);
     return (
       <Toolbar id="archived-recordings-toolbar">
@@ -280,19 +276,19 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
           </ToolbarGroup>
           <ToolbarGroup variant="icon-button-group">
             <ToolbarItem>
-                <Button key="upload" variant="secondary" onClick={() => setShowUploadModal(true)}>
-                  <UploadIcon/>
-                </Button>
+              <Button key="upload" variant="secondary" onClick={() => setShowUploadModal(true)}>
+                <UploadIcon />
+              </Button>
             </ToolbarItem>
           </ToolbarGroup>
-          { deleteArchivedWarningModal }
+          {deleteArchivedWarningModal}
         </ToolbarContent>
       </Toolbar>
     );
   };
 
   const recordingRows = React.useMemo(() => {
-    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx} />)
   }, [recordings, expandedRows, checkedIndices]);
 
   const handleModalClose = React.useCallback(() => {
@@ -302,19 +298,19 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   return (<>
     <RecordingsTable
-        tableTitle="Archived Flight Recordings"
-        toolbar={<RecordingsToolbar />}
-        tableColumns={tableColumns}
-        isHeaderChecked={headerChecked}
-        onHeaderCheck={handleHeaderCheck}
-        isLoading={isLoading}
-        isEmpty={!recordings.length}
-        errorMessage=''
+      tableTitle="Archived Flight Recordings"
+      toolbar={<RecordingsToolbar />}
+      tableColumns={tableColumns}
+      isHeaderChecked={headerChecked}
+      onHeaderCheck={handleHeaderCheck}
+      isLoading={isLoading}
+      isEmpty={!recordings.length}
+      errorMessage=''
     >
       {recordingRows}
     </RecordingsTable>
 
-    <ArchiveUploadModal visible={showUploadModal} onClose={handleModalClose}/>
+    <ArchiveUploadModal visible={showUploadModal} onClose={handleModalClose} />
   </>);
 };
 

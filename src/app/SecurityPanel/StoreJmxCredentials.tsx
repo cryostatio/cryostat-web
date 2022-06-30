@@ -181,23 +181,20 @@ export const StoreJmxCredentials = () => {
       );
     }, [checkedIndices]);
 
-    const items = storedTargets.filter((t, i) => checkedIndices.indexOf(i) != -1).map((t) => t.alias);
-
     const deleteCredentialModal = React.useMemo(() => {
-      return <DeleteWarningModal 
-      warningType={DeleteWarningType.DeleteJMXCredentials}
-      items={items}
-      visible={warningModalOpen} 
-      onAccept={handleDeleteCredentials} 
-      onClose={handleWarningModalClose}
-      disableDialog={disableDeletionDialog}
+      return <DeleteWarningModal
+        warningType={DeleteWarningType.DeleteJMXCredentials}
+        visible={warningModalOpen}
+        onAccept={handleDeleteCredentials}
+        onClose={handleWarningModalClose}
+        disableDialog={disableDeletionDialog}
       />
     }, [checkedIndices]);
 
     return (
       <Toolbar id="target-credentials-toolbar">
         <ToolbarContent>{buttons}</ToolbarContent>
-        { deleteCredentialModal }
+        {deleteCredentialModal}
       </Toolbar>
     );
   };
@@ -264,7 +261,7 @@ export const StoreJmxCredentials = () => {
               key="table-header-check-all"
               select={{
                 onSelect: handleHeaderCheck,
-                  isSelected: headerChecked,
+                isSelected: headerChecked,
               }}
             />
             {tableColumns.map((key, idx) => (
@@ -279,7 +276,7 @@ export const StoreJmxCredentials = () => {
 
   return (<>
     <TargetCredentialsToolbar />
-    { content }
+    {content}
     <CreateJmxCredentialModal visible={showAuthModal} onClose={handleAuthModalClose} />
   </>);
 };

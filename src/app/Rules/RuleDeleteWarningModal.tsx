@@ -36,44 +36,39 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant, Button, Checkbox, Stack, Split, Text, TextContent } from '@patternfly/react-core';
+import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import { DeleteAutomatedRules } from '../Modal/DeleteWarningUtils';
 import { useState } from 'react';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
 
 export interface RuleDeleteWarningProps extends DeleteWarningProps {
+  rule: string;
   clean: boolean;
   setClean: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const RuleDeleteWarningModal = ({ items, visible, onAccept, onClose, disableDialog, clean, setClean}: RuleDeleteWarningProps): JSX.Element => {
+export const RuleDeleteWarningModal = ({ visible, rule, onAccept, onClose, disableDialog, clean, setClean }: RuleDeleteWarningProps): JSX.Element => {
   const [doNotAsk, setDoNotAsk] = useState(false);
 
-  const description = 
-  <TextContent>
-    <Text>
-      {DeleteAutomatedRules.description}: [{items?.join(", ")}]
-    </Text>
-  </TextContent>
-
-  const onAcceptClose = () => {
+  const onAcceptClose = React.useCallback(() => {
     onAccept();
     onClose();
     if (doNotAsk) {
       disableDialog();
     }
-  } 
+  }, [onAccept, onClose, disableDialog, doNotAsk]);
+
   return (
     <Modal
       title={`Permanently ${DeleteAutomatedRules.title}?`}
-      description={description}
+      description={DeleteAutomatedRules.description}
       aria-label={DeleteAutomatedRules.ariaLabel}
       titleIconVariant="warning"
       variant={ModalVariant.small}
       isOpen={visible}
       showClose
       onClose={onClose}
-      actions={[  
+      actions={[
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
@@ -83,22 +78,22 @@ export const RuleDeleteWarningModal = ({ items, visible, onAccept, onClose, disa
               Cancel
             </Button>
           </Split>
-        </Stack> 
+        </Stack>
       ]}
     >
       <Stack hasGutter key="modal-checkboxes-stack">
-        <Checkbox id="clean-rule-enabled" 
-          label="Clean" 
-          description={`Clean will stop any Active Recordings that ${items![0]} created.`}
-          isChecked={clean} 
+        <Checkbox id="clean-rule-enabled"
+          label="Clean"
+          description={`Clean will stop any Active Recordings that ${rule} created.`}
+          isChecked={clean}
           onChange={setClean}
         />
-        <Checkbox id="do-not-ask-enabled" 
-          label="Don't ask me again" 
-          isChecked={doNotAsk} 
+        <Checkbox id="do-not-ask-enabled"
+          label="Don't ask me again"
+          isChecked={doNotAsk}
           onChange={setDoNotAsk}
         />
       </Stack>
-    </Modal>  
-);
+    </Modal>
+  );
 };

@@ -71,10 +71,10 @@ export const EventTemplates = () => {
   const addSubscription = useSubscriptions();
 
   const tableColumns = [
-    { title: 'Name', transforms: [ sortable ] },
+    { title: 'Name', transforms: [sortable] },
     'Description',
-    { title: 'Provider', transforms: [ sortable ] },
-    { title: 'Type', transforms: [ sortable ] },
+    { title: 'Provider', transforms: [sortable] },
+    { title: 'Type', transforms: [sortable] },
   ];
 
   React.useEffect(() => {
@@ -110,11 +110,11 @@ export const EventTemplates = () => {
     setIsLoading(true)
     addSubscription(
       context.target.target()
-      .pipe(
-        filter(target => target !== NO_TARGET),
-        first(),
-        concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)),
-      ).subscribe(value => handleTemplates(value), err => handleError(err))
+        .pipe(
+          filter(target => target !== NO_TARGET),
+          first(),
+          concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)),
+        ).subscribe(value => handleTemplates(value), err => handleError(err))
     );
   }, [addSubscription, context, context.target, context.api, setIsLoading, handleTemplates, handleError]);
 
@@ -156,15 +156,15 @@ export const EventTemplates = () => {
   }, [context.target]);
 
   const displayTemplates = React.useMemo(
-    () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),
+    () => filteredTemplates.map((t: EventTemplate) => ([t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()])),
     [filteredTemplates]
   );
-  
+
   const handleDelete = (rowData) => {
     addSubscription(
       context.api.deleteCustomEventTemplate(rowData[0])
-      .pipe(first())
-      .subscribe(() => {} /* do nothing - notification will handle updating state */)
+        .pipe(first())
+        .subscribe(() => { } /* do nothing - notification will handle updating state */)
     );
   };
 
@@ -180,25 +180,25 @@ export const EventTemplates = () => {
     ] as IAction[];
 
     const template: EventTemplate = filteredTemplates[extraData.rowIndex];
-    if ((template.name !== 'ALL')||(template.type !== 'TARGET')) {
+    if ((template.name !== 'ALL') || (template.type !== 'TARGET')) {
       actions = actions.concat([
-          {
-            title: 'Download',
-            onClick: (event, rowId) => context.api.downloadTemplate(filteredTemplates[rowId]),
-          }
+        {
+          title: 'Download',
+          onClick: (event, rowId) => context.api.downloadTemplate(filteredTemplates[rowId]),
+        }
       ]);
     }
     if (template.type === 'CUSTOM') {
       actions = actions.concat([
-          {
-            isSeparator: true,
+        {
+          isSeparator: true,
+        },
+        {
+          title: 'Delete',
+          onClick: (event, rowId, rowData) => {
+            handleDeleteButton(rowData);
           },
-          {
-            title: 'Delete',
-            onClick: (event, rowId, rowData) => {
-              handleDeleteButton(rowData);
-            },
-          }
+        }
       ]);
     }
     return actions;
@@ -229,15 +229,15 @@ export const EventTemplates = () => {
     setUploading(true);
     addSubscription(
       context.api.addCustomEventTemplate(uploadFile)
-      .pipe(first())
-      .subscribe(success => {
-        setUploading(false);
-        if (success) {
-          setUploadFile(undefined);
-          setUploadFilename('');
-          setModalOpen(false);
-        }
-      })
+        .pipe(first())
+        .subscribe(success => {
+          setUploading(false);
+          if (success) {
+            setUploadFile(undefined);
+            setUploadFilename('');
+            setModalOpen(false);
+          }
+        })
     );
   };
 
@@ -282,37 +282,36 @@ export const EventTemplates = () => {
       <ToolbarContent>
         <ToolbarGroup variant="filter-group">
           <ToolbarItem>
-            <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
+            <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText} />
           </ToolbarItem>
         </ToolbarGroup>
         <ToolbarGroup variant="icon-button-group">
           <ToolbarItem>
             <Button key="upload" variant="secondary" onClick={handleModalToggle}>
-              <UploadIcon/>
+              <UploadIcon />
             </Button>
           </ToolbarItem>
         </ToolbarGroup>
-        <DeleteWarningModal 
+        <DeleteWarningModal
           warningType={DeleteWarningType.DeleteEventTemplates}
-          items={[rowDeleteData[0]]}
           visible={warningModalOpen}
           onAccept={handleWarningModalAccept}
-          onClose={handleWarningModalClose} 
-          disableDialog={disableDeletionDialog}/>
-          </ToolbarContent>
+          onClose={handleWarningModalClose}
+          disableDialog={disableDeletionDialog} />
+      </ToolbarContent>
     </Toolbar>
   </>);
-  
+
   if (errorMessage != '') {
-    return (<ErrorView message={errorMessage}/>);
+    return (<ErrorView message={errorMessage} />);
   } else if (isLoading) {
     return (<>
-      { toolbar }
-      <LoadingView/>
+      {toolbar}
+      <LoadingView />
     </>);
   } else {
     return (<>
-      { toolbar }
+      {toolbar}
       <Table aria-label="Event Templates table"
         variant={TableVariant.compact}
         cells={tableColumns}
@@ -332,7 +331,7 @@ export const EventTemplates = () => {
         onClose={handleModalToggle}
         title="Create Custom Event Template"
         description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
-        >
+      >
         <Form>
           <FormGroup
             label="Template XML"

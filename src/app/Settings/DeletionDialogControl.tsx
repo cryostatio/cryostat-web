@@ -65,7 +65,7 @@ const Component = () => {
   }, [state]);
 
   const switches = React.useMemo(() => {
-    return Array.from(state.entries(), ([key, value]) => <StackItem key={key}><Switch id={key} label={getFromWarningMap(key)?.id || key.toString()} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
+    return Array.from(state.entries(), ([key, value]) => <StackItem key={key}><Switch id={key} label={getFromWarningMap(key)?.label || key.toString()} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
   }, [state]);
 
   return (<>
@@ -77,7 +77,7 @@ const Component = () => {
         onToggle={setExpanded}
         isExpanded={expanded}
       >
-        { switches }
+        {switches}
       </ExpandableSection>
     </Stack>
   </>);

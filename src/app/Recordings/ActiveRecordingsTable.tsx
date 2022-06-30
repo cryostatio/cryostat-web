@@ -41,7 +41,7 @@ import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.servic
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions} from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
@@ -121,11 +121,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     setIsLoading(true);
     addSubscription(
       context.target.target()
-      .pipe(
-        filter(target => target !== NO_TARGET),
-        concatMap(target => context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
-        first(),
-      ).subscribe(value => handleRecordings(value), err => handleError(err))
+        .pipe(
+          filter(target => target !== NO_TARGET),
+          concatMap(target => context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
+          first(),
+        ).subscribe(value => handleRecordings(value), err => handleError(err))
     );
   }, [addSubscription, context, context.target, context.api, setIsLoading, handleRecordings, handleError]);
 
@@ -144,14 +144,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
         ),
       ])
-      .subscribe(parts => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
-        setRecordings(old => old.concat([event.message.recording]));
-      })
+        .subscribe(parts => {
+          const currentTarget = parts[0];
+          const event = parts[1];
+          if (currentTarget.connectUrl != event.message.target) {
+            return;
+          }
+          setRecordings(old => old.concat([event.message.recording]));
+        })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -164,28 +164,28 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           context.notificationChannel.messages(NotificationCategory.SnapshotDeleted),
         ),
       ])
-      .subscribe(parts => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
-        let deleted;
+        .subscribe(parts => {
+          const currentTarget = parts[0];
+          const event = parts[1];
+          if (currentTarget.connectUrl != event.message.target) {
+            return;
+          }
+          let deleted;
 
-        setRecordings((old) => {
-          return old.filter((r, i) => {
-            if (r.name == event.message.recording.name) {
-              deleted = i;
-              return false;
-            }
-            return true;
+          setRecordings((old) => {
+            return old.filter((r, i) => {
+              if (r.name == event.message.recording.name) {
+                deleted = i;
+                return false;
+              }
+              return true;
+            });
           });
-        });
-        setCheckedIndices(old => old
-          .filter((v) => v !== deleted)
-          .map(ci => ci > deleted ? ci - 1 : ci)
-        );
-      })
+          setCheckedIndices(old => old
+            .filter((v) => v !== deleted)
+            .map(ci => ci > deleted ? ci - 1 : ci)
+          );
+        })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
@@ -195,22 +195,22 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
       ])
-      .subscribe(parts => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
-        setRecordings(old => {
-          const updated = [...old];
-          for (const r of updated) {
-            if (r.name === event.message.recording.name) {
-              r.state = RecordingState.STOPPED;
-            }
+        .subscribe(parts => {
+          const currentTarget = parts[0];
+          const event = parts[1];
+          if (currentTarget.connectUrl != event.message.target) {
+            return;
           }
-          return updated;
-        });
-      })
+          setRecordings(old => {
+            const updated = [...old];
+            for (const r of updated) {
+              if (r.name === event.message.recording.name) {
+                r.state = RecordingState.STOPPED;
+              }
+            }
+            return updated;
+          });
+        })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -224,20 +224,20 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-      context.target.target(),
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
-    ])
-      .subscribe(parts => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
-        setRecordings(old => old.map(
-          o => o.name == event.message.recordingName 
-            ? { ...o, metadata: { labels: event.message.metadata.labels } } 
-            : o));
-      })
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
+      ])
+        .subscribe(parts => {
+          const currentTarget = parts[0];
+          const event = parts[1];
+          if (currentTarget.connectUrl != event.message.target) {
+            return;
+          }
+          setRecordings(old => old.map(
+            o => o.name == event.message.recordingName
+              ? { ...o, metadata: { labels: event.message.metadata.labels } }
+              : o));
+        })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -252,7 +252,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error)
+      forkJoin(tasks).subscribe(() => { } /* do nothing */, window.console.error)
     );
   }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
@@ -269,7 +269,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
+      forkJoin(tasks).subscribe((() => { } /* do nothing */), window.console.error)
     );
   }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
@@ -284,7 +284,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       }
     });
     addSubscription(
-      forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
+      forkJoin(tasks).subscribe((() => { } /* do nothing */), window.console.error)
     );
   }, [recordings, checkedIndices, context.reports, context.api, addSubscription]);
 
@@ -301,7 +301,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       return parseLabels(props.recording.metadata.labels);
     }, [props.recording.metadata.labels]);
 
-    const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
+    const expandedRowId = `active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
 
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
@@ -359,8 +359,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             {props.recording.state}
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
-            <LabelCell 
-              labels={parsedLabels} 
+            <LabelCell
+              labels={parsedLabels}
             />
           </Td>
           <RecordingActions
@@ -399,9 +399,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             <ExpandableRowContent>
               <Text>Recording Options:</Text>
               <Text>
-                toDisk = { String(props.recording.toDisk) } &emsp;
+                toDisk = {String(props.recording.toDisk)} &emsp;
                 maxAge = {props.recording.maxAge / 1000}s &emsp;
-                maxSize = { props.recording.maxSize }B
+                maxSize = {props.recording.maxSize}B
               </Text>
               <br></br>
               <hr></hr>
@@ -476,7 +476,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         {
           arr.map((btn, idx) => (
             <ToolbarItem key={idx}>
-              { btn }
+              {btn}
             </ToolbarItem>
           ))
         }
@@ -484,14 +484,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     }, [checkedIndices]);
 
     const deleteActiveWarningModal = React.useMemo(() => {
-      const filtered = recordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
-      const items = filtered.map((r) => `${r.name}`);
-      return <DeleteWarningModal 
+      return <DeleteWarningModal
         warningType={DeleteWarningType.DeleteActiveRecordings}
-        items={items}
         visible={warningModalOpen}
         onAccept={handleDeleteRecordings}
-        onClose={handleWarningModalClose} 
+        onClose={handleWarningModalClose}
         disableDialog={disableDeletionDialog}
       />
     }, [recordings, checkedIndices]);
@@ -499,20 +496,20 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return (
       <Toolbar id="active-recordings-toolbar">
         <ToolbarContent>
-        { buttons }
-        { deleteActiveWarningModal }
+          {buttons}
+          {deleteActiveWarningModal}
         </ToolbarContent>
       </Toolbar>
     );
   };
 
   const recordingRows = React.useMemo(() => {
-    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx} />)
   }, [recordings, expandedRows, checkedIndices]);
 
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
-      setShowPanel={setShowDetailsPanel}  
+      setShowPanel={setShowDetailsPanel}
       isTargetRecording={true}
       checkedIndices={checkedIndices}
     />
@@ -524,14 +521,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       <DrawerContent panelContent={LabelsPanel} className='recordings-table-drawer-content'>
         <DrawerContentBody hasPadding>
           <RecordingsTable
-          tableTitle="Active Flight Recordings"
-          toolbar={<RecordingsToolbar />}
-          tableColumns={tableColumns}
-          isHeaderChecked={headerChecked}
-          onHeaderCheck={handleHeaderCheck}
-          isEmpty={!recordings.length}
-          isLoading ={isLoading}
-          errorMessage ={errorMessage}
+            tableTitle="Active Flight Recordings"
+            toolbar={<RecordingsToolbar />}
+            tableColumns={tableColumns}
+            isHeaderChecked={headerChecked}
+            onHeaderCheck={handleHeaderCheck}
+            isEmpty={!recordings.length}
+            isLoading={isLoading}
+            errorMessage={errorMessage}
           >
             {recordingRows}
           </RecordingsTable>
