@@ -392,7 +392,7 @@ const Comp = () => {
                     isRequired
                     type="number"
                     id="preservedArchives"
-                    aria-label="prserved archives"
+                    aria-label="preserved archives"
                     onChange={handleSetPreservedArchives}
                     min="0"
                   />
