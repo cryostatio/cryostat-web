@@ -55,7 +55,7 @@ export const DeleteActiveRecordings: DeleteWarning = {
     id: DeleteWarningType.DeleteActiveRecordings,
     title: 'Permanently delete Active Recording?',
     label: 'Delete Active Recording',
-    description: `Recording and report data will be lost: `,
+    description: `Recording and report data will be lost.`,
     ariaLabel: "Recording delete warning"
 }
 
@@ -63,7 +63,7 @@ export const DeleteArchivedRecordings: DeleteWarning = {
     id: DeleteWarningType.DeleteArchivedRecordings,
     title: 'Permanently delete Archived Recording?',
     label: 'Delete Archived Recording',
-    description: `Recording and report data will be lost: `,
+    description: `Recording and report data will be lost.`,
     ariaLabel: "Recording delete warning"
 }
 
@@ -71,7 +71,7 @@ export const DeleteAutomatedRules: DeleteWarning = {
     id: DeleteWarningType.DeleteAutomatedRules,
     title: 'Permanently delete Automated Rule?',
     label: 'Delete Automated Rule',
-    description: `Rule data will be lost: `,
+    description: `Rule data will be lost.`,
     ariaLabel: "Automated rule delete warning"
 }
 
@@ -79,7 +79,7 @@ export const DeleteEventTemplates: DeleteWarning = {
     id: DeleteWarningType.DeleteEventTemplates,
     title: 'Permanently delete Event Template?',
     label: 'Delete Event Template',
-    description: `Template data will be lost: `,
+    description: `Custom event template data will be lost.`,
     ariaLabel: "Event template delete warning"
 }
 
@@ -87,7 +87,7 @@ export const DeleteJMXCredentials: DeleteWarning = {
     id: DeleteWarningType.DeleteJMXCredentials,
     title: 'Permanently delete JMX Credentials?',
     label: 'Delete JMX Credentials',
-    description: `Credential data for this target will be lost: `,
+    description: `Credential data for this target will be lost.`,
     ariaLabel: "JMX Credentials delete warning"
 }
 

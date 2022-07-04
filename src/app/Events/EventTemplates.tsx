@@ -273,10 +273,6 @@ export const EventTemplates = () => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const disableDeletionDialog = React.useCallback(() => {
-    context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates, false);
-  }, [context, context.settings]);
-
   const toolbar: JSX.Element = (<>
     <Toolbar id="event-templates-toolbar">
       <ToolbarContent>
@@ -296,8 +292,7 @@ export const EventTemplates = () => {
           warningType={DeleteWarningType.DeleteEventTemplates}
           visible={warningModalOpen}
           onAccept={handleWarningModalAccept}
-          onClose={handleWarningModalClose}
-          disableDialog={disableDeletionDialog} />
+          onClose={handleWarningModalClose} />
       </ToolbarContent>
     </Toolbar>
   </>);

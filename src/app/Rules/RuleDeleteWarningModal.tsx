@@ -40,6 +40,7 @@ import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly
 import { DeleteAutomatedRules } from '../Modal/DeleteWarningUtils';
 import { useState } from 'react';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
+import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface RuleDeleteWarningProps extends DeleteWarningProps {
   rule: string;
@@ -47,20 +48,21 @@ export interface RuleDeleteWarningProps extends DeleteWarningProps {
   setClean: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const RuleDeleteWarningModal = ({ visible, rule, onAccept, onClose, disableDialog, clean, setClean }: RuleDeleteWarningProps): JSX.Element => {
+export const RuleDeleteWarningModal = ({ visible, rule, onAccept, onClose, clean, setClean }: RuleDeleteWarningProps): JSX.Element => {
+  const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
 
   const onAcceptClose = React.useCallback(() => {
     onAccept();
     onClose();
     if (doNotAsk) {
-      disableDialog();
+        context.settings.setDeletionDialogsEnabledFor(DeleteAutomatedRules.id, false);
     }
-  }, [onAccept, onClose, disableDialog, doNotAsk]);
+  }, [onAccept, onClose, doNotAsk, context, context.settings]);
 
   return (
     <Modal
-      title={`Permanently ${DeleteAutomatedRules.title}?`}
+      title={DeleteAutomatedRules.title}
       description={DeleteAutomatedRules.description}
       aria-label={DeleteAutomatedRules.ariaLabel}
       titleIconVariant="warning"

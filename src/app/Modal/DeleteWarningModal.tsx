@@ -39,26 +39,28 @@ import * as React from 'react';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import { DeleteWarningType, getFromWarningMap } from './DeleteWarningUtils';
 import { useState } from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface DeleteWarningProps {
   warningType: DeleteWarningType;
   visible: boolean;
   onAccept: () => void;
   onClose: () => void;
-  disableDialog: () => void;
 }
 
-export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose, disableDialog }: DeleteWarningProps): JSX.Element => {
+export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose }: DeleteWarningProps): JSX.Element => {
+  const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
+  
   const realWarningType = getFromWarningMap(warningType);
 
   const onAcceptClose = React.useCallback(() => {
     onAccept();
     onClose();
-    if (doNotAsk) {
-      disableDialog();
+    if (doNotAsk && !!realWarningType) {
+        context.settings.setDeletionDialogsEnabledFor(realWarningType.id, false);
     }
-  }, [onAccept, onClose, disableDialog, doNotAsk]);
+  }, [onAccept, onClose, doNotAsk, context, context.settings]);
 
   return (
     <Modal

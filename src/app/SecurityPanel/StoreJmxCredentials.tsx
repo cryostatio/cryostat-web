@@ -158,10 +158,6 @@ export const StoreJmxCredentials = () => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const disableDeletionDialog = React.useCallback(() => {
-    context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials, false);
-  }, [context, context.settings]);
-
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
@@ -187,7 +183,6 @@ export const StoreJmxCredentials = () => {
         visible={warningModalOpen}
         onAccept={handleDeleteCredentials}
         onClose={handleWarningModalClose}
-        disableDialog={disableDeletionDialog}
       />
     }, [checkedIndices]);
 

@@ -277,10 +277,6 @@ export const Rules = () => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const disableDeletionDialog = React.useCallback(() => {
-    context.settings.setDeletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules, false);
-  }, [context, context.settings]);
-
   return (<>
     <BreadcrumbPage pageTitle='Automated Rules' >
       <Card>
@@ -304,7 +300,6 @@ export const Rules = () => {
                 onClose={handleWarningModalClose}
                 clean={cleanRuleEnabled}
                 setClean={setCleanRuleEnabled}
-                disableDialog={disableDeletionDialog}
               />
             </ToolbarContent>
           </Toolbar>
