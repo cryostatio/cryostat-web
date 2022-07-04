@@ -159,6 +159,10 @@ describe('<CreateRule/>', () => {
     expect(preservedArchivesInput).toBeInTheDocument();
     expect(preservedArchivesInput).toBeVisible();
 
+    const initialDelayInput = screen.getByLabelText('Initial Delay');
+    expect(initialDelayInput).toBeInTheDocument();
+    expect(initialDelayInput).toBeVisible();
+
     const createButton = screen.getByRole('button', {name: /create/i});
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
@@ -171,6 +175,7 @@ describe('<CreateRule/>', () => {
     userEvent.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
     userEvent.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);
     userEvent.type(preservedArchivesInput, `${mockRule.preservedArchives}`);
+    userEvent.type(initialDelayInput, `${mockRule.initialDelaySeconds}`);
 
     await waitFor(() => expect(createButton).not.toBeDisabled());
 
