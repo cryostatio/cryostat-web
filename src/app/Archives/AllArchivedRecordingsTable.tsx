@@ -40,7 +40,7 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from '@app/Recordings/RecordingActions';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
@@ -259,7 +259,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
       const items = filtered.map((r) => `${r.name}`);
       return <DeleteWarningModal 
         warningType={DeleteWarningType.DeleteArchivedRecordings}
-        items={items}
         visible={warningModalOpen}
         onAccept={handleDeleteRecordings}
         onClose={handleWarningModalClose}
