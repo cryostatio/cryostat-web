@@ -16,7 +16,7 @@
     "eslint": "eslint --ext .tsx,.js ./src/",
     "license:check": "license-check-and-add check -f license-config.json",
     "license:apply": "license-check-and-add add -f license-config.json",
-    "lint": "npm-run-all -l -p license:check eslint",
+    "lint": "npm-run-all -l -p format:check eslint",
     "format": "npm-run-all format:apply",
     "format:check": "npm-run-all -l license:check prettier:check",
     "format:apply": "npm-run-all -l -p license:apply prettier:apply",
