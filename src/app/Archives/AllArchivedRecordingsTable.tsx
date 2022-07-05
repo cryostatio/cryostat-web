@@ -47,7 +47,7 @@ import { RecordingsTable } from '@app/Recordings/RecordingsTable';
 import { ReportFrame } from '@app/Recordings/ReportFrame';
 import { Observable, forkJoin, merge } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { PlusIcon, UploadIcon } from '@patternfly/react-icons';
+import { UploadIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
@@ -255,8 +255,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   const RecordingsToolbar = () => {
     const deleteArchivedWarningModal = React.useMemo(() => {
-      const filtered = recordings.filter((r: ArchivedRecording, idx: number) => checkedIndices.includes(idx));
-      const items = filtered.map((r) => `${r.name}`);
       return <DeleteWarningModal 
         warningType={DeleteWarningType.DeleteArchivedRecordings}
         visible={warningModalOpen}
