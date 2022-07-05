@@ -208,8 +208,8 @@ export class ApiService {
       );
   }
 
-  deleteRule(name: string): Observable<boolean> {
-    return this.sendRequest('v2', `rules/${name}?clean=true`, {
+  deleteRule(name: string, clean: boolean=true): Observable<boolean> {
+    return this.sendRequest('v2', `rules/${name}?clean=${clean}`, {
         method: 'DELETE',
       }).pipe(
         map(resp => resp.ok),

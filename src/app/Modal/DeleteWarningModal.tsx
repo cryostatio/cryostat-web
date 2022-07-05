@@ -35,52 +35,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
+import { DeleteWarningType, getFromWarningMap } from './DeleteWarningUtils';
+import { useState } from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
 
-import { AutoRefresh } from './AutoRefresh';
-import { NotificationControl } from './NotificationControl';
-import { WebSocketDebounce } from './WebSocketDebounce';
-import { DeletionDialogControl } from './DeletionDialogControl';
-
-export const Settings: React.FunctionComponent<{}> = () => {
-
-  const settings =
-    [
-      AutoRefresh,
-      NotificationControl,
-      DeletionDialogControl,
-      WebSocketDebounce,
-    ].map(c => ({
-      title: c.title,
-      description: c.description,
-      element: React.createElement(c.content, null),
-    }));
-
-  return (<>
-    <BreadcrumbPage pageTitle="Settings">
-      {
-        settings.map(s => (<>
-          <Card>
-            <CardTitle>
-              <Text component={TextVariants.h1}>{ s.title }</Text>
-              <Text component={TextVariants.small}>{ s.description }</Text>
-            </CardTitle>
-            <CardBody>
-              { s.element }
-            </CardBody>
-          </Card>
-        </>))
-      }
-    </BreadcrumbPage>
-  </>);
-
+export interface DeleteWarningProps {
+  warningType: DeleteWarningType;
+  visible: boolean;
+  onAccept: () => void;
+  onClose: () => void;
 }
 
-export interface UserSetting {
-  title: string;
-  description: string;
-  content: React.FunctionComponent;
-}
+export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose }: DeleteWarningProps): JSX.Element => {
+  const context = React.useContext(ServiceContext);
+  const [doNotAsk, setDoNotAsk] = useState(false);
+  
+  const realWarningType = getFromWarningMap(warningType);
+
+  const onAcceptClose = React.useCallback(() => {
+    onAccept();
+    onClose();
+    if (doNotAsk && !!realWarningType) {
+        context.settings.setDeletionDialogsEnabledFor(realWarningType.id, false);
+    }
+  }, [onAccept, onClose, doNotAsk, context, context.settings]);
+
+  return (
+    <Modal
+      title={`${realWarningType?.title}`}
+      description={realWarningType?.description}
+      aria-label={realWarningType?.ariaLabel}
+      titleIconVariant="warning"
+      variant={ModalVariant.medium}
+      isOpen={visible}
+      showClose
+      onClose={onClose}
+      actions={[  
+        <Stack hasGutter key="modal-footer-stack">
+          <Split key="modal-footer-split">
+            <Button variant="danger" onClick={onAcceptClose}>
+              Delete
+            </Button>
+            <Button variant="link" onClick={onClose}>
+              Cancel
+            </Button>
+          </Split>
+        </Stack> 
+      ]}
+    >
+      <Checkbox id="do-not-ask-enabled" 
+        label="Don't ask me again" 
+        isChecked={doNotAsk} 
+        onChange={setDoNotAsk}
+      />
+    </Modal>  
+  );
+};

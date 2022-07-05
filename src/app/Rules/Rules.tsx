@@ -47,6 +47,8 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RuleUploadModal } from './RulesUploadModal';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 
 export interface Rule {
   name: string;
@@ -68,7 +70,10 @@ export const Rules = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [rules, setRules] = React.useState([] as Rule[]);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
+  const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
+  const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
 
   const tableColumns = [
     {
@@ -187,9 +192,9 @@ export const Rules = () => {
     return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
   }, [rules, sortBy]);
 
-  const handleDelete = (rowData: IRowData) => {
+  const handleDelete = (rowData: IRowData, clean: boolean=true) => {
     addSubscription(
-      context.api.deleteRule(rowData[0])
+      context.api.deleteRule(rowData[0], clean)
       .pipe(first())
       .subscribe(() => {} /* do nothing - notification will handle updating state */)
     );
@@ -213,10 +218,22 @@ export const Rules = () => {
       },
       {
         title: 'Delete',
-        onClick: (event, rowId, rowData) => handleDelete(rowData)
+        onClick: (event, rowId, rowData) => {
+          setRowDeleteData(rowData);
+          handleDeleteButton(rowData);
+        }
       }
     ]
   };
+
+  const handleDeleteButton = React.useCallback((rowData) => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules)) {
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDelete(rowData, cleanRuleEnabled)
+    }
+  }, [context, context.settings, setWarningModalOpen, handleDelete, cleanRuleEnabled]);
 
   const handleUploadModalClose = React.useCallback(() => {
     setIsUploadModalOpen(false);
@@ -252,23 +269,40 @@ export const Rules = () => {
     }
   };
 
+  const handleWarningModalAccept = React.useCallback(() => {
+    handleDelete(rowDeleteData, cleanRuleEnabled);
+  }, [handleDelete, rowDeleteData, cleanRuleEnabled]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
   return (<>
     <BreadcrumbPage pageTitle='Automated Rules' >
       <Card>
         <CardBody>
-        <Toolbar id="event-templates-toolbar">
-          <ToolbarContent>
-            <ToolbarGroup variant="icon-button-group">
-              <ToolbarItem>
-                <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
-                {' '}
-                <Button key="upload" variant="secondary" aria-label='Upload' onClick={handleUploadRule}>
-                  <UploadIcon/>
-                </Button>
-              </ToolbarItem>
-            </ToolbarGroup>
-          </ToolbarContent>
-        </Toolbar>
+          <Toolbar id="event-templates-toolbar">
+            <ToolbarContent>
+              <ToolbarGroup variant="icon-button-group">
+                <ToolbarItem>
+                  <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
+                  {' '}
+                  <Button key="upload" variant="secondary" aria-label='Upload' onClick={handleUploadRule}>
+                    <UploadIcon />
+                  </Button>
+                </ToolbarItem>
+              </ToolbarGroup>
+              <RuleDeleteWarningModal
+                warningType={DeleteWarningType.DeleteAutomatedRules}
+                rule={rowDeleteData[0]}
+                visible={warningModalOpen}
+                onAccept={handleWarningModalAccept}
+                onClose={handleWarningModalClose}
+                clean={cleanRuleEnabled}
+                setClean={setCleanRuleEnabled}
+              />
+            </ToolbarContent>
+          </Toolbar>
           {viewContent()}
         </CardBody>
       </Card>

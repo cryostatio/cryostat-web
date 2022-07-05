@@ -51,6 +51,8 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 export interface ArchivedRecordingsTableProps { }
 
@@ -62,6 +64,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -300,7 +303,29 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     );
   };
 
+  const handleDeleteButton = React.useCallback(() => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings)) {
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDeleteRecordings();
+    }
+  }, [context, context.settings, setWarningModalOpen, handleDeleteRecordings])
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
   const RecordingsToolbar = () => {
+    const deleteArchivedWarningModal = React.useMemo(() => {
+      return <DeleteWarningModal 
+        warningType={DeleteWarningType.DeleteArchivedRecordings}
+        visible={warningModalOpen}
+        onAccept={handleDeleteRecordings}
+        onClose={handleWarningModalClose}
+      />
+    }, [recordings, checkedIndices]);
+
     return (
       <Toolbar id="archived-recordings-toolbar">
         <ToolbarContent>
@@ -309,9 +334,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
             </ToolbarItem>
             <ToolbarItem>
-              <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+              <Button variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
             </ToolbarItem>
           </ToolbarGroup>
+          { deleteArchivedWarningModal }
         </ToolbarContent>
       </Toolbar>
     );
@@ -345,8 +371,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               errorMessage=''
           >
             {recordingRows}
-            </RecordingsTable>
-          </DrawerContentBody>
+          </RecordingsTable>
+        </DrawerContentBody>
       </DrawerContent>
     </Drawer>
   );

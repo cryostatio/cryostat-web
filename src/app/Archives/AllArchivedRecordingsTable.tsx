@@ -40,17 +40,19 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Label, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { RecordingActions } from '@app/Recordings/RecordingActions';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
 import { ReportFrame } from '@app/Recordings/ReportFrame';
 import { Observable, forkJoin, merge } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { PlusIcon, UploadIcon } from '@patternfly/react-icons';
+import { UploadIcon } from '@patternfly/react-icons';
 import { ArchiveUploadModal } from './ArchiveUploadModal';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 export interface AllArchivedRecordingsTableProps { }
 
@@ -62,6 +64,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -237,13 +240,34 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     );
   };
 
+  const handleDeleteButton = React.useCallback(() => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings)) {
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDeleteRecordings();
+    }
+  }, [context, context.settings, setWarningModalOpen, handleDeleteRecordings])
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
   const RecordingsToolbar = () => {
+    const deleteArchivedWarningModal = React.useMemo(() => {
+      return <DeleteWarningModal 
+        warningType={DeleteWarningType.DeleteArchivedRecordings}
+        visible={warningModalOpen}
+        onAccept={handleDeleteRecordings}
+        onClose={handleWarningModalClose}
+      />
+    }, [recordings, checkedIndices]);
     return (
       <Toolbar id="archived-recordings-toolbar">
         <ToolbarContent>
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
-              <Button variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+              <Button variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
             </ToolbarItem>
           </ToolbarGroup>
           <ToolbarGroup variant="icon-button-group">
@@ -253,6 +277,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
                 </Button>
             </ToolbarItem>
           </ToolbarGroup>
+          { deleteArchivedWarningModal }
         </ToolbarContent>
       </Toolbar>
     );

@@ -39,24 +39,24 @@
 import * as React from 'react';
 import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
+import { DeleteWarningType, getFromWarningMap } from '@app/Modal/DeleteWarningUtils';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
-  const [state, setState] = React.useState(context.settings.notificationsEnabled());
+  const [state, setState] = React.useState(context.settings.deletionDialogsEnabled());
   const [expanded, setExpanded] = React.useState(false);
 
   const handleCheckboxChange = React.useCallback((checked, element) => {
-    state.set(NotificationCategory[element.target.id], checked);
-    context.settings.setNotificationsEnabled(state);
+    state.set(DeleteWarningType[element.target.id], checked);
+    context.settings.setDeletionDialogsEnabled(state);
     setState(new Map(state));
   }, [state, setState, context.settings]);
 
   const handleCheckAll = React.useCallback(checked => {
     const newState = new Map();
     Array.from(state.entries()).forEach(v => newState.set(v[0], checked));
-    context.settings.setNotificationsEnabled(newState);
+    context.settings.setDeletionDialogsEnabled(newState);
     setState(newState);
   }, [state, setState]);
 
@@ -64,21 +64,13 @@ const Component = () => {
     return Array.from(state.entries()).map(e => e[1]).reduce((a, b) => a && b);
   }, [state]);
 
-  const labels = React.useMemo(() => {
-    const result = new Map<NotificationCategory, string>();
-    messageKeys.forEach((v, k) => {
-      result.set(k, v?.title || k);
-    });
-    return result;
-  }, [messageKeys]);
-
   const switches = React.useMemo(() => {
-    return Array.from(state.entries(), ([key, value]) => <StackItem key={key}><Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
-  }, [state, labels]);
+    return Array.from(state.entries(), ([key, value]) => <StackItem key={key}><Switch id={key} label={getFromWarningMap(key)?.id || key.toString()} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
+  }, [state]);
 
   return (<>
     <Stack hasGutter>
-      <StackItem key='all-notifications'><Switch id='all-notifications' label='All Notifications' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
+      <StackItem key='all-deletion-warnings'><Switch id='all-deletion-warnings' label='All Deletion Warnings' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
       <Divider />
       <ExpandableSection
         toggleText={expanded ? 'Show less' : 'Show more'}
@@ -91,8 +83,8 @@ const Component = () => {
   </>);
 }
 
-export const NotificationControl: UserSetting = {
-  title: 'Notifications',
-  description: 'Enable or disable notifications by category.',
+export const DeletionDialogControl: UserSetting = {
+  title: 'Show Deletion Dialogs',
+  description: 'Enable or disable deletion dialogs by deletion type.',
   content: Component,
 }

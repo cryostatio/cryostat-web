@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import userEvent from '@testing-library/user-event';
@@ -81,6 +81,7 @@ const mockDeleteNotification = { message: { target: mockConnectUrl, recording: m
 
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 jest.spyOn(defaultServices.api, 'deleteArchivedRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
@@ -90,6 +91,9 @@ jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecord
 jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of(true));
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(true);
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -180,7 +184,32 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
   });
 
-  it('deletes a recording when Delete is clicked', () => {
+  it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <ArchivedRecordingsTable />
+      </ServiceContext.Provider>
+    );
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    const selectAllCheck = checkboxes[0];
+    userEvent.click(selectAllCheck);
+    userEvent.click(screen.getByText('Delete'));
+
+    expect(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel));
+
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
+    const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
+    userEvent.click(screen.getByLabelText("Don't ask me again"));
+    userEvent.click(within(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel)).getByText('Delete'));
+
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toBeCalledWith('someRecording');
+    expect(dialogWarningSpy).toBeCalledTimes(1);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteArchivedRecordings, false);
+  });
+
+  it('deletes the recording when Delete is clicked w/o popup warning', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <ArchivedRecordingsTable />
@@ -194,6 +223,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
 
+    expect(screen.queryByLabelText(DeleteActiveRecordings.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someRecording');
   });
