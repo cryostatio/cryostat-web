@@ -626,6 +626,102 @@ exports[`<CreateRule/> renders correctly 1`] = `
                   >
                     <label
                       className="pf-c-form__label"
+                      htmlFor="initialDelay"
+                    >
+                      <span
+                        className="pf-c-form__label-text"
+                      >
+                        Initial Delay
+                      </span>
+                    </label>
+                     
+                  </div>
+                  <div
+                    className="pf-c-form__group-control"
+                  >
+                    <div
+                      className="pf-l-split pf-m-gutter"
+                    >
+                      <div
+                        className="pf-l-split__item pf-m-fill"
+                      >
+                        <input
+                          aria-invalid={false}
+                          aria-label="initial delay"
+                          className="pf-c-form-control"
+                          data-ouia-component-id="OUIA-Generated-TextInputBase-7"
+                          data-ouia-component-type="PF4/TextInput"
+                          data-ouia-safe={true}
+                          disabled={false}
+                          id="initialDelay"
+                          min="0"
+                          onBlur={[Function]}
+                          onChange={[Function]}
+                          onFocus={[Function]}
+                          readOnly={false}
+                          required={true}
+                          type="number"
+                          value={0}
+                        />
+                      </div>
+                      <div
+                        className="pf-l-split__item"
+                      >
+                        <select
+                          aria-invalid={false}
+                          aria-label="initial delay units input"
+                          className="pf-c-form-control"
+                          data-ouia-component-id="OUIA-Generated-FormSelect-default-5"
+                          data-ouia-component-type="PF4/FormSelect"
+                          data-ouia-safe={true}
+                          disabled={false}
+                          onBlur={[Function]}
+                          onChange={[Function]}
+                          onFocus={[Function]}
+                          required={false}
+                          value={1}
+                        >
+                          <option
+                            className=""
+                            disabled={false}
+                            value="1"
+                          >
+                            Seconds
+                          </option>
+                          <option
+                            className=""
+                            disabled={false}
+                            value={60}
+                          >
+                            Minutes
+                          </option>
+                          <option
+                            className=""
+                            disabled={false}
+                            value={3600}
+                          >
+                            Hours
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div
+                      aria-live="polite"
+                      className="pf-c-form__helper-text"
+                      id="initialDelay-helper"
+                    >
+                      Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival Period later.
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className="pf-c-form__group"
+                >
+                  <div
+                    className="pf-c-form__group-label"
+                  >
+                    <label
+                      className="pf-c-form__label"
                       htmlFor="preservedArchives"
                     >
                       <span
@@ -641,9 +737,9 @@ exports[`<CreateRule/> renders correctly 1`] = `
                   >
                     <input
                       aria-invalid={false}
-                      aria-label="prserved archives"
+                      aria-label="preserved archives"
                       className="pf-c-form-control"
-                      data-ouia-component-id="OUIA-Generated-TextInputBase-7"
+                      data-ouia-component-id="OUIA-Generated-TextInputBase-8"
                       data-ouia-component-type="PF4/TextInput"
                       data-ouia-safe={true}
                       disabled={false}

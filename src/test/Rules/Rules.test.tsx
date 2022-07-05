@@ -55,6 +55,7 @@ const mockRule: Rule =  {
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
   eventSpecifier: "template=Profiling,type=TARGET",
   archivalPeriodSeconds: 0,
+  initialDelaySeconds: 0,
   preservedArchives: 0,
   maxAgeSeconds: 0,
   maxSizeBytes: 0
@@ -271,7 +272,7 @@ describe('<Rules/>', () => {
     const uploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
-    
+
     userEvent.click(browseButton);
     userEvent.upload(uploadInput, mockFileUpload);
 
