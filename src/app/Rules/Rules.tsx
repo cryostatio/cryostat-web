@@ -78,7 +78,7 @@ export const Rules = () => {
   const tableColumns = [
     {
       title: 'Name',
-      transforms: [sortable],
+      transforms: [ sortable ],
     },
     { title: 'Description', },
     {
@@ -189,14 +189,14 @@ export const Rules = () => {
         .sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
       sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
     }
-    return sorted.map((r: Rule) => ([r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes]));
+    return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
   }, [rules, sortBy]);
 
-  const handleDelete = (rowData: IRowData, clean: boolean = true) => {
+  const handleDelete = (rowData: IRowData, clean: boolean=true) => {
     addSubscription(
       context.api.deleteRule(rowData[0], clean)
-        .pipe(first())
-        .subscribe(() => { } /* do nothing - notification will handle updating state */)
+      .pipe(first())
+      .subscribe(() => {} /* do nothing - notification will handle updating state */)
     );
   };
 
@@ -246,7 +246,7 @@ export const Rules = () => {
     } else if (rules.length === 0) {
       return (<>
         <EmptyState>
-          <EmptyStateIcon icon={SearchIcon} />
+          <EmptyStateIcon icon={SearchIcon}/>
           <Title headingLevel="h4" size="lg">
             No Automated Rules
           </Title>

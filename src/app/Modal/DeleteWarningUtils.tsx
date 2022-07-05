@@ -36,11 +36,11 @@
  * SOFTWARE.
  */
 export enum DeleteWarningType {
-    DeleteActiveRecordings = 'DeleteActiveRecordings',
-    DeleteArchivedRecordings = 'DeleteArchivedRecordings',
-    DeleteAutomatedRules = 'DeleteAutomatedRules',
-    DeleteEventTemplates = 'DeleteEventTemplates',
-    DeleteJMXCredentials = 'DeleteJMXCredentials',
+    DeleteActiveRecordings='DeleteActiveRecordings',
+    DeleteArchivedRecordings='DeleteArchivedRecordings',
+    DeleteAutomatedRules='DeleteAutomatedRules',
+    DeleteEventTemplates='DeleteEventTemplates',
+    DeleteJMXCredentials='DeleteJMXCredentials',
 }
 
 export interface DeleteWarning {
@@ -91,7 +91,7 @@ export const DeleteJMXCredentials: DeleteWarning = {
     ariaLabel: "JMX Credentials delete warning"
 }
 
-export const DeleteWarningKinds: DeleteWarning[] = [
+export const DeleteWarningKinds : DeleteWarning[] = [
     DeleteActiveRecordings,
     DeleteArchivedRecordings,
     DeleteAutomatedRules,

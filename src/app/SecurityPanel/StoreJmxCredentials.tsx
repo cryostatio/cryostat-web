@@ -189,7 +189,7 @@ export const StoreJmxCredentials = () => {
     return (
       <Toolbar id="target-credentials-toolbar">
         <ToolbarContent>{buttons}</ToolbarContent>
-        {deleteCredentialModal}
+        { deleteCredentialModal }
       </Toolbar>
     );
   };
@@ -256,7 +256,7 @@ export const StoreJmxCredentials = () => {
               key="table-header-check-all"
               select={{
                 onSelect: handleHeaderCheck,
-                isSelected: headerChecked,
+                  isSelected: headerChecked,
               }}
             />
             {tableColumns.map((key, idx) => (
@@ -271,7 +271,7 @@ export const StoreJmxCredentials = () => {
 
   return (<>
     <TargetCredentialsToolbar />
-    {content}
+    { content }
     <CreateJmxCredentialModal visible={showAuthModal} onClose={handleAuthModalClose} />
   </>);
 };

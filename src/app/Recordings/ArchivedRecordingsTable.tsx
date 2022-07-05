@@ -100,11 +100,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     setIsLoading(true);
     addSubscription(
       context.target.target()
-        .pipe(
-          filter(target => target !== NO_TARGET),
-          first(),
-          concatMap(target =>
-            context.api.graphql<any>(`
+      .pipe(
+        filter(target => target !== NO_TARGET),
+        first(),
+        concatMap(target =>
+          context.api.graphql<any>(`
             query {
               targetNodes(filter: { name: "${target.connectUrl}" }) {
                 recordings {
@@ -119,10 +119,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
                 }
               }
             }`)
-          ),
-          map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
-        )
-        .subscribe(handleRecordings)
+        ),
+        map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+      )
+      .subscribe(handleRecordings)
     );
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
@@ -141,14 +141,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved),
         ),
       ])
-        .subscribe(parts => {
-          const currentTarget = parts[0];
-          const event = parts[1];
-          if (currentTarget.connectUrl != event.message.target) {
-            return;
-          }
-          setRecordings(old => old.concat(event.message.recording));
-        })
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.concat(event.message.recording));
+      })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -179,19 +179,19 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             .filter((v) => v !== deleted)
             .map(ci => ci > deleted ? ci - 1 : ci)
           );
-        })
+      })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
-        .subscribe(event => {
-          setRecordings(old => old.map(
-            o => o.name == event.message.recordingName
-              ? { ...o, metadata: { labels: event.message.metadata.labels } }
-              : o));
-        })
+      .subscribe(event => {
+        setRecordings(old => old.map(
+          o => o.name == event.message.recordingName 
+            ? { ...o, metadata: { labels: event.message.metadata.labels } } 
+            : o));
+      })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
@@ -209,7 +209,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       forkJoin(tasks).subscribe()
     );
   }, [recordings, checkedIndices, context.reports, context.api, addSubscription]);
-
+ 
   const toggleExpanded = (id) => {
     const idx = expandedRows.indexOf(id);
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
@@ -228,7 +228,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       return parseLabels(props.recording.metadata.labels);
     }, [props.recording.metadata.labels]);
 
-    const expandedRowId = `archived-table-row-${props.index}-exp`;
+    const expandedRowId =`archived-table-row-${props.index}-exp`;
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
@@ -242,7 +242,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     };
 
     const parentRow = React.useMemo(() => {
-      return (
+      return(
         <Tr key={`${props.index}_parent`}>
           <Td key={`archived-table-row-${props.index}_0`}>
             <Checkbox
@@ -253,21 +253,21 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             />
           </Td>
           <Td
-            key={`archived-table-row-${props.index}_1`}
-            id={`archived-ex-toggle-${props.index}`}
-            aria-controls={`archived-ex-expand-${props.index}`}
-            expand={{
-              rowIndex: props.index,
-              isExpanded: isExpanded,
-              onToggle: handleToggle,
-            }}
-          />
+              key={`archived-table-row-${props.index}_1`}
+              id={`archived-ex-toggle-${props.index}`}
+              aria-controls={`archived-ex-expand-${props.index}`}
+              expand={{
+                rowIndex: props.index,
+                isExpanded: isExpanded,
+                onToggle: handleToggle,
+              }}
+            />
           <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            <LabelCell
-              labels={parsedLabels}
+            <LabelCell 
+              labels={parsedLabels} 
             />
           </Td>
           <RecordingActions
@@ -287,9 +287,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             dataLabel={"Content Details"}
             colSpan={tableColumns.length + 3}
           >
-            <ExpandableRowContent>
-              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-            </ExpandableRowContent>
+          <ExpandableRowContent>
+            <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
+          </ExpandableRowContent>
           </Td>
         </Tr>
       )
@@ -318,7 +318,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const RecordingsToolbar = () => {
     const deleteArchivedWarningModal = React.useMemo(() => {
-      return <DeleteWarningModal
+      return <DeleteWarningModal 
         warningType={DeleteWarningType.DeleteArchivedRecordings}
         visible={warningModalOpen}
         onAccept={handleDeleteRecordings}
@@ -337,19 +337,19 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               <Button variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
             </ToolbarItem>
           </ToolbarGroup>
-          {deleteArchivedWarningModal}
+          { deleteArchivedWarningModal }
         </ToolbarContent>
       </Toolbar>
     );
   };
 
   const recordingRows = React.useMemo(() => {
-    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx} />)
+    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
   }, [recordings, expandedRows, checkedIndices]);
 
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
-      setShowPanel={setShowDetailsPanel}
+      setShowPanel={setShowDetailsPanel}  
       isTargetRecording={true}
       checkedIndices={checkedIndices}
     />
@@ -361,14 +361,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       <DrawerContent panelContent={LabelsPanel} className='recordings-table-drawer-content'>
         <DrawerContentBody hasPadding>
           <RecordingsTable
-            tableTitle="Archived Flight Recordings"
-            toolbar={<RecordingsToolbar />}
-            tableColumns={tableColumns}
-            isHeaderChecked={headerChecked}
-            onHeaderCheck={handleHeaderCheck}
-            isLoading={isLoading}
-            isEmpty={!recordings.length}
-            errorMessage=''
+              tableTitle="Archived Flight Recordings"
+              toolbar={<RecordingsToolbar />}
+              tableColumns={tableColumns}
+              isHeaderChecked={headerChecked}
+              onHeaderCheck={handleHeaderCheck}
+              isLoading={isLoading}
+              isEmpty={!recordings.length}
+              errorMessage=''
           >
             {recordingRows}
           </RecordingsTable>

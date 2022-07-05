@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
+import { Modal, ModalVariant, Button, Checkbox, Stack, Split, Text, TextContent } from '@patternfly/react-core';
 import { DeleteAutomatedRules } from '../Modal/DeleteWarningUtils';
 import { useState } from 'react';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
@@ -70,7 +70,7 @@ export const RuleDeleteWarningModal = ({ visible, rule, onAccept, onClose, clean
       isOpen={visible}
       showClose
       onClose={onClose}
-      actions={[
+      actions={[  
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
@@ -80,22 +80,22 @@ export const RuleDeleteWarningModal = ({ visible, rule, onAccept, onClose, clean
               Cancel
             </Button>
           </Split>
-        </Stack>
+        </Stack> 
       ]}
     >
       <Stack hasGutter key="modal-checkboxes-stack">
-        <Checkbox id="clean-rule-enabled"
-          label="Clean"
+        <Checkbox id="clean-rule-enabled" 
+          label="Clean" 
           description={`Clean will stop any Active Recordings that ${rule} created.`}
-          isChecked={clean}
+          isChecked={clean} 
           onChange={setClean}
         />
-        <Checkbox id="do-not-ask-enabled"
-          label="Don't ask me again"
-          isChecked={doNotAsk}
+        <Checkbox id="do-not-ask-enabled" 
+          label="Don't ask me again" 
+          isChecked={doNotAsk} 
           onChange={setDoNotAsk}
         />
       </Stack>
-    </Modal>
-  );
+    </Modal>  
+);
 };
