@@ -13,7 +13,7 @@
     "start:dev": "webpack serve --hot --color --progress --config webpack.dev.js",
     "test": "jest --maxWorkers=50% --coverage=true",
     "test:ci": "jest --maxWorkers=50%",
-    "eslint": "eslint --ext .tsx,.js ./src/",
+    "eslint": "eslint --ext .ts,.tsx,.js ./src/",
     "license:check": "license-check-and-add check -f license-config.json",
     "license:apply": "license-check-and-add add -f license-config.json",
     "lint": "npm-run-all -l -p format:check eslint",
