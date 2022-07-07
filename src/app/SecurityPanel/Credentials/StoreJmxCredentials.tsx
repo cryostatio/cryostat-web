@@ -56,6 +56,7 @@ import { forkJoin, merge, Observable } from 'rxjs';
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from '../SecurityPanel';
+import { CredentialsTableRow } from './CredentialsTableRow';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
@@ -194,35 +195,21 @@ export const StoreJmxCredentials = () => {
     );
   };
 
-  const CredentialsTableRow = (props) => {
-    const handleCheck = (checked) => {
-      handleRowCheck(checked, props.index);
-    };
-
-    return (
-      <Tbody key={props.index}>
-        <Tr key={`${props.index}`}>
-          <Td key={`credentials-table-row-${props.index}_0`}>
-            <Checkbox
-              name={`credentials-table-row-${props.index}-check`}
-              onChange={handleCheck}
-              isChecked={checkedIndices.includes(props.index)}
-              id={`credentials-table-row-${props.index}-check`}
-              aria-label={`credentials-table-row-${props.index}-check`}
-            />
-          </Td>
-          <Td key={`credentials-table-row-${props.index}_1`} dataLabel={tableColumns[0]}>
-            {props.matchExpression}
-          </Td>
-        </Tr>
-      </Tbody>
-    );
-  };
+    const handleCheck = React.useCallback((checked, index) => {
+      handleRowCheck(checked, index);
+    }, [handleRowCheck]);
 
   const targetRows = React.useMemo(() => {
     const rows: JSX.Element[] = [];
     for (var i = 0; i < credentials.length; i++) {
-        rows.push(<CredentialsTableRow key={i} matchExpression={credentials[i].matchExpression} index={i} />);
+      rows.push(<CredentialsTableRow
+        key={i}
+        index={i}
+        label={tableColumns[0]}
+        matchExpression={credentials[i].matchExpression}
+        isChecked={checkedIndices.includes(i)}
+        handleCheck={(state: boolean, index: number) => handleCheck(state, index)}
+      />);
     }
     return rows;
   }, [credentials, checkedIndices]);
