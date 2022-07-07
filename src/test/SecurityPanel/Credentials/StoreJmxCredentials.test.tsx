@@ -47,8 +47,8 @@ import '@testing-library/jest-dom';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
-const mockCredential: StoredCredential = { matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"', targets: [{ connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' }] };
-const mockAnotherCredential: StoredCredential = { matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"', targets: [{ connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' }] };
+const mockCredential: StoredCredential = { id: 0, matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"', targets: [{ connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' }] };
+const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"', targets: [{ connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' }] };
 
 jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
   return {

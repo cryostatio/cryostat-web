@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { StoreJmxCredentialsCard } from './StoreJmxCredentials';
+import { StoreJmxCredentialsCard } from './Credentials/StoreJmxCredentials';
 import { ImportCertificate } from './ImportCertificate';
 
 export const SecurityPanel = () => {

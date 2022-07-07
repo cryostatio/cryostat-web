@@ -768,6 +768,7 @@ export interface Metadata {
 }
 
 export interface StoredCredential {
+  id: number;
   matchExpression: string;
   targets: Target[];
 }

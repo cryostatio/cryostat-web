@@ -55,7 +55,7 @@ import { forkJoin, merge, Observable } from 'rxjs';
 
 import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
-import { SecurityCard } from './SecurityPanel';
+import { SecurityCard } from '../SecurityPanel';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
@@ -72,7 +72,7 @@ export const StoreJmxCredentials = () => {
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const tableColumns: string[] = ['Target Alias', 'Connect URL'];
+  const tableColumns: string[] = ['Match Expression'];
   const tableTitle = 'Stored Credentials';
 
   const refreshStoredTargetsList = React.useCallback(() => {
@@ -212,10 +212,7 @@ export const StoreJmxCredentials = () => {
             />
           </Td>
           <Td key={`credentials-table-row-${props.index}_1`} dataLabel={tableColumns[0]}>
-            {props.target.alias}
-          </Td>
-          <Td key={`credentials-table-row-${props.index}_2`} dataLabel={tableColumns[1]}>
-            {props.target.connectUrl}
+            {props.matchExpression}
           </Td>
         </Tr>
       </Tbody>
@@ -224,11 +221,8 @@ export const StoreJmxCredentials = () => {
 
   const targetRows = React.useMemo(() => {
     const rows: JSX.Element[] = [];
-    for (const credential of credentials) {
-      for (const target of credential.targets) {
-        const idx = rows.length;
-        rows.push(<CredentialsTableRow key={idx} matchExpression={credential.matchExpression} target={target} index={idx} />);
-      }
+    for (var i = 0; i < credentials.length; i++) {
+        rows.push(<CredentialsTableRow key={i} matchExpression={credentials[i].matchExpression} index={i} />);
     }
     return rows;
   }, [credentials, checkedIndices]);
@@ -278,8 +272,6 @@ export const StoreJmxCredentials = () => {
 
 export const StoreJmxCredentialsCard: SecurityCard = {
   title: 'Store JMX Credentials',
-  description: `Targets for which Cryostat has stored JMX credentials are listed here.
-    If a Target JVM requires JMX authentication, Cryostat will use stored credentials
-    when attempting to open JMX connections to the target.`,
+  description: `Credentials that Cryostat uses to connect to target JVMs over JMX are stored here. Expand an item to see which known target applications the credential applies to.`,
   content: StoreJmxCredentials,
 };
