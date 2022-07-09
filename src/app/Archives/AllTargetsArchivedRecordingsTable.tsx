@@ -59,7 +59,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   const [search, setSearch] = React.useState('');
   const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
   const [searchedCounts, setSearchedCounts] = React.useState([] as number[]);
-  const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [expandedTargets, setExpandedTargets] = React.useState([] as Target[]);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -223,27 +223,25 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   }, [addSubscription, context, context.notificationChannel, updateCount]);
 
   const isExpanded = React.useMemo(() => {
-    return searchedTargets.map((target, idx) => {
-      const expandedRowId =`target-table-row-${idx}-exp`;
-      return expandedRows.includes(expandedRowId);
+    return searchedTargets.map((target) => {
+      return expandedTargets.includes(target);
     });
-  }, [searchedTargets, expandedRows]);
+  }, [searchedTargets, expandedTargets]);
 
   const isExpandable = React.useMemo(() => {
     return searchedTargets.map((target, idx) => searchedCounts[idx] !== 0 || isExpanded[idx]);
   }, [searchedTargets, searchedCounts, isExpanded]);
 
-  const toggleExpanded = React.useCallback((id) => {
-    const idx = expandedRows.indexOf(id);
-    setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
-  }, [expandedRows]);
+  const toggleExpanded = React.useCallback((target) => {
+    const idx = expandedTargets.indexOf(target);
+    setExpandedTargets(expandedTargets => idx >= 0 ? [...expandedTargets.slice(0, idx), ...expandedTargets.slice(idx + 1, expandedTargets.length)] : [...expandedTargets, target]);
+  }, [expandedTargets]);
 
   const parentRows = React.useMemo(() => {
     return searchedTargets.map((target, idx) => {
       const handleToggle = () => {
         if (isExpandable[idx]) {
-          const expandedRowId =`target-table-row-${idx}-exp`; 
-          toggleExpanded(expandedRowId);
+          toggleExpanded(target);
         }
       };
 
@@ -294,7 +292,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </Tr>
       );
     });
-  }, [searchedTargets, isExpanded]);
+  }, [searchedTargets, isExpanded, tableColumns]);
 
   const tableRows = React.useMemo(() => {
     return parentRows.map((parentRow, idx) => {
