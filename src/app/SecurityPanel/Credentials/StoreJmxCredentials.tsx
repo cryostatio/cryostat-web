@@ -51,7 +51,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { forkJoin, merge, Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 
 import { TableComposable, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
@@ -89,19 +89,15 @@ export const StoreJmxCredentials = () => {
   }, []);
 
   React.useEffect(() => {
-    const targetsChanged = context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery);
-    const credentialAdd = context.notificationChannel.messages(NotificationCategory.CredentialsStored);
-    const sub = merge(targetsChanged, credentialAdd).subscribe(() => {
+    addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe(() => {
       refreshStoredTargetsList();
-    });
-    return () => sub.unsubscribe();
+    }));
   }, [context, context.notificationChannel, refreshStoredTargetsList]);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
+    addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
       setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
-    });
-    return () => sub.unsubscribe();
+    }));
   }, [context, context.notificationChannel, setCredentials]);
 
   const handleRowCheck = React.useCallback(
@@ -130,7 +126,6 @@ export const StoreJmxCredentials = () => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(context.api.deleteCredentials(credential.id));
-        // context.target.deleteCredentials(r[1].connectUrl);
       }
     });
     addSubscription(forkJoin(tasks).subscribe());

@@ -47,10 +47,10 @@ import '@testing-library/jest-dom';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
-const mockCredential: StoredCredential = { id: 0, matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"', targets: [{ connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' }] };
-const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"', targets: [{ connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' }] };
+const mockCredential: StoredCredential = { id: 0, matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"' };
+const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"' };
 
-jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
+jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
   return {
     CreateJmxCredentialModal: jest.fn((props) => {
       return (
@@ -69,7 +69,7 @@ jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
 });
 
 jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
-  const mockNotification = { message: { target: 'target.connectUrl == "service:jmx:rmi://someUrl"' } } as NotificationMessage;
+  const mockNotification = { message: { matchExpression: mockCredential.matchExpression } } as NotificationMessage;
   return {
     ...jest.requireActual('@app/Shared/Services/NotificationChannel.service'),
     NotificationChannel: jest.fn(() => {
@@ -78,32 +78,17 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
           .fn()
           .mockReturnValueOnce(of()) // 'renders correctly'
           .mockReturnValueOnce(of())
-          .mockReturnValueOnce(of())
 
-          .mockReturnValueOnce(of()) // 'adds the correct table entry when a stored notification is received'
-          .mockReturnValueOnce(of(mockNotification))
+          .mockReturnValueOnce(of(mockNotification)) // 'adds the correct table entry when a stored notification is received'
           .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'removes the correct table entry when a deletion notification is received'
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of(mockNotification))
 
           .mockReturnValueOnce(of()) // 'renders an empty table after receiving deletion notifications for all credentials'
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of(mockNotification))
 
           .mockReturnValue(of()), // all other tests
-      };
-    }),
-  };
-});
-
-jest.mock('@app/Shared/Services/Target.service', () => {
-  return {
-    ...jest.requireActual('@app/Shared/Services/Target.service'),
-    TargetService: jest.fn(() => {
-      return {
-        deleteCredentials: jest.fn(),
       };
     }),
   };
@@ -113,11 +98,14 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   return {
     ApiService: jest.fn(() => {
       return {
-        getStoredJmxCredentials: jest
+        deleteCredentials: jest
+          .fn()
+          .mockReturnValue(of(true)),
+        getCredentials: jest
           .fn()
           .mockReturnValueOnce(of([mockCredential])) // 'renders correectly'
 
-          .mockReturnValueOnce(of([mockCredential])) // 'adds the correct table entry when a stored notification is received'
+          .mockReturnValueOnce(of([])) // 'adds the correct table entry when a stored notification is received'
           .mockReturnValueOnce(of([mockCredential]))
 
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'removes the correct table entry when a deletion notification is received'
@@ -126,7 +114,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 
           .mockReturnValueOnce(of([])) // 'opens the JMX auth modal when Add is clicked'
 
-          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'makes a delete request when deleting one credential'
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete'
 
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'makes multiple delete requests when all credentials are deleted at once'
 
@@ -166,7 +154,7 @@ describe('<StoreJmxCredentials />', () => {
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByText('fooTarget')).toBeInTheDocument();
+    expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
   });
 
   it('removes the correct table entry when a deletion notification is received', () => {
@@ -176,8 +164,8 @@ describe('<StoreJmxCredentials />', () => {
       </ServiceContext.Provider>
     );
 
-    expect(screen.queryByText('fooTarget')).not.toBeInTheDocument();
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
+    expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
   });
 
   it('renders an empty table after receiving deletion notifications for all credentials', () => {
@@ -187,7 +175,8 @@ describe('<StoreJmxCredentials />', () => {
       </ServiceContext.Provider>
     );
 
-    expect(screen.queryByText('fooTarget')).not.toBeInTheDocument();
+    expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
+    expect(screen.queryByText(mockAnotherCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
   });
 
@@ -211,8 +200,8 @@ describe('<StoreJmxCredentials />', () => {
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByText('fooTarget')).toBeInTheDocument();
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
+    expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
 
     userEvent.click(screen.getByLabelText('credentials-table-row-0-check'));
     userEvent.click(screen.getByText('Delete'));
@@ -234,8 +223,8 @@ describe('<StoreJmxCredentials />', () => {
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
-    expect(screen.getByText('fooTarget')).toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
+    expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
