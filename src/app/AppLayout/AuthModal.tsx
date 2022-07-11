@@ -36,7 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant } from '@patternfly/react-core';
+import { Modal, ModalVariant, Text } from '@patternfly/react-core';
+import { Link } from 'react-router-dom';
 import { JmxAuthForm } from './JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { first } from 'rxjs';
@@ -72,7 +73,12 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
       showClose={true}
       onClose={props.onDismiss}
       title="Authentication Required"
-      description="This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections."
+      description={
+        <Text>
+          This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections.
+          Enter credentials specific to this target, or go to <Link onClick={props.onDismiss} to="/security">Security</Link> to add a credential matching multiple targets.
+        </Text>
+      }
     >
       <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} />
     </Modal>
