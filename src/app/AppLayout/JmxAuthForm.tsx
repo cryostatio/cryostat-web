@@ -77,6 +77,7 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
 
   return (
     <Form>
+      { props.children }
       <FormGroup isRequired label="Username" fieldId="username">
         <TextInput
           value={username}

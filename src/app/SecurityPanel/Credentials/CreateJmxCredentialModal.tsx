@@ -36,13 +36,11 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Form, FormGroup, Modal, ModalVariant, ValidatedOptions } from '@patternfly/react-core';
+import { FormGroup, Modal, ModalVariant, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { first, map } from 'rxjs';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { first } from 'rxjs';
+import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
 
 export interface CreateJmxCredentialModalProps {
   visible: boolean;
@@ -51,32 +49,19 @@ export interface CreateJmxCredentialModalProps {
 
 export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredentialModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const [validTarget, setValidTarget] = React.useState(ValidatedOptions.default);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.target.target()
-      .pipe(
-        map(target => target !== NO_TARGET),
-        map(isTarget => isTarget ? ValidatedOptions.success : ValidatedOptions.error)
-      )
-      .subscribe(setValidTarget)
-    );
-  }, [context, context.target, setValidTarget]);
+  const [matchExpression, setMatchExpression] = React.useState('');
+  const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
 
   const onSave = React.useCallback((username: string, password: string): Promise<void> => {
     return new Promise((resolve) => {
-      context.target.target().pipe(first()).subscribe((target) => {
-        context.api.postCredentials(`target.connectUrl == "${target.connectUrl}"`, username, password)
-          .pipe(first())
-          .subscribe(() => {
-            props.onClose();
-            resolve();
-          });
-      });
+      context.api.postCredentials(matchExpression, username, password)
+        .pipe(first())
+        .subscribe(() => {
+          props.onClose();
+          resolve();
+        });
     });
-  }, [props.onClose, context, context.target, context.api, validTarget, setValidTarget]);
+  }, [props.onClose, context, context.target, context.api, matchExpression]);
 
   return (
     <Modal
@@ -89,19 +74,31 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
         If a Target JVM requires JMX authentication, Cryostat will use stored credentials
         when attempting to open JMX connections to the target."
     >
-      <Form>
+      <JmxAuthForm onSave={onSave} onDismiss={props.onClose}>
         <FormGroup
-          label="Target"
+          label="Match Expression"
           isRequired
-          fieldId="target-select"
-          helperTextInvalid="Select a target"
-          validated={validTarget}
+          fieldId="match-expression"
+          helperText={
+            <Text component={TextVariants.small}>
+              Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.
+              Select a target from the dropdown above to view the context object available within the match expression context and test if the expression matches.
+            </Text>
+          }
+          validated={matchExpressionValid}
         >
-          <TargetSelect />
+          <TextInput
+            value={matchExpression}
+            isRequired
+            type="text"
+            id="rule-matchexpr"
+            aria-describedby="rule-matchexpr-helper"
+            onChange={setMatchExpression}
+            validated={matchExpressionValid}
+          />
+          <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
         </FormGroup>
-      </Form>
-      <br/>
-      <JmxAuthForm onSave={onSave} onDismiss={props.onClose} />
+      </JmxAuthForm>
     </Modal>
   );
 };

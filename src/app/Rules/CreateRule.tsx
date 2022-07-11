@@ -45,7 +45,7 @@ import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbP
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { EventTemplate } from '../CreateRecording/CreateRecording';
 import { Rule } from './Rules';
-import { MatchExpressionEvaluator } from './MatchExpressionEvaluator';
+import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 
 // FIXME check if this is correct/matches backend name validation
@@ -415,7 +415,7 @@ const Comp = () => {
               </CardHeaderMain>
             </CardHeader>
             <CardBody>
-              <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
+              <MatchExpressionEvaluator showHint matchExpression={matchExpression} onChange={setMatchExpressionValid} />
             </CardBody>
           </Card>
         </GridItem>

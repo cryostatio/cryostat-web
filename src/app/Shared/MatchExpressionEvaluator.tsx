@@ -45,6 +45,7 @@ import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import {CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangleIcon} from '@patternfly/react-icons';
 
 export interface MatchExpressionEvaluatorProps {
+  showHint?: boolean;
   matchExpression?: string;
   onChange?: (validated: ValidatedOptions) => void;
 }
@@ -126,12 +127,15 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
       <StackItem>
         { statusLabel }
       </StackItem>
-      <StackItem>
-        <Text>
-          Hint: try an expression like
-        </Text>
-        { exampleExpression }
-      </StackItem>
+      {
+        props.showHint ?
+          <StackItem>
+            <Text>
+              Hint: try an expression like
+            </Text>
+            { exampleExpression }
+          </StackItem> : <></>
+      }
       <StackItem>
         {
           !!target?.alias && !!target?.connectUrl ?
