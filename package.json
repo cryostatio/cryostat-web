@@ -31,7 +31,6 @@
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^27.0.2",
     "@types/js-base64": "3.0.0",
-    "@types/react-router-dom": "^5.3.3",
     "@types/react-test-renderer": "^17.0.1",
     "@types/victory": "^33.1.5",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
