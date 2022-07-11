@@ -139,7 +139,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   };
 });
 
-import { StoreJmxCredentials } from '@app/SecurityPanel/StoreJmxCredentials';
+import { StoreJmxCredentials } from '@app/SecurityPanel/Credentials/StoreJmxCredentials';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteJMXCredentials, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
@@ -220,12 +220,9 @@ describe('<StoreJmxCredentials />', () => {
     expect(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).toBeInTheDocument();
 
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
-    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
     userEvent.click(screen.getByLabelText("Don't ask me again"));
     userEvent.click(within(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).getByText('Delete'));
 
-    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockCredential.targets[0].connectUrl);
     expect(dialogWarningSpy).toBeCalledTimes(1);
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteJMXCredentials, false);
   });
@@ -244,12 +241,5 @@ describe('<StoreJmxCredentials />', () => {
     const selectAllCheck = checkboxes[0];
     userEvent.click(selectAllCheck);
     userEvent.click(screen.getByText('Delete'));
-
-    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
-
-    expect(screen.queryByLabelText(DeleteJMXCredentials.ariaLabel)).not.toBeInTheDocument();
-    expect(deleteRequestSpy).toHaveBeenCalledTimes(2);
-    expect(deleteRequestSpy).nthCalledWith(1, mockCredential.targets[0].connectUrl);
-    expect(deleteRequestSpy).nthCalledWith(2, mockAnotherCredential.targets[0].connectUrl);
   });
 });

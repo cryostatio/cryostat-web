@@ -41,7 +41,8 @@ import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { first } from 'rxjs';
+import { first, map } from 'rxjs';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface CreateJmxCredentialModalProps {
   visible: boolean;
@@ -50,21 +51,31 @@ export interface CreateJmxCredentialModalProps {
 
 export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredentialModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [validTarget, setValidTarget] = React.useState(ValidatedOptions.default);
 
-  const onSave = React.useCallback((username: string, password: string) => {
-    let isValid;
-    context.target.target().subscribe((t) => {
-      isValid = t == NO_TARGET ? ValidatedOptions.error : ValidatedOptions.success;
-      setValidTarget(isValid);
-    });
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target()
+      .pipe(
+        map(target => target !== NO_TARGET),
+        map(isTarget => isTarget ? ValidatedOptions.success : ValidatedOptions.error)
+      )
+      .subscribe(setValidTarget)
+    );
+  }, [context, context.target, setValidTarget]);
 
-    if (isValid == ValidatedOptions.success) {
-      context.api.postTargetCredentials(username, password)
-      .pipe(first())
-      .subscribe();
-      props.onClose();
-    }
+  const onSave = React.useCallback((username: string, password: string): Promise<void> => {
+    return new Promise((resolve) => {
+      context.target.target().pipe(first()).subscribe((target) => {
+        context.api.postCredentials(`target.connectUrl == "${target.connectUrl}"`, username, password)
+          .pipe(first())
+          .subscribe(() => {
+            props.onClose();
+            resolve();
+          });
+      });
+    });
   }, [props.onClose, context, context.target, context.api, validTarget, setValidTarget]);
 
   return (
@@ -74,8 +85,8 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
       showClose={true}
       onClose={props.onClose}
       title="Store JMX Credentials"
-      description="Creates stored credentials for a given target. 
-        If a Target JVM requires JMX authentication, Cryostat will use stored credentials 
+      description="Creates stored credentials for a given target.
+        If a Target JVM requires JMX authentication, Cryostat will use stored credentials
         when attempting to open JMX connections to the target."
     >
       <Form>

@@ -40,6 +40,7 @@ import { Modal, ModalVariant } from '@patternfly/react-core';
 import { JmxAuthForm } from './JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { first } from 'rxjs';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 
 export interface AuthModalProps {
   visible: boolean;
@@ -50,25 +51,30 @@ export interface AuthModalProps {
 export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
 
-  const handleDismiss = () => {
-    props.onDismiss();
-  };
-
-  const onSave = (username: string, password: string) => {
-    context.api.postTargetCredentials(username, password).pipe(first()).subscribe();
-    props.onSave();
-  };
+  const onSave = React.useCallback((username: string, password: string): Promise<void> => {
+    return new Promise((resolve) => {
+      context.target.target().pipe(first()).subscribe((target) => {
+        if (target === NO_TARGET) {
+          return;
+        }
+        context.api.postCredentials(`target.connectUrl == "${target.connectUrl}"`, username, password).pipe(first()).subscribe(() => {
+          props.onSave();
+          resolve();
+        });
+      });
+    });
+  }, [context, context.target, context.api, props.onSave]);
 
   return (
     <Modal
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}
-      onClose={handleDismiss}
+      onClose={props.onDismiss}
       title="Authentication Required"
       description="This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections."
     >
-      <JmxAuthForm onSave={onSave} onDismiss={handleDismiss} />
+      <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} />
     </Modal>
   );
 };

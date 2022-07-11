@@ -53,7 +53,7 @@ import {
 import { SearchIcon } from '@patternfly/react-icons';
 import { forkJoin, merge, Observable } from 'rxjs';
 
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { TableComposable, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from '../SecurityPanel';
 import { CredentialsTableRow } from './CredentialsTableRow';
@@ -78,11 +78,11 @@ export const StoreJmxCredentials = () => {
 
   const refreshStoredTargetsList = React.useCallback(() => {
     setIsLoading(true);
-    addSubscription(context.api.getStoredJmxCredentials().subscribe((credentials: StoredCredential[]) => {
+    addSubscription(context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
       setCredentials(credentials);
       setIsLoading(false);
     }));
-  }, [context, context.api, setCredentials]);
+  }, [context, context.api, setIsLoading, setCredentials]);
 
   React.useEffect(() => {
     refreshStoredTargetsList();
@@ -90,7 +90,7 @@ export const StoreJmxCredentials = () => {
 
   React.useEffect(() => {
     const targetsChanged = context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery);
-    const credentialAdd = context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored);
+    const credentialAdd = context.notificationChannel.messages(NotificationCategory.CredentialsStored);
     const sub = merge(targetsChanged, credentialAdd).subscribe(() => {
       refreshStoredTargetsList();
     });
@@ -98,8 +98,8 @@ export const StoreJmxCredentials = () => {
   }, [context, context.notificationChannel, refreshStoredTargetsList]);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
-      setCredentials(old => old.filter(c => c.matchExpression !== v.message.target));
+    const sub = context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
+      setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
     });
     return () => sub.unsubscribe();
   }, [context, context.notificationChannel, setCredentials]);
@@ -126,21 +126,19 @@ export const StoreJmxCredentials = () => {
 
   const handleDeleteCredentials = () => {
     const tasks: Observable<any>[] = [];
-    const rows: [string, Target][] = [];
-    for (const credential of credentials) {
-      for (const target of credential.targets) {
-        rows.push([credential.matchExpression, target]);
-      }
-    }
-    rows.forEach((r: [string, Target], idx) => {
+    credentials.forEach((credential, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        tasks.push(context.api.deleteTargetCredentials(r[1].connectUrl));
-        context.target.deleteCredentials(r[1].connectUrl);
+        tasks.push(context.api.deleteCredentials(credential.id));
+        // context.target.deleteCredentials(r[1].connectUrl);
       }
     });
     addSubscription(forkJoin(tasks).subscribe());
   };
+
+  const handleAuthModalOpen = React.useCallback(() => {
+    setShowAuthModal(true);
+  }, [setShowAuthModal]);
 
   const handleAuthModalClose = React.useCallback(() => {
     setShowAuthModal(false);
@@ -162,7 +160,7 @@ export const StoreJmxCredentials = () => {
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
-        <Button variant="primary" aria-label="add-jmx-credential" onClick={() => setShowAuthModal(true)}>
+        <Button variant="primary" aria-label="add-jmx-credential" onClick={handleAuthModalOpen}>
           Add
         </Button>,
         <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>

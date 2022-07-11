@@ -53,7 +53,6 @@ class TargetService {
   private readonly _target: Subject<Target> = new BehaviorSubject(NO_TARGET);
   private readonly _authFailure: Subject<void> = new Subject();
   private readonly _authRetry: Subject<void> = new Subject();
-  private readonly _credentials: Map<string, string> = new window.Map();
   private readonly _sslFailure: Subject<void> = new Subject();
 
   setTarget(target: Target): void {
@@ -82,22 +81,6 @@ class TargetService {
 
   setAuthRetry(): void {
     this._authRetry.next();
-  }
-
-  hasCredentials(target: string): boolean {
-    return this._credentials.has(target);
-  }
-
-  deleteCredentials(target: string): void {
-    this._credentials.delete(target);
-  }
-
-  setCredentials(target: string, credentials: string): void {
-    this._credentials.set(target, credentials);
-  }
-
-  getCredentials(target: string): string | undefined {
-    return this._credentials.get(target);
   }
 
   sslFailure(): Observable<void> {

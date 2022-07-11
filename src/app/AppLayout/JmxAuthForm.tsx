@@ -36,13 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { first } from 'rxjs/operators';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface JmxAuthFormProps {
   onDismiss: () => void;
-  onSave: (username: string, password: string) => void;
+  onSave: (username: string, password: string) => Promise<void>;
 }
 
 const EnterKeyCode = 13;
@@ -52,33 +51,29 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  const clear = () => {
+  const clear = React.useCallback(() => {
     setUsername('');
     setPassword('');
-  };
+  }, [setUsername, setPassword]);
 
-  const handleSave = () => {
-    context.target
-      .target()
-      .pipe(first())
-      .subscribe((target) => {
-        context.target.setCredentials(target.connectUrl, `${username}:${password}`);
-        context.target.setAuthRetry();
-        clear();
-        props.onSave(username, password);
-      });
-  };
+  const handleSave = React.useCallback(() => {
+    props.onSave(username, password).then(() => {
+      console.log('on save, setting auth retry');
+      clear();
+      context.target.setAuthRetry();
+    });
+  }, [context, context.target, clear, props.onSave, username, password]);
 
-  const handleDismiss = () => {
+  const handleDismiss = React.useCallback(() => {
     clear();
     props.onDismiss();
-  };
+  }, [clear, props.onDismiss]);
 
-  const handleKeyUp = (event: React.KeyboardEvent): void => {
+  const handleKeyUp = React.useCallback((event: React.KeyboardEvent): void => {
     if (event.keyCode === EnterKeyCode) {
       handleSave();
     }
-  };
+  }, [handleSave]);
 
   return (
     <Form>
