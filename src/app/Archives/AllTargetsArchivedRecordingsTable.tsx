@@ -58,7 +58,6 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   const [counts, setCounts] = React.useState([] as number[]);
   const [search, setSearch] = React.useState('');
   const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
-  const [searchedCounts, setSearchedCounts] = React.useState([] as number[]);
   const [expandedTargets, setExpandedTargets] = React.useState([] as Target[]);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -163,25 +162,17 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
   React.useEffect(() => {
     let updatedSearchedTargets;
-    let updatedSearchedCounts: number[] = [];
     if (!search) {
       updatedSearchedTargets = targets;
-      updatedSearchedCounts = counts;
     } else {
       const searchText = search.trim().toLowerCase();
       updatedSearchedTargets = targets.filter((t: Target) => t.alias.toLowerCase().includes(searchText) || t.connectUrl.toLowerCase().includes(searchText))
-      
-      for (const t of updatedSearchedTargets) {
-        const idx = targets.indexOf(t);
-        updatedSearchedCounts.push(counts[idx]); 
-      }
     }
 
     if (!_.isEqual(searchedTargetsRef.current, updatedSearchedTargets)) {
       setSearchedTargets([...updatedSearchedTargets]);
     }
-    setSearchedCounts([...updatedSearchedCounts]);
-  }, [search, targets, counts]);
+  }, [search, targets]);
 
   React.useEffect(() => {
     addSubscription(
@@ -222,25 +213,17 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     );
   }, [addSubscription, context, context.notificationChannel, updateCount]);
 
-  const isExpandable = React.useMemo(() => {
-    let result: Map<Target, boolean> = new Map<Target, boolean>();
-    searchedTargets.map((target) => {
-      result.set(target, expandedTargets.includes(target) || !expandedTargets.includes(target));
-    });
-    return result;
-  }, [searchedTargets, searchedCounts, expandedTargets]);
-
   const toggleExpanded = React.useCallback((target) => {
     const idx = expandedTargets.indexOf(target);
     setExpandedTargets(expandedTargets => idx >= 0 ? [...expandedTargets.slice(0, idx), ...expandedTargets.slice(idx + 1, expandedTargets.length)] : [...expandedTargets, target]);
   }, [expandedTargets]);
 
-  const parentRows = React.useMemo(() => {
+  const targetRows = React.useMemo(() => {
     let targetRows: Map<Target, JSX.Element> = new Map<Target, JSX.Element>();
     targets.map((target, idx) => {
       let isExpanded: boolean = expandedTargets.includes(target);
       const handleToggle = () => {
-        if (isExpandable.get(target)) {
+        if (counts[idx] !== 0 || isExpanded) {
           toggleExpanded(target);
         }
       };
@@ -266,7 +249,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           </Td>
           <Td>
             <Badge key={idx}> 
-              {searchedCounts[idx]}
+              {counts[idx]}
             </Badge>          
           </Td>
         </Tr>
@@ -274,20 +257,21 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       targetRows.set(target, view);
     });
     return targetRows;
-  }, [searchedTargets, searchedCounts, expandedTargets]);
+  }, [targets, counts, expandedTargets, searchedTargets]);
 
-  const childRows = React.useMemo(() => {
-    let nestedTables: Map<Target, JSX.Element> = new Map<Target, JSX.Element>();
-    targets.map((target) => {
+  const recordingRows = React.useMemo(() => {
+    let recordingRows: Map<Target, JSX.Element> = new Map<Target, JSX.Element>();
+    targets.map((target, idx) => {
+      let isExpanded: boolean = expandedTargets.includes(target);
       let view: JSX.Element;
       view =(<>
-        <Tr key={`${target.alias}_child`} isExpanded={expandedTargets.includes(target)} isHidden={!searchedTargets.includes(target)}>
+        <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={!searchedTargets.includes(target)}>
           <Td
-            key={`target-ex-expand-${target.alias}`}
+            key={`target-ex-expand-${idx}`}
             dataLabel={"Content Details"}
             colSpan={tableColumns.length + 1}
           >
-            {expandedTargets.includes(target) ?
+            {isExpanded ?
               <ExpandableRowContent>
                 <ArchivedRecordingsTable isUploadsTable={false} target={of(target)}/>
               </ExpandableRowContent>
@@ -296,31 +280,32 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           </Td>
         </Tr>
       </>);
-      nestedTables.set(target, view);
+      recordingRows.set(target, view);
     });
-    return nestedTables;
-  }, [targets, expandedTargets]);
+    return recordingRows;
+  }, [targets, expandedTargets, searchedTargets]);
+
+  const tableRows = React.useMemo(() => {
+    return targets.map((target) => <>{targetRows.get(target)}{recordingRows.get(target)}</>);
+  }, [targets, targetRows, recordingRows]);
 
   let view: JSX.Element;
   if (isLoading) {
     view = (<LoadingView/>);
   } else {
     view = (<>
-      <TableComposable aria-label="all-archives">
+      <TableComposable aria-label="all-archives" className='pf-c-table-all-archives'>
         <Thead>
           <Tr>
             <Th key="table-header-expand"/>
-            {tableColumns.map((key , idx) => (
+            {tableColumns.map((key) => (
               <Th key={`table-header-${key}`}>{key}</Th>
             ))}
           </Tr>
         </Thead>
-        {targets.map((target, idx) => (
-          <Tbody key={idx} isExpanded={expandedTargets.includes(target)}>
-            {parentRows.get(target)}
-            {childRows.get(target)}
-          </Tbody>
-        ))}
+        <Tbody>
+          {tableRows}
+        </Tbody>
       </TableComposable>
     </>)
   }
