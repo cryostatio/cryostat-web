@@ -44,8 +44,6 @@ export interface JmxAuthFormProps {
   onSave: (username: string, password: string) => Promise<void>;
 }
 
-const EnterKeyCode = 13;
-
 export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
@@ -58,7 +56,6 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
 
   const handleSave = React.useCallback(() => {
     props.onSave(username, password).then(() => {
-      console.log('on save, setting auth retry');
       clear();
       context.target.setAuthRetry();
     });
@@ -70,7 +67,7 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
   }, [clear, props.onDismiss]);
 
   const handleKeyUp = React.useCallback((event: React.KeyboardEvent): void => {
-    if (event.keyCode === EnterKeyCode) {
+    if (event.code === 'Enter') {
       handleSave();
     }
   }, [handleSave]);
