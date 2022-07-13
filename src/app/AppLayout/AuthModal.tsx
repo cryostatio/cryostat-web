@@ -61,7 +61,8 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
           first(),
           filter(target => target !== NO_TARGET),
           map(target => target.connectUrl),
-          mergeMap(connectUrl => context.api.postCredentials(`target.connectUrl == "${connectUrl}"`, username, password))
+          map(connectUrl => `target.connectUrl == "${connectUrl}"`),
+          mergeMap(matchExpression => context.api.postCredentials(matchExpression, username, password))
         ).subscribe(result => {
           if (result) {
             props.onSave();
