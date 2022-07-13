@@ -252,6 +252,6 @@ export const StoreJmxCredentials = () => {
 
 export const StoreJmxCredentialsCard: SecurityCard = {
   title: 'Store JMX Credentials',
-  description: `Credentials that Cryostat uses to connect to target JVMs over JMX are stored here. Expand an item to see which known target applications the credential applies to.`,
+  description: `Credentials that Cryostat uses to connect to target JVMs over JMX are stored here.`,
   content: StoreJmxCredentials,
 };
