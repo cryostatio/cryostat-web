@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { CodeBlock, CodeBlockCode, Label, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
+import { CodeBlock, CodeBlockCode, Label, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Target } from '@app/Shared/Services/Target.service';
@@ -119,14 +119,20 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
         <TargetSelect/>
       </StackItem>
       <StackItem>
-        { statusLabel }
-        {
-          !props.inlineHint ?
-            <Tooltip content={<div>Hint: try an expression like <br />{ exampleExpression }</div>}>
-              <HelpIcon noVerticalAlign />
-            </Tooltip>
-          : <></>
-        }
+        <Split hasGutter isWrappable>
+          <SplitItem>
+            { statusLabel }
+          </SplitItem>
+          <SplitItem>
+            {
+              !props.inlineHint ?
+                <Tooltip content={<div>Hint: try an expression like <br />{ exampleExpression }</div>}>
+                  <HelpIcon />
+                </Tooltip>
+              : <></>
+            }
+          </SplitItem>
+        </Split>
       </StackItem>
       {
         props.inlineHint ?
