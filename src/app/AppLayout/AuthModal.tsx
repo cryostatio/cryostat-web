@@ -86,7 +86,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
         </Text>
       }
     >
-      <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} />
+      <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} focus={true} />
     </Modal>
   );
 };

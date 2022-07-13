@@ -78,7 +78,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
         If a Target JVM requires JMX authentication, Cryostat will use stored credentials
         when attempting to open JMX connections to the target."
     >
-      <JmxAuthForm onSave={onSave} onDismiss={props.onClose}>
+      <JmxAuthForm onSave={onSave} onDismiss={props.onClose} focus={false}>
         <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
         <FormGroup
           label="Match Expression"
@@ -100,6 +100,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
             aria-describedby="rule-matchexpr-helper"
             onChange={setMatchExpression}
             validated={matchExpressionValid}
+            autoFocus
           />
         </FormGroup>
       </JmxAuthForm>

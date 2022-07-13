@@ -42,6 +42,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 export interface JmxAuthFormProps {
   onDismiss: () => void;
   onSave: (username: string, password: string) => Promise<void>;
+  focus?: boolean;
 }
 
 export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) => {
@@ -83,7 +84,7 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
           id="username"
           onChange={setUsername}
           onKeyUp={handleKeyUp}
-          autoFocus
+          autoFocus={props.focus}
         />
       </FormGroup>
       <FormGroup isRequired label="Password" fieldId="password">
