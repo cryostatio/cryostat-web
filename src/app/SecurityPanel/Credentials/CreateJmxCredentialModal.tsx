@@ -74,7 +74,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
       showClose={true}
       onClose={props.onClose}
       title="Store JMX Credentials"
-      description="Creates stored credentials for a given target.
+      description="Creates stored credentials for target JVMs according to various properties.
         If a Target JVM requires JMX authentication, Cryostat will use stored credentials
         when attempting to open JMX connections to the target."
     >
