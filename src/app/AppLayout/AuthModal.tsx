@@ -40,7 +40,7 @@ import { Modal, ModalVariant, Text } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
 import { JmxAuthForm } from './JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { filter, first, mergeMap } from 'rxjs';
+import { filter, first, map, mergeMap } from 'rxjs';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 
@@ -60,7 +60,8 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
         context.target.target().pipe(
           first(),
           filter(target => target !== NO_TARGET),
-          mergeMap(target => context.api.postCredentials(`target.connectUrl == "${target.connectUrl}"`, username, password))
+          map(target => target.connectUrl),
+          mergeMap(connectUrl => context.api.postCredentials(`target.connectUrl == "${connectUrl}"`, username, password))
         ).subscribe(result => {
           if (result) {
             props.onSave();
