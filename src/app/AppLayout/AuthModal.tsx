@@ -42,6 +42,7 @@ import { JmxAuthForm } from './JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { first } from 'rxjs';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface AuthModalProps {
   visible: boolean;
@@ -51,18 +52,23 @@ export interface AuthModalProps {
 
 export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
   const onSave = React.useCallback((username: string, password: string): Promise<void> => {
     return new Promise((resolve) => {
-      context.target.target().pipe(first()).subscribe((target) => {
-        if (target === NO_TARGET) {
-          return;
-        }
-        context.api.postCredentials(`target.connectUrl == "${target.connectUrl}"`, username, password).pipe(first()).subscribe(() => {
-          props.onSave();
-          resolve();
-        });
-      });
+      addSubscription(
+        context.target.target().pipe(first()).subscribe((target) => {
+          if (target === NO_TARGET) {
+            return;
+          }
+          addSubscription(
+            context.api.postCredentials(`target.connectUrl == "${target.connectUrl}"`, username, password).pipe(first()).subscribe(() => {
+              props.onSave();
+              resolve();
+            })
+          );
+        })
+      );
     });
   }, [context, context.target, context.api, props.onSave]);
 

@@ -41,6 +41,7 @@ import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { first } from 'rxjs';
 import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface CreateJmxCredentialModalProps {
   visible: boolean;
@@ -49,17 +50,20 @@ export interface CreateJmxCredentialModalProps {
 
 export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredentialModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
 
   const onSave = React.useCallback((username: string, password: string): Promise<void> => {
     return new Promise((resolve) => {
-      context.api.postCredentials(matchExpression, username, password)
-        .pipe(first())
-        .subscribe(() => {
-          props.onClose();
-          resolve();
-        });
+      addSubscription(
+        context.api.postCredentials(matchExpression, username, password)
+          .pipe(first())
+          .subscribe(() => {
+            props.onClose();
+            resolve();
+          })
+      );
     });
   }, [props.onClose, context, context.target, context.api, matchExpression]);
 
