@@ -415,7 +415,7 @@ const Comp = () => {
               </CardHeaderMain>
             </CardHeader>
             <CardBody>
-              <MatchExpressionEvaluator showHint matchExpression={matchExpression} onChange={setMatchExpressionValid} />
+              <MatchExpressionEvaluator inlineHint matchExpression={matchExpression} onChange={setMatchExpressionValid} />
             </CardBody>
           </Card>
         </GridItem>
