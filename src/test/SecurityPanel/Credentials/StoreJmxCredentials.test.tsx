@@ -103,7 +103,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
           .mockReturnValue(of(true)),
         getCredentials: jest
           .fn()
-          .mockReturnValueOnce(of([mockCredential])) // 'renders correectly'
+          .mockReturnValueOnce(of([mockCredential])) // 'renders correctly'
 
           .mockReturnValueOnce(of([])) // 'adds the correct table entry when a stored notification is received'
           .mockReturnValueOnce(of([mockCredential]))
