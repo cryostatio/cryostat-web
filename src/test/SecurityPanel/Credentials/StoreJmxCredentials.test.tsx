@@ -106,7 +106,6 @@ jest.mock('@app/Shared/Services/Api.service', () => {
           .mockReturnValueOnce(of([mockCredential])) // 'renders correctly'
 
           .mockReturnValueOnce(of([])) // 'adds the correct table entry when a stored notification is received'
-          .mockReturnValueOnce(of([mockCredential]))
 
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'removes the correct table entry when a deletion notification is received'
 
@@ -159,8 +158,7 @@ describe('<StoreJmxCredentials />', () => {
     );
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
-    // FIXME this should only be callede once, the notification message contents should update state
-    expect(apiRequestSpy).toHaveBeenCalledTimes(2);
+    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('removes the correct table entry when a deletion notification is received', () => {
