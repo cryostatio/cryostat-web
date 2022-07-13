@@ -79,6 +79,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
         when attempting to open JMX connections to the target."
     >
       <JmxAuthForm onSave={onSave} onDismiss={props.onClose}>
+        <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
         <FormGroup
           label="Match Expression"
           isRequired
@@ -86,7 +87,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
           helperText={
             <Text component={TextVariants.small}>
               Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.
-              Select a target from the dropdown above to view the context object available within the match expression context and test if the expression matches.
+              Select a target from the dropdown below to view the context object available within the match expression context and test if the expression matches.
             </Text>
           }
           validated={matchExpressionValid}
@@ -100,7 +101,6 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
             onChange={setMatchExpression}
             validated={matchExpressionValid}
           />
-          <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
         </FormGroup>
       </JmxAuthForm>
     </Modal>
