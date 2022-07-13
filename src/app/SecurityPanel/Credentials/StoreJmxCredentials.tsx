@@ -88,6 +88,7 @@ export const StoreJmxCredentials = () => {
     refreshStoredTargetsList();
   }, []);
 
+  // FIXME update state locally without performing a re-query
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe(() => {
       refreshStoredTargetsList();

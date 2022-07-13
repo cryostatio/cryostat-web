@@ -136,6 +136,7 @@ jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
 
 describe('<StoreJmxCredentials />', () => {
   it('renders correctly', async () => {
+    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     let tree;
     await act(async () => {
       tree = renderer.create(
@@ -145,9 +146,12 @@ describe('<StoreJmxCredentials />', () => {
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
+
+    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('adds the correct table entry when a stored notification is received', () => {
+    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -155,9 +159,12 @@ describe('<StoreJmxCredentials />', () => {
     );
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
+    // FIXME this should only be callede once, the notification message contents should update state
+    expect(apiRequestSpy).toHaveBeenCalledTimes(2);
   });
 
   it('removes the correct table entry when a deletion notification is received', () => {
+    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -166,9 +173,11 @@ describe('<StoreJmxCredentials />', () => {
 
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
+    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('renders an empty table after receiving deletion notifications for all credentials', () => {
+    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -178,6 +187,7 @@ describe('<StoreJmxCredentials />', () => {
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.queryByText(mockAnotherCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
+    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('opens the JMX auth modal when Add is clicked', () => {
@@ -194,6 +204,8 @@ describe('<StoreJmxCredentials />', () => {
   });
 
   it('shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete', () => {
+    const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -214,9 +226,13 @@ describe('<StoreJmxCredentials />', () => {
 
     expect(dialogWarningSpy).toBeCalledTimes(1);
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteJMXCredentials, false);
+    expect(queryRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('makes multiple delete requests when all credentials are deleted at once w/o popup warning', () => {
+    const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -230,5 +246,7 @@ describe('<StoreJmxCredentials />', () => {
     const selectAllCheck = checkboxes[0];
     userEvent.click(selectAllCheck);
     userEvent.click(screen.getByText('Delete'));
+    expect(queryRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(2);
   });
 });
