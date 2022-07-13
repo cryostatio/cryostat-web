@@ -40,7 +40,7 @@ import { Modal, ModalVariant, Text } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
 import { JmxAuthForm } from './JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { first } from 'rxjs';
+import { filter, first, mergeMap } from 'rxjs';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 
@@ -55,18 +55,19 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
   const addSubscription = useSubscriptions();
 
   const onSave = React.useCallback((username: string, password: string): Promise<void> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       addSubscription(
-        context.target.target().pipe(first()).subscribe((target) => {
-          if (target === NO_TARGET) {
-            return;
+        context.target.target().pipe(
+          first(),
+          filter(target => target !== NO_TARGET),
+          mergeMap(target => context.api.postCredentials(`target.connectUrl == "${target.connectUrl}"`, username, password))
+        ).subscribe(result => {
+          if (result) {
+            props.onSave();
+            resolve();
+          } else {
+            reject();
           }
-          addSubscription(
-            context.api.postCredentials(`target.connectUrl == "${target.connectUrl}"`, username, password).pipe(first()).subscribe(() => {
-              props.onSave();
-              resolve();
-            })
-          );
         })
       );
     });
