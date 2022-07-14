@@ -189,6 +189,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           } else if (evt.kind === 'LOST') {
             const idx = targets.indexOf(target);
             setTargets(old => old.filter(o => o.connectUrl != target.connectUrl));
+            setExpandedTargets(old => old.filter(o => o != target));
             setCounts(old => old.splice(idx, 1));
           }
         })
@@ -222,6 +223,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     let targetRows: Map<Target, JSX.Element> = new Map<Target, JSX.Element>();
     targets.map((target, idx) => {
       let isExpanded: boolean = expandedTargets.includes(target);
+      
       const handleToggle = () => {
         if (counts[idx] !== 0 || isExpanded) {
           toggleExpanded(target);
@@ -257,7 +259,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       targetRows.set(target, view);
     });
     return targetRows;
-  }, [targets, counts, expandedTargets, searchedTargets]);
+  }, [targets, expandedTargets, counts, searchedTargets]);
 
   const recordingRows = React.useMemo(() => {
     let recordingRows: Map<Target, JSX.Element> = new Map<Target, JSX.Element>();
@@ -287,7 +289,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
   const tableRows = React.useMemo(() => {
     return targets.map((target) => <>{targetRows.get(target)}{recordingRows.get(target)}</>);
-  }, [targets, targetRows, recordingRows]);
+  }, [targetRows, recordingRows]);
 
   let view: JSX.Element;
   if (isLoading) {
