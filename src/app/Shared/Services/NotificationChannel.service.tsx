@@ -65,6 +65,8 @@ export enum NotificationCategory {
   GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
   TargetCredentialsStored = 'TargetCredentialsStored',
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
+  CredentialsStored = 'CredentialsStored',
+  CredentialsDeleted = 'CredentialsDeleted',
 }
 
 export enum CloseStatus {
@@ -220,6 +222,20 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Target Credentials Deleted',
       body: evt => `Credentials deleted for target: ${evt.message.target}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.CredentialsStored, {
+      variant: AlertVariant.success,
+      title: 'Credentials Stored',
+      body: evt => `Credentials stored for: ${evt.message.matchExpression}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.CredentialsDeleted, {
+      variant: AlertVariant.success,
+      title: 'Credentials Deleted',
+      body: evt => `Credentials deleted for: ${evt.message.matchExpression}`
     } as NotificationMessageMapper
   ],
 ]);

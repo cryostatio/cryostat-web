@@ -47,10 +47,10 @@ import '@testing-library/jest-dom';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
-const mockCredential: StoredCredential = { matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"', targets: [{ connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' }] };
-const mockAnotherCredential: StoredCredential = { matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"', targets: [{ connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherTarget' }] };
+const mockCredential: StoredCredential = { id: 0, matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"' };
+const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"' };
 
-jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
+jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
   return {
     CreateJmxCredentialModal: jest.fn((props) => {
       return (
@@ -69,7 +69,7 @@ jest.mock('@app/SecurityPanel/CreateJmxCredentialModal', () => {
 });
 
 jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
-  const mockNotification = { message: { target: 'target.connectUrl == "service:jmx:rmi://someUrl"' } } as NotificationMessage;
+  const mockNotification = { message: { matchExpression: mockCredential.matchExpression } } as NotificationMessage;
   return {
     ...jest.requireActual('@app/Shared/Services/NotificationChannel.service'),
     NotificationChannel: jest.fn(() => {
@@ -78,32 +78,17 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
           .fn()
           .mockReturnValueOnce(of()) // 'renders correctly'
           .mockReturnValueOnce(of())
-          .mockReturnValueOnce(of())
 
-          .mockReturnValueOnce(of()) // 'adds the correct table entry when a stored notification is received'
-          .mockReturnValueOnce(of(mockNotification))
+          .mockReturnValueOnce(of(mockNotification)) // 'adds the correct table entry when a stored notification is received'
           .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'removes the correct table entry when a deletion notification is received'
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of(mockNotification))
 
           .mockReturnValueOnce(of()) // 'renders an empty table after receiving deletion notifications for all credentials'
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of(mockNotification))
 
           .mockReturnValue(of()), // all other tests
-      };
-    }),
-  };
-});
-
-jest.mock('@app/Shared/Services/Target.service', () => {
-  return {
-    ...jest.requireActual('@app/Shared/Services/Target.service'),
-    TargetService: jest.fn(() => {
-      return {
-        deleteCredentials: jest.fn(),
       };
     }),
   };
@@ -113,12 +98,14 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   return {
     ApiService: jest.fn(() => {
       return {
-        getStoredJmxCredentials: jest
+        deleteCredentials: jest
           .fn()
-          .mockReturnValueOnce(of([mockCredential])) // 'renders correectly'
+          .mockReturnValue(of(true)),
+        getCredentials: jest
+          .fn()
+          .mockReturnValueOnce(of([mockCredential])) // 'renders correctly'
 
-          .mockReturnValueOnce(of([mockCredential])) // 'adds the correct table entry when a stored notification is received'
-          .mockReturnValueOnce(of([mockCredential]))
+          .mockReturnValueOnce(of([])) // 'adds the correct table entry when a stored notification is received'
 
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'removes the correct table entry when a deletion notification is received'
 
@@ -126,7 +113,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 
           .mockReturnValueOnce(of([])) // 'opens the JMX auth modal when Add is clicked'
 
-          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'makes a delete request when deleting one credential'
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete'
 
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'makes multiple delete requests when all credentials are deleted at once'
 
@@ -139,7 +126,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   };
 });
 
-import { StoreJmxCredentials } from '@app/SecurityPanel/StoreJmxCredentials';
+import { StoreJmxCredentials } from '@app/SecurityPanel/Credentials/StoreJmxCredentials';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteJMXCredentials, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
@@ -148,6 +135,7 @@ jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
 
 describe('<StoreJmxCredentials />', () => {
   it('renders correctly', async () => {
+    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     let tree;
     await act(async () => {
       tree = renderer.create(
@@ -157,38 +145,47 @@ describe('<StoreJmxCredentials />', () => {
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
+
+    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('adds the correct table entry when a stored notification is received', () => {
+    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByText('fooTarget')).toBeInTheDocument();
+    expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
+    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('removes the correct table entry when a deletion notification is received', () => {
+    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
 
-    expect(screen.queryByText('fooTarget')).not.toBeInTheDocument();
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
+    expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
+    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('renders an empty table after receiving deletion notifications for all credentials', () => {
+    const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
 
-    expect(screen.queryByText('fooTarget')).not.toBeInTheDocument();
+    expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
+    expect(screen.queryByText(mockAnotherCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
+    expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('opens the JMX auth modal when Add is clicked', () => {
@@ -205,14 +202,16 @@ describe('<StoreJmxCredentials />', () => {
   });
 
   it('shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete', () => {
+    const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByText('fooTarget')).toBeInTheDocument();
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
+    expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
 
     userEvent.click(screen.getByLabelText('credentials-table-row-0-check'));
     userEvent.click(screen.getByText('Delete'));
@@ -220,36 +219,32 @@ describe('<StoreJmxCredentials />', () => {
     expect(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).toBeInTheDocument();
 
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
-    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
     userEvent.click(screen.getByLabelText("Don't ask me again"));
     userEvent.click(within(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).getByText('Delete'));
 
-    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toHaveBeenCalledWith(mockCredential.targets[0].connectUrl);
     expect(dialogWarningSpy).toBeCalledTimes(1);
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteJMXCredentials, false);
+    expect(queryRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('makes multiple delete requests when all credentials are deleted at once w/o popup warning', () => {
+    const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByText('anotherTarget')).toBeInTheDocument();
-    expect(screen.getByText('fooTarget')).toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
+    expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
     userEvent.click(selectAllCheck);
     userEvent.click(screen.getByText('Delete'));
-
-    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteTargetCredentials');
-
-    expect(screen.queryByLabelText(DeleteJMXCredentials.ariaLabel)).not.toBeInTheDocument();
+    expect(queryRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledTimes(2);
-    expect(deleteRequestSpy).nthCalledWith(1, mockCredential.targets[0].connectUrl);
-    expect(deleteRequestSpy).nthCalledWith(2, mockAnotherCredential.targets[0].connectUrl);
   });
 });

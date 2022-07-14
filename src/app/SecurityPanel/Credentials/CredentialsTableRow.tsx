@@ -36,35 +36,40 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { StoreJmxCredentialsCard } from './Credentials/StoreJmxCredentials';
-import { ImportCertificate } from './ImportCertificate';
+import { Checkbox } from '@patternfly/react-core';
+import { Tbody, Td, Tr  } from '@patternfly/react-table';
 
-export const SecurityPanel = () => {
-  const securityCards = [ImportCertificate, StoreJmxCredentialsCard].map((c) => ({
-    title: c.title,
-    description: c.description,
-    element: React.createElement(c.content, null),
-  }));
+export interface CredentialsTableRowProps {
+  key: number;
+  index: number;
+  matchExpression: string;
+  isChecked: boolean;
+  label: string;
+  handleCheck: (state: boolean, index: number) => void;
+}
+
+export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowProps> = (props: CredentialsTableRowProps) => {
+
+  const handleCheck = React.useCallback((checked: boolean) => {
+    props.handleCheck(checked, props.index);
+  }, [props, props.handleCheck]);
 
   return (
-    <BreadcrumbPage pageTitle="Security">
-      {securityCards.map((s) => (
-        <Card key={s.title}>
-          <CardTitle>
-            <Text component={TextVariants.h1}>{s.title}</Text>
-            <Text component={TextVariants.small}>{s.description}</Text>
-          </CardTitle>
-          <CardBody>{s.element}</CardBody>
-        </Card>
-      ))}
-    </BreadcrumbPage>
+    <Tbody key={props.index}>
+      <Tr key={`${props.index}`}>
+        <Td key={`credentials-table-row-${props.index}_0`}>
+          <Checkbox
+            name={`credentials-table-row-${props.index}-check`}
+            onChange={handleCheck}
+            isChecked={props.isChecked}
+            id={`credentials-table-row-${props.index}-check`}
+            aria-label={`credentials-table-row-${props.index}-check`}
+          />
+        </Td>
+        <Td key={`credentials-table-row-${props.index}_1`} dataLabel={props.label}>
+          {props.matchExpression}
+        </Td>
+      </Tr>
+    </Tbody>
   );
 };
-
-export interface SecurityCard {
-  title: string;
-  description: string;
-  content: React.FunctionComponent;
-}

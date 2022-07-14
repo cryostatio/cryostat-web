@@ -36,15 +36,16 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { CodeBlock, CodeBlockCode, Label, Stack, StackItem, Text, ValidatedOptions } from '@patternfly/react-core';
+import { CodeBlock, CodeBlockCode, Label, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
-import {CheckCircleIcon, ExclamationCircleIcon, InfoCircleIcon, WarningTriangleIcon} from '@patternfly/react-icons';
+import {CheckCircleIcon, ExclamationCircleIcon, HelpIcon, InfoCircleIcon, WarningTriangleIcon} from '@patternfly/react-icons';
 
 export interface MatchExpressionEvaluatorProps {
+  inlineHint?: boolean;
   matchExpression?: string;
   onChange?: (validated: ValidatedOptions) => void;
 }
@@ -109,13 +110,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     }
     body = JSON.stringify(body, null, 2);
     body = body.substring(1, body.length - 1);
-    return (<>
-      <CodeBlock>
-        <CodeBlockCode>
-          { body }
-        </CodeBlockCode>
-      </CodeBlock>
-    </>);
+    return body;
   },[target]);
 
   return (<>
@@ -124,14 +119,35 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
         <TargetSelect/>
       </StackItem>
       <StackItem>
-        { statusLabel }
+        <Split hasGutter isWrappable>
+          <SplitItem>
+            { statusLabel }
+          </SplitItem>
+          <SplitItem>
+            {
+              !props.inlineHint ?
+                <Tooltip content={<div>Hint: try an expression like <br />{ exampleExpression }</div>}>
+                  <HelpIcon />
+                </Tooltip>
+              : <></>
+            }
+          </SplitItem>
+        </Split>
       </StackItem>
-      <StackItem>
-        <Text>
-          Hint: try an expression like
-        </Text>
-        { exampleExpression }
-      </StackItem>
+      {
+        props.inlineHint ?
+          <StackItem>
+            <Text>
+              Hint: try an expression like
+            </Text>
+            <CodeBlock>
+              <CodeBlockCode>
+                { exampleExpression }
+              </CodeBlockCode>
+            </CodeBlock>
+          </StackItem>
+          : <></>
+      }
       <StackItem>
         {
           !!target?.alias && !!target?.connectUrl ?

@@ -36,52 +36,46 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { first } from 'rxjs/operators';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
+import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface JmxAuthFormProps {
   onDismiss: () => void;
-  onSave: (username: string, password: string) => void;
+  onSave: (username: string, password: string) => Promise<void>;
+  focus?: boolean;
 }
-
-const EnterKeyCode = 13;
 
 export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  const clear = () => {
+  const clear = React.useCallback(() => {
     setUsername('');
     setPassword('');
-  };
+  }, [setUsername, setPassword]);
 
-  const handleSave = () => {
-    context.target
-      .target()
-      .pipe(first())
-      .subscribe((target) => {
-        context.target.setCredentials(target.connectUrl, `${username}:${password}`);
-        context.target.setAuthRetry();
-        clear();
-        props.onSave(username, password);
-      });
-  };
+  const handleSave = React.useCallback(() => {
+    props.onSave(username, password).then(() => {
+      clear();
+      context.target.setAuthRetry();
+    });
+  }, [context, context.target, clear, props.onSave, username, password]);
 
-  const handleDismiss = () => {
+  const handleDismiss = React.useCallback(() => {
     clear();
     props.onDismiss();
-  };
+  }, [clear, props.onDismiss]);
 
-  const handleKeyUp = (event: React.KeyboardEvent): void => {
-    if (event.keyCode === EnterKeyCode) {
+  const handleKeyUp = React.useCallback((event: React.KeyboardEvent): void => {
+    if (event.code === 'Enter') {
       handleSave();
     }
-  };
+  }, [handleSave]);
 
   return (
     <Form>
+      { props.children }
       <FormGroup isRequired label="Username" fieldId="username">
         <TextInput
           value={username}
@@ -90,7 +84,7 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
           id="username"
           onChange={setUsername}
           onKeyUp={handleKeyUp}
-          autoFocus
+          autoFocus={props.focus}
         />
       </FormGroup>
       <FormGroup isRequired label="Password" fieldId="password">

@@ -51,11 +51,12 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { forkJoin, merge, Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { TableComposable, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
-import { SecurityCard } from './SecurityPanel';
+import { SecurityCard } from '../SecurityPanel';
+import { CredentialsTableRow } from './CredentialsTableRow';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
@@ -72,35 +73,31 @@ export const StoreJmxCredentials = () => {
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const tableColumns: string[] = ['Target Alias', 'Connect URL'];
+  const tableColumns: string[] = ['Match Expression'];
   const tableTitle = 'Stored Credentials';
 
   const refreshStoredTargetsList = React.useCallback(() => {
     setIsLoading(true);
-    addSubscription(context.api.getStoredJmxCredentials().subscribe((credentials: StoredCredential[]) => {
+    addSubscription(context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
       setCredentials(credentials);
       setIsLoading(false);
     }));
-  }, [context, context.api, setCredentials]);
+  }, [context, context.api, setIsLoading, setCredentials]);
 
   React.useEffect(() => {
     refreshStoredTargetsList();
   }, []);
 
   React.useEffect(() => {
-    const targetsChanged = context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery);
-    const credentialAdd = context.notificationChannel.messages(NotificationCategory.TargetCredentialsStored);
-    const sub = merge(targetsChanged, credentialAdd).subscribe(() => {
-      refreshStoredTargetsList();
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.notificationChannel, refreshStoredTargetsList]);
+    addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((msg) => {
+      setCredentials(old => old.concat([msg.message]));
+    }));
+  }, [context, context.notificationChannel, setCredentials]);
 
   React.useEffect(() => {
-    const sub = context.notificationChannel.messages(NotificationCategory.TargetCredentialsDeleted).subscribe((v) => {
-      setCredentials(old => old.filter(c => c.matchExpression !== v.message.target));
-    });
-    return () => sub.unsubscribe();
+    addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
+      setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
+    }));
   }, [context, context.notificationChannel, setCredentials]);
 
   const handleRowCheck = React.useCallback(
@@ -125,21 +122,18 @@ export const StoreJmxCredentials = () => {
 
   const handleDeleteCredentials = () => {
     const tasks: Observable<any>[] = [];
-    const rows: [string, Target][] = [];
-    for (const credential of credentials) {
-      for (const target of credential.targets) {
-        rows.push([credential.matchExpression, target]);
-      }
-    }
-    rows.forEach((r: [string, Target], idx) => {
+    credentials.forEach((credential, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
-        tasks.push(context.api.deleteTargetCredentials(r[1].connectUrl));
-        context.target.deleteCredentials(r[1].connectUrl);
+        tasks.push(context.api.deleteCredentials(credential.id));
       }
     });
     addSubscription(forkJoin(tasks).subscribe());
   };
+
+  const handleAuthModalOpen = React.useCallback(() => {
+    setShowAuthModal(true);
+  }, [setShowAuthModal]);
 
   const handleAuthModalClose = React.useCallback(() => {
     setShowAuthModal(false);
@@ -161,7 +155,7 @@ export const StoreJmxCredentials = () => {
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
-        <Button variant="primary" aria-label="add-jmx-credential" onClick={() => setShowAuthModal(true)}>
+        <Button variant="primary" aria-label="add-jmx-credential" onClick={handleAuthModalOpen}>
           Add
         </Button>,
         <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>
@@ -194,41 +188,21 @@ export const StoreJmxCredentials = () => {
     );
   };
 
-  const CredentialsTableRow = (props) => {
-    const handleCheck = (checked) => {
-      handleRowCheck(checked, props.index);
-    };
-
-    return (
-      <Tbody key={props.index}>
-        <Tr key={`${props.index}`}>
-          <Td key={`credentials-table-row-${props.index}_0`}>
-            <Checkbox
-              name={`credentials-table-row-${props.index}-check`}
-              onChange={handleCheck}
-              isChecked={checkedIndices.includes(props.index)}
-              id={`credentials-table-row-${props.index}-check`}
-              aria-label={`credentials-table-row-${props.index}-check`}
-            />
-          </Td>
-          <Td key={`credentials-table-row-${props.index}_1`} dataLabel={tableColumns[0]}>
-            {props.target.alias}
-          </Td>
-          <Td key={`credentials-table-row-${props.index}_2`} dataLabel={tableColumns[1]}>
-            {props.target.connectUrl}
-          </Td>
-        </Tr>
-      </Tbody>
-    );
-  };
+    const handleCheck = React.useCallback((checked, index) => {
+      handleRowCheck(checked, index);
+    }, [handleRowCheck]);
 
   const targetRows = React.useMemo(() => {
     const rows: JSX.Element[] = [];
-    for (const credential of credentials) {
-      for (const target of credential.targets) {
-        const idx = rows.length;
-        rows.push(<CredentialsTableRow key={idx} matchExpression={credential.matchExpression} target={target} index={idx} />);
-      }
+    for (var i = 0; i < credentials.length; i++) {
+      rows.push(<CredentialsTableRow
+        key={i}
+        index={i}
+        label={tableColumns[0]}
+        matchExpression={credentials[i].matchExpression}
+        isChecked={checkedIndices.includes(i)}
+        handleCheck={(state: boolean, index: number) => handleCheck(state, index)}
+      />);
     }
     return rows;
   }, [credentials, checkedIndices]);
@@ -278,8 +252,6 @@ export const StoreJmxCredentials = () => {
 
 export const StoreJmxCredentialsCard: SecurityCard = {
   title: 'Store JMX Credentials',
-  description: `Targets for which Cryostat has stored JMX credentials are listed here.
-    If a Target JVM requires JMX authentication, Cryostat will use stored credentials
-    when attempting to open JMX connections to the target.`,
+  description: `Credentials that Cryostat uses to connect to target JVMs over JMX are stored here.`,
   content: StoreJmxCredentials,
 };

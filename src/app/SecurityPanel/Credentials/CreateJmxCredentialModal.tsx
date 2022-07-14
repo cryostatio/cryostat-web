@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Form, FormGroup, Modal, ModalVariant, ValidatedOptions } from '@patternfly/react-core';
+import { FormGroup, Modal, ModalVariant, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { first } from 'rxjs';
+import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface CreateJmxCredentialModalProps {
   visible: boolean;
@@ -50,22 +50,22 @@ export interface CreateJmxCredentialModalProps {
 
 export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredentialModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const [validTarget, setValidTarget] = React.useState(ValidatedOptions.default);
+  const addSubscription = useSubscriptions();
+  const [matchExpression, setMatchExpression] = React.useState('');
+  const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
 
-  const onSave = React.useCallback((username: string, password: string) => {
-    let isValid;
-    context.target.target().subscribe((t) => {
-      isValid = t == NO_TARGET ? ValidatedOptions.error : ValidatedOptions.success;
-      setValidTarget(isValid);
+  const onSave = React.useCallback((username: string, password: string): Promise<void> => {
+    return new Promise((resolve) => {
+      addSubscription(
+        context.api.postCredentials(matchExpression, username, password)
+          .pipe(first())
+          .subscribe(() => {
+            props.onClose();
+            resolve();
+          })
+      );
     });
-
-    if (isValid == ValidatedOptions.success) {
-      context.api.postTargetCredentials(username, password)
-      .pipe(first())
-      .subscribe();
-      props.onClose();
-    }
-  }, [props.onClose, context, context.target, context.api, validTarget, setValidTarget]);
+  }, [props.onClose, context, context.target, context.api, matchExpression]);
 
   return (
     <Modal
@@ -74,23 +74,36 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
       showClose={true}
       onClose={props.onClose}
       title="Store JMX Credentials"
-      description="Creates stored credentials for a given target. 
-        If a Target JVM requires JMX authentication, Cryostat will use stored credentials 
+      description="Creates stored credentials for target JVMs according to various properties.
+        If a Target JVM requires JMX authentication, Cryostat will use stored credentials
         when attempting to open JMX connections to the target."
     >
-      <Form>
+      <JmxAuthForm onSave={onSave} onDismiss={props.onClose} focus={false}>
+        <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
         <FormGroup
-          label="Target"
+          label="Match Expression"
           isRequired
-          fieldId="target-select"
-          helperTextInvalid="Select a target"
-          validated={validTarget}
+          fieldId="match-expression"
+          helperText={
+            <Text component={TextVariants.small}>
+              Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.
+              Select a target from the dropdown below to view the context object available within the match expression context and test if the expression matches.
+            </Text>
+          }
+          validated={matchExpressionValid}
         >
-          <TargetSelect />
+          <TextInput
+            value={matchExpression}
+            isRequired
+            type="text"
+            id="rule-matchexpr"
+            aria-describedby="rule-matchexpr-helper"
+            onChange={setMatchExpression}
+            validated={matchExpressionValid}
+            autoFocus
+          />
         </FormGroup>
-      </Form>
-      <br/>
-      <JmxAuthForm onSave={onSave} onDismiss={props.onClose} />
+      </JmxAuthForm>
     </Modal>
   );
 };

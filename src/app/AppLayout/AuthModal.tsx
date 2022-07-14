@@ -36,10 +36,13 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Modal, ModalVariant } from '@patternfly/react-core';
+import { Modal, ModalVariant, Text } from '@patternfly/react-core';
+import { Link } from 'react-router-dom';
 import { JmxAuthForm } from './JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { first } from 'rxjs';
+import { filter, first, map, mergeMap } from 'rxjs';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface AuthModalProps {
   visible: boolean;
@@ -49,26 +52,44 @@ export interface AuthModalProps {
 
 export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
-  const handleDismiss = () => {
-    props.onDismiss();
-  };
-
-  const onSave = (username: string, password: string) => {
-    context.api.postTargetCredentials(username, password).pipe(first()).subscribe();
-    props.onSave();
-  };
+  const onSave = React.useCallback((username: string, password: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      addSubscription(
+        context.target.target().pipe(
+          first(),
+          filter(target => target !== NO_TARGET),
+          map(target => target.connectUrl),
+          map(connectUrl => `target.connectUrl == "${connectUrl}"`),
+          mergeMap(matchExpression => context.api.postCredentials(matchExpression, username, password))
+        ).subscribe(result => {
+          if (result) {
+            props.onSave();
+            resolve();
+          } else {
+            reject();
+          }
+        })
+      );
+    });
+  }, [context, context.target, context.api, props.onSave]);
 
   return (
     <Modal
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}
-      onClose={handleDismiss}
+      onClose={props.onDismiss}
       title="Authentication Required"
-      description="This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections."
+      description={
+        <Text>
+          This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections.
+          Enter credentials specific to this target, or go to <Link onClick={props.onDismiss} to="/security">Security</Link> to add a credential matching multiple targets.
+        </Text>
+      }
     >
-      <JmxAuthForm onSave={onSave} onDismiss={handleDismiss} />
+      <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} focus={true} />
     </Modal>
   );
 };

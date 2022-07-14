@@ -572,26 +572,25 @@ export class ApiService {
       ));
   }
 
-  postTargetCredentials(username: string, password: string): Observable<boolean> {
+  postCredentials(matchExpression: string, username: string, password: string): Observable<boolean> {
     const body = new window.FormData();
+    body.append('matchExpression', matchExpression);
     body.append('username', username);
     body.append('password', password);
 
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest(
-        'v2', `targets/${encodeURIComponent(target.connectUrl)}/credentials`,
-        {
-          method: 'POST',
-          body,
-        }
-      ).pipe(
-        map(resp => resp.ok),
-        first()
-      )
-    ));
+    return this.sendRequest(
+      'v2.2', 'credentials',
+      {
+        method: 'POST',
+        body,
+      }
+    ).pipe(
+      map(resp => resp.ok),
+      first()
+    );
   }
 
-  getStoredJmxCredentials() : Observable<StoredCredential[]> {
+  getCredentials() : Observable<StoredCredential[]> {
     return this.sendRequest(
       'v2.2', `credentials`,
       {
@@ -604,9 +603,9 @@ export class ApiService {
     );
   }
 
-  deleteTargetCredentials(targetId: string): Observable<boolean> {
+  deleteCredentials(id: number): Observable<boolean> {
     return this.sendRequest(
-      'v2', `targets/${encodeURIComponent(targetId)}/credentials`,
+      'v2.2', `credentials/${id}`,
       {
         method: 'DELETE'
       }
@@ -768,6 +767,6 @@ export interface Metadata {
 }
 
 export interface StoredCredential {
+  id: number;
   matchExpression: string;
-  targets: Target[];
 }
