@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { first } from 'rxjs/operators';
+import { concatMap, filter, first, mergeMap, toArray} from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
@@ -47,6 +47,7 @@ import { EventTemplate } from '../CreateRecording/CreateRecording';
 import { Rule } from './Rules';
 import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -62,6 +63,7 @@ const Comp = () => {
   const [description, setDescription] = React.useState('');
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
+  const [target, setTarget] = React.useState(undefined as Target | undefined);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState(null as string | null);
   const [templateType, setTemplateType] = React.useState(null as string | null);
@@ -172,9 +174,13 @@ const Comp = () => {
   // or at least make them write the name manually and choose TARGET/CUSTOM from a dropdown?
   React.useEffect(() => {
     addSubscription(
-      context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).subscribe(setTemplates)
+      context.target.target()
+      .pipe(
+        filter(target => target !== NO_TARGET),
+        concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)),
+      ).subscribe(setTemplates)
     );
-  }, [addSubscription, context, context.api]);
+  }, [addSubscription, context, context.api, context.target]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
