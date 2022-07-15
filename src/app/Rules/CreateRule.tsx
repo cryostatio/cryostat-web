@@ -48,6 +48,7 @@ import { Rule } from './Rules';
 import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { iif } from 'rxjs';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -172,12 +173,22 @@ const Comp = () => {
 
   // FIXME we query ourselves to populate the list of templates, since Rules can apply to any target. Is this better than making the user write the event specifier manually,
   // or at least make them write the name manually and choose TARGET/CUSTOM from a dropdown?
+
   React.useEffect(() => {
     addSubscription(
       context.target.target()
       .pipe(
-        filter(target => target !== NO_TARGET),
-        concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)),
+        concatMap(target => 
+          iif(
+            () => target !== NO_TARGET,
+            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
+            context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
+              mergeMap(x => x),
+              filter(template => (template.provider !== "Cryostat") || (template.name !== "Cryostat")),
+              toArray()
+            ),       
+          )
+        )
       ).subscribe(setTemplates)
     );
   }, [addSubscription, context, context.api, context.target]);
