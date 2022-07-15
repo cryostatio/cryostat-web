@@ -77,7 +77,7 @@ export const Archives = () => {
       alias: '',
     }
     return (<> 
-      <ArchivedRecordingsTable isUploadsTable={true} target={of(target)}/>
+      <ArchivedRecordingsTable target={of(target)} isUploadsTable={true}/>
     </>);
   },[]);
 
