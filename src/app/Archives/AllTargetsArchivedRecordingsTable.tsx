@@ -40,7 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Badge } from '@patternfly/react-core';
+import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Badge, Checkbox } from '@patternfly/react-core';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, OuterScrollContainer, InnerScrollContainer} from '@patternfly/react-table';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
@@ -59,6 +59,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   const [search, setSearch] = React.useState('');
   const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
   const [expandedTargets, setExpandedTargets] = React.useState([] as Target[]);
+  const [hideEmptyTargets, setHideEmptyTargets] = React.useState(true);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -230,7 +231,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       };
 
       return ( 
-        <Tr key={`${idx}_parent`} isHidden={!searchedTargets.includes(target)}>
+        <Tr key={`${idx}_parent`} isHidden={!searchedTargets.includes(target) || (hideEmptyTargets && counts[idx] === 0)}>
           <Td
               key={`target-table-row-${idx}_1`}
               id={`target-ex-toggle-${idx}`}
@@ -244,7 +245,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           <Td key={`target-table-row-${idx}_2`} dataLabel={tableColumns[0]}>
             {(target.alias == target.connectUrl) || !target.alias ?
               `${target.connectUrl}`
-            : 
+            :
               `${target.alias} (${target.connectUrl})`}
           </Td>
           <Td  key={`target-table-row-${idx}_3`}>
@@ -255,14 +256,14 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </Tr>
       );
     });
-  }, [targets, expandedTargets, counts, searchedTargets]);
+  }, [targets, expandedTargets, counts, searchedTargets, hideEmptyTargets]);
 
   const recordingRows = React.useMemo(() => {
     return targets.map((target, idx) => {
       let isExpanded: boolean = expandedTargets.includes(target);
       
       return (
-        <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={!searchedTargets.includes(target)}>
+        <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={!searchedTargets.includes(target) || (hideEmptyTargets && counts[idx] === 0)}>
           <Td
             key={`target-ex-expand-${idx}`}
             dataLabel={"Content Details"}
@@ -278,7 +279,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </Tr>
       );
     });
-  }, [targets, expandedTargets, searchedTargets]);
+  }, [targets, expandedTargets, searchedTargets, hideEmptyTargets, counts]);
 
   const rowPairs = React.useMemo(() => {
     let rowPairs: JSX.Element[] = [];
@@ -324,6 +325,18 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
               value={search}
               onChange={setSearch}
               onClear={evt => setSearch('')}
+            />
+          </ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Checkbox
+              name={`all-archives-hide-check`}
+              label="Hide targets with zero recordings"
+              onChange={v => setHideEmptyTargets(old => !old)}
+              isChecked={hideEmptyTargets}
+              id={`all-archives-hide-check`}
+              aria-label={`all-archives-hide-check`}
             />
           </ToolbarItem>
         </ToolbarGroup>
