@@ -248,7 +248,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             :
               `${target.alias} (${target.connectUrl})`}
           </Td>
-          <Td  key={`target-table-row-${idx}_3`}>
+          <Td key={`target-table-row-${idx}_3`}>
             <Badge key={`${idx}_count`}> 
               {counts[idx]}
             </Badge>
@@ -290,10 +290,6 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     return rowPairs;
   }, [targetRows, recordingRows]);
 
-  // The table rows are nested inside of a single <Tbody/> component
-  // because searching targets results in row borders disappearing if
-  // we instead enclose each row pair inside its own <Tbody/>, which is
-  // unfortunately the proper way to handle nested tables.
   let view: JSX.Element;
   if (isLoading) {
     view = (<LoadingView/>);
