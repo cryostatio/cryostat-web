@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
-import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { Tbody, Th, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { PlusIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -61,6 +61,7 @@ import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 export interface ArchivedRecordingsTableProps { 
   target: Observable<Target>;
   isUploadsTable: boolean;
+  isNestedTable: boolean;
 }
 
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
@@ -291,7 +292,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
     const parentRow = React.useMemo(() => {
       return(
-        <Tr key={`${props.index}_parent`}>
+        <Tr key={`${props.index}_parent`} >
           <Td key={`archived-table-row-${props.index}_0`}>
             <Checkbox
               name={`archived-table-row-${props.index}-check`}
@@ -318,11 +319,13 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               labels={parsedLabels} 
             />
           </Td>
-          <RecordingActions
-            recording={props.recording}
-            index={props.index}
-            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
-          />
+          <Td key={`active-table-row-${props.index}_4`}>
+            <RecordingActions
+              recording={props.recording}
+              index={props.index}
+              uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
+            />
+          </Td>
         </Tr>
       );
     }, [props.recording, props.recording.metadata.labels, props.recording.name, props.index, handleCheck, checkedIndices, isExpanded, handleToggle, tableColumns, context.api]);
@@ -432,6 +435,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               isEmpty={!recordings.length}
               isEmptyFilterResult={!filteredRecordings.length}
               clearFilters={handleClearFilters}
+              isNestedTable={props.isNestedTable}
               errorMessage=''
           >
             {recordingRows}

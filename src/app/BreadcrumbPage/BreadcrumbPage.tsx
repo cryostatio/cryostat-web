@@ -51,7 +51,7 @@ export interface BreadcrumbTrail {
 
 export const BreadcrumbPage: React.FunctionComponent<BreadcrumbPageProps> = (props) => {
   return (<>
-    <PageSection>
+    <PageSection hasOverflowScroll>
       <Breadcrumb>
         {
         (props.breadcrumbs || []).map(

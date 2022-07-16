@@ -41,7 +41,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Badge } from '@patternfly/react-core';
-import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, OuterScrollContainer, InnerScrollContainer} from '@patternfly/react-table';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -270,7 +270,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           >
             {isExpanded ?
               <ExpandableRowContent>
-                <ArchivedRecordingsTable target={of(target)} isUploadsTable={false}/>
+                <ArchivedRecordingsTable target={of(target)} isUploadsTable={false} isNestedTable={true}/>
               </ExpandableRowContent>
             :
               null}
@@ -289,12 +289,16 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     return rowPairs;
   }, [targetRows, recordingRows]);
 
+  // The table rows are nested inside of a single <Tbody/> component
+  // because searching targets results in row borders disappearing if
+  // we instead enclose each row pair inside its own <Tbody/>, which is
+  // unfortunately the proper way to handle nested tables.
   let view: JSX.Element;
   if (isLoading) {
     view = (<LoadingView/>);
   } else {
     view = (<>
-      <TableComposable aria-label="all-archives" className='pf-c-table-all-archives'>
+      <TableComposable aria-label="all-archives">
         <Thead>
           <Tr>
             <Th key="table-header-expand"/>

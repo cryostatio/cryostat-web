@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { Title, EmptyState, EmptyStateIcon, EmptyStateBody, Button, EmptyStateSecondaryActions } from '@patternfly/react-core';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
-import { TableComposable, Thead, Tr, Th } from '@patternfly/react-table';
+import { TableComposable, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 
@@ -50,6 +50,7 @@ export interface RecordingsTableProps {
   isEmptyFilterResult?: boolean;
   isHeaderChecked: boolean;
   isLoading: boolean;
+  isNestedTable: boolean;
   errorMessage: string;
   onHeaderCheck: (event, checked: boolean) => void;
   clearFilters?: (filterType) => void;
@@ -90,8 +91,8 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
     </>);
   } else {
     view = (<>
-      <TableComposable aria-label={props.tableTitle}>
-        <Thead>
+      <TableComposable aria-label={props.tableTitle} isStickyHeader>
+        <Thead >
           <Tr>
             <Th
               key="table-header-check-all"
@@ -101,7 +102,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
               }}
             />
             <Th key="table-header-expand"/>
-            {props.tableColumns.map((key , idx) => (
+            {props.tableColumns.map((key, idx) => (
               <Th key={`table-header-${key}`}>{key}</Th>
             ))}
             <Th key="table-header-actions"/>
@@ -109,6 +110,17 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
         </Thead>
         { props.children }
       </TableComposable>
+    </>);
+  }
+
+  if (props.isNestedTable) {
+    return (<> 
+      <OuterScrollContainer style={{ height: '500px' }}>
+        { props.toolbar }
+        <InnerScrollContainer>
+          { view }
+        </InnerScrollContainer>
+      </OuterScrollContainer>
     </>);
   }
 
