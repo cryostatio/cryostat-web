@@ -194,7 +194,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
 
