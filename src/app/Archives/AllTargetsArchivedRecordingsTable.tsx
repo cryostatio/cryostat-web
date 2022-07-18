@@ -291,10 +291,16 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     return rowPairs;
   }, [targetRows, recordingRows]);
 
+  const noTargets = React.useMemo(() => {
+    return (
+      searchedTargets.length === 0 || (hideEmptyTargets && counts.reduce((a, b) => a + b, 0) === 0)
+    );
+  }, [searchedTargets, hideEmptyTargets, counts]);
+
   let view: JSX.Element;
   if (isLoading) {
     view = (<LoadingView/>);
-  } else if (searchedTargets.length === 0 || (hideEmptyTargets && counts.reduce((a, b) => a + b, 0) === 0)) {
+  } else if (noTargets) {
     view = (<>
       <EmptyState>
         <EmptyStateIcon icon={SearchIcon}/>
