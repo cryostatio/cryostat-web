@@ -136,7 +136,7 @@ export const EventTemplates = () => {
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.TemplateDeleted)
-        .subscribe(v => setTemplates(old => old.filter(o => o.name != v.message.template.name)))
+        .subscribe(v => setTemplates(old => old.filter(o => (o.name != v.message.template.name || o.type != v.message.template.type))))
     )
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
