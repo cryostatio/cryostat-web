@@ -40,8 +40,9 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Badge, Checkbox } from '@patternfly/react-core';
-import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent, OuterScrollContainer, InnerScrollContainer} from '@patternfly/react-table';
+import { Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, SearchInput, Badge, Checkbox, EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
+import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -293,6 +294,15 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   let view: JSX.Element;
   if (isLoading) {
     view = (<LoadingView/>);
+  } else if (searchedTargets.length === 0 || (hideEmptyTargets && counts.reduce((a, b) => a + b, 0) === 0)) {
+    view = (<>
+      <EmptyState>
+        <EmptyStateIcon icon={SearchIcon}/>
+        <Title headingLevel="h4" size="lg">
+          No Targets
+        </Title>
+      </EmptyState>
+    </>);
   } else {
     view = (<>
       <TableComposable aria-label="all-archives">
