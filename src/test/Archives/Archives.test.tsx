@@ -35,3 +35,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+import * as React from 'react';
+import userEvent from '@testing-library/user-event';
+import { render, screen, within } from '@testing-library/react';
+import renderer, { act } from 'react-test-renderer';
+import '@testing-library/jest-dom';
+import { of } from 'rxjs';
+
+import { Archives } from '@app/Archives/Archives';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+
+jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
+  return {
+    ArchivedRecordingsTable: jest.fn((props) => {
+      return (
+        <div>
+          Archived Recordings Table
+        </div>
+      )
+    }),
+  };
+});
+
+jest.mock('@app/Archives/AllTargetsArchivedRecordingsTable', () => {
+  return {
+    AllTargetsArchivedRecordingsTable: jest.fn(() => {
+      return (
+        <div>
+          All Targets Table
+        </div>
+      )
+    }),
+  }
+})
+
+jest.spyOn(defaultServices.api, 'isArchiveEnabled').mockReturnValue(of(true));
+
+describe('<Archives />', () => {
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <Archives />
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+});
