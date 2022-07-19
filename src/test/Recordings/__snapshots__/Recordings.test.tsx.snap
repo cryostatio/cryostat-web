@@ -22,10 +22,10 @@ exports[`<Recordings /> renders correctly 1`] = `
         onSelect={[Function]}
       >
         <button
-          aria-hidden={false}
+          aria-hidden={true}
           aria-label="Scroll left"
           className="pf-c-tabs__scroll-button"
-          disabled={false}
+          disabled={true}
           onClick={[Function]}
         >
           <svg
@@ -50,41 +50,48 @@ exports[`<Recordings /> renders correctly 1`] = `
         <ul
           className="pf-c-tabs__list"
           onScroll={[Function]}
+          role="tablist"
         >
           <li
             className="pf-c-tabs__item pf-m-current"
+            role="presentation"
           >
             <button
               aria-controls="pf-tab-section-0-active-recordings"
+              aria-selected={true}
               className="pf-c-tabs__link"
               data-ouia-component-type="PF4/TabButton"
               data-ouia-safe={true}
               id="pf-tab-0-active-recordings"
               onClick={[Function]}
+              role="tab"
             >
               Active Recordings
             </button>
           </li>
           <li
             className="pf-c-tabs__item"
+            role="presentation"
           >
             <button
               aria-controls="pf-tab-section-1-archived-recordings"
+              aria-selected={false}
               className="pf-c-tabs__link"
               data-ouia-component-type="PF4/TabButton"
               data-ouia-safe={true}
               id="pf-tab-1-archived-recordings"
               onClick={[Function]}
+              role="tab"
             >
               Archived Recordings
             </button>
           </li>
         </ul>
         <button
-          aria-hidden={false}
+          aria-hidden={true}
           aria-label="Scroll right"
           className="pf-c-tabs__scroll-button"
-          disabled={false}
+          disabled={true}
           onClick={[Function]}
         >
           <svg

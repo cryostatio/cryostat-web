@@ -319,13 +319,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               labels={parsedLabels} 
             />
           </Td>
-          <Td key={`active-table-row-${props.index}_4`}>
-            <RecordingActions
-              recording={props.recording}
-              index={props.index}
-              uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
-            />
-          </Td>
+          <RecordingActions
+            recording={props.recording}
+            index={props.index}
+            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
+          />
         </Tr>
       );
     }, [props.recording, props.recording.metadata.labels, props.recording.name, props.index, handleCheck, checkedIndices, isExpanded, handleToggle, tableColumns, context.api]);

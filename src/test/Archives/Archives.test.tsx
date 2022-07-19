@@ -51,7 +51,7 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
     ArchivedRecordingsTable: jest.fn((props) => {
       return (
         <div>
-          Archived Recordings Table
+          Uploads Table
         </div>
       )
     }),

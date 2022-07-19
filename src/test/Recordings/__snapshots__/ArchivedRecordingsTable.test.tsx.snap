@@ -113,13 +113,15 @@ exports[`<ArchivedRecordingsTable /> renders correctly 1`] = `
                 onMouseEnter={[Function]}
                 scope={null}
               >
-                <input
-                  aria-label="Select all rows"
-                  checked={false}
-                  name="check-all"
-                  onChange={[Function]}
-                  type="checkbox"
-                />
+                <label>
+                  <input
+                    aria-label="Select all rows"
+                    checked={false}
+                    name="check-all"
+                    onChange={[Function]}
+                    type="checkbox"
+                  />
+                </label>
               </td>
               <th
                 className=""
@@ -248,7 +250,6 @@ exports[`<ArchivedRecordingsTable /> renders correctly 1`] = `
                 style={
                   Object {
                     "paddingRight": 0,
-                    "width": "auto",
                   }
                 }
               >
@@ -307,6 +308,7 @@ exports[`<ArchivedRecordingsTable /> renders correctly 1`] = `
                   className="pf-c-table__expandable-row-content"
                 >
                   <span
+                    aria-label="Contents"
                     aria-valuetext="Loading..."
                     className="pf-c-spinner pf-m-xl"
                     role="progressbar"
@@ -338,6 +340,7 @@ exports[`<ArchivedRecordingsTable /> renders correctly 1`] = `
     <div
       className="pf-c-drawer__panel pf-m-resizable"
       hidden={true}
+      id="pf-drawer-panel-0"
       onTransitionEnd={[Function]}
     />
   </div>
