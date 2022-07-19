@@ -143,28 +143,28 @@ describe('<Recordings />', () => {
     );
 
     // Assert that the active recordings tab is currently selected (default behaviour)
-    let tabsList = screen.getAllByRole('listitem');
+    let tabsList = screen.getAllByRole('tab');
     
     let firstTab = tabsList[0];
-    expect(firstTab).toHaveClass('pf-c-tabs__item pf-m-current');
+    expect(firstTab).toHaveAttribute('aria-selected', 'true');
     expect(within(firstTab).getByText('Active Recordings')).toBeTruthy();
 
     let secondTab = tabsList[1];
-    expect(secondTab).toHaveClass('pf-c-tabs__item');
+    expect(secondTab).toHaveAttribute('aria-selected', 'false');
     expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
 
     // Click the archived recordings tab
     userEvent.click(screen.getByText('Archived Recordings'));
 
     // Assert that the archived recordings tab is now selected
-    tabsList = screen.getAllByRole('listitem');
+    tabsList = screen.getAllByRole('tab');
     
     firstTab = tabsList[0];
-    expect(firstTab).toHaveClass('pf-c-tabs__item');
+    expect(firstTab).toHaveAttribute('aria-selected', 'false');
     expect(within(firstTab).getByText('Active Recordings')).toBeTruthy();
 
     secondTab = tabsList[1];
-    expect(secondTab).toHaveClass('pf-c-tabs__item pf-m-current');
+    expect(secondTab).toHaveAttribute('aria-selected', 'true');
     expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
   });
 });

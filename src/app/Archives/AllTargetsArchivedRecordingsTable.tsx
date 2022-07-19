@@ -221,6 +221,14 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     setExpandedTargets(expandedTargets => idx >= 0 ? [...expandedTargets.slice(0, idx), ...expandedTargets.slice(idx + 1, expandedTargets.length)] : [...expandedTargets, target]);
   }, [expandedTargets]);
 
+  const isHidden = React.useMemo(() => {
+    let isHidden: boolean[] = [];
+    targets.map((target, idx) => {
+      isHidden.push(!searchedTargets.includes(target) || (hideEmptyTargets && counts[idx] === 0))
+    })
+    return isHidden;
+  },[targets, searchedTargets, hideEmptyTargets, counts])
+
   const targetRows = React.useMemo(() => {
     return targets.map((target, idx) => {
       let isExpanded: boolean = expandedTargets.includes(target);
@@ -232,7 +240,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       };
 
       return ( 
-        <Tr key={`${idx}_parent`} isHidden={!searchedTargets.includes(target) || (hideEmptyTargets && counts[idx] === 0)}>
+        <Tr key={`${idx}_parent`} isHidden={isHidden[idx]}>
           <Td
               key={`target-table-row-${idx}_1`}
               id={`target-ex-toggle-${idx}`}
@@ -264,7 +272,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       let isExpanded: boolean = expandedTargets.includes(target);
       
       return (
-        <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={!searchedTargets.includes(target) || (hideEmptyTargets && counts[idx] === 0)}>
+        <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
           <Td
             key={`target-ex-expand-${idx}`}
             dataLabel={"Content Details"}
@@ -293,9 +301,9 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
   const noTargets = React.useMemo(() => {
     return (
-      searchedTargets.length === 0 || (hideEmptyTargets && counts.reduce((a, b) => a + b, 0) === 0)
+      isHidden.reduce((a, b) => a && b, true)
     );
-  }, [searchedTargets, hideEmptyTargets, counts]);
+  }, [isHidden]);
 
   let view: JSX.Element;
   if (isLoading) {

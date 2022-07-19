@@ -55,44 +55,36 @@ export const Archives = () => {
     return () => sub.unsubscribe();
   }, [context.api]);
 
-  const allTargets = React.useMemo(() => {
-    if (!archiveEnabled) {
-      return (<>
-        <EmptyState>
-          <EmptyStateIcon icon={SearchIcon}/>
-          <Title headingLevel="h4" size="lg">
-            Archives Unavailable
-          </Title>
-        </EmptyState>
-      </>);
-    }
-    return (<>
-      <AllTargetsArchivedRecordingsTable />
-    </>);
-  }, [archiveEnabled]);
+  const target: Target = {
+    connectUrl: '',
+    alias: '',
+  }
 
-  const uploads = React.useMemo(() => {
-    const target: Target = {
-      connectUrl: '',
-      alias: '',
-    }
-    return (<> 
-      <ArchivedRecordingsTable target={of(target)} isUploadsTable={true} isNestedTable={false}/>
-    </>);
-  },[]);
+  const cardBody = React.useMemo(() => {
+    return archiveEnabled ? (
+      <Tabs id='archives' activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+        <Tab id='all-targets' eventKey={0} title="All Targets">
+          <AllTargetsArchivedRecordingsTable />
+        </Tab>
+        <Tab id='uploads' eventKey={1} title="Uploads">
+          <ArchivedRecordingsTable target={of(target)} isUploadsTable={true} isNestedTable={false}/>
+        </Tab>
+      </Tabs>
+    ) : (
+      <EmptyState>
+        <EmptyStateIcon icon={SearchIcon}/>
+        <Title headingLevel="h4" size="lg">
+          Archives Unavailable
+        </Title>
+      </EmptyState>
+    );
+  }, [archiveEnabled, activeTab])
 
   return (
     <BreadcrumbPage pageTitle='Archives'>
       <Card>
         <CardBody>
-          <Tabs id='archives' activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-            <Tab id='all-targets' eventKey={0} title="All Targets">
-              { allTargets }
-            </Tab>
-            <Tab id='uploads' eventKey={1} title="Uploads">
-              { uploads }
-            </Tab>
-          </Tabs>
+          { cardBody }
         </CardBody>
       </Card>
     </BreadcrumbPage>
