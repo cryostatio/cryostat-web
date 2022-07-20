@@ -170,8 +170,7 @@ const Comp = () => {
     archivalPeriod, archivalPeriodUnits, initialDelay, initialDelayUnits,
     preservedArchives, maxAge, maxAgeUnits, maxSize, maxSizeUnits]);
 
-  // FIXME we query ourselves to populate the list of templates, since Rules can apply to any target. Is this better than making the user write the event specifier manually,
-  // or at least make them write the name manually and choose TARGET/CUSTOM from a dropdown?
+  // FIXME Error 427 JMX Authentication is handled differently than Error 502 Untrusted SSL
   const refreshTemplateList = React.useCallback(() => {
     addSubscription(
       context.target.target()
@@ -190,11 +189,7 @@ const Comp = () => {
           ),
         ),
         first(),
-      ).subscribe({
-        next: (t) => setTemplates(t),
-        error: (e) => console.log(e), 
-        complete: () => console.log("completed")
-      })
+      ).subscribe(setTemplates)
     );
   }, [addSubscription, context, context.api, context.target, setTemplates]);
 
