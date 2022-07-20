@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { catchError, concatMap, filter, first, mergeMap, toArray} from 'rxjs/operators';
+import { catchError, concatMap, filter, finalize, first, mergeMap, toArray} from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
@@ -176,11 +176,11 @@ const Comp = () => {
     addSubscription(
       context.target.target()
       .pipe(
-        concatMap(target => 
+        mergeMap(target => 
           iif(
             () => target !== NO_TARGET,
             context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`).pipe(
-              catchError(_ => of([])),
+              catchError(_ => of([] as EventTemplate[])),
             ),
             context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
               mergeMap(x => x),
@@ -190,7 +190,11 @@ const Comp = () => {
           ),
         ),
         first(),
-      ).subscribe(setTemplates)
+      ).subscribe({
+        next: (t) => setTemplates(t),
+        error: (e) => console.log(e), 
+        complete: () => console.log("completed")
+      })
     );
   }, [addSubscription, context, context.api, context.target, setTemplates]);
 
