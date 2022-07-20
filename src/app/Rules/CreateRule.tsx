@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { concatMap, filter, first, mergeMap, toArray} from 'rxjs/operators';
+import { catchError, concatMap, filter, first, mergeMap, toArray} from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
@@ -48,7 +48,7 @@ import { Rule } from './Rules';
 import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
-import { iif } from 'rxjs';
+import { iif, of } from 'rxjs';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -64,7 +64,6 @@ const Comp = () => {
   const [description, setDescription] = React.useState('');
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
-  const [target, setTarget] = React.useState(undefined as Target | undefined);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState(null as string | null);
   const [templateType, setTemplateType] = React.useState(null as string | null);
@@ -173,25 +172,33 @@ const Comp = () => {
 
   // FIXME we query ourselves to populate the list of templates, since Rules can apply to any target. Is this better than making the user write the event specifier manually,
   // or at least make them write the name manually and choose TARGET/CUSTOM from a dropdown?
-
-  React.useEffect(() => {
+  const refreshTemplateList = React.useCallback(() => {
     addSubscription(
       context.target.target()
       .pipe(
         concatMap(target => 
           iif(
             () => target !== NO_TARGET,
-            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
+            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`).pipe(
+              catchError(_ => of([])),
+            ),
             context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
               mergeMap(x => x),
               filter(template => (template.provider !== "Cryostat") || (template.name !== "Cryostat")),
-              toArray()
+              toArray(),
             ),       
-          )
-        )
+          ),
+        ),
+        first(),
       ).subscribe(setTemplates)
     );
-  }, [addSubscription, context, context.api, context.target]);
+  }, [addSubscription, context, context.api, context.target, setTemplates]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(refreshTemplateList)
+    );
+  }, [addSubscription, context, context.target, refreshTemplateList]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
@@ -202,6 +209,7 @@ const Comp = () => {
 
   return (
     <BreadcrumbPage pageTitle='Create' breadcrumbs={breadcrumbs} >
+      <Button onClick={() => {context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).subscribe()}}/>
       <Grid hasGutter>
         <GridItem xl={7}>
           <Card>
