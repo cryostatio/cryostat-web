@@ -63,6 +63,22 @@ exports[`<CreateRule/> renders correctly 1`] = `
     <div
       className="pf-l-stack__item"
     >
+      <button
+        aria-disabled={false}
+        aria-label={null}
+        className="pf-c-button pf-m-primary"
+        data-ouia-component-id="OUIA-Generated-Button-primary-1"
+        data-ouia-component-type="PF4/Button"
+        data-ouia-safe={true}
+        disabled={false}
+        onClick={[Function]}
+        role={null}
+        type="button"
+      />
+    </div>
+    <div
+      className="pf-l-stack__item"
+    >
       <div
         className="pf-l-grid pf-m-gutter"
       >
@@ -775,7 +791,7 @@ exports[`<CreateRule/> renders correctly 1`] = `
                         aria-disabled={true}
                         aria-label={null}
                         className="pf-c-button pf-m-primary pf-m-disabled"
-                        data-ouia-component-id="OUIA-Generated-Button-primary-1"
+                        data-ouia-component-id="OUIA-Generated-Button-primary-2"
                         data-ouia-component-type="PF4/Button"
                         data-ouia-safe={true}
                         disabled={true}
