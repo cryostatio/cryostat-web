@@ -69,6 +69,7 @@ const fakeTableColumns: string[] = [
 const fakeTableRows  =  (
     <Tbody>
       <Tr key='fake-row-1'>
+        <Td></Td> 
         <Td key='data-1'>
           Row 1: Fake Column 1 Data
         </Td>
@@ -83,11 +84,12 @@ const fakeTableRows  =  (
         <Td key='data-4'>
           Row 2: Fake Column 2 Data
         </Td>
+        <Td></Td>
       </Tr>
     </Tbody>
 );
 
-const mockHeaderCheck = jest.fn((event, checked) => {/* do nothing */});
+const mockHeaderCheckCallback = jest.fn((event, checked) => {/* do nothing */});
 
 
 describe('<RecordingsTable />', () => {
@@ -102,7 +104,7 @@ describe('<RecordingsTable />', () => {
         isNestedTable={false}
         errorMessage=''
         isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheck}
+        onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
       </RecordingsTable>
@@ -122,7 +124,7 @@ describe('<RecordingsTable />', () => {
         isNestedTable={false}
         errorMessage=''
         isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheck}
+        onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
       </RecordingsTable>
@@ -149,7 +151,7 @@ describe('<RecordingsTable />', () => {
         isNestedTable={true}
         errorMessage=''
         isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheck}
+        onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
       </RecordingsTable>
@@ -172,7 +174,7 @@ describe('<RecordingsTable />', () => {
         isNestedTable={false}
         errorMessage='some error'
         isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheck}
+        onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
       </RecordingsTable>
@@ -192,7 +194,7 @@ describe('<RecordingsTable />', () => {
         isNestedTable={false}
         errorMessage=''
         isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheck}
+        onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
       </RecordingsTable>
@@ -213,12 +215,56 @@ describe('<RecordingsTable />', () => {
         isNestedTable={false}
         errorMessage=''
         isHeaderChecked={false}
-        onHeaderCheck={mockHeaderCheck}
+        onHeaderCheck={mockHeaderCheckCallback}
       >
         {fakeTableRows}
       </RecordingsTable>
     );
 
     expect(screen.getByText(`No ${fakeTableTitle}`)).toBeInTheDocument();
-  })
+  });
+
+  it('handles the header checkbox callback correctly', () => {
+    render(
+      <RecordingsTable 
+        toolbar={<FakeToolbar />}
+        tableColumns={fakeTableColumns}
+        tableTitle={fakeTableTitle}
+        isEmpty={false}
+        isLoading={false}
+        isNestedTable={false}
+        errorMessage=''
+        isHeaderChecked={false}
+        onHeaderCheck={mockHeaderCheckCallback}
+      >
+        {fakeTableRows}
+      </RecordingsTable>
+    );
+
+    let headerCheckAll = screen.getByLabelText('Select all rows');
+    expect(headerCheckAll).not.toHaveAttribute('checked');
+    userEvent.click(headerCheckAll);
+    expect(mockHeaderCheckCallback).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the header checkbox as checked if props.isHeaderChecked == true', () => {
+    render(
+      <RecordingsTable 
+        toolbar={<FakeToolbar />}
+        tableColumns={fakeTableColumns}
+        tableTitle={fakeTableTitle}
+        isEmpty={false}
+        isLoading={false}
+        isNestedTable={false}
+        errorMessage=''
+        isHeaderChecked={true}
+        onHeaderCheck={mockHeaderCheckCallback}
+      >
+        {fakeTableRows}
+      </RecordingsTable>
+    );
+
+    let headerCheckAll = screen.getByLabelText('Select all rows');
+    expect(headerCheckAll).toHaveAttribute('checked');
+  });
 });
