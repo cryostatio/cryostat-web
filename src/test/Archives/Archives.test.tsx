@@ -70,7 +70,12 @@ jest.mock('@app/Archives/AllTargetsArchivedRecordingsTable', () => {
   }
 })
 
-jest.spyOn(defaultServices.api, 'isArchiveEnabled').mockReturnValue(of(true));
+jest.spyOn(defaultServices.api, 'isArchiveEnabled')
+    .mockReturnValueOnce(of(true))
+    .mockReturnValueOnce(of(true))
+    .mockReturnValueOnce(of(true))
+    .mockReturnValueOnce(of(false)) // Test archives disabled case
+    .mockReturnValue(of(true));
 
 describe('<Archives />', () => {
   it('renders correctly', async () => {
@@ -81,7 +86,74 @@ describe('<Archives />', () => {
           <Archives />
         </ServiceContext.Provider>
       );
-    });
+    })
+
     expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('has the correct page title', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Archives />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('Archives')).toBeInTheDocument();
+  });
+
+  it('handles the case where archiving is enabled', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Archives />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('All Targets')).toBeInTheDocument();
+    expect(screen.getByText('Uploads')).toBeInTheDocument();
+  });
+
+  it('handles the case where archiving is disabled', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Archives />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.queryByText('All Targets')).not.toBeInTheDocument();
+    expect(screen.queryByText('Uploads')).not.toBeInTheDocument();
+    expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
+  });
+
+  it('handles changing tabs', () => {
+    render(
+      <ServiceContext.Provider value = {defaultServices}>
+        <Archives />
+      </ServiceContext.Provider>
+    );
+
+    // Assert that the All Targets tab is currently selected (default behaviour)
+    let tabsList = screen.getAllByRole('tab');
+    
+    let firstTab = tabsList[0];
+    expect(firstTab).toHaveAttribute('aria-selected', 'true');
+    expect(within(firstTab).getByText('All Targets')).toBeTruthy();
+
+    let secondTab = tabsList[1];
+    expect(secondTab).toHaveAttribute('aria-selected', 'false');
+    expect(within(secondTab).getByText('Uploads')).toBeTruthy();
+
+    // Click the Uploads tab
+    userEvent.click(screen.getByText('Uploads'));
+
+    // Assert that the Uploads tab is now selected
+    tabsList = screen.getAllByRole('tab');
+    
+    firstTab = tabsList[0];
+    expect(firstTab).toHaveAttribute('aria-selected', 'false');
+    expect(within(firstTab).getByText('All Targets')).toBeTruthy();
+
+    secondTab = tabsList[1];
+    expect(secondTab).toHaveAttribute('aria-selected', 'true');
+    expect(within(secondTab).getByText('Uploads')).toBeTruthy();
   });
 });
