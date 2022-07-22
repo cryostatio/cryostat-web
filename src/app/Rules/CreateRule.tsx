@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { first } from 'rxjs/operators';
+import { catchError, filter, first, mergeMap, toArray} from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
@@ -47,6 +47,8 @@ import { EventTemplate } from '../CreateRecording/CreateRecording';
 import { Rule } from './Rules';
 import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { iif, of } from 'rxjs';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -168,13 +170,34 @@ const Comp = () => {
     archivalPeriod, archivalPeriodUnits, initialDelay, initialDelayUnits,
     preservedArchives, maxAge, maxAgeUnits, maxSize, maxSizeUnits]);
 
-  // FIXME we query ourselves to populate the list of templates, since Rules can apply to any target. Is this better than making the user write the event specifier manually,
-  // or at least make them write the name manually and choose TARGET/CUSTOM from a dropdown?
+  // FIXME Error 427 JMX Authentication is handled differently than Error 502 Untrusted SSL.
+  const refreshTemplateList = React.useCallback(() => {
+    addSubscription(
+      context.target.target()
+      .pipe(
+        mergeMap(target => 
+          iif(
+            () => target !== NO_TARGET,
+            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`).pipe(
+              catchError(_ => of([] as EventTemplate[])),
+            ),
+            context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
+              mergeMap(x => x),
+              filter(template => (template.provider !== "Cryostat") || (template.name !== "Cryostat")),
+              toArray(),
+            ),       
+          ),
+        ),
+        first(),
+      ).subscribe(setTemplates)
+    );
+  }, [addSubscription, context, context.api, context.target, setTemplates]);
+
   React.useEffect(() => {
     addSubscription(
-      context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).subscribe(setTemplates)
+      context.target.target().subscribe(refreshTemplateList)
     );
-  }, [addSubscription, context, context.api]);
+  }, [addSubscription, context, context.target, refreshTemplateList]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
