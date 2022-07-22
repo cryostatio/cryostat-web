@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { catchError, concatMap, filter, finalize, first, mergeMap, toArray} from 'rxjs/operators';
+import { catchError, filter, first, mergeMap, toArray} from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
@@ -47,7 +47,7 @@ import { EventTemplate } from '../CreateRecording/CreateRecording';
 import { Rule } from './Rules';
 import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { iif, of } from 'rxjs';
 
 // FIXME check if this is correct/matches backend name validation
