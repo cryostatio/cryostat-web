@@ -170,7 +170,7 @@ const Comp = () => {
     archivalPeriod, archivalPeriodUnits, initialDelay, initialDelayUnits,
     preservedArchives, maxAge, maxAgeUnits, maxSize, maxSizeUnits]);
 
-  // FIXME Error 427 JMX Authentication is handled differently than Error 502 Untrusted SSL
+  // FIXME Error 427 JMX Authentication is handled differently than Error 502 Untrusted SSL.
   const refreshTemplateList = React.useCallback(() => {
     addSubscription(
       context.target.target()
@@ -208,7 +208,6 @@ const Comp = () => {
 
   return (
     <BreadcrumbPage pageTitle='Create' breadcrumbs={breadcrumbs} >
-      <Button onClick={() => {context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).subscribe()}}/>
       <Grid hasGutter>
         <GridItem xl={7}>
           <Card>
