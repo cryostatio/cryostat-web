@@ -200,6 +200,7 @@ export const CustomRecordingForm = (props) => {
         isRequired
         fieldId="recording-name"
         helperText="Enter a recording name. This will be unique within the target JVM"
+        helperTextInvalid="A recording name may only contain letters, numbers, and underscores"
         validated={nameValid}
       >
         <TextInput
