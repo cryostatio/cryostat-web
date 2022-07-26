@@ -46,6 +46,7 @@ import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.se
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockUploadsTarget = { connectUrl: '', alias: '' };
 const mockRecordingLabels = {
   someLabel: 'someValue',
 };
@@ -85,15 +86,38 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
     })
   };
 });
+const mockHandleClose = () => {/*do nothing*/};
 
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { Modal, ModalVariant, Text } from '@patternfly/react-core';
+
+jest.mock('@app/Archives/ArchiveUploadModal', () => {
+  return {
+    ArchiveUploadModal: (props) => <Modal
+      isOpen={props.visible}
+      variant={ModalVariant.large}
+      showClose={true}
+      onClose={mockHandleClose}
+      title="Mock Modal"
+    >
+      Re-Upload Archived Recording
+    </Modal>
+  }
+});
+
+jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
+  return {
+    BulkEditLabels: (props) => <Text>Edit Recording Labels</Text>
+  }
+});
 
 jest.spyOn(defaultServices.api, 'deleteArchivedRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'downloadReport').mockReturnValue();
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/grafanaUrl'));
+jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
 jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
 jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of(true));
 
@@ -122,7 +146,10 @@ jest
   .mockReturnValueOnce(of()) // removes a recording after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockDeleteNotification))
+  
   .mockReturnValue(of()); // all other tests
+
+jest.spyOn(window, 'open').mockReturnValue(null);
 
 describe('<ArchivedRecordingsTable />', () => {
   it('renders correctly', async () => {
@@ -280,5 +307,38 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(grafanaUploadSpy).toHaveBeenCalledTimes(1);
     expect(grafanaUploadSpy).toBeCalledWith('someRecording');
+  });
+
+  /** Recording Actions tests */
+
+  /**Uploads Table Tests*/
+  // Test updating state with notifications (also empty target as well?)
+
+  // Test that upload button is there and that clicking it makes the upload modal appear
+  it('correctly renders the Uploads table', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false}/>
+      </ServiceContext.Provider>
+    );
+
+    // Queries for recordings 
+    expect(screen.getByText('someRecording')).toBeInTheDocument(); 
+
+    // Has the button to show the upload modal
+    const button = screen.getByLabelText('add'); 
+    expect(button).toHaveAttribute('type', 'button')
+
+    // Clicking the button shows the modal
+    userEvent.click(button);
+
+    const modal = await screen.findByRole('dialog');
+    expect(modal).toBeInTheDocument();
+    expect(modal).toBeVisible();
+
+
+    // unmock the archiveuploadmodal ?
+    
+    screen.debug();
   });
 });
