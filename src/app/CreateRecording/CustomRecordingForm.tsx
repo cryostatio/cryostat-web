@@ -48,6 +48,7 @@ import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface CustomRecordingFormProps {
   onSubmit: (recordingAttributes: RecordingAttributes) => void;
@@ -59,6 +60,7 @@ export const CustomRecordingForm = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
+  const addSubscription = useSubscriptions();
 
   const [recordingName, setRecordingName] = React.useState(props.recordingName || props?.location?.state?.recordingName || '');
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
@@ -76,25 +78,25 @@ export const CustomRecordingForm = (props) => {
   const [labels, setLabels] = React.useState([] as RecordingLabel[]);
   const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
 
-  const handleContinuousChange = (checked, evt) => {
+  const handleContinuousChange = React.useCallback((checked, evt) => {
     setContinuous(evt.target.checked);
-  };
+  }, [setContinuous]);
 
-  const handleDurationChange = (evt) => {
+  const handleDurationChange = React.useCallback((evt) => {
     setDuration(Number(evt));
-  };
+  }, [setDuration]);
 
-  const handleDurationUnitChange = (evt) => {
+  const handleDurationUnitChange = React.useCallback((evt) => {
     setDurationUnit(Number(evt));
-  };
+  }, [setDurationUnit]);
 
-  const handleTemplateChange = (template) => {
+  const handleTemplateChange = React.useCallback((template) => {
     const parts: string[] = template.split(',');
     setTemplate(parts[0]);
     setTemplateType(parts[1]);
-  };
+  }, [setTemplate, setTemplateType]);
 
-  const getEventString = () => {
+  const getEventString = React.useCallback(() => {
     var str = '';
     if (!!template) {
       str += `template=${template}`;
@@ -103,9 +105,9 @@ export const CustomRecordingForm = (props) => {
       str += `,type=${templateType}`;
     }
     return str;
-  };
+  }, [template, templateType]);
 
-  const getFormattedLabels = () => {
+  const getFormattedLabels = React.useCallback(() => {
     let obj = {};
   
       labels.forEach(l => { 
@@ -115,42 +117,42 @@ export const CustomRecordingForm = (props) => {
       });
 
     return obj;
-  }
+  }, [labels])
 
-  const handleRecordingNameChange = (name) => {
+  const handleRecordingNameChange = React.useCallback((name) => {
     setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
     setRecordingName(name);
-  };
+  }, [setNameValid, setRecordingName]);
 
-  const handleMaxAgeChange = (evt) => {
+  const handleMaxAgeChange = React.useCallback((evt) => {
     setMaxAge(Number(evt));
-  };
+  }, [setMaxAge]);
 
-  const handleMaxAgeUnitChange = (evt) => {
+  const handleMaxAgeUnitChange = React.useCallback((evt) => {
     setMaxAgeUnits(Number(evt));
-  };
+  }, [setMaxAgeUnits]);
 
-  const handleMaxSizeChange = (evt) => {
+  const handleMaxSizeChange = React.useCallback((evt) => {
     setMaxSize(Number(evt));
-  };
+  }, [setMaxSize]);
 
-  const handleMaxSizeUnitChange = (evt) => {
+  const handleMaxSizeUnitChange = React.useCallback((evt) => {
     setMaxSizeUnits(Number(evt));
-  };
+  }, [setMaxSizeUnits]);
 
-  const handleToDiskChange = (checked, evt) => {
+  const handleToDiskChange = React.useCallback((checked, evt) => {
     setToDisk(evt.target.checked);
-  };
+  }, [setToDisk]);
 
-  const setRecordingOptions = (options: RecordingOptions) => {
+  const setRecordingOptions = React.useCallback((options: RecordingOptions) => {
     // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
     setMaxAge(options.maxAge || 0);
     setMaxAgeUnits(1);
     setMaxSize(options.maxSize || 0);
     setMaxSizeUnits(1);
-  };
+  }, [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits]);
 
-  const handleSubmit = () => {
+  const handleSubmit = React.useCallback(() => {
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
@@ -175,19 +177,25 @@ export const CustomRecordingForm = (props) => {
       metadata: { labels: getFormattedLabels() }
     }
     props.onSubmit(recordingAttributes);
-  };
+  }, [getEventString, getFormattedLabels, continuous, 
+    duration, durationUnit, maxAge, maxAgeUnits, maxSize, maxSizeUnits, 
+    nameValid, notifications, notifications.warning, recordingName, toDisk]);
 
   React.useEffect(() => {
-    const sub = context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`))).subscribe(setTemplates);
-    return () => sub.unsubscribe();
-  }, []);
+    addSubscription(
+      context.target.target()
+      .pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)))
+      .subscribe(setTemplates)
+    )
+  }, [addSubscription, context, context.target, setTemplates]);
 
   React.useEffect(() => {
-    const sub = context.target.target()
+    addSubscription(
+      context.target.target()
       .pipe(concatMap(target => context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`)))
-      .subscribe(options => setRecordingOptions(options));
-    return () => sub.unsubscribe();
-  }, []);
+      .subscribe(setRecordingOptions)
+    )
+  }, [addSubscription, context, context.target, setRecordingOptions]);
 
   return (<>
     <Text component={TextVariants.small}>
@@ -258,7 +266,7 @@ export const CustomRecordingForm = (props) => {
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
           <Text component={TextVariants.small}>
-            A value of 0 for maximum age or size means unbounded.
+            A value of 0 for maximum size or age means unbounded.
           </Text>
           <FormGroup
             fieldId="To Disk"
