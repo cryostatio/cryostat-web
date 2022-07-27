@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, Split, SplitItem, Text, TextInput, TextVariants, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
@@ -55,6 +55,7 @@ export interface CustomRecordingFormProps {
 }
 
 export const RecordingNamePattern = /^[\w_]+$/;
+export const DurationPattern = /^[1-9][0-9]*$/;
 
 export const CustomRecordingForm = (props) => {
   const context = React.useContext(ServiceContext);
@@ -67,6 +68,7 @@ export const CustomRecordingForm = (props) => {
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1000);
+  const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  null);
   const [templateType, setTemplateType] = React.useState(props.templateType || props?.location?.state?.templateType || null as TemplateType | null);
@@ -78,13 +80,16 @@ export const CustomRecordingForm = (props) => {
   const [labels, setLabels] = React.useState([] as RecordingLabel[]);
   const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
 
-  const handleContinuousChange = React.useCallback((checked, evt) => {
-    setContinuous(evt.target.checked);
-  }, [setContinuous]);
+  const handleContinuousChange = React.useCallback((checked) => {
+    setContinuous(checked);
+    setDuration(0);
+    setDurationValid(checked ? ValidatedOptions.success : ValidatedOptions.error)
+  }, [setContinuous, setDuration, setDurationValid]);
 
   const handleDurationChange = React.useCallback((evt) => {
     setDuration(Number(evt));
-  }, [setDuration]);
+    setDurationValid(DurationPattern.test(evt) ? ValidatedOptions.success : ValidatedOptions.error);
+  }, [setDurationValid, setDuration]);
 
   const handleDurationUnitChange = React.useCallback((evt) => {
     setDurationUnit(Number(evt));
@@ -174,7 +179,7 @@ export const CustomRecordingForm = (props) => {
       events: getEventString(),
       duration: continuous ? undefined : duration * (durationUnit/1000),
       options: options,
-      metadata: { labels: getFormattedLabels() }
+      metadata: { labels: getFormattedLabels }
     }
     props.onSubmit(recordingAttributes);
   }, [getEventString, getFormattedLabels, continuous, 
@@ -196,6 +201,10 @@ export const CustomRecordingForm = (props) => {
       .subscribe(setRecordingOptions)
     )
   }, [addSubscription, context, context.target, setRecordingOptions]);
+
+  const isFormInvalid : boolean = React.useMemo(() => {
+    return nameValid !== ValidatedOptions.success || durationValid !== ValidatedOptions.success || !template || !templateType || labelsValid !== ValidatedOptions.success;
+  }, [nameValid, durationValid, template, templateType, labelsValid]);
 
   return (<>
     <Text component={TextVariants.small}>
@@ -224,8 +233,10 @@ export const CustomRecordingForm = (props) => {
       <FormGroup
         label="Duration"
         isRequired
-        fieldId="recording-duration"
+        validated={durationValid}
         helperText="Time before the recording is automatically stopped"
+        helperTextInvalid="A recording may only have a non-zero integer duration"
+        fieldId="recording-duration"
       >
         <Checkbox
           label="Continuous"
@@ -345,7 +356,7 @@ export const CustomRecordingForm = (props) => {
         </Form>
       </ExpandableSection>
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType || labelsValid !== ValidatedOptions.success}>Create</Button>
+        <Button variant="primary" onClick={handleSubmit} isDisabled={isFormInvalid}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
