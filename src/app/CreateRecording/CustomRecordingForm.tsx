@@ -234,8 +234,8 @@ export const CustomRecordingForm = (props) => {
         label="Duration"
         isRequired
         validated={durationValid}
-        helperText="Time before the recording is automatically stopped"
-        helperTextInvalid="A recording may only have a non-zero integer duration"
+        helperText={continuous ? "A continuous recording will never be automatically stopped" : "Time before the recording is automatically stopped"}
+        helperTextInvalid="A recording may only have a positive integer duration"
         fieldId="recording-duration"
       >
         <Checkbox
