@@ -38,8 +38,6 @@
 
 import { RecordingState } from '@app/Shared/Services/Api.service';
 import {
-  Button,
-  ButtonVariant,
   Checkbox,
   Dropdown,
   DropdownItem,
@@ -57,7 +55,7 @@ import {
   ToolbarItem,
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
-import { FilterIcon, OldRepublicIcon, SearchIcon } from '@patternfly/react-icons';
+import { FilterIcon } from '@patternfly/react-icons';
 import React, { Dispatch, SetStateAction } from 'react';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { DateTimePicker } from './DateTimePicker';
@@ -103,7 +101,8 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
             Name: [],
             Labels: [],
             State: [],
-            DateRange: [],
+            StartedBeforeDate: [],
+            StartedAfterDate: [],
             DurationSeconds: [],
           };
         });
@@ -131,10 +130,17 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     [props.setFilters]
   );
 
-  const onDateRangeInput = React.useCallback((dateRange) => {
+  const onStartedBeforeInput = React.useCallback((searchDate) => {
     props.setFilters((old) => {
-      if (!old.DateRangeUTC) return old;
-      return { ...old, DateRange: old.DateRangeUTC.includes(dateRange) ? old.DateRangeUTC : [...old.DateRangeUTC, dateRange] };
+      if (!old.StartedBeforeDate) return old;
+      return { ...old, StartedBeforeDate: old.StartedBeforeDate.includes(searchDate) ? old.StartedBeforeDate : [...old.StartedBeforeDate, searchDate] };
+    });
+  }, [props.setFilters]);
+
+  const onStartedAfterInput = React.useCallback((searchDate) => {
+    props.setFilters((old) => {
+      if (!old.StartedAfterDate) return old;
+      return { ...old, StartedAfterDate: old.StartedAfterDate.includes(searchDate) ? old.StartedBeforeDate : [...old.StartedAfterDate, searchDate] };
     });
   }, [props.setFilters]);
 
@@ -208,6 +214,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     );
   }, [Object.keys(props.filters), isCategoryDropdownOpen, onCategoryToggle, onCategorySelect]);
 
+  // FIXME prevent re-renders every time a recording is stopped
   const filterDropdownItems = React.useMemo(
     () => [
       <InputGroup>
@@ -230,8 +237,11 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         ))}
       </Select>,
       <InputGroup>
-        <DateTimePicker onSubmit={onDateRangeInput} />
+        <DateTimePicker onSubmit={onStartedBeforeInput} />
       </InputGroup>,
+      <InputGroup>
+      <DateTimePicker onSubmit={onStartedAfterInput} />
+    </InputGroup>,
       <InputGroup>
         <Flex>
           <FlexItem>
@@ -245,6 +255,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
               onKeyDown={onDurationInput}
             />
           </FlexItem>
+          {/* FIXME checkbox padding and alignment */}
           <FlexItem>
             <Checkbox
               label="Continuous"

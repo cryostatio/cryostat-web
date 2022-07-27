@@ -44,6 +44,7 @@ import {
   FlexItem,
   InputGroup,
   isValidDate,
+  Text,
   TimePicker,
   yyyyMMddFormat,
 } from '@patternfly/react-core';
@@ -51,31 +52,20 @@ import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export interface DateTimePickerProps {
-  onSubmit: (dateRange) => void;
+  onSubmit: (startDate) => void;
 }
 
 export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
-  const TOMORROW = new Date().getTime() + (24 * 60 * 60 * 1000);
   const [start, setStart] = React.useState(new Date(0));
-  const [end, setEnd] = React.useState(new Date(TOMORROW));
   const [searchDisabled, setSearchDisabled] = React.useState(true);
-
-  // FIXME trigger this when clicking search button
-  const endRangeValidator = React.useMemo(
-    () => {
-      return isValidDate(end) && yyyyMMddFormat(end) > yyyyMMddFormat(start)
-        ? ''
-        : 'End date must be after start date';
-    },
-    [start, end, isValidDate, yyyyMMddFormat]
-  );
 
   const onStartDateChange = React.useCallback(
     (inputDate, newStartDate) => {
       if (isValidDate(start) && isValidDate(newStartDate) && inputDate === yyyyMMddFormat(newStartDate)) {
-        newStartDate.setUTCHours(start.getHours());
-        newStartDate.setUTCMinutes(start.getMinutes());
         setStart(new Date(newStartDate));
+        setSearchDisabled(false);
+      } else {
+        setSearchDisabled(true);
       }
     },
     [start, isValidDate, yyyyMMddFormat]
@@ -83,47 +73,16 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
 
   const onStartTimeChange = React.useCallback(
     (time, hour, minute) => {
-      if (isValidDate(start)) {
-        const updated = new Date(start);
-        updated.setUTCHours(hour);
-        updated.setUTCMinutes(minute);
-        setStart(updated);
-      }
+      let updated = new Date(start);
+      updated.setUTCHours(hour, minute);
+      setStart(updated);
     },
     [start, setStart, isValidDate]
   );
 
-  const onEndDateChange = React.useCallback(
-    (inputDate, newEndDate) => {
-      if (isValidDate(newEndDate) && inputDate === yyyyMMddFormat(newEndDate)) {
-        newEndDate.setUTCHours(end.getHours());
-        newEndDate.setUTCMinutes(end.getMinutes());
-        setEnd(new Date(newEndDate));
-      }
-    },
-    [end, setEnd, isValidDate]
-  );
-
-  const onEndTimeChange = React.useCallback(
-    (time, hour, minute) => {
-      if (isValidDate(end)) {
-        const updated = new Date(end);
-        updated.setUTCHours(hour);
-        updated.setUTCMinutes(minute);
-        setEnd(updated);
-      }
-    },
-    [end, setEnd, isValidDate]
-  );
-
   const handleSubmit = React.useCallback(() => {
-    props.onSubmit(`${start.toISOString()} to ${end.toISOString()}`);
-  }, [start, end, props.onSubmit]);
-
-  React.useEffect(() => {
-    setSearchDisabled(() =>
-      !isValidDate(start) || !isValidDate(end));
-  }, [end, start, setSearchDisabled]);
+    props.onSubmit(`${start.toISOString()}`);
+  }, [start, props.onSubmit]);
 
   return (
     <Flex>
@@ -135,26 +94,14 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
             placeholder="YYYY-MM-DD" />
           <TimePicker is24Hour aria-label="Start time" className="time-picker" onChange={onStartTimeChange} />
         </InputGroup>
-      </FlexItem>
-      <FlexItem>to</FlexItem>
-      <FlexItem>
-        <InputGroup>
-          <DatePicker
-            onChange={onEndDateChange}
-            aria-label="End date"
-            placeholder="YYYY-MM-DD"
-            invalidFormatText={endRangeValidator}
-          />
-          <TimePicker
-            is24Hour
-            aria-label="End time"
-            className="time-picker"
-            onChange={onEndTimeChange}
-          />
-          <Button variant={ButtonVariant.control} aria-label="search button for date range" isDisabled={searchDisabled} onClick={handleSubmit}>
+        </FlexItem>
+        <FlexItem>
+          <Text>UTC</Text>
+        </FlexItem>
+        <FlexItem>
+          <Button variant={ButtonVariant.control} aria-label="search button for start date" isDisabled={searchDisabled} onClick={handleSubmit}>
             <SearchIcon />
           </Button>
-        </InputGroup>
       </FlexItem>
     </Flex>
   );

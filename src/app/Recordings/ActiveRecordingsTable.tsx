@@ -68,7 +68,8 @@ export interface RecordingFiltersCategories {
     Name: string[],
     Labels: string[],
     State?: RecordingState[],
-    DateRangeUTC?: string[],
+    StartedBeforeDate?: string[],
+    StartedAfterDate?: string[],
     DurationSeconds?: string[],
 }
 
@@ -88,7 +89,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     Name: [],
     Labels: [],
     State: [],
-    DateRangeUTC: [],
+    StartedBeforeDate: [],
+    StartedAfterDate: [],
     DurationSeconds: [],
   } as RecordingFiltersCategories);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -316,7 +318,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       Name: [],
       Labels: [],
       State: [],
-      DateRangeUTC: [],
+      StartedBeforeDate: [],
+      StartedAfterDate: [],
       DurationSeconds: [],
     } as RecordingFiltersCategories);
   }, [setFilters]);
@@ -341,21 +344,23 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           (filters.DurationSeconds.includes('continuous') && r.continuous);
         });
     }
-    // FIXME how to determine if a manually stopped continuous recording was running?
-    if (!!filters.DateRangeUTC && !!filters.DateRangeUTC.length) {
+    if (!!filters.StartedBeforeDate && !!filters.StartedBeforeDate.length) {
       filtered = filtered.filter((rec) => {
-        const start = rec.startTime;
-        const stop = rec.state === RecordingState.RUNNING ? new Date().getTime() : rec.startTime + rec.duration;
-        if (!filters.DateRangeUTC) return true;
-        return filters.DateRangeUTC.filter((range) => {
-          const window = range.split(' to ');
-          const beginning = new Date(window[0]).getTime();
-          const end = new Date(window[1]).getTime();
-          const isInDateRange =
-            (start >= beginning && start <= end) || // starts within date range
-            (stop >= beginning && stop <= end) || // stops within date range
-            (start <= beginning && stop >= end); // runs throughout date range
-          return isInDateRange;
+        if (!filters.StartedBeforeDate) return true;
+
+        return filters.StartedBeforeDate.filter((startedBefore) => {
+          const beforeDate = new Date(startedBefore);
+          return rec.startTime < beforeDate.getTime();
+        }).length;
+      });
+    }
+    if (!!filters.StartedAfterDate && !!filters.StartedAfterDate.length) {
+      filtered = filtered.filter((rec) => {
+        if (!filters.StartedAfterDate) return true;
+        return filters.StartedAfterDate.filter((startedAfter) => {
+          const afterDate = new Date(startedAfter);
+
+          return rec.startTime > afterDate.getTime();
         }).length;
       });
     }
