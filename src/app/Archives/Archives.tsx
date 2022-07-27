@@ -55,7 +55,14 @@ export const Archives = () => {
     return () => sub.unsubscribe();
   }, [context.api]);
 
-  const target: Target = {
+  /*
+  This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
+  The connectUrl is the empty string because for actions performed on uploaded archived recordings,
+  the backend issues a notification with the "target" field set to the empty string, signalling that 
+  these recordings are not associated with any target. We can then match on the empty string when performing
+  notification handling in the ArchivedRecordingsTable. 
+  */ 
+  const target: Target = { 
     connectUrl: '',
     alias: '',
   }

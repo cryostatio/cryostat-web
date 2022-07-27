@@ -36,13 +36,20 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
+import { Text } from '@patternfly/react-core';
+import renderer, { act } from 'react-test-renderer';
+import { render, screen, within, waitFor, cleanup} from '@testing-library/react';
+import * as tlr from '@testing-library/react';
+import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -87,25 +94,10 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
   };
 });
 const mockHandleClose = () => {/*do nothing*/};
+const mockFileName = 'mock.jfr'//mockFil
+const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFileName, {type: 'jfr'});
 
-import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { Modal, ModalVariant, Text } from '@patternfly/react-core';
-
-jest.mock('@app/Archives/ArchiveUploadModal', () => {
-  return {
-    ArchiveUploadModal: (props) => <Modal
-      isOpen={props.visible}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={mockHandleClose}
-      title="Mock Modal"
-    >
-      Re-Upload Archived Recording
-    </Modal>
-  }
-});
+const history = createMemoryHistory();
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
@@ -113,6 +105,7 @@ jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   }
 });
 
+const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 jest.spyOn(defaultServices.api, 'deleteArchivedRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'downloadReport').mockReturnValue();
@@ -152,6 +145,13 @@ jest
 jest.spyOn(window, 'open').mockReturnValue(null);
 
 describe('<ArchivedRecordingsTable />', () => {
+  beforeEach(() => {
+    history.go(-history.length);
+    history.push('/archives');
+  });
+
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
@@ -309,36 +309,77 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(grafanaUploadSpy).toBeCalledWith('someRecording');
   });
 
-  /** Recording Actions tests */
-
-  /**Uploads Table Tests*/
-  // Test updating state with notifications (also empty target as well?)
-
-  // Test that upload button is there and that clicking it makes the upload modal appear
   it('correctly renders the Uploads table', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false}/>
+        <Router location={history.location} history={history}>
+          <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false}/>
+        </Router>
       </ServiceContext.Provider>
     );
 
-    // Queries for recordings 
     expect(screen.getByText('someRecording')).toBeInTheDocument(); 
 
-    // Has the button to show the upload modal
-    const button = screen.getByLabelText('add'); 
-    expect(button).toHaveAttribute('type', 'button')
+    const uploadButton = screen.getByLabelText('add'); 
+    expect(uploadButton).toHaveAttribute('type', 'button')
 
-    // Clicking the button shows the modal
-    userEvent.click(button);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    userEvent.click(uploadButton);
+
+    const uploadModal = await screen.findByRole('dialog');
+    expect(uploadModal).toBeInTheDocument();
+    expect(uploadModal).toBeVisible();
+  });
+
+  it('uploads an archived recording when Submit is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Router location={history.location} history={history}>
+          <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false}/>
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByLabelText('add'));
 
     const modal = await screen.findByRole('dialog');
-    expect(modal).toBeInTheDocument();
-    expect(modal).toBeVisible();
 
+    const modalTitle = await within(modal).findByText('Re-Upload Archived Recording');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
 
-    // unmock the archiveuploadmodal ?
+    const fileLabel = await within(modal).findByText('JFR File');
+    expect(fileLabel).toBeInTheDocument();
+    expect(fileLabel).toBeInTheDocument();
+
+    const fileUploadDropZone = await within(modal).findByLabelText('Drag a file here or browse to upload') as HTMLInputElement;
+    expect(fileUploadDropZone).toBeInTheDocument();
+    expect(fileUploadDropZone).toBeVisible();
+
+    const browseButton = await within(modal).findByRole('button', { name: 'Browse...'});
+    expect(browseButton).toBeInTheDocument();
+    expect(browseButton).toBeVisible();
+
+    const submitButton = screen.getByRole('button', {name: 'Submit'}) as HTMLButtonElement;
+    userEvent.click(submitButton);
+
+    const uploadInput = modal.querySelector("input[accept='.jfr'][type='file']") as HTMLInputElement;
+    expect(uploadInput).toBeInTheDocument();
+    expect(uploadInput).not.toBeVisible();
+
+    userEvent.click(browseButton);
+    userEvent.upload(uploadInput, mockFileUpload);
+
+    expect(uploadInput.files).not.toBe(null);
+    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
     
-    screen.debug();
+    await waitFor(() => expect(submitButton).not.toBeDisabled());
+    await tlr.act(async () => {
+      userEvent.click(submitButton)
+    });
+
+    expect(uploadSpy).toHaveBeenCalled();
+    expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, expect.anything());
   });
 });
