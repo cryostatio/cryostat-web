@@ -319,7 +319,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     </>);
   } else {
     view = (<>
-      <TableComposable aria-label="all-archives">
+      <TableComposable aria-label="all-archives-table">
         <Thead>
           <Tr>
             <Th key="table-header-expand"/>
