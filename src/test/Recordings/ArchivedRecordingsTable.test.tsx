@@ -79,6 +79,17 @@ const mockLabelsNotification = {
 } as NotificationMessage;
 const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
 
+jest.mock('@app/Recordings/RecordingFilters', () => {
+  return {
+    ...jest.requireActual('@app/Recordings/RecordingFilters'),
+    RecordingFilters: jest.fn(() => {
+      return <div>
+                RecordingFilters
+             </div>
+    })
+  };
+});
+
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
