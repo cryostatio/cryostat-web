@@ -376,7 +376,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   return (
     <Drawer isExpanded={showDetailsPanel} isInline>
-      {/* TODO change drawer panel content depending on which RecordingsToolbar button was clicked */}
       <DrawerContent panelContent={LabelsPanel} className='recordings-table-drawer-content'>
         <DrawerContentBody hasPadding>
           <RecordingsTable

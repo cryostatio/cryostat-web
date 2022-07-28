@@ -149,7 +149,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
       const dates = new Set(old.StartedAfterDate);
       dates.add(searchDate);
-      return { ...old, StartedBeforeDate: Array.from(dates) };      
+      return { ...old, StartedAfterDate: Array.from(dates) };      
     });
   }, [props.setFilters]);
 
@@ -172,13 +172,13 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 
   const onRecordingStateSelect = React.useCallback(
-    (e, state) => {
+    (e, searchState) => {
       props.setFilters((old) => {
         if (!old.State) return old;
-        return {
-          ...old,
-          State: old.State.includes(state) ? old.State.filter((v) => v != state) : [...old.State, state],
-        };
+
+        const states = new Set(old.State);
+        states.add(searchState);
+        return { ...old, State: Array.from(states) };    
       });
     },
     [props.setFilters]
