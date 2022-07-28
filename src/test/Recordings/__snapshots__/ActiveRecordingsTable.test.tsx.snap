@@ -15,7 +15,7 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
       >
         <div
           className="pf-c-toolbar"
-          data-ouia-component-id="OUIA-Generated-Toolbar-2"
+          data-ouia-component-id="OUIA-Generated-Toolbar-3"
           data-ouia-component-type="PF4/Toolbar"
           data-ouia-safe={true}
           id="active-recordings-toolbar"
@@ -26,6 +26,9 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
             <div
               className="pf-c-toolbar__content-section"
             >
+              <div>
+                RecordingFilters
+              </div>
               <div
                 className="pf-c-toolbar__item"
               >
@@ -33,7 +36,7 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
                   aria-disabled={false}
                   aria-label={null}
                   className="pf-c-button pf-m-primary"
-                  data-ouia-component-id="OUIA-Generated-Button-primary-2"
+                  data-ouia-component-id="OUIA-Generated-Button-primary-3"
                   data-ouia-component-type="PF4/Button"
                   data-ouia-safe={true}
                   disabled={false}
@@ -51,7 +54,7 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
                   aria-disabled={true}
                   aria-label={null}
                   className="pf-c-button pf-m-secondary pf-m-disabled"
-                  data-ouia-component-id="OUIA-Generated-Button-secondary-3"
+                  data-ouia-component-id="OUIA-Generated-Button-secondary-5"
                   data-ouia-component-type="PF4/Button"
                   data-ouia-safe={true}
                   disabled={true}
@@ -70,7 +73,7 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
                   aria-disabled={true}
                   aria-label={null}
                   className="pf-c-button pf-m-secondary pf-m-disabled"
-                  data-ouia-component-id="OUIA-Generated-Button-secondary-4"
+                  data-ouia-component-id="OUIA-Generated-Button-secondary-6"
                   data-ouia-component-type="PF4/Button"
                   data-ouia-safe={true}
                   disabled={true}
@@ -89,7 +92,7 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
                   aria-disabled={true}
                   aria-label={null}
                   className="pf-c-button pf-m-tertiary pf-m-disabled"
-                  data-ouia-component-id="OUIA-Generated-Button-tertiary-2"
+                  data-ouia-component-id="OUIA-Generated-Button-tertiary-3"
                   data-ouia-component-type="PF4/Button"
                   data-ouia-safe={true}
                   disabled={true}
@@ -108,7 +111,7 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
                   aria-disabled={true}
                   aria-label={null}
                   className="pf-c-button pf-m-danger pf-m-disabled"
-                  data-ouia-component-id="OUIA-Generated-Button-danger-2"
+                  data-ouia-component-id="OUIA-Generated-Button-danger-3"
                   data-ouia-component-type="PF4/Button"
                   data-ouia-safe={true}
                   disabled={true}
@@ -123,7 +126,7 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
             </div>
             <div
               className="pf-c-toolbar__expandable-content"
-              id="active-recordings-toolbar-expandable-content-1"
+              id="active-recordings-toolbar-expandable-content-2"
             >
               <div
                 className="pf-c-toolbar__group"
