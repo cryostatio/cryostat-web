@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, FormSelectOptionGroup, Split, SplitItem, Text, TextArea, TextInput, TextVariants, Tooltip, TooltipPosition, ValidatedOptions } from '@patternfly/react-core';
+import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, Split, SplitItem, Text, TextInput, TextVariants, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
@@ -48,23 +48,27 @@ import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface CustomRecordingFormProps {
   onSubmit: (recordingAttributes: RecordingAttributes) => void;
 }
 
 export const RecordingNamePattern = /^[\w_]+$/;
+export const DurationPattern = /^[1-9][0-9]*$/;
 
 export const CustomRecordingForm = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
+  const addSubscription = useSubscriptions();
 
   const [recordingName, setRecordingName] = React.useState(props.recordingName || props?.location?.state?.recordingName || '');
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1000);
+  const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  null);
   const [templateType, setTemplateType] = React.useState(props.templateType || props?.location?.state?.templateType || null as TemplateType | null);
@@ -76,25 +80,28 @@ export const CustomRecordingForm = (props) => {
   const [labels, setLabels] = React.useState([] as RecordingLabel[]);
   const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
 
-  const handleContinuousChange = (checked, evt) => {
-    setContinuous(evt.target.checked);
-  };
+  const handleContinuousChange = React.useCallback((checked) => {
+    setContinuous(checked);
+    setDuration(0);
+    setDurationValid(checked ? ValidatedOptions.success : ValidatedOptions.error)
+  }, [setContinuous, setDuration, setDurationValid]);
 
-  const handleDurationChange = (evt) => {
+  const handleDurationChange = React.useCallback((evt) => {
     setDuration(Number(evt));
-  };
+    setDurationValid(DurationPattern.test(evt) ? ValidatedOptions.success : ValidatedOptions.error);
+  }, [setDurationValid, setDuration]);
 
-  const handleDurationUnitChange = (evt) => {
+  const handleDurationUnitChange = React.useCallback((evt) => {
     setDurationUnit(Number(evt));
-  };
+  }, [setDurationUnit]);
 
-  const handleTemplateChange = (template) => {
+  const handleTemplateChange = React.useCallback((template) => {
     const parts: string[] = template.split(',');
     setTemplate(parts[0]);
     setTemplateType(parts[1]);
-  };
+  }, [setTemplate, setTemplateType]);
 
-  const getEventString = () => {
+  const getEventString = React.useCallback(() => {
     var str = '';
     if (!!template) {
       str += `template=${template}`;
@@ -103,9 +110,9 @@ export const CustomRecordingForm = (props) => {
       str += `,type=${templateType}`;
     }
     return str;
-  };
+  }, [template, templateType]);
 
-  const getFormattedLabels = () => {
+  const getFormattedLabels = React.useCallback(() => {
     let obj = {};
   
       labels.forEach(l => { 
@@ -115,42 +122,42 @@ export const CustomRecordingForm = (props) => {
       });
 
     return obj;
-  }
+  }, [labels])
 
-  const handleRecordingNameChange = (name) => {
+  const handleRecordingNameChange = React.useCallback((name) => {
     setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
     setRecordingName(name);
-  };
+  }, [setNameValid, setRecordingName]);
 
-  const handleMaxAgeChange = (evt) => {
+  const handleMaxAgeChange = React.useCallback((evt) => {
     setMaxAge(Number(evt));
-  };
+  }, [setMaxAge]);
 
-  const handleMaxAgeUnitChange = (evt) => {
+  const handleMaxAgeUnitChange = React.useCallback((evt) => {
     setMaxAgeUnits(Number(evt));
-  };
+  }, [setMaxAgeUnits]);
 
-  const handleMaxSizeChange = (evt) => {
+  const handleMaxSizeChange = React.useCallback((evt) => {
     setMaxSize(Number(evt));
-  };
+  }, [setMaxSize]);
 
-  const handleMaxSizeUnitChange = (evt) => {
+  const handleMaxSizeUnitChange = React.useCallback((evt) => {
     setMaxSizeUnits(Number(evt));
-  };
+  }, [setMaxSizeUnits]);
 
-  const handleToDiskChange = (checked, evt) => {
+  const handleToDiskChange = React.useCallback((checked, evt) => {
     setToDisk(evt.target.checked);
-  };
+  }, [setToDisk]);
 
-  const setRecordingOptions = (options: RecordingOptions) => {
+  const setRecordingOptions = React.useCallback((options: RecordingOptions) => {
     // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
     setMaxAge(options.maxAge || 0);
     setMaxAgeUnits(1);
     setMaxSize(options.maxSize || 0);
     setMaxSizeUnits(1);
-  };
+  }, [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits]);
 
-  const handleSubmit = () => {
+  const handleSubmit = React.useCallback(() => {
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Recording name ${recordingName} is invalid`);
@@ -172,22 +179,32 @@ export const CustomRecordingForm = (props) => {
       events: getEventString(),
       duration: continuous ? undefined : duration * (durationUnit/1000),
       options: options,
-      metadata: { labels: getFormattedLabels() }
+      metadata: { labels: getFormattedLabels }
     }
     props.onSubmit(recordingAttributes);
-  };
+  }, [getEventString, getFormattedLabels, continuous, 
+    duration, durationUnit, maxAge, maxAgeUnits, maxSize, maxSizeUnits, 
+    nameValid, notifications, notifications.warning, recordingName, toDisk]);
 
   React.useEffect(() => {
-    const sub = context.target.target().pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`))).subscribe(setTemplates);
-    return () => sub.unsubscribe();
-  }, []);
+    addSubscription(
+      context.target.target()
+      .pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)))
+      .subscribe(setTemplates)
+    )
+  }, [addSubscription, context, context.target, setTemplates]);
 
   React.useEffect(() => {
-    const sub = context.target.target()
+    addSubscription(
+      context.target.target()
       .pipe(concatMap(target => context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`)))
-      .subscribe(options => setRecordingOptions(options));
-    return () => sub.unsubscribe();
-  }, []);
+      .subscribe(setRecordingOptions)
+    )
+  }, [addSubscription, context, context.target, setRecordingOptions]);
+
+  const isFormInvalid : boolean = React.useMemo(() => {
+    return nameValid !== ValidatedOptions.success || durationValid !== ValidatedOptions.success || !template || !templateType || labelsValid !== ValidatedOptions.success;
+  }, [nameValid, durationValid, template, templateType, labelsValid]);
 
   return (<>
     <Text component={TextVariants.small}>
@@ -200,6 +217,7 @@ export const CustomRecordingForm = (props) => {
         isRequired
         fieldId="recording-name"
         helperText="Enter a recording name. This will be unique within the target JVM"
+        helperTextInvalid="A recording name may only contain letters, numbers, and underscores"
         validated={nameValid}
       >
         <TextInput
@@ -215,8 +233,10 @@ export const CustomRecordingForm = (props) => {
       <FormGroup
         label="Duration"
         isRequired
+        validated={durationValid}
+        helperText={continuous ? "A continuous recording will never be automatically stopped" : "Time before the recording is automatically stopped"}
+        helperTextInvalid="A recording may only have a positive integer duration"
         fieldId="recording-duration"
-        helperText="Time before the recording is automatically stopped"
       >
         <Checkbox
           label="Continuous"
@@ -257,7 +277,7 @@ export const CustomRecordingForm = (props) => {
       <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
         <Form>
           <Text component={TextVariants.small}>
-            A value of 0 for maximum age or size means unbounded.
+            A value of 0 for maximum size or age means unbounded.
           </Text>
           <FormGroup
             fieldId="To Disk"
@@ -336,7 +356,7 @@ export const CustomRecordingForm = (props) => {
         </Form>
       </ExpandableSection>
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType || labelsValid !== ValidatedOptions.success}>Create</Button>
+        <Button variant="primary" onClick={handleSubmit} isDisabled={isFormInvalid}>Create</Button>
         <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
       </ActionGroup>
     </Form>
