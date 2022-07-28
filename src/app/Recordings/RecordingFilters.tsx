@@ -283,6 +283,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         {categoryDropdown}
         {Object.keys(props.filters).map((filterKey, i) => (
           <ToolbarFilter
+            key={filterKey}
             chips={props.filters[filterKey]}
             deleteChip={onDelete}
             categoryName={filterKey}
