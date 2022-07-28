@@ -37,13 +37,12 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer'
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom';
-import { expand, of } from 'rxjs';
+import { of } from 'rxjs';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
-import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
 
@@ -53,9 +52,6 @@ const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockAlias2 = 'fooTarget2';
 const mockConnectUrl3 = 'service:jmx:rmi://someUrl3';
 const mockAlias3 = 'fooTarget3';
-const mockTarget1 = { connectUrl: mockConnectUrl1, alias: mockAlias1 };
-const mockTarget2 = { connectUrl: mockConnectUrl2, alias: mockAlias2 };
-const mockTarget3 = { connectUrl: mockConnectUrl3, alias: mockAlias3 };
 const mockCount1 = 1;
 const mockCount2 = 3;
 const mockCount3 = 0;
@@ -297,4 +293,6 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   // it doesnt expand targets with a count of 0
 
   // it handles notifications (3 cases)
+
+  // test isLoading and EmptyState (technically emptystate already tested) somehow?
 });
