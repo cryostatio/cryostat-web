@@ -385,8 +385,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               isHeaderChecked={headerChecked}
               onHeaderCheck={handleHeaderCheck}
               isLoading={isLoading}
-              isEmpty={!filteredRecordings.length}
-              isEmptyFilterResult={false}
+              isEmpty={!recordings.length}
+              isEmptyFilterResult={!filteredRecordings.length}
               clearFilters={handleClearFilters}
               errorMessage=''
           >

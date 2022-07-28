@@ -47,12 +47,12 @@ export interface RecordingsTableProps {
   tableColumns: string[];
   tableTitle: string;
   isEmpty: boolean;
-  isEmptyFilterResult: boolean;
+  isEmptyFilterResult?: boolean;
   isHeaderChecked: boolean;
   isLoading: boolean;
   errorMessage: string;
   onHeaderCheck: (event, checked: boolean) => void;
-  clearFilters: (filterType) => void;
+  clearFilters?: (filterType) => void;
 }
 
 export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
@@ -82,7 +82,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
           Remove all filters or clear all filters to show results.
         </EmptyStateBody>
         <EmptyStateSecondaryActions>
-          <Button variant="link" onClick={() => props.clearFilters(null)}>
+          <Button variant="link" onClick={() => props.clearFilters && props.clearFilters(null)}>
             Clear all filters
           </Button>
         </EmptyStateSecondaryActions>
