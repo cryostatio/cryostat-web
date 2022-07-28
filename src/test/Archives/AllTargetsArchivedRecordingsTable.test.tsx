@@ -270,8 +270,6 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
       </ServiceContext.Provider>
     );
 
-    screen.debug(undefined, Infinity);
-
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
     
     let tableBody = screen.getAllByRole('rowgroup')[1];
@@ -288,5 +286,15 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
 
     let expandedTable = rows[1];
     expect(within(expandedTable).getByText('Archived Recordings Table')).toBeTruthy();
+
+    userEvent.click(expand);
+    tableBody = screen.getAllByRole('rowgroup')[1];
+    rows = within(tableBody).getAllByRole('row');
+    expect(rows).toHaveLength(2);
+    expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
   });
+
+  // it doesnt expand targets with a count of 0
+
+  // it handles notifications (3 cases)
 });
