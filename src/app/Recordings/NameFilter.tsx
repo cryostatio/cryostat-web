@@ -40,10 +40,9 @@ import React from 'react';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { combineLatest, concatMap, filter, first, map, merge } from 'rxjs';
+import { concatMap, filter, first, map } from 'rxjs';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 
 export interface NameFilterProps {
   onSubmit: (inputName) => void;

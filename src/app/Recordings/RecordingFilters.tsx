@@ -111,11 +111,12 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     [props.setFilters]
   );
 
-  // FIXME replace includes() with Set.add to improve performance
   const onNameInput = React.useCallback(
     (inputName) => {
       props.setFilters((old) => {
-        return { ...old, Name: old.Name.includes(inputName) ? old.Name : [...old.Name, inputName] };
+        const names = new Set(old.Name);
+        names.add(inputName);
+        return { ...old, Name: Array.from(names) };
       });
     },
     [props.setFilters]
@@ -124,7 +125,9 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const onLabelInput = React.useCallback(
     (inputLabel) => {
       props.setFilters((old) => {
-        return { ...old, Labels: old.Labels.includes(inputLabel) ? old.Labels : [...old.Labels, inputLabel] };
+        const labels = new Set(old.Labels);
+        labels.add(inputLabel);
+        return { ...old, Labels: Array.from(labels) };     
       });
     },
     [props.setFilters]
@@ -133,14 +136,20 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const onStartedBeforeInput = React.useCallback((searchDate) => {
     props.setFilters((old) => {
       if (!old.StartedBeforeDate) return old;
-      return { ...old, StartedBeforeDate: old.StartedBeforeDate.includes(searchDate) ? old.StartedBeforeDate : [...old.StartedBeforeDate, searchDate] };
+
+      const dates = new Set(old.StartedBeforeDate);
+      dates.add(searchDate);
+      return { ...old, StartedBeforeDate: Array.from(dates) };    
     });
   }, [props.setFilters]);
 
   const onStartedAfterInput = React.useCallback((searchDate) => {
     props.setFilters((old) => {
       if (!old.StartedAfterDate) return old;
-      return { ...old, StartedAfterDate: old.StartedAfterDate.includes(searchDate) ? old.StartedBeforeDate : [...old.StartedAfterDate, searchDate] };
+
+      const dates = new Set(old.StartedAfterDate);
+      dates.add(searchDate);
+      return { ...old, StartedBeforeDate: Array.from(dates) };      
     });
   }, [props.setFilters]);
 
@@ -150,13 +159,13 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         return;
       }
 
-      props.setFilters((old) => {
-        const dur = `${duration.toString()} s`;
+      props.setFilters((old) => {        
         if (!old.DurationSeconds) return old;
-        return {
-          ...old,
-          DurationSeconds: old.DurationSeconds.includes(dur) ? old.DurationSeconds : [...old.DurationSeconds, dur],
-        };
+        const dur = `${duration.toString()} s`;
+
+        const durations = new Set(old.DurationSeconds);
+        durations.add(dur);
+        return { ...old, DurationSeconds: Array.from(durations) };
       });
     },
     [duration, props.setFilters]
@@ -214,7 +223,6 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     );
   }, [Object.keys(props.filters), isCategoryDropdownOpen, onCategoryToggle, onCategorySelect]);
 
-  // FIXME prevent re-renders every time a recording is stopped
   const filterDropdownItems = React.useMemo(
     () => [
       <InputGroup>
@@ -255,7 +263,6 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
               onKeyDown={onDurationInput}
             />
           </FlexItem>
-          {/* FIXME checkbox padding and alignment */}
           <FlexItem>
             <Checkbox
               label="Continuous"

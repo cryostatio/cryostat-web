@@ -40,10 +40,9 @@ import React from 'react';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { combineLatest, concatMap, filter, first, map, merge } from 'rxjs';
+import { concatMap, filter, first, map } from 'rxjs';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 
 export interface LabelFilterProps {
     onSubmit: (inputName) => void;
@@ -83,9 +82,15 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
                               recordings {
                                 active {
                                   name
+                                  metadata {
+                                    labels
+                                  }
                                 }
                                 archived {
-                                  name
+                                  name 
+                                  metadata {
+                                    labels
+                                  }
                                 }
                               }
                             }
@@ -98,7 +103,7 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
                 .subscribe((recordings) => setLabels(old => {
                     let updated = new Set(old);
                     recordings.forEach((r) => {
-                        if (!r) return;
+                        if (!r || !r.metadata) return;
                         Object.entries(r.metadata.labels).map(([k, v]) =>
                             updated.add(`${k}:${v}`)
                         );

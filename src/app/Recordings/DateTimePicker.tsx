@@ -72,7 +72,7 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
   );
 
   const onStartTimeChange = React.useCallback(
-    (time, hour, minute) => {
+    (unused, hour, minute) => {
       let updated = new Date(start);
       updated.setUTCHours(hour, minute);
       setStart(updated);
