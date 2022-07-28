@@ -54,7 +54,7 @@ import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
-import { RecordingFilters } from './RecordingFilters';
+import { filterRecordings, RecordingFilters } from './RecordingFilters';
 
 export interface ArchivedRecordingsTableProps { }
 
@@ -230,23 +230,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   };
 
   React.useEffect(() => {
-    if (!recordings || !recordings.length) {
-      return;
-    }
-    let filtered = recordings;
-
-    if (!!filters.Name.length) {
-      filtered = filtered.filter((r) => filters.Name.includes(r.name));
-    }
-
-    if (!!filters.Labels.length) {
-      filtered = filtered.filter((r) =>
-        Object.entries(r.metadata.labels)
-          .filter(([k,v]) => filters.Labels.includes(`${k}:${v}`)).length
-        );
-    }
-
-    setFilteredRecordings(filtered);
+    setFilteredRecordings(filterRecordings(recordings, filters));
   }, [recordings, filters]);
 
   React.useEffect(() => {

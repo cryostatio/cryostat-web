@@ -295,3 +295,54 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     </ToolbarToggleGroup>
   );
 };
+
+export const filterRecordings = (recordings, filters) => {
+  if (!recordings || !recordings.length) {
+    return recordings;
+  }
+
+  let filtered = recordings;
+
+  if (!!filters.Name.length) {
+    filtered = filtered.filter((r) => filters.Name.includes(r.name));
+  }
+  if (!!filters.State && !!filters.State.length) {
+    filtered = filtered.filter((r) => !!filters.State && filters.State.includes(r.state));
+  }
+  if (!!filters.DurationSeconds && !!filters.DurationSeconds.length) {
+    filtered = filtered.filter(
+      (r) => {
+      if (!filters.DurationSeconds) return true;
+        return filters.DurationSeconds.includes(`${r.duration / 1000} s`) ||
+        (filters.DurationSeconds.includes('continuous') && r.continuous);
+      });
+  }
+  if (!!filters.StartedBeforeDate && !!filters.StartedBeforeDate.length) {
+    filtered = filtered.filter((rec) => {
+      if (!filters.StartedBeforeDate) return true;
+
+      return filters.StartedBeforeDate.filter((startedBefore) => {
+        const beforeDate = new Date(startedBefore);
+        return rec.startTime < beforeDate.getTime();
+      }).length;
+    });
+  }
+  if (!!filters.StartedAfterDate && !!filters.StartedAfterDate.length) {
+    filtered = filtered.filter((rec) => {
+      if (!filters.StartedAfterDate) return true;
+      return filters.StartedAfterDate.filter((startedAfter) => {
+        const afterDate = new Date(startedAfter);
+
+        return rec.startTime > afterDate.getTime();
+      }).length;
+    });
+  }
+  if (!!filters.Labels.length) {
+    filtered = filtered.filter((r) =>
+      Object.entries(r.metadata.labels)
+        .filter(([k,v]) => filters.Labels.includes(`${k}:${v}`)).length
+      );
+  }
+
+  return filtered;
+}
