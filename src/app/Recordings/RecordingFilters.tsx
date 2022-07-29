@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { RecordingState } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import {
   Checkbox,
   Dropdown,
@@ -63,6 +63,7 @@ import { LabelFilter } from './LabelFilter';
 import { NameFilter } from './NameFilter';
 
 export interface RecordingFiltersProps {
+  recordings: ArchivedRecording[];
   filters: RecordingFiltersCategories;
   setFilters: Dispatch<SetStateAction<RecordingFiltersCategories>>;
 }
@@ -226,10 +227,10 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const filterDropdownItems = React.useMemo(
     () => [
       <InputGroup>
-        <NameFilter onSubmit={onNameInput} />
+        <NameFilter recordings={props.recordings} onSubmit={onNameInput} />
       </InputGroup>,
       <InputGroup>
-        <LabelFilter onSubmit={onLabelInput} />
+        <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} />
       </InputGroup>,
       <Select
         variant={SelectVariant.checkbox}

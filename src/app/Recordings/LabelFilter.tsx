@@ -39,12 +39,11 @@
 import React from 'react';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { concatMap, filter, first, map } from 'rxjs';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 
 export interface LabelFilterProps {
+    recordings: ArchivedRecording[];
     onSubmit: (inputName) => void;
 }
 
@@ -69,53 +68,18 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
         [props.onSubmit, setIsOpen, setSelected]
     );
 
-    const refreshLabelList = React.useCallback(() => {
-        addSubscription(
-            context.target
-                .target()
-                .pipe(
-                    filter((target) => target !== NO_TARGET),
-                    concatMap(target =>
-                        context.api.graphql<any>(`
-                          query {
-                            targetNodes(filter: { name: "${target.connectUrl}" }) {
-                              recordings {
-                                active {
-                                  name
-                                  metadata {
-                                    labels
-                                  }
-                                }
-                                archived {
-                                  name 
-                                  metadata {
-                                    labels
-                                  }
-                                }
-                              }
-                            }
-                          }`)
-                    ),
-                    map(v => [...v.data.targetNodes[0].recordings.active as ArchivedRecording[],
-                    ...v.data.targetNodes[0].recordings.archived as ArchivedRecording[]]),
-                    first()
-                )
-                .subscribe((recordings) => setLabels(old => {
-                    let updated = new Set(old);
-                    recordings.forEach((r) => {
-                        if (!r || !r.metadata) return;
-                        Object.entries(r.metadata.labels).map(([k, v]) =>
-                            updated.add(`${k}:${v}`)
-                        );
-                    });
-                    return Array.from(updated);
-                }))
-        );
-    }, [addSubscription, context, context.target, context.api]);
-
     React.useEffect(() => {
-        addSubscription(context.target.target().subscribe(refreshLabelList));
-    }, [addSubscription, context, context.target, refreshLabelList]);
+        setLabels(old => {
+            let updated = new Set(old);
+            props.recordings.forEach((r) => {
+                if (!r || !r.metadata) return;
+                Object.entries(r.metadata.labels).map(([k, v]) =>
+                    updated.add(`${k}:${v}`)
+                );
+            });
+            return Array.from(updated);
+        });
+    }, [setLabels, props.recordings]);
 
     return (
         <Select
