@@ -331,7 +331,6 @@ Array [
           style={
             Object {
               "paddingRight": 0,
-              "width": "auto",
             }
           }
         >

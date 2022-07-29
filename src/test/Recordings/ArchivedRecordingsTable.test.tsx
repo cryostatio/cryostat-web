@@ -36,16 +36,24 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
+import { Text } from '@patternfly/react-core';
+import renderer, { act } from 'react-test-renderer';
+import { render, screen, within, waitFor, cleanup} from '@testing-library/react';
+import * as tlr from '@testing-library/react';
+import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockUploadsTarget = { connectUrl: '', alias: '' };
 const mockRecordingLabels = {
   someLabel: 'someValue',
 };
@@ -55,17 +63,13 @@ const mockRecording: ArchivedRecording = {
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
 };
+
 const mockArchivedRecordingsResponse = {
   data: {
-    targetNodes: [
-      {
-        recordings: {
-          archived: [mockRecording] as ArchivedRecording[],
-        },
-      },
-    ],
+    archivedRecordings: [mockRecording] as ArchivedRecording[],
   },
-};
+}
+
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
 const mockCreateNotification = {
   message: { target: mockConnectUrl, recording: mockAnotherRecording },
@@ -79,6 +83,17 @@ const mockLabelsNotification = {
 } as NotificationMessage;
 const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
 
+const mockFileName = 'mock.jfr'
+const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFileName, {type: 'jfr'});
+
+const history = createMemoryHistory();
+
+jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
+  return {
+    BulkEditLabels: (props) => <Text>Edit Recording Labels</Text>
+  }
+});
+
 jest.mock('@app/Recordings/RecordingFilters', () => {
   return {
     ...jest.requireActual('@app/Recordings/RecordingFilters'),
@@ -90,14 +105,12 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
   };
 });
 
-import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-
+const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 jest.spyOn(defaultServices.api, 'deleteArchivedRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'downloadReport').mockReturnValue();
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/grafanaUrl'));
+jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
 jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
 jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of(true));
 
@@ -126,15 +139,25 @@ jest
   .mockReturnValueOnce(of()) // removes a recording after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockDeleteNotification))
+  
   .mockReturnValue(of()); // all other tests
 
+jest.spyOn(window, 'open').mockReturnValue(null);
+
 describe('<ArchivedRecordingsTable />', () => {
+  beforeEach(() => {
+    history.go(-history.length);
+    history.push('/archives');
+  });
+
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <ArchivedRecordingsTable />
+          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
         </ServiceContext.Provider>
       );
     });
@@ -144,7 +167,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('adds a recording after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
     expect(screen.getByText('someRecording')).toBeInTheDocument();
@@ -154,7 +177,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('updates the recording labels after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
     expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
@@ -164,7 +187,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('removes a recording after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
     expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
@@ -173,7 +196,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('displays the toolbar buttons', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -184,7 +207,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('opens the labels drawer when Edit Labels is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -198,7 +221,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -223,7 +246,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('deletes the recording when Delete is clicked w/o popup warning', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -242,7 +265,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('downloads a recording when Download Recording is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -258,7 +281,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('displays the automated analysis report when View Report is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -273,7 +296,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('uploads a recording to Grafana when View in Grafana is clicked', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <ArchivedRecordingsTable />
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
       </ServiceContext.Provider>
     );
 
@@ -284,5 +307,79 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(grafanaUploadSpy).toHaveBeenCalledTimes(1);
     expect(grafanaUploadSpy).toBeCalledWith('someRecording');
+  });
+
+  it('correctly renders the Uploads table', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Router location={history.location} history={history}>
+          <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false}/>
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('someRecording')).toBeInTheDocument(); 
+
+    const uploadButton = screen.getByLabelText('add'); 
+    expect(uploadButton).toHaveAttribute('type', 'button')
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    userEvent.click(uploadButton);
+
+    const uploadModal = await screen.findByRole('dialog');
+    expect(uploadModal).toBeInTheDocument();
+    expect(uploadModal).toBeVisible();
+  });
+
+  it('uploads an archived recording when Submit is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Router location={history.location} history={history}>
+          <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false}/>
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByLabelText('add'));
+
+    const modal = await screen.findByRole('dialog');
+
+    const modalTitle = await within(modal).findByText('Re-Upload Archived Recording');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
+
+    const fileLabel = await within(modal).findByText('JFR File');
+    expect(fileLabel).toBeInTheDocument();
+    expect(fileLabel).toBeInTheDocument();
+
+    const fileUploadDropZone = await within(modal).findByLabelText('Drag a file here or browse to upload') as HTMLInputElement;
+    expect(fileUploadDropZone).toBeInTheDocument();
+    expect(fileUploadDropZone).toBeVisible();
+
+    const browseButton = await within(modal).findByRole('button', { name: 'Browse...'});
+    expect(browseButton).toBeInTheDocument();
+    expect(browseButton).toBeVisible();
+
+    const submitButton = screen.getByRole('button', {name: 'Submit'}) as HTMLButtonElement;
+    userEvent.click(submitButton);
+
+    const uploadInput = modal.querySelector("input[accept='.jfr'][type='file']") as HTMLInputElement;
+    expect(uploadInput).toBeInTheDocument();
+    expect(uploadInput).not.toBeVisible();
+
+    userEvent.click(browseButton);
+    userEvent.upload(uploadInput, mockFileUpload);
+
+    expect(uploadInput.files).not.toBe(null);
+    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
+    
+    await waitFor(() => expect(submitButton).not.toBeDisabled());
+    await tlr.act(async () => {
+      userEvent.click(submitButton)
+    });
+
+    expect(uploadSpy).toHaveBeenCalled();
+    expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, expect.anything());
   });
 });

@@ -80,10 +80,10 @@
     "yarn": "^1.22.13"
   },
   "dependencies": {
-    "@patternfly/react-core": "^4.157.3",
-    "@patternfly/react-icons": "^4.11.17",
-    "@patternfly/react-styles": "^4.11.16",
-    "@patternfly/react-table": "^4.30.3",
+    "@patternfly/react-core": "^4.224.1",
+    "@patternfly/react-icons": "^4.75.1",
+    "@patternfly/react-styles": "^4.74.1",
+    "@patternfly/react-table": "^4.93.1",
     "@types/lodash": "^4.14.175",
     "express": "^4.17.1",
     "react": "^17.0.2",

@@ -37,13 +37,17 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Card, CardBody, CardHeader, EmptyState, EmptyStateIcon, Text, TextVariants, Title } from '@patternfly/react-core';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
+import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { Target } from '@app/Shared/Services/Target.service';
+import { of } from 'rxjs';
 
 export const Archives = () => {
   const context = React.useContext(ServiceContext);
+  const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
@@ -51,22 +55,37 @@ export const Archives = () => {
     return () => sub.unsubscribe();
   }, [context.api]);
 
+  /*
+  This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
+  The connectUrl is the empty string because for actions performed on uploaded archived recordings,
+  the backend issues a notification with the "target" field set to the empty string, signalling that 
+  these recordings are not associated with any target. We can then match on the empty string when performing
+  notification handling in the ArchivedRecordingsTable. 
+  */ 
+  const target: Target = { 
+    connectUrl: '',
+    alias: '',
+  }
+
   const cardBody = React.useMemo(() => {
-    if (!archiveEnabled) {
-      return (<>
-        <EmptyState>
-          <EmptyStateIcon icon={SearchIcon}/>
-          <Title headingLevel="h4" size="lg">
-            Archives Unavailable
-          </Title>
-        </EmptyState>
-      </>);
-    }
-    return (<>
-      <CardHeader><Text component={TextVariants.h4}>Archived Recordings (All Targets)</Text></CardHeader>
-      <AllArchivedRecordingsTable />
-    </>);
-  }, [archiveEnabled]);
+    return archiveEnabled ? (
+      <Tabs id='archives' activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+        <Tab id='all-targets' eventKey={0} title="All Targets">
+          <AllTargetsArchivedRecordingsTable />
+        </Tab>
+        <Tab id='uploads' eventKey={1} title="Uploads">
+          <ArchivedRecordingsTable target={of(target)} isUploadsTable={true} isNestedTable={false}/>
+        </Tab>
+      </Tabs>
+    ) : (
+      <EmptyState>
+        <EmptyStateIcon icon={SearchIcon}/>
+        <Title headingLevel="h4" size="lg">
+          Archives Unavailable
+        </Title>
+      </EmptyState>
+    );
+  }, [archiveEnabled, activeTab])
 
   return (
     <BreadcrumbPage pageTitle='Archives'>

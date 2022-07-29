@@ -569,6 +569,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           isEmptyFilterResult={!filteredRecordings.length}
           clearFilters={handleClearFilters}
           isLoading ={isLoading}
+          isNestedTable={false}
           errorMessage ={errorMessage}
           >
             {recordingRows}
