@@ -142,7 +142,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             }
           }
         }`)
-      .subscribe(v => setCounts(old => old.concat(v.data.targetNodes.recordings.archived.aggregate.count as number)))
+      .subscribe(v => setCounts(old => old.concat(v.data.targetNodes[0].recordings.archived.aggregate.count as number)))
     );
   },[addSubscription, context, context.api, setCounts]);
 

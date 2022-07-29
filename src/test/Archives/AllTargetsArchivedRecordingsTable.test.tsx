@@ -45,30 +45,54 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
+import { Target } from '@app/Shared/Services/Target.service';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';
+const mockTarget1: Target = {
+  connectUrl: mockConnectUrl1,
+  alias: mockAlias1,
+};
 const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockAlias2 = 'fooTarget2';
 const mockConnectUrl3 = 'service:jmx:rmi://someUrl3';
 const mockAlias3 = 'fooTarget3';
+const mockTarget3: Target = {
+  connectUrl: mockConnectUrl3,
+  alias: mockAlias3,
+};
+const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
+const mockNewAlias = 'newTarget';
+const mockNewTarget: Target = {
+  connectUrl: mockNewConnectUrl,
+  alias: mockNewAlias,
+}
 const mockCount1 = 1;
 const mockCount2 = 3;
 const mockCount3 = 0;
+const mockNewCount = 12;
 
-const mockRecordingLabels = {
-  someLabel: 'someValue',
-};
-const mockRecording: ArchivedRecording = {
-  name: 'someRecording',
-  downloadUrl: 'http://downloadUrl',
-  reportUrl: 'http://reportUrl',
-  metadata: { labels: mockRecordingLabels },
-};
-const fakeNotification = {
+const mockTargetFoundNotification = {
   message: {
-    target: 'fakeServiceUri',
-    recording: mockRecording
+    event: { kind: 'FOUND', serviceRef: mockNewTarget }
+  }
+} as NotificationMessage;
+
+const mockTargetLostNotification = {
+  message: {
+    event: { kind: 'LOST', serviceRef: mockTarget1 }
+  }
+} as NotificationMessage;
+
+const mockRecordingSavedNotification = {
+  message: {
+    target: mockConnectUrl3
+  }
+} as NotificationMessage;
+
+const mockRecordingDeletedNotification = {
+  message: {
+    target: mockConnectUrl1
   }
 } as NotificationMessage;
 
@@ -118,6 +142,22 @@ const mockTargetsAndCountsResponse = {
   }
 }
 
+const mockNewTargetCountResponse = {
+  data: {
+    targetNodes: [
+      {
+        recordings: {
+          archived: {
+            aggregate: {
+              count: mockNewCount
+            }
+          }
+        }
+      },
+    ]
+  }
+}
+
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
     ArchivedRecordingsTable: jest.fn((props) => {
@@ -130,9 +170,23 @@ jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   };
 });
 
-jest 
-  .spyOn(defaultServices.api, 'graphql')
-  .mockReturnValue(of(mockTargetsAndCountsResponse))
+jest.spyOn(defaultServices.api, 'graphql')
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // renders correctly
+
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // has the correct table elements
+
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // hides targets with zero recordings
+
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // correctly handles the search function
+
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // expands targets to show their <ArchivedRecordingsTable />
+
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // does not expand targets with zero recordings
+
+  .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // adds a target upon receiving a notification
+  .mockReturnValueOnce(of(mockNewTargetCountResponse))
+
+  .mockReturnValue(of(mockTargetsAndCountsResponse)) // remaining tests
 
 jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
@@ -165,7 +219,35 @@ jest.spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
-  
+  .mockReturnValueOnce(of()) // does not expand targets with zero recordings
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of(mockTargetFoundNotification)) // adds a target upon receiving a notification
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of(mockTargetLostNotification)) // removes a target upon receiving a notification
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // increments the count when an archived recording is saved
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockRecordingSavedNotification))
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // decrements the count when an archived recording is deleted
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockRecordingDeletedNotification))
 
 describe('<AllTargetsArchivedRecordingsTable />', () => {
   it('renders correctly', async () => {
@@ -187,15 +269,15 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
       </ServiceContext.Provider>
     );
 
-    const table = screen.getByLabelText('all-archives-table');
-    expect(within(table).getByText('Target')).toBeInTheDocument();
-    expect(within(table).getByText('Count')).toBeInTheDocument();
-    expect(within(table).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeInTheDocument();
-    expect(within(table).getByText(`${mockCount1}`)).toBeInTheDocument();
-    expect(within(table).getByText(`${mockAlias2} (${mockConnectUrl2})`)).toBeInTheDocument();
-    expect(within(table).getByText(`${mockCount2}`)).toBeInTheDocument();
-    expect(within(table).getByText(`${mockAlias3} (${mockConnectUrl3})`)).toBeInTheDocument();
-    expect(within(table).getByText(`${mockCount3}`)).toBeInTheDocument();
+    expect(screen.getByLabelText('all-archives-table')).toBeInTheDocument();
+    expect(screen.getByText('Target')).toBeInTheDocument();
+    expect(screen.getByText('Count')).toBeInTheDocument();
+    expect(screen.getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockCount1}`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockAlias2} (${mockConnectUrl2})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockCount2}`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockAlias3} (${mockConnectUrl3})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockCount3}`)).toBeInTheDocument();
   });
 
   it('hides targets with zero recordings', () => {
@@ -290,9 +372,85 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
   });
 
-  // it doesnt expand targets with a count of 0
+  it('does not expand targets with zero recordings', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AllTargetsArchivedRecordingsTable />
+      </ServiceContext.Provider>
+    );
 
-  // it handles notifications (3 cases)
+    const checkbox = screen.getByLabelText('all-archives-hide-check');
+    userEvent.click(checkbox);
 
-  // test isLoading and EmptyState (technically emptystate already tested) somehow?
+    let tableBody = screen.getAllByRole('rowgroup')[1];
+    let rows = within(tableBody).getAllByRole('row');
+    expect(rows).toHaveLength(3);
+
+    const thirdTarget = rows[2];
+    expect(within(thirdTarget).getByText(`${mockAlias3} (${mockConnectUrl3})`)).toBeTruthy();
+    expect(within(thirdTarget).getByText(`${mockCount3}`)).toBeTruthy();
+
+    const expand = within(thirdTarget).getByLabelText('Details');
+    userEvent.click(expand);
+
+    tableBody = screen.getAllByRole('rowgroup')[1];
+    rows = within(tableBody).getAllByRole('row');
+    expect(rows).toHaveLength(3);
+    expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
+  });
+
+  it('adds a target upon receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AllTargetsArchivedRecordingsTable />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText(`${mockNewAlias} (${mockNewConnectUrl})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockNewCount}`)).toBeInTheDocument();
+  });
+
+  it('removes a target upon receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AllTargetsArchivedRecordingsTable />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.queryByText(`${mockAlias1} (${mockConnectUrl1})`)).not.toBeInTheDocument();
+    expect(screen.queryByText(`${mockCount1}`)).not.toBeInTheDocument();
+  });
+
+  it('increments the count when an archived recording is saved', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AllTargetsArchivedRecordingsTable />
+      </ServiceContext.Provider>
+    );
+
+    let tableBody = screen.getAllByRole('rowgroup')[1];
+    let rows = within(tableBody).getAllByRole('row');
+    expect(rows).toHaveLength(3);
+
+    const thirdTarget = rows[2];
+    expect(within(thirdTarget).getByText(`${mockCount3+1}`)).toBeTruthy();
+  });
+
+  it('decrements the count when an archived recording is deleted', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AllTargetsArchivedRecordingsTable />
+      </ServiceContext.Provider>
+    );
+
+    const checkbox = screen.getByLabelText('all-archives-hide-check');
+    userEvent.click(checkbox);
+
+    let tableBody = screen.getAllByRole('rowgroup')[1];
+    let rows = within(tableBody).getAllByRole('row');
+
+    const firstTarget = rows[0];
+    expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();
+    expect(within(firstTarget).getByText(`${mockCount1-1}`)).toBeTruthy();    
+  });
 });
