@@ -83,6 +83,17 @@ const mockLabelsNotification = {
 } as NotificationMessage;
 const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
 
+const mockFileName = 'mock.jfr'
+const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFileName, {type: 'jfr'});
+
+const history = createMemoryHistory();
+
+jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
+  return {
+    BulkEditLabels: (props) => <Text>Edit Recording Labels</Text>
+  }
+});
+
 jest.mock('@app/Recordings/RecordingFilters', () => {
   return {
     ...jest.requireActual('@app/Recordings/RecordingFilters'),
@@ -92,17 +103,6 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
              </div>
     })
   };
-});
-const mockHandleClose = () => {/*do nothing*/};
-const mockFileName = 'mock.jfr'//mockFil
-const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFileName, {type: 'jfr'});
-
-const history = createMemoryHistory();
-
-jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
-  return {
-    BulkEditLabels: (props) => <Text>Edit Recording Labels</Text>
-  }
 });
 
 const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
