@@ -42,7 +42,6 @@ import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
 import { Target } from '@app/Shared/Services/Target.service';
@@ -57,10 +56,6 @@ const mockConnectUrl2 = 'service:jmx:rmi://someUrl2';
 const mockAlias2 = 'fooTarget2';
 const mockConnectUrl3 = 'service:jmx:rmi://someUrl3';
 const mockAlias3 = 'fooTarget3';
-const mockTarget3: Target = {
-  connectUrl: mockConnectUrl3,
-  alias: mockAlias3,
-};
 const mockNewConnectUrl = 'service:jmx:rmi://someNewUrl';
 const mockNewAlias = 'newTarget';
 const mockNewTarget: Target = {
