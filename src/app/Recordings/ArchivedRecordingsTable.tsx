@@ -378,7 +378,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return (
       <Toolbar id="archived-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-          <RecordingFilters filters={filters} setFilters={setFilters} />
+          <RecordingFilters recordings={recordings} filters={filters} setFilters={setFilters} />
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
               <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>

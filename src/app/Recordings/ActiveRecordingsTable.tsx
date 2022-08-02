@@ -531,7 +531,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return (
       <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-        <RecordingFilters filters={filters} setFilters={setFilters} />
+        <RecordingFilters recordings={recordings} filters={filters} setFilters={setFilters} />        
         { buttons }
         { deleteActiveWarningModal }
         </ToolbarContent>

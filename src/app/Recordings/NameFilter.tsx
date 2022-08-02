@@ -39,12 +39,11 @@
 import React from 'react';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { concatMap, filter, first, map } from 'rxjs';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 
 export interface NameFilterProps {
+  recordings: ArchivedRecording[];
   onSubmit: (inputName) => void;
 }
 
@@ -69,38 +68,9 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
     [props.onSubmit, setIsOpen, setSelected]
   );
 
-  const refreshRecordingList = React.useCallback(() => {
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => target !== NO_TARGET),
-          concatMap(target =>
-            context.api.graphql<any>(`
-              query {
-                targetNodes(filter: { name: "${target.connectUrl}" }) {
-                  recordings {
-                    active {
-                      name
-                    }
-                    archived {
-                      name
-                    }
-                  }
-                }
-              }`)
-          ),
-          map(v => [...v.data.targetNodes[0].recordings.active as ArchivedRecording[],
-          ...v.data.targetNodes[0].recordings.archived as ArchivedRecording[]]),
-          first()
-        )
-        .subscribe((recordings) => setNames(recordings.map((r) => r.name)))
-    );
-  }, [addSubscription, context, context.target, context.api]);
-
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refreshRecordingList));
-  }, [addSubscription, context, context.target, refreshRecordingList]);
+    setNames(props.recordings.map((r) => r.name));
+  }, [setNames, props.recordings]);
 
   return (
     <Select
