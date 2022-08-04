@@ -37,15 +37,20 @@
  */
 import * as React from 'react';
 import { Checkbox } from '@patternfly/react-core';
-import { Tbody, Td, Tr  } from '@patternfly/react-table';
+import { ExpandableRowContent, Tbody, Td, Tr  } from '@patternfly/react-table';
+import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 export interface CredentialsTableRowProps {
   key: number;
   index: number;
+  id: number;
   matchExpression: string;
   isChecked: boolean;
+  isExpanded: boolean;
   label: string;
+  colSpan: number;
   handleCheck: (state: boolean, index: number) => void;
+  handleToggleExpanded: (index: number) => void;
 }
 
 export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowProps> = (props: CredentialsTableRowProps) => {
@@ -54,10 +59,23 @@ export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowPro
     props.handleCheck(checked, props.index);
   }, [props, props.handleCheck]);
 
-  return (
-    <Tbody key={props.index}>
-      <Tr key={`${props.index}`}>
-        <Td key={`credentials-table-row-${props.index}_0`}>
+  const handleToggle = React.useCallback(() => {
+    props.handleToggleExpanded(props.index);
+  },[props, props.handleToggleExpanded])
+
+  const parentRow = (
+    <Tr key={`${props.index}`}>
+        <Td
+          key={`credentials-table-row-${props.index}_0`}
+          id={`credentials-ex-toggle-${props.index}`}
+          aria-controls={`credentials-ex-expand-${props.index}`}
+          expand={{
+            rowIndex: props.index,
+            isExpanded: props.isExpanded,
+            onToggle: handleToggle,
+          }}
+        />
+        <Td key={`credentials-table-row-${props.index}_1`}>
           <Checkbox
             name={`credentials-table-row-${props.index}-check`}
             onChange={handleCheck}
@@ -66,10 +84,33 @@ export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowPro
             aria-label={`credentials-table-row-${props.index}-check`}
           />
         </Td>
-        <Td key={`credentials-table-row-${props.index}_1`} dataLabel={props.label}>
+        <Td key={`credentials-table-row-${props.index}_2`} dataLabel={props.label}>
           {props.matchExpression}
         </Td>
-      </Tr>
-    </Tbody>
+    </Tr>
+  );
+
+  const childRow = (
+    <Tr key={`${props.index}_child`}>
+      <Td
+        key={`credentials-ex-expand-${props.index}`}
+        dataLabel={"Content Details"}
+        colSpan={props.colSpan}
+      >
+        {props.isExpanded ?
+          <ExpandableRowContent>
+            <MatchedTargetsTable id={props.id}/>
+          </ExpandableRowContent>
+        :
+          null
+        }
+      </Td>
+    </Tr>
+  );
+
+  return (<>
+    {parentRow}
+    {childRow}
+  </>
   );
 };

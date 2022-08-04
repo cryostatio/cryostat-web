@@ -590,6 +590,19 @@ export class ApiService {
     );
   }
 
+  getCredential(id: number) : Observable<MatchedCredential> {
+    return this.sendRequest(
+      'v2.2', `credentials/${id}`,
+      {
+        method: 'GET'
+      }
+    ).pipe(
+      concatMap(resp => resp.json()),
+      map((response: CredentialResponse) => response.data.result),
+      first()
+    );
+  }
+
   getCredentials() : Observable<StoredCredential[]> {
     return this.sendRequest(
       'v2.2', `credentials`,
@@ -706,6 +719,12 @@ interface AssetJwtResponse extends ApiV2Response {
   }
 }
 
+interface CredentialResponse extends ApiV2Response {
+  data: {
+    result: MatchedCredential;
+  }
+}
+
 interface CredentialsResponse extends ApiV2Response {
   data: {
     result: StoredCredential[];
@@ -769,4 +788,9 @@ export interface Metadata {
 export interface StoredCredential {
   id: number;
   matchExpression: string;
+}
+
+export interface MatchedCredential {
+  matchExpression: string;
+  targets: Target[];
 }

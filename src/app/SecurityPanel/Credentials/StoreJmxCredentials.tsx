@@ -53,7 +53,7 @@ import {
 import { SearchIcon } from '@patternfly/react-icons';
 import { forkJoin, Observable } from 'rxjs';
 
-import { TableComposable, Th, Thead, Tr } from '@patternfly/react-table';
+import { TableComposable, Tbody, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from '../SecurityPanel';
 import { CredentialsTableRow } from './CredentialsTableRow';
@@ -67,6 +67,7 @@ export const StoreJmxCredentials = () => {
   const addSubscription = useSubscriptions();
 
   const [credentials, setCredentials] = React.useState([] as StoredCredential[]);
+  const [expandedCredentials, setExpandedCredentials] = React.useState([] as StoredCredential[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
@@ -188,9 +189,15 @@ export const StoreJmxCredentials = () => {
     );
   };
 
-    const handleCheck = React.useCallback((checked, index) => {
-      handleRowCheck(checked, index);
-    }, [handleRowCheck]);
+  const handleCheck = React.useCallback((checked, index) => {
+    handleRowCheck(checked, index);
+  }, [handleRowCheck]);
+
+  const handleToggleExpanded = React.useCallback((index) => {
+    const credential: StoredCredential = credentials[index];
+    const idx = expandedCredentials.indexOf(credential);
+    setExpandedCredentials(expandedCredentials => idx >=0 ? [...expandedCredentials.slice(0, idx), ...expandedCredentials.slice(idx + 1, expandedCredentials.length)] : [...expandedCredentials, credential]);
+  }, [credentials, expandedCredentials])
 
   const targetRows = React.useMemo(() => {
     const rows: JSX.Element[] = [];
@@ -199,13 +206,17 @@ export const StoreJmxCredentials = () => {
         key={i}
         index={i}
         label={tableColumns[0]}
+        colSpan={tableColumns.length+2}
+        id={credentials[i].id}
         matchExpression={credentials[i].matchExpression}
         isChecked={checkedIndices.includes(i)}
+        isExpanded={expandedCredentials.includes(credentials[i])}
         handleCheck={(state: boolean, index: number) => handleCheck(state, index)}
+        handleToggleExpanded={(index: number) => handleToggleExpanded(index)}
       />);
     }
     return rows;
-  }, [credentials, checkedIndices]);
+  }, [credentials, expandedCredentials, checkedIndices]);
 
   let content: JSX.Element;
   if (isLoading) {
@@ -226,6 +237,7 @@ export const StoreJmxCredentials = () => {
       <TableComposable aria-label={tableTitle}>
         <Thead>
           <Tr>
+            <Th key="table-header-expand"/>
             <Th
               key="table-header-check-all"
               select={{
@@ -238,7 +250,9 @@ export const StoreJmxCredentials = () => {
             ))}
           </Tr>
         </Thead>
-        {targetRows}
+        <Tbody>
+          {targetRows}
+        </Tbody>
       </TableComposable>
     </>);
   }
