@@ -64,7 +64,7 @@ export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowPro
   },[props, props.handleToggleExpanded])
 
   const parentRow = (
-    <Tr key={`${props.index}`}>
+    <Tr key={`${props.index}_parent`}>
         <Td
           key={`credentials-table-row-${props.index}_0`}
           id={`credentials-ex-toggle-${props.index}`}
@@ -91,7 +91,7 @@ export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowPro
   );
 
   const childRow = (
-    <Tr key={`${props.index}_child`}>
+    <Tr key={`${props.index}_child`} isExpanded={props.isExpanded}>
       <Td
         key={`credentials-ex-expand-${props.index}`}
         dataLabel={"Content Details"}
