@@ -98,22 +98,25 @@ export const StoreJmxCredentials = () => {
     refreshStoredCredentialsAndCounts();
   }, []);
 
-
   React.useEffect(() => {
-    addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((msg) => {
-      setCredentials(old => old.concat([msg.message]));
+    addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
+      setCredentials(old => old.concat([v.message]));
+      setCounts(old => old.concat(v.message.numMatchingTargets));
     }));
-  }, [context, context.notificationChannel, setCredentials]);
+  }, [context, context.notificationChannel, setCredentials, setCounts]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
-      setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
+      const credential: StoredCredential = v.message;
+      const idx = credentials.indexOf(credential);
+      setCredentials(old => old.splice(idx, 1));
+      setCounts(old => old.splice(idx, 1));
     }));
-  }, [context, context.notificationChannel, setCredentials]);
+  }, [credentials, context, context.notificationChannel, setCredentials, setCounts]);
 
   const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
     for (let i = 0; i < credentials.length; i++) {
-      const match: boolean = eval(credentials[i].matchExpression);
+      let match: boolean = eval(credentials[i].matchExpression);
       if (match) {
         setCounts(old => {
           let updated = [...old];
@@ -138,7 +141,7 @@ export const StoreJmxCredentials = () => {
         }
       )
     );
-  }, [addSubscription, context, context.notificationChannel, ])
+  }, [addSubscription, context, context.notificationChannel, handleTargetNotification])
 
   const handleRowCheck = React.useCallback(
     (checked, index) => {
