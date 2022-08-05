@@ -42,7 +42,9 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { SearchIcon } from '@patternfly/react-icons';
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { InnerScrollContainer, OuterScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 export interface MatchedTargetsTableProps { 
   id: number,
@@ -76,6 +78,17 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
     refreshTargetsList();
   }, []);
 
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
+      .subscribe(v => {
+        const evt: TargetDiscoveryEvent = v.message.event;
+        const target
+      })
+      
+    );
+  })
+
   const targetRows = React.useMemo(() => {
     return targets.map((target, idx) => {
       return (
@@ -105,18 +118,20 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
     </>);
   } else {
     view = (<>
-      <TableComposable aria-label="matched-targets-table" variant={'compact'}>
-        <Thead>
-          <Tr>
-            {tableColumns.map((key) => (
-              <Th key={`table-header-${key}`}>{key}</Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {targetRows}
-        </Tbody>
-      </TableComposable>
+      <InnerScrollContainer style={{height: '300px'}}>
+        <TableComposable aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
+          <Thead>
+            <Tr>
+              {tableColumns.map((key) => (
+                <Th key={`table-header-${key}`}>{key}</Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {targetRows}
+          </Tbody>
+        </TableComposable>
+      </InnerScrollContainer>
     </>);
   }
 

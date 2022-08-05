@@ -68,25 +68,31 @@ export const StoreJmxCredentials = () => {
 
   const [credentials, setCredentials] = React.useState([] as StoredCredential[]);
   const [expandedCredentials, setExpandedCredentials] = React.useState([] as StoredCredential[]);
+  const [counts, setCounts] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const tableColumns: string[] = ['Match Expression'];
+  const tableColumns: string[] = ['Match Expression', 'Count'];
   const tableTitle = 'Stored Credentials';
 
-  const refreshStoredTargetsList = React.useCallback(() => {
+  const refreshStoredCredentialsAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
+      let counts: number[] = [];
+      for (const cred of credentials) {
+        counts.push(cred.numMatchingTargets);
+      }
       setCredentials(credentials);
+      setCounts(counts);
       setIsLoading(false);
     }));
-  }, [context, context.api, setIsLoading, setCredentials]);
+  }, [context, context.api, setIsLoading, setCredentials, setCounts]);
 
   React.useEffect(() => {
-    refreshStoredTargetsList();
+    refreshStoredCredentialsAndCounts();
   }, []);
 
   React.useEffect(() => {
@@ -116,7 +122,7 @@ export const StoreJmxCredentials = () => {
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
       setHeaderChecked(checked);
-      setCheckedIndices(checked ? Array.from(new Array(targetRows.length), (x, i) => i) : []);
+      setCheckedIndices(checked ? Array.from(new Array(matchExpressionRows.length), (x, i) => i) : []);
     },
     [setHeaderChecked, setCheckedIndices, credentials]
   );
@@ -199,7 +205,7 @@ export const StoreJmxCredentials = () => {
     setExpandedCredentials(expandedCredentials => idx >=0 ? [...expandedCredentials.slice(0, idx), ...expandedCredentials.slice(idx + 1, expandedCredentials.length)] : [...expandedCredentials, credential]);
   }, [credentials, expandedCredentials])
 
-  const targetRows = React.useMemo(() => {
+  const matchExpressionRows = React.useMemo(() => {
     const rows: JSX.Element[] = [];
     for (var i = 0; i < credentials.length; i++) {
       rows.push(<CredentialsTableRow
@@ -209,6 +215,7 @@ export const StoreJmxCredentials = () => {
         colSpan={tableColumns.length+2}
         id={credentials[i].id}
         matchExpression={credentials[i].matchExpression}
+        count={counts[i]}
         isChecked={checkedIndices.includes(i)}
         isExpanded={expandedCredentials.includes(credentials[i])}
         handleCheck={(state: boolean, index: number) => handleCheck(state, index)}
@@ -216,7 +223,7 @@ export const StoreJmxCredentials = () => {
       />);
     }
     return rows;
-  }, [credentials, expandedCredentials, checkedIndices]);
+  }, [credentials, expandedCredentials, counts, checkedIndices]);
 
   let content: JSX.Element;
   if (isLoading) {
@@ -251,7 +258,7 @@ export const StoreJmxCredentials = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {targetRows}
+          {matchExpressionRows}
         </Tbody>
       </TableComposable>
     </>);

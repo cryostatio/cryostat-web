@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Checkbox } from '@patternfly/react-core';
+import { Badge, Checkbox } from '@patternfly/react-core';
 import { ExpandableRowContent, Tbody, Td, Tr  } from '@patternfly/react-table';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 
@@ -45,6 +45,7 @@ export interface CredentialsTableRowProps {
   index: number;
   id: number;
   matchExpression: string;
+  count: number;
   isChecked: boolean;
   isExpanded: boolean;
   label: string;
@@ -65,28 +66,33 @@ export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowPro
 
   const parentRow = (
     <Tr key={`${props.index}_parent`}>
-        <Td
-          key={`credentials-table-row-${props.index}_0`}
-          id={`credentials-ex-toggle-${props.index}`}
-          aria-controls={`credentials-ex-expand-${props.index}`}
-          expand={{
-            rowIndex: props.index,
-            isExpanded: props.isExpanded,
-            onToggle: handleToggle,
-          }}
+      <Td
+        key={`credentials-table-row-${props.index}_0`}
+        id={`credentials-ex-toggle-${props.index}`}
+        aria-controls={`credentials-ex-expand-${props.index}`}
+        expand={{
+          rowIndex: props.index,
+          isExpanded: props.isExpanded,
+          onToggle: handleToggle,
+        }}
+      />
+      <Td key={`credentials-table-row-${props.index}_1`}>
+        <Checkbox
+          name={`credentials-table-row-${props.index}-check`}
+          onChange={handleCheck}
+          isChecked={props.isChecked}
+          id={`credentials-table-row-${props.index}-check`}
+          aria-label={`credentials-table-row-${props.index}-check`}
         />
-        <Td key={`credentials-table-row-${props.index}_1`}>
-          <Checkbox
-            name={`credentials-table-row-${props.index}-check`}
-            onChange={handleCheck}
-            isChecked={props.isChecked}
-            id={`credentials-table-row-${props.index}-check`}
-            aria-label={`credentials-table-row-${props.index}-check`}
-          />
-        </Td>
-        <Td key={`credentials-table-row-${props.index}_2`} dataLabel={props.label}>
-          {props.matchExpression}
-        </Td>
+      </Td>
+      <Td key={`credentials-table-row-${props.index}_2`} dataLabel={props.label}>
+        {props.matchExpression}
+      </Td>
+      <Td key={`credentials-table-row-${props.index}_3`}>
+        <Badge key={`${props.index}_count`}>
+          {props.count}
+        </Badge>
+      </Td>
     </Tr>
   );
 

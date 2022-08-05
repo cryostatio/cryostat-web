@@ -788,6 +788,7 @@ export interface Metadata {
 export interface StoredCredential {
   id: number;
   matchExpression: string;
+  numMatchingTargets: number;
 }
 
 export interface MatchedCredential {
