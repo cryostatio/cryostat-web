@@ -72,17 +72,15 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   ];
 
   const updateCount = React.useCallback((connectUrl: string, delta: number) => {
-    let idx = 0;
-    for (const t of targets) {
-      if (t.connectUrl === connectUrl) {
+    for(let i = 0; i < targets.length; i++) {
+      if(targets[i].connectUrl === connectUrl) {
         setCounts(old => {
           let updated = [...old];
-          updated[idx] += delta;
+          updated[i] += delta;
           return updated;
         });
         break;
       }
-      idx++;
     }
   }, [targets, setCounts]);
 
@@ -190,8 +188,8 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             getCountForNewTarget(target);
           } else if (evt.kind === 'LOST') {
             const idx = targets.indexOf(target);
-            setTargets(old => old.filter(o => o.connectUrl != target.connectUrl));
-            setExpandedTargets(old => old.filter(o => o != target));
+            setTargets(old => old.filter(o => !_.isEqual(o, target)))
+            setExpandedTargets(old => old.filter(o => !_.isEqual(o, target)))
             setCounts(old => old.splice(idx, 1));
           }
         })

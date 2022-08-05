@@ -45,6 +45,7 @@ import { SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, OuterScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
+import _ from 'lodash';
 
 export interface MatchedTargetsTableProps { 
   id: number,
@@ -74,6 +75,19 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
     );
   }, [setIsLoading, addSubscription, context, context.api, setTargets]);
 
+  const handleNewTarget = React.useCallback((newTarget: Target) => {
+    addSubscription(
+      context.api.getCredential(props.id)
+      .subscribe(
+        v => {
+          if (_.find(v.targets, function(t) { return _.isEqual(t, newTarget); }) !== undefined) {
+            setTargets(old => old.concat(newTarget));
+          }
+        }
+      )
+    )
+  }, [addSubscription, context, context.api, setTargets])
+
   React.useEffect(() => {
     refreshTargetsList();
   }, []);
@@ -83,11 +97,15 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
       context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
       .subscribe(v => {
         const evt: TargetDiscoveryEvent = v.message.event;
-        const target
+        const target: Target = evt.serviceRef;
+        if (evt.kind === 'FOUND') {
+          handleNewTarget(target);
+        } else if (evt.kind === 'LOST') {
+          setTargets(old => old.filter(o => !_.isEqual(o, target)));
+        }
       })
-      
     );
-  })
+  }, [addSubscription, context, context.notificationChannel, setTargets]);
 
   const targetRows = React.useMemo(() => {
     return targets.map((target, idx) => {

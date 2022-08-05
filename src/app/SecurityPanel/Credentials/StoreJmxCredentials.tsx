@@ -62,6 +62,8 @@ import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
+import _ from 'lodash';
+
 export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
