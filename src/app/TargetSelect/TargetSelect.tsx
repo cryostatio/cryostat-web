@@ -47,6 +47,7 @@ import { catchError, first } from 'rxjs/operators';
 
 import { CreateTargetModal } from './CreateTargetModal';
 import _ from 'lodash';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface TargetSelectProps {
 }
@@ -63,12 +64,33 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.targets.targets().subscribe((targets) => {
-      setTargets(targets);
-      selectTargetFromCache(targets);
-    });
-    return () => sub.unsubscribe();
+    addSubscription(
+      context.targets.targets().subscribe((targets) => {
+        setTargets(targets);
+        selectTargetFromCache(targets);
+      })
+    );
   }, [context, context.targets, setTargets]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
+        .subscribe(v => {
+          const evt: TargetDiscoveryEvent = v.message.event;
+          if (evt.kind === 'LOST') {
+            const target: Target = {
+              connectUrl: evt.serviceRef.connectUrl,
+              alias: evt.serviceRef.alias,
+            }
+            context.target.target().subscribe((currentTarget) => {
+              if (currentTarget.connectUrl == target.connectUrl && currentTarget.alias == target.alias) {
+                selectNone();
+              }
+            })
+          }
+        })
+    );
+  }, [addSubscription, context, context.notificationChannel, context.target]);
 
   const refreshTargetList = React.useCallback(() => {
     setLoading(true);
@@ -126,7 +148,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       }
     }
     setExpanded(false);
-  }, [context, selected, notifications, setExpanded]);
+  }, [context, context.target, selected, notifications, setExpanded, setCachedTargetSelection, removeCachedTargetSelection]);
 
   const selectNone = React.useCallback(() => {
     onSelect(undefined, undefined, true);
