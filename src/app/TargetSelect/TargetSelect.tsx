@@ -82,8 +82,8 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               connectUrl: evt.serviceRef.connectUrl,
               alias: evt.serviceRef.alias,
             }
-            context.target.target().subscribe((currentTarget) => {
-              if (currentTarget.connectUrl == target.connectUrl && currentTarget.alias == target.alias) {
+            context.target.target().pipe(first()).subscribe((currentTarget) => {
+              if (currentTarget.connectUrl === target.connectUrl && currentTarget.alias === target.alias) {
                 selectNone();
               }
             })
