@@ -49,6 +49,7 @@ import _ from 'lodash';
 
 export interface MatchedTargetsTableProps { 
   id: number,
+  matchExpression: string, 
 }
 
 export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTableProps> = (props) => {
@@ -75,19 +76,6 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
     );
   }, [setIsLoading, addSubscription, context, context.api, setTargets]);
 
-  const handleNewTarget = React.useCallback((newTarget: Target) => {
-    addSubscription(
-      context.api.getCredential(props.id)
-      .subscribe(
-        v => {
-          if (_.find(v.targets, function(t) { return _.isEqual(t, newTarget); }) !== undefined) {
-            setTargets(old => old.concat(newTarget));
-          }
-        }
-      )
-    )
-  }, [addSubscription, context, context.api, setTargets])
-
   React.useEffect(() => {
     refreshTargetsList();
   }, []);
@@ -99,7 +87,10 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
         const evt: TargetDiscoveryEvent = v.message.event;
         const target: Target = evt.serviceRef;
         if (evt.kind === 'FOUND') {
-          handleNewTarget(target);
+          const match: boolean = eval(props.matchExpression);
+          if (match) {
+            setTargets(old => old.concat(target));
+          }
         } else if (evt.kind === 'LOST') {
           setTargets(old => old.filter(o => !_.isEqual(o, target)));
         }

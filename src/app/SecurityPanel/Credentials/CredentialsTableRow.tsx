@@ -105,7 +105,7 @@ export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowPro
       >
         {props.isExpanded ?
           <ExpandableRowContent>
-            <MatchedTargetsTable id={props.id}/>
+            <MatchedTargetsTable id={props.id} matchExpression={props.matchExpression}/>
           </ExpandableRowContent>
         :
           null

@@ -63,6 +63,7 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 import _ from 'lodash';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
@@ -97,6 +98,7 @@ export const StoreJmxCredentials = () => {
     refreshStoredCredentialsAndCounts();
   }, []);
 
+
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((msg) => {
       setCredentials(old => old.concat([msg.message]));
@@ -108,6 +110,35 @@ export const StoreJmxCredentials = () => {
       setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
     }));
   }, [context, context.notificationChannel, setCredentials]);
+
+  const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
+    for (let i = 0; i < credentials.length; i++) {
+      const match: boolean = eval(credentials[i].matchExpression);
+      if (match) {
+        setCounts(old => {
+          let updated = [...old];
+          let delta = kind === 'FOUND' ? 1 : -1;
+          updated[i] += delta;
+          return updated;
+        });
+      }
+    }
+  }, [credentials, setCounts]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
+      .subscribe(
+        v => {
+          const evt: TargetDiscoveryEvent = v.message.event;
+          const target: Target = v.message.serviceRef;
+          if (evt.kind === 'FOUND' || evt.kind === 'LOST') {
+            handleTargetNotification(target, evt.kind);
+          }
+        }
+      )
+    );
+  }, [addSubscription, context, context.notificationChannel, ])
 
   const handleRowCheck = React.useCallback(
     (checked, index) => {
