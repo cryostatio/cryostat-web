@@ -92,7 +92,7 @@ export const StoreJmxCredentials = () => {
       setCounts(counts);
       setIsLoading(false);
     }));
-  }, [context, context.api, setIsLoading, setCredentials, setCounts]);
+  }, [addSubscription, context, context.api, setIsLoading, setCredentials, setCounts]);
 
   React.useEffect(() => {
     refreshStoredCredentialsAndCounts();
@@ -103,16 +103,19 @@ export const StoreJmxCredentials = () => {
       setCredentials(old => old.concat([v.message]));
       setCounts(old => old.concat(v.message.numMatchingTargets));
     }));
-  }, [context, context.notificationChannel, setCredentials, setCounts]);
+  }, [addSubscription ,context, context.notificationChannel, setCredentials, setCounts]);
+
+  const handleDeletedCredential = React.useCallback((deletedCredential: StoredCredential) => {
+    const idx = credentials.indexOf(deletedCredential);
+    setCredentials(old => old.splice(idx, 1));
+    setCounts(old => old.splice(idx, 1));
+  },[credentials, setCredentials, setCounts]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
-      const credential: StoredCredential = v.message;
-      const idx = credentials.indexOf(credential);
-      setCredentials(old => old.splice(idx, 1));
-      setCounts(old => old.splice(idx, 1));
+      handleDeletedCredential(v.message);
     }));
-  }, [credentials, context, context.notificationChannel, setCredentials, setCounts]);
+  }, [addSubscription, handleDeletedCredential]);
 
   const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
     for (let i = 0; i < credentials.length; i++) {
@@ -303,7 +306,6 @@ export const StoreJmxCredentials = () => {
   return (<>
     <TargetCredentialsToolbar />
     { content }
-    <CreateJmxCredentialModal visible={showAuthModal} onClose={handleAuthModalClose} />
   </>);
 };
 
