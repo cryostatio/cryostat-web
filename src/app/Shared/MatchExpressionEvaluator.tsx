@@ -60,7 +60,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     addSubscription(
       context.target.target().subscribe(setTarget)
     );
-  }, [context, context.target]);
+  }, [addSubscription, context, context.target]);
 
   React.useEffect(() => {
     if (!props.matchExpression || !target?.connectUrl) {

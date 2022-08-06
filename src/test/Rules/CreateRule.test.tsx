@@ -48,6 +48,7 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { CreateRule } from '@app/Rules/CreateRule';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { Target } from '@app/Shared/Services/Target.service';
+import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 const escapeKeyboardInput = (value: string) => {
   return value.replace(/[{[]/g, '$&$&');
@@ -82,6 +83,18 @@ const mockRule: Rule =  {
   maxSizeBytes: 0
 };
 
+const mockNewTarget: Target = {
+  connectUrl: 'service:jmx:rmi://someUrl1',
+  alias: 'someAlias',
+}
+
+const mockTargetFoundNotification = {
+  message: {
+    event: { kind: 'FOUND', serviceRef: mockNewTarget }
+  }
+} as NotificationMessage;
+
+
 const history = createMemoryHistory();
 
 jest.mock('react-router-dom', () => ({
@@ -91,6 +104,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
+jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of(mockTargetFoundNotification));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
