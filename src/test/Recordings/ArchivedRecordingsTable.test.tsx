@@ -86,7 +86,7 @@ const mockDeleteNotification = { message: { target: mockConnectUrl, recording: m
 const mockFileName = 'mock.jfr'
 const mockFileUpload = new File([JSON.stringify(mockAnotherRecording)], mockFileName, {type: 'jfr'});
 
-const history = createMemoryHistory();
+const history = createMemoryHistory({initialEntries: ["/archives"]});
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
@@ -147,7 +147,6 @@ jest.spyOn(window, 'open').mockReturnValue(null);
 describe('<ArchivedRecordingsTable />', () => {
   beforeEach(() => {
     history.go(-history.length);
-    history.push('/archives');
   });
 
   afterEach(cleanup);

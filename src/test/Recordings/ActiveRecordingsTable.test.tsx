@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { createMemoryHistory } from 'history';
 import renderer, { act } from 'react-test-renderer';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -77,14 +78,12 @@ const mockLabelsNotification = {
 const mockStopNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
 const mockDeleteNotification = mockStopNotification;
 
-const mockHistoryPush = jest.fn();
+const history = createMemoryHistory({initialEntries: ["/recordings"]});
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: '/baseUrl' }),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
+  useRouteMatch: () => ({ url: history.location.pathname }),
+  useHistory: () => history,
 }));
 
 jest.mock('@app/Recordings/RecordingFilters', () => {
@@ -158,6 +157,7 @@ jest
     beforeEach(() => {
       mockRecording.metadata.labels = mockRecordingLabels;
       mockRecording.state = RecordingState.RUNNING;
+      history.go(-history.length);
     });
 
     it('renders correctly', async () => {
@@ -234,7 +234,7 @@ jest
 
       userEvent.click(screen.getByText('Create'));
 
-      expect(mockHistoryPush).toHaveBeenCalledWith('/baseUrl/create');
+      expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(["/recordings", "/recordings/create"]);
     });
 
     it('archives the selected recording when Archive is clicked', () => {

@@ -68,7 +68,7 @@ mockFileUpload.text = jest.fn(() => new Promise( (resolve, _) => resolve(JSON.st
 
 const mockDeleteNotification = { message: {...mockRule} } as NotificationMessage;
 
-const history = createMemoryHistory();
+const history = createMemoryHistory({initialEntries: ["/rules"]});
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -109,7 +109,6 @@ jest.spyOn(defaultServices.notificationChannel, 'messages')
 describe('<Rules/>', () => {
   beforeEach(() => {
     history.go(-history.length);
-    history.push('/rules');
   });
 
   afterEach(cleanup);
@@ -139,7 +138,7 @@ describe('<Rules/>', () => {
 
     userEvent.click(screen.getByRole('button', { name: /Create/ }));
 
-    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/', '/rules', '/rules/create']);
+    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/rules', '/rules/create']);
   });
 
   it('opens upload modal when upload icon is clicked', async () => {
