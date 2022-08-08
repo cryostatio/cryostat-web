@@ -72,7 +72,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         selectTargetFromCache(targets);
       })
     );
-  }, [context, context.targets, setTargets, setNumTargets]);
+  }, [addSubscription, context, context.targets, setTargets, setNumTargets]);
 
   React.useEffect(() => {
     addSubscription(
@@ -99,7 +99,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     addSubscription(
       context.targets.queryForTargets().subscribe(() => setLoading(false))
     );
-  }, [setLoading, addSubscription, context.targets]);
+  }, [addSubscription, context, context.targets, setLoading]);
 
   const setCachedTargetSelection = (target) => {
     localStorage.setItem(TARGET_KEY, JSON.stringify(target));
@@ -220,18 +220,21 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           </CardHeaderMain>
           <CardActions>
             <Button
+              aria-label="Create target"
               isDisabled={isLoading}
               onClick={showCreateTargetModal}
               variant="control"
               icon={<PlusCircleIcon />}
             />
             <Button
+              aria-label="Delete target"
               isDisabled={isLoading || (selected == NO_TARGET)}
               onClick={deleteTarget}
               variant="control"
               icon={<TrashIcon />}
             />
             <Button
+              aria-label="Refresh targets"
               isDisabled={isLoading}
               onClick={refreshTargetList}
               variant="control"
