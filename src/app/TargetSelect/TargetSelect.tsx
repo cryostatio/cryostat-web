@@ -58,7 +58,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const context = React.useContext(ServiceContext);
   const [selected, setSelected] = React.useState(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
-  const [numTargets, setNumTargets] = React.useState(0);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [isModalOpen, setModalOpen] = React.useState(false);
@@ -101,11 +100,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     addSubscription(
       context.targets.targets().subscribe((targets) => {
         setTargets(targets);
-        setNumTargets(targets.length)
         selectTargetFromCache(targets);
       })
     );
-  }, [addSubscription, context, context.targets, setTargets, setNumTargets]);
+  }, [addSubscription, context, context.targets, setTargets]);
 
   React.useEffect(() => {
     addSubscription(
@@ -254,7 +252,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             aria-label="Select Input"
           >
           {
-            ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} itemCount={numTargets} />])
+            ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} itemCount={targets.length} />])
               .concat(
                 targets.map((t: Target) => (
                   (t.alias == t.connectUrl) || !t.alias ?
