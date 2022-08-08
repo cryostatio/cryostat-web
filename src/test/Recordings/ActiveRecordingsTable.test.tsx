@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import renderer, { act } from 'react-test-renderer';
 import { render, screen, within } from '@testing-library/react';
@@ -85,17 +86,6 @@ jest.mock('react-router-dom', () => ({
   useRouteMatch: () => ({ url: history.location.pathname }),
   useHistory: () => history,
 }));
-
-jest.mock('@app/Recordings/RecordingFilters', () => {
-  return {
-    ...jest.requireActual('@app/Recordings/RecordingFilters'),
-    RecordingFilters: jest.fn(() => {
-      return <div>
-                RecordingFilters
-             </div>
-    })
-  };
-});
 
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
@@ -165,7 +155,9 @@ jest
       await act(async () => {
         tree = renderer.create(
           <ServiceContext.Provider value={defaultServices}>
-            <ActiveRecordingsTable archiveEnabled={true} />
+            <Router location={history.location} history={history}>
+              <ActiveRecordingsTable archiveEnabled={true} />
+            </Router>
           </ServiceContext.Provider>
         );
       });
@@ -175,7 +167,9 @@ jest
     it('adds a recording after receiving a notification', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
       expect(screen.getByText('someRecording')).toBeInTheDocument();
@@ -185,7 +179,9 @@ jest
     it('updates the recording labels after receiving a notification', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
       expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
@@ -195,7 +191,9 @@ jest
     it('stops a recording after receiving a notification', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
       expect(screen.getByText('STOPPED')).toBeInTheDocument();
@@ -205,7 +203,9 @@ jest
     it('removes a recording after receiving a notification', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
       expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
@@ -214,7 +214,9 @@ jest
     it('displays the toolbar buttons', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -228,7 +230,9 @@ jest
     it('routes to the Create Flight Recording form when Create is clicked', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -240,7 +244,9 @@ jest
     it('archives the selected recording when Archive is clicked', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -258,7 +264,9 @@ jest
     it('stops the selected recording when Stop is clicked', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -276,7 +284,9 @@ jest
     it('opens the labels drawer when Edit Labels is clicked', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -290,7 +300,9 @@ jest
     it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -315,7 +327,9 @@ jest
     it('deletes the recording when Delete is clicked w/o popup warning', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -334,7 +348,9 @@ jest
     it('downloads a recording when Download Recording is clicked', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -350,7 +366,9 @@ jest
     it('displays the automated analysis report when View Report is clicked', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
@@ -365,7 +383,9 @@ jest
     it('uploads a recording to Grafana when View in Grafana is clicked', () => {
       render(
         <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <Router location={history.location} history={history}>
+            <ActiveRecordingsTable archiveEnabled={true} />
+          </Router>
         </ServiceContext.Provider>
       );
 
