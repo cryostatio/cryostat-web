@@ -71,70 +71,59 @@ export const StoreJmxCredentials = () => {
 
   const [credentials, setCredentials] = React.useState([] as StoredCredential[]);
   const [expandedCredentials, setExpandedCredentials] = React.useState([] as StoredCredential[]);
-  const [counts, setCounts] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const credentialsRef = React.useRef(credentials);
-
   const tableColumns: string[] = ['Match Expression', 'Count'];
   const tableTitle = 'Stored Credentials';
 
-  const refreshStoredCredentialsAndCounts = React.useCallback(() => {
+  const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
+    setCredentials(old => {
+      let updated = [...old];
+      for (let i = 0; i < updated.length; i++) {
+        let match: boolean = eval(updated[i].matchExpression);
+        if (match) {
+          updated[i].numMatchingTargets += (kind === 'FOUND' ? 1 : -1);
+        }
+      }
+      return updated;
+    });
+  }, [setCredentials]);
+
+  const refreshStoredCredentials = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
-      let counts: number[] = [];
-      for (const cred of credentials) {
-        counts.push(cred.numMatchingTargets);
-      }
       setCredentials(credentials);
-      setCounts(counts);
       setIsLoading(false);
     }));
-  }, [addSubscription, context, context.api, setIsLoading, setCredentials, setCounts]);
+  }, [addSubscription, context, context.api, setIsLoading, setCredentials]);
 
   React.useEffect(() => {
-    refreshStoredCredentialsAndCounts();
+    refreshStoredCredentials();
   }, []);
 
   React.useEffect(() => {
-    credentialsRef.current = credentials;
-  });
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
+    }
+    const id = window.setInterval(() => refreshStoredCredentials(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    return () => window.clearInterval(id);
+  }, [context.target, context.settings, refreshStoredCredentials]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
       setCredentials(old => old.concat([v.message]));
-      setCounts(old => old.concat(v.message.numMatchingTargets));
     }));
-  }, [addSubscription ,context, context.notificationChannel, setCredentials, setCounts]);
+  }, [addSubscription ,context, context.notificationChannel, setCredentials]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
-      //setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
-      const credential: StoredCredential = v.message;
-      let current = [...credentialsRef.current];
-      const idx = current.indexOf(credential);
-      setCredentials(old => old.splice(idx, 1));
-      setCounts(old => old.splice(idx, 1));
+      setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
     }));
-  }, [addSubscription, context, context.notificationChannel, setCredentials, setCounts]);
-
-  const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
-    for (let i = 0; i < credentials.length; i++) {
-      let match: boolean = eval(credentials[i].matchExpression);
-      if (match) {
-        setCounts(old => {
-          let updated = [...old];
-          let delta = kind === 'FOUND' ? 1 : -1;
-          updated[i] += delta;
-          return updated;
-        });
-      }
-    }
-  }, [credentials, setCounts]);
+  }, [addSubscription, context, context.notificationChannel, setCredentials]);
 
   React.useEffect(() => {
     addSubscription(
@@ -142,7 +131,7 @@ export const StoreJmxCredentials = () => {
       .subscribe(
         v => {
           const evt: TargetDiscoveryEvent = v.message.event;
-          const target: Target = v.message.serviceRef;
+          const target: Target = evt.serviceRef;
           if (evt.kind === 'FOUND' || evt.kind === 'LOST') {
             handleTargetNotification(target, evt.kind);
           }
@@ -259,7 +248,7 @@ export const StoreJmxCredentials = () => {
         colSpan={tableColumns.length+2}
         id={credentials[i].id}
         matchExpression={credentials[i].matchExpression}
-        count={counts[i]}
+        count={credentials[i].numMatchingTargets}
         isChecked={checkedIndices.includes(i)}
         isExpanded={expandedCredentials.includes(credentials[i])}
         handleCheck={(state: boolean, index: number) => handleCheck(state, index)}
@@ -267,7 +256,7 @@ export const StoreJmxCredentials = () => {
       />);
     }
     return rows;
-  }, [credentials, expandedCredentials, counts, checkedIndices]);
+  }, [credentials, expandedCredentials, checkedIndices]);
 
   let content: JSX.Element;
   if (isLoading) {
