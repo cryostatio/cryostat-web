@@ -177,7 +177,7 @@ describe('<CreateRule/>', () => {
     expect(initialDelayInput).toBeInTheDocument();
     expect(initialDelayInput).toBeVisible();
 
-    const createButton = screen.getByRole('button', {name: /create/i});
+    const createButton = screen.getByRole('button', {name: /^create$/i});
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
 
