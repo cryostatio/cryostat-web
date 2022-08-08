@@ -145,12 +145,12 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   },[addSubscription, context, context.api, setCounts]);
 
   React.useEffect(() => {
-    searchedTargetsRef.current = searchedTargets;
-  });
-
-  React.useEffect(() => {
     refreshTargetsAndCounts();
   }, []);
+
+  React.useEffect(() => {
+    searchedTargetsRef.current = searchedTargets;
+  });
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {

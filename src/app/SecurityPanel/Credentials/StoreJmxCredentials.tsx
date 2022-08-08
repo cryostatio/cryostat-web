@@ -78,6 +78,8 @@ export const StoreJmxCredentials = () => {
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const credentialsRef = React.useRef(credentials);
+
   const tableColumns: string[] = ['Match Expression', 'Count'];
   const tableTitle = 'Stored Credentials';
 
@@ -99,23 +101,26 @@ export const StoreJmxCredentials = () => {
   }, []);
 
   React.useEffect(() => {
+    credentialsRef.current = credentials;
+  });
+
+  React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
       setCredentials(old => old.concat([v.message]));
       setCounts(old => old.concat(v.message.numMatchingTargets));
     }));
   }, [addSubscription ,context, context.notificationChannel, setCredentials, setCounts]);
 
-  const handleDeletedCredential = React.useCallback((deletedCredential: StoredCredential) => {
-    const idx = credentials.indexOf(deletedCredential);
-    setCredentials(old => old.splice(idx, 1));
-    setCounts(old => old.splice(idx, 1));
-  },[credentials, setCredentials, setCounts]);
-
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
-      handleDeletedCredential(v.message);
+      //setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
+      const credential: StoredCredential = v.message;
+      let current = [...credentialsRef.current];
+      const idx = current.indexOf(credential);
+      setCredentials(old => old.splice(idx, 1));
+      setCounts(old => old.splice(idx, 1));
     }));
-  }, [addSubscription, handleDeletedCredential]);
+  }, [addSubscription, context, context.notificationChannel, setCredentials, setCounts]);
 
   const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
     for (let i = 0; i < credentials.length; i++) {
@@ -166,7 +171,7 @@ export const StoreJmxCredentials = () => {
     [setHeaderChecked, setCheckedIndices, credentials]
   );
 
-  const handleDeleteCredentials = () => {
+  const handleDeleteCredentials = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
     credentials.forEach((credential, idx) => {
       if (checkedIndices.includes(idx)) {
@@ -175,7 +180,7 @@ export const StoreJmxCredentials = () => {
       }
     });
     addSubscription(forkJoin(tasks).subscribe());
-  };
+  }, [credentials, checkedIndices, handleRowCheck, context, context.api, addSubscription]);
 
   const handleAuthModalOpen = React.useCallback(() => {
     setShowAuthModal(true);
@@ -306,6 +311,7 @@ export const StoreJmxCredentials = () => {
   return (<>
     <TargetCredentialsToolbar />
     { content }
+    <CreateJmxCredentialModal visible={showAuthModal} onClose={handleAuthModalClose} />
   </>);
 };
 
