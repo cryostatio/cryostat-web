@@ -64,6 +64,39 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [isModalOpen, setModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
 
+  const setCachedTargetSelection = React.useCallback((target) => {
+    localStorage.setItem(TARGET_KEY, JSON.stringify(target));
+  }, [localStorage]);
+
+  const removeCachedTargetSelection = React.useCallback(() => {
+    localStorage.removeItem(TARGET_KEY);
+  }, [localStorage]);
+
+  const getCachedTargetSelection = React.useCallback(() => {
+    const cachedTarget = localStorage.getItem(TARGET_KEY);
+    return cachedTarget ? JSON.parse(cachedTarget) : NO_TARGET;
+  }, [localStorage]);
+
+  const selectTargetFromCache = React.useCallback((targets) => {
+    if(targets.length === 0) {
+      return;
+    }
+
+    try {
+      const cachedTarget = getCachedTargetSelection();
+      const cachedTargetExists = targets.some(target => _.isEqual(cachedTarget, target));
+
+      if(cachedTargetExists) {
+        context.target.setTarget(cachedTarget);
+      } else {
+        removeCachedTargetSelection();
+      }
+    } catch (error) {
+      context.target.setTarget(NO_TARGET);
+      removeCachedTargetSelection();
+    }
+  }, [context, context.target, getCachedTargetSelection, removeCachedTargetSelection]);
+
   React.useEffect(() => {
     addSubscription(
       context.targets.targets().subscribe((targets) => {
@@ -101,39 +134,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     );
   }, [addSubscription, context, context.targets, setLoading]);
 
-  const setCachedTargetSelection = (target) => {
-    localStorage.setItem(TARGET_KEY, JSON.stringify(target));
-  };
-
-  const removeCachedTargetSelection = () => {
-    localStorage.removeItem(TARGET_KEY);
-  };
-
-  const getCachedTargetSelection = () => {
-    const cachedTarget = localStorage.getItem(TARGET_KEY);
-    return cachedTarget ? JSON.parse(cachedTarget) : NO_TARGET;
-  };
-
-  const selectTargetFromCache = React.useCallback((targets) => {
-    if(targets.length === 0) {
-      return;
-    }
-
-    try {
-      const cachedTarget = getCachedTargetSelection();
-      const cachedTargetExists = targets.some(target => _.isEqual(cachedTarget, target));
-
-      if(cachedTargetExists) {
-        context.target.setTarget(cachedTarget);
-      } else {
-        removeCachedTargetSelection();
-      }
-    } catch (error) {
-      context.target.setTarget(NO_TARGET);
-      removeCachedTargetSelection();
-    }
-  }, [context.target, getCachedTargetSelection, removeCachedTargetSelection]);
-
   const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
       context.target.setTarget(NO_TARGET);
@@ -150,7 +150,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       }
     }
     setExpanded(false);
-  }, [context, context.target, selected, notifications, setExpanded]);
+  }, [context, context.target, selected, notifications, setExpanded, removeCachedTargetSelection, setCachedTargetSelection]);
 
   const selectNone = React.useCallback(() => {
     onSelect(undefined, undefined, true);
@@ -160,7 +160,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     addSubscription(
       context.target.target().subscribe(setSelected)
     );
-  }, [context.target, addSubscription]);
+  }, [addSubscription, context, context.target, setSelected]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -168,7 +168,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     }
     const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
-  }, [context.target, context.settings, refreshTargetList]);
+  }, [context, context.target, context.settings, refreshTargetList]);
 
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
@@ -187,7 +187,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           }
         })
     );
-  }, [context.api, notifications, setModalOpen, addSubscription]);
+  }, [addSubscription, context, context.api, notifications, setLoading, setModalOpen]);
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
@@ -208,7 +208,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
       })
     );
-  }, [context.api, selected, setLoading, addSubscription, notifications, selectNone]);
+  }, [addSubscription, context, context.api, notifications, selected, setLoading, selectNone]);
 
   return (<>
       <Card>

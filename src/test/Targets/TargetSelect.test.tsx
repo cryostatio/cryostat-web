@@ -87,6 +87,9 @@ jest.spyOn(defaultServices.api, 'deleteTarget')
 jest.spyOn(defaultServices.targets, 'queryForTargets')
     .mockReturnValue(of());
 
+jest.spyOn(defaultServices.notificationChannel, 'messages')
+    .mockReturnValue(of())
+
 describe('<TargetSelect />', () => {
   it('renders correctly', () => {
     const tree = renderer.create(    
