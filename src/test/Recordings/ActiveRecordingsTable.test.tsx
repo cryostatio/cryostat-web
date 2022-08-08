@@ -39,7 +39,7 @@ import * as React from 'react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
@@ -149,6 +149,8 @@ jest
       mockRecording.state = RecordingState.RUNNING;
       history.go(-history.length);
     });
+
+    afterEach(cleanup);
 
     it('renders correctly', async () => {
       let tree;
