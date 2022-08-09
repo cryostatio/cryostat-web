@@ -61,7 +61,9 @@ export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowPro
   }, [props, props.handleCheck]);
 
   const handleToggle = React.useCallback(() => {
+  if (props.count !== 0 || props.isExpanded) {
     props.handleToggleExpanded(props.index);
+  }
   },[props, props.handleToggleExpanded])
 
   const parentRow = (

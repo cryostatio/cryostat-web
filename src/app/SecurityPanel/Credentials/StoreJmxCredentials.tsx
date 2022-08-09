@@ -41,7 +41,9 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { StoredCredential } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
+  Badge,
   Button,
+  Checkbox,
   EmptyState,
   EmptyStateIcon,
   Title,
@@ -52,7 +54,7 @@ import {
 import { SearchIcon } from '@patternfly/react-icons';
 import { forkJoin, Observable } from 'rxjs';
 
-import { TableComposable, Tbody, Th, Thead, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from '../SecurityPanel';
 import { CredentialsTableRow } from './CredentialsTableRow';
@@ -63,6 +65,7 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 import _ from 'lodash';
+import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
@@ -70,61 +73,88 @@ export const StoreJmxCredentials = () => {
 
   const [credentials, setCredentials] = React.useState([] as StoredCredential[]);
   const [expandedCredentials, setExpandedCredentials] = React.useState([] as StoredCredential[]);
+  const [counts, setCounts] = React.useState([] as number[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  const credentialsRef = React.useRef(credentials);
+  const countsRef = React.useRef(counts);
+
   const tableColumns: string[] = ['Match Expression', 'Count'];
   const tableTitle = 'Stored Credentials';
 
   const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
-    setCredentials(old => {
-      let updated = [...old];
-      for (let i = 0; i < updated.length; i++) {
-        let match: boolean = eval(updated[i].matchExpression);
-        if (match) {
-          updated[i].numMatchingTargets += (kind === 'FOUND' ? 1 : -1);
-        }
+    let currentCredentials = credentialsRef.current;
+    let updated = [...countsRef.current];
+    for (let i = 0; i < currentCredentials.length; i++) {
+      let match: boolean = eval(currentCredentials[i].matchExpression);
+      if (match) {
+        updated[i] += (kind === 'FOUND' ? 1 : -1);
       }
-      return updated;
-    });
-  }, [setCredentials]);
+    }
 
-  const refreshStoredCredentials = React.useCallback(() => {
+    if (!_.isEqual(updated, countsRef.current)) {
+      setCounts(updated);
+    }
+  }, [setCounts]);
+
+  const refreshStoredCredentialsAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
+      let counts: number[] = [];
+      for (const c of credentials) {
+        counts.push(c.numMatchingTargets);
+      }
       setCredentials(credentials);
+      setCounts(counts);
       setIsLoading(false);
     }));
-  }, [addSubscription, context, context.api, setIsLoading, setCredentials]);
+  }, [addSubscription, context, context.api, setIsLoading, setCredentials, setCounts]);
 
   React.useEffect(() => {
-    refreshStoredCredentials();
+    refreshStoredCredentialsAndCounts();
   }, []);
+
+  React.useEffect(() => {
+    credentialsRef.current = credentials;
+    countsRef.current = counts;
+  });
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
-    const id = window.setInterval(() => refreshStoredCredentials(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    const id = window.setInterval(() => refreshStoredCredentialsAndCounts(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
-  }, [context.target, context.settings, refreshStoredCredentials]);
+  }, [context.target, context.settings, refreshStoredCredentialsAndCounts]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
       setCredentials(old => old.concat([v.message]));
+      setCounts(old => old.concat([v.message.numMatchingTargets]));
     }));
   }, [addSubscription ,context, context.notificationChannel, setCredentials]);
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
       const credential: StoredCredential = v.message;
+      let currentCredentials = credentialsRef.current;
+      let idx;
+      for (idx = 0; idx < currentCredentials.length; idx++) {
+        if (_.isEqual(credential, currentCredentials[idx])) break;
+      }
       setCredentials(old => old.filter(o => !_.isEqual(o, credential)));
       setExpandedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
+      setCounts(old => {
+        let updated = [...old];
+        updated.splice(idx, 1);
+        return updated;
+      });
     }));
-  }, [addSubscription, context, context.notificationChannel, setCredentials]);
+  }, [addSubscription, context, context.notificationChannel, setCredentials, setExpandedCredentials, setCounts]);
 
   React.useEffect(() => {
     addSubscription(
@@ -229,35 +259,92 @@ export const StoreJmxCredentials = () => {
     );
   };
 
-  const handleCheck = React.useCallback((checked, index) => {
-    handleRowCheck(checked, index);
-  }, [handleRowCheck]);
-
-  const handleToggleExpanded = React.useCallback((index) => {
-    const credential: StoredCredential = credentials[index];
+  const toggleExpanded = React.useCallback((credential) => {
     const idx = expandedCredentials.indexOf(credential);
-    setExpandedCredentials(expandedCredentials => idx >=0 ? [...expandedCredentials.slice(0, idx), ...expandedCredentials.slice(idx + 1, expandedCredentials.length)] : [...expandedCredentials, credential]);
-  }, [credentials, expandedCredentials])
+    setExpandedCredentials(expandedCredentials => idx >= 0 ? [...expandedCredentials.slice(0, idx), ...expandedCredentials.slice(idx + 1, expandedCredentials.length)] : [...expandedCredentials, credential]);
+  }, [expandedCredentials])
 
   const matchExpressionRows = React.useMemo(() => {
-    const rows: JSX.Element[] = [];
-    for (var i = 0; i < credentials.length; i++) {
-      rows.push(<CredentialsTableRow
-        key={i}
-        index={i}
-        label={tableColumns[0]}
-        colSpan={tableColumns.length+2}
-        id={credentials[i].id}
-        matchExpression={credentials[i].matchExpression}
-        count={credentials[i].numMatchingTargets}
-        isChecked={checkedIndices.includes(i)}
-        isExpanded={expandedCredentials.includes(credentials[i])}
-        handleCheck={(state: boolean, index: number) => handleCheck(state, index)}
-        handleToggleExpanded={(index: number) => handleToggleExpanded(index)}
-      />);
-    }
-    return rows;
-  }, [credentials, expandedCredentials, checkedIndices]);
+    return credentials.map((credential, idx) => {
+      let isExpanded: boolean = expandedCredentials.includes(credential);
+      let isChecked: boolean = checkedIndices.includes(idx);
+
+      const handleToggle = () => {
+        if (counts[idx] !== 0 || isExpanded) {
+          toggleExpanded(credential);
+        }
+      };
+
+      const handleCheck = (checked: boolean) => {
+        handleRowCheck(checked, idx)
+      };
+
+      return (
+        <Tr key={`${idx}_parent`}>
+          <Td
+            key={`credentials-table-row-${idx}_0`}
+            id={`credentials-ex-toggle-${idx}`}
+            aria-controls={`credentials-ex-expand-${idx}`}
+            expand={{
+              rowIndex: idx,
+              isExpanded: isExpanded,
+              onToggle: handleToggle,
+            }}
+          />
+          <Td key={`credentials-table-row-${idx}_1`}>
+            <Checkbox
+              name={`credentials-table-row-${idx}-check`}
+              onChange={handleCheck}
+              isChecked={isChecked}
+              id={`credentials-table-row-${idx}-check`}
+              aria-label={`credentials-table-row-${idx}-check`}
+            />
+          </Td>
+          <Td key={`credentials-table-row-${idx}_2`} dataLabel={tableColumns[0]}>
+            {credential.matchExpression}
+          </Td>
+          <Td key={`credentials-table-row-${idx}_3`} dataLabel={tableColumns[1]}>
+            <Badge key={`${idx}_count`}>
+              {counts[idx]}
+            </Badge>
+          </Td>
+        </Tr>
+      );
+    });
+  }, [credentials, expandedCredentials, checkedIndices, counts]);
+
+  const targetRows = React.useMemo(() => {
+    return credentials.map((credential, idx) => {
+      let isExpanded: boolean = expandedCredentials.includes(credential);
+
+      return (
+        <Tr key={`${idx}_child`} isExpanded={isExpanded}>
+          <Td
+            key={`credentials-ex-expand-${idx}`}
+            dataLabel={"Content Details"}
+            colSpan={tableColumns.length + 2}
+          >
+            {isExpanded ?
+              <ExpandableRowContent>
+                <MatchedTargetsTable id={credential.id} matchExpression={credential.matchExpression}/>
+              </ExpandableRowContent>
+            :
+              null
+            }
+          </Td>
+        </Tr>
+      );
+    })
+  }, [credentials, expandedCredentials]);
+
+  const rowPairs = React.useMemo(() => {
+    let rowPairs: JSX.Element[] = [];
+    for (let i = 0; i < matchExpressionRows.length; i++) {
+      rowPairs.push(matchExpressionRows[i]);
+      rowPairs.push(targetRows[i]);
+    } 
+    return rowPairs;
+  }, [matchExpressionRows, targetRows]);
 
   let content: JSX.Element;
   if (isLoading) {
@@ -292,7 +379,7 @@ export const StoreJmxCredentials = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {matchExpressionRows}
+          {rowPairs}
         </Tbody>
       </TableComposable>
     </>);
