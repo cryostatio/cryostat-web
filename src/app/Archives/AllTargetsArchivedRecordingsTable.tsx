@@ -156,7 +156,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       updated.splice(idx, 1);
       return updated;
     });
-  }, [targets, setTargets, setExpandedTargets, setCounts]);
+  }, [setTargets, setExpandedTargets, setCounts]);
 
   React.useEffect(() => {
     refreshTargetsAndCounts();
