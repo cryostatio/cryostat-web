@@ -144,6 +144,20 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     );
   },[addSubscription, context, context.api, setCounts]);
 
+  const handleLostTarget = React.useCallback((target: Target) => {
+    let idx;
+    for (idx = 0; idx < targets.length; idx++) {
+      if (_.isEqual(targets[idx], target)) break;
+    }
+    setTargets(old => old.filter(o => !_.isEqual(o, target)));
+    setExpandedTargets(old => old.filter(o => !_.isEqual(o, target)));
+    setCounts(old => {
+      let updated = [...old];
+      updated.splice(idx, 1);
+      return updated;
+    });
+  }, [targets, setTargets, setExpandedTargets, setCounts]);
+
   React.useEffect(() => {
     refreshTargetsAndCounts();
   }, []);
@@ -187,14 +201,11 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             setTargets(old => old.concat(target));
             getCountForNewTarget(target);
           } else if (evt.kind === 'LOST') {
-            const idx = targets.indexOf(target);
-            setTargets(old => old.filter(o => !_.isEqual(o, target)))
-            setExpandedTargets(old => old.filter(o => !_.isEqual(o, target)))
-            setCounts(old => old.splice(idx, 1));
+            handleLostTarget(target);
           }
         })
     );
-  }, [addSubscription, context, context.notificationChannel, getCountForNewTarget, setTargets, setCounts]);
+  }, [addSubscription, context, context.notificationChannel, setTargets, getCountForNewTarget, handleLostTarget]);
 
   React.useEffect(() => {
     addSubscription(
@@ -263,7 +274,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </Tr>
       );
     });
-  }, [targets, expandedTargets, counts, searchedTargets, hideEmptyTargets]);
+  }, [targets, expandedTargets, counts, isHidden]);
 
   const recordingRows = React.useMemo(() => {
     return targets.map((target, idx) => {
@@ -286,7 +297,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </Tr>
       );
     });
-  }, [targets, expandedTargets, searchedTargets, hideEmptyTargets, counts]);
+  }, [targets, expandedTargets, isHidden]);
 
   const rowPairs = React.useMemo(() => {
     let rowPairs: JSX.Element[] = [];
@@ -322,7 +333,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           <Tr>
             <Th key="table-header-expand"/>
             {tableColumns.map((key) => (
-              <Th key={`table-header-${key}`}>{key}</Th>
+              <Th key={`table-header-${key}`} width={key === 'Target' ? 90 : 15}>{key}</Th>
             ))}
           </Tr>
         </Thead>

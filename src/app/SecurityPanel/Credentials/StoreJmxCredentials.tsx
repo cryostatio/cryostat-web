@@ -42,7 +42,6 @@ import { StoredCredential } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
-  Checkbox,
   EmptyState,
   EmptyStateIcon,
   Title,
@@ -58,12 +57,12 @@ import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from '../SecurityPanel';
 import { CredentialsTableRow } from './CredentialsTableRow';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 import _ from 'lodash';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);
@@ -121,7 +120,9 @@ export const StoreJmxCredentials = () => {
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
-      setCredentials(old => old.filter(c => c.matchExpression !== v.message.matchExpression));
+      const credential: StoredCredential = v.message;
+      setCredentials(old => old.filter(o => !_.isEqual(o, credential)));
+      setExpandedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
     }));
   }, [addSubscription, context, context.notificationChannel, setCredentials]);
 
@@ -286,7 +287,7 @@ export const StoreJmxCredentials = () => {
               }}
             />
             {tableColumns.map((key, idx) => (
-              <Th key={`table-header-${key}`}>{key}</Th>
+              <Th key={`table-header-${key}`} width={key === 'Match Expression' ? 90 : 15}>{key}</Th>
             ))}
           </Tr>
         </Thead>
