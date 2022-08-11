@@ -64,7 +64,6 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
-  const targetsRef = React.useRef(targets);
   const searchedTargetsRef = React.useRef(searchedTargets);
 
   const tableColumns: string[] = [
@@ -146,12 +145,13 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   },[addSubscription, context, context.api, setCounts]);
 
   const handleLostTarget = React.useCallback((target: Target) => {
-    let currentTargets = targetsRef.current;
     let idx;
-    for (idx = 0; idx < currentTargets.length; idx++) {
-      if (_.isEqual(currentTargets[idx], target)) break;
-    }
-    setTargets(old => old.filter(o => !_.isEqual(o, target)));
+    setTargets(old => {
+      for (idx = 0; idx < old.length; idx++) {
+        if (_.isEqual(target, old[idx])) break;
+      }
+      return old.filter(o => !_.isEqual(o, target));
+    });
     setExpandedTargets(old => old.filter(o => !_.isEqual(o, target)));
     setCounts(old => {
       let updated = [...old];
@@ -165,9 +165,8 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   }, []);
 
   React.useEffect(() => {
-    targetsRef.current = targets;
     searchedTargetsRef.current = searchedTargets;
-  });
+  }, [searchedTargets]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {

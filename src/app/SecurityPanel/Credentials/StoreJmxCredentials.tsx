@@ -57,7 +57,6 @@ import { forkJoin, Observable } from 'rxjs';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from '../SecurityPanel';
-import { CredentialsTableRow } from './CredentialsTableRow';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
@@ -121,7 +120,7 @@ export const StoreJmxCredentials = () => {
   React.useEffect(() => {
     credentialsRef.current = credentials;
     countsRef.current = counts;
-  });
+  }, [credentials, counts]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -136,25 +135,28 @@ export const StoreJmxCredentials = () => {
       setCredentials(old => old.concat([v.message]));
       setCounts(old => old.concat([v.message.numMatchingTargets]));
     }));
-  }, [addSubscription ,context, context.notificationChannel, setCredentials]);
+  }, [addSubscription, context, context.notificationChannel, setCredentials, setCounts]);
 
   React.useEffect(() => {
-    context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
-      const credential: StoredCredential = v.message;
-      let currentCredentials = credentialsRef.current;
-      let idx;
-      for (idx = 0; idx < currentCredentials.length; idx++) {
-        if (_.isEqual(credential, currentCredentials[idx])) break;
-      }
-      setCredentials(old => old.filter(o => !_.isEqual(o, credential)));
-      setExpandedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
-      setCounts(old => {
-        let updated = [...old];
-        updated.splice(idx, 1);
-        return updated;
-      });
-    });
-  }, []);
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
+        const credential: StoredCredential = v.message;
+        let idx;
+        setCredentials(old => {
+          for (idx = 0; idx < old.length; idx++) {
+            if (_.isEqual(credential, old[idx])) break;
+          }
+          return old.filter(o => !_.isEqual(o, credential));
+        });
+        setExpandedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
+        setCounts(old => {
+          let updated = [...old];
+          updated.splice(idx, 1);
+          return updated;
+        });
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setCredentials, setExpandedCredentials, setCounts]);
 
   React.useEffect(() => {
     addSubscription(
@@ -169,7 +171,7 @@ export const StoreJmxCredentials = () => {
         }
       )
     );
-  }, [addSubscription, context, context.notificationChannel, handleTargetNotification])
+  }, [addSubscription, context, context.notificationChannel, handleTargetNotification]);
 
   const handleRowCheck = React.useCallback(
     (checked, credential) => {
