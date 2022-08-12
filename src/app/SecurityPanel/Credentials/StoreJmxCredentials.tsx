@@ -36,10 +36,6 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { StoredCredential } from '@app/Shared/Services/Api.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Badge,
   Button,
@@ -51,10 +47,13 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
+import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { SearchIcon } from '@patternfly/react-icons';
 import { forkJoin, Observable } from 'rxjs';
-
-import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { StoredCredential } from '@app/Shared/Services/Api.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from '../SecurityPanel';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -62,9 +61,8 @@ import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-
-import _ from 'lodash';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
+import _ from 'lodash';
 
 export const StoreJmxCredentials = () => {
   const context = React.useContext(ServiceContext);

@@ -39,8 +39,8 @@ import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
 
-import { render, screen, waitFor, within } from '@testing-library/react';
-import { expand, of, throwError } from 'rxjs';
+import { render, screen, within } from '@testing-library/react';
+import { of, throwError } from 'rxjs';
 import { MatchedCredential, StoredCredential } from '@app/Shared/Services/Api.service';
 
 import '@testing-library/jest-dom';

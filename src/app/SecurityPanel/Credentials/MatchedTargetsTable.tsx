@@ -42,7 +42,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { SearchIcon } from '@patternfly/react-icons';
-import { InnerScrollContainer, OuterScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { InnerScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import _ from 'lodash';
