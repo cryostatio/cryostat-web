@@ -48,7 +48,20 @@ import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 const mockCredential: StoredCredential = { id: 0, matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"', numMatchingTargets: 1 };
-const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"', numMatchingTargets: 1 };
+const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"', numMatchingTargets: 2 };
+
+const mockTarget: Target = {
+  connectUrl: "service:jmx:rmi://someUrl",
+  alias: "someAlias",
+};
+const mockAnotherTarget: Target = {
+  connectUrl: "service:jmx:rmi://anotherUrl",
+  alias: "anotherAlias",
+};
+const mockAnotherMatchingTarget: Target = {
+  connectUrl: "service:jmx:rmi://anotherMatchUrl",
+  alias: "anotherMatchAlias",
+}
 
 jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
   return {
@@ -69,7 +82,7 @@ jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
 });
 
 jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
-  const mockNotification = { message: { matchExpression: mockCredential.matchExpression } } as NotificationMessage;
+  const mockNotification = { message: mockCredential } as NotificationMessage;
   return {
     ...jest.requireActual('@app/Shared/Services/NotificationChannel.service'),
     NotificationChannel: jest.fn(() => {
@@ -78,15 +91,32 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
           .fn()
           .mockReturnValueOnce(of()) // 'renders correctly'
           .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of(mockNotification)) // 'adds the correct table entry when a stored notification is received'
+          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'removes the correct table entry when a deletion notification is received'
           .mockReturnValueOnce(of(mockNotification))
+          .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'renders an empty table after receiving deletion notifications for all credentials'
           .mockReturnValueOnce(of(mockNotification))
+          .mockReturnValueOnce(of())
+
+          .mockReturnValueOnce(of()) // 'expands to show its nested targets'
+          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
+
+          .mockReturnValueOnce(of()) // 'decrements the count and updates the nested table when a lost target notification is received'
+          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
+
+          .mockReturnValueOnce(of()) // 'increments the count and updates the nested table when a found target notification is received'
+          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
 
           .mockReturnValue(of()), // all other tests
       };
@@ -103,7 +133,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
           .mockReturnValue(of(true)),
         getCredentials: jest
           .fn()
-          .mockReturnValueOnce(of([mockCredential])) // 'renders correctly'
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'renders correctly'
 
           .mockReturnValueOnce(of([])) // 'adds the correct table entry when a stored notification is received'
 
@@ -111,6 +141,12 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 
           .mockReturnValueOnce(of([mockCredential])) // 'renders an empty table after receiving deletion notifications for all credentials'
 
+          .mockReturnValueOnce(of([mockCredential])) // 'expands to show its nested targets'
+
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'decrements the count and updates the nested table when a lost target notification is received'
+
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'increments the count and updates the nested table when a found target notification is received'
+          
           .mockReturnValueOnce(of([])) // 'opens the JMX auth modal when Add is clicked'
 
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete'
@@ -118,9 +154,9 @@ jest.mock('@app/Shared/Services/Api.service', () => {
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'makes multiple delete requests when all credentials are deleted at once'
 
           .mockReturnValue(throwError(() => new Error('Too many calls'))),
-        deleteTargetCredentials: jest.fn(() => {
-          return of(true);
-        }),
+        getCredential: jest
+          .fn()
+          .mockReturnValueOnce(of([mockTarget])),
       };
     }),
   };
@@ -129,6 +165,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 import { StoreJmxCredentials } from '@app/SecurityPanel/Credentials/StoreJmxCredentials';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteJMXCredentials, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { Target } from '@app/Shared/Services/Target.service';
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true);
@@ -158,6 +195,7 @@ describe('<StoreJmxCredentials />', () => {
     );
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
+    expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();
     expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -170,7 +208,9 @@ describe('<StoreJmxCredentials />', () => {
     );
 
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
+    expect(screen.queryByText(mockCredential.numMatchingTargets)).not.toBeInTheDocument();
     expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.numMatchingTargets)).toBeInTheDocument();
     expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -183,9 +223,37 @@ describe('<StoreJmxCredentials />', () => {
     );
 
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
+    expect(screen.queryByText(mockCredential.numMatchingTargets)).not.toBeInTheDocument();
     expect(screen.queryByText(mockAnotherCredential.matchExpression)).not.toBeInTheDocument();
+    expect(screen.queryByText(mockAnotherCredential.numMatchingTargets)).not.toBeInTheDocument();
     expect(screen.getByText('No Stored Credentials')).toBeInTheDocument();
     expect(apiRequestSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('expands to show its nested targets', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <StoreJmxCredentials />
+      </ServiceContext.Provider>
+    );
+
+    screen.debug(undefined, Infinity);
+  });
+
+  it('decrements the count and updates the nested table when a lost target notification is received', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <StoreJmxCredentials />
+      </ServiceContext.Provider>
+    );
+  });
+
+  it('increments the count and updates the nested table when a found target notification is received', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <StoreJmxCredentials />
+      </ServiceContext.Provider>
+    );
   });
 
   it('opens the JMX auth modal when Add is clicked', () => {
@@ -237,8 +305,10 @@ describe('<StoreJmxCredentials />', () => {
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
+    expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.numMatchingTargets)).toBeInTheDocument();
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
