@@ -79,26 +79,21 @@ export const StoreJmxCredentials = () => {
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const credentialsRef = React.useRef(credentials);
-  const countsRef = React.useRef(counts);
-
   const tableColumns: string[] = ['Match Expression', 'Count'];
   const tableTitle = 'Stored Credentials';
 
   const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
-    let currentCredentials = credentialsRef.current;
-    let updated = [...countsRef.current];
-    for (let i = 0; i < currentCredentials.length; i++) {
-      let match: boolean = eval(currentCredentials[i].matchExpression);
-      if (match) {
-        updated[i] += (kind === 'FOUND' ? 1 : -1);
+    setCounts(old => {
+      let updated = [...old];
+      for (let i = 0; i < credentials.length; i++) {
+        let match: boolean = eval(credentials[i].matchExpression);
+        if (match) {
+          updated[i] += (kind === 'FOUND' ? 1 : -1);
+        }
       }
-    }
-
-    if (!_.isEqual(updated, countsRef.current)) {
-      setCounts(updated);
-    }
-  }, [setCounts]);
+      return updated;
+    });
+  }, [credentials, setCounts]);
 
   const refreshStoredCredentialsAndCounts = React.useCallback(() => {
     setIsLoading(true);
@@ -116,11 +111,6 @@ export const StoreJmxCredentials = () => {
   React.useEffect(() => {
     refreshStoredCredentialsAndCounts();
   }, []);
-
-  React.useEffect(() => {
-    credentialsRef.current = credentials;
-    countsRef.current = counts;
-  }, [credentials, counts]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {

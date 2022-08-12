@@ -39,29 +39,24 @@ import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
 
-import { render, screen, within } from '@testing-library/react';
-import { of, throwError } from 'rxjs';
-import { StoredCredential } from '@app/Shared/Services/Api.service';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import { expand, of, throwError } from 'rxjs';
+import { MatchedCredential, StoredCredential } from '@app/Shared/Services/Api.service';
 
 import '@testing-library/jest-dom';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 const mockCredential: StoredCredential = { id: 0, matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"', numMatchingTargets: 1 };
-const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl"', numMatchingTargets: 2 };
+const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl" || target.connectUrl == "service:jmx:rmi://anotherMatchUrl" || target.connectUrl == "service:jmx:rmi://yetAnotherMatchUrl"', numMatchingTargets: 2 };
 
-const mockTarget: Target = {
-  connectUrl: "service:jmx:rmi://someUrl",
-  alias: "someAlias",
-};
-const mockAnotherTarget: Target = {
-  connectUrl: "service:jmx:rmi://anotherUrl",
-  alias: "anotherAlias",
-};
-const mockAnotherMatchingTarget: Target = {
-  connectUrl: "service:jmx:rmi://anotherMatchUrl",
-  alias: "anotherMatchAlias",
-}
+const mockTarget: Target = { connectUrl: "service:jmx:rmi://someUrl", alias: "someAlias", };
+const mockAnotherTarget: Target = { connectUrl: "service:jmx:rmi://anotherUrl", alias: "anotherAlias", };
+const mockAnotherMatchingTarget: Target = { connectUrl: "service:jmx:rmi://anotherMatchUrl", alias: "anotherMatchAlias", };
+const mockYetAnotherMatchingTarget: Target = { connectUrl: "service:jmx:rmi://yetAnotherMatchUrl", alias: "yetAnotherMatchAlias" };
+
+const mockMatchedCredentialResponse: MatchedCredential = { matchExpression: mockCredential.matchExpression, targets: [mockTarget] };
+const mockAnotherMatchedCredentialResponse: MatchedCredential = { matchExpression: mockAnotherCredential.matchExpression, targets: [mockAnotherTarget, mockAnotherMatchingTarget] };
 
 jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
   return {
@@ -82,7 +77,10 @@ jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
 });
 
 jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
-  const mockNotification = { message: mockCredential } as NotificationMessage;
+  const mockCredentialNotification = { message: mockCredential } as NotificationMessage;
+  const evt = { kind: 'LOST', serviceRef:  mockTarget } as TargetDiscoveryEvent;
+  const mockLostTargetNotification = { message: { event: { kind: 'LOST', serviceRef:  mockAnotherTarget } } } as NotificationMessage;
+  const mockFoundTargetNotification = { message: { event: { kind: 'FOUND', serviceRef:  mockYetAnotherMatchingTarget } } } as NotificationMessage;
   return {
     ...jest.requireActual('@app/Shared/Services/NotificationChannel.service'),
     NotificationChannel: jest.fn(() => {
@@ -92,33 +90,45 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
           .mockReturnValueOnce(of()) // 'renders correctly'
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
 
-          .mockReturnValueOnce(of(mockNotification)) // 'adds the correct table entry when a stored notification is received'
+          .mockReturnValueOnce(of(mockCredentialNotification)) // 'adds the correct table entry when a stored notification is received'
+          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'removes the correct table entry when a deletion notification is received'
-          .mockReturnValueOnce(of(mockNotification))
+          .mockReturnValueOnce(of(mockCredentialNotification))
+          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'renders an empty table after receiving deletion notifications for all credentials'
-          .mockReturnValueOnce(of(mockNotification))
-          .mockReturnValueOnce(of())
-
-          .mockReturnValueOnce(of()) // 'expands to show its nested targets'
-          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of(mockCredentialNotification))
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
 
-          .mockReturnValueOnce(of()) // 'decrements the count and updates the nested table when a lost target notification is received'
+          .mockReturnValueOnce(of()) // 'expands to show the correct nested targets'
+          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
 
-          .mockReturnValueOnce(of()) // 'increments the count and updates the nested table when a found target notification is received'
+          .mockReturnValueOnce(of()) // 'decrements the correct count and updates the correct nested table when a lost target notification is received'
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of(mockLostTargetNotification))
+          .mockReturnValueOnce(of(mockLostTargetNotification))
+          .mockReturnValueOnce(of(mockLostTargetNotification))
 
-          .mockReturnValue(of()), // all other tests
+          .mockReturnValueOnce(of()) // 'increments the correct count and updates the correct nested table when a found target notification is received'
+          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of())
+          .mockReturnValueOnce(of(mockFoundTargetNotification))
+          .mockReturnValueOnce(of(mockFoundTargetNotification))
+          .mockReturnValueOnce(of(mockFoundTargetNotification))
+
+          .mockReturnValue(of()) // remaining tests
       };
     }),
   };
@@ -141,11 +151,11 @@ jest.mock('@app/Shared/Services/Api.service', () => {
 
           .mockReturnValueOnce(of([mockCredential])) // 'renders an empty table after receiving deletion notifications for all credentials'
 
-          .mockReturnValueOnce(of([mockCredential])) // 'expands to show its nested targets'
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'expands to show the correct nested targets'
 
-          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'decrements the count and updates the nested table when a lost target notification is received'
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'decrements the correct count and updates the correct nested table when a lost target notification is received'
 
-          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'increments the count and updates the nested table when a found target notification is received'
+          .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'increments the correct count and updates the correct nested table when a found target notification is received'
           
           .mockReturnValueOnce(of([])) // 'opens the JMX auth modal when Add is clicked'
 
@@ -156,7 +166,16 @@ jest.mock('@app/Shared/Services/Api.service', () => {
           .mockReturnValue(throwError(() => new Error('Too many calls'))),
         getCredential: jest
           .fn()
-          .mockReturnValueOnce(of([mockTarget])),
+          .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // 'expands to show the correct nested targets'
+          .mockReturnValueOnce(of(mockAnotherMatchedCredentialResponse))
+
+          .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // 'decrements the correct count and updates the correct nested table when a lost target notification is received'
+          .mockReturnValueOnce(of(mockAnotherMatchedCredentialResponse))
+
+          .mockReturnValueOnce(of(mockMatchedCredentialResponse)) // 'increments the correct count and updates the correct nested table when a found target notification is received'
+          .mockReturnValueOnce(of(mockAnotherMatchedCredentialResponse))
+
+          .mockReturnValue(throwError(() => new Error('Too many calls'))),
       };
     }),
   };
@@ -166,6 +185,7 @@ import { StoreJmxCredentials } from '@app/SecurityPanel/Credentials/StoreJmxCred
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteJMXCredentials, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { Target } from '@app/Shared/Services/Target.service';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true);
@@ -230,30 +250,79 @@ describe('<StoreJmxCredentials />', () => {
     expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('expands to show its nested targets', () => {
+  it('expands to show the correct nested targets', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
 
-    screen.debug(undefined, Infinity);
+    expect(screen.queryByText('Target')).not.toBeInTheDocument();
+    expect(screen.queryByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).not.toBeInTheDocument();
+    expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
+    expect(screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).not.toBeInTheDocument();
+    
+    const expandButtons = screen.getAllByLabelText('Details');
+    
+    userEvent.click(expandButtons[0]);
+
+    expect(screen.getByText('Target')).toBeInTheDocument();
+    expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
+    expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
+    expect(screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).not.toBeInTheDocument();
+    
+    userEvent.click(expandButtons[1]);
+
+    expect(screen.getByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).toBeInTheDocument();
   });
 
-  it('decrements the count and updates the nested table when a lost target notification is received', () => {
+  it('decrements the correct count and updates the correct nested table when a lost target notification is received', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
+
+    // both counts should now be equal to 1
+    const counts = screen.getAllByText(mockAnotherCredential.numMatchingTargets - 1);
+    expect(within(counts[0]).getByText(mockCredential.numMatchingTargets)).toBeTruthy();
+    expect(within(counts[1]).getByText(mockAnotherCredential.numMatchingTargets - 1)).toBeTruthy();
+    
+    const expandButtons = screen.getAllByLabelText('Details');
+   
+    userEvent.click(expandButtons[0]);
+
+    expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
+
+    userEvent.click(expandButtons[1]);
+
+    expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
+    expect(screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).toBeInTheDocument();
   });
 
-  it('increments the count and updates the nested table when a found target notification is received', () => {
+  it('increments the correct count and updates the correct nested table when a found target notification is received', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
+
+    expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();
+    expect(screen.getByText(mockAnotherCredential.numMatchingTargets + 1)).toBeInTheDocument();
+
+    const expandButtons = screen.getAllByLabelText('Details');
+   
+    userEvent.click(expandButtons[0]);
+
+    expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
+    expect(screen.queryByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)).not.toBeInTheDocument();
+
+    userEvent.click(expandButtons[1]);
+
+    expect(screen.getByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)).toBeInTheDocument();
   });
 
   it('opens the JMX auth modal when Add is clicked', () => {

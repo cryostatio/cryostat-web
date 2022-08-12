@@ -166,7 +166,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
   React.useEffect(() => {
     searchedTargetsRef.current = searchedTargets;
-  }, [searchedTargets]);
+  });
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
