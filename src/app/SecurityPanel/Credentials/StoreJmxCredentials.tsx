@@ -64,47 +64,74 @@ import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 import _ from 'lodash';
 
-export const StoreJmxCredentials = () => {
-  const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
+const enum Actions {
+  HANDLE_REFRESH = 'handleRefresh',
+  HANDLE_TARGET_NOTIFICATION = 'handleTargetNotification',
+  HANDLE_STORED_CREDENTIALS_NOTIFICATION = 'handleStoredCredentialsNotification',
+  
+}
 
-  const [credentials, setCredentials] = React.useState([] as StoredCredential[]);
-  const [expandedCredentials, setExpandedCredentials] = React.useState([] as StoredCredential[]);
-  const [checkedCredentials, setCheckedCredentials] = React.useState([] as StoredCredential[]);
-  const [counts, setCounts] = React.useState([] as number[]);
-  const [headerChecked, setHeaderChecked] = React.useState(false);
-  const [showAuthModal, setShowAuthModal] = React.useState(false);
-  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const tableColumns: string[] = ['Match Expression', 'Count'];
-  const tableTitle = 'Stored Credentials';
-
-  const handleTargetNotification = React.useCallback((target: Target, kind: string) => {
-    setCounts(old => {
-      let updated = [...old];
-      for (let i = 0; i < credentials.length; i++) {
-        let match: boolean = eval(credentials[i].matchExpression);
-        if (match) {
-          updated[i] += (kind === 'FOUND' ? 1 : -1);
-        }
-      }
-      return updated;
-    });
-  }, [credentials, setCounts]);
-
-  const refreshStoredCredentialsAndCounts = React.useCallback(() => {
-    setIsLoading(true);
-    addSubscription(context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
+const reducer = (state, action) => {
+  switch(action.type) {
+    case Actions.HANDLE_REFRESH:
+      let credentials: StoredCredential[] = action.payload.credentials;
       let counts: number[] = [];
       for (const c of credentials) {
         counts.push(c.numMatchingTargets);
       }
-      setCredentials(credentials);
-      setCounts(counts);
+      return {
+        ...state,
+        credentials: credentials,
+        counts: counts
+      }
+    case Actions.HANDLE_TARGET_NOTIFICATION:
+      let target: Target = action.payload.target;
+      let updated = [...state.counts];
+      for (let i = 0; i < state.credentials.length; i++) {
+        let match: boolean = eval(state.credentials[i].matchExpression);
+        if (match) {
+          updated[i] += (action.payload.kind === 'FOUND' ? 1 : -1);
+        }
+      }
+      return {
+        ...state,
+        counts: updated
+      }
+    case Actions.HANDLE_STORED_CREDENTIALS_NOTIFICATION:
+      return {
+        ...state,
+        credentials: state.credentials.concat(action.payload.credentials),
+        counts: state.counts.concat(action.payload.credentials.numMatchingTargets)
+      }
+    default:
+      return state;
+  }
+};
+
+export const StoreJmxCredentials = () => {
+  const context = React.useContext(ServiceContext);
+  const [state, dispatch] = React.useReducer(reducer, {
+    credentials: [] as StoredCredential[],
+    expandedCredentials: [] as StoredCredential[],
+    checkedCredentials: [] as StoredCredential[],
+    counts: [] as number[]
+  });
+  const [headerChecked, setHeaderChecked] = React.useState(false);
+  const [showAuthModal, setShowAuthModal] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const addSubscription = useSubscriptions();
+
+  const tableColumns: string[] = ['Match Expression', 'Count'];
+  const tableTitle = 'Stored Credentials';
+
+  const refreshStoredCredentialsAndCounts = React.useCallback(() => {
+    setIsLoading(true);
+    addSubscription(context.api.getCredentials().subscribe((credentials: StoredCredential[]) => {
+      dispatch({ type: Actions.HANDLE_REFRESH, payload: { credentials: credentials }});
       setIsLoading(false);
     }));
-  }, [addSubscription, context, context.api, setIsLoading, setCredentials, setCounts]);
+  }, [addSubscription, context, context.api, setIsLoading]);
 
   React.useEffect(() => {
     refreshStoredCredentialsAndCounts();
@@ -120,10 +147,9 @@ export const StoreJmxCredentials = () => {
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
-      setCredentials(old => old.concat([v.message]));
-      setCounts(old => old.concat([v.message.numMatchingTargets]));
+      dispatch({ type: Actions.HANDLE_STORED_CREDENTIALS_NOTIFICATION, payload: { credentials: v.message } });
     }));
-  }, [addSubscription, context, context.notificationChannel, setCredentials, setCounts]);
+  }, [addSubscription, context, context.notificationChannel]);
 
   React.useEffect(() => {
     addSubscription(
@@ -137,6 +163,7 @@ export const StoreJmxCredentials = () => {
           return old.filter(o => !_.isEqual(o, credential));
         });
         setExpandedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
+        setCheckedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
         setCounts(old => {
           let updated = [...old];
           updated.splice(idx, 1);
@@ -154,7 +181,7 @@ export const StoreJmxCredentials = () => {
           const evt: TargetDiscoveryEvent = v.message.event;
           const target: Target = evt.serviceRef;
           if (evt.kind === 'FOUND' || evt.kind === 'LOST') {
-            handleTargetNotification(target, evt.kind);
+            dispatch({ type: Actions.HANDLE_TARGET_NOTIFICATION, payload: { target: target, kind: evt.kind }})
           }
         }
       )
