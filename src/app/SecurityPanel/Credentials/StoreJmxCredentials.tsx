@@ -67,14 +67,18 @@ import _ from 'lodash';
 const enum Actions {
   HANDLE_REFRESH = 'handleRefresh',
   HANDLE_TARGET_NOTIFICATION = 'handleTargetNotification',
-  HANDLE_STORED_CREDENTIALS_NOTIFICATION = 'handleStoredCredentialsNotification',
+  HANDLE_CREDENTIALS_STORED_NOTIFICATION = 'handleCredentialsStoredNotification',
+  HANDLE_CREDENTIALS_DELETED_NOTIFICATION = 'handleCredentialsDeletedNotification',
+  HANDLE_ROW_CHECK= 'handleRowCheck',
+  HANDLE_HEADER_CHECK = 'handleHeaderCheck',
+
   
 }
 
 const reducer = (state, action) => {
   switch(action.type) {
-    case Actions.HANDLE_REFRESH:
-      let credentials: StoredCredential[] = action.payload.credentials;
+    case Actions.HANDLE_REFRESH: {
+      const credentials: StoredCredential[] = action.payload.credentials;
       let counts: number[] = [];
       for (const c of credentials) {
         counts.push(c.numMatchingTargets);
@@ -84,8 +88,9 @@ const reducer = (state, action) => {
         credentials: credentials,
         counts: counts
       }
-    case Actions.HANDLE_TARGET_NOTIFICATION:
-      let target: Target = action.payload.target;
+    }
+    case Actions.HANDLE_TARGET_NOTIFICATION: {
+      const target: Target = action.payload.target;
       let updated = [...state.counts];
       for (let i = 0; i < state.credentials.length; i++) {
         let match: boolean = eval(state.credentials[i].matchExpression);
@@ -97,12 +102,52 @@ const reducer = (state, action) => {
         ...state,
         counts: updated
       }
-    case Actions.HANDLE_STORED_CREDENTIALS_NOTIFICATION:
+    }
+    case Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION: {
       return {
         ...state,
         credentials: state.credentials.concat(action.payload.credentials),
         counts: state.counts.concat(action.payload.credentials.numMatchingTargets)
       }
+    }
+    case Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION: {
+      const deletedCredentials: StoredCredential = action.payload.credentials;
+      let deletedIdx;
+      for (deletedIdx = 0; deletedIdx < state.credentials.length; deletedIdx++) {
+        if (_.isEqual(deletedCredentials, state.credentials[deletedIdx])) break;
+      }
+      const updatedCounts = [...state.counts];
+      updatedCounts.splice(deletedIdx, 1);
+
+      return {
+        ...state,
+        credentials: state.credentials.filter(o => !_.isEqual(o, deletedCredentials)),
+        expandedCredentials: state.expandedCredentials.filter(o => !_.isEqual(o, deletedCredentials)),
+        checkedCredentials: state.checkedCredentials.filter(o => !_.isEqual(o, deletedCredentials)),
+        counts: updatedCounts
+      }
+    }
+    case Actions.HANDLE_ROW_CHECK: {
+      if (action.payload.checked) {
+        return {
+          ...state,
+          checkedCredentials: state.checkedCredentials.concat(action.payload.credentials)
+        }
+      } else {
+        return {
+          ...state,
+          checkedCredentials: state.checkedCredentials.filter(o => !_.isEqual(o, action.payload.credentials)),
+          isHeaderChecked: false
+        }
+      }
+    }
+    case Actions.HANDLE_HEADER_CHECK: {
+      return {
+        ...state,
+        checkedCredentials: action.payload.checked ? state.credentials : [],
+        isHeaderChecked: action.payload.checked
+      }
+    }
     default:
       return state;
   }
@@ -114,9 +159,9 @@ export const StoreJmxCredentials = () => {
     credentials: [] as StoredCredential[],
     expandedCredentials: [] as StoredCredential[],
     checkedCredentials: [] as StoredCredential[],
+    isHeaderChecked: false,
     counts: [] as number[]
   });
-  const [headerChecked, setHeaderChecked] = React.useState(false);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -147,31 +192,17 @@ export const StoreJmxCredentials = () => {
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
-      dispatch({ type: Actions.HANDLE_STORED_CREDENTIALS_NOTIFICATION, payload: { credentials: v.message } });
+      dispatch({ type: Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION, payload: { credentials: v.message } });
     }));
   }, [addSubscription, context, context.notificationChannel]);
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
-        const credential: StoredCredential = v.message;
-        let idx;
-        setCredentials(old => {
-          for (idx = 0; idx < old.length; idx++) {
-            if (_.isEqual(credential, old[idx])) break;
-          }
-          return old.filter(o => !_.isEqual(o, credential));
-        });
-        setExpandedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
-        setCheckedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
-        setCounts(old => {
-          let updated = [...old];
-          updated.splice(idx, 1);
-          return updated;
-        });
+        dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credentials: v.message }});
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setCredentials, setExpandedCredentials, setCounts]);
+  }, [addSubscription, context, context.notificationChannel]);
 
   React.useEffect(() => {
     addSubscription(
@@ -186,27 +217,15 @@ export const StoreJmxCredentials = () => {
         }
       )
     );
-  }, [addSubscription, context, context.notificationChannel, handleTargetNotification]);
+  }, [addSubscription, context, context.notificationChannel]);
 
-  const handleRowCheck = React.useCallback(
-    (checked, credential) => {
-      if (checked) {
-        setCheckedCredentials(old => old.concat(credential));
-      } else {
-        setHeaderChecked(false);
-        setCheckedCredentials(old => old.filter(o => !_.isEqual(o, credential)));
-      }
-    },
-    [setCheckedCredentials, setHeaderChecked]
-  );
+  const handleRowCheck = React.useCallback((checked, credentials) => {
+      dispatch({ type: Actions.HANDLE_ROW_CHECK, payload: { checked: checked, credentials: credentials }});
+  }, []);
 
-  const handleHeaderCheck = React.useCallback(
-    (event, checked) => {
-      setHeaderChecked(checked);
-      setCheckedCredentials(checked ? credentials : []);
-    },
-    [setHeaderChecked, setCheckedCredentials, credentials]
-  );
+  const handleHeaderCheck = React.useCallback((event, checked) => {
+    dispatch({ type: Actions.HANDLE_HEADER_CHECK, payload: { checked: checked }});
+  }, []);
 
   const handleDeleteCredentials = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
@@ -257,7 +276,7 @@ export const StoreJmxCredentials = () => {
           ))}
         </>
       );
-    }, [checkedCredentials]);
+    }, [state.checkedCredentials]);
 
     const deleteCredentialModal = React.useMemo(() => {
       return <DeleteWarningModal
@@ -266,7 +285,7 @@ export const StoreJmxCredentials = () => {
         onAccept={handleDeleteCredentials}
         onClose={handleWarningModalClose}
       />
-    }, [checkedCredentials]);
+    }, [state.checkedCredentials]);
 
     return (
       <Toolbar id="target-credentials-toolbar">
@@ -368,7 +387,7 @@ export const StoreJmxCredentials = () => {
     content = (<>
       <LoadingView />
     </>);
-  } else if (credentials.length === 0) {
+  } else if (state.credentials.length === 0) {
     content = (<>
       <EmptyState>
         <EmptyStateIcon icon={SearchIcon} />
@@ -387,7 +406,7 @@ export const StoreJmxCredentials = () => {
               key="table-header-check-all"
               select={{
                 onSelect: handleHeaderCheck,
-                  isSelected: headerChecked,
+                  isSelected: state.headerChecked,
               }}
             />
             {tableColumns.map((key, idx) => (
