@@ -49,7 +49,7 @@ import {
 } from '@patternfly/react-core';
 import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { SearchIcon } from '@patternfly/react-icons';
-import { forkJoin, Observable } from 'rxjs';
+import { concatMap, forkJoin, Observable, of } from 'rxjs';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { StoredCredential } from '@app/Shared/Services/Api.service';
@@ -65,14 +65,13 @@ import { MatchedTargetsTable } from './MatchedTargetsTable';
 import _ from 'lodash';
 
 const enum Actions {
-  HANDLE_REFRESH = 'handleRefresh',
-  HANDLE_TARGET_NOTIFICATION = 'handleTargetNotification',
-  HANDLE_CREDENTIALS_STORED_NOTIFICATION = 'handleCredentialsStoredNotification',
-  HANDLE_CREDENTIALS_DELETED_NOTIFICATION = 'handleCredentialsDeletedNotification',
-  HANDLE_ROW_CHECK= 'handleRowCheck',
-  HANDLE_HEADER_CHECK = 'handleHeaderCheck',
-
-  
+  HANDLE_REFRESH,
+  HANDLE_TARGET_NOTIFICATION,
+  HANDLE_CREDENTIALS_STORED_NOTIFICATION,
+  HANDLE_CREDENTIALS_DELETED_NOTIFICATION,
+  HANDLE_ROW_CHECK,
+  HANDLE_HEADER_CHECK,
+  HANDLE_TOGGLE_EXPANDED,
 }
 
 const reducer = (state, action) => {
@@ -106,24 +105,26 @@ const reducer = (state, action) => {
     case Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION: {
       return {
         ...state,
-        credentials: state.credentials.concat(action.payload.credentials),
-        counts: state.counts.concat(action.payload.credentials.numMatchingTargets)
+        credentials: state.credentials.concat(action.payload.credential),
+        counts: state.counts.concat(action.payload.credential.numMatchingTargets)
       }
     }
     case Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION: {
-      const deletedCredentials: StoredCredential = action.payload.credentials;
+      const deletedCredential: StoredCredential = action.payload.credential;
       let deletedIdx;
       for (deletedIdx = 0; deletedIdx < state.credentials.length; deletedIdx++) {
-        if (_.isEqual(deletedCredentials, state.credentials[deletedIdx])) break;
+        if (_.isEqual(deletedCredential, state.credentials[deletedIdx])) break;
       }
       const updatedCounts = [...state.counts];
       updatedCounts.splice(deletedIdx, 1);
+      const updatedCheckedCredentials = state.checkedCredentials.filter(o => !_.isEqual(o, deletedCredential));
 
       return {
         ...state,
-        credentials: state.credentials.filter(o => !_.isEqual(o, deletedCredentials)),
-        expandedCredentials: state.expandedCredentials.filter(o => !_.isEqual(o, deletedCredentials)),
-        checkedCredentials: state.checkedCredentials.filter(o => !_.isEqual(o, deletedCredentials)),
+        credentials: state.credentials.filter(o => !_.isEqual(o, deletedCredential)),
+        expandedCredentials: state.expandedCredentials.filter(o => !_.isEqual(o, deletedCredential)),
+        checkedCredentials: updatedCheckedCredentials,
+        isHeaderChecked: updatedCheckedCredentials.length === 0 ? false : state.isHeaderChecked,
         counts: updatedCounts
       }
     }
@@ -131,12 +132,12 @@ const reducer = (state, action) => {
       if (action.payload.checked) {
         return {
           ...state,
-          checkedCredentials: state.checkedCredentials.concat(action.payload.credentials)
+          checkedCredentials: state.checkedCredentials.concat(action.payload.credential)
         }
       } else {
         return {
           ...state,
-          checkedCredentials: state.checkedCredentials.filter(o => !_.isEqual(o, action.payload.credentials)),
+          checkedCredentials: state.checkedCredentials.filter(o => !_.isEqual(o, action.payload.credential)),
           isHeaderChecked: false
         }
       }
@@ -144,12 +145,23 @@ const reducer = (state, action) => {
     case Actions.HANDLE_HEADER_CHECK: {
       return {
         ...state,
-        checkedCredentials: action.payload.checked ? state.credentials : [],
+        checkedCredentials: action.payload.checked ? [...state.credentials] : [],
         isHeaderChecked: action.payload.checked
       }
     }
-    default:
+    case Actions.HANDLE_TOGGLE_EXPANDED: {
+      const credential: StoredCredential = action.payload.credential;
+      const idx = state.expandedCredentials.indexOf(credential);
+      const updated = idx >= 0 ? [...state.expandedCredentials.slice(0, idx), ...state.expandedCredentials.slice(idx + 1, state.expandedCredentials.length)] : [...state.expandedCredentials, credential];
+
+      return {
+        ...state,
+        expandedCredentials: updated
+      }
+    }
+    default: {
       return state;
+    }
   }
 };
 
@@ -192,36 +204,31 @@ export const StoreJmxCredentials = () => {
 
   React.useEffect(() => {
     addSubscription(context.notificationChannel.messages(NotificationCategory.CredentialsStored).subscribe((v) => {
-      dispatch({ type: Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION, payload: { credentials: v.message } });
+      dispatch({ type: Actions.HANDLE_CREDENTIALS_STORED_NOTIFICATION, payload: { credential: v.message }});
     }));
   }, [addSubscription, context, context.notificationChannel]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.CredentialsDeleted).subscribe((v) => {
-        dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credentials: v.message }});
-      })
+      context.notificationChannel.messages(NotificationCategory.CredentialsDeleted)
+      .pipe(concatMap(v => of(dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credential: v.message }}))))
+      .subscribe(() => {} /* do nothing - dispatch will have already handled updating state */)
     );
   }, [addSubscription, context, context.notificationChannel]);
+
+  const handleTargetNotification = (evt: TargetDiscoveryEvent) => {
+    if (evt.kind === 'FOUND' || evt.kind === 'LOST') {
+      dispatch({ type: Actions.HANDLE_TARGET_NOTIFICATION, payload: { target: evt.serviceRef, kind: evt.kind }})
+    }
+  };
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
-      .subscribe(
-        v => {
-          const evt: TargetDiscoveryEvent = v.message.event;
-          const target: Target = evt.serviceRef;
-          if (evt.kind === 'FOUND' || evt.kind === 'LOST') {
-            dispatch({ type: Actions.HANDLE_TARGET_NOTIFICATION, payload: { target: target, kind: evt.kind }})
-          }
-        }
-      )
+      .pipe(concatMap(v => of(handleTargetNotification(v.message.event))))
+      .subscribe(() => {} /* do nothing - dispatch will have already handled updating state */)
     );
   }, [addSubscription, context, context.notificationChannel]);
-
-  const handleRowCheck = React.useCallback((checked, credentials) => {
-      dispatch({ type: Actions.HANDLE_ROW_CHECK, payload: { checked: checked, credentials: credentials }});
-  }, []);
 
   const handleHeaderCheck = React.useCallback((event, checked) => {
     dispatch({ type: Actions.HANDLE_HEADER_CHECK, payload: { checked: checked }});
@@ -229,14 +236,13 @@ export const StoreJmxCredentials = () => {
 
   const handleDeleteCredentials = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
-    credentials.forEach((credential) => {
-      if (checkedCredentials.includes(credential)) {
-        handleRowCheck(false, credential);
+    state.credentials.forEach((credential) => {
+      if (state.checkedCredentials.includes(credential)) {
         tasks.push(context.api.deleteCredentials(credential.id));
       }
     });
     addSubscription(forkJoin(tasks).subscribe());
-  }, [credentials, checkedCredentials, handleRowCheck, context, context.api, addSubscription]);
+  }, [state.credentials, state.checkedCredentials, context, context.api, addSubscription]);
 
   const handleAuthModalOpen = React.useCallback(() => {
     setShowAuthModal(true);
@@ -265,7 +271,7 @@ export const StoreJmxCredentials = () => {
         <Button variant="primary" aria-label="add-jmx-credential" onClick={handleAuthModalOpen}>
           Add
         </Button>,
-        <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={handleDeleteButton} isDisabled={!checkedCredentials.length}>
+        <Button key="delete" variant="danger" aria-label="delete-selected-jmx-credential" onClick={handleDeleteButton} isDisabled={!state.checkedCredentials.length}>
           Delete
         </Button>,
       ];
@@ -295,24 +301,19 @@ export const StoreJmxCredentials = () => {
     );
   };
 
-  const toggleExpanded = React.useCallback((credential) => {
-    const idx = expandedCredentials.indexOf(credential);
-    setExpandedCredentials(expandedCredentials => idx >= 0 ? [...expandedCredentials.slice(0, idx), ...expandedCredentials.slice(idx + 1, expandedCredentials.length)] : [...expandedCredentials, credential]);
-  }, [expandedCredentials])
-
   const matchExpressionRows = React.useMemo(() => {
-    return credentials.map((credential, idx) => {
-      let isExpanded: boolean = expandedCredentials.includes(credential);
-      let isChecked: boolean = checkedCredentials.includes(credential);
+    return state.credentials.map((credential, idx) => {
+      let isExpanded: boolean = state.expandedCredentials.includes(credential);
+      let isChecked: boolean = state.checkedCredentials.includes(credential);
 
-      const handleToggle = () => {
-        if (counts[idx] !== 0 || isExpanded) {
-          toggleExpanded(credential);
+      const handleToggleExpanded = () => {
+        if (state.counts[idx] !== 0 || isExpanded) {
+          dispatch({ type: Actions.HANDLE_TOGGLE_EXPANDED, payload: { credential: credential } });
         }
       };
 
-      const handleCheck = (checked: boolean) => {
-        handleRowCheck(checked, credential)
+      const handleRowCheck = (checked: boolean) => {
+        dispatch({ type: Actions.HANDLE_ROW_CHECK, payload: { checked: checked, credential: credential }});
       };
 
       return (
@@ -324,13 +325,13 @@ export const StoreJmxCredentials = () => {
             expand={{
               rowIndex: idx,
               isExpanded: isExpanded,
-              onToggle: handleToggle,
+              onToggle: handleToggleExpanded,
             }}
           />
           <Td key={`credentials-table-row-${idx}_1`}>
             <Checkbox
               name={`credentials-table-row-${idx}-check`}
-              onChange={handleCheck}
+              onChange={handleRowCheck}
               isChecked={isChecked}
               id={`credentials-table-row-${idx}-check`}
               aria-label={`credentials-table-row-${idx}-check`}
@@ -341,17 +342,17 @@ export const StoreJmxCredentials = () => {
           </Td>
           <Td key={`credentials-table-row-${idx}_3`} dataLabel={tableColumns[1]}>
             <Badge key={`${idx}_count`}>
-              {counts[idx]}
+              {state.counts[idx]}
             </Badge>
           </Td>
         </Tr>
       );
     });
-  }, [credentials, expandedCredentials, checkedCredentials, counts]);
+  }, [state.credentials, state.expandedCredentials, state.checkedCredentials, state.counts]);
 
   const targetRows = React.useMemo(() => {
-    return credentials.map((credential, idx) => {
-      let isExpanded: boolean = expandedCredentials.includes(credential);
+    return state.credentials.map((credential, idx) => {
+      let isExpanded: boolean = state.expandedCredentials.includes(credential);
 
       return (
         <Tr key={`${idx}_child`} isExpanded={isExpanded}>
@@ -371,7 +372,7 @@ export const StoreJmxCredentials = () => {
         </Tr>
       );
     })
-  }, [credentials, expandedCredentials]);
+  }, [state.credentials, state.expandedCredentials]);
 
   const rowPairs = React.useMemo(() => {
     let rowPairs: JSX.Element[] = [];
@@ -406,7 +407,7 @@ export const StoreJmxCredentials = () => {
               key="table-header-check-all"
               select={{
                 onSelect: handleHeaderCheck,
-                  isSelected: state.headerChecked,
+                  isSelected: state.isHeaderChecked,
               }}
             />
             {tableColumns.map((key, idx) => (
