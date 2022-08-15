@@ -50,6 +50,7 @@ import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 export interface CreateRecordingProps {
   recordingName?: string;
   template?: string;
+  templateType?: string;
   eventSpecifiers?: string[];
 }
 
@@ -80,7 +81,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
       })
     );
   };
- 
+
   const handleCreateSnapshot = (): void => {
     addSubscription(
       context.api.createSnapshot()

@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, PageSection, Stack, StackItem } from '@patternfly/react-core';
 
 interface BreadcrumbPageProps {
@@ -52,7 +53,10 @@ export const BreadcrumbPage: React.FunctionComponent<BreadcrumbPageProps> = (pro
   return (<>
     <PageSection>
       <Breadcrumb>
-        {(props.breadcrumbs || []).map(({ title, path }) => (<BreadcrumbItem key={path} to={path}>{title}</BreadcrumbItem>))}
+        {
+        (props.breadcrumbs || []).map(
+            ({ title, path }) => <BreadcrumbItem key={path} render={() => (<><Link to={path}>{title}</Link></>)}></BreadcrumbItem>)
+        }
         <BreadcrumbHeading>{props.pageTitle}</BreadcrumbHeading>
       </Breadcrumb>
       <Stack hasGutter={true}>

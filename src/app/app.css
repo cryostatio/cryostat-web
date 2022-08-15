@@ -53,6 +53,27 @@ html, body, #root {
   padding-top: 2rem;
 }
 
+.pf-c-empty-state-not-found {
+  padding-left: 10rem;
+  padding-right: 10rem;
+}
 .cryostat-logo {
   height: 2em;
 }
+
+.recordings-table-drawer-content {
+  min-height: 23rem;
+}
+
+.time-picker {
+  width: 10rem;
+}
+
+.pf-c-chip-group	{
+  max-width: 100ch;
+}
+
+.pf-c-chip {
+  --pf-c-chip__text--MaxWidth: 100ch;
+}
+

@@ -38,15 +38,17 @@
 import * as React from 'react';
 import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { first } from 'rxjs/operators';
+import { catchError, filter, first, mergeMap, toArray} from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { EventTemplate } from '../CreateRecording/CreateRecording';
 import { Rule } from './Rules';
-import { MatchExpressionEvaluator } from './MatchExpressionEvaluator';
+import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { iif, of } from 'rxjs';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -71,14 +73,16 @@ const Comp = () => {
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [archivalPeriod, setArchivalPeriod] = React.useState(0);
   const [archivalPeriodUnits, setArchivalPeriodUnits] = React.useState(1);
+  const [initialDelay, setInitialDelay] = React.useState(0);
+  const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
 
-  const handleNameChange = (evt) => {
+  const handleNameChange = React.useCallback((evt) => {
     setNameValid(RuleNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
     setName(evt);
-  };
+  }, [setNameValid, name, setName]);
 
-  const getEventString = () => {
+  const eventSpecifierString = React.useMemo(() => {
     var str = '';
     if (!!template) {
       str += `template=${template}`;
@@ -87,43 +91,51 @@ const Comp = () => {
       str += `,type=${templateType}`;
     }
     return str;
-  };
+  }, [template]);
 
-  const handleTemplateChange = (template) => {
+  const handleTemplateChange = React.useCallback((template) => {
     const parts: string[] = template.split(',');
     setTemplate(parts[0]);
     setTemplateType(parts[1]);
-  };
+  }, [setTemplate, setTemplateType]);
 
-  const handleMaxAgeChange = (evt) => {
+  const handleMaxAgeChange = React.useCallback((evt) => {
     setMaxAge(Number(evt));
-  };
+  }, [setMaxAge]);
 
-  const handleMaxAgeUnitChange = (evt) => {
+  const handleMaxAgeUnitChange = React.useCallback((evt) => {
     setMaxAgeUnits(Number(evt));
-  };
+  }, [setMaxAgeUnits]);
 
-  const handleMaxSizeChange = (evt) => {
+  const handleMaxSizeChange = React.useCallback((evt) => {
     setMaxSize(Number(evt));
-  };
+  }, [setMaxSize]);
 
-  const handleMaxSizeUnitChange = (evt) => {
+  const handleMaxSizeUnitChange = React.useCallback((evt) => {
     setMaxSizeUnits(Number(evt));
-  };
+  }, [setMaxSizeUnits]);
 
-  const handleArchivalPeriodChange = (evt) => {
+  const handleArchivalPeriodChange = React.useCallback((evt) => {
     setArchivalPeriod(Number(evt));
-  };
+  }, [setArchivalPeriod]);
 
-  const handleArchivalPeriodUnitsChange = (evt) => {
+  const handleArchivalPeriodUnitsChange = React.useCallback((evt) => {
     setArchivalPeriodUnits(Number(evt));
-  };
+  }, [setArchivalPeriodUnits]);
 
-  const handleSetPreservedArchives = (evt) => {
+  const handleInitialDelayChange = React.useCallback((evt) => {
+    setInitialDelay(Number(evt));
+  }, [setInitialDelay]);
+
+  const handleInitialDelayUnitsChanged = React.useCallback((evt) => {
+    setInitialDelayUnits(Number(evt));
+  }, [setInitialDelayUnits]);
+
+  const handleSetPreservedArchives = React.useCallback((evt) => {
     setPreservedArchives(Number(evt));
-  };
+  }, [setPreservedArchives]);
 
-  const handleSubmit = (): void => {
+  const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Rule name ${name} is invalid`);
@@ -137,8 +149,9 @@ const Comp = () => {
       name,
       description,
       matchExpression,
-      eventSpecifier: getEventString(),
+      eventSpecifier: eventSpecifierString,
       archivalPeriodSeconds: archivalPeriod * archivalPeriodUnits,
+      initialDelaySeconds: initialDelay * initialDelayUnits,
       preservedArchives,
       maxAgeSeconds: maxAge * maxAgeUnits,
       maxSizeBytes: maxSize * maxSizeUnits
@@ -152,15 +165,39 @@ const Comp = () => {
         }
       })
     );
-  };
+  }, [addSubscription, context, context.api, history,
+    name, nameValid, description, matchExpression, eventSpecifierString,
+    archivalPeriod, archivalPeriodUnits, initialDelay, initialDelayUnits,
+    preservedArchives, maxAge, maxAgeUnits, maxSize, maxSizeUnits]);
 
-  // FIXME we query ourselves to populate the list of templates, since Rules can apply to any target. Is this better than making the user write the event specifier manually,
-  // or at least make them write the name manually and choose TARGET/CUSTOM from a dropdown?
+  // FIXME Error 427 JMX Authentication is handled differently than Error 502 Untrusted SSL.
+  const refreshTemplateList = React.useCallback(() => {
+    addSubscription(
+      context.target.target()
+      .pipe(
+        mergeMap(target => 
+          iif(
+            () => target !== NO_TARGET,
+            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`).pipe(
+              catchError(_ => of([] as EventTemplate[])),
+            ),
+            context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
+              mergeMap(x => x),
+              filter(template => (template.provider !== "Cryostat") || (template.name !== "Cryostat")),
+              toArray(),
+            ),       
+          ),
+        ),
+        first(),
+      ).subscribe(setTemplates)
+    );
+  }, [addSubscription, context, context.api, context.target, setTemplates]);
+
   React.useEffect(() => {
     addSubscription(
-      context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).subscribe(setTemplates)
+      context.target.target().subscribe(refreshTemplateList)
     );
-  }, []);
+  }, [addSubscription, context, context.target, refreshTemplateList]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
@@ -289,7 +326,7 @@ const Comp = () => {
                         value={maxAge}
                         isRequired
                         type="number"
-                        id="maxAgeDuration"
+                        id="maxAge"
                         aria-label="Max age duration"
                         onChange={handleMaxAgeChange}
                         min="0"
@@ -339,6 +376,36 @@ const Comp = () => {
                   </Split>
                 </FormGroup>
                 <FormGroup
+                  label="Initial Delay"
+                  fieldId="initialDelay"
+                  helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival Period later."
+                >
+                  <Split hasGutter={true}>
+                    <SplitItem isFilled>
+                      <TextInput
+                        value={initialDelay}
+                        isRequired
+                        type="number"
+                        id="initialDelay"
+                        aria-label="initial delay"
+                        onChange={handleInitialDelayChange}
+                        min="0"
+                      />
+                    </SplitItem>
+                    <SplitItem>
+                      <FormSelect
+                        value={initialDelayUnits}
+                        onChange={handleInitialDelayUnitsChanged}
+                        aria-label="initial delay units input"
+                      >
+                        <FormSelectOption key="1" value="1" label="Seconds" />
+                        <FormSelectOption key="2" value={60} label="Minutes" />
+                        <FormSelectOption key="3" value={60*60} label="Hours" />
+                      </FormSelect>
+                    </SplitItem>
+                  </Split>
+                </FormGroup>
+                <FormGroup
                   label="Preserved Archives"
                   fieldId="preservedArchives"
                   helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
@@ -348,7 +415,7 @@ const Comp = () => {
                     isRequired
                     type="number"
                     id="preservedArchives"
-                    aria-label="prserved archives"
+                    aria-label="preserved archives"
                     onChange={handleSetPreservedArchives}
                     min="0"
                   />
@@ -371,7 +438,7 @@ const Comp = () => {
               </CardHeaderMain>
             </CardHeader>
             <CardBody>
-              <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
+              <MatchExpressionEvaluator inlineHint matchExpression={matchExpression} onChange={setMatchExpressionValid} />
             </CardBody>
           </Card>
         </GridItem>

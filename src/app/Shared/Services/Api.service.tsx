@@ -41,9 +41,12 @@ import { catchError, concatMap, first, map, mergeMap, tap } from 'rxjs/operators
 import { Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
-import {Rule} from '@app/Rules/Rules';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { Rule } from '@app/Rules/Rules';
+import { NotificationCategory } from './NotificationChannel.service';
+import _ from 'lodash';
 
-type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'beta';
+type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
 export class HttpError extends Error {
   readonly httpResponse: Response;
@@ -108,19 +111,43 @@ export class ApiService {
       });
     health
       .pipe(concatMap((jsonResp: any) => {
-        if (jsonResp.datasourceAvailable && jsonResp.dashboardAvailable) {
-          return forkJoin([getDatasourceURL, getDashboardURL]);
+        const toFetch: Observable<any>[] = [];
+        const unconfigured: string[] = [];
+        const unavailable: string[] = [];
+        // if datasource or dashboard are not configured, display a warning
+        // if either is configured but not available, display an error
+        // if both configured and available then display nothing and just retrieve the URLs
+        if (jsonResp.datasourceConfigured) {
+          if (jsonResp.datasourceAvailable) {
+            toFetch.push(getDatasourceURL);
+          } else {
+            unavailable.push('datasource URL');
+          }
         } else {
-          const missing: string[] = [];
-          if (!jsonResp.dashboardAvailable) {
-            missing.push('dashboard URL');
-          }
-          if (!jsonResp.datasourceAvailable) {
-            missing.push('datasource URL');
-          }
-          const message = missing.join(', ') + ' unavailable';
-          return throwError(() => message);
+          unconfigured.push('datasource URL');
         }
+        if (jsonResp.dashboardConfigured) {
+          if (jsonResp.dashboardAvailable) {
+            toFetch.push(getDashboardURL);
+          } else {
+            unavailable.push('dashboard URL');
+          }
+        } else {
+          unconfigured.push('dashboard URL');
+        }
+        if (unconfigured.length > 0) {
+          return throwError(() => ({
+            state: 'not configured',
+            message: unconfigured.join(', ') + ' unconfigured',
+          }));
+        }
+        if (unavailable.length > 0) {
+          return throwError(() => ({
+            state: 'unavailable',
+            message: unavailable.join(', ') + ' unavailable',
+          }));
+        }
+        return forkJoin(toFetch);
       }))
       .subscribe({
         next: (parts: any) => {
@@ -129,7 +156,11 @@ export class ApiService {
         },
         error: err => {
           window.console.error(err);
-          this.notifications.danger('Grafana configuration not found', err);
+          if (err.state === 'unavailable') {
+            this.notifications.danger(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
+          } else {
+            this.notifications.warning(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
+          }
         }
       });
   }
@@ -165,20 +196,20 @@ export class ApiService {
   }
 
   createRule(rule: Rule): Observable<boolean> {
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
     return this.sendRequest('v2', 'rules', {
         method: 'POST',
         body: JSON.stringify(rule),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       }).pipe(
         map(resp => resp.ok),
         first(),
       );
   }
 
-  deleteRule(name: string): Observable<boolean> {
-    return this.sendRequest('v2', `rules/${name}?clean=true`, {
+  deleteRule(name: string, clean: boolean=true): Observable<boolean> {
+    return this.sendRequest('v2', `rules/${name}?clean=${clean}`, {
         method: 'DELETE',
       }).pipe(
         map(resp => resp.ok),
@@ -204,6 +235,9 @@ export class ApiService {
         form.append('maxSize', String(recordingAttributes.options.maxSize));
       }
     }
+    if (!!recordingAttributes.metadata) {
+      form.append('metadata', JSON.stringify(recordingAttributes.metadata));
+    }
 
     return this.target.target().pipe(concatMap(target =>
       this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
@@ -221,9 +255,7 @@ export class ApiService {
         method: 'POST',
       }).pipe(
         tap(resp => {
-          if (resp.status == 200) {
-            this.notifications.success('Recording Created');
-          } else if (resp.status == 202) {
+          if (resp.status == 202) {
             this.notifications.warning('Snapshot Failed to Create', 'The resultant recording was unreadable for some reason, likely due to a lack of Active, non-Snapshot source recordings to take event data from');
           }
         }),
@@ -451,6 +483,12 @@ export class ApiService {
       }).pipe(concatMap(resp => resp.json()), 
       map(response => response.data.result),
       first())));
+    }
+
+  graphql<T>(query: string): Observable<T> {
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/graphql');
+    return this.sendRequest('v2.2', 'graphql', { method: 'POST', body: query, headers }).pipe(map(resp => resp.json()), concatMap(from), first());
   }
 
   downloadReport(recording: ArchivedRecording): void {
@@ -514,6 +552,24 @@ export class ApiService {
     });
   }
 
+  downloadRule(name: string): void {
+    this.doGet<any>('rules/' + name, 'v2')
+      .pipe(
+        first(),
+        map((resp) => resp.data.result)
+      )
+      .subscribe(rule => {
+        const filename = `${rule.name}.json`;
+        const file = new File([JSON.stringify(rule)], filename);
+        const resourceUrl = URL.createObjectURL(file)
+        this.downloadFile(
+          resourceUrl,
+          filename
+        );
+        setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
+      });
+  }
+
   uploadRecording(file: File, signal?: AbortSignal): Observable<string> {
     window.onbeforeunload = () => true;
     return this.login.getHeaders().pipe(
@@ -526,13 +582,22 @@ export class ApiService {
           method: 'POST',
           body,
           headers,
-          selector: response => response.text(),
           signal,
         });
       }),
+      concatMap(v => {
+        if (v.ok) {
+          return from(v.text());
+        }
+        throw from(v.text());
+      }),
       tap({
         next: () => window.onbeforeunload = null,
-        error: () => window.onbeforeunload = null,
+        error: (err) => {
+          window.onbeforeunload = null;
+          err.subscribe(msg => this.notifications.danger('Upload Failed', msg, NotificationCategory.ArchivedRecordingCreated));
+        },
+        complete: () => window.onbeforeunload = null,
       }),
     );
   }
@@ -555,22 +620,114 @@ export class ApiService {
     );
   }
 
-  private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
-    const req = () => this.login.getHeaders().pipe(
-      concatMap(headers => {
-        return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, {
-          credentials: 'include',
-          mode: 'cors',
-          headers,
-          ...config,
-        });
-      }),
-      map(resp => {
-        if (resp.ok) return resp;
-        throw new HttpError(resp);
-      }),
-      catchError(err => this.handleError<Response>(err, req)),
+  postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+    return this.sendRequest(
+      'beta', `recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
+      {
+        method: 'POST',
+        body: this.stringifyRecordingLabels(labels),
+      }
+    ).pipe(
+      concatMap(resp => {
+        if (resp.ok) {
+        return from(resp.text());
+      }
+      throw resp.text();
+      })
     );
+  }
+
+  postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<string> {
+    return this.target.target().pipe(
+      first(),
+      concatMap(target =>
+        this.sendRequest(
+          'beta', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/metadata/labels`,
+          {
+            method: 'POST',
+            body: this.stringifyRecordingLabels(labels),
+          }
+        ).pipe(
+          concatMap(resp => {
+            if (resp.ok) {
+            return from(resp.text());
+          }
+          throw resp.text();
+          })
+        )
+      ));
+  }
+
+  postCredentials(matchExpression: string, username: string, password: string): Observable<boolean> {
+    const body = new window.FormData();
+    body.append('matchExpression', matchExpression);
+    body.append('username', username);
+    body.append('password', password);
+
+    return this.sendRequest(
+      'v2.2', 'credentials',
+      {
+        method: 'POST',
+        body,
+      }
+    ).pipe(
+      map(resp => resp.ok),
+      first()
+    );
+  }
+
+  getCredentials() : Observable<StoredCredential[]> {
+    return this.sendRequest(
+      'v2.2', `credentials`,
+      {
+        method: 'GET'
+      }
+    ).pipe(
+      concatMap(resp => resp.json()),
+      map((response: CredentialsResponse) => response.data.result),
+      first()
+    );
+  }
+
+  deleteCredentials(id: number): Observable<boolean> {
+    return this.sendRequest(
+      'v2.2', `credentials/${id}`,
+      {
+        method: 'DELETE'
+      }
+    ).pipe(
+      map(resp => resp.ok),
+      first(),
+    );
+  }
+
+  private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
+    const req = () =>
+      this.login.getHeaders().pipe(
+        concatMap((headers) => {
+          const defaultReq = {
+            credentials: 'include',
+            mode: 'cors',
+            headers: headers,
+          } as RequestInit;
+
+          function customizer(dest, src) {
+            if (dest instanceof Headers && src instanceof Headers) {
+              src.forEach((v, k) => dest.set(k, v));
+            }
+            return dest;
+          }
+
+          _.mergeWith(config, defaultReq, customizer);
+
+          return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, config);
+        }),
+        map((resp) => {
+          if (resp.ok) return resp;
+          throw new HttpError(resp);
+        }),
+        catchError((err) => this.handleError<Response>(err, req))
+      );
     return req();
   }
 
@@ -609,6 +766,14 @@ export class ApiService {
     throw error;
   }
 
+  private stringifyRecordingLabels(labels: RecordingLabel[]): string {
+    let arr = [] as Map<string, string>[];
+    labels.forEach(l => {
+      arr[l.key] = l.value;
+    });
+    return JSON.stringify(Object.entries(arr));
+  }
+
 }
 
 export interface ApiV2Response {
@@ -627,10 +792,17 @@ interface AssetJwtResponse extends ApiV2Response {
   }
 }
 
+interface CredentialsResponse extends ApiV2Response {
+  data: {
+    result: StoredCredential[];
+  }
+}
+
 export interface ArchivedRecording {
   name: string;
   downloadUrl: string;
   reportUrl: string;
+  metadata: Metadata;
 }
 
 export interface ActiveRecording extends ArchivedRecording {
@@ -673,6 +845,16 @@ export interface RecordingAttributes {
   events: string;
   duration?: number;
   options?: RecordingOptions;
+  metadata?: Metadata;
+}
+
+export interface Metadata {
+  labels: Object;
+}
+
+export interface StoredCredential {
+  id: number;
+  matchExpression: string;
 }
 
 export interface ProbeTemplate {

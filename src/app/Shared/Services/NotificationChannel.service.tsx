@@ -43,20 +43,30 @@ import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { AlertVariant } from '@patternfly/react-core';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
+import { Target } from './Target.service';
+import { TargetDiscoveryEvent } from './Targets.service';
 
 export enum NotificationCategory {
   WsClientActivity = 'WsClientActivity',
-  JvmDiscovery = 'TargetJvmDiscovery',
+  TargetJvmDiscovery = 'TargetJvmDiscovery',
   ActiveRecordingCreated = 'ActiveRecordingCreated',
   ActiveRecordingStopped = 'ActiveRecordingStopped',
   ActiveRecordingSaved = 'ActiveRecordingSaved',
   ActiveRecordingDeleted = 'ActiveRecordingDeleted',
+  SnapshotCreated = 'SnapshotCreated',
+  SnapshotDeleted = 'SnapshotDeleted',
   ArchivedRecordingCreated = 'ArchivedRecordingCreated',
   ArchivedRecordingDeleted = 'ArchivedRecordingDeleted',
-  TemplateCreated = 'TemplateUploaded',
+  TemplateUploaded = 'TemplateUploaded',
   TemplateDeleted = 'TemplateDeleted',
   RuleCreated = 'RuleCreated',
   RuleDeleted = 'RuleDeleted',
+  RecordingMetadataUpdated  = 'RecordingMetadataUpdated',
+  GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
+  TargetCredentialsStored = 'TargetCredentialsStored',
+  TargetCredentialsDeleted = 'TargetCredentialsDeleted',
+  CredentialsStored = 'CredentialsStored',
+  CredentialsDeleted = 'CredentialsDeleted',
 }
 
 export enum CloseStatus {
@@ -71,12 +81,32 @@ interface ReadyState {
   code?: CloseStatus;
 }
 
-const messageKeys = new Map([
+export const messageKeys = new Map([
   [
-    // explicitly configure this category with a null mapper.
-    // This is a special case because we do not want to display an alert,
-    // the Targets.service already handles this
-    NotificationCategory.JvmDiscovery, null
+    // explicitly configure this category with a null message body mapper.
+    // This is a special case because this is generated client-side,
+    // not sent by the backend
+    NotificationCategory.GrafanaConfiguration, {
+      title: 'Grafana Configuration',
+    },
+  ],
+  [
+    NotificationCategory.TargetJvmDiscovery, {
+      variant: AlertVariant.info,
+      title: 'Target JVM Discovery',
+      body: v => {
+        const evt: TargetDiscoveryEvent = v.message.event;
+        const target: Target = evt.serviceRef;
+        switch (evt.kind) {
+          case 'FOUND':
+           return `Target "${target.alias}" appeared (${target.connectUrl})"`;
+          case 'LOST':
+            return `Target "${target.alias}" disappeared (${target.connectUrl})"`;
+          default:
+            return `Received a notification with category ${NotificationCategory.TargetJvmDiscovery} and unrecognized kind ${evt.kind}`;
+        }
+      }
+    } as NotificationMessageMapper,
   ],
   [
     NotificationCategory.WsClientActivity, {
@@ -93,7 +123,7 @@ const messageKeys = new Map([
     NotificationCategory.ActiveRecordingCreated, {
       variant: AlertVariant.success,
       title: 'Recording Created',
-      body: evt => `${evt.message.recording.name} created in target: ${evt.message.target}`,
+      body: evt => `${evt.message.recording.name} created in target: ${evt.message.target}`
     } as NotificationMessageMapper
   ],
   [
@@ -118,21 +148,35 @@ const messageKeys = new Map([
     } as NotificationMessageMapper
   ],
   [
+    NotificationCategory.SnapshotCreated, {
+      variant: AlertVariant.success,
+      title: 'Snapshot Created',
+      body: evt => `${evt.message.recording.name} was created in target: ${evt.message.target}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.SnapshotDeleted, {
+      variant: AlertVariant.success,
+      title: 'Snapshot Deleted',
+      body: evt => `${evt.message.recording.name} was deleted`
+    } as NotificationMessageMapper
+  ],
+  [
     NotificationCategory.ArchivedRecordingCreated, {
       variant: AlertVariant.success,
-      title: 'Recording Archived',
+      title: 'Archived Recording Uploaded',
       body: evt => `${evt.message.recording.name} was uploaded into archives`
     } as NotificationMessageMapper
   ],
   [
     NotificationCategory.ArchivedRecordingDeleted, {
       variant: AlertVariant.success,
-      title: 'Recording Deleted',
+      title: 'Archived Recording Deleted',
       body: evt => `${evt.message.recording.name} was deleted`
     } as NotificationMessageMapper
   ],
   [
-    NotificationCategory.TemplateCreated, {
+    NotificationCategory.TemplateUploaded, {
       variant: AlertVariant.success,
       title: 'Template Created',
       body: evt => `${evt.message.template.name} was created`
@@ -159,12 +203,47 @@ const messageKeys = new Map([
       body: evt => `${evt.message.name} was deleted`
     } as NotificationMessageMapper
   ],
+  [
+    NotificationCategory.RecordingMetadataUpdated, {
+      variant: AlertVariant.success,
+      title: 'Recording Metadata Updated',
+      body: evt => `${evt.message.recordingName} metadata was updated`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.TargetCredentialsStored, {
+      variant: AlertVariant.success,
+      title: 'Target Credentials Stored',
+      body: evt => `Credentials stored for target: ${evt.message.target}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.TargetCredentialsDeleted, {
+      variant: AlertVariant.success,
+      title: 'Target Credentials Deleted',
+      body: evt => `Credentials deleted for target: ${evt.message.target}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.CredentialsStored, {
+      variant: AlertVariant.success,
+      title: 'Credentials Stored',
+      body: evt => `Credentials stored for: ${evt.message.matchExpression}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.CredentialsDeleted, {
+      variant: AlertVariant.success,
+      title: 'Credentials Deleted',
+      body: evt => `Credentials deleted for: ${evt.message.matchExpression}`
+    } as NotificationMessageMapper
+  ],
 ]);
 
 interface NotificationMessageMapper {
   title: string;
-  body: (evt: NotificationMessage) => string;
-  variant: AlertVariant;
+  body?: (evt: NotificationMessage) => string;
+  variant?: AlertVariant;
 }
 
 export class NotificationChannel {
@@ -178,28 +257,24 @@ export class NotificationChannel {
     private readonly login: LoginService
   ) {
     messageKeys.forEach((value, key) => {
-      if (!value) {
+      if (!value || !value.body || !value.variant) {
         return;
       }
       this.messages(key).subscribe((msg: NotificationMessage) => {
+        if (!value || !value.body || !value.variant) {
+          return;
+        }
         const message = value.body(msg);
         notifications.notify({ title: value.title, message, category: key, variant: value.variant })
       });
     });
+
+    // fallback handler for unknown categories of message
     this._messages.pipe(
       filter(msg => !messageKeys.has(msg.meta.category as NotificationCategory))
     ).subscribe(msg => {
       const category = NotificationCategory[msg.meta.category as keyof typeof NotificationCategory];
-
-      var variant: AlertVariant;
-      if (category == NotificationCategory.WsClientActivity) {
-        variant = AlertVariant.info;
-      } else if (category == NotificationCategory.JvmDiscovery) {
-        variant = AlertVariant.info;
-      } else {
-        variant = AlertVariant.success;
-      }
-      notifications.notify({ title: msg.meta.category, message: msg.message, category, variant });
+      notifications.notify({ title: msg.meta.category, message: msg.message, category, variant: AlertVariant.success });
     });
 
     const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)

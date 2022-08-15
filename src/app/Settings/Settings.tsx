@@ -37,132 +37,50 @@
  */
 
 import * as React from 'react';
-import { Card, Checkbox, CardBody, CardHeader, NumberInput, Text, TextVariants } from '@patternfly/react-core';
+import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 
-const defaultPreferences = {
-  autoRefreshEnabled: true,
-  autoRefreshPeriod: 30,
-  autoRefreshUnits: 1_000,
-  webSocketDebounceMs: 100,
-}
-
-const debounceMin = 1;
-const debounceMax = 1000;
+import { AutoRefresh } from './AutoRefresh';
+import { NotificationControl } from './NotificationControl';
+import { WebSocketDebounce } from './WebSocketDebounce';
+import { DeletionDialogControl } from './DeletionDialogControl';
 
 export const Settings: React.FunctionComponent<{}> = () => {
-  const context = React.useContext(ServiceContext);
-  const [state, setState] = React.useState(defaultPreferences);
 
-  React.useLayoutEffect(() => {
-    setState({
-      autoRefreshEnabled: context.settings.autoRefreshEnabled(),
-      autoRefreshPeriod: context.settings.autoRefreshPeriod(),
-      autoRefreshUnits: context.settings.autoRefreshUnits(),
-      webSocketDebounceMs: context.settings.webSocketDebounceMs(),
-    });
-  }, [setState, context.settings]);
-
-  const handleAutoRefreshEnabledChange = React.useCallback(autoRefreshEnabled => {
-    setState(state => ({ ...state, autoRefreshEnabled }));
-    context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
-  }, [setState, context.settings]);
-
-  const handleAutoRefreshPeriodChange = React.useCallback(autoRefreshPeriod => {
-    setState(state => ({ ...state, autoRefreshPeriod }));
-    context.settings.setAutoRefreshPeriod(autoRefreshPeriod);
-  }, [setState, context.settings]);
-
-  const handleAutoRefreshUnitScalarChange = React.useCallback(autoRefreshUnits => {
-    setState(state => ({ ...state, autoRefreshUnits }));
-    context.settings.setAutoRefreshUnits(autoRefreshUnits);
-  }, [setState, context.settings]);
-
-  const handleWebSocketDebounceMinus = React.useCallback(() => {
-    setState(state => {
-      const newState = { ...state };
-      let debounce = (state.webSocketDebounceMs || 1) - 1;
-      if (debounce < debounceMin) {
-        debounce = debounceMin;
-      }
-      newState.webSocketDebounceMs = debounce;
-      context.settings.setWebSocketDebounceMs(newState.webSocketDebounceMs)
-      return newState;
-    });
-  }, [setState, context.settings]);
-
-  const handleWebSocketDebouncePlus = React.useCallback(() => {
-    setState(state => {
-      const newState = { ...state };
-      let debounce = (state.webSocketDebounceMs || 1) + 1;
-      if (debounce > debounceMax) {
-        debounce = debounceMax;
-      }
-      newState.webSocketDebounceMs = debounce;
-      context.settings.setWebSocketDebounceMs(newState.webSocketDebounceMs)
-      return newState;
-    });
-  }, [setState, context.settings]);
-
-  const handleWebSocketDebounceChange = React.useCallback(event => {
-    let webSocketDebounceMs = isNaN(event.target.value) ? 0 : Number(event.target.value);
-    if (webSocketDebounceMs < debounceMin) {
-      webSocketDebounceMs = debounceMin;
-    } else if (webSocketDebounceMs > debounceMax) {
-      webSocketDebounceMs = debounceMax;
-    }
-    setState(state => ({ ...state, webSocketDebounceMs }));
-    context.settings.setWebSocketDebounceMs(webSocketDebounceMs);
-  }, [setState, context.settings]);
+  const settings =
+    [
+      AutoRefresh,
+      NotificationControl,
+      DeletionDialogControl,
+      WebSocketDebounce,
+    ].map(c => ({
+      title: c.title,
+      description: c.description,
+      element: React.createElement(c.content, null),
+    }));
 
   return (<>
     <BreadcrumbPage pageTitle="Settings">
-      <Card>
-        <CardHeader>
-          <Text component={TextVariants.h4}>
-            Auto-Refresh
-          </Text>
-        </CardHeader>
-        <CardBody>
-          <Text component={TextVariants.p}>
-            Set the refresh period for content views.
-          </Text>
-          <DurationPicker
-            enabled={state.autoRefreshEnabled}
-            period={state.autoRefreshPeriod}
-            onPeriodChange={handleAutoRefreshPeriodChange}
-            unitScalar={state.autoRefreshUnits}
-            onUnitScalarChange={handleAutoRefreshUnitScalarChange}
-          />
-          <Checkbox id="auto-refresh-enabled" label="Enabled" isChecked={state.autoRefreshEnabled} onChange={handleAutoRefreshEnabledChange} />
-        </CardBody>
-      </Card>
-      <Card>
-        <CardHeader>
-          <Text component={TextVariants.h4}>
-            WebSocket Connection Debounce
-          </Text>
-        </CardHeader>
-        <CardBody>
-          <Text component={TextVariants.p}>
-            Set the debounce time (in milliseconds) used when establishing WebSocket connections.
-            Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages.
-            Decrease this time if the web-interface takes a long time to populate on startup.
-          </Text>
-          <NumberInput
-            value={state.webSocketDebounceMs}
-            min={debounceMin}
-            max={debounceMax}
-            onChange={handleWebSocketDebounceChange}
-            onMinus={handleWebSocketDebounceMinus}
-            onPlus={handleWebSocketDebouncePlus}
-            unit="ms"
-          />
-        </CardBody>
-      </Card>
+      {
+        settings.map(s => (<>
+          <Card>
+            <CardTitle>
+              <Text component={TextVariants.h1}>{ s.title }</Text>
+              <Text component={TextVariants.small}>{ s.description }</Text>
+            </CardTitle>
+            <CardBody>
+              { s.element }
+            </CardBody>
+          </Card>
+        </>))
+      }
     </BreadcrumbPage>
   </>);
 
+}
+
+export interface UserSetting {
+  title: string;
+  description: string;
+  content: React.FunctionComponent;
 }

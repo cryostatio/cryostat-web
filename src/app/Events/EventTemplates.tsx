@@ -42,12 +42,14 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
-import { PlusIcon } from '@patternfly/react-icons';
+import { UploadIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ErrorView } from '@app/ErrorView/ErrorView';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
 export const EventTemplates = () => {
   const context = React.useContext(ServiceContext);
@@ -56,6 +58,7 @@ export const EventTemplates = () => {
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [filteredTemplates, setFilteredTemplates] = React.useState([] as EventTemplate[]);
   const [filterText, setFilterText] = React.useState('');
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
   const [uploadFilename, setUploadFilename] = React.useState('');
@@ -64,6 +67,7 @@ export const EventTemplates = () => {
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
   const addSubscription = useSubscriptions();
 
   const tableColumns = [
@@ -124,7 +128,7 @@ export const EventTemplates = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TemplateCreated)
+      context.notificationChannel.messages(NotificationCategory.TemplateUploaded)
         .subscribe(v => setTemplates(old => old.concat(v.message.template)))
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
@@ -132,7 +136,7 @@ export const EventTemplates = () => {
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.TemplateDeleted)
-        .subscribe(v => setTemplates(old => old.filter(o => o.name != v.message.template.name)))
+        .subscribe(v => setTemplates(old => old.filter(o => (o.name != v.message.template.name || o.type != v.message.template.type))))
     )
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
@@ -155,7 +159,7 @@ export const EventTemplates = () => {
     () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),
     [filteredTemplates]
   );
-
+  
   const handleDelete = (rowData) => {
     addSubscription(
       context.api.deleteCustomEventTemplate(rowData[0])
@@ -191,7 +195,9 @@ export const EventTemplates = () => {
           },
           {
             title: 'Delete',
-            onClick: (event, rowId, rowData) => handleDelete(rowData)
+            onClick: (event, rowId, rowData) => {
+              handleDeleteButton(rowData);
+            },
           }
       ]);
     }
@@ -249,26 +255,58 @@ export const EventTemplates = () => {
     setSortBy({ index, direction });
   };
 
+  const handleDeleteButton = React.useCallback((rowData) => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+      setRowDeleteData(rowData);
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDelete(rowData);
+    }
+  }, [context, context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]);
+
+  const handleWarningModalAccept = React.useCallback(() => {
+    handleDelete(rowDeleteData);
+  }, [handleDelete, rowDeleteData]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const toolbar: JSX.Element = (<>
+    <Toolbar id="event-templates-toolbar">
+      <ToolbarContent>
+        <ToolbarGroup variant="filter-group">
+          <ToolbarItem>
+            <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
+          </ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarGroup variant="icon-button-group">
+          <ToolbarItem>
+            <Button key="upload" variant="secondary" onClick={handleModalToggle}>
+              <UploadIcon/>
+            </Button>
+          </ToolbarItem>
+        </ToolbarGroup>
+        <DeleteWarningModal 
+          warningType={DeleteWarningType.DeleteEventTemplates}
+          visible={warningModalOpen}
+          onAccept={handleWarningModalAccept}
+          onClose={handleWarningModalClose} />
+      </ToolbarContent>
+    </Toolbar>
+  </>);
+  
   if (errorMessage != '') {
-    return (<ErrorView message={errorMessage}/>)
+    return (<ErrorView message={errorMessage}/>);
   } else if (isLoading) {
-    return (<LoadingView/>)
+    return (<>
+      { toolbar }
+      <LoadingView/>
+    </>);
   } else {
     return (<>
-      <Toolbar id="event-templates-toolbar">
-        <ToolbarContent>
-          <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-              <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
-            </ToolbarItem>
-          </ToolbarGroup>
-          <ToolbarGroup variant="icon-button-group">
-            <ToolbarItem>
-              <Button key="create" variant="primary" onClick={handleModalToggle}>Upload</Button>
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
+      { toolbar }
       <Table aria-label="Event Templates table"
         variant={TableVariant.compact}
         cells={tableColumns}

@@ -36,23 +36,41 @@
  * SOFTWARE.
  */
 
+import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
-import {  Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { combineLatest, forkJoin, Observable } from 'rxjs';
+import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
+import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
+import { RecordingLabelsPanel } from './RecordingLabelsPanel';
+import { filterRecordings, RecordingFilters } from './RecordingFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
+import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
+export enum PanelContent {
+  LABELS,
+}
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
+}
+
+export interface RecordingFiltersCategories {
+    Name: string[],
+    Labels: string[],
+    State?: RecordingState[],
+    StartedBeforeDate?: string[],
+    StartedAfterDate?: string[],
+    DurationSeconds?: string[],
 }
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
@@ -60,9 +78,21 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const routerHistory = useHistory();
 
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
+  const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
+  const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
+  const [filters, setFilters] = React.useState({
+    Name: [],
+    Labels: [],
+    State: [],
+    StartedBeforeDate: [],
+    StartedAfterDate: [],
+    DurationSeconds: [],
+  } as RecordingFiltersCategories);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const { url } = useRouteMatch();
@@ -72,6 +102,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     'Start Time',
     'Duration',
     'State',
+    'Labels',
   ];
 
   const addSubscription = useSubscriptions();
@@ -87,12 +118,17 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
-    setCheckedIndices(checked ? Array.from(new Array(recordings.length), (x, i) => i) : []);
-  }, [setHeaderChecked, setCheckedIndices, recordings]);
+    setCheckedIndices(checked ? Array.from(new Array(filteredRecordings.length), (x, i) => i) : []);
+  }, [setHeaderChecked, setCheckedIndices, filteredRecordings]);
 
   const handleCreateRecording = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
   }, [routerHistory]);
+
+  const handleEditLabels = React.useCallback(() => {
+    setShowDetailsPanel(true);
+    setPanelContent(PanelContent.LABELS);
+  }, [setShowDetailsPanel]);
 
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
@@ -127,7 +163,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       combineLatest([
         context.target.target(),
-        context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+        merge(
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+          context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
+        ),
       ])
       .subscribe(parts => {
         const currentTarget = parts[0];
@@ -144,7 +183,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       combineLatest([
         context.target.target(),
-        context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
+        merge(
+          context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
+          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted),
+        ),
       ])
       .subscribe(parts => {
         const currentTarget = parts[0];
@@ -152,10 +194,24 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        setRecordings(old => old.filter(r => r.name != event.message.recording.name));
+        let deleted;
+
+        setRecordings((old) => {
+          return old.filter((r, i) => {
+            if (r.name == event.message.recording.name) {
+              deleted = i;
+              return false;
+            }
+            return true;
+          });
+        });
+        setCheckedIndices(old => old
+          .filter((v) => v !== deleted)
+          .map(ci => ci > deleted ? ci - 1 : ci)
+        );
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
@@ -189,9 +245,29 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return () => sub.unsubscribe();
   }, [context, context.target, setErrorMessage]);
 
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([
+      context.target.target(),
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
+    ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
+        setRecordings(old => old.map(
+          o => o.name == event.message.recordingName 
+            ? { ...o, metadata: { labels: event.message.metadata.labels } } 
+            : o));
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+
   const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
-    recordings.forEach((r: ActiveRecording, idx) => {
+    filteredRecordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         tasks.push(
@@ -202,11 +278,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
+  }, [filteredRecordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleStopRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
-    recordings.forEach((r: ActiveRecording, idx) => {
+    filteredRecordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
         handleRowCheck(false, idx);
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
@@ -219,13 +295,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
+  }, [filteredRecordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<{}>[] = [];
-    recordings.forEach((r: ActiveRecording, idx) => {
+    filteredRecordings.forEach((r: ActiveRecording, idx) => {
       if (checkedIndices.includes(idx)) {
-        handleRowCheck(false, idx);
         context.reports.delete(r);
         tasks.push(
           context.api.deleteRecording(r.name).pipe(first())
@@ -235,7 +310,23 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
     );
-  }, [recordings, checkedIndices, handleRowCheck, context.reports, context.api, addSubscription]);
+  }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
+
+
+  const handleClearFilters = React.useCallback(() => {
+    setFilters({
+      Name: [],
+      Labels: [],
+      State: [],
+      StartedBeforeDate: [],
+      StartedAfterDate: [],
+      DurationSeconds: [],
+    } as RecordingFiltersCategories);
+  }, [setFilters]);
+
+  React.useEffect(() => {
+    setFilteredRecordings(filterRecordings(recordings, filters));
+  }, [recordings, filters]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -246,7 +337,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [refreshRecordingList, context, context.settings]);
 
   const RecordingRow = (props) => {
+    const parsedLabels = React.useMemo(() => {
+      return parseLabels(props.recording.metadata.labels);
+    }, [props.recording.metadata.labels]);
+
     const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
+
     const handleToggle = () => {
       toggleExpanded(expandedRowId);
     };
@@ -266,7 +362,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       };
 
       const RecordingDuration = (props) => {
-        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`
+        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`;
         return (<span>{str}</span>);
       };
 
@@ -302,13 +398,18 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           <Td key={`active-table-row-${props.index}_5`} dataLabel={tableColumns[3]}>
             {props.recording.state}
           </Td>
+          <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
+            <LabelCell 
+              labels={parsedLabels} 
+            />
+          </Td>
           <RecordingActions
             index={props.index}
             recording={props.recording}
             uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
           />
         </Tr>
-      )
+      );
     }, [
       props.duration,
       props.index,
@@ -318,12 +419,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       props.recording.startTime,
       props.recording.state,
       props.timeStr,
+      props.recording.metadata.labels,
       context.api,
       checkedIndices,
       handleCheck,
       handleToggle,
       isExpanded,
-      tableColumns
+      tableColumns,
     ]);
 
     const childRow = React.useMemo(() => {
@@ -365,15 +467,28 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
   };
 
+  const handleDeleteButton = React.useCallback(() => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings)) {
+      setWarningModalOpen(true);
+    }
+    else {
+      handleDeleteRecordings();
+    }
+  }, [context, context.settings, setWarningModalOpen, handleDeleteRecordings]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
   const RecordingsToolbar = () => {
     const isStopDisabled = React.useMemo(() => {
       if (!checkedIndices.length) {
         return true;
       }
-      const filtered = recordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
+      const filtered = filteredRecordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
       const anyRunning = filtered.some((r: ActiveRecording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
       return !anyRunning;
-    }, [checkedIndices, recordings]);
+    }, [checkedIndices, filteredRecordings]);
 
     const buttons = React.useMemo(() => {
       const arr = [
@@ -385,10 +500,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         ));
       }
       arr.push((
+        <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
+      ));
+      arr.push((
         <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
       ));
       arr.push((
-        <Button key="delete" variant="danger" onClick={handleDeleteRecordings} isDisabled={!checkedIndices.length}>Delete</Button>
+        <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
       ));
       return <>
         {
@@ -401,31 +519,63 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       </>;
     }, [checkedIndices]);
 
+    const deleteActiveWarningModal = React.useMemo(() => {
+      return <DeleteWarningModal 
+        warningType={DeleteWarningType.DeleteActiveRecordings}
+        visible={warningModalOpen}
+        onAccept={handleDeleteRecordings}
+        onClose={handleWarningModalClose}
+      />
+    }, [recordings, checkedIndices]);
+
     return (
-      <Toolbar id="active-recordings-toolbar">
+      <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
+        <RecordingFilters recordings={recordings} filters={filters} setFilters={setFilters} />        
         { buttons }
+        { deleteActiveWarningModal }
         </ToolbarContent>
       </Toolbar>
     );
   };
 
   const recordingRows = React.useMemo(() => {
-    return recordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
-  }, [recordings, expandedRows, checkedIndices]);
+    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+  }, [filteredRecordings, expandedRows, checkedIndices]);
+
+  const LabelsPanel = React.useMemo(() => (
+    <RecordingLabelsPanel
+      setShowPanel={setShowDetailsPanel}  
+      isTargetRecording={true}
+      checkedIndices={checkedIndices}
+    />
+  ), [checkedIndices]);
 
   return (
-    <RecordingsTable
-        tableTitle="Active Flight Recordings"
-        toolbar={<RecordingsToolbar />}
-        tableColumns={tableColumns}
-        isHeaderChecked={headerChecked}
-        onHeaderCheck={handleHeaderCheck}
-        isEmpty={!recordings.length}
-        isLoading ={isLoading}
-        errorMessage ={errorMessage}
-    >
-      {recordingRows}
-    </RecordingsTable>
+    <Drawer isExpanded={showDetailsPanel} isInline>
+      <DrawerContent panelContent={
+        {
+          [PanelContent.LABELS]: LabelsPanel,
+        }[panelContent]
+      } className='recordings-table-drawer-content'>
+        <DrawerContentBody hasPadding>
+          <RecordingsTable
+          tableTitle="Active Flight Recordings"
+          toolbar={<RecordingsToolbar />}
+          tableColumns={tableColumns}
+          isHeaderChecked={headerChecked}
+          onHeaderCheck={handleHeaderCheck}
+          isEmpty={!recordings.length}
+          isEmptyFilterResult={!filteredRecordings.length}
+          clearFilters={handleClearFilters}
+          isLoading ={isLoading}
+          isNestedTable={false}
+          errorMessage ={errorMessage}
+          >
+            {recordingRows}
+          </RecordingsTable>
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
   );
 };

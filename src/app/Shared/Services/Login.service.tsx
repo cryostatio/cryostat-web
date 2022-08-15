@@ -151,25 +151,10 @@ export class LoginService {
   }
 
   getHeaders(): Observable<Headers> {
-    const authorization = combineLatest([this.getToken(), this.getAuthMethod()])
+    return combineLatest([this.getToken(), this.getAuthMethod()])
     .pipe(
       map((parts: [string, AuthMethod]) => this.getAuthHeaders(parts[0], parts[1])),
       first(),
-    );
-    return combineLatest([authorization, this.target.target()])
-    .pipe(
-      first(),
-      map(parts => {
-        const headers = parts[0];
-        const target = parts[1];
-        if (!!target && !!target.connectUrl && this.target.hasCredentials(target.connectUrl)) {
-          const credentials = this.target.getCredentials(target.connectUrl);
-          if (credentials) {
-            headers.set('X-JMX-Authorization', `Basic ${Base64.encodeURL(credentials)}`);
-          }
-        }
-        return headers;
-      })
     );
   }
 

@@ -10,14 +10,11 @@ module.exports = merge(common('development'), {
   mode: 'development',
   devtool: 'eval-source-map',
   devServer: {
-    contentBase: './dist',
     compress: true,
     historyApiFallback: true,
     host: HOST,
     hot: true,
-    inline: true,
     open: true,
-    overlay: true,
     port: PORT,
   },
   plugins: [
@@ -25,7 +22,8 @@ module.exports = merge(common('development'), {
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'), 
+    hashFunction: "xxhash64",
   },
   module: {
     rules: [

@@ -47,6 +47,7 @@ import { catchError, first } from 'rxjs/operators';
 
 import { CreateTargetModal } from './CreateTargetModal';
 import _ from 'lodash';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface TargetSelectProps {
 }
@@ -62,33 +63,18 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [isModalOpen, setModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
 
-  React.useEffect(() => {
-    const sub = context.targets.targets().subscribe((targets) => {
-      setTargets(targets);
-      selectTargetFromCache(targets);
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.targets, setTargets]);
-
-  const refreshTargetList = React.useCallback(() => {
-    setLoading(true);
-    addSubscription(
-      context.targets.queryForTargets().subscribe(() => setLoading(false))
-    );
-  }, [setLoading, addSubscription, context.targets]);
-
-  const setCachedTargetSelection = (target) => {
+  const setCachedTargetSelection = React.useCallback((target) => {
     localStorage.setItem(TARGET_KEY, JSON.stringify(target));
-  };
+  }, [localStorage]);
 
-  const removeCachedTargetSelection = () => {
+  const removeCachedTargetSelection = React.useCallback(() => {
     localStorage.removeItem(TARGET_KEY);
-  };
+  }, [localStorage]);
 
-  const getCachedTargetSelection = () => {
+  const getCachedTargetSelection = React.useCallback(() => {
     const cachedTarget = localStorage.getItem(TARGET_KEY);
     return cachedTarget ? JSON.parse(cachedTarget) : NO_TARGET;
-  };
+  }, [localStorage]);
 
   const selectTargetFromCache = React.useCallback((targets) => {
     if(targets.length === 0) {
@@ -108,7 +94,43 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.target.setTarget(NO_TARGET);
       removeCachedTargetSelection();
     }
-  }, [context.target, getCachedTargetSelection, removeCachedTargetSelection]);
+  }, [context, context.target, getCachedTargetSelection, removeCachedTargetSelection]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.targets.targets().subscribe((targets) => {
+        setTargets(targets);
+        selectTargetFromCache(targets);
+      })
+    );
+  }, [addSubscription, context, context.targets, setTargets]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
+        .subscribe(v => {
+          const evt: TargetDiscoveryEvent = v.message.event;
+          if (evt.kind === 'LOST') {
+            const target: Target = {
+              connectUrl: evt.serviceRef.connectUrl,
+              alias: evt.serviceRef.alias,
+            }
+            context.target.target().pipe(first()).subscribe((currentTarget) => {
+              if (currentTarget.connectUrl === target.connectUrl && currentTarget.alias === target.alias) {
+                selectNone();
+              }
+            })
+          }
+        })
+    );
+  }, [addSubscription, context, context.notificationChannel, context.target]);
+
+  const refreshTargetList = React.useCallback(() => {
+    setLoading(true);
+    addSubscription(
+      context.targets.queryForTargets().subscribe(() => setLoading(false))
+    );
+  }, [addSubscription, context, context.targets, setLoading]);
 
   const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
     if (isPlaceholder) {
@@ -126,7 +148,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       }
     }
     setExpanded(false);
-  }, [context, selected, notifications, setExpanded]);
+  }, [context, context.target, selected, notifications, setExpanded, removeCachedTargetSelection, setCachedTargetSelection]);
 
   const selectNone = React.useCallback(() => {
     onSelect(undefined, undefined, true);
@@ -136,7 +158,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     addSubscription(
       context.target.target().subscribe(setSelected)
     );
-  }, [context.target, addSubscription]);
+  }, [addSubscription, context, context.target, setSelected]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -144,7 +166,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     }
     const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
     return () => window.clearInterval(id);
-  }, [context.target, context.settings, refreshTargetList]);
+  }, [context, context.target, context.settings, refreshTargetList]);
 
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
@@ -163,7 +185,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           }
         })
     );
-  }, [context.api, notifications, setModalOpen, addSubscription]);
+  }, [addSubscription, context, context.api, notifications, setLoading, setModalOpen]);
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
@@ -184,7 +206,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
       })
     );
-  }, [context.api, selected, setLoading, addSubscription, notifications, selectNone]);
+  }, [addSubscription, context, context.api, notifications, selected, setLoading, selectNone]);
 
   return (<>
       <Card>
@@ -196,18 +218,21 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           </CardHeaderMain>
           <CardActions>
             <Button
+              aria-label="Create target"
               isDisabled={isLoading}
               onClick={showCreateTargetModal}
               variant="control"
               icon={<PlusCircleIcon />}
             />
             <Button
+              aria-label="Delete target"
               isDisabled={isLoading || (selected == NO_TARGET)}
               onClick={deleteTarget}
               variant="control"
               icon={<TrashIcon />}
             />
             <Button
+              aria-label="Refresh targets"
               isDisabled={isLoading}
               onClick={refreshTargetList}
               variant="control"
@@ -227,7 +252,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             aria-label="Select Input"
           >
           {
-            ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} />])
+            ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} itemCount={targets.length} />])
               .concat(
                 targets.map((t: Target) => (
                   (t.alias == t.connectUrl) || !t.alias ?

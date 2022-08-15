@@ -53,7 +53,7 @@ import { SslErrorModal } from './SslErrorModal';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 import { SessionState } from '@app/Shared/Services/Login.service';
-import { combineLatest } from 'rxjs';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -285,7 +285,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
     <AlertGroup isToast>
       {
         notifications
-          .filter(n => !n.read && (Notifications.isProblemNotification(n) || n.variant === AlertVariant.success))
+          .filter(n => !n.read)
+          .filter(n => serviceContext.settings.notificationsEnabledFor(NotificationCategory[n.category || '']))
           .sort((prev, curr) => {
             if(!prev.timestamp) return -1;
             if(!curr.timestamp) return 1;

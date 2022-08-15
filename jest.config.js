@@ -5,9 +5,6 @@ module.exports = {
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
 
-  // Indicates whether the coverage information should be collected while executing the test
-  collectCoverage: true,
-
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
 
@@ -51,5 +48,16 @@ module.exports = {
   // A map from regular expressions to paths to transformers
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest"
-  }
+  },
+
+  // A set of global variables that need to be available in all test environments
+  globals: {
+    'ts-jest': {
+        isolatedModules: true
+    }
+  },
+
+  // An array of regexp pattern strings that are matched against all source file paths before transformation. 
+  // If the file path matches any of the patterns, it will not be transformed.
+  transformIgnorePatterns: ["/node_modules/(?!@patternfly)"]
 };
