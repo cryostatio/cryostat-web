@@ -45,7 +45,7 @@ import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from 
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import _ from 'lodash';
@@ -72,17 +72,15 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   ];
 
   const updateCount = React.useCallback((connectUrl: string, delta: number) => {
-    let idx = 0;
-    for (const t of targets) {
-      if (t.connectUrl === connectUrl) {
+    for(let i = 0; i < targets.length; i++) {
+      if(targets[i].connectUrl === connectUrl) {
         setCounts(old => {
           let updated = [...old];
-          updated[idx] += delta;
+          updated[i] += delta;
           return updated;
         });
         break;
       }
-      idx++;
     }
   }, [targets, setCounts]);
 
@@ -146,13 +144,42 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     );
   },[addSubscription, context, context.api, setCounts]);
 
-  React.useEffect(() => {
-    searchedTargetsRef.current = searchedTargets;
-  });
+  const handleLostTarget = React.useCallback((target: Target) => {
+    let idx;
+    setTargets(old => {
+      for (idx = 0; idx < old.length; idx++) {
+        if (_.isEqual(target, old[idx])) break;
+      }
+      return old.filter(o => !_.isEqual(o, target));
+    });
+    setExpandedTargets(old => old.filter(o => !_.isEqual(o, target)));
+    setCounts(old => {
+      let updated = [...old];
+      updated.splice(idx, 1);
+      return updated;
+    });
+  }, [setTargets, setExpandedTargets, setCounts]);
+
+  const handleTargetNotification  = React.useCallback((evt: TargetDiscoveryEvent) => {
+    const target: Target = {
+      connectUrl: evt.serviceRef.connectUrl,
+      alias: evt.serviceRef.alias,
+    }
+    if (evt.kind === 'FOUND') {
+      setTargets(old => old.concat(target));
+      getCountForNewTarget(target);
+    } else if (evt.kind === 'LOST') {
+      handleLostTarget(target);
+    }
+  }, [setTargets, getCountForNewTarget, handleLostTarget]);
 
   React.useEffect(() => {
     refreshTargetsAndCounts();
   }, []);
+
+  React.useEffect(() => {
+    searchedTargetsRef.current = searchedTargets;
+  });
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -172,31 +199,17 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     }
 
     if (!_.isEqual(searchedTargetsRef.current, updatedSearchedTargets)) {
-      setSearchedTargets([...updatedSearchedTargets]);
+      setSearchedTargets(updatedSearchedTargets);
     }
   }, [search, targets]);
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
-        .subscribe(v => {
-          const evt: TargetDiscoveryEvent = v.message.event;
-          const target: Target = {
-            connectUrl: evt.serviceRef.connectUrl,
-            alias: evt.serviceRef.alias,
-          }
-          if (evt.kind === 'FOUND') {
-            setTargets(old => old.concat(target));
-            getCountForNewTarget(target);
-          } else if (evt.kind === 'LOST') {
-            const idx = targets.indexOf(target);
-            setTargets(old => old.filter(o => o.connectUrl != target.connectUrl));
-            setExpandedTargets(old => old.filter(o => o != target));
-            setCounts(old => old.splice(idx, 1));
-          }
-        })
+      .pipe(concatMap(v => of(handleTargetNotification(v.message.event))))
+      .subscribe(() => {} /* do nothing - callback will have already handled updating state */)
     );
-  }, [addSubscription, context, context.notificationChannel, getCountForNewTarget, setTargets, setCounts]);
+  }, [addSubscription, context, context.notificationChannel, handleTargetNotification]);
 
   React.useEffect(() => {
     addSubscription(
@@ -265,7 +278,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </Tr>
       );
     });
-  }, [targets, expandedTargets, counts, searchedTargets, hideEmptyTargets]);
+  }, [targets, expandedTargets, counts, isHidden]);
 
   const recordingRows = React.useMemo(() => {
     return targets.map((target, idx) => {
@@ -288,7 +301,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         </Tr>
       );
     });
-  }, [targets, expandedTargets, searchedTargets, hideEmptyTargets, counts]);
+  }, [targets, expandedTargets, isHidden]);
 
   const rowPairs = React.useMemo(() => {
     let rowPairs: JSX.Element[] = [];
@@ -324,7 +337,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           <Tr>
             <Th key="table-header-expand"/>
             {tableColumns.map((key) => (
-              <Th key={`table-header-${key}`}>{key}</Th>
+              <Th key={`table-header-${key}`} width={key === 'Target' ? 90 : 15}>{key}</Th>
             ))}
           </Tr>
         </Thead>

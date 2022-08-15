@@ -143,14 +143,14 @@ Array [
           scope={null}
         />
         <th
-          className=""
+          className="pf-m-width-90"
           onMouseEnter={[Function]}
           scope="col"
         >
           Target
         </th>
         <th
-          className=""
+          className="pf-m-width-15"
           onMouseEnter={[Function]}
           scope="col"
         >
