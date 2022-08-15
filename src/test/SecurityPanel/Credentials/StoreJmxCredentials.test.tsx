@@ -90,21 +90,17 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
           .mockReturnValueOnce(of()) // 'renders correctly'
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
-          .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of(mockCredentialNotification)) // 'adds the correct table entry when a stored notification is received'
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'removes the correct table entry when a deletion notification is received'
           .mockReturnValueOnce(of(mockCredentialNotification))
           .mockReturnValueOnce(of())
-          .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'renders an empty table after receiving deletion notifications for all credentials'
           .mockReturnValueOnce(of(mockCredentialNotification))
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'expands to show the correct nested targets'
@@ -112,17 +108,14 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
-          .mockReturnValueOnce(of())
 
           .mockReturnValueOnce(of()) // 'decrements the correct count and updates the correct nested table when a lost target notification is received'
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of(mockLostTargetNotification))
           .mockReturnValueOnce(of(mockLostTargetNotification))
           .mockReturnValueOnce(of(mockLostTargetNotification))
 
           .mockReturnValueOnce(of()) // 'increments the correct count and updates the correct nested table when a found target notification is received'
-          .mockReturnValueOnce(of())
           .mockReturnValueOnce(of())
           .mockReturnValueOnce(of(mockFoundTargetNotification))
           .mockReturnValueOnce(of(mockFoundTargetNotification))
