@@ -39,6 +39,7 @@ import * as React from 'react';
 import { CreateRecording } from '@app/CreateRecording/CreateRecording';
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { Events } from '@app/Events/Events';
+import { Agent } from '@app/Agent/Agent';
 import { Login } from '@app/Login/Login';
 import { NotFound } from '@app/NotFound/NotFound';
 import { Recordings } from '@app/Recordings/Recordings';
@@ -127,6 +128,14 @@ const routes: IAppRoute[] = [
     label: 'Events',
     path: '/events',
     title: 'Events',
+    navGroup: CONSOLE,
+  },
+  {
+    component: Agent,
+    exact: true,
+    label: 'Agent',
+    path: '/agent',
+    title: 'Agent',
     navGroup: CONSOLE,
   },
   {
