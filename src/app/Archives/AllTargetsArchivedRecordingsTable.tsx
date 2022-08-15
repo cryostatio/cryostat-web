@@ -45,7 +45,7 @@ import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from 
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import _ from 'lodash';
@@ -160,6 +160,19 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     });
   }, [setTargets, setExpandedTargets, setCounts]);
 
+  const handleTargetNotification  = React.useCallback((evt: TargetDiscoveryEvent) => {
+    const target: Target = {
+      connectUrl: evt.serviceRef.connectUrl,
+      alias: evt.serviceRef.alias,
+    }
+    if (evt.kind === 'FOUND') {
+      setTargets(old => old.concat(target));
+      getCountForNewTarget(target);
+    } else if (evt.kind === 'LOST') {
+      handleLostTarget(target);
+    }
+  }, [setTargets, getCountForNewTarget, handleLostTarget]);
+
   React.useEffect(() => {
     refreshTargetsAndCounts();
   }, []);
@@ -193,21 +206,10 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
-        .subscribe(v => {
-          const evt: TargetDiscoveryEvent = v.message.event;
-          const target: Target = {
-            connectUrl: evt.serviceRef.connectUrl,
-            alias: evt.serviceRef.alias,
-          }
-          if (evt.kind === 'FOUND') {
-            setTargets(old => old.concat(target));
-            getCountForNewTarget(target);
-          } else if (evt.kind === 'LOST') {
-            handleLostTarget(target);
-          }
-        })
+      .pipe(concatMap(v => of(handleTargetNotification(v.message.event))))
+      .subscribe(() => {} /* do nothing - callback will have already handled updating state */)
     );
-  }, [addSubscription, context, context.notificationChannel, setTargets, getCountForNewTarget, handleLostTarget]);
+  }, [addSubscription, context, context.notificationChannel, handleTargetNotification]);
 
   React.useEffect(() => {
     addSubscription(
