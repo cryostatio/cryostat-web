@@ -90,6 +90,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return filters.length > 0? filters[0].archived.filters: emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
 
+  const uploadsSubdirectory: string = 'uploads';
+
   const tableColumns: string[] = [
     'Name',
     'Labels',
@@ -137,7 +139,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const queryUploadedRecordings = React.useCallback(() => {
     return context.api.graphql<any>(`
       query {
-        archivedRecordings(filter: { sourceTarget: "uploads" }) {
+        archivedRecordings(filter: { sourceTarget: "${uploadsSubdirectory}" }) {
           data {
             name
             downloadUrl
@@ -292,7 +294,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           if (checkedIndices.includes(idx)) {
             context.reports.delete(r);
             tasks.push(
-              context.api.deleteArchivedRecording((t.connectUrl === '' ? "uploads" : t.connectUrl), r.name).pipe(first())
+              context.api.deleteArchivedRecording((t.connectUrl === '' ? uploadsSubdirectory : t.connectUrl), r.name).pipe(first())
             );
           }
         })
