@@ -38,6 +38,7 @@
 import {NotificationsContext} from '@app/Notifications/Notifications';
 import {ActiveRecording} from '@app/Shared/Services/Api.service';
 import {ServiceContext} from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
 import {useSubscriptions} from '@app/utils/useSubscriptions';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
@@ -47,6 +48,7 @@ import {first} from 'rxjs/operators';
 export interface RecordingActionsProps {
   index: number;
   recording: ActiveRecording;
+  sourceTarget?: Observable<Target>;
   uploadFn: () => Observable<boolean>;
 }
 

@@ -46,6 +46,7 @@ import { Rule } from '@app/Rules/Rules';
 import { NotificationCategory } from './NotificationChannel.service';
 import _ from 'lodash';
 import { createBlobURL } from '@app/utils/utils';
+import { UPLOADS_SUBDIRECTORY } from '@app/Recordings/ArchivedRecordingsTable';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
@@ -337,9 +338,10 @@ export class ApiService {
     ));
   }
 
-  uploadArchivedRecordingToGrafana(recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-        'v1', `recordings/${encodeURIComponent(recordingName)}/upload`,
+  uploadArchivedRecordingToGrafana(sourceTarget: Observable<Target>, recordingName: string): Observable<boolean> {
+    return sourceTarget.pipe(concatMap(target => 
+      this.sendRequest(
+        'beta', `recordings/${encodeURIComponent((target.connectUrl === '') ? UPLOADS_SUBDIRECTORY : target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
         {
           method: 'POST',
         }
@@ -347,7 +349,7 @@ export class ApiService {
         map(resp => resp.ok),
         first()
       )
-    ;
+    ));
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
