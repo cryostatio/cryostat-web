@@ -286,14 +286,18 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
-    filteredRecordings.forEach((r: ArchivedRecording) => {
-      if (checkedIndices.includes(hashCode(r.name))) {
-        context.reports.delete(r);
-        tasks.push(
-          context.api.deleteArchivedRecording(r.name).pipe(first())
-        );
-      }
-    });
+    addSubscription(
+      props.target.subscribe(t => {
+        filteredRecordings.forEach((r: ArchivedRecording, idx) => {
+          if (checkedIndices.includes(idx)) {
+            context.reports.delete(r);
+            tasks.push(
+              context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first())
+            );
+          }
+        })
+      })
+    );
     addSubscription(
       forkJoin(tasks).subscribe()
     );

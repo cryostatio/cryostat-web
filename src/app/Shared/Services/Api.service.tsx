@@ -314,8 +314,8 @@ export class ApiService {
     ));
   }
 
-  deleteArchivedRecording(recordingName: string): Observable<boolean> {
-    return this.sendRequest('v1', `recordings/${encodeURIComponent(recordingName)}`, {
+  deleteArchivedRecording(connectUrl: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest('beta', `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`, {
       method: 'DELETE'
     }).pipe(
       map(resp => resp.ok),
