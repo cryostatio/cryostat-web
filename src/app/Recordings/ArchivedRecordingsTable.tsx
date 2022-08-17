@@ -292,7 +292,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           if (checkedIndices.includes(idx)) {
             context.reports.delete(r);
             tasks.push(
-              context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first())
+              context.api.deleteArchivedRecording((t.connectUrl === '' ? "uploads" : t.connectUrl), r.name).pipe(first())
             );
           }
         })
