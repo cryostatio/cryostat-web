@@ -316,9 +316,12 @@ export class ApiService {
   }
 
   deleteArchivedRecording(connectUrl: string, recordingName: string): Observable<boolean> {
-    return this.sendRequest('beta', `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`, {
-      method: 'DELETE'
-    }).pipe(
+    return this.sendRequest(
+      'beta', `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`, 
+      {
+        method: 'DELETE'
+      }
+    ).pipe(
       map(resp => resp.ok),
       first(),
     );
@@ -341,7 +344,7 @@ export class ApiService {
   uploadArchivedRecordingToGrafana(sourceTarget: Observable<Target>, recordingName: string): Observable<boolean> {
     return sourceTarget.pipe(concatMap(target => 
       this.sendRequest(
-        'beta', `recordings/${encodeURIComponent((target.connectUrl === '') ? UPLOADS_SUBDIRECTORY : target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
+        'beta', `recordings/${encodeURIComponent(target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
         {
           method: 'POST',
         }
