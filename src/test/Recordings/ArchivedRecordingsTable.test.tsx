@@ -288,7 +288,7 @@ describe('<ArchivedRecordingsTable />', () => {
     userEvent.click(within(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith('someRecording');
+    expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl,'someRecording');
     expect(dialogWarningSpy).toBeCalledTimes(1);
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteArchivedRecordings, false);
   });
@@ -311,7 +311,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(screen.queryByLabelText(DeleteArchivedRecordings.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-    expect(deleteRequestSpy).toBeCalledWith('someRecording');
+    expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
   });
 
   it('downloads a recording when Download Recording is clicked', () => {
@@ -364,7 +364,6 @@ describe('<ArchivedRecordingsTable />', () => {
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana');
 
     expect(grafanaUploadSpy).toHaveBeenCalledTimes(1);
-    expect(grafanaUploadSpy).toBeCalledWith('someRecording');
   });
 
   it('correctly renders the Uploads table', async () => {

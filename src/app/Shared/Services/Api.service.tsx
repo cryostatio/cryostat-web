@@ -350,17 +350,6 @@ export class ApiService {
         first()
       )
     ));
-    // return sourceTarget.pipe(concatMap(target => 
-    //   this.sendRequest(
-    //     'v1', `recordings/${encodeURIComponent((target.connectUrl === '') ? UPLOADS_SUBDIRECTORY : target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
-    //     {
-    //       method: 'POST',
-    //     }
-    //   ).pipe(
-    //     map(resp => resp.ok),
-    //     first()
-    //   )
-    // ));
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {

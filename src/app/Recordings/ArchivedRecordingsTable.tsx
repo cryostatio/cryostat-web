@@ -493,6 +493,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   );
 };
 
+export const UPLOADS_SUBDIRECTORY: string = 'uploads';
 export interface ArchivedRecordingsToolbarProps {
   target: string,
   checkedIndices: number[],
@@ -567,4 +568,3 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
       </Toolbar>
   );
 };
-export const UPLOADS_SUBDIRECTORY: string = 'uploads';
