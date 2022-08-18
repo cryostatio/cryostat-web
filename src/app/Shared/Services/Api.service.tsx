@@ -410,7 +410,7 @@ export class ApiService {
 
   downloadReport(recording: ArchivedRecording): void {
     const body = new window.FormData();
-    body.append('resource', recording.reportUrl.replace('/api/v1', '/api/v2.1'));
+    body.append('resource', recording.reportUrl);
     this.sendRequest('v2.1', 'auth/token', {
       method: 'POST',
       body,
@@ -429,7 +429,7 @@ export class ApiService {
 
   downloadRecording(recording: ArchivedRecording): void {
     const body = new window.FormData();
-    body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/v2.1'));
+    body.append('resource', recording.downloadUrl);
     this.sendRequest('v2.1', 'auth/token', {
       method: 'POST',
       body,
