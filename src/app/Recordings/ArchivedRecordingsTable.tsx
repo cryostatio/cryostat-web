@@ -46,7 +46,7 @@ import { PlusIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
+import { Observable, forkJoin, merge, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
@@ -89,6 +89,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL);
     return filters.length > 0? filters[0].archived.filters: emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
+
+  const target: Subject<Target> = new BehaviorSubject<Target>({} as Target);
 
   const tableColumns: string[] = [
     'Name',
@@ -370,7 +372,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <RecordingActions
             recording={props.recording}
             index={props.index}
-            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.target, props.recording.name)}
+            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(target, props.recording.name)}
           />
         </Tr>
       );

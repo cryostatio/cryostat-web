@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay } from 'rxjs';
+import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay, Subject, BehaviorSubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { NO_TARGET, Target, TargetService } from './Target.service';
@@ -338,7 +338,7 @@ export class ApiService {
     ));
   }
 
-  uploadArchivedRecordingToGrafana(sourceTarget: Observable<Target>, recordingName: string): Observable<boolean> {
+  uploadArchivedRecordingToGrafana(sourceTarget: Subject<Target>, recordingName: string): Observable<boolean> {
     return sourceTarget.pipe(concatMap(target => 
       this.sendRequest(
         'beta', `recordings/${encodeURIComponent((target.connectUrl === '') ? UPLOADS_SUBDIRECTORY : target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
@@ -350,6 +350,17 @@ export class ApiService {
         first()
       )
     ));
+    // return sourceTarget.pipe(concatMap(target => 
+    //   this.sendRequest(
+    //     'v1', `recordings/${encodeURIComponent((target.connectUrl === '') ? UPLOADS_SUBDIRECTORY : target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
+    //     {
+    //       method: 'POST',
+    //     }
+    //   ).pipe(
+    //     map(resp => resp.ok),
+    //     first()
+    //   )
+    // ));
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
