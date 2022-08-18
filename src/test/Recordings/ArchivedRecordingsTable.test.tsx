@@ -45,7 +45,7 @@ import { render, screen, within, waitFor, cleanup} from '@testing-library/react'
 import * as tlr from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
@@ -58,7 +58,7 @@ import { renderWithServiceContextAndReduxStoreWithRoute } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
-const mockUploadsTarget = { connectUrl: '', alias: '' };
+const mockUploadsTarget = { connectUrl: UPLOADS_SUBDIRECTORY, alias: '' };
 const mockRecordingLabels = {
   someLabel: 'someValue',
 };
