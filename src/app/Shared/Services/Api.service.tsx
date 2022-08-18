@@ -338,7 +338,7 @@ export class ApiService {
     ));
   }
 
-  uploadArchivedRecordingToGrafana(sourceTarget: Subject<Target>, recordingName: string): Observable<boolean> {
+  uploadArchivedRecordingToGrafana(sourceTarget: Observable<Target>, recordingName: string): Observable<boolean> {
     return sourceTarget.pipe(concatMap(target => 
       this.sendRequest(
         'beta', `recordings/${encodeURIComponent((target.connectUrl === '') ? UPLOADS_SUBDIRECTORY : target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,

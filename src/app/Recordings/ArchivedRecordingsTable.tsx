@@ -372,7 +372,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <RecordingActions
             recording={props.recording}
             index={props.index}
-            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(target, props.recording.name)}
+            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.sourceTarget, props.recording.name)}
           />
         </Tr>
       );
@@ -446,7 +446,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   ]);
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Label} index={hashCode(r.name)}/>)
+    return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Label} index={hashCode(r.name)} sourceTarget={props.target}/>)
   }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const handleModalClose = React.useCallback(() => {
