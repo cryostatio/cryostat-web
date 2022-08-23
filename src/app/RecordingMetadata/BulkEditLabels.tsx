@@ -106,6 +106,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
       let allRecordingLabels = [] as RecordingLabel[][];
+      console.log("updateCommonLabels", recordings);
+      console.log(recordings)
       recordings.forEach((r: ArchivedRecording, idx) => {
         if (props.checkedIndices.includes(idx)) {
           allRecordingLabels.push(parseLabels(r.metadata.labels));
@@ -135,18 +137,20 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
                     targetNodes(filter: { name: "${target.connectUrl}" }) {
                       recordings {
                         archived {
-                          name
-                          downloadUrl
-                          reportUrl
-                          metadata {
-                            labels
+                          data {
+                            name
+                            downloadUrl
+                            reportUrl
+                            metadata {
+                              labels
+                            }
                           }
                         }
                       }
                     }
                   }`),
           ),
-          map(v => props.isTargetRecording ? v : v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
+          map(v => props.isTargetRecording ? v : v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
           first()
         )
         .subscribe((value) => setRecordings(value))
