@@ -43,9 +43,8 @@ import { of } from 'rxjs';
 import '@testing-library/jest-dom';
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
-import { Button, TextInput } from '@patternfly/react-core';
 
 jest.mock('@patternfly/react-core', () => ({
   ...jest.requireActual('@patternfly/react-core'),
@@ -76,7 +75,9 @@ const mockArchivedRecordingsResponse = {
     targetNodes: [
       {
         recordings: {
-          archived: [mockRecording] as ArchivedRecording[],
+          archived: {
+            data: [mockRecording] as ArchivedRecording[]
+          }
         },
       },
     ],
