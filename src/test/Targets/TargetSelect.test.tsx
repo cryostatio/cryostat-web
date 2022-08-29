@@ -37,22 +37,20 @@
  */
 import * as React from 'react';
 import renderer from 'react-test-renderer'
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { of } from 'rxjs';
-import { createMemoryHistory } from 'history';
 
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import userEvent from '@testing-library/user-event';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
 const mockBazConnectUrl = 'service:jmx:rmi://someBazUrl';
-const mockFooTarget = { connectUrl: mockFooConnectUrl, alias: 'fooTarget' };
-const mockBarTarget = { connectUrl: mockBarConnectUrl, alias: 'barTarget' }
+const mockFooTarget = { connectUrl: mockFooConnectUrl, alias: 'fooTarget', annotations: { 'cryostat': new Map([['REALM', 'Custom Targets']]), 'platform' : new Map() } };
+const mockBarTarget = { ...mockFooTarget, connectUrl: mockBarConnectUrl, alias: 'barTarget' }
 const mockBazTarget = { connectUrl: mockBazConnectUrl, alias: 'bazTarget' }
 
 const mockHistoryPush = jest.fn();
@@ -70,6 +68,9 @@ jest.spyOn(defaultServices.target, 'target')
     .mockReturnValueOnce(of())
     .mockReturnValueOnce(of())
     .mockReturnValueOnce(of(mockFooTarget))
+    .mockReturnValueOnce(of(mockFooTarget))
+    .mockReturnValueOnce(of(mockFooTarget))
+    .mockReturnValueOnce(of(mockBazTarget)) // 'does nothing when trying to delete non-custom targets'
 
 jest.spyOn(defaultServices.targets, 'targets')
     .mockReturnValue(of([mockFooTarget, mockBarTarget]))
@@ -163,9 +164,23 @@ describe('<TargetSelect />', () => {
     const deleteButton = screen.getByLabelText('Delete target');
     userEvent.click(deleteButton);
 
+    expect(deleteButton).toBeDisabled();
+
     const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
-    expect(deleteTargetRequestSpy).toBeCalledTimes(1);
-    expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
+    expect(deleteTargetRequestSpy).toBeCalledTimes(0);
+  }); 
+
+  it('does nothing when trying to delete non-custom targets', () => {
+    render(
+        <ServiceContext.Provider value={defaultServices}>
+            <TargetSelect />
+        </ServiceContext.Provider>
+    );
+    const refreshButton = screen.getByLabelText('Refresh targets');
+    userEvent.click(refreshButton);
+
+    const refreshTargetsRequestSpy = jest.spyOn(defaultServices.targets, 'queryForTargets');
+    expect(refreshTargetsRequestSpy).toBeCalledTimes(1);
   }); 
 
   it('refreshes targets when button clicked', () => {

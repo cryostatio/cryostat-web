@@ -905,15 +905,16 @@ exports[`<CreateRule/> renders correctly 1`] = `
                           </span>
                         </button>
                         <button
-                          aria-disabled={false}
+                          aria-disabled={true}
                           aria-label="Delete target"
-                          className="pf-c-button pf-m-control"
+                          className="pf-c-button pf-m-control pf-m-disabled"
                           data-ouia-component-id="OUIA-Generated-Button-control-2"
                           data-ouia-component-type="PF4/Button"
                           data-ouia-safe={true}
-                          disabled={false}
+                          disabled={true}
                           onClick={[Function]}
                           role={null}
+                          tabIndex={null}
                           type="button"
                         >
                           <span

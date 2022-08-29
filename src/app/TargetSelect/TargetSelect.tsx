@@ -63,6 +63,8 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [isModalOpen, setModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
 
+  const CUSTOM_TARGETS_REALM = "Custom Targets";
+
   const setCachedTargetSelection = React.useCallback((target) => {
     localStorage.setItem(TARGET_KEY, JSON.stringify(target));
   }, [localStorage]);
@@ -226,7 +228,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             />
             <Button
               aria-label="Delete target"
-              isDisabled={isLoading || (selected == NO_TARGET)}
+              isDisabled={isLoading || (selected == NO_TARGET) || (selected.annotations?.cryostat["REALM"] !== CUSTOM_TARGETS_REALM)}
               onClick={deleteTarget}
               variant="control"
               icon={<TrashIcon />}
