@@ -52,13 +52,13 @@ const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
 const mockBazConnectUrl = 'service:jmx:rmi://someBazUrl';
 
 // Test fails if new Map([['REALM', 'Custom Targets']]) is used, most likely since 'cryostat' Map is not being utilized
-const customTargetAnnotation = new Map();
-customTargetAnnotation['REALM'] = CUSTOM_TARGETS_REALM;
+const cryostatAnnotation = new Map();
+cryostatAnnotation['REALM'] = CUSTOM_TARGETS_REALM;
 const mockFooTarget: Target = { 
     connectUrl: mockFooConnectUrl, 
     alias: 'fooTarget', 
     annotations: { 
-        cryostat: customTargetAnnotation, 
+        cryostat: cryostatAnnotation, 
         platform : new Map() 
     }
 };
