@@ -37,10 +37,10 @@
  */
 import * as React from 'react';
 import renderer from 'react-test-renderer'
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { first, of } from 'rxjs';
+import { of } from 'rxjs';
 
 import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
@@ -65,8 +65,6 @@ const mockFooTarget: Target = {
 const mockBarTarget: Target = { ...mockFooTarget, connectUrl: mockBarConnectUrl, alias: 'barTarget' }
 const mockBazTarget: Target = { connectUrl: mockBazConnectUrl, alias: 'bazTarget' }
 
-const observableMock = of(mockFooTarget);
-
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
     useRouteMatch: () => ({ url: '/baseUrl' }),
@@ -78,7 +76,7 @@ jest.spyOn(defaultServices.target, 'target')
     .mockReturnValueOnce(of())
     .mockReturnValueOnce(of(mockFooTarget))
     .mockReturnValueOnce(of(mockFooTarget))
-    .mockReturnValueOnce(observableMock)
+    .mockReturnValueOnce(of(mockFooTarget))
     .mockReturnValueOnce(of(mockBazTarget)) // does nothing when trying to delete non-custom targets
 
 jest.spyOn(defaultServices.targets, 'targets')
@@ -168,24 +166,16 @@ describe('<TargetSelect />', () => {
   }); 
 
   it('deletes target when delete button clicked', async () => {
-    const spy = jest.spyOn(defaultServices.target, 'target');
     render(
         <ServiceContext.Provider value={defaultServices}>
             <TargetSelect />
         </ServiceContext.Provider>
     );
 
-
-    expect(spy).toBeCalledTimes(1);
-    expect(spy).toReturnWith(observableMock);
-    observableMock.pipe(first()).subscribe(console.log);
-
     const deleteButton = screen.getByLabelText('Delete target');
     await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-    await act(async () => {
-        userEvent.click(deleteButton)
-      });
+    userEvent.click(deleteButton);
 
     const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
     expect(deleteTargetRequestSpy).toBeCalledTimes(1);
