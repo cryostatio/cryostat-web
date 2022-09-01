@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import {
   Checkbox,
   Dropdown,
@@ -46,9 +46,6 @@ import {
   Flex,
   FlexItem,
   InputGroup,
-  Select,
-  SelectOption,
-  SelectVariant,
   TextInput,
   ToolbarFilter,
   ToolbarGroup,
@@ -61,6 +58,7 @@ import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { DateTimePicker } from './DateTimePicker';
 import { LabelFilter } from './LabelFilter';
 import { NameFilter } from './NameFilter';
+import { RecordingStateFilter } from './RecordingStateFilter';
 
 export interface RecordingFiltersProps {
   recordings: ArchivedRecording[];
@@ -71,7 +69,6 @@ export interface RecordingFiltersProps {
 export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
   const [currentCategory, setCurrentCategory] = React.useState('Name');
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
-  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = React.useState(false);
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
 
@@ -81,14 +78,10 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
   const onCategorySelect = React.useCallback(
     (curr) => {
-      setIsCategoryDropdownOpen(false);
       setCurrentCategory(curr);
+      setIsCategoryDropdownOpen(false);
     },[setCurrentCategory, setIsCategoryDropdownOpen]
   );
-
-  const onFilterToggle = React.useCallback(() => {
-    setIsFilterDropdownOpen((opened) => !opened);
-  }, [setIsFilterDropdownOpen]);
 
   const onDelete = React.useCallback(
     (type = '', id = '') => {
@@ -173,7 +166,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 
   const onRecordingStateSelect = React.useCallback(
-    (e, searchState) => {
+    (searchState) => {
       props.setFilters((old) => {
         if (!old.State) return old;
 
@@ -232,19 +225,9 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
       <InputGroup>
         <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} />
       </InputGroup>,
-      <Select
-        variant={SelectVariant.checkbox}
-        aria-label={'State'}
-        onToggle={onFilterToggle}
-        onSelect={onRecordingStateSelect}
-        selections={props.filters.State}
-        isOpen={isFilterDropdownOpen}
-        placeholderText="Filter by state"
-      >
-        {Object.values(RecordingState).map((rs) => (
-          <SelectOption key={rs} value={rs} />
-        ))}
-      </Select>,
+      <InputGroup>
+        <RecordingStateFilter states={props.filters.State} onSubmit={onRecordingStateSelect} />
+      </InputGroup>,
       <InputGroup>
         <DateTimePicker onSubmit={onStartedBeforeInput} />
       </InputGroup>,

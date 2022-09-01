@@ -36,51 +36,45 @@
  * SOFTWARE.
  */
 
+
 import React from 'react';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { RecordingState } from '@app/Shared/Services/Api.service';
 
-export interface NameFilterProps {
-  recordings: ArchivedRecording[];
-  onSubmit: (inputName: string) => void;
+export interface RecordingStateFilterProps {
+  states: RecordingState[] | undefined;
+  onSubmit: (state: any) => void;
 }
 
-export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
+export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterProps> = (props) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState('');
-  const [names, setNames] = React.useState([] as string[]);
+  const [selected, setSelected] = React.useState(new Set(props.states));
 
   const onSelect = React.useCallback(
     (event, selection, isPlaceholder) => {
       if (isPlaceholder) {
+        setSelected(new Set());
         setIsOpen(false);
-        setSelected('');
       } else {
-        setSelected(selection);
+        setSelected((selected) => selected.add(selection));
         props.onSubmit(selection);
       }
-    },
-    [props.onSubmit, setIsOpen, setSelected]
-  );
-
-  React.useEffect(() => {
-    setNames(props.recordings.map((r) => r.name));
-  }, [setNames, props.recordings]);
-
+    }, [setSelected, setIsOpen, props.onSubmit]);
+  
   return (
     <Select
-      variant={SelectVariant.typeahead}
-      typeAheadAriaLabel="Filter by name..."
+      variant={SelectVariant.checkbox}
+      aria-label='State'
       onToggle={setIsOpen}
       onSelect={onSelect}
-      selections={selected}
+      selections={Array.from(selected)}
       isOpen={isOpen}
-      aria-labelledby="Filter by recording name"
-      placeholderText="Filter by name..."
-    >
-      {names.map((option, index) => (
-        <SelectOption key={index} value={option} />
-      ))}
-    </Select>
+      placeholderText="Filter by state">
+      {
+        Object.values(RecordingState).map((rs) => (
+          <SelectOption key={rs} value={rs} />
+        ))
+      }
+  </Select>
   );
 };

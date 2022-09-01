@@ -38,19 +38,14 @@
 
 import React from 'react';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 
 export interface LabelFilterProps {
     recordings: ArchivedRecording[];
-    onSubmit: (inputName) => void;
+    onSubmit: (inputLabel: string) => void;
 }
 
 export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) => {
-    const addSubscription = useSubscriptions();
-    const context = React.useContext(ServiceContext);
-
     const [isOpen, setIsOpen] = React.useState(false);
     const [selected, setSelected] = React.useState('');
     const [labels, setLabels] = React.useState([] as string[]);
