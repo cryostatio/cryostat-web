@@ -81,9 +81,9 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
   const onCategorySelect = React.useCallback(
     (curr) => {
+      setIsCategoryDropdownOpen(false);
       setCurrentCategory(curr);
-    },
-    [setCurrentCategory]
+    },[setCurrentCategory, setIsCategoryDropdownOpen]
   );
 
   const onFilterToggle = React.useCallback(() => {
@@ -212,13 +212,13 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
             </DropdownToggle>
           }
           isOpen={isCategoryDropdownOpen}
-          dropdownItems={[
+          dropdownItems={
             Object.keys(props.filters).map((cat) => (
               <DropdownItem key={cat} onClick={() => onCategorySelect(cat)}>
                 {cat}
               </DropdownItem>
-            )),
-          ]}
+            ))
+          }
         ></Dropdown>
       </ToolbarItem>
     );
