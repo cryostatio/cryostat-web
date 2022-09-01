@@ -75,6 +75,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [currentFilterCategory, setCurrentFilterCategory] = React.useState('Name');
   const [filters, setFilters] = React.useState({
     Name: [],
     Labels: [],
@@ -383,10 +384,25 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       />
     }, [recordings, checkedIndices]);
 
+    const updateFilters = React.useCallback((filterValue: string, filterKey: string, deleted = false) => {
+      setCurrentFilterCategory(filterKey);
+      setFilters((old) => {
+        if (!old[filterKey]) return old;
+
+        const oldFilterValues = old[filterKey] as any[];
+        const filterValues = deleted? oldFilterValues.filter((val) => val !== filterValue): 
+                Array.from(new Set([...oldFilterValues, filterValue]));
+        const newFilters = {...old};
+        newFilters[filterKey] = filterValues;
+        return newFilters;
+      });
+      
+    }, [setCurrentFilterCategory, setFilters]);
+
     return (
       <Toolbar id="archived-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-          <RecordingFilters recordings={recordings} filters={filters} setFilters={setFilters} />
+          <RecordingFilters category={currentFilterCategory} recordings={recordings} filters={filters} updateFilters={updateFilters} clearFilters={handleClearFilters}/>
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
               <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>

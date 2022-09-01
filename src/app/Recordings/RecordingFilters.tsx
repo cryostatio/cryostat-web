@@ -53,7 +53,7 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { DateTimePicker } from './DateTimePicker';
 import { LabelFilter } from './LabelFilter';
@@ -61,13 +61,15 @@ import { NameFilter } from './NameFilter';
 import { RecordingStateFilter } from './RecordingStateFilter';
 
 export interface RecordingFiltersProps {
+  category: string,
   recordings: ArchivedRecording[];
   filters: RecordingFiltersCategories;
-  setFilters: Dispatch<SetStateAction<RecordingFiltersCategories>>;
+  updateFilters: (filterValue: any, filterKey: string, deleted?: boolean) => void;
+  clearFilters: () => void;
 }
 
 export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
-  const [currentCategory, setCurrentCategory] = React.useState('Name');
+  const [currentCategory, setCurrentCategory] = React.useState(props.category);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
   const [continuous, setContinuous] = React.useState(false);
   const [duration, setDuration] = React.useState(30);
@@ -84,114 +86,54 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 
   const onDelete = React.useCallback(
-    (type = '', id = '') => {
-      if (type) {
-        props.setFilters((old) => {
-          return { ...old, [type]: old[type].filter((val) => val !== id) };
-        });
-      } else {
-        props.setFilters(() => {
-          return {
-            Name: [],
-            Labels: [],
-            State: [],
-            StartedBeforeDate: [],
-            StartedAfterDate: [],
-            DurationSeconds: [],
-          };
-        });
-      }
+    (category, value) => {
+      props.updateFilters(value, category, true);
     },
-    [props.setFilters]
+    [props.updateFilters]
   );
 
   const onNameInput = React.useCallback(
-    (inputName) => {
-      props.setFilters((old) => {
-        const names = new Set(old.Name);
-        names.add(inputName);
-        return { ...old, Name: Array.from(names) };
-      });
-    },
-    [props.setFilters]
+    (inputName) => props.updateFilters(inputName, currentCategory), 
+    [props.updateFilters, currentCategory]
   );
 
   const onLabelInput = React.useCallback(
-    (inputLabel) => {
-      props.setFilters((old) => {
-        const labels = new Set(old.Labels);
-        labels.add(inputLabel);
-        return { ...old, Labels: Array.from(labels) };     
-      });
-    },
-    [props.setFilters]
+    (inputLabel) => props.updateFilters(inputLabel, currentCategory), 
+    [props.updateFilters, currentCategory]
   );
 
-  const onStartedBeforeInput = React.useCallback((searchDate) => {
-    props.setFilters((old) => {
-      if (!old.StartedBeforeDate) return old;
+  const onStartedBeforeInput = React.useCallback(
+    (searchDate) => props.updateFilters(searchDate, currentCategory), 
+    [props.updateFilters, currentCategory]
+  );
 
-      const dates = new Set(old.StartedBeforeDate);
-      dates.add(searchDate);
-      return { ...old, StartedBeforeDate: Array.from(dates) };    
-    });
-  }, [props.setFilters]);
-
-  const onStartedAfterInput = React.useCallback((searchDate) => {
-    props.setFilters((old) => {
-      if (!old.StartedAfterDate) return old;
-
-      const dates = new Set(old.StartedAfterDate);
-      dates.add(searchDate);
-      return { ...old, StartedAfterDate: Array.from(dates) };      
-    });
-  }, [props.setFilters]);
+  const onStartedAfterInput = React.useCallback(
+    (searchDate) =>  props.updateFilters(searchDate, currentCategory), 
+    [props.updateFilters, currentCategory]
+  );
 
   const onDurationInput = React.useCallback(
     (e) => {
       if (e.key && e.key !== 'Enter') {
         return;
       }
-
-      props.setFilters((old) => {        
-        if (!old.DurationSeconds) return old;
-        const dur = `${duration.toString()} s`;
-
-        const durations = new Set(old.DurationSeconds);
-        durations.add(dur);
-        return { ...old, DurationSeconds: Array.from(durations) };
-      });
+      props.updateFilters(`${duration.toString()} s`, currentCategory);
     },
-    [duration, props.setFilters]
+    [duration, props.updateFilters, currentCategory]
   );
 
   const onRecordingStateSelect = React.useCallback(
-    (searchState) => {
-      props.setFilters((old) => {
-        if (!old.State) return old;
-
-        const states = new Set(old.State);
-        states.add(searchState);
-        return { ...old, State: Array.from(states) };    
-      });
-    },
-    [props.setFilters]
+    (searchState) => props.updateFilters(searchState, currentCategory),
+    [props.updateFilters, currentCategory]
   );
 
   const onContinuousDurationSelect = React.useCallback(
     (cont) => {
       setContinuous(cont);
-      props.setFilters((old) => {
-        if (!old.DurationSeconds) return old;
-        return {
-          ...old,
-          DurationSeconds: cont
-            ? [...old.DurationSeconds, 'continuous']
-            : old.DurationSeconds.filter((v) => v != 'continuous'),
-        };
-      });
+      let contValue = cont? 'continuous': null;
+      props.updateFilters(contValue, currentCategory, !contValue);
     },
-    [setContinuous, props.setFilters]
+    [setContinuous, props.updateFilters, currentCategory]
   );
 
   const categoryDropdown = React.useMemo(() => {
@@ -271,7 +213,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
             chips={props.filters[filterKey]}
             deleteChip={onDelete}
             categoryName={filterKey}
-            showToolbarItem={currentCategory === filterKey}
+            showToolbarItem={filterKey === currentCategory}
           >
             {filterDropdownItems[i]}
           </ToolbarFilter>

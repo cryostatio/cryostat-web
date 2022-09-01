@@ -85,6 +85,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
+  const [currentFilterCategory, setCurrentFilterCategory] = React.useState('Name');
   const [filters, setFilters] = React.useState({
     Name: [],
     Labels: [],
@@ -528,12 +529,27 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       />
     }, [recordings, checkedIndices]);
 
+    const updateFilters = React.useCallback((filterValue: string, filterKey: string, deleted = false) => {
+      setCurrentFilterCategory(filterKey);
+      setFilters((old) => {
+        if (!old[filterKey]) return old;
+
+        const oldFilterValues = old[filterKey] as any[];
+        const filterValues = deleted? oldFilterValues.filter((val) => val !== filterValue): 
+                Array.from(new Set([...oldFilterValues, filterValue]));
+        const newFilters = {...old};
+        newFilters[filterKey] = filterValues;
+        return newFilters;
+      });
+      
+    }, [setCurrentFilterCategory, setFilters]);
+
     return (
       <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-        <RecordingFilters recordings={recordings} filters={filters} setFilters={setFilters} />        
-        { buttons }
-        { deleteActiveWarningModal }
+          <RecordingFilters category={currentFilterCategory} recordings={recordings} filters={filters} updateFilters={updateFilters} clearFilters={handleClearFilters} />        
+          { buttons }
+          { deleteActiveWarningModal }
         </ToolbarContent>
       </Toolbar>
     );
