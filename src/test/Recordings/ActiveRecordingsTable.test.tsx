@@ -87,6 +87,17 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
+jest.mock('@app/Recordings/RecordingFilters', () => {
+  return {
+    ...jest.requireActual('@app/Recordings/RecordingFilters'),
+    RecordingFilters: jest.fn(() => {
+      return <div>
+                RecordingFilters
+             </div>
+    })
+  };
+});
+
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
