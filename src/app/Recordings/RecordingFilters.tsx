@@ -64,8 +64,18 @@ export interface RecordingFiltersProps {
   category: string,
   recordings: ArchivedRecording[];
   filters: RecordingFiltersCategories;
-  updateFilters: (filterValue: any, filterKey: string, deleted?: boolean) => void;
-  clearFilters: () => void;
+  updateFilters: (updatefilterParams: UpdateFilterOptions) => void;
+}
+
+export interface UpdateFilterOptions {
+  filterKey: string;
+  filterValue?: any;
+  deleted?: boolean;
+  deleteOptions?: FilterDeleteOptions
+}
+
+export interface FilterDeleteOptions {
+  all: boolean
 }
 
 export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
@@ -87,28 +97,35 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
   const onDelete = React.useCallback(
     (category, value) => {
-      props.updateFilters(value, category, true);
+      props.updateFilters({ filterKey: category, filterValue: value, deleted: true});
+    },
+    [props.updateFilters]
+  );
+
+  const onDeleteGroup = React.useCallback(
+    (category) => {
+      props.updateFilters({ filterKey: category, deleted: true, deleteOptions: { all: true }});
     },
     [props.updateFilters]
   );
 
   const onNameInput = React.useCallback(
-    (inputName) => props.updateFilters(inputName, currentCategory), 
+    (inputName) => props.updateFilters({ filterKey: currentCategory, filterValue: inputName }),
     [props.updateFilters, currentCategory]
   );
 
   const onLabelInput = React.useCallback(
-    (inputLabel) => props.updateFilters(inputLabel, currentCategory), 
+    (inputLabel) => props.updateFilters({ filterKey: currentCategory, filterValue: inputLabel }), 
     [props.updateFilters, currentCategory]
   );
 
   const onStartedBeforeInput = React.useCallback(
-    (searchDate) => props.updateFilters(searchDate, currentCategory), 
+    (searchDate) => props.updateFilters({ filterKey: currentCategory, filterValue: searchDate}),
     [props.updateFilters, currentCategory]
   );
 
   const onStartedAfterInput = React.useCallback(
-    (searchDate) =>  props.updateFilters(searchDate, currentCategory), 
+    (searchDate) =>  props.updateFilters({ filterKey: currentCategory, filterValue: searchDate}),
     [props.updateFilters, currentCategory]
   );
 
@@ -117,21 +134,20 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
       if (e.key && e.key !== 'Enter') {
         return;
       }
-      props.updateFilters(`${duration.toString()} s`, currentCategory);
+      props.updateFilters({ filterKey: currentCategory, filterValue: `${duration.toString()} s` });
     },
     [duration, props.updateFilters, currentCategory]
   );
 
   const onRecordingStateSelect = React.useCallback(
-    (searchState) => props.updateFilters(searchState, currentCategory),
+    (searchState) => props.updateFilters({ filterKey: currentCategory, filterValue: searchState }),
     [props.updateFilters, currentCategory]
   );
 
   const onContinuousDurationSelect = React.useCallback(
     (cont) => {
       setContinuous(cont);
-      let contValue = cont? 'continuous': null;
-      props.updateFilters(contValue, currentCategory, !contValue);
+      props.updateFilters({ filterKey: currentCategory, filterValue: 'continuous', deleted: !cont });
     },
     [setContinuous, props.updateFilters, currentCategory]
   );
@@ -212,6 +228,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
             key={filterKey}
             chips={props.filters[filterKey]}
             deleteChip={onDelete}
+            deleteChipGroup={onDeleteGroup}
             categoryName={filterKey}
             showToolbarItem={filterKey === currentCategory}
           >

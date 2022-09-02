@@ -51,7 +51,7 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import { filterRecordings, RecordingFilters } from './RecordingFilters';
+import { FilterDeleteOptions, filterRecordings, RecordingFilters } from './RecordingFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
@@ -529,14 +529,23 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       />
     }, [recordings, checkedIndices]);
 
-    const updateFilters = React.useCallback((filterValue: string, filterKey: string, deleted = false) => {
+    const updateFilters = React.useCallback(({filterValue, filterKey, deleted = false, deleteOptions}) => {
       setCurrentFilterCategory(filterKey);
       setFilters((old) => {
         if (!old[filterKey]) return old;
 
         const oldFilterValues = old[filterKey] as any[];
-        const filterValues = deleted? oldFilterValues.filter((val) => val !== filterValue): 
-                Array.from(new Set([...oldFilterValues, filterValue]));
+        let filterValues: any[];
+        if (deleted) {
+          if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
+            filterValues = [];
+          } else {
+            filterValues = oldFilterValues.filter((val) => val !== filterValue);
+          }
+        } else {
+          filterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+        }
+
         const newFilters = {...old};
         newFilters[filterKey] = filterValues;
         return newFilters;
@@ -547,7 +556,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return (
       <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-          <RecordingFilters category={currentFilterCategory} recordings={recordings} filters={filters} updateFilters={updateFilters} clearFilters={handleClearFilters} />        
+          <RecordingFilters category={currentFilterCategory} recordings={recordings} filters={filters} updateFilters={updateFilters} />        
           { buttons }
           { deleteActiveWarningModal }
         </ToolbarContent>

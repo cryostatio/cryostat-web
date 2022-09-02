@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
-import { Tbody, Th, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { PlusIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -55,7 +55,7 @@ import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
-import { filterRecordings, RecordingFilters } from './RecordingFilters';
+import { FilterDeleteOptions, filterRecordings, RecordingFilters } from './RecordingFilters';
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 
 export interface ArchivedRecordingsTableProps { 
@@ -384,14 +384,23 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       />
     }, [recordings, checkedIndices]);
 
-    const updateFilters = React.useCallback((filterValue: string, filterKey: string, deleted = false) => {
+    const updateFilters = React.useCallback(({filterValue, filterKey, deleted = false, deleteOptions}) => {
       setCurrentFilterCategory(filterKey);
       setFilters((old) => {
         if (!old[filterKey]) return old;
 
         const oldFilterValues = old[filterKey] as any[];
-        const filterValues = deleted? oldFilterValues.filter((val) => val !== filterValue): 
-                Array.from(new Set([...oldFilterValues, filterValue]));
+        let filterValues: any[];
+        if (deleted) {
+          if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
+            filterValues = [];
+          } else {
+            filterValues = oldFilterValues.filter((val) => val !== filterValue);
+          }
+        } else {
+          filterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+        }
+
         const newFilters = {...old};
         newFilters[filterKey] = filterValues;
         return newFilters;
@@ -402,7 +411,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return (
       <Toolbar id="archived-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-          <RecordingFilters category={currentFilterCategory} recordings={recordings} filters={filters} updateFilters={updateFilters} clearFilters={handleClearFilters}/>
+          <RecordingFilters category={currentFilterCategory} recordings={recordings} filters={filters} updateFilters={updateFilters} />
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
               <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
