@@ -55,11 +55,11 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
-import { DateTimePicker } from './DateTimePicker';
-import { DurationFilter } from './DurationFilter';
-import { LabelFilter } from './LabelFilter';
-import { NameFilter } from './NameFilter';
-import { RecordingStateFilter } from './RecordingStateFilter';
+import { DateTimePicker } from './Filters/DateTimePicker';
+import { DurationFilter } from './Filters/DurationFilter';
+import { LabelFilter } from './Filters/LabelFilter';
+import { NameFilter } from './Filters/NameFilter';
+import { RecordingStateFilter } from './Filters/RecordingStateFilter';
 
 export interface RecordingFiltersProps {
   category: string,

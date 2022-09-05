@@ -53,7 +53,7 @@ import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export interface DateTimePickerProps {
-  onSubmit: (startDate) => void;
+  onSubmit: (startDate: any) => void;
 }
 
 export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
