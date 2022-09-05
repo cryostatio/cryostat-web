@@ -56,6 +56,7 @@ import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { DateTimePicker } from './DateTimePicker';
+import { DurationFilter } from './DurationFilter';
 import { LabelFilter } from './LabelFilter';
 import { NameFilter } from './NameFilter';
 import { RecordingStateFilter } from './RecordingStateFilter';
@@ -64,7 +65,7 @@ export interface RecordingFiltersProps {
   category: string,
   recordings: ArchivedRecording[];
   filters: RecordingFiltersCategories;
-  updateFilters: (updatefilterParams: UpdateFilterOptions) => void;
+  updateFilters: (updateFilterOptions: UpdateFilterOptions) => void;
 }
 
 export interface UpdateFilterOptions {
@@ -81,8 +82,6 @@ export interface FilterDeleteOptions {
 export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
   const [currentCategory, setCurrentCategory] = React.useState(props.category);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
-  const [continuous, setContinuous] = React.useState(false);
-  const [duration, setDuration] = React.useState(30);
 
   const onCategoryToggle = React.useCallback(() => {
     setIsCategoryDropdownOpen((opened) => !opened);
@@ -96,16 +95,12 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 
   const onDelete = React.useCallback(
-    (category, value) => {
-      props.updateFilters({ filterKey: category, filterValue: value, deleted: true});
-    },
+    (category, value) => props.updateFilters({ filterKey: category, filterValue: value, deleted: true}),
     [props.updateFilters]
   );
 
   const onDeleteGroup = React.useCallback(
-    (category) => {
-      props.updateFilters({ filterKey: category, deleted: true, deleteOptions: { all: true }});
-    },
+    (category) => props.updateFilters({ filterKey: category, deleted: true, deleteOptions: { all: true }}),
     [props.updateFilters]
   );
 
@@ -130,13 +125,8 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 
   const onDurationInput = React.useCallback(
-    (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
-      }
-      props.updateFilters({ filterKey: currentCategory, filterValue: `${duration.toString()} s` });
-    },
-    [duration, props.updateFilters, currentCategory]
+    (duration) => props.updateFilters({ filterKey: currentCategory, filterValue: `${duration.toString()} s` }),
+    [props.updateFilters, currentCategory]
   );
 
   const onRecordingStateSelect = React.useCallback(
@@ -145,11 +135,8 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 
   const onContinuousDurationSelect = React.useCallback(
-    (cont) => {
-      setContinuous(cont);
-      props.updateFilters({ filterKey: currentCategory, filterValue: 'continuous', deleted: !cont });
-    },
-    [setContinuous, props.updateFilters, currentCategory]
+    (cont) => props.updateFilters({ filterKey: currentCategory, filterValue: 'continuous', deleted: !cont }),
+    [props.updateFilters, currentCategory]
   );
 
   const categoryDropdown = React.useMemo(() => {
@@ -190,30 +177,10 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <DateTimePicker onSubmit={onStartedBeforeInput} />
       </InputGroup>,
       <InputGroup>
-      <DateTimePicker onSubmit={onStartedAfterInput} />
-    </InputGroup>,
+        <DateTimePicker onSubmit={onStartedAfterInput} />
+      </InputGroup>,
       <InputGroup>
-        <Flex>
-          <FlexItem>
-            <TextInput
-              type="number"
-              value={duration}
-              id="durationInput1"
-              aria-label="duration filter"
-              onChange={(e) => setDuration(Number(e))}
-              min="0"
-              onKeyDown={onDurationInput}
-            />
-          </FlexItem>
-          <FlexItem>
-            <Checkbox
-              label="Continuous"
-              id="continuous-checkbox"
-              isChecked={continuous}
-              onChange={(checked) => onContinuousDurationSelect(checked)}
-            />
-          </FlexItem>
-        </Flex>
+        <DurationFilter durations={props.filters.DurationSeconds} onContinuousDurationSelect={onContinuousDurationSelect} onDurationInput={onDurationInput}></DurationFilter>
       </InputGroup>,
     ],
     [Object.keys(props.filters)]

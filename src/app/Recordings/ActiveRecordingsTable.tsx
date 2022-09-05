@@ -535,19 +535,19 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         if (!old[filterKey]) return old;
 
         const oldFilterValues = old[filterKey] as any[];
-        let filterValues: any[];
+        let newfilterValues: any[];
         if (deleted) {
           if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
-            filterValues = [];
+            newfilterValues = [];
           } else {
-            filterValues = oldFilterValues.filter((val) => val !== filterValue);
+            newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
           }
         } else {
-          filterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+          newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
         }
 
         const newFilters = {...old};
-        newFilters[filterKey] = filterValues;
+        newFilters[filterKey] = newfilterValues;
         return newFilters;
       });
       
