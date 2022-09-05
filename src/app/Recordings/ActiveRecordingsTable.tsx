@@ -51,7 +51,7 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import { FilterDeleteOptions, filterRecordings, RecordingFilters } from './RecordingFilters';
+import { FilterDeleteOptions, filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
@@ -62,15 +62,6 @@ export enum PanelContent {
 }
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
-}
-
-export interface RecordingFiltersCategories {
-    Name: string[],
-    Labels: string[],
-    State?: RecordingState[],
-    StartedBeforeDate?: string[],
-    StartedAfterDate?: string[],
-    DurationSeconds?: string[],
 }
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {

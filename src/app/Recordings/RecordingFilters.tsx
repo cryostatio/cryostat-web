@@ -38,15 +38,11 @@
 
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import {
-  Checkbox,
   Dropdown,
   DropdownItem,
   DropdownPosition,
   DropdownToggle,
-  Flex,
-  FlexItem,
   InputGroup,
-  TextInput,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
@@ -54,12 +50,21 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
-import { RecordingFiltersCategories } from './ActiveRecordingsTable';
 import { DateTimePicker } from './Filters/DateTimePicker';
 import { DurationFilter } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
+import { RecordingState } from '@app/Shared/Services/Api.service';
+
+export interface RecordingFiltersCategories {
+  Name: string[],
+  Labels: string[],
+  State?: RecordingState[],
+  StartedBeforeDate?: string[],
+  StartedAfterDate?: string[],
+  DurationSeconds?: string[],
+}
 
 export interface RecordingFiltersProps {
   category: string,

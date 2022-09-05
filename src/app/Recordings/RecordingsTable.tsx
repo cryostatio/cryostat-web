@@ -91,7 +91,10 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
     </>);
   } else {
     view = (<>
-      <TableComposable aria-label={props.tableTitle} isStickyHeader={props.isNestedTable} variant={props.isNestedTable ? 'compact' : undefined}>
+      <TableComposable 
+        aria-label={props.tableTitle} 
+        isStickyHeader={props.isNestedTable} 
+        variant={props.isNestedTable ? 'compact' : undefined}>
         <Thead>
           <Tr>
             <Th

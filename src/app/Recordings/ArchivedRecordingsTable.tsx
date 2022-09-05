@@ -54,7 +54,7 @@ import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { RecordingFiltersCategories } from './ActiveRecordingsTable';
+import { RecordingFiltersCategories } from './RecordingFilters';
 import { FilterDeleteOptions, filterRecordings, RecordingFilters } from './RecordingFilters';
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 
