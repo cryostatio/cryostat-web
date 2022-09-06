@@ -325,6 +325,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <LabelCell 
+              labelFilters={props.labelFilters}
               labels={parsedLabels} 
             />
           </Td>
@@ -436,7 +437,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   };
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} labelFilters={filters.Labels} index={idx}/>)
   }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const handleModalClose = React.useCallback(() => {

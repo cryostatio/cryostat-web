@@ -392,6 +392,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
             <LabelCell 
+              labelFilters={props.labelFilters}
               labels={parsedLabels} 
             />
           </Td>
@@ -556,7 +557,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   };
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} index={idx}/>)
+    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} labelFilters={filters.Labels} index={idx}/>)
   }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const LabelsPanel = React.useMemo(() => (

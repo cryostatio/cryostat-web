@@ -42,15 +42,22 @@ import { RecordingLabel } from './RecordingLabel';
 
 export interface LabelCellProps {
   labels: RecordingLabel[];
+  labelFilters?: string[];
 }
 
 export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
   // TODO make labels clickable to select multiple recordings with the same label
   return (
     <>
-      {!!props.labels && props.labels.length ? (
-        props.labels.map((l) => <Label key={l.key} color="grey">{`${l.key}: ${l.value}`}</Label>)
-      ) : (
+      {!!props.labels && props.labels.length? (
+        props.labels.map((l) => 
+          <Label 
+            key={l.key} 
+            color={props.labelFilters && props.labelFilters.includes(`${l.key}:${l.value}`)? "blue": "grey"}
+          >
+            {`${l.key}: ${l.value}`}
+          </Label>
+        )) : (
         <Text>-</Text>
       )}
     </>
