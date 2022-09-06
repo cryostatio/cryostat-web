@@ -39,11 +39,14 @@
 import React from 'react';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { parseLabels, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 
 export interface LabelFilterProps {
     recordings: ArchivedRecording[];
     onSubmit: (inputLabel: string) => void;
 }
+
+export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
 
 export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) => {
     const [isOpen, setIsOpen] = React.useState(false);
@@ -68,9 +71,7 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
             let updated = new Set(old);
             props.recordings.forEach((r) => {
                 if (!r || !r.metadata) return;
-                Object.entries(r.metadata.labels).map(([k, v]) =>
-                    updated.add(`${k}:${v}`)
-                );
+                parseLabels(r.metadata.labels).map((label) => updated.add(getLabelDisplay(label)));
             });
             return Array.from(updated);
         });

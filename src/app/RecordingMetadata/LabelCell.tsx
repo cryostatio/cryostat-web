@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
 import { UpdateFilterOptions } from '@app/Recordings/RecordingFilters';
 import { Label, Text } from '@patternfly/react-core';
 import React from 'react';
@@ -69,11 +70,10 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
       {!!props.labels && props.labels.length? (
         props.labels.map((l) => 
           <Label
-          className=''
             style={labelStyle}
-            onClick={() => {onLabelSelectToggle(`${l.key}:${l.value}`)}}
+            onClick={() => {onLabelSelectToggle(getLabelDisplay(l))}}
             key={l.key} 
-            color={props.labelFilters && props.labelFilters.includes(`${l.key}:${l.value}`)? "blue": "grey"}
+            color={props.labelFilters && props.labelFilters.includes(getLabelDisplay(l))? "blue": "grey"}
           >
             {`${l.key}: ${l.value}`}
           </Label>
