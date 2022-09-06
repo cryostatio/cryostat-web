@@ -171,6 +171,30 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       Labels: [],
     } as RecordingFiltersCategories);
   }, [setFilters]);
+  
+  const updateFilters = React.useCallback(({filterValue, filterKey, deleted = false, deleteOptions}) => {
+    setCurrentFilterCategory(filterKey);
+    setFilters((old) => {
+      if (!old[filterKey]) return old;
+
+      const oldFilterValues = old[filterKey] as any[];
+      let newfilterValues: any[];
+      if (deleted) {
+        if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
+          newfilterValues = [];
+        } else {
+          newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
+        }
+      } else {
+        newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+      }
+
+      const newFilters = {...old};
+      newFilters[filterKey] = newfilterValues;
+      return newFilters;
+    });
+    
+  }, [setCurrentFilterCategory, setFilters]);
 
   React.useEffect(() => {
     addSubscription(
@@ -325,6 +349,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <LabelCell 
+              onSubmit={updateFilters}
               labelFilters={props.labelFilters}
               labels={parsedLabels} 
             />
@@ -384,30 +409,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         onClose={handleWarningModalClose}
       />
     }, [recordings, checkedIndices]);
-
-    const updateFilters = React.useCallback(({filterValue, filterKey, deleted = false, deleteOptions}) => {
-      setCurrentFilterCategory(filterKey);
-      setFilters((old) => {
-        if (!old[filterKey]) return old;
-
-        const oldFilterValues = old[filterKey] as any[];
-        let newfilterValues: any[];
-        if (deleted) {
-          if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
-            newfilterValues = [];
-          } else {
-            newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
-          }
-        } else {
-          newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
-        }
-
-        const newFilters = {...old};
-        newFilters[filterKey] = newfilterValues;
-        return newFilters;
-      });
-      
-    }, [setCurrentFilterCategory, setFilters]);
 
     return (
       <Toolbar id="archived-recordings-toolbar" clearAllFilters={handleClearFilters}>

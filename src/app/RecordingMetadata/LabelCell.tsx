@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { UpdateFilterOptions } from '@app/Recordings/RecordingFilters';
 import { Label, Text } from '@patternfly/react-core';
 import React from 'react';
 import { RecordingLabel } from './RecordingLabel';
@@ -43,15 +44,32 @@ import { RecordingLabel } from './RecordingLabel';
 export interface LabelCellProps {
   labels: RecordingLabel[];
   labelFilters?: string[];
+  onSubmit?: (updateFilterOptions: UpdateFilterOptions) => void
 }
 
 export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
-  // TODO make labels clickable to select multiple recordings with the same label
+  const labelStyle = React.useMemo(() => (props.onSubmit? {
+    cursor: "pointer",
+  }: {}), 
+  [props.onSubmit]);
+
+  const onLabelSelectToggle = React.useCallback(
+    (label) => {
+      if (props.onSubmit) {
+        const deleted = props.labelFilters && props.labelFilters.includes(label)
+        props.onSubmit({filterKey: "Labels", filterValue: label, deleted: deleted})
+      }
+    }, 
+    [props.onSubmit, props.labelFilters]);
+  
   return (
     <>
       {!!props.labels && props.labels.length? (
         props.labels.map((l) => 
-          <Label 
+          <Label
+          className=''
+            style={labelStyle}
+            onClick={() => {onLabelSelectToggle(`${l.key}:${l.value}`)}}
             key={l.key} 
             color={props.labelFilters && props.labelFilters.includes(`${l.key}:${l.value}`)? "blue": "grey"}
           >

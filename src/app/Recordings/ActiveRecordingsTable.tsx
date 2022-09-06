@@ -316,6 +316,30 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     } as RecordingFiltersCategories);
   }, [setFilters]);
 
+  const updateFilters = React.useCallback(({filterValue, filterKey, deleted = false, deleteOptions}) => {
+    setCurrentFilterCategory(filterKey);
+    setFilters((old) => {
+      if (!old[filterKey]) return old;
+
+      const oldFilterValues = old[filterKey] as any[];
+      let newfilterValues: any[];
+      if (deleted) {
+        if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
+          newfilterValues = [];
+        } else {
+          newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
+        }
+      } else {
+        newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+      }
+
+      const newFilters = {...old};
+      newFilters[filterKey] = newfilterValues;
+      return newFilters;
+    });
+    
+  }, [setCurrentFilterCategory, setFilters]);
+
   React.useEffect(() => {
     setFilteredRecordings(filterRecordings(recordings, filters));
   }, [recordings, filters]);
@@ -392,6 +416,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
             <LabelCell 
+              onSubmit={updateFilters}
               labelFilters={props.labelFilters}
               labels={parsedLabels} 
             />
@@ -520,30 +545,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         onClose={handleWarningModalClose}
       />
     }, [recordings, checkedIndices]);
-
-    const updateFilters = React.useCallback(({filterValue, filterKey, deleted = false, deleteOptions}) => {
-      setCurrentFilterCategory(filterKey);
-      setFilters((old) => {
-        if (!old[filterKey]) return old;
-
-        const oldFilterValues = old[filterKey] as any[];
-        let newfilterValues: any[];
-        if (deleted) {
-          if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
-            newfilterValues = [];
-          } else {
-            newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
-          }
-        } else {
-          newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
-        }
-
-        const newFilters = {...old};
-        newFilters[filterKey] = newfilterValues;
-        return newFilters;
-      });
-      
-    }, [setCurrentFilterCategory, setFilters]);
 
     return (
       <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
