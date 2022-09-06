@@ -43,24 +43,26 @@ import { RecordingLabel } from './RecordingLabel';
 
 export interface LabelCellProps {
   labels: RecordingLabel[];
+  // Must be specified along with updateFilters.
   labelFilters?: string[];
-  onSubmit?: (updateFilterOptions: UpdateFilterOptions) => void
+  // If undefined, labels are not clickable (i.e. display only).
+  updateFilters?: (updateFilterOptions: UpdateFilterOptions) => void
 }
 
 export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
-  const labelStyle = React.useMemo(() => (props.onSubmit? {
+  const labelStyle = React.useMemo(() => (props.updateFilters? {
     cursor: "pointer",
   }: {}), 
-  [props.onSubmit]);
+  [props.updateFilters]);
 
   const onLabelSelectToggle = React.useCallback(
     (label) => {
-      if (props.onSubmit) {
+      if (props.updateFilters) {
         const deleted = props.labelFilters && props.labelFilters.includes(label)
-        props.onSubmit({filterKey: "Labels", filterValue: label, deleted: deleted})
+        props.updateFilters({filterKey: "Labels", filterValue: label, deleted: deleted})
       }
     }, 
-    [props.onSubmit, props.labelFilters]);
+    [props.updateFilters, props.labelFilters]);
   
   return (
     <>

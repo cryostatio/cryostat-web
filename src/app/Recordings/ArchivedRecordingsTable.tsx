@@ -349,7 +349,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <LabelCell 
-              onSubmit={updateFilters}
+              updateFilters={updateFilters}
               labelFilters={props.labelFilters}
               labels={parsedLabels} 
             />

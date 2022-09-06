@@ -416,7 +416,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
             <LabelCell 
-              onSubmit={updateFilters}
+              updateFilters={updateFilters}
               labelFilters={props.labelFilters}
               labels={parsedLabels} 
             />
