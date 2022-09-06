@@ -49,6 +49,7 @@ import { CreateTargetModal } from './CreateTargetModal';
 import _ from 'lodash';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
+export const CUSTOM_TARGETS_REALM = "Custom Targets";
 export interface TargetSelectProps {
 }
 
@@ -62,7 +63,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [isLoading, setLoading] = React.useState(false);
   const [isModalOpen, setModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
-
+  
   const setCachedTargetSelection = React.useCallback((target) => {
     localStorage.setItem(TARGET_KEY, JSON.stringify(target));
   }, [localStorage]);
@@ -226,7 +227,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             />
             <Button
               aria-label="Delete target"
-              isDisabled={isLoading || (selected == NO_TARGET)}
+              isDisabled={isLoading || (selected == NO_TARGET) || (selected.annotations?.cryostat['REALM'] !== CUSTOM_TARGETS_REALM)}
               onClick={deleteTarget}
               variant="control"
               icon={<TrashIcon />}

@@ -37,32 +37,37 @@
  */
 import * as React from 'react';
 import renderer from 'react-test-renderer'
-import { render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { of } from 'rxjs';
-import { createMemoryHistory } from 'history';
 
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import userEvent from '@testing-library/user-event';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { Target } from '@app/Shared/Services/Target.service';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
 const mockBazConnectUrl = 'service:jmx:rmi://someBazUrl';
-const mockFooTarget = { connectUrl: mockFooConnectUrl, alias: 'fooTarget' };
-const mockBarTarget = { connectUrl: mockBarConnectUrl, alias: 'barTarget' }
-const mockBazTarget = { connectUrl: mockBazConnectUrl, alias: 'bazTarget' }
 
-const mockHistoryPush = jest.fn();
+// Test fails if new Map([['REALM', 'Custom Targets']]) is used, most likely since 'cryostat' Map is not being utilized
+const cryostatAnnotation = new Map();
+cryostatAnnotation['REALM'] = CUSTOM_TARGETS_REALM;
+const mockFooTarget: Target = { 
+    connectUrl: mockFooConnectUrl, 
+    alias: 'fooTarget', 
+    annotations: { 
+        cryostat: cryostatAnnotation, 
+        platform : new Map() 
+    }
+};
+const mockBarTarget: Target = { ...mockFooTarget, connectUrl: mockBarConnectUrl, alias: 'barTarget' }
+const mockBazTarget: Target = { connectUrl: mockBazConnectUrl, alias: 'bazTarget' }
 
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
     useRouteMatch: () => ({ url: '/baseUrl' }),
-    useHistory: () => ({
-      push: mockHistoryPush,
-    }),
   }));
 
 jest.spyOn(defaultServices.target, 'target')
@@ -70,6 +75,9 @@ jest.spyOn(defaultServices.target, 'target')
     .mockReturnValueOnce(of())
     .mockReturnValueOnce(of())
     .mockReturnValueOnce(of(mockFooTarget))
+    .mockReturnValueOnce(of(mockFooTarget))
+    .mockReturnValueOnce(of(mockFooTarget))
+    .mockReturnValueOnce(of(mockBazTarget)) // does nothing when trying to delete non-custom targets
 
 jest.spyOn(defaultServices.targets, 'targets')
     .mockReturnValue(of([mockFooTarget, mockBarTarget]))
@@ -89,6 +97,9 @@ jest.spyOn(defaultServices.targets, 'queryForTargets')
 
 jest.spyOn(defaultServices.notificationChannel, 'messages')
     .mockReturnValue(of())
+
+
+afterEach(cleanup);
 
 describe('<TargetSelect />', () => {
   it('renders correctly', () => {
@@ -154,7 +165,24 @@ describe('<TargetSelect />', () => {
     expect(createTargetRequestSpy).toBeCalledWith(mockBazTarget);
   }); 
 
-  it('deletes target when delete button clicked', () => {
+  it('deletes target when delete button clicked', async () => {
+    render(
+        <ServiceContext.Provider value={defaultServices}>
+            <TargetSelect />
+        </ServiceContext.Provider>
+    );
+
+    const deleteButton = screen.getByLabelText('Delete target');
+    await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
+    userEvent.click(deleteButton);
+
+    const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
+    expect(deleteTargetRequestSpy).toBeCalledTimes(1);
+    expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
+  }); 
+
+  it('does nothing when trying to delete non-custom targets', () => {
     render(
         <ServiceContext.Provider value={defaultServices}>
             <TargetSelect />
@@ -164,8 +192,9 @@ describe('<TargetSelect />', () => {
     userEvent.click(deleteButton);
 
     const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
-    expect(deleteTargetRequestSpy).toBeCalledTimes(1);
-    expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
+
+    expect(deleteTargetRequestSpy).toBeCalledTimes(0);
+    expect(deleteButton).toBeDisabled();
   }); 
 
   it('refreshes targets when button clicked', () => {
