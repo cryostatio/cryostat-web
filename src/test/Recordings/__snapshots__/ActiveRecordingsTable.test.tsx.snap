@@ -332,6 +332,12 @@ exports[`<ActiveRecordingsTable /> renders correctly 1`] = `
               >
                 <span
                   className="pf-c-label"
+                  onClick={[Function]}
+                  style={
+                    Object {
+                      "cursor": "pointer",
+                    }
+                  }
                 >
                   <span
                     className="pf-c-label__content"

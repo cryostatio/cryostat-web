@@ -3,6 +3,8 @@
 exports[`<EditableLabelCell /> renders correctly 1`] = `
 <span
   className="pf-c-label"
+  onClick={[Function]}
+  style={Object {}}
 >
   <span
     className="pf-c-label__content"
