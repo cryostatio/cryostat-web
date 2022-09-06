@@ -165,7 +165,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         ></Dropdown>
       </ToolbarItem>
     );
-  }, [Object.keys(props.filters), isCategoryDropdownOpen, onCategoryToggle, onCategorySelect]);
+  }, [Object.keys(props.filters), isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
 
   const filterDropdownItems = React.useMemo(
     () => [
