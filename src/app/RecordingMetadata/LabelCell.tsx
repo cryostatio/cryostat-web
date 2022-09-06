@@ -56,11 +56,12 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
   }: {}), 
   [props.updateFilters]);
 
+  const labelFilterSet = React.useMemo(() => new Set(props.labelFilters), [props.labelFilters]);
+
   const onLabelSelectToggle = React.useCallback(
-    (label) => {
+    (selectedLabel) => {
       if (props.updateFilters) {
-        const deleted = props.labelFilters && props.labelFilters.includes(label)
-        props.updateFilters({filterKey: "Labels", filterValue: label, deleted: deleted})
+        props.updateFilters({filterKey: "Labels", filterValue: selectedLabel, deleted: labelFilterSet.has(selectedLabel)})
       }
     }, 
     [props.updateFilters, props.labelFilters]);
@@ -68,14 +69,14 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
   return (
     <>
       {!!props.labels && props.labels.length? (
-        props.labels.map((l) => 
+        props.labels.map((label) =>
           <Label
             style={labelStyle}
-            onClick={() => {onLabelSelectToggle(getLabelDisplay(l))}}
-            key={l.key} 
-            color={props.labelFilters && props.labelFilters.includes(getLabelDisplay(l))? "blue": "grey"}
+            onClick={() => {onLabelSelectToggle(getLabelDisplay(label))}}
+            key={label.key}
+            color={labelFilterSet.has(getLabelDisplay(label))? "blue": "grey"}
           >
-            {`${l.key}: ${l.value}`}
+            {`${label.key}: ${label.value}`}
           </Label>
         )) : (
         <Text>-</Text>
