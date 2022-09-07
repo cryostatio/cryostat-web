@@ -48,8 +48,16 @@ export const store = configureStore({
 });
 
 export const saveFilterStates = (filterStates: any) => {
-  saveToLocalStorage("ARCHIVED_RECORDING_FILTER", filterStates.activeRecordingFilterStates);
-  saveToLocalStorage("ARCHIVED_RECORDING_FILTER", filterStates.archivedRecordingFilterStates);
+  // Using anonymous functions to avoid name conflicts
+  (() => {
+    const {recordings, ...activeFiltersToSave } = filterStates.activeRecordingFilterStates as RecordingFilterStates;
+    saveToLocalStorage("ARCHIVED_RECORDING_FILTER", activeFiltersToSave);
+  })();
+
+  (() => {
+    const {recordings, ...archivedFiltersToSave } = filterStates.archivedRecordingFilterStates as RecordingFilterStates;
+    saveToLocalStorage("ARCHIVED_RECORDING_FILTER", archivedFiltersToSave);
+  })();
 }
 
 // Add a subscription to save filter states to local storage
