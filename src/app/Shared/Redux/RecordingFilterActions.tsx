@@ -45,6 +45,7 @@ export enum RecordingFilterAction {
   FILTER_UPDATE = "filters/update",
   CATEGORY_UPDATE = "category/update",
   RECORDING_LIST_UPDATE = "recording_list/update",
+  SELECTED_ROWS_UPDATE = "selected_recording_row/update"
 }
 
 export interface RecordingFilterActionPayload {
@@ -56,6 +57,11 @@ export interface RecordingFilterActionPayload {
 export interface RecordingListActionPayload {
   isArchived: boolean,
   recordings: ArchivedRecording[]
+}
+
+export interface SelectedRowsActionPayload {
+  isArchived: boolean,
+  indices: number[]
 }
 
 export const addFilterIntent = createAction(RecordingFilterAction.FILTER_ADD, (category: string, filter: any, isArchived: boolean) => ({
@@ -96,3 +102,9 @@ export const updateRecordingListIntent = createAction(RecordingFilterAction.RECO
   } as RecordingListActionPayload
 }));
 
+export const updateSelectedRowIndicesIntent = createAction(RecordingFilterAction.SELECTED_ROWS_UPDATE, (indices: number[], isArchived: boolean) => ({
+  payload: {
+    isArchived: isArchived,
+    indices: indices
+  } as SelectedRowsActionPayload
+}));

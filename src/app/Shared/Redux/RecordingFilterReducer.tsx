@@ -41,12 +41,13 @@ import { createReducer } from "@reduxjs/toolkit"
 import { WritableDraft } from "immer/dist/internal";
 import { ArchivedRecording } from "../Services/Api.service";
 import { getFromLocalStorage } from "../../utils/LocalStorage";
-import { addFilterIntent, deleteFilterIntent, deleteFiltersIntent, updateCategoryIntent, updateRecordingListIntent } from './RecordingFilterActions'
+import { addFilterIntent, deleteFilterIntent, deleteFiltersIntent, updateCategoryIntent, updateRecordingListIntent, updateSelectedRowIndicesIntent } from './RecordingFilterActions'
 
 export interface RecordingFilterStates {
   selectedCategory: string,
   filters: RecordingFiltersCategories,
   recordings: ArchivedRecording[] // Recordings are unfiltered
+  selectedRowIndices: number[] // The indices of selected recording rows
 }
 
 const defaultActiveRecordingFilters = {
@@ -68,7 +69,6 @@ const defaultArchivedRecordingFilters= {
     Labels: [],
   }
 };
-
 
 export interface UpdateFilterOptions {
   filterKey: string;
@@ -120,9 +120,9 @@ export const updateRecordingFilterStates = (
  */
  export const getSavedRecordingFilterStates = ({isArchived}): RecordingFilterStates => {
   if (isArchived) {
-    return {...getFromLocalStorage("ARCHIVED_RECORDING_FILTER", defaultArchivedRecordingFilters), recordings: []}
+    return {...getFromLocalStorage("ARCHIVED_RECORDING_FILTER", defaultArchivedRecordingFilters), recordings: [], selectedRowIndices: []}
   } else {
-    return {...getFromLocalStorage("ACTIVE_RECORDING_FILTER", defaultActiveRecordingFilters), recordings: []}
+    return {...getFromLocalStorage("ACTIVE_RECORDING_FILTER", defaultActiveRecordingFilters), recordings: [], selectedRowIndices: []}
   }
 }
 
@@ -185,6 +185,10 @@ export const recordingFilterReducer = createReducer(initialState, (builder) => {
         .addCase(updateRecordingListIntent, (state, {payload}) => {
           const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
           oldFilterStates.recordings = payload.recordings;
+        })
+        .addCase(updateSelectedRowIndicesIntent, (state, {payload}) => {
+          const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
+          oldFilterStates.selectedRowIndices = payload.indices;
         });
 });
 
