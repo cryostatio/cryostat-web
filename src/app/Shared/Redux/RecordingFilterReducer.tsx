@@ -40,7 +40,7 @@ import { filterRecordings, RecordingFiltersCategories } from "@app/Recordings/Re
 import { createReducer } from "@reduxjs/toolkit"
 import { WritableDraft } from "immer/dist/internal";
 import { ArchivedRecording } from "../Services/Api.service";
-import { getFromLocalStorage, LocalStorageKey } from "../Storage/LocalStorage";
+import { getFromLocalStorage } from "../../utils/LocalStorage";
 import { addFilterIntent, deleteFilterIntent, deleteFiltersIntent, updateCategoryIntent, updateRecordingListIntent } from './RecordingFilterActions'
 
 export interface RecordingFilterStates {

@@ -38,7 +38,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { throttle } from "lodash";
-import { saveToLocalStorage } from "../Storage/LocalStorage";
+import { saveToLocalStorage } from "../../utils/LocalStorage";
 import { recordingFilterReducer, RecordingFilterStates } from "./RecordingFilterReducer";
 
 export const store = configureStore({
