@@ -89,7 +89,6 @@ export const updateCategoryIntent = createAction(RecordingFilterAction.CATEGORY_
   } as RecordingFilterActionPayload
 }));
 
-// Updates to recording list is subjected to current filters
 export const updateRecordingListIntent = createAction(RecordingFilterAction.RECORDING_LIST_UPDATE, (recordings: ArchivedRecording[], isArchived: boolean) => ({
   payload: {
     isArchived: isArchived,

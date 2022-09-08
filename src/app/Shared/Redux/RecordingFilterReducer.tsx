@@ -46,7 +46,7 @@ import { addFilterIntent, deleteFilterIntent, deleteFiltersIntent, updateCategor
 export interface RecordingFilterStates {
   selectedCategory: string,
   filters: RecordingFiltersCategories,
-  recordings: ArchivedRecording[]
+  recordings: ArchivedRecording[] // Recordings are unfiltered
 }
 
 const defaultActiveRecordingFilters = {
@@ -184,7 +184,7 @@ export const recordingFilterReducer = createReducer(initialState, (builder) => {
         })
         .addCase(updateRecordingListIntent, (state, {payload}) => {
           const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
-          oldFilterStates.recordings = filterRecordings(payload.recordings, oldFilterStates.filters);
+          oldFilterStates.recordings = payload.recordings;
         });
 });
 
