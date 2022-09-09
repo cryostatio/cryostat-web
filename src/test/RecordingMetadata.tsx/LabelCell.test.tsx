@@ -51,13 +51,13 @@ describe('<EditableLabelCell />', () => {
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
-      tree = renderer.create(<LabelCell labels={[mockLabel]} />);
+      tree = renderer.create(<LabelCell target='' labels={[mockLabel]} />);
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('displays read-only labels', () => {
-    render(<LabelCell labels={[mockLabel]} />);
+    render(<LabelCell target='' labels={[mockLabel]} />);
     expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
     expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
   });

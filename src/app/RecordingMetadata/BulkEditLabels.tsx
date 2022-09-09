@@ -236,7 +236,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           </Split>
         </StackItem>
         <StackItem>
-          <LabelCell labels={savedCommonLabels} />
+          <LabelCell target='' labels={savedCommonLabels} />
         </StackItem>
         <StackItem>
           {editing ? (

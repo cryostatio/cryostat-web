@@ -42,14 +42,18 @@ import { AppLayout } from '@app/AppLayout/AppLayout';
 import { AppRoutes } from '@app/routes';
 import '@app/app.css';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { Provider } from 'react-redux';
+import { store } from '@app/Shared/Redux/ReduxStore';
 
 const App: React.FunctionComponent = () => (
   <ServiceContext.Provider value={defaultServices}>
-    <Router>
-      <AppLayout>
-        <AppRoutes />
-      </AppLayout>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <AppLayout>
+          <AppRoutes />
+        </AppLayout>
+      </Router>
+    </Provider>
   </ServiceContext.Provider>
 );
 

@@ -37,17 +37,18 @@
  */
 
 import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
-import { UpdateFilterOptions } from '@app/Recordings/RecordingFilters';
+import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { Label, Text } from '@patternfly/react-core';
 import React from 'react';
 import { RecordingLabel } from './RecordingLabel';
 
 export interface LabelCellProps {
+  target: string,
   labels: RecordingLabel[];
   // Must be specified along with updateFilters.
   labelFilters?: string[];
   // If undefined, labels are not clickable (i.e. display only).
-  updateFilters?: (updateFilterOptions: UpdateFilterOptions) => void
+  updateFilters?: (target: string, updateFilterOptions: UpdateFilterOptions) => void
 }
 
 export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
@@ -61,10 +62,10 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
   const onLabelSelectToggle = React.useCallback(
     (selectedLabel) => {
       if (props.updateFilters) {
-        props.updateFilters({filterKey: "Labels", filterValue: selectedLabel, deleted: labelFilterSet.has(selectedLabel)})
+        props.updateFilters(props.target, {filterKey: "Labels", filterValue: selectedLabel, deleted: labelFilterSet.has(selectedLabel)})
       }
     }, 
-    [props.updateFilters, props.labelFilters]);
+    [props.updateFilters, props.labelFilters, props.target]);
   
   return (
     <>

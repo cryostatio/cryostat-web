@@ -51,11 +51,14 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import { FilterDeleteOptions, filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
+import { emptyActiveRecordingFilters, filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { useDispatch, useSelector } from 'react-redux';
+import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent } from '@app/Shared/Redux/RecordingFilterActions';
+import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
 
 export enum PanelContent {
   LABELS,
@@ -67,7 +70,11 @@ export interface ActiveRecordingsTableProps {
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
+  const { url } = useRouteMatch();
+  const addSubscription = useSubscriptions();
+  const disPatch = useDispatch();
 
+  const [target, setTarget] = React.useState(""); // connectURL of the target
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -76,18 +83,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
-  const [currentFilterCategory, setCurrentFilterCategory] = React.useState('Name');
-  const [filters, setFilters] = React.useState({
-    Name: [],
-    Labels: [],
-    State: [],
-    StartedBeforeDate: [],
-    StartedAfterDate: [],
-    DurationSeconds: [],
-  } as RecordingFiltersCategories);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const { url } = useRouteMatch();
+
+  const targetRecordingFilters = useSelector((state: any) => {
+    const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === target);
+    return filters.length > 0? filters[0].active.filters: emptyActiveRecordingFilters;
+  }) as RecordingFiltersCategories;
 
   const tableColumns: string[] = [
     'Name',
@@ -96,8 +98,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     'State',
     'Labels',
   ];
-
-  const addSubscription = useSubscriptions();
 
   const handleRowCheck = React.useCallback((checked, index) => {
     if (checked) {
@@ -147,9 +147,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(refreshRecordingList)
+      context.target.target().subscribe((target) => {
+        setTarget(target.connectUrl);
+        disPatch(addTargetIntent(target.connectUrl));
+        refreshRecordingList();
+      })
     );
-  }, [addSubscription, context, context.target, refreshRecordingList]);
+  }, [addSubscription, context, context.target, refreshRecordingList, setTarget]);
 
   React.useEffect(() => {
     addSubscription(
@@ -304,45 +308,25 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     );
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
-
   const handleClearFilters = React.useCallback(() => {
-    setFilters({
-      Name: [],
-      Labels: [],
-      State: [],
-      StartedBeforeDate: [],
-      StartedAfterDate: [],
-      DurationSeconds: [],
-    } as RecordingFiltersCategories);
-  }, [setFilters]);
+    disPatch(deleteAllFiltersIntent(target));
+  }, [disPatch, target]);
 
-  const updateFilters = React.useCallback(({filterValue, filterKey, deleted = false, deleteOptions}) => {
-    setCurrentFilterCategory(filterKey);
-    setFilters((old) => {
-      if (!old[filterKey]) return old;
-
-      const oldFilterValues = old[filterKey] as any[];
-      let newfilterValues: any[];
-      if (deleted) {
-        if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
-          newfilterValues = [];
-        } else {
-          newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
-        }
+  const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
+    if (deleted) {
+      if (deleteOptions && deleteOptions.all) {
+        disPatch(deleteCategoryFiltersIntent(target, filterKey, false));
       } else {
-        newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+        disPatch(deleteFilterIntent(target, filterKey, filterValue, false));
       }
-
-      const newFilters = {...old};
-      newFilters[filterKey] = newfilterValues;
-      return newFilters;
-    });
-    
-  }, [setCurrentFilterCategory, setFilters]);
+    } else {
+      disPatch(addFilterIntent(target, filterKey, filterValue, false));
+    }
+  }, [disPatch]);
 
   React.useEffect(() => {
-    setFilteredRecordings(filterRecordings(recordings, filters));
-  }, [recordings, filters]);
+    setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
+  }, [recordings, targetRecordingFilters]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -357,28 +341,27 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       return parseLabels(props.recording.metadata.labels);
     }, [props.recording.metadata.labels]);
 
-    const expandedRowId =`active-table-row-${props.recording.name}-${props.recording.startTime}-exp`;
+    const expandedRowId = React.useMemo(() => `active-table-row-${props.recording.name}-${props.recording.startTime}-exp`,
+     [props.recording.name, props.recording.startTime]);
 
-    const handleToggle = () => {
-      toggleExpanded(expandedRowId);
-    };
+    const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [toggleExpanded]);
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId)
     }, [expandedRows, expandedRowId]);
 
-    const handleCheck = (checked) => {
+    const handleCheck = React.useCallback((checked) => {
       handleRowCheck(checked, props.index);
-    };
+    }, [handleRowCheck, props.index]);
 
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
-        const fmt = new Date(props.timeStr).toISOString();
+        const fmt = React.useMemo(() => new Date(props.timeStr).toISOString(), [props.timeStr]);
         return (<span>{fmt}</span>);
       };
 
       const RecordingDuration = (props) => {
-        const str = props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`;
+        const str = React.useMemo(() => props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`, [props.duration]);
         return (<span>{str}</span>);
       };
 
@@ -416,6 +399,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
             <LabelCell 
+              target={target}
               updateFilters={updateFilters}
               labelFilters={props.labelFilters}
               labels={parsedLabels} 
@@ -438,12 +422,17 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       props.recording.state,
       props.timeStr,
       props.recording.metadata.labels,
+      props.labelFilters,
       context.api,
+      context.api.uploadActiveRecordingToGrafana,
       checkedIndices,
       handleCheck,
       handleToggle,
+      updateFilters,
       isExpanded,
       tableColumns,
+      parsedLabels,
+      target
     ]);
 
     const childRow = React.useMemo(() => {
@@ -480,10 +469,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     );
   };
 
-  const toggleExpanded = (id) => {
-    const idx = expandedRows.indexOf(id);
-    setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
-  };
+  const toggleExpanded = React.useCallback((id: string) => {
+    setExpandedRows(expandedRows => {
+      const idx = expandedRows.indexOf(id);
+      return idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]
+    });
+  }, [expandedRows, setExpandedRows]);
 
   const handleDeleteButton = React.useCallback(() => {
     if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings)) {
@@ -549,7 +540,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return (
       <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
         <ToolbarContent>
-          <RecordingFilters category={currentFilterCategory} recordings={recordings} filters={filters} updateFilters={updateFilters} />        
+          <RecordingFilters 
+            target={target}
+            isArchived={false} 
+            recordings={recordings} 
+            filters={targetRecordingFilters} 
+            updateFilters={updateFilters} />        
           { buttons }
           { deleteActiveWarningModal }
         </ToolbarContent>
@@ -558,7 +554,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   };
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} labelFilters={filters.Labels} index={idx}/>)
+    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} labelFilters={targetRecordingFilters.Labels} index={idx}/>)
   }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const LabelsPanel = React.useMemo(() => (
