@@ -37,29 +37,10 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { throttle } from "lodash";
-import { saveToLocalStorage } from "../../utils/LocalStorage";
-import { recordingFilterReducer, RecordingFilterStates } from "./RecordingFilterReducer";
+import { recordingFilterReducer as recordingFiltersReducer } from "./RecordingFilterReducer";
 
 export const store = configureStore({
   reducer: {
-    recordingFilter: recordingFilterReducer
+    recordingFilters: recordingFiltersReducer
   }
 });
-
-export const saveFilterStates = (filterStates: any) => {
-  // Using anonymous functions to avoid name conflicts
-  (() => {
-    const {recordings, ...activeFiltersToSave } = filterStates.activeRecordingFilterStates as RecordingFilterStates;
-    saveToLocalStorage("ARCHIVED_RECORDING_FILTER", activeFiltersToSave);
-  })();
-
-  (() => {
-    const {recordings, ...archivedFiltersToSave } = filterStates.archivedRecordingFilterStates as RecordingFilterStates;
-    saveToLocalStorage("ARCHIVED_RECORDING_FILTER", archivedFiltersToSave);
-  })();
-}
-
-// Add a subscription to save filter states to local storage
-// Every 500ms
-store.subscribe(throttle(() => saveFilterStates(store.getState()), 500));

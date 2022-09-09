@@ -36,63 +36,50 @@
  * SOFTWARE.
  */
 
-import { filterRecordings, RecordingFiltersCategories } from "@app/Recordings/RecordingFilters"
+import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters, RecordingFiltersCategories } from "@app/Recordings/RecordingFilters"
 import { createReducer } from "@reduxjs/toolkit"
 import { WritableDraft } from "immer/dist/internal";
-import { ArchivedRecording } from "../Services/Api.service";
-import { getFromLocalStorage } from "../../utils/LocalStorage";
-import { addFilterIntent, deleteFilterIntent, deleteFiltersIntent, updateCategoryIntent, updateRecordingListIntent, updateSelectedRowIndicesIntent } from './RecordingFilterActions'
+import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent,  deleteTargetIntent, updateCategoryIntent, } from './RecordingFilterActions';
 
-export interface RecordingFilterStates {
-  selectedCategory: string,
-  filters: RecordingFiltersCategories,
-  recordings: ArchivedRecording[] // Recordings are unfiltered
-  selectedRowIndices: number[] // The indices of selected recording rows
+export interface TargetRecordingFilters {
+  target: string, // connectURL
+  active: { // active recordings
+    selectedCategory?: string,
+    filters: RecordingFiltersCategories,
+  },
+  archived:  { // archived recordings
+    selectedCategory?: string,
+    filters: RecordingFiltersCategories,
+  }
 }
-
-const defaultActiveRecordingFilters = {
-  selectedCategory: "Name",
-  filters: {
-    Name: [],
-    Labels: [],
-    State: [],
-    StartedBeforeDate: [],
-    StartedAfterDate: [],
-    DurationSeconds: [],
-  }
-};
-
-const defaultArchivedRecordingFilters= {
-  selectedCategory: "Name",
-  filters: {
-    Name: [],
-    Labels: [],
-  }
-};
 
 export interface UpdateFilterOptions {
   filterKey: string;
   filterValue?: any;
   deleted?: boolean;
-  deleteOptions?: FilterDeleteOptions
+  deleteOptions?: {
+    all: boolean
+  }
 }
 
-export interface FilterDeleteOptions {
-  all: boolean
-}
-
-export const updateFilters = (old: RecordingFiltersCategories, {filterValue, filterKey, deleted = false, deleteOptions}: UpdateFilterOptions): RecordingFiltersCategories => {
-  if (!old[filterKey]) return old;
-  const oldFilterValues = old[filterKey] as any[];
+export const createOrUpdateRecordingFilter = (
+  old: RecordingFiltersCategories, 
+  {filterValue, filterKey, deleted = false, deleteOptions}: UpdateFilterOptions): RecordingFiltersCategories => {
+  
   let newfilterValues: any[];
-  if (deleted) {
-    if (deleteOptions && (deleteOptions as FilterDeleteOptions).all) {
-      newfilterValues = [];
-    } else {
-      newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
-    }
+  if (!old[filterKey]) {
+    newfilterValues = [];
   } else {
-    newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+    const oldFilterValues = old[filterKey] as any[];
+    if (deleted) {
+      if (deleteOptions && deleteOptions.all) {
+        newfilterValues = [];
+      } else {
+        newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
+      }
+    } else {
+      newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+    }
   }
 
   const newFilters = {...old};
@@ -100,95 +87,144 @@ export const updateFilters = (old: RecordingFiltersCategories, {filterValue, fil
   return newFilters;
 }
 
-export const getRecordingFilterStates = (
-  state: WritableDraft<{ activeRecordingFilterStates: RecordingFilterStates; archivedRecordingFilterStates: RecordingFilterStates; }>, 
-  isArchived: boolean): RecordingFilterStates => (isArchived? state.archivedRecordingFilterStates: state.activeRecordingFilterStates);
+export const getTargetRecordingFilter = (state: WritableDraft<{ list: TargetRecordingFilters[]; }>, target: string): TargetRecordingFilters => {
+    const targetFilter = state.list.filter((targetFilters) => targetFilters.target === target);
+    return targetFilter.length > 0? targetFilter[0]: createEmptyTargetRecordingFilters(target);
+};
 
-export const updateRecordingFilterStates = (
-  state: WritableDraft<{ activeRecordingFilterStates: RecordingFilterStates; archivedRecordingFilterStates: RecordingFilterStates; }>, 
-  isArchived: boolean, 
-  newFilterStates: RecordingFilterStates) => {
-  if (isArchived) {
-    state.archivedRecordingFilterStates = newFilterStates
-  } else {
-    state.activeRecordingFilterStates = newFilterStates;
-  }   
-}
+export const createEmptyTargetRecordingFilters = (target: string) => (
+  {
+    target: target,
+    active: {
+      selectedCategory: "Name",
+      filters: emptyActiveRecordingFilters,
+    },
+    archived:  {
+      selectedCategory: "Name",
+      filters: emptyArchivedRecordingFilters,
+    }
+  } as TargetRecordingFilters
+);
 
-/**
- * Note: Only filters are saved to local storage. Recordings are later fetched from api server.
- */
- export const getSavedRecordingFilterStates = ({isArchived}): RecordingFilterStates => {
-  if (isArchived) {
-    return {...getFromLocalStorage("ARCHIVED_RECORDING_FILTER", defaultArchivedRecordingFilters), recordings: [], selectedRowIndices: []}
-  } else {
-    return {...getFromLocalStorage("ACTIVE_RECORDING_FILTER", defaultActiveRecordingFilters), recordings: [], selectedRowIndices: []}
-  }
-}
-
-/**
- * Initial states are loaded from local storage if there are any.
- */
-const initialState = {
-  activeRecordingFilterStates: getSavedRecordingFilterStates({isArchived: false}),
-  archivedRecordingFilterStates: getSavedRecordingFilterStates({isArchived: false}),
-}
+// Initial states are loaded from local storage if there are any (TODO)
+const initialState = { list: [] as TargetRecordingFilters[] };
 
 export const recordingFilterReducer = createReducer(initialState, (builder) => {
   builder
         .addCase(addFilterIntent, (state, {payload}) => {
-          const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
+          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
-          const newFilters = updateFilters(oldFilterStates.filters, {filterKey: payload.category, filterValue: payload.filter});
-          const newRecordings = filterRecordings(oldFilterStates.recordings, newFilters);
+          let newTargetRecordingFilter: TargetRecordingFilters;
+          if (payload.isArchived) {
+            newTargetRecordingFilter = {
+              ...oldTargetRecordingFilter, 
+              archived: {
+                selectedCategory: payload.category,
+                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
+                  filterKey: payload.category!,
+                  filterValue: payload.filter
+                })
+              }}
+          } else {
+            newTargetRecordingFilter = {
+              ...oldTargetRecordingFilter, 
+              active: {
+                selectedCategory: payload.category,
+                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
+                  filterKey: payload.category!,
+                  filterValue: payload.filter
+                })
+              }}
+          }
 
-          const newFilterStates = {
-            selectedCategory: payload.category,
-            filters: newFilters,
-            recordings: newRecordings
-          } as RecordingFilterStates;
-
-          updateRecordingFilterStates(state, payload.isArchived, newFilterStates);         
+          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+          state.list.push(newTargetRecordingFilter);
         })
         .addCase(deleteFilterIntent, (state, {payload}) => {
-          const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
+          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
-          const newFilters = updateFilters(oldFilterStates.filters, {filterKey: payload.category, filterValue: payload.filter, deleted: true});
-          const newRecordings = filterRecordings(oldFilterStates.recordings, newFilters);
+          let newTargetRecordingFilter: TargetRecordingFilters;
+          if (payload.isArchived) {
+            newTargetRecordingFilter = {
+              ...oldTargetRecordingFilter, 
+              archived: {
+                selectedCategory: payload.category,
+                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
+                  filterKey: payload.category!,
+                  filterValue: payload.filter,
+                  deleted: true
+                })
+              }}
+          } else {
+            newTargetRecordingFilter = {
+              ...oldTargetRecordingFilter, 
+              active: {
+                selectedCategory: payload.category,
+                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
+                  filterKey: payload.category!,
+                  filterValue: payload.filter,
+                  deleted: true
+                })
+              }}
+          }
 
-          const newFilterStates = {
-            selectedCategory: payload.category,
-            filters: newFilters,
-            recordings: newRecordings
-          } as RecordingFilterStates;
-
-          updateRecordingFilterStates(state, payload.isArchived, newFilterStates); 
+          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+          state.list.push(newTargetRecordingFilter);
         })
-        .addCase(deleteFiltersIntent, (state, {payload}) => {
-          const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
+        .addCase(deleteCategoryFiltersIntent, (state, {payload}) => {
+          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
-          const newFilters = updateFilters(oldFilterStates.filters, {filterKey: payload.category, filterValue: payload.filter, deleted: true, deleteOptions: {all: true}});
-          const newRecordings = filterRecordings(oldFilterStates.recordings, newFilters);
+          let newTargetRecordingFilter: TargetRecordingFilters;
+          if (payload.isArchived) {
+            newTargetRecordingFilter = {
+              ...oldTargetRecordingFilter, 
+              archived: {
+                selectedCategory: payload.category,
+                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
+                  filterKey: payload.category!,
+                  deleted: true,
+                  deleteOptions: {all: true}
+                })
+              }}
+          } else {
+            newTargetRecordingFilter = {
+              ...oldTargetRecordingFilter, 
+              active: {
+                selectedCategory: payload.category,
+                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
+                  filterKey: payload.category!,
+                  deleted: true,
+                  deleteOptions: {all: true}
+                })
+              }}
+          }
 
-          const newFilterStates = {
-            selectedCategory: payload.category,
-            filters: newFilters,
-            recordings: newRecordings
-          } as RecordingFilterStates;
-
-          updateRecordingFilterStates(state, payload.isArchived, newFilterStates); 
+          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+          state.list.push(newTargetRecordingFilter);
+        })
+        .addCase(deleteAllFiltersIntent, (state, {payload}) => {
+          const newTargetRecordingFilter = createEmptyTargetRecordingFilters(payload.target);
+          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+          state.list.push(newTargetRecordingFilter);
         })
         .addCase(updateCategoryIntent, (state, {payload}) => {
-          const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
-          oldFilterStates.selectedCategory = payload.category;
+          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+          const newTargetRecordingFilter = {...oldTargetRecordingFilter};
+          if (payload.isArchived) {
+            newTargetRecordingFilter.archived.selectedCategory = payload.category;
+          } else {
+            newTargetRecordingFilter.active.selectedCategory = payload.category;
+          }
+          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+          state.list.push(newTargetRecordingFilter);
         })
-        .addCase(updateRecordingListIntent, (state, {payload}) => {
-          const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
-          oldFilterStates.recordings = payload.recordings;
+        .addCase(addTargetIntent, (state, {payload}) => {
+          const targetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+          state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
+          state.list.push(targetRecordingFilter);
         })
-        .addCase(updateSelectedRowIndicesIntent, (state, {payload}) => {
-          const oldFilterStates = getRecordingFilterStates(state, payload.isArchived);
-          oldFilterStates.selectedRowIndices = payload.indices;
-        });
+        .addCase(deleteTargetIntent, (state, {payload}) => {
+          state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
+        })
 });
 

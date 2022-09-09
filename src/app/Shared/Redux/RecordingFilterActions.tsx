@@ -37,74 +37,73 @@
  */
 
 import { createAction } from "@reduxjs/toolkit";
-import { ArchivedRecording } from "../Services/Api.service";
 
+// Common action string format: "resource(s)/action"
 export enum RecordingFilterAction {
-  FILTER_ADD = "filters/add",
-  FILTER_DELETE = "filters/delete",
-  FILTER_UPDATE = "filters/update",
+  FILTER_ADD = "filter/add",
+  FILTER_DELETE = "filter/delete",
+  FILTER_DELETE_ALL = "filter/delete_all", // Delete all filters in all categories
+  CATEGORY_FILTERS_DELETE ="filters/delete", // Delete all filters of the same category
   CATEGORY_UPDATE = "category/update",
-  RECORDING_LIST_UPDATE = "recording_list/update",
-  SELECTED_ROWS_UPDATE = "selected_recording_row/update"
+  TARGET_ADD = "target/add",
+  TARGET_DELETE = "target/delete"
 }
 
 export interface RecordingFilterActionPayload {
-  category: string,
+  target: string,
+  category?: string,
   filter?: any,
-  isArchived: boolean
+  isArchived?: boolean
 }
 
-export interface RecordingListActionPayload {
-  isArchived: boolean,
-  recordings: ArchivedRecording[]
-}
-
-export interface SelectedRowsActionPayload {
-  isArchived: boolean,
-  indices: number[]
-}
-
-export const addFilterIntent = createAction(RecordingFilterAction.FILTER_ADD, (category: string, filter: any, isArchived: boolean) => ({
+export const addFilterIntent = createAction(RecordingFilterAction.FILTER_ADD, (target: string, category: string, filter: any, isArchived: boolean) => ({
   payload: {
+    target: target,
     category: category,
     filter: filter,
     isArchived: isArchived
   } as RecordingFilterActionPayload
 }));
 
-export const deleteFilterIntent = createAction(RecordingFilterAction.FILTER_DELETE, (category: string, filter: any, isArchived: boolean) => ({
+export const deleteFilterIntent = createAction(RecordingFilterAction.FILTER_DELETE, (target: string, category: string, filter: any, isArchived: boolean) => ({
   payload: {
+    target: target,
     category: category,
     filter: filter,
     isArchived: isArchived
   } as RecordingFilterActionPayload
 }));
 
-export const deleteFiltersIntent = createAction(RecordingFilterAction.FILTER_DELETE, (category: string, isArchived: boolean) => ({
+export const deleteCategoryFiltersIntent = createAction(RecordingFilterAction.CATEGORY_FILTERS_DELETE, (target: string, category: string, isArchived: boolean) => ({
   payload: {
+    target: target,
     category: category,
     isArchived: isArchived
   } as RecordingFilterActionPayload
 }));
 
-
-export const updateCategoryIntent = createAction(RecordingFilterAction.CATEGORY_UPDATE, (category: string, isArchived: boolean) => ({
+export const deleteAllFiltersIntent = createAction(RecordingFilterAction.FILTER_DELETE_ALL, (target: string) => ({
   payload: {
+    target: target,
+  } as RecordingFilterActionPayload
+}));
+
+export const updateCategoryIntent = createAction(RecordingFilterAction.CATEGORY_UPDATE, (target: string, category: string, isArchived: boolean) => ({
+  payload: {
+    target: target,
     category: category,
     isArchived: isArchived
   } as RecordingFilterActionPayload
 }));
 
-export const updateRecordingListIntent = createAction(RecordingFilterAction.RECORDING_LIST_UPDATE, (recordings: ArchivedRecording[], isArchived: boolean) => ({
+export const addTargetIntent = createAction(RecordingFilterAction.TARGET_ADD, (target: string) => ({
   payload: {
-    isArchived: isArchived,
-    recordings: recordings
-  } as RecordingListActionPayload
+    target: target,
+  } as RecordingFilterActionPayload
 }));
 
-export const updateSelectedRowIndicesIntent = createAction(RecordingFilterAction.SELECTED_ROWS_UPDATE, (indices: number[], isArchived: boolean) => ({
+export const deleteTargetIntent = createAction(RecordingFilterAction.TARGET_DELETE, (target: string) => ({
   payload: {
-    isArchived: isArchived,
-    indices: indices
-  } as SelectedRowsActionPayload
+    target: target,
+  } as RecordingFilterActionPayload
 }));
