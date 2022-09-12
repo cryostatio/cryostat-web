@@ -253,7 +253,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       <NavList id="nav-list-simple">
         {navGroups.map((title) => {
           return (
-          <NavGroup title={title}>
+          <NavGroup title={title} key={title}>
             {routes.filter(route => route.navGroup === title)
               .map((route, idx) => {
                 return (
@@ -295,6 +295,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
           .map(( { key, title, message, variant } ) => (
             <Alert
               variant={variant}
+              key={title}
               title={title}
               actionClose={<AlertActionCloseButton onClose={() => handleMarkNotificationRead(key)} />}
               timeout={true}
