@@ -43,7 +43,6 @@ import {
   DatePicker,
   Flex,
   FlexItem,
-  InputGroup,
   isValidDate,
   Text,
   TimePicker,
@@ -53,56 +52,61 @@ import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export interface DateTimePickerProps {
-  onSubmit: (startDate: any) => void;
+  onSubmit: (date: any) => void;
 }
 
 export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
-  const [start, setStart] = React.useState(new Date(0));
+  const [selectedDate, setSelectedDate] = React.useState(new Date(0));
   const [searchDisabled, setSearchDisabled] = React.useState(true);
+  const [isTimeOpen, setIsTimeOpen] = React.useState(false);
 
-  const onStartDateChange = React.useCallback(
-    (inputDate, newStartDate) => {
-      if (isValidDate(start) && isValidDate(newStartDate) && inputDate === yyyyMMddFormat(newStartDate)) {
-        setStart(new Date(newStartDate));
-        setSearchDisabled(false);
-      } else {
-        setSearchDisabled(true);
+  const onDateChange = React.useCallback(
+    (inputDate, newDate) => {
+      const valid = isValidDate(selectedDate) && isValidDate(newDate) && inputDate === yyyyMMddFormat(newDate);
+      if (valid) {
+        setSelectedDate(new Date(newDate));
       }
+      setSearchDisabled(!valid);
     },
-    [start, isValidDate, yyyyMMddFormat]
+    [selectedDate, isValidDate, yyyyMMddFormat]
   );
 
-  const onStartTimeChange = React.useCallback(
-    (unused, hour, minute) => {
-      let updated = new Date(start);
+  const onTimeChange = React.useCallback(
+    (_, hour, minute) => {
+      let updated = new Date(selectedDate);
       updated.setUTCHours(hour, minute);
-      setStart(updated);
+      setSelectedDate(updated);
     },
-    [start, setStart, isValidDate]
+    [selectedDate, setSelectedDate, isValidDate]
   );
+
+  const onTimeToggle = React.useCallback((opened) => {
+    setIsTimeOpen(opened);
+  }, [setIsTimeOpen]);
 
   const handleSubmit = React.useCallback(() => {
-    props.onSubmit(`${start.toISOString()}`);
-  }, [start, props.onSubmit]);
+    props.onSubmit(`${selectedDate.toISOString()}`);
+  }, [selectedDate, props.onSubmit]);
+
+  const elementToAppend = () => document.getElementById("active-recording-drawer")!;
 
   return (
     <Flex>
       <FlexItem>
-        <InputGroup>
-          <DatePicker
-            onChange={onStartDateChange}
-            aria-label="Start date"
+        <DatePicker
+            appendTo={elementToAppend}
+            onChange={onDateChange}
+            aria-label="Date Picker"
             placeholder="YYYY-MM-DD" />
-          <TimePicker is24Hour aria-label="Start time" className="time-picker" onChange={onStartTimeChange} />
-        </InputGroup>
-        </FlexItem>
-        <FlexItem>
-          <Text>UTC</Text>
-        </FlexItem>
-        <FlexItem>
-          <Button variant={ButtonVariant.control} aria-label="search button for start date" isDisabled={searchDisabled} onClick={handleSubmit}>
-            <SearchIcon />
-          </Button>
+        <TimePicker isOpen={isTimeOpen} setIsOpen={onTimeToggle} is24Hour aria-label="Time Picker" className="time-picker" onChange={onTimeChange} menuAppendTo={elementToAppend} />
+      </FlexItem>
+      <FlexItem>
+        <Text>UTC</Text>
+      </FlexItem>
+      <FlexItem>
+        <Button variant={ButtonVariant.control} aria-label="Search For Date" isDisabled={searchDisabled} onClick={handleSubmit}>
+          <SearchIcon />
+        </Button>
       </FlexItem>
     </Flex>
   );

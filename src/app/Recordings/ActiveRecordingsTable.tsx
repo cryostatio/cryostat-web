@@ -42,7 +42,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Text, Toolbar, ToolbarContent, ToolbarItem } from '@patternfly/react-core';
+import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -499,7 +499,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     }, [checkedIndices, filteredRecordings]);
 
     const buttons = React.useMemo(() => {
-      const arr = [
+      let arr = [
         <Button key="create" variant="primary" onClick={handleCreateRecording}>Create</Button>
       ];
       if (props.archiveEnabled) {
@@ -507,15 +507,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
         ));
       }
-      arr.push((
-        <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
-      ));
-      arr.push((
-        <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>
-      ));
-      arr.push((
+      arr = [
+        ...arr,
+        <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>,
+        <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>,
         <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
-      ));
+      ]
       return <>
         {
           arr.map((btn, idx) => (
@@ -544,8 +541,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             isArchived={false} 
             recordings={recordings} 
             filters={targetRecordingFilters} 
-            updateFilters={updateFilters} />        
-          { buttons }
+            updateFilters={updateFilters} />
+          <ToolbarGroup variant="button-group">
+            { buttons }
+          </ToolbarGroup>  
           { deleteActiveWarningModal }
         </ToolbarContent>
       </Toolbar>
@@ -565,7 +564,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   ), [checkedIndices]);
 
   return (
-    <Drawer isExpanded={showDetailsPanel} isInline>
+    <Drawer isExpanded={showDetailsPanel} isInline id={"active-recording-drawer"}>
       <DrawerContent panelContent={
         {
           [PanelContent.LABELS]: LabelsPanel,
