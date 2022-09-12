@@ -94,7 +94,7 @@ export interface RecordingFiltersProps {
 }
 
 export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
-  const disPatch = useDispatch();
+  const dispatch = useDispatch();
 
   const currentCategory = useSelector((state: any) => {
     const targetRecordingFilters = state.recordingFilters.list.filter((targetFilter) => targetFilter.target === props.target);
@@ -111,8 +111,8 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const onCategorySelect = React.useCallback(
     (category) => {
       setIsCategoryDropdownOpen(false);
-      disPatch(updateCategoryIntent(props.target, category, props.isArchived))
-    },[disPatch, setIsCategoryDropdownOpen, props.target, props.isArchived]
+      dispatch(updateCategoryIntent(props.target, category, props.isArchived))
+    },[dispatch, setIsCategoryDropdownOpen, props.target, props.isArchived]
   );
 
   const onDelete = React.useCallback(

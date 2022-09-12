@@ -71,7 +71,7 @@ export interface ArchivedRecordingsTableProps {
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const disPatch = useDispatch();
+  const dispatch = useDispatch();
   
   const [target, setTarget] = React.useState(""); // connectURL of the target
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
@@ -172,30 +172,30 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
-    disPatch(deleteAllFiltersIntent(target, true));
-  }, [disPatch, target]);
+    dispatch(deleteAllFiltersIntent(target, true));
+  }, [dispatch, target]);
   
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
     if (deleted) {
       if (deleteOptions && deleteOptions.all) {
-        disPatch(deleteCategoryFiltersIntent(target, filterKey, true));
+        dispatch(deleteCategoryFiltersIntent(target, filterKey, true));
       } else {
-        disPatch(deleteFilterIntent(target, filterKey, filterValue, true));
+        dispatch(deleteFilterIntent(target, filterKey, filterValue, true));
       }
     } else {
-      disPatch(addFilterIntent(target, filterKey, filterValue, true));
+      dispatch(addFilterIntent(target, filterKey, filterValue, true));
     }
-  }, [disPatch]);
+  }, [dispatch]);
 
   React.useEffect(() => {
     addSubscription(
       props.target.subscribe((target) => {
         setTarget(target.connectUrl);
-        disPatch(addTargetIntent(target.connectUrl));
+        dispatch(addTargetIntent(target.connectUrl));
         refreshRecordingList();
       })
     );
-  }, [addSubscription, refreshRecordingList, disPatch, setTarget]);
+  }, [addSubscription, refreshRecordingList, dispatch, setTarget]);
 
   React.useEffect(() => {
     addSubscription(

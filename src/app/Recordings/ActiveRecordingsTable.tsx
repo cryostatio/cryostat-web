@@ -72,7 +72,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const routerHistory = useHistory();
   const { url } = useRouteMatch();
   const addSubscription = useSubscriptions();
-  const disPatch = useDispatch();
+  const dispatch = useDispatch();
 
   const [target, setTarget] = React.useState(""); // connectURL of the target
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
@@ -149,7 +149,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       context.target.target().subscribe((target) => {
         setTarget(target.connectUrl);
-        disPatch(addTargetIntent(target.connectUrl));
+        dispatch(addTargetIntent(target.connectUrl));
         refreshRecordingList();
       })
     );
@@ -308,20 +308,20 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
   const handleClearFilters = React.useCallback(() => {
-    disPatch(deleteAllFiltersIntent(target, false));
-  }, [disPatch, target]);
+    dispatch(deleteAllFiltersIntent(target, false));
+  }, [dispatch, target]);
 
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
     if (deleted) {
       if (deleteOptions && deleteOptions.all) {
-        disPatch(deleteCategoryFiltersIntent(target, filterKey, false));
+        dispatch(deleteCategoryFiltersIntent(target, filterKey, false));
       } else {
-        disPatch(deleteFilterIntent(target, filterKey, filterValue, false));
+        dispatch(deleteFilterIntent(target, filterKey, filterValue, false));
       }
     } else {
-      disPatch(addFilterIntent(target, filterKey, filterValue, false));
+      dispatch(addFilterIntent(target, filterKey, filterValue, false));
     }
-  }, [disPatch]);
+  }, [dispatch]);
 
   React.useEffect(() => {
     setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
