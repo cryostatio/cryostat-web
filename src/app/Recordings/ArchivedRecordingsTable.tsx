@@ -283,14 +283,18 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     );
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
  
-  const toggleExpanded = (id) => {
-    const idx = expandedRows.indexOf(id);
-    setExpandedRows(expandedRows => idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]);
-  };
+  const toggleExpanded = React.useCallback(
+    (id: string) => {
+      setExpandedRows((expandedRows) => {
+        const idx = expandedRows.indexOf(id);
+        return idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]
+      });
+    }, [setExpandedRows]
+  );
 
   React.useEffect(() => {
     setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
-  }, [recordings, targetRecordingFilters]);
+  }, [recordings, targetRecordingFilters, setFilteredRecordings, filterRecordings]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -305,18 +309,18 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       return parseLabels(props.recording.metadata.labels);
     }, [props.recording.metadata.labels]);
 
-    const expandedRowId =`archived-table-row-${props.index}-exp`;
-    const handleToggle = () => {
+    const expandedRowId = React.useMemo(() => `archived-table-row-${props.index}-exp`, [props.index]);
+    const handleToggle = React.useCallback(() => {
       toggleExpanded(expandedRowId);
-    };
+    }, [toggleExpanded, expandedRowId]);
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
     }, [expandedRows, expandedRowId]);
 
-    const handleCheck = (checked) => {
+    const handleCheck = React.useCallback((checked) => {
       handleRowCheck(checked, props.index);
-    };
+    }, [handleRowCheck, props.index]);
 
     const parentRow = React.useMemo(() => {
       return(
@@ -357,7 +361,23 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           />
         </Tr>
       );
-    }, [props.recording, props.recording.metadata.labels, props.recording.name, props.index, handleCheck, checkedIndices, isExpanded, handleToggle, tableColumns, context.api, target]);
+    }, [
+      props.recording,
+      props.recording.metadata.labels,
+      props.recording.name,
+      props.index,
+      props.labelFilters,
+      checkedIndices,
+      isExpanded,
+      handleCheck,
+      handleToggle,
+      updateFilters,
+      tableColumns,
+      parsedLabels, 
+      context.api,
+      context.api.uploadArchivedRecordingToGrafana,
+      target
+    ]);
 
     const childRow = React.useMemo(() => {
       return (

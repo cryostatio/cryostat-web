@@ -120,7 +120,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const handleEditLabels = React.useCallback(() => {
     setShowDetailsPanel(true);
     setPanelContent(PanelContent.LABELS);
-  }, [setShowDetailsPanel]);
+  }, [setShowDetailsPanel, setPanelContent]);
 
   const handleRecordings = React.useCallback((recordings) => {
     setRecordings(recordings);
@@ -235,11 +235,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
-    const sub = context.target.authFailure().subscribe(() => {
+    addSubscription(context.target.authFailure().subscribe(() => {
       setErrorMessage("Auth failure");
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.target, setErrorMessage]);
+    }));
+  }, [context, context.target, setErrorMessage, addSubscription]);
 
   React.useEffect(() => {
     addSubscription(
@@ -326,7 +325,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
-  }, [recordings, targetRecordingFilters]);
+  }, [recordings, targetRecordingFilters, setFilteredRecordings, filterRecordings]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -483,7 +482,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     else {
       handleDeleteRecordings();
     }
-  }, [context, context.settings, setWarningModalOpen, handleDeleteRecordings]);
+  }, [context, context.settings, context.settings.deletionDialogsEnabledFor, setWarningModalOpen, handleDeleteRecordings]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
