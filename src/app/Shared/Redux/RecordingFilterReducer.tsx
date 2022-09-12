@@ -106,6 +106,25 @@ export const createEmptyTargetRecordingFilters = (target: string) => (
   } as TargetRecordingFilters
 );
 
+export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRecordingFilters, isArchived: boolean) => {
+  if (isArchived) {
+    return {
+      ...targetRecordingFilter, 
+      archived:  {
+        selectedCategory: targetRecordingFilter.archived.selectedCategory,
+        filters: emptyArchivedRecordingFilters,
+      }
+    }
+  }
+  return {
+    ...targetRecordingFilter, 
+    active: {
+      selectedCategory: targetRecordingFilter.active.selectedCategory,
+      filters: emptyActiveRecordingFilters,
+    }
+  }
+}
+
 // Initial states are loaded from local storage if there are any (TODO)
 const initialState = { list: [] as TargetRecordingFilters[] };
 
@@ -203,7 +222,8 @@ export const recordingFilterReducer = createReducer(initialState, (builder) => {
           state.list.push(newTargetRecordingFilter);
         })
         .addCase(deleteAllFiltersIntent, (state, {payload}) => {
-          const newTargetRecordingFilter = createEmptyTargetRecordingFilters(payload.target);
+          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+          const newTargetRecordingFilter = deleteAllTargetRecordingFilters(oldTargetRecordingFilter, payload.isArchived!);
           state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
           state.list.push(newTargetRecordingFilter);
         })

@@ -172,7 +172,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
-    disPatch(deleteAllFiltersIntent(target));
+    disPatch(deleteAllFiltersIntent(target, true));
   }, [disPatch, target]);
   
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {

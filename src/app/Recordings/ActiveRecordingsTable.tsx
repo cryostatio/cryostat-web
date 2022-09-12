@@ -308,7 +308,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
   const handleClearFilters = React.useCallback(() => {
-    disPatch(deleteAllFiltersIntent(target));
+    disPatch(deleteAllFiltersIntent(target, false));
   }, [disPatch, target]);
 
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {

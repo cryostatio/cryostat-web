@@ -82,9 +82,10 @@ export const deleteCategoryFiltersIntent = createAction(RecordingFilterAction.CA
   } as RecordingFilterActionPayload
 }));
 
-export const deleteAllFiltersIntent = createAction(RecordingFilterAction.FILTER_DELETE_ALL, (target: string) => ({
+export const deleteAllFiltersIntent = createAction(RecordingFilterAction.FILTER_DELETE_ALL, (target: string, isArchived: boolean) => ({
   payload: {
     target: target,
+    isArchived: isArchived
   } as RecordingFilterActionPayload
 }));
 
