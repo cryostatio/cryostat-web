@@ -260,6 +260,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
+  React.useEffect(() => {
+    if (checkedIndices.length < filteredRecordings.length) {
+      setHeaderChecked(false);
+    }
+  }, [setHeaderChecked, checkedIndices, filteredRecordings])
+
   const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
     filteredRecordings.forEach((r: ActiveRecording, idx) => {
