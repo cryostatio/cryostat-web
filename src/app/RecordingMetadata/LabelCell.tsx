@@ -52,36 +52,84 @@ export interface LabelCellProps {
 }
 
 export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
-  const labelStyle = React.useMemo(() => (props.updateFilters? {
-    cursor: "pointer",
-  }: {}), 
-  [props.updateFilters]);
-
   const labelFilterSet = React.useMemo(() => new Set(props.labelFilters), [props.labelFilters]);
 
+  const isLabelSelected = React.useCallback((label: RecordingLabel) => labelFilterSet.has(getLabelDisplay(label)), [labelFilterSet, getLabelDisplay]);
+  const getLabelColor = React.useCallback((label: RecordingLabel) => isLabelSelected(label)? "blue": "grey", [isLabelSelected]);
+
   const onLabelSelectToggle = React.useCallback(
-    (selectedLabel) => {
+    (clickedLabel: RecordingLabel) => {
       if (props.updateFilters) {
-        props.updateFilters(props.target, {filterKey: "Labels", filterValue: selectedLabel, deleted: labelFilterSet.has(selectedLabel)})
+        props.updateFilters(props.target, {filterKey: "Labels", filterValue: getLabelDisplay(clickedLabel), deleted: isLabelSelected(clickedLabel)})
       }
-    }, 
-    [props.updateFilters, props.labelFilters, props.target]);
-  
+    },
+    [props.updateFilters, props.labelFilters, props.target, getLabelDisplay]);
+
   return (
     <>
       {!!props.labels && props.labels.length? (
         props.labels.map((label) =>
-          <Label
-            style={labelStyle}
-            onClick={() => {onLabelSelectToggle(getLabelDisplay(label))}}
+        props.updateFilters?
+          <ClickableLabel
             key={label.key}
-            color={labelFilterSet.has(getLabelDisplay(label))? "blue": "grey"}
+            label={label}
+            isSelected={isLabelSelected(label)}
+            onLabelClick={onLabelSelectToggle}
+          /> :
+          <Label
+            key={label.key}
+            color={getLabelColor(label)}
           >
             {`${label.key}: ${label.value}`}
           </Label>
+          
         )) : (
         <Text>-</Text>
       )}
     </>
   );
 };
+
+export interface ClickableLabelCellProps {
+  label: RecordingLabel;
+  isSelected: boolean;
+  onLabelClick: (label: RecordingLabel) => void
+}
+
+export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = (props) => {
+  const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
+  const labelColor = React.useMemo(() => props.isSelected? "blue": "grey", [props.isSelected]);
+
+  const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
+  const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
+
+  const style = React.useMemo(() => {
+    if (isHoveredOrFocused) {
+      const defaultStyle = { cursor: "pointer", "--pf-c-label__content--before--BorderWidth": "2.5px"};
+      if (props.isSelected) {
+        return {...defaultStyle, "--pf-c-label__content--before--BorderColor": "#06c"}
+      }
+      return {...defaultStyle, "--pf-c-label__content--before--BorderColor": "#8a8d90"}
+    }
+    return {};
+  }, [props.isSelected, isHoveredOrFocused]);
+
+  const handleLabelClicked = React.useCallback(
+    () => props.onLabelClick(props.label), 
+    [props.label, props.onLabelClick, getLabelDisplay]
+  );
+
+  return <>
+    <Label
+      style={style}
+      onMouseEnter={() => handleHoveredOrFocused()}
+      onMouseLeave={handleNonHoveredOrFocused}
+      onFocus={handleHoveredOrFocused}
+      onClick={handleLabelClicked}
+      key={props.label.key}
+      color={labelColor}
+      >
+        {`${props.label.key}: ${props.label.value}`}
+    </Label>
+  </>;
+}
