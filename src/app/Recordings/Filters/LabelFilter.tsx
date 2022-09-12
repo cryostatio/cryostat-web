@@ -42,8 +42,9 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { parseLabels, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 
 export interface LabelFilterProps {
-    recordings: ArchivedRecording[];
-    onSubmit: (inputLabel: string) => void;
+  recordings: ArchivedRecording[];
+  filteredLabels: string[];
+  onSubmit: (inputLabel: string) => void;
 }
 
 export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
@@ -71,7 +72,7 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
           if (!r || !r.metadata) return;
           parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
       });
-      return Array.from(labels).sort();
+      return Array.from(labels).filter((l) => !props.filteredLabels.includes(l)).sort();
     }, [props.recordings, parseLabels, getLabelDisplay]);
 
     return (

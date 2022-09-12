@@ -42,6 +42,7 @@ import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 
 export interface NameFilterProps {
   recordings: ArchivedRecording[];
+  filteredNames: string[];
   onSubmit: (inputName: string) => void;
 }
 
@@ -61,7 +62,9 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
     [props.onSubmit, setIsOpen, setSelected]
   );
 
-  const names = React.useMemo(() => props.recordings.map((r) => r.name), [props.recordings]);
+  const names = React.useMemo(() => {
+    return props.recordings.map((r) => r.name).filter((n) => !props.filteredNames.includes(n));
+  }, [props.recordings, props.filteredNames]);
 
   return (
     <Select
