@@ -39,7 +39,7 @@ import * as React from 'react';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, ArchivedRecording, isActiveRecording } from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
 import { combineLatest, concatMap, filter, first, forkJoin, map, merge, Observable } from 'rxjs';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
@@ -47,6 +47,7 @@ import { RecordingLabelFields } from './RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { transformNameToNumber } from '@app/Recordings/ArchivedRecordingsTable';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -62,11 +63,21 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const addSubscription = useSubscriptions();
 
+  console.log(props.checkedIndices);
+  const getIdxFromRecording = React.useCallback((r: ArchivedRecording): number =>  {
+    if (isActiveRecording(r)) {
+      return r.id;
+    } else {
+      return transformNameToNumber(r.name);
+    }
+  }, [isActiveRecording, transformNameToNumber]);
+
   const handleUpdateLabels = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
-    recordings.forEach((r: ArchivedRecording, idx) => {
+    recordings.forEach((r: ArchivedRecording) => {
+      const idx = getIdxFromRecording(r);
       if (props.checkedIndices.includes(idx)) {
         let updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
         updatedLabels = updatedLabels.filter((label) => {
@@ -106,7 +117,9 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
       let allRecordingLabels = [] as RecordingLabel[][];
-      recordings.forEach((r: ArchivedRecording, idx) => {
+
+      recordings.forEach((r: ArchivedRecording) => {
+        const idx = getIdxFromRecording(r);
         if (props.checkedIndices.includes(idx)) {
           allRecordingLabels.push(parseLabels(r.metadata.labels));
         }
