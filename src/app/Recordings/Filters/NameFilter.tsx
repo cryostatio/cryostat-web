@@ -48,8 +48,6 @@ export interface NameFilterProps {
 export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [selected, setSelected] = React.useState('');
-  const [names, setNames] = React.useState([] as string[]);
-
   const onSelect = React.useCallback(
     (event, selection, isPlaceholder) => {
       if (isPlaceholder) {
@@ -63,9 +61,7 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
     [props.onSubmit, setIsOpen, setSelected]
   );
 
-  React.useEffect(() => {
-    setNames(props.recordings.map((r) => r.name));
-  }, [setNames, props.recordings]);
+  const names = React.useMemo(() => props.recordings.map((r) => r.name), [props.recordings]);
 
   return (
     <Select
