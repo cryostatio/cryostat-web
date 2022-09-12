@@ -110,7 +110,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
-    setCheckedIndices(checked ? Array.from(new Array(filteredRecordings.length), (x, i) => i) : []);
+    setCheckedIndices(checked ? filteredRecordings.map((r) => r.id) : []);
   }, [setHeaderChecked, setCheckedIndices, filteredRecordings]);
 
   const handleCreateRecording = React.useCallback(() => {
@@ -190,21 +190,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        let deleted;
 
-        setRecordings((old) => {
-          return old.filter((r, i) => {
-            if (r.name == event.message.recording.name) {
-              deleted = i;
-              return false;
-            }
-            return true;
-          });
-        });
-        setCheckedIndices(old => old
-          .filter((v) => v !== deleted)
-          .map(ci => ci > deleted ? ci - 1 : ci)
-        );
+        setRecordings((old) =>  old.filter((r) => r.name !== event.message.recording.name));
+        setCheckedIndices(old => old.filter((idx) => idx !==  event.message.recording.id));
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
@@ -261,16 +249,33 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
-    if (checkedIndices.length < filteredRecordings.length) {
-      setHeaderChecked(false);
+    setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
+  }, [recordings, targetRecordingFilters, setFilteredRecordings, filterRecordings]);
+
+  React.useEffect(() => {
+    setCheckedIndices((ci) => {
+      const filteredRecordingIdx = new Set(filteredRecordings.map((r) => r.id));
+      return ci.filter((idx) => filteredRecordingIdx.has(idx));
+    });
+  }, [filteredRecordings, setCheckedIndices]);
+
+  React.useEffect(() => {
+    setHeaderChecked(checkedIndices.length === filteredRecordings.length);
+  }, [setHeaderChecked, checkedIndices]);
+
+  React.useEffect(() => {
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
     }
-  }, [setHeaderChecked, checkedIndices, filteredRecordings])
+    const id = window.setInterval(() => refreshRecordingList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    return () => window.clearInterval(id);
+  }, [refreshRecordingList, context, context.settings]);
 
   const handleArchiveRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
-    filteredRecordings.forEach((r: ActiveRecording, idx) => {
-      if (checkedIndices.includes(idx)) {
-        handleRowCheck(false, idx);
+    filteredRecordings.forEach((r: ActiveRecording) => {
+      if (checkedIndices.includes(r.id)) {
+        handleRowCheck(false, r.id);
         tasks.push(
           context.api.archiveRecording(r.name).pipe(first())
         );
@@ -283,9 +288,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleStopRecordings = React.useCallback(() => {
     const tasks: Observable<boolean>[] = [];
-    filteredRecordings.forEach((r: ActiveRecording, idx) => {
-      if (checkedIndices.includes(idx)) {
-        handleRowCheck(false, idx);
+    filteredRecordings.forEach((r: ActiveRecording) => {
+      if (checkedIndices.includes(r.id)) {
+        handleRowCheck(false, r.id);
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
           tasks.push(
             context.api.stopRecording(r.name).pipe(first())
@@ -300,8 +305,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<{}>[] = [];
-    filteredRecordings.forEach((r: ActiveRecording, idx) => {
-      if (checkedIndices.includes(idx)) {
+    filteredRecordings.forEach((r: ActiveRecording) => {
+      if (checkedIndices.includes(r.id)) {
         context.reports.delete(r);
         tasks.push(
           context.api.deleteRecording(r.name).pipe(first())
@@ -328,18 +333,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       dispatch(addFilterIntent(target, filterKey, filterValue, false));
     }
   }, [dispatch]);
-
-  React.useEffect(() => {
-    setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
-  }, [recordings, targetRecordingFilters, setFilteredRecordings, filterRecordings]);
-
-  React.useEffect(() => {
-    if (!context.settings.autoRefreshEnabled()) {
-      return;
-    }
-    const id = window.setInterval(() => refreshRecordingList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
-    return () => window.clearInterval(id);
-  }, [refreshRecordingList, context, context.settings]);
 
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
@@ -499,7 +492,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       if (!checkedIndices.length) {
         return true;
       }
-      const filtered = filteredRecordings.filter((r: ActiveRecording, idx: number) => checkedIndices.includes(idx));
+      const filtered = filteredRecordings.filter((r: ActiveRecording) => checkedIndices.includes(r.id));
       const anyRunning = filtered.some((r: ActiveRecording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
       return !anyRunning;
     }, [checkedIndices, filteredRecordings]);
@@ -528,7 +521,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           ))
         }
       </>;
-    }, [checkedIndices]);
+    }, [checkedIndices, handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteButton]);
 
     const deleteActiveWarningModal = React.useMemo(() => {
       return <DeleteWarningModal 
@@ -537,7 +530,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         onAccept={handleDeleteRecordings}
         onClose={handleWarningModalClose}
       />
-    }, [recordings, checkedIndices]);
+    }, [recordings, checkedIndices, handleDeleteRecordings, handleWarningModalClose]);
 
     return (
       <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
@@ -558,8 +551,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   };
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r, idx) => <RecordingRow key={idx} recording={r} labelFilters={targetRecordingFilters.Labels} index={idx}/>)
-  }, [filteredRecordings, expandedRows, checkedIndices]);
+    return filteredRecordings.map((r) => <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Labels} index={r.id}/>)
+  }, [filteredRecordings, expandedRows, targetRecordingFilters, checkedIndices]);
 
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
@@ -567,7 +560,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       isTargetRecording={true}
       checkedIndices={checkedIndices}
     />
-  ), [checkedIndices]);
+  ), [checkedIndices, setShowDetailsPanel]);
 
   return (
     <Drawer isExpanded={showDetailsPanel} isInline id={"active-recording-drawer"}>
