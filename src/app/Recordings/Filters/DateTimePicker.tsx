@@ -88,6 +88,7 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
     props.onSubmit(`${selectedDate.toISOString()}`);
   }, [selectedDate, props.onSubmit]);
 
+  // Append the popever menu to the component higher in the tree to avoid cut-off and misalignment.
   const elementToAppend = () => document.getElementById("active-recording-drawer")!;
 
   return (
