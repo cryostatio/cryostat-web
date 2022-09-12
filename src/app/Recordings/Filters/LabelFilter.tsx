@@ -51,7 +51,6 @@ export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.
 export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [selected, setSelected] = React.useState('');
-    const [labels, setLabels] = React.useState([] as string[]);
 
     const onSelect = React.useCallback(
         (event, selection, isPlaceholder) => {
@@ -66,16 +65,14 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
         [props.onSubmit, setIsOpen, setSelected]
     );
 
-    React.useEffect(() => {
-        setLabels(old => {
-            let updated = new Set(old);
-            props.recordings.forEach((r) => {
-                if (!r || !r.metadata) return;
-                parseLabels(r.metadata.labels).map((label) => updated.add(getLabelDisplay(label)));
-            });
-            return Array.from(updated);
-        });
-    }, [setLabels, props.recordings]);
+    const labels = React.useMemo(() => {
+      let labels = new Set<string>();
+      props.recordings.forEach((r) => {
+          if (!r || !r.metadata) return;
+          parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
+      });
+      return Array.from(labels).sort();
+    }, [props.recordings, parseLabels, getLabelDisplay]);
 
     return (
         <Select
