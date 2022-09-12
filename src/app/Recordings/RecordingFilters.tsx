@@ -150,8 +150,11 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     [props.updateFilters, currentCategory, props.target]
   );
 
-  const onRecordingStateSelect = React.useCallback(
-    (searchState) => props.updateFilters(props.target,{ filterKey: currentCategory!, filterValue: searchState }),
+  const onRecordingStateSelectToggle = React.useCallback(
+    (searchState) => {
+      const deleted = props.filters.State && props.filters.State.includes(searchState);
+      props.updateFilters(props.target,{ filterKey: currentCategory!, filterValue: searchState, deleted: deleted})
+    },
     [props.updateFilters, currentCategory, props.target]
   );
 
@@ -192,7 +195,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} />
       </InputGroup>,
       <InputGroup>
-        <RecordingStateFilter states={props.filters.State} onSubmit={onRecordingStateSelect} />
+        <RecordingStateFilter filteredStates={props.filters.State} onSelectToggle={onRecordingStateSelectToggle} />
       </InputGroup>,
       <InputGroup>
         <DateTimePicker onSubmit={onStartedBeforeInput} />

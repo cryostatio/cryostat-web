@@ -42,24 +42,18 @@ import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { RecordingState } from '@app/Shared/Services/Api.service';
 
 export interface RecordingStateFilterProps {
-  states: RecordingState[] | undefined;
-  onSubmit: (state: any) => void;
+  filteredStates: RecordingState[] | undefined;
+  onSelectToggle: (state: any) => void;
 }
 
 export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterProps> = (props) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState(new Set(props.states));
 
   const onSelect = React.useCallback(
-    (event, selection, isPlaceholder) => {
-      if (isPlaceholder) {
-        setSelected(new Set());
-        setIsOpen(false);
-      } else {
-        setSelected((selected) => selected.add(selection));
-        props.onSubmit(selection);
-      }
-    }, [setSelected, setIsOpen, props.onSubmit]);
+    (_, selection) => {
+      setIsOpen(false);
+      props.onSelectToggle(selection);
+    }, [setIsOpen, props.onSelectToggle]);
   
   return (
     <Select
@@ -67,7 +61,7 @@ export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterP
       aria-label='State'
       onToggle={setIsOpen}
       onSelect={onSelect}
-      selections={Array.from(selected)}
+      selections={props.filteredStates}
       isOpen={isOpen}
       placeholderText="Filter by state">
       {
