@@ -75,8 +75,8 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
       onSelect={onSelect}
       selections={selected}
       isOpen={isOpen}
-      aria-labelledby="Filter by recording name"
       placeholderText="Filter by name..."
+      aria-label='Filter by name'
     >
       {names.map((option, index) => (
         <SelectOption key={index} value={option} />
