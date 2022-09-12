@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { saveToLocalStorage } from "@app/utils/LocalStorage";
 import { configureStore } from "@reduxjs/toolkit";
 import { recordingFilterReducer as recordingFiltersReducer } from "./RecordingFilterReducer";
 
@@ -44,3 +45,7 @@ export const store = configureStore({
     recordingFilters: recordingFiltersReducer
   }
 });
+
+// Add a subscription to save filter states to local storage
+// Every 500ms
+store.subscribe(() => saveToLocalStorage("TARGET_RECORDING_FILTERS", store.getState().recordingFilters.list));

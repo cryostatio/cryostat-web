@@ -37,8 +37,7 @@
  */
 
 export enum LocalStorageKey {
-  ACTIVE_RECORDING_FILTER,
-  ARCHIVED_RECORDING_FILTER
+  TARGET_RECORDING_FILTERS
 }
 
 /**

@@ -37,6 +37,7 @@
  */
 
 import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters, RecordingFiltersCategories } from "@app/Recordings/RecordingFilters"
+import { getFromLocalStorage } from "@app/utils/LocalStorage";
 import { createReducer } from "@reduxjs/toolkit"
 import { WritableDraft } from "immer/dist/internal";
 import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent,  deleteTargetIntent, updateCategoryIntent, } from './RecordingFilterActions';
@@ -126,7 +127,7 @@ export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRec
 }
 
 // Initial states are loaded from local storage if there are any (TODO)
-const initialState = { list: [] as TargetRecordingFilters[] };
+const initialState = { list: getFromLocalStorage("TARGET_RECORDING_FILTERS", [])};
 
 export const recordingFilterReducer = createReducer(initialState, (builder) => {
   builder
