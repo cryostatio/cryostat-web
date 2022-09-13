@@ -56,9 +56,8 @@ import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
 import { RecordingState } from '@app/Shared/Services/Api.service';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { WritableDraft } from 'immer/dist/internal';
-import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { updateCategoryIntent } from '@app/Shared/Redux/RecordingFilterActions';
 
 export interface RecordingFiltersCategories {
@@ -207,7 +206,20 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <DurationFilter durations={props.filters.DurationSeconds} onContinuousDurationSelect={onContinuousDurationSelect} onDurationInput={onDurationInput}></DurationFilter>
       </InputGroup>,
     ],
-    [Object.keys(props.filters)]
+    [
+      props.recordings,
+      props.filters.Name,
+      props.filters.Labels,
+      props.filters.State,
+      props.filters.DurationSeconds,
+      onNameInput,
+      onLabelInput,
+      onRecordingStateSelectToggle,
+      onStartedAfterInput,
+      onStartedBeforeInput,
+      onContinuousDurationSelect,
+      onDurationInput
+    ]
   );
 
   return (
