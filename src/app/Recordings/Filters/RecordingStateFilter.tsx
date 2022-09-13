@@ -58,15 +58,15 @@ export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterP
   return (
     <Select
       variant={SelectVariant.checkbox}
-      aria-label='State'
       onToggle={setIsOpen}
       onSelect={onSelect}
       selections={props.filteredStates}
       isOpen={isOpen}
+      aria-label='Filter by state'
       placeholderText="Filter by state">
       {
         Object.values(RecordingState).map((rs) => (
-          <SelectOption key={rs} value={rs} />
+          <SelectOption aria-label={`${rs} State`} key={rs} value={rs} />
         ))
       }
   </Select>
