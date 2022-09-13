@@ -64,7 +64,7 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
     const labels = React.useMemo(() => {
       const labels = new Set<string>();
       props.recordings.forEach((r) => {
-          if (!r || !r.metadata) return;
+          if (!r || !r.metadata || !r.metadata.labels) return;
           parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
       });
       return Array.from(labels).filter((l) => !props.filteredLabels.includes(l)).sort();
@@ -73,11 +73,11 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
     return (
         <Select
             variant={SelectVariant.typeahead}
-            typeAheadAriaLabel="Filter by label"
             onToggle={setIsExpanded}
             onSelect={onSelect}
             isOpen={isExpanded}
-            aria-labelledby="Select a labels"
+            aria-label="Filter by label"
+            typeAheadAriaLabel="Filter by label..."
             placeholderText="Filter by label..."
         >
             {labels.map((option, index) => (
