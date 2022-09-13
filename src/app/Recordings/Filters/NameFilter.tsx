@@ -47,39 +47,34 @@ export interface NameFilterProps {
 }
 
 export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState('');
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
   const onSelect = React.useCallback(
-    (event, selection, isPlaceholder) => {
-      if (isPlaceholder) {
-        setIsOpen(false);
-        setSelected('');
-      } else {
-        setSelected(selection);
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        // No need to close menu as parent rebuilds
         props.onSubmit(selection);
       }
-    },
-    [props.onSubmit, setIsOpen, setSelected]
+    }, [props.onSubmit]
   );
 
-  const names = React.useMemo(() => {
-    return props.recordings.map((r) => r.name).filter((n) => !props.filteredNames.includes(n));
+  const nameOptions = React.useMemo(() => {
+    return props.recordings.map((r) => r.name).filter((n) => !props.filteredNames.includes(n)).map((option, index) => (
+      <SelectOption key={index} value={option} />
+    ));
   }, [props.recordings, props.filteredNames]);
 
   return (
     <Select
       variant={SelectVariant.typeahead}
-      typeAheadAriaLabel="Filter by name..."
-      onToggle={setIsOpen}
+      onToggle={setIsExpanded}
       onSelect={onSelect}
-      selections={selected}
-      isOpen={isOpen}
+      isOpen={isExpanded}
+      typeAheadAriaLabel="Filter by name..."
       placeholderText="Filter by name..."
       aria-label='Filter by name'
     >
-      {names.map((option, index) => (
-        <SelectOption key={index} value={option} />
-      ))}
+      { nameOptions }
     </Select>
   );
 };

@@ -50,24 +50,19 @@ export interface LabelFilterProps {
 export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
 
 export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) => {
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [selected, setSelected] = React.useState('');
+    const [isExpanded, setIsExpanded] = React.useState(false);
 
     const onSelect = React.useCallback(
-        (event, selection, isPlaceholder) => {
-            if (isPlaceholder) {
-                setIsOpen(false);
-                setSelected('');
-            } else {
-                setSelected(selection);
-                props.onSubmit(selection);
-            }
-        },
-        [props.onSubmit, setIsOpen, setSelected]
+      (_, selection, isPlaceholder) => {
+        if (!isPlaceholder) {
+          // No need to close menu as parent rebuilds
+          props.onSubmit(selection);
+        }
+      }, [props.onSubmit]
     );
 
     const labels = React.useMemo(() => {
-      let labels = new Set<string>();
+      const labels = new Set<string>();
       props.recordings.forEach((r) => {
           if (!r || !r.metadata) return;
           parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
@@ -79,15 +74,14 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
         <Select
             variant={SelectVariant.typeahead}
             typeAheadAriaLabel="Filter by label"
-            onToggle={setIsOpen}
+            onToggle={setIsExpanded}
             onSelect={onSelect}
-            selections={selected}
-            isOpen={isOpen}
+            isOpen={isExpanded}
             aria-labelledby="Select a labels"
             placeholderText="Filter by label..."
         >
             {labels.map((option, index) => (
-                <SelectOption key={option} value={option} >
+                <SelectOption key={index} value={option} >
                     <Label key={option} color="grey">{option}</Label>
                 </SelectOption>
             ))}
