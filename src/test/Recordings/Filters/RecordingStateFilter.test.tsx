@@ -137,12 +137,11 @@ describe("<RecordingStateFilter />", () => {
     expect(checkedBox).toBeInTheDocument();
     expect(checkedBox).toBeVisible();
     expect(checkedBox).toHaveAttribute('checked');
-
   });
 
   it ('should select a state when clicking unchecked state box', async () => {
     const onRecordingStateToggle = jest.fn((state) => {
-      emptyFilteredStates.push(mockRecording.state);
+      emptyFilteredStates.push(state);
     });
 
     render(
@@ -165,7 +164,7 @@ describe("<RecordingStateFilter />", () => {
       expect(selectOption).toBeVisible();
     });
 
-    const selectedOption = within(selectMenu).getByLabelText(`${mockRecording.state} State`);
+    const selectedOption = within(selectMenu).getByLabelText(`${mockAnotherRecording.state} State`);
     expect(selectedOption).toBeInTheDocument();
     expect(selectedOption).toBeVisible();
 
@@ -177,13 +176,13 @@ describe("<RecordingStateFilter />", () => {
     userEvent.click(uncheckedBox);
 
     expect(onRecordingStateToggle).toHaveBeenCalledTimes(1);
-    expect(onRecordingStateToggle).toHaveBeenCalledWith(mockRecording.state);
-    expect(emptyFilteredStates).toStrictEqual([ mockRecording.state ]);
+    expect(onRecordingStateToggle).toHaveBeenCalledWith(mockAnotherRecording.state);
+    expect(emptyFilteredStates).toStrictEqual([ mockAnotherRecording.state ]);
   });
   
   it ('should unselect a state when clicking checked state box', async () => {
     const onRecordingStateToggle = jest.fn((state) => {
-      filteredStates = filteredStates.filter((state) => state !== state);
+      filteredStates = filteredStates.filter((rs) => state !== rs);
     });
 
     render(
