@@ -63,7 +63,6 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const addSubscription = useSubscriptions();
 
-  console.log(props.checkedIndices);
   const getIdxFromRecording = React.useCallback((r: ArchivedRecording): number =>  {
     if (isActiveRecording(r)) {
       return r.id;
