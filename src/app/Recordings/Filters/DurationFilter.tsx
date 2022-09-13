@@ -50,6 +50,17 @@ export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (pro
   const isContinuous = React.useMemo(() => props.durations && props.durations.includes("continuous"), 
   [props.durations]);
 
+  const handleContinousCheckBoxChange = React.useCallback((checked, envt) => {
+    props.onContinuousDurationSelect(checked);
+  }, [props.onContinuousDurationSelect]);
+
+  const handleEnterKey = React.useCallback((e) => {
+    if (e.key && e.key !== 'Enter') {
+      return;
+    }
+    props.onDurationInput(duration)
+  }, [props.onDurationInput, duration]);
+
   return (
     <Flex>
       <FlexItem>
@@ -60,12 +71,7 @@ export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (pro
           aria-label="duration filter"
           onChange={(e) => setDuration(Number(e))}
           min="0"
-          onKeyDown={(e) => {
-            if (e.key && e.key !== 'Enter') {
-              return;
-            }
-            props.onDurationInput(duration);
-          }}
+          onKeyDown={handleEnterKey}
         />
       </FlexItem>
       <FlexItem>
@@ -73,7 +79,7 @@ export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (pro
           label="Continuous"
           id="continuous-checkbox"
           isChecked={isContinuous}
-          onChange={props.onContinuousDurationSelect}
+          onChange={handleContinousCheckBoxChange}
         />
       </FlexItem>
     </Flex>
