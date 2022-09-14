@@ -1,5 +1,3 @@
-import { DateTimePicker } from "@app/Recordings/Filters/DateTimePicker";
-
 /*
  * Copyright The Cryostat Authors
  *
@@ -38,7 +36,8 @@ import { DateTimePicker } from "@app/Recordings/Filters/DateTimePicker";
  * SOFTWARE.
  */
 
-import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { DateTimePicker } from "@app/Recordings/Filters/DateTimePicker";
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -48,7 +47,6 @@ currentDate.setUTCDate(14);
 currentDate.setUTCFullYear(2022, 8, 14); // 8 is September
 
 describe("<DateTimePicker />", () => {
-
   beforeEach(() => {
     // Mock system time
     jest.useFakeTimers("modern").setSystemTime(currentDate);
