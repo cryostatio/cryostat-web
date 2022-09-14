@@ -55,28 +55,24 @@ export interface DateTimePickerProps {
 }
 
 export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
-  const [selectedDate, setSelectedDate] = React.useState(new Date(0));
-  const [searchDisabled, setSearchDisabled] = React.useState(true);
+  const [selectedDate, setSelectedDate] = React.useState<Date|undefined>();
+  const [selectedHour, setSelectedHour] = React.useState(0);
+  const [selectedMinute, setSelectedMinute] = React.useState(0);
   const [isTimeOpen, setIsTimeOpen] = React.useState(false);
 
   const onDateChange = React.useCallback(
-    (inputDate, newDate) => {
-      const valid = isValidDate(selectedDate) && isValidDate(newDate) && inputDate === yyyyMMddFormat(newDate);
-      if (valid) {
-        setSelectedDate(new Date(newDate));
-      }
-      setSearchDisabled(!valid);
+    (inputDateValue: string, newDate: Date | undefined) => {
+      setSelectedDate(newDate);
     },
-    [selectedDate, isValidDate, yyyyMMddFormat]
+    [isValidDate, yyyyMMddFormat, setSelectedDate]
   );
 
   const onTimeChange = React.useCallback(
     (_, hour, minute) => {
-      let updated = new Date(selectedDate);
-      updated.setUTCHours(hour, minute);
-      setSelectedDate(updated);
+      setSelectedHour(hour);
+      setSelectedMinute(minute);
     },
-    [selectedDate, setSelectedDate, isValidDate]
+    [setSelectedHour, setSelectedMinute]
   );
 
   const onTimeToggle = React.useCallback((opened) => {
@@ -84,8 +80,9 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
   }, [setIsTimeOpen]);
 
   const handleSubmit = React.useCallback(() => {
-    props.onSubmit(`${selectedDate.toISOString()}`);
-  }, [selectedDate, props.onSubmit]);
+    selectedDate!.setUTCHours(selectedHour, selectedMinute);
+    props.onSubmit(`${selectedDate!.toISOString()}`);
+  }, [selectedDate, selectedHour, selectedMinute, props.onSubmit]);
 
   // Append the popover date menu to the higher component in the tree to avoid cut-off.
   // Potential cause: A parent container has "overflow: hidden".
@@ -114,7 +111,7 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
         <Text>UTC</Text>
       </FlexItem>
       <FlexItem>
-        <Button variant={ButtonVariant.control} aria-label="Search For Date" isDisabled={searchDisabled} onClick={handleSubmit}>
+        <Button variant={ButtonVariant.control} aria-label="Search For Date" isDisabled={!selectedDate} onClick={handleSubmit}>
           <SearchIcon />
         </Button>
       </FlexItem>
