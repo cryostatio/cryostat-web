@@ -108,6 +108,32 @@ describe("<RecordingStateFilter />", () => {
     });
   });
 
+  it ('should close state selections when dropdown is toggled', async () => {
+    render(
+      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />
+    );
+
+    const stateDropDown = screen.getByRole('button', { name: "Options menu" });
+    expect(stateDropDown).toBeInTheDocument();
+    expect(stateDropDown).toBeVisible();
+
+    userEvent.click(stateDropDown);
+    
+    const selectMenu = await screen.findByRole("listbox", {name: "Filter by state"})
+    expect(selectMenu).toBeInTheDocument();
+    expect(selectMenu).toBeVisible();
+
+    Object.values(RecordingState).forEach((rs) => {
+      const selectOption = within(selectMenu).getByText(rs);
+      expect(selectOption).toBeInTheDocument();
+      expect(selectOption).toBeVisible();
+    });
+
+    userEvent.click(stateDropDown);
+    expect(selectMenu).not.toBeInTheDocument();
+    expect(selectMenu).not.toBeVisible();
+  });
+
   it ('should display filtered states as checked', async () => {
     render(
       <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onStateSelectToggle} />
