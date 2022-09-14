@@ -59,6 +59,7 @@ import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent } from '@app/Shared/Redux/RecordingFilterActions';
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
+import { menuMountPointId } from '@app/utils/utils';
 
 export enum PanelContent {
   LABELS,
@@ -563,7 +564,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   ), [checkedIndices, setShowDetailsPanel]);
 
   return (
-    <Drawer isExpanded={showDetailsPanel} isInline id={"active-recording-drawer"}>
+    <Drawer isExpanded={showDetailsPanel} isInline id={menuMountPointId(false)}>
       <DrawerContent
         panelContent={{[PanelContent.LABELS]: LabelsPanel,}[panelContent]}
         className='recordings-table-drawer-content'>

@@ -59,6 +59,7 @@ import { RecordingState } from '@app/Shared/Services/Api.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { updateCategoryIntent } from '@app/Shared/Redux/RecordingFilterActions';
+import { menuMountPointId } from '@app/utils/utils';
 
 export interface RecordingFiltersCategories {
   Name: string[],
@@ -185,6 +186,8 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     );
   }, [Object.keys(props.filters), isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
 
+  const dateTimeMountId = React.useMemo(() => menuMountPointId(props.isArchived), [props.isArchived, menuMountPointId])
+
   const filterDropdownItems = React.useMemo(
     () => [
       <InputGroup>
@@ -197,7 +200,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <RecordingStateFilter filteredStates={props.filters.State} onSelectToggle={onRecordingStateSelectToggle} />
       </InputGroup>,
       <InputGroup>
-        <DateTimePicker onSubmit={onStartedBeforeInput} />
+        <DateTimePicker menuMountId={dateTimeMountId} onSubmit={onStartedBeforeInput} />
       </InputGroup>,
       <InputGroup>
         <DateTimePicker onSubmit={onStartedAfterInput} />

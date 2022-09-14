@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { findDatetimeMenuMountPoint } from '@app/utils/utils';
 import {
   Button,
   ButtonVariant,
@@ -52,6 +53,7 @@ import React from 'react';
 
 export interface DateTimePickerProps {
   onSubmit: (date: any) => void;
+  menuMountId?: string;
 }
 
 export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
@@ -87,7 +89,9 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
   // Append the popover date menu to the higher component in the tree to avoid cut-off.
   // Potential cause: A parent container has "overflow: hidden".
   // Caution: Lose accessibility support if using document.body
-  const elementToAppend = () => document.getElementById("active-recording-drawer") || document.body;
+  const elementToAppend = React.useMemo(() => {
+    return props.menuMountId? findDatetimeMenuMountPoint(props.menuMountId): "parent";
+  }, [props.menuMountId]);
 
   return (
     <Flex>
