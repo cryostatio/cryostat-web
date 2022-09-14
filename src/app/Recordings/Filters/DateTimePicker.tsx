@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 
-
 import {
   Button,
   ButtonVariant,
@@ -88,8 +87,10 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
     props.onSubmit(`${selectedDate.toISOString()}`);
   }, [selectedDate, props.onSubmit]);
 
-  // Append the popever menu to the component higher in the tree to avoid cut-off and misalignment.
-  const elementToAppend = () => document.getElementById("active-recording-drawer")!;
+  // Append the popover date menu to the higher component in the tree to avoid cut-off.
+  // Potential cause: A parent container has "overflow: hidden".
+  // Caution: Lose accessibility support if using document.body
+  const elementToAppend = () => document.getElementById("active-recording-drawer") || document.body;
 
   return (
     <Flex>
@@ -99,7 +100,15 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
             onChange={onDateChange}
             aria-label="Date Picker"
             placeholder="YYYY-MM-DD" />
-        <TimePicker isOpen={isTimeOpen} setIsOpen={onTimeToggle} is24Hour aria-label="Time Picker" className="time-picker" onChange={onTimeChange} menuAppendTo={elementToAppend} />
+        <TimePicker
+          isOpen={isTimeOpen}
+          setIsOpen={onTimeToggle}
+          is24Hour
+          aria-label="Time Picker"
+          className="time-picker"
+          menuAppendTo={elementToAppend}
+          onChange={onTimeChange} 
+          />
       </FlexItem>
       <FlexItem>
         <Text>UTC</Text>

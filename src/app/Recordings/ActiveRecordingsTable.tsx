@@ -564,24 +564,22 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   return (
     <Drawer isExpanded={showDetailsPanel} isInline id={"active-recording-drawer"}>
-      <DrawerContent panelContent={
-        {
-          [PanelContent.LABELS]: LabelsPanel,
-        }[panelContent]
-      } className='recordings-table-drawer-content'>
-        <DrawerContentBody hasPadding>
+      <DrawerContent
+        panelContent={{[PanelContent.LABELS]: LabelsPanel,}[panelContent]}
+        className='recordings-table-drawer-content'>
+        <DrawerContentBody hasPadding >
           <RecordingsTable
-          tableTitle="Active Flight Recordings"
-          toolbar={<RecordingsToolbar />}
-          tableColumns={tableColumns}
-          isHeaderChecked={headerChecked}
-          onHeaderCheck={handleHeaderCheck}
-          isEmpty={!recordings.length}
-          isEmptyFilterResult={!filteredRecordings.length}
-          clearFilters={handleClearFilters}
-          isLoading ={isLoading}
-          isNestedTable={false}
-          errorMessage ={errorMessage}
+            tableTitle="Active Flight Recordings"
+            toolbar={<RecordingsToolbar />}
+            tableColumns={tableColumns}
+            isHeaderChecked={headerChecked}
+            onHeaderCheck={handleHeaderCheck}
+            isEmpty={!recordings.length}
+            isEmptyFilterResult={!filteredRecordings.length}
+            clearFilters={handleClearFilters}
+            isLoading ={isLoading}
+            isNestedTable={false}
+            errorMessage ={errorMessage}
           >
             {recordingRows}
           </RecordingsTable>
