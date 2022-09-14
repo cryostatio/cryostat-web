@@ -40,6 +40,7 @@ import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { Label, Text } from '@patternfly/react-core';
 import React from 'react';
+import { ClickableLabel } from './ClickableLabel';
 import { RecordingLabel } from './RecordingLabel';
 
 export interface LabelCellProps {
@@ -89,47 +90,3 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
     </>
   );
 };
-
-export interface ClickableLabelCellProps {
-  label: RecordingLabel;
-  isSelected: boolean;
-  onLabelClick: (label: RecordingLabel) => void
-}
-
-export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = (props) => {
-  const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
-  const labelColor = React.useMemo(() => props.isSelected? "blue": "grey", [props.isSelected]);
-
-  const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
-  const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
-
-  const style = React.useMemo(() => {
-    if (isHoveredOrFocused) {
-      const defaultStyle = { cursor: "pointer", "--pf-c-label__content--before--BorderWidth": "2.5px"};
-      if (props.isSelected) {
-        return {...defaultStyle, "--pf-c-label__content--before--BorderColor": "#06c"}
-      }
-      return {...defaultStyle, "--pf-c-label__content--before--BorderColor": "#8a8d90"}
-    }
-    return {};
-  }, [props.isSelected, isHoveredOrFocused]);
-
-  const handleLabelClicked = React.useCallback(
-    () => props.onLabelClick(props.label), 
-    [props.label, props.onLabelClick, getLabelDisplay]
-  );
-
-  return <>
-    <Label
-      style={style}
-      onMouseEnter={() => handleHoveredOrFocused()}
-      onMouseLeave={handleNonHoveredOrFocused}
-      onFocus={handleHoveredOrFocused}
-      onClick={handleLabelClicked}
-      key={props.label.key}
-      color={labelColor}
-      >
-        {`${props.label.key}: ${props.label.value}`}
-    </Label>
-  </>;
-}
