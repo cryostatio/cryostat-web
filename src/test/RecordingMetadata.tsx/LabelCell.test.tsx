@@ -37,28 +37,99 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { Target } from '@app/Shared/Services/Target.service';
+import userEvent from '@testing-library/user-event';
+import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 
-const mockLabel = {
-  key: 'someLabel',
-  value: 'someValue',
+const mockFooTarget: Target = { 
+  connectUrl: "service:jmx:rmi://someFooUrl", 
+  alias: 'fooTarget', 
+  annotations: { 
+      cryostat: new Map(), 
+      platform : new Map() 
+  }
 };
 
+const mockLabel = { key: 'someLabel', value: 'someValue'} as RecordingLabel;
+const mockAnotherLabel = { key: 'anotherLabel', value: 'anotherValue' } as RecordingLabel;
+const mockLabelList = [ mockLabel, mockAnotherLabel ];
+
+// For display
+const mockLabelStringDisplayList = [ `${mockLabel.key}: ${mockLabel.value}`, `${mockAnotherLabel.key}: ${mockAnotherLabel.value}` ]
+// For filters and labeling elements
+const mockLabelStringList = mockLabelStringDisplayList.map((s: string) => s.replace(" ", ""));
+
 describe('<LabelCell />', () => {
+  let onUpdateLabels: ((target: string, updateFilterOptions: UpdateFilterOptions) => void) | undefined;
+  beforeEach(() => {
+    onUpdateLabels = jest.fn((target: string, options: UpdateFilterOptions) => {});
+  });
+
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
-      tree = renderer.create(<LabelCell target='' labels={[mockLabel]} />);
+      tree = renderer.create(
+        <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} labelFilters={[]} updateFilters={onUpdateLabels}/>
+      );
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('displays read-only labels', () => {
-    render(<LabelCell target='' labels={[mockLabel]} />);
-    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
-    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+  it('should display read-only labels', () => {
+    render(
+      <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} labelFilters={[]} />
+    );
+    
+    mockLabelStringDisplayList.forEach((labelAsString) => {
+      const displayedLabel = screen.getByLabelText(labelAsString);
+
+      expect(displayedLabel).toBeInTheDocument();
+      expect(displayedLabel).toBeVisible();
+
+      expect(displayedLabel.onclick).toBeNull();
+
+      userEvent.click(displayedLabel);
+      expect(onUpdateLabels).not.toHaveBeenCalled();
+    });
+  });
+
+  it('should display clickable labels', () => {
+    render(
+      <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} labelFilters={[]} updateFilters={onUpdateLabels} />
+    );
+    
+    let count = 0;
+    mockLabelStringDisplayList.forEach((labelAsString, index) => {
+      const displayedLabel = screen.getByLabelText(labelAsString);
+
+      expect(displayedLabel).toBeInTheDocument();
+      expect(displayedLabel).toBeVisible();
+
+      userEvent.click(displayedLabel);
+      
+      expect(onUpdateLabels).toHaveBeenCalledTimes(++count);
+      expect(onUpdateLabels).toHaveBeenCalledWith(
+        mockFooTarget.connectUrl,
+        {filterKey: "Labels", filterValue: mockLabelStringList[index], deleted: false}
+      );
+    });
+  });
+
+  it('should display placeholder when there is no label', () => {
+    render(
+      <LabelCell target={mockFooTarget.connectUrl} labels={[]} labelFilters={[]} updateFilters={onUpdateLabels} />
+    );
+    
+    const placeHolder = screen.getByText("-");
+    expect(placeHolder).toBeInTheDocument();
+    expect(placeHolder).toBeVisible();
+    expect(placeHolder.onclick).toBeNull();
   });
 });

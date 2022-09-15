@@ -78,6 +78,7 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
             onLabelClick={onLabelSelectToggle}
           /> :
           <Label
+            aria-label={`${label.key}: ${label.value}`}
             key={label.key}
             color={getLabelColor(label)}
           >
