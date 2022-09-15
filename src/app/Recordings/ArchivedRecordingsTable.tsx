@@ -60,6 +60,7 @@ import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
 import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent } from '@app/Shared/Redux/RecordingFilterActions';
+import { has } from 'lodash';
 
 export interface ArchivedRecordingsTableProps { 
   target: Observable<Target>;
@@ -96,7 +97,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleHeaderCheck = React.useCallback((event, checked) => {
     setHeaderChecked(checked);
-    setCheckedIndices(checked ? filteredRecordings.map((r) => transformNameToNumber(r.name)) : []);
+    setCheckedIndices(checked ? filteredRecordings.map((r) => convertToNumber(r.name)) : []);
   }, [setHeaderChecked, setCheckedIndices, filteredRecordings]);
 
   const handleRowCheck = React.useCallback((checked, index) => {
@@ -231,7 +232,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           }
 
           setRecordings((old) =>  old.filter((r) => r.name !== event.message.recording.name));
-          setCheckedIndices(old => old.filter((idx) => idx !==  transformNameToNumber(event.message.recording.name)));
+          setCheckedIndices(old => old.filter((idx) => idx !==  convertToNumber(event.message.recording.name)));
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
@@ -270,7 +271,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
-      const filteredRecordingIdx = new Set(filteredRecordings.map((r) => transformNameToNumber(r.name)));
+      const filteredRecordingIdx = new Set(filteredRecordings.map((r) => convertToNumber(r.name)));
       return ci.filter((idx) => filteredRecordingIdx.has(idx));
     });
   }, [filteredRecordings, setCheckedIndices]);
@@ -282,7 +283,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
     filteredRecordings.forEach((r: ArchivedRecording) => {
-      if (checkedIndices.includes(transformNameToNumber(r.name))) {
+      if (checkedIndices.includes(convertToNumber(r.name))) {
         context.reports.delete(r);
         tasks.push(
           context.api.deleteArchivedRecording(r.name).pipe(first())
@@ -458,7 +459,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   };
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Labels} index={transformNameToNumber(r.name)}/>)
+    return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Labels} index={convertToNumber(r.name)}/>)
   }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const handleModalClose = React.useCallback(() => {
@@ -505,8 +506,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   );
 };
 
-
-export const transformNameToNumber = (recordingName: string) => {
-  const utf8Array = new TextEncoder().encode(recordingName);
-  return utf8Array.reduce((prev, curr) => prev + curr, 0);
-}
+export const convertToNumber = (recordingName: string): number => {
+  let hash = 0;
+  for (let i = 0; i < recordingName.length; i++) {
+    hash = ((hash << 5) - hash) + recordingName.charCodeAt(i);
+    hash |= 0; // Force 32-bit number
+  }
+  return hash;
+};
