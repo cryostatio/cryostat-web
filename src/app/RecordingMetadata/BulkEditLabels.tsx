@@ -171,25 +171,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     addSubscription(context.target.target().subscribe(refreshRecordingList));
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
-  React.useEffect(() => {
-    addSubscription(
-      combineLatest([
-        context.target.target(),
-        merge(
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
-          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
-        ),
-      ]).subscribe((parts) => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
-        setRecordings((old) => old.filter((r) => r.name != event.message.recording.name));
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
-
+  // Depends only on RecordingMetadataUpdated notifications
+  // since updates on list of recordings will mount a completely new BulkEditLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
