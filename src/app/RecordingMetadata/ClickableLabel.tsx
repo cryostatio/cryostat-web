@@ -73,6 +73,7 @@ export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = 
 
   return <>
     <Label
+      aria-label={`${props.label.key}: ${props.label.value}`}
       style={style}
       onMouseEnter={() => handleHoveredOrFocused()}
       onMouseLeave={handleNonHoveredOrFocused}
