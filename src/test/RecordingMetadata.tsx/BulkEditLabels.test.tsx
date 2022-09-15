@@ -70,11 +70,24 @@ const mockLabelsNotification = {
   },
 } as NotificationMessage;
 const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
-
+const mockArchivedRecordingsResponse = {
+  data: {
+    targetNodes: [
+      {
+        recordings: {
+          archived: {
+            data: [mockRecording] as ArchivedRecording[]
+          }
+        },
+      },
+    ],
+  },
+};
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockRecording]));
-jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata').mockReturnValue(of('updatedLabels'));
-jest.spyOn(defaultServices.api, 'postRecordingMetadata').mockReturnValue(of('updatedLabels'));
+jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata').mockReturnValue(of());
+jest.spyOn(defaultServices.api, 'postRecordingMetadata').mockReturnValue(of());
+jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
 jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -220,41 +233,5 @@ describe('<BulkEditLabels />', () => {
 
     const saveRequestSpy = jest.spyOn(defaultServices.api, 'postRecordingMetadata');
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('adds a label when Add Label is clicked', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} isTargetRecording={false} />
-      </ServiceContext.Provider>
-    );
-
-    userEvent.click(screen.getByText('Edit'));
-
-    expect(screen.getAllByLabelText('label key').length).toBe(1);
-    expect(screen.getAllByLabelText('label value').length).toBe(1);
-
-    userEvent.click(screen.getByText('Add Label'));
-
-    expect(screen.getAllByLabelText('label key').length).toBe(2);
-    expect(screen.getAllByLabelText('label value').length).toBe(2);
-  });
-
-  it('removes a label when Delete button is clicked', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} isTargetRecording={false} />
-      </ServiceContext.Provider>
-    );
-
-    userEvent.click(screen.getByText('Edit'));
-
-    expect(screen.getAllByLabelText('label key').length).toBe(1);
-    expect(screen.getAllByLabelText('label value').length).toBe(1);
-
-    userEvent.click(screen.getAllByTestId('remove-label-button')[0]);
-
-    expect(screen.queryByLabelText('label key')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('label value')).not.toBeInTheDocument();
   });
 });

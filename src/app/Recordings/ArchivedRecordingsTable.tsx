@@ -230,8 +230,16 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   React.useEffect(() => {
     addSubscription(
+      combineLatest([
+        context.target.target(),
       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
-      .subscribe(event => {
+      ])
+      .subscribe(parts => {
+        const currentTarget = parts[0];
+        const event = parts[1];
+        if (currentTarget.connectUrl != event.message.target) {
+          return;
+        }
         setRecordings(old => old.map(
           o => o.name == event.message.recordingName 
             ? { ...o, metadata: { labels: event.message.metadata.labels } } 
@@ -414,7 +422,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
       setShowPanel={setShowDetailsPanel}  
-      isTargetRecording={true}
+      isTargetRecording={false}
       checkedIndices={checkedIndices}
     />
   ), [checkedIndices]);

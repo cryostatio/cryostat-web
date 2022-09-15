@@ -41,7 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
-import { combineLatest, concatMap, filter, first, forkJoin, merge, Observable } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, map, merge, Observable } from 'rxjs';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { RecordingLabelFields } from './RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
@@ -55,7 +55,7 @@ export interface BulkEditLabelsProps {
 
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
+  const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [editing, setEditing] = React.useState(false);
   const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
   const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as RecordingLabel[]);
@@ -128,13 +128,32 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         .pipe(
           filter((target) => target !== NO_TARGET),
           concatMap((target) =>
-            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+            props.isTargetRecording ?
+              context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+              : context.api.graphql<any>(`
+                  query {
+                    targetNodes(filter: { name: "${target.connectUrl}" }) {
+                      recordings {
+                        archived {
+                          data {
+                            name
+                            downloadUrl
+                            reportUrl
+                            metadata {
+                              labels
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }`),
           ),
+          map(v => props.isTargetRecording ? v : v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
           first()
         )
         .subscribe((value) => setRecordings(value))
     );
-  }, [addSubscription, context, context.target, context.api, setRecordings]);
+  }, [addSubscription, props.isTargetRecording, context, context.target, context.api, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshRecordingList));
