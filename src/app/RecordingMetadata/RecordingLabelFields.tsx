@@ -167,7 +167,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
 
   return (
     <>
-      <Button onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
+      <Button aria-label='Add Label' onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
         Add Label
       </Button>
       {!!props.labels && props.labels.map((label, idx) => (

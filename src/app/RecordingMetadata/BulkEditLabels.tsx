@@ -258,6 +258,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           ) : (
             <Button
               key="edit labels"
+              aria-label='Edit Labels'
               variant="secondary"
               onClick={handleEditLabels}
               isDisabled={!props.checkedIndices.length}

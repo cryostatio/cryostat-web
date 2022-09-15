@@ -38,12 +38,12 @@
 import * as React from 'react';
 import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { of } from 'rxjs';
 import '@testing-library/jest-dom';
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 jest.mock('@patternfly/react-core', () => ({
@@ -51,187 +51,339 @@ jest.mock('@patternfly/react-core', () => ({
   Tooltip: ({ t }) => <>{t}</>,
 }));
 
+const mockConnectUrl = 'service:jmx:rmi://someUrl';
+const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+
 const mockRecordingLabels = {
   someLabel: 'someValue',
 };
-const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
-const mockRecording: ArchivedRecording = {
-  name: 'someRecording',
+
+const mockArchivedRecording: ArchivedRecording = {
+  name: 'someArchivedRecording_some_random',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
 };
-const mockLabelsNotification = {
+
+const mockActiveRecording: ActiveRecording = {
+  name: 'someActiveRecording',
+  downloadUrl: 'http://downloadUrl',
+  reportUrl: 'http://reportUrl',
+  metadata: { labels: mockRecordingLabels },
+  startTime: 1234567890,
+  id: 0,
+  state: RecordingState.RUNNING,
+  duration: 0,
+  continuous: false,
+  toDisk: false,
+  maxSize: 0,
+  maxAge: 0,
+};
+
+const mockActiveLabelsNotification = {
   message: {
     target: mockConnectUrl,
-    recordingName: 'someRecording',
+    recordingName: 'someActiveRecording',
     metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
   },
 } as NotificationMessage;
-const mockDeleteNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
+
+const mockActiveRecordingResponse = [ mockActiveRecording ];
+
+const mockArchivedLabelsNotification = {
+  message: {
+    target: mockConnectUrl,
+    recordingName: 'someArchivedRecording_some_random',
+    metadata: { labels: { someLabel: 'someValue', someNewLabel: 'someNewValue' } },
+  },
+} as NotificationMessage;
+
 const mockArchivedRecordingsResponse = {
   data: {
     targetNodes: [
       {
         recordings: {
           archived: {
-            data: [mockRecording] as ArchivedRecording[]
+            data: [mockArchivedRecording] as ArchivedRecording[]
           }
         },
       },
     ],
   },
 };
+
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockRecording]));
-jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata').mockReturnValue(of());
-jest.spyOn(defaultServices.api, 'postRecordingMetadata').mockReturnValue(of());
 jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
-jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
+jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of(mockActiveRecordingResponse));
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
-  .mockReturnValueOnce(of()) // updates the recording labels after receiving a notification
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of(mockLabelsNotification))
-
-  .mockReturnValueOnce(of()) // removes applicable recording labels after receiving a notification
-  .mockReturnValueOnce(of(mockDeleteNotification))
+  .mockReturnValueOnce(of()) // should display read-only labels from selected recordings
+  .mockReturnValueOnce(of()) // should display editable labels form when in edit mode
+  .mockReturnValueOnce(of()) // should not display labels for unchecked recordings
+  .mockReturnValueOnce(of(mockActiveLabelsNotification)) // should update the target recording labels after receiving a notification
+  .mockReturnValueOnce(of(mockArchivedLabelsNotification)) // should update the archived recording labels after receiving a notification
   .mockReturnValue(of());
 
 describe('<BulkEditLabels />', () => {
-  const mockProps = {
-    isTargetRecording: true,
-    checkedIndices: [0],
-  };
+  let activeCheckedIndices: number[];
+  let archivedCheckedIndices: number[];
+  let emptycheckIndices: number[];
+
+  beforeEach(() => {
+    activeCheckedIndices = [ mockActiveRecording.id ];
+    archivedCheckedIndices = [ -553224758 ]; // Hash code of "someArchivedRecording_some_random"
+    emptycheckIndices = [];
+  });
+
+  afterEach(cleanup);
 
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <BulkEditLabels {...mockProps} />
+          <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true}  />
         </ServiceContext.Provider>
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('updates the recording labels after receiving a notification', () => {
+  it('should display read-only labels from selected recordings', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} />
+        <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByText('someNewLabel: someNewValue')).toBeInTheDocument();
-    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
+    const label = screen.getByLabelText('someLabel: someValue');
+    expect(label).toBeInTheDocument();
+    expect(label).toBeVisible();
+    expect(label.onclick).toBeNull();
+
+    const addLabelButton = screen.queryByRole('button', { name: 'Add Label'});
+    expect(addLabelButton).not.toBeInTheDocument();
+
+    const editButton = screen.getByRole('button', {name: "Edit Labels"})
+    expect(editButton).toBeInTheDocument();
+    expect(editButton).toBeVisible();
+    expect(editButton).not.toBeDisabled();
   });
 
-  it('removes applicable recording labels after receiving a notification', () => {
+  it('should not display labels for unchecked recordings', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} />
+        <BulkEditLabels checkedIndices={emptycheckIndices} isTargetRecording={true} />
       </ServiceContext.Provider>
     );
-
-    expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
-    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
-  });
-
-  it('displays read-only labels from selected recordings', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} />
-      </ServiceContext.Provider>
-    );
-
-    expect(screen.getByText('someLabel: someValue')).toBeInTheDocument();
-    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
-    expect(screen.getByText('Edit')).toBeInTheDocument();
-  });
-
-  it('does not display labels for unchecked recordings', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} checkedIndices={[]} />
-      </ServiceContext.Provider>
-    );
-
+    
     expect(screen.queryByText('someLabel')).not.toBeInTheDocument();
     expect(screen.queryByText('someValue')).not.toBeInTheDocument();
+
+    const placeHolder = screen.getByText("-");
+    expect(placeHolder).toBeInTheDocument();
+    expect(placeHolder).toBeVisible();
   });
 
-  it('displays editable labels form when in edit mode', () => {
+  it('should display editable labels form when in edit mode', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} />
+        <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByText('Edit'));
+    const editButton = screen.getByRole('button', {name: "Edit Labels"})
+    expect(editButton).toBeInTheDocument();
+    expect(editButton).toBeVisible();
+
+    userEvent.click(editButton);
+
+    const addLabelButton = screen.getByRole('button', { name: 'Add Label'});
+    expect(addLabelButton).toBeInTheDocument();
+    expect(addLabelButton).toBeVisible();
 
     const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
-    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
-
-    expect(screen.getByText('Add Label')).toBeInTheDocument();
     expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelKeyInput).toBeInTheDocument();
+    expect(labelKeyInput).toBeVisible();
+
+    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
     expect(labelValueInput).toHaveClass('pf-c-form-control');
-    expect(screen.getByText('Save')).toBeInTheDocument();
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toBeInTheDocument();
+    expect(labelValueInput).toBeVisible();
+
+    const saveButton = screen.getByText('Save');
+    expect(saveButton).toBeInTheDocument();
+    expect(saveButton).toBeVisible();
+    
+    const cancelButton = screen.getByText('Cancel');
+    expect(cancelButton).toBeInTheDocument();
+    expect(cancelButton).toBeVisible();
   });
 
-  it('returns to read-only view when edited labels are cancelled', async () => {
+  it('should update the target recording labels after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} />
+        <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByText('Edit'));
+    const newLabel = screen.getByLabelText('someNewLabel: someNewValue');
+    expect(newLabel).toBeInTheDocument();
+    expect(newLabel).toBeVisible();
+
+    const oldLabel = screen.getByLabelText('someLabel: someValue');
+    expect(oldLabel).toBeInTheDocument();
+    expect(oldLabel).toBeVisible();
+  });
+
+  it('should update the archived recording labels after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
+      </ServiceContext.Provider>
+    );
+
+    const newLabel = screen.getByLabelText('someNewLabel: someNewValue');
+    expect(newLabel).toBeInTheDocument();
+    expect(newLabel).toBeVisible();
+
+    const oldLabel = screen.getByLabelText('someLabel: someValue');
+    expect(oldLabel).toBeInTheDocument();
+    expect(oldLabel).toBeVisible();
+  });
+
+  it('should return to read-only view when edited labels are cancelled', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
+      </ServiceContext.Provider>
+    );
+
+    let editButton = screen.getByRole('button', {name: "Edit Labels"})
+    expect(editButton).toBeInTheDocument();
+    expect(editButton).toBeVisible();
+
+    userEvent.click(editButton);
+
+    let addLabelButton = screen.getByRole('button', { name: 'Add Label'});
+    expect(addLabelButton).toBeInTheDocument();
+    expect(addLabelButton).toBeVisible();
 
     const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
-    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
     expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelKeyInput).toBeInTheDocument();
+    expect(labelKeyInput).toBeVisible();
+
+    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
     expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toBeInTheDocument();
+    expect(labelValueInput).toBeVisible();
 
-    expect(screen.getByText('Add Label')).toBeInTheDocument();
+    const saveButton = screen.getByText('Save');
+    expect(saveButton).toBeInTheDocument();
+    expect(saveButton).toBeVisible();
+    
+    const cancelButton = screen.getByText('Cancel');
+    expect(cancelButton).toBeInTheDocument();
+    expect(cancelButton).toBeVisible();
 
-    userEvent.click(screen.getByText('Cancel'));
+    userEvent.click(cancelButton);
 
-    expect(screen.getByText('Edit')).toBeInTheDocument();
-    expect(screen.queryByText('Add Label')).not.toBeInTheDocument();
+    editButton = screen.getByRole('button', {name: "Edit Labels"});
+    expect(editButton).toBeInTheDocument();
+    expect(editButton).toBeVisible();
+    expect(addLabelButton).not.toBeInTheDocument();
   });
 
-  it('saves target recording labels when Save is clicked', async () => {
+  it('should save target recording labels when Save is clicked', async () => {
+    const saveRequestSpy = jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata').mockReturnValue(of());
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} />
+        <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByText('Edit'));
-    userEvent.click(screen.getByText('Save'));
+    let editButton = screen.getByRole('button', {name: "Edit Labels"})
+    expect(editButton).toBeInTheDocument();
+    expect(editButton).toBeVisible();
 
-    const saveRequestSpy = jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata');
+    userEvent.click(editButton);
+
+    let addLabelButton = screen.getByRole('button', { name: 'Add Label'});
+    expect(addLabelButton).toBeInTheDocument();
+    expect(addLabelButton).toBeVisible();
+
+    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelKeyInput).toBeInTheDocument();
+    expect(labelKeyInput).toBeVisible();
+
+    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toBeInTheDocument();
+    expect(labelValueInput).toBeVisible();
+
+    const saveButton = screen.getByText('Save');
+    expect(saveButton).toBeInTheDocument();
+    expect(saveButton).toBeVisible();
+    
+    const cancelButton = screen.getByText('Cancel');
+    expect(cancelButton).toBeInTheDocument();
+    expect(cancelButton).toBeVisible();
+
+    userEvent.click(saveButton);
+    
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('saves archived recording labels when Save is clicked', async () => {
+  it('should save archived recording labels when Save is clicked', async () => {
+    const saveRequestSpy = jest.spyOn(defaultServices.api, 'postRecordingMetadata').mockReturnValue(of());
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels {...mockProps} isTargetRecording={false} />
+        <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByText('Edit'));
-    userEvent.click(screen.getByText('Save'));
+    let editButton = screen.getByRole('button', {name: "Edit Labels"})
+    expect(editButton).toBeInTheDocument();
+    expect(editButton).toBeVisible();
 
-    const saveRequestSpy = jest.spyOn(defaultServices.api, 'postRecordingMetadata');
+    userEvent.click(editButton);
+
+    let addLabelButton = screen.getByRole('button', { name: 'Add Label'});
+    expect(addLabelButton).toBeInTheDocument();
+    expect(addLabelButton).toBeVisible();
+
+    const labelKeyInput = screen.getAllByDisplayValue('someLabel')[0];
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelKeyInput).toHaveClass('pf-c-form-control');
+    expect(labelKeyInput).toBeInTheDocument();
+    expect(labelKeyInput).toBeVisible();
+
+    const labelValueInput = screen.getAllByDisplayValue('someValue')[0];
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toHaveClass('pf-c-form-control');
+    expect(labelValueInput).toBeInTheDocument();
+    expect(labelValueInput).toBeVisible();
+
+    const saveButton = screen.getByText('Save');
+    expect(saveButton).toBeInTheDocument();
+    expect(saveButton).toBeVisible();
+    
+    const cancelButton = screen.getByText('Cancel');
+    expect(cancelButton).toBeInTheDocument();
+    expect(cancelButton).toBeVisible();
+
+    userEvent.click(saveButton);
+    
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
 });

@@ -32,9 +32,8 @@ exports[`<BulkEditLabels /> renders correctly 1`] = `
     className="pf-l-stack__item"
   >
     <span
+      aria-label="someLabel: someValue"
       className="pf-c-label"
-      onClick={[Function]}
-      style={Object {}}
     >
       <span
         className="pf-c-label__content"
@@ -48,7 +47,7 @@ exports[`<BulkEditLabels /> renders correctly 1`] = `
   >
     <button
       aria-disabled={false}
-      aria-label={null}
+      aria-label="Edit Labels"
       className="pf-c-button pf-m-secondary"
       data-ouia-component-id="OUIA-Generated-Button-secondary-1"
       data-ouia-component-type="PF4/Button"
