@@ -39,7 +39,7 @@ import * as React from 'react';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActiveRecording, ArchivedRecording, isActiveRecording } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
 import { combineLatest, concatMap, filter, first, forkJoin, map, merge, Observable } from 'rxjs';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
@@ -64,12 +64,12 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const addSubscription = useSubscriptions();
 
   const getIdxFromRecording = React.useCallback((r: ArchivedRecording): number =>  {
-    if (isActiveRecording(r)) {
-      return r.id;
+    if (props.isTargetRecording) {
+      return (r as ActiveRecording).id;
     } else {
       return convertToNumber(r.name);
     }
-  }, [isActiveRecording, convertToNumber]);
+  }, [convertToNumber, props.isTargetRecording]);
 
   const handleUpdateLabels = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
