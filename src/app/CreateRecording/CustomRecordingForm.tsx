@@ -179,7 +179,7 @@ export const CustomRecordingForm = (props) => {
       events: getEventString(),
       duration: continuous ? undefined : duration * (durationUnit/1000),
       options: options,
-      metadata: { labels: getFormattedLabels }
+      metadata: { labels: getFormattedLabels() }
     }
     props.onSubmit(recordingAttributes);
   }, [getEventString, getFormattedLabels, continuous, 
