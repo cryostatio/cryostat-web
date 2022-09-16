@@ -168,16 +168,17 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     return (
       <ToolbarItem>
         <Dropdown
+          aria-label={"Category Dropdown"} 
           position={DropdownPosition.left}
           toggle={
-            <DropdownToggle onToggle={onCategoryToggle}>
+            <DropdownToggle aria-label={currentCategory} onToggle={onCategoryToggle}>
               <FilterIcon /> {currentCategory}
             </DropdownToggle>
           }
           isOpen={isCategoryDropdownOpen}
           dropdownItems={
             Object.keys(props.filters).map((cat) => (
-              <DropdownItem key={cat} onClick={() => onCategorySelect(cat)}>
+              <DropdownItem aria-label={cat} key={cat} onClick={() => onCategorySelect(cat)}>
                 {cat}
               </DropdownItem>
             ))

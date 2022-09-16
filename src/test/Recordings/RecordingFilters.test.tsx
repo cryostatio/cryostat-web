@@ -36,15 +36,16 @@
  * SOFTWARE.
  */
 
-
-
-import { emptyActiveRecordingFilters, RecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
-import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
-import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
+import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters, RecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { Target } from '@app/Shared/Services/Target.service';
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { Toolbar, ToolbarContent } from '@patternfly/react-core';
+import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { renderWithReduxProvider } from '../Common';
 
 const mockFooTarget: Target = { 
   connectUrl: "service:jmx:rmi://someFooUrl", 
@@ -54,10 +55,12 @@ const mockFooTarget: Target = {
       platform : new Map() 
   }
 };
+
 const mockRecordingLabels = {
   someLabel: 'someValue',
 };
-const mockRecording: ActiveRecording = {
+
+const mockActiveRecording: ActiveRecording = {
   name: 'someRecording',
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
@@ -71,43 +74,372 @@ const mockRecording: ActiveRecording = {
   maxSize: 0,
   maxAge: 0,
 };
-const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' } as ActiveRecording;
-const mockRecordingList = [mockRecording, mockAnotherRecording];
+const mockActiveRecordingList = [mockActiveRecording, { ...mockActiveRecording, name: 'anotherRecording' } as ActiveRecording];
 
-const categoryOptions = Object.keys({} as RecordingFiltersCategories);
+const mockArchivedRecording: ArchivedRecording = {
+  name: 'someArchivedRecording',
+  downloadUrl: 'http://downloadUrl',
+  reportUrl: 'http://reportUrl',
+  metadata: { labels: mockRecordingLabels },
+};
+const mockArchivedRecordingList = [mockArchivedRecording, { ...mockArchivedRecording, name: 'anotherArchivedRecording' } as ArchivedRecording];
+
+const activeCategoryOptions = Object.keys({} as RecordingFiltersCategories);
+const archivedCategoryOptions = [ "Name", "Labels" ];
+
 const updateFilters = jest.fn((target: string, options: UpdateFilterOptions) => {});
 
 describe("<RecordingFilters />", () => {
-  let emptyFilteredNames: RecordingFiltersCategories;
-  let filteredNames: RecordingFiltersCategories;
+  let preloadedState: RootState;
+  let activeRecordingFilters: RecordingFiltersCategories;
+  let archivedRecordingFilters: RecordingFiltersCategories;
 
   beforeEach(() => {
-    emptyFilteredNames = emptyActiveRecordingFilters;
-    filteredNames = {
-      Name: [ mockRecording.name ],
+    activeRecordingFilters = {
+      Name: [ mockActiveRecording.name ],
       Labels: [ 'someLabel:someValue' ],
       State:[],
       StartedBeforeDate: [],
       StartedAfterDate: [],
       DurationSeconds: [],
     } as RecordingFiltersCategories;
+
+    archivedRecordingFilters = {
+      Name: [ mockArchivedRecording.name ],
+      Labels: [],
+    } as RecordingFiltersCategories;
+
+    preloadedState = { 
+      recordingFilters: {
+        list: [  
+          {
+            target: mockFooTarget.connectUrl,
+            active: {
+              selectedCategory: "Labels",
+              filters: activeRecordingFilters,
+            },
+            archived:  {
+              selectedCategory: "Name",
+              filters: archivedRecordingFilters,
+            }
+          } as TargetRecordingFilters
+        ]
+      }
+    }
   });
 
   afterEach(cleanup);
 
-  it('renders correctly', async () => { /** Skip snapshot test as component depends on DOM */ });
+  it('renders correctly', async () => { /** Skip snapshot test as child component depends on DOM */ });
   
-  it ('', () => {
-    render(
-      <RecordingFilters target={mockFooTarget.connectUrl} isArchived={false} recordings={mockRecordingList} filters={emptyFilteredNames} updateFilters={updateFilters}></RecordingFilters>
+  it('should display currently selected category for active recordings', () => {
+    renderWithReduxProvider(
+      <Toolbar>
+        <ToolbarContent>
+          <RecordingFilters 
+          target={mockFooTarget.connectUrl} 
+          isArchived={false} 
+          recordings={mockActiveRecordingList} 
+          filters={activeRecordingFilters}
+          updateFilters={updateFilters}
+        />
+        </ToolbarContent>
+      </Toolbar>,
+      {
+        preloadState: preloadedState
+      }
     );
+    
+    const categoryDropDown = screen.getByLabelText("Category Dropdown");
+    expect(categoryDropDown).toBeInTheDocument();
+    expect(categoryDropDown).toBeVisible();
+
+    const selectedItem = screen.getByRole('button', { name: "Labels" });
+    expect(selectedItem).toBeInTheDocument();
+    expect(selectedItem).toBeVisible();
   });
 
-
-  it ('should not display chips when no filters are selected', () => {
-    render(
-      <RecordingFilters target={mockFooTarget.connectUrl} isArchived={false} recordings={mockRecordingList} filters={emptyFilteredNames} updateFilters={updateFilters}></RecordingFilters>
+  it('should display currently selected category for archived recordings', () => {
+    renderWithReduxProvider(
+      <Toolbar>
+        <ToolbarContent>
+          <RecordingFilters 
+          target={mockFooTarget.connectUrl} 
+          isArchived={true} 
+          recordings={mockArchivedRecordingList} 
+          filters={archivedRecordingFilters}
+          updateFilters={updateFilters}
+        />
+        </ToolbarContent>
+      </Toolbar>,
+      {
+        preloadState: preloadedState
+      }
     );
+
+    const categoryDropDown = screen.getByLabelText("Category Dropdown");
+    expect(categoryDropDown).toBeInTheDocument();
+    expect(categoryDropDown).toBeVisible();
+
+    const selectedItem = screen.getByRole('button', { name: "Name" });
+    expect(selectedItem).toBeInTheDocument();
+    expect(selectedItem).toBeVisible();
   });
 
+  it('should display category menu for active recordings when clicked', async () => {
+    renderWithReduxProvider(
+      <Toolbar>
+        <ToolbarContent>
+          <RecordingFilters 
+          target={mockFooTarget.connectUrl} 
+          isArchived={false} 
+          recordings={mockActiveRecordingList} 
+          filters={activeRecordingFilters}
+          updateFilters={updateFilters}
+        />
+        </ToolbarContent>
+      </Toolbar>,
+      {
+        preloadState: preloadedState
+      }
+    );
+
+    const categoryDropDown = screen.getByLabelText("Category Dropdown");
+    expect(categoryDropDown).toBeInTheDocument();
+    expect(categoryDropDown).toBeVisible();
+
+    const selectedItem = screen.getByRole('button', { name: "Labels" });
+    expect(selectedItem).toBeInTheDocument();
+    expect(selectedItem).toBeVisible();
+
+    userEvent.click(selectedItem);
+
+    const categoryMenu = await screen.findByRole('menu');
+    expect(categoryMenu).toBeInTheDocument();
+    expect(categoryMenu).toBeVisible();
+
+    activeCategoryOptions.forEach((category) => {
+      const option = within(categoryMenu).getByRole("menuitem", { name: category });
+      expect(option).toBeInTheDocument();
+      expect(option).toBeVisible();
+    });
+  });
+
+  it('should display category menu for archived recordings when clicked', async () => {
+    renderWithReduxProvider(
+      <Toolbar>
+        <ToolbarContent>
+          <RecordingFilters 
+          target={mockFooTarget.connectUrl} 
+          isArchived={true} 
+          recordings={mockArchivedRecordingList} 
+          filters={archivedRecordingFilters}
+          updateFilters={updateFilters}
+        />
+        </ToolbarContent>
+      </Toolbar>,
+      {
+        preloadState: preloadedState
+      }
+    );
+
+    const categoryDropDown = screen.getByLabelText("Category Dropdown");
+    expect(categoryDropDown).toBeInTheDocument();
+    expect(categoryDropDown).toBeVisible();
+
+    const selectedItem = screen.getByRole('button', { name: "Name"});
+    expect(selectedItem).toBeInTheDocument();
+    expect(selectedItem).toBeVisible();
+
+    userEvent.click(selectedItem);
+
+    const categoryMenu = await screen.findByRole('menu');
+    expect(categoryMenu).toBeInTheDocument();
+    expect(categoryMenu).toBeVisible();
+
+    archivedCategoryOptions.forEach((category) => {
+      const option = within(categoryMenu).getByRole("menuitem", { name: category });
+      expect(option).toBeInTheDocument();
+      expect(option).toBeVisible();
+    });
+
+    // Check that only Name and Labels should be showned
+    activeCategoryOptions.forEach((category) => {
+      if (!archivedCategoryOptions.includes(category)) {
+        const option = within(categoryMenu).queryByRole("menuitem", { name: category });
+        expect(option).toBeInTheDocument();
+      }
+    });
+  });
+
+  it('should close category menu when toggled', async () => {
+    renderWithReduxProvider(
+      <Toolbar>
+        <ToolbarContent>
+          <RecordingFilters 
+          target={mockFooTarget.connectUrl} 
+          isArchived={false} 
+          recordings={mockActiveRecordingList} 
+          filters={activeRecordingFilters}
+          updateFilters={updateFilters}
+        />
+        </ToolbarContent>
+      </Toolbar>,
+      {
+        preloadState: preloadedState
+      }
+    );
+    
+    const categoryDropDown = screen.getByLabelText("Category Dropdown");
+    expect(categoryDropDown).toBeInTheDocument();
+    expect(categoryDropDown).toBeVisible();
+
+    const selectedItem = screen.getByRole('button', { name: "Labels" });
+    expect(selectedItem).toBeInTheDocument();
+    expect(selectedItem).toBeVisible();
+
+    userEvent.click(selectedItem);
+
+    let categoryMenu = await screen.findByRole('menu');
+    expect(categoryMenu).toBeInTheDocument();
+    expect(categoryMenu).toBeVisible();
+
+    userEvent.click(selectedItem); // Click again
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('should switch filter input if a category is selected ', async () => {
+    renderWithReduxProvider(
+      <Toolbar>
+        <ToolbarContent>
+          <RecordingFilters 
+          target={mockFooTarget.connectUrl} 
+          isArchived={false} 
+          recordings={mockActiveRecordingList} 
+          filters={activeRecordingFilters}
+          updateFilters={updateFilters}
+        />
+        </ToolbarContent>
+      </Toolbar>,
+      {
+        preloadState: preloadedState
+      }
+    );
+
+    const categoryDropDown = screen.getByLabelText("Category Dropdown");
+    expect(categoryDropDown).toBeInTheDocument();
+    expect(categoryDropDown).toBeVisible();
+
+    let selectedItem = screen.getByRole('button', { name: "Labels"});
+    expect(selectedItem).toBeInTheDocument();
+    expect(selectedItem).toBeVisible();
+
+    userEvent.click(selectedItem);
+
+    const categoryMenu = await screen.findByRole('menu');
+    expect(categoryMenu).toBeInTheDocument();
+    expect(categoryMenu).toBeVisible();
+
+    activeCategoryOptions.forEach((category) => {
+      const option = within(categoryMenu).getByRole("menuitem", { name: category });
+      expect(option).toBeInTheDocument();
+      expect(option).toBeVisible();
+    });
+
+    userEvent.click(within(categoryMenu).getByRole("menuitem", { name: "Name" }));
+
+    selectedItem = screen.getByRole('button', { name: "Name"});
+    expect(selectedItem).toBeInTheDocument();
+    expect(selectedItem).toBeVisible();
+
+    const prevSelectedItem = screen.queryByRole('button', { name: "Labels"});
+    expect(prevSelectedItem).not.toBeInTheDocument();
+  });
+
+  it('should approriate chips for filtered categories', () => {
+    renderWithReduxProvider(
+      <Toolbar>
+        <ToolbarContent>
+          <RecordingFilters 
+          target={mockFooTarget.connectUrl} 
+          isArchived={false} 
+          recordings={mockActiveRecordingList} 
+          filters={activeRecordingFilters}
+          updateFilters={updateFilters}
+        />
+        </ToolbarContent>
+      </Toolbar>,
+      {
+        preloadState: preloadedState
+      }
+    );
+    
+    // Labels group
+    let chipGroup = screen.getByRole('group', { name: "Labels" });
+    expect(chipGroup).toBeInTheDocument();
+    expect(chipGroup).toBeVisible();
+
+    let chipGroupName = within(chipGroup).getByText("Labels");
+    expect(chipGroupName).toBeInTheDocument();
+    expect(chipGroupName).toBeVisible();
+
+    let chip = within(chipGroup).getByText('someLabel:someValue' );
+    expect(chip).toBeInTheDocument();
+    expect(chip).toBeVisible();
+
+    // Name group
+    chipGroup = screen.getByRole('group', { name: "Name" });
+    expect(chipGroup).toBeInTheDocument();
+    expect(chipGroup).toBeVisible();
+
+    chipGroupName = within(chipGroup).getByText("Name");
+    expect(chipGroupName).toBeInTheDocument();
+    expect(chipGroupName).toBeVisible();
+
+    chip = within(chipGroup).getByText(mockActiveRecording.name);
+    expect(chip).toBeInTheDocument();
+    expect(chip).toBeVisible();
+  });
+
+  it('should not display chips when no filters are selected', () => {
+    const emptyPreloadedState = { 
+      recordingFilters: {
+        list: [  
+          {
+            target: mockFooTarget.connectUrl,
+            active: {
+              selectedCategory: "Labels",
+              filters: emptyActiveRecordingFilters,
+            },
+            archived:  {
+              selectedCategory: "Name",
+              filters: emptyArchivedRecordingFilters,
+            }
+          } as TargetRecordingFilters
+        ]
+      }
+    }
+    renderWithReduxProvider(
+      <Toolbar>
+        <ToolbarContent>
+          <RecordingFilters 
+          target={mockFooTarget.connectUrl} 
+          isArchived={false} 
+          recordings={mockActiveRecordingList} 
+          filters={emptyActiveRecordingFilters}
+          updateFilters={updateFilters}
+        />
+        </ToolbarContent>
+      </Toolbar>,
+      {
+        preloadState: emptyPreloadedState 
+      }
+    );
+
+    activeCategoryOptions.forEach((category) => {
+      let chipGroup = screen.queryByRole('group', { name: category });
+      expect(chipGroup).not.toBeInTheDocument();
+    }); 
+  });
 });
