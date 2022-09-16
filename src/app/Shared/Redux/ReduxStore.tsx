@@ -47,5 +47,5 @@ export const store = configureStore({
 });
 
 // Add a subscription to save filter states to local storage
-// Every 500ms
+// if states change.
 store.subscribe(() => saveToLocalStorage("TARGET_RECORDING_FILTERS", store.getState().recordingFilters.list));
