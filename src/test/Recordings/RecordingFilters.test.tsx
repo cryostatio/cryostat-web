@@ -125,7 +125,7 @@ describe("<RecordingFilters />", () => {
           } as TargetRecordingFilters
         ]
       }
-    }
+    };
   });
 
   afterEach(cleanup);

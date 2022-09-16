@@ -65,7 +65,7 @@ const mockRecording: ActiveRecording = {
   maxSize: 0,
   maxAge: 0,
 };
-const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
+const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: 1 };
 const mockCreateNotification = {
   message: { target: mockConnectUrl, recording: mockAnotherRecording },
 } as NotificationMessage;
@@ -87,7 +87,7 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
-jest.mock('@app/Recordings/RecordingFilters', () => {
+jest.mock('@app/Recordings/RecordingFilters', () => { // Already tested separately
   return {
     ...jest.requireActual('@app/Recordings/RecordingFilters'),
     RecordingFilters: jest.fn(() => {
@@ -101,6 +101,11 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
+import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
+import { Provider } from 'react-redux';
+import { renderWithServiceContextAndReduxStoreWithRoute } from '../Common';
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
@@ -155,10 +160,29 @@ jest
   .mockReturnValue(of()); // all other tests
 
   describe('<ActiveRecordingsTable />', () => {
+    let preloadedState: RootState;
+
     beforeEach(() => {
       mockRecording.metadata.labels = mockRecordingLabels;
       mockRecording.state = RecordingState.RUNNING;
       history.go(-history.length);
+      preloadedState = { 
+        recordingFilters: {
+          list: [  
+            {
+              target: mockTarget.connectUrl,
+              active: {
+                selectedCategory: "Labels",
+                filters: emptyActiveRecordingFilters,
+              },
+              archived:  {
+                selectedCategory: "Name",
+                filters: emptyArchivedRecordingFilters,
+              }
+            } as TargetRecordingFilters
+          ]
+        }
+      };
     });
 
     afterEach(cleanup);
@@ -168,9 +192,11 @@ jest
       await act(async () => {
         tree = renderer.create(
           <ServiceContext.Provider value={defaultServices}>
-            <Router location={history.location} history={history}>
-              <ActiveRecordingsTable archiveEnabled={true} />
-            </Router>
+            <Provider store={setupStore()}>
+                <Router location={history.location} history={history}>
+                  <ActiveRecordingsTable archiveEnabled={true} />
+                </Router>
+            </Provider>
           </ServiceContext.Provider>
         );
       });
@@ -178,59 +204,59 @@ jest
     });
 
     it('adds a recording after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
       expect(screen.getByText('someRecording')).toBeInTheDocument();
       expect(screen.getByText('anotherRecording')).toBeInTheDocument();
     });
 
     it('updates the recording labels after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
       expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
       expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
     });
 
     it('stops a recording after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
       expect(screen.getByText('STOPPED')).toBeInTheDocument();
       expect(screen.queryByText('RUNNING')).not.toBeInTheDocument();
     });
 
     it('removes a recording after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
       expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
     });
 
     it('displays the toolbar buttons', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       expect(screen.getByText('Create')).toBeInTheDocument();
@@ -241,12 +267,12 @@ jest
     });
 
     it('routes to the Create Flight Recording form when Create is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       userEvent.click(screen.getByText('Create'));
@@ -255,12 +281,12 @@ jest
     });
 
     it('archives the selected recording when Archive is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -275,12 +301,12 @@ jest
     });
 
     it('stops the selected recording when Stop is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -295,12 +321,12 @@ jest
     });
 
     it('opens the labels drawer when Edit Labels is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -311,12 +337,12 @@ jest
     });
 
     it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -338,12 +364,12 @@ jest
     });
 
     it('deletes the recording when Delete is clicked w/o popup warning', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -359,12 +385,12 @@ jest
     });
 
     it('downloads a recording when Download Recording is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       userEvent.click(screen.getByLabelText('Actions'));
@@ -377,12 +403,12 @@ jest
     });
 
     it('displays the automated analysis report when View Report is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       userEvent.click(screen.getByLabelText('Actions'));
@@ -394,12 +420,12 @@ jest
     });
 
     it('uploads a recording to Grafana when View in Grafana is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ActiveRecordingsTable archiveEnabled={true} />
-          </Router>
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       userEvent.click(screen.getByLabelText('Actions'));
