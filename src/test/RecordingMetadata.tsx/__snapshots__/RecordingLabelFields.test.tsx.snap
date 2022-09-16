@@ -4,7 +4,7 @@ exports[`<RecordingLabelFields /> renders correctly 1`] = `
 Array [
   <button
     aria-disabled={false}
-    aria-label={null}
+    aria-label="Add Label"
     className="pf-c-button pf-m-link"
     data-ouia-component-id="OUIA-Generated-Button-link-1"
     data-ouia-component-type="PF4/Button"

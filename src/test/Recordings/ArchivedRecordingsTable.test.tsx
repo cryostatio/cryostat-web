@@ -50,6 +50,11 @@ import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.se
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
+import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
+import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
+import { Provider } from 'react-redux';
+import { renderWithServiceContextAndReduxStoreWithRoute } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -145,8 +150,26 @@ jest
 jest.spyOn(window, 'open').mockReturnValue(null);
 
 describe('<ArchivedRecordingsTable />', () => {
+  let preloadedState: RootState;
   beforeEach(() => {
     history.go(-history.length);
+    preloadedState = { 
+      recordingFilters: {
+        list: [  
+          {
+            target: mockTarget.connectUrl,
+            active: {
+              selectedCategory: "Labels",
+              filters: emptyActiveRecordingFilters,
+            },
+            archived:  {
+              selectedCategory: "Name",
+              filters: emptyArchivedRecordingFilters,
+            }
+          } as TargetRecordingFilters
+        ]
+      }
+    };
   });
 
   afterEach(cleanup);
@@ -156,9 +179,11 @@ describe('<ArchivedRecordingsTable />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-          </Router>
+          <Provider store={setupStore()}>
+            <Router location={history.location} history={history}>
+              <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
+            </Router>
+          </Provider>
         </ServiceContext.Provider>
       );
     });
@@ -166,47 +191,47 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('adds a recording after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
     expect(screen.getByText('someRecording')).toBeInTheDocument();
     expect(screen.getByText('anotherRecording')).toBeInTheDocument();
   });
 
   it('updates the recording labels after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
     expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
   });
 
   it('removes a recording after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
     expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
   });
 
   it('displays the toolbar buttons', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     expect(screen.getByText('Delete')).toBeInTheDocument();
@@ -214,12 +239,12 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('opens the labels drawer when Edit Labels is clicked', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -230,12 +255,12 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -257,12 +282,12 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('deletes the recording when Delete is clicked w/o popup warning', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -278,12 +303,12 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('downloads a recording when Download Recording is clicked', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     userEvent.click(screen.getByLabelText('Actions'));
@@ -296,12 +321,12 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('displays the automated analysis report when View Report is clicked', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     userEvent.click(screen.getByLabelText('Actions'));
@@ -313,12 +338,12 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('uploads a recording to Grafana when View in Grafana is clicked', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     userEvent.click(screen.getByLabelText('Actions'));
@@ -331,12 +356,12 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('correctly renders the Uploads table', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-        <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     expect(screen.getByText('someRecording')).toBeInTheDocument(); 
@@ -354,12 +379,12 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('uploads an archived recording when Submit is clicked', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false}/>
-        </Router>
-      </ServiceContext.Provider>
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false}/>,
+      {
+        preloadState: preloadedState,
+        history: history
+      }
     );
 
     userEvent.click(screen.getByLabelText('add'));
