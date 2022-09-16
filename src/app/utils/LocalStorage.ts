@@ -42,7 +42,7 @@ export enum LocalStorageKey {
 
 /**
  * This is equivalent to:
- * type LocalStorageKeyStrings = 'ACTIVE_RECORDING_FILTER' | ARCHIVED_RECORDING_FILTER;
+ * type LocalStorageKeyStrings = 'ACTIVE_RECORDING_FILTER';
  */
 type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
 
