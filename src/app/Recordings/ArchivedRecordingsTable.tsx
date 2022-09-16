@@ -60,7 +60,7 @@ import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
 import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent } from '@app/Shared/Redux/RecordingFilterActions';
-import { has } from 'lodash';
+import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
 export interface ArchivedRecordingsTableProps { 
   target: Observable<Target>;
@@ -72,7 +72,7 @@ export interface ArchivedRecordingsTableProps {
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<StateDispatch>();
   
   const [target, setTarget] = React.useState(""); // connectURL of the target
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
@@ -85,7 +85,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   
-  const targetRecordingFilters = useSelector((state: any) => {
+  const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === target);
     return filters.length > 0? filters[0].archived.filters: emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;

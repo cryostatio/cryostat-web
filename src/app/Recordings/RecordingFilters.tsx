@@ -60,6 +60,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { updateCategoryIntent } from '@app/Shared/Redux/RecordingFilterActions';
 import { menuMountPointId } from '@app/utils/utils';
+import { StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
 
 export interface RecordingFiltersCategories {
   Name: string[],
@@ -94,9 +95,9 @@ export interface RecordingFiltersProps {
 }
 
 export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<StateDispatch>();
 
-  const currentCategory = useSelector((state: any) => {
+  const currentCategory = useSelector((state: RootState) => {
     const targetRecordingFilters = state.recordingFilters.list.filter((targetFilter) => targetFilter.target === props.target);
     if (!targetRecordingFilters.length) return "Name"; // Target is not yet loaded
     return (props.isArchived? targetRecordingFilters[0].archived: targetRecordingFilters[0].active).selectedCategory;

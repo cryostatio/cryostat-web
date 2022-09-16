@@ -60,6 +60,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent } from '@app/Shared/Redux/RecordingFilterActions';
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
 import { menuMountPointId } from '@app/utils/utils';
+import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
 export enum PanelContent {
   LABELS,
@@ -73,7 +74,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const routerHistory = useHistory();
   const { url } = useRouteMatch();
   const addSubscription = useSubscriptions();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<StateDispatch>();
 
   const [target, setTarget] = React.useState(""); // connectURL of the target
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
@@ -87,7 +88,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const targetRecordingFilters = useSelector((state: any) => {
+  const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === target);
     return filters.length > 0? filters[0].active.filters: emptyActiveRecordingFilters;
   }) as RecordingFiltersCategories;

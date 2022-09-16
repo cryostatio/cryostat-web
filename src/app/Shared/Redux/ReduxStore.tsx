@@ -46,6 +46,10 @@ export const store = configureStore({
   }
 });
 
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>
+export type StateDispatch = typeof store.dispatch
+
 // Add a subscription to save filter states to local storage
 // if states change.
 store.subscribe(() => saveToLocalStorage("TARGET_RECORDING_FILTERS", store.getState().recordingFilters.list));
