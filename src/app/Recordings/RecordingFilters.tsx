@@ -166,8 +166,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
   const categoryDropdown = React.useMemo(() => {
     return (
-      <ToolbarItem>
-        <Dropdown
+      <Dropdown
           aria-label={"Category Dropdown"} 
           position={DropdownPosition.left}
           toggle={
@@ -183,8 +182,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
               </DropdownItem>
             ))
           }
-        ></Dropdown>
-      </ToolbarItem>
+        />
     );
   }, [Object.keys(props.filters), isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
 
@@ -217,6 +215,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
       props.filters.Labels,
       props.filters.State,
       props.filters.DurationSeconds,
+      dateTimeMountId,
       onNameInput,
       onLabelInput,
       onRecordingStateSelectToggle,
@@ -230,7 +229,9 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   return (
     <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
       <ToolbarGroup variant="filter-group">
-        {categoryDropdown}
+        <ToolbarItem>
+          {categoryDropdown}
+        </ToolbarItem>
         {Object.keys(props.filters).map((filterKey, i) => (
           <ToolbarFilter
             key={filterKey}
