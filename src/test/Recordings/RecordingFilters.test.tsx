@@ -353,6 +353,10 @@ describe("<RecordingFilters />", () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
+    const newFilterTool = screen.getByLabelText("Filter by name...");
+    expect(newFilterTool).toBeInTheDocument();
+    expect(newFilterTool).toBeVisible();
+
     const prevSelectedItem = screen.queryByRole('button', { name: "Labels"});
     expect(prevSelectedItem).not.toBeInTheDocument();
   });
