@@ -58,7 +58,7 @@ import { emptyArchivedRecordingFilters, RecordingFiltersCategories } from './Rec
 import { filterRecordings, RecordingFilters } from './RecordingFilters';
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
+import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent } from '@app/Shared/Redux/RecordingFilterActions';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
@@ -82,7 +82,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
-  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   
   const targetRecordingFilters = useSelector((state: RootState) => {
@@ -403,60 +402,36 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     );
   };
 
-  const handleDeleteButton = React.useCallback(() => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings)) {
-      setWarningModalOpen(true);
-    }
-    else {
-      handleDeleteRecordings();
-    }
-  }, [context, context.settings, context.settings.deletionDialogsEnabledFor, setWarningModalOpen, handleDeleteRecordings])
-
-  const handleWarningModalClose = React.useCallback(() => {
-    setWarningModalOpen(false);
-  }, [setWarningModalOpen]);
-
-  const RecordingsToolbar = () => {
-    const deleteArchivedWarningModal = React.useMemo(() => {
-      return <DeleteWarningModal 
-        warningType={DeleteWarningType.DeleteArchivedRecordings}
-        visible={warningModalOpen}
-        onAccept={handleDeleteRecordings}
-        onClose={handleWarningModalClose}
-      />
-    }, [warningModalOpen, recordings, checkedIndices, handleDeleteRecordings, handleWarningModalClose]);
-
-    return (
-      <Toolbar id="archived-recordings-toolbar" clearAllFilters={handleClearFilters}>
-        <ToolbarContent>
-          <RecordingFilters
-            target={target}
-            isArchived={true}
-            recordings={recordings} 
-            filters={targetRecordingFilters} 
-            updateFilters={updateFilters} />
-          <ToolbarGroup variant="button-group">
-            <ToolbarItem>
-              <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>
-            </ToolbarItem>
-            <ToolbarItem>
-              <Button variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
-            </ToolbarItem>
-          </ToolbarGroup>
-          { deleteArchivedWarningModal }
-          {props.isUploadsTable ? 
-            <ToolbarGroup variant="icon-button-group">
-              <ToolbarItem>
-                <Button variant="plain" aria-label="add" onClick={() => setShowUploadModal(true)}><PlusIcon /></Button>
-              </ToolbarItem>
-            </ToolbarGroup>
-          :
-            null
-          }
-        </ToolbarContent>
-      </Toolbar>
-    );
-  };
+  const RecordingsToolbar = React.useMemo(() => (
+    <ArchivedRecordingsToolbar 
+      target={target}
+      checkedIndices={checkedIndices}
+      targetRecordingFilters={targetRecordingFilters}
+      recordings={recordings}
+      filteredRecordings={filteredRecordings}
+      updateFilters={updateFilters}
+      handleClearFilters={handleClearFilters}
+      handleEditLabels={handleEditLabels}
+      handleDeleteRecordings={handleDeleteRecordings}
+      deletionDialogsEnabled={context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings)} 
+      handleShowUploadModal={() => setShowUploadModal(true)} 
+      isUploadsTable={props.isUploadsTable}/>
+  ), [
+    target,
+    checkedIndices,
+    targetRecordingFilters, 
+    recordings, 
+    filteredRecordings,
+    updateFilters,
+    handleClearFilters,
+    handleEditLabels, 
+    handleDeleteRecordings,
+    context,
+    context.settings,
+    context.settings.deletionDialogsEnabledFor,
+    setShowUploadModal,
+    props.isUploadsTable
+  ]);
 
   const recordingRows = React.useMemo(() => {
     return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Labels} index={convertToNumber(r.name)}/>)
@@ -481,7 +456,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         <DrawerContentBody hasPadding>
           <RecordingsTable
               tableTitle="Archived Flight Recordings"
-              toolbar={<RecordingsToolbar />}
+              toolbar={RecordingsToolbar}
               tableColumns={tableColumns}
               isHeaderChecked={headerChecked}
               onHeaderCheck={handleHeaderCheck}
@@ -513,4 +488,75 @@ export const convertToNumber = (recordingName: string): number => {
     hash |= 0; // Force 32-bit number
   }
   return hash;
+};
+
+export interface ArchivedRecordingsToolbarProps {
+  target: string,
+  checkedIndices: number[],
+  targetRecordingFilters: RecordingFiltersCategories,
+  recordings: ArchivedRecording[],
+  filteredRecordings: ArchivedRecording[],
+  updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void,
+  handleClearFilters: () => void,
+  handleEditLabels: () => void,
+  handleDeleteRecordings: () => void,
+  handleShowUploadModal: () => void,
+  deletionDialogsEnabled: boolean,
+  isUploadsTable: boolean
+}
+
+const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolbarProps> = (props) => {
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const handleDeleteButton = React.useCallback(() => {
+    if (props.deletionDialogsEnabled) {
+      setWarningModalOpen(true);
+    } else {
+      props.handleDeleteRecordings();
+    }
+  }, [props.deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
+
+  const deleteArchivedWarningModal = React.useMemo(() => {
+    return <DeleteWarningModal 
+      warningType={DeleteWarningType.DeleteArchivedRecordings}
+      visible={warningModalOpen}
+      onAccept={props.handleDeleteRecordings}
+      onClose={handleWarningModalClose}
+    />
+  }, [warningModalOpen, props.recordings, props.checkedIndices, props.handleDeleteRecordings, handleWarningModalClose]);
+
+  return (
+    <Toolbar id="archived-recordings-toolbar" clearAllFilters={props.handleClearFilters}>
+        <ToolbarContent>
+          <RecordingFilters
+            target={props.target}
+            isArchived={true}
+            recordings={props.recordings} 
+            filters={props.targetRecordingFilters} 
+            updateFilters={props.updateFilters} />
+          <ToolbarGroup variant="button-group">
+            <ToolbarItem>
+              <Button key="edit labels" variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>Edit Labels</Button>
+            </ToolbarItem>
+            <ToolbarItem>
+              <Button variant="danger" onClick={handleDeleteButton} isDisabled={!props.checkedIndices.length}>Delete</Button>
+            </ToolbarItem>
+          </ToolbarGroup>
+          { deleteArchivedWarningModal }
+          {props.isUploadsTable ? 
+            <ToolbarGroup variant="icon-button-group">
+              <ToolbarItem>
+                <Button variant="plain" aria-label="add" onClick={props.handleShowUploadModal}><PlusIcon /></Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+          :
+            null
+          }
+        </ToolbarContent>
+      </Toolbar>
+  );
 };

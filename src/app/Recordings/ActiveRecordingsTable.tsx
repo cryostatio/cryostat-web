@@ -58,7 +58,7 @@ import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent } from '@app/Shared/Redux/RecordingFilterActions';
-import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
+import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { menuMountPointId } from '@app/utils/utils';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
@@ -83,7 +83,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
-  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -476,81 +475,27 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     });
   }, [expandedRows, setExpandedRows]);
 
-  const handleDeleteButton = React.useCallback(() => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings)) {
-      setWarningModalOpen(true);
-    }
-    else {
-      handleDeleteRecordings();
-    }
-  }, [context, context.settings, context.settings.deletionDialogsEnabledFor, setWarningModalOpen, handleDeleteRecordings]);
+  const RecordingsToolbar = React.useMemo(() => (
+    <ActiveRecordingsToolbar
+      target={target}
+      checkedIndices={checkedIndices}
+      targetRecordingFilters={targetRecordingFilters}
+      recordings={recordings}
+      filteredRecordings={filteredRecordings}
+      updateFilters={updateFilters}
+      handleClearFilters={handleClearFilters}
+      archiveEnabled={props.archiveEnabled}
+      handleCreateRecording={handleCreateRecording}
+      handleArchiveRecordings={handleArchiveRecordings}
+      handleEditLabels={handleEditLabels}
+      handleStopRecordings={handleStopRecordings}
+      handleDeleteRecordings={handleDeleteRecordings}
+      deletionDialogsEnabled={context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings)}
+    />
 
-  const handleWarningModalClose = React.useCallback(() => {
-    setWarningModalOpen(false);
-  }, [setWarningModalOpen]);
-
-  const RecordingsToolbar = () => {
-    const isStopDisabled = React.useMemo(() => {
-      if (!checkedIndices.length) {
-        return true;
-      }
-      const filtered = filteredRecordings.filter((r: ActiveRecording) => checkedIndices.includes(r.id));
-      const anyRunning = filtered.some((r: ActiveRecording) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
-      return !anyRunning;
-    }, [checkedIndices, filteredRecordings]);
-
-    const buttons = React.useMemo(() => {
-      let arr = [
-        <Button key="create" variant="primary" onClick={handleCreateRecording}>Create</Button>
-      ];
-      if (props.archiveEnabled) {
-        arr.push((
-          <Button key="archive" variant="secondary" onClick={handleArchiveRecordings} isDisabled={!checkedIndices.length}>Archive</Button>
-        ));
-      }
-      arr = [
-        ...arr,
-        <Button key="edit labels" variant="secondary" onClick={handleEditLabels} isDisabled={!checkedIndices.length}>Edit Labels</Button>,
-        <Button key="stop" variant="tertiary" onClick={handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>,
-        <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!checkedIndices.length}>Delete</Button>
-      ]
-      return <>
-        {
-          arr.map((btn, idx) => (
-            <ToolbarItem key={idx}>
-              { btn }
-            </ToolbarItem>
-          ))
-        }
-      </>;
-    }, [checkedIndices, handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteButton]);
-
-    const deleteActiveWarningModal = React.useMemo(() => {
-      return <DeleteWarningModal 
-        warningType={DeleteWarningType.DeleteActiveRecordings}
-        visible={warningModalOpen}
-        onAccept={handleDeleteRecordings}
-        onClose={handleWarningModalClose}
-      />
-    }, [recordings, checkedIndices, handleDeleteRecordings, handleWarningModalClose]);
-
-    return (
-      <Toolbar id="active-recordings-toolbar" clearAllFilters={handleClearFilters}>
-        <ToolbarContent>
-          <RecordingFilters 
-            target={target}
-            isArchived={false} 
-            recordings={recordings} 
-            filters={targetRecordingFilters} 
-            updateFilters={updateFilters} />
-          <ToolbarGroup variant="button-group">
-            { buttons }
-          </ToolbarGroup>  
-          { deleteActiveWarningModal }
-        </ToolbarContent>
-      </Toolbar>
-    );
-  };
+  ), [target, checkedIndices, targetRecordingFilters, recordings, filteredRecordings, updateFilters, handleClearFilters, props.archiveEnabled,
+    handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteRecordings, context, context.settings, context.settings.deletionDialogsEnabledFor
+  ]);
 
   const recordingRows = React.useMemo(() => {
     return filteredRecordings.map((r) => <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Labels} index={r.id}/>)
@@ -572,7 +517,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         <DrawerContentBody hasPadding >
           <RecordingsTable
             tableTitle="Active Flight Recordings"
-            toolbar={<RecordingsToolbar />}
+            toolbar={RecordingsToolbar}
             tableColumns={tableColumns}
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}
@@ -588,5 +533,105 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         </DrawerContentBody>
       </DrawerContent>
     </Drawer>
+  );
+};
+
+export interface ActiveRecordingsToolbarProps {
+  target: string,
+  checkedIndices: number[],
+  targetRecordingFilters: RecordingFiltersCategories,
+  recordings: ActiveRecording[],
+  filteredRecordings: ActiveRecording[],
+  updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void,
+  handleClearFilters: () => void,
+  archiveEnabled: boolean,
+  handleCreateRecording: () => void,
+  handleArchiveRecordings: () => void,
+  handleEditLabels: () => void,
+  handleStopRecordings: () => void,
+  handleDeleteRecordings: () => void,
+  deletionDialogsEnabled: boolean,
+}
+
+const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarProps> = (props) => {
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const handleDeleteButton = React.useCallback(() => {
+    if (props.deletionDialogsEnabled) {
+      setWarningModalOpen(true);
+    } else {
+      props.handleDeleteRecordings();
+    }
+  }, [props.deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
+
+
+  const isStopDisabled = React.useMemo(() => {
+    if (!props.checkedIndices.length) {
+      return true;
+    }
+    const filtered = props.filteredRecordings.filter((r) => props.checkedIndices.includes(r.id));
+    const anyRunning = filtered.some((r) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
+    return !anyRunning;
+  }, [props.checkedIndices, props.filteredRecordings]);
+
+  const buttons = React.useMemo(() => {
+    let arr = [
+      <Button key="create" variant="primary" onClick={props.handleCreateRecording}>Create</Button>
+    ];
+    if (props.archiveEnabled) {
+      arr.push((
+        <Button key="archive" variant="secondary" onClick={props.handleArchiveRecordings} isDisabled={!props.checkedIndices.length}>Archive</Button>
+      ));
+    }
+    arr = [
+      ...arr,
+      <Button key="edit labels" variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>Edit Labels</Button>,
+      <Button key="stop" variant="tertiary" onClick={props.handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>,
+      <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!props.checkedIndices.length}>Delete</Button>
+    ]
+    return <>
+      {
+        arr.map((btn, idx) => (
+          <ToolbarItem key={idx}>
+            { btn }
+          </ToolbarItem>
+        ))
+      }
+    </>;
+  }, [props.checkedIndices, 
+    props.handleCreateRecording, 
+    props.handleArchiveRecordings, 
+    props.handleEditLabels, 
+    props.handleStopRecordings, 
+    handleDeleteButton]);
+
+  const deleteActiveWarningModal = React.useMemo(() => {
+    return <DeleteWarningModal 
+      warningType={DeleteWarningType.DeleteActiveRecordings}
+      visible={warningModalOpen}
+      onAccept={props.handleDeleteRecordings}
+      onClose={handleWarningModalClose}
+    />
+  }, [props.recordings, props.checkedIndices, props.handleDeleteRecordings, handleWarningModalClose]);
+
+  return (
+    <Toolbar id="active-recordings-toolbar" clearAllFilters={props.handleClearFilters}>
+      <ToolbarContent>
+        <RecordingFilters 
+          target={props.target}
+          isArchived={false} 
+          recordings={props.recordings} 
+          filters={props.targetRecordingFilters} 
+          updateFilters={props.updateFilters} />
+        <ToolbarGroup variant="button-group">
+          { buttons }
+        </ToolbarGroup>  
+        { deleteActiveWarningModal }
+      </ToolbarContent>
+    </Toolbar>
   );
 };
