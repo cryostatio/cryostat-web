@@ -44,7 +44,7 @@ import { ClickableLabel } from './ClickableLabel';
 import { RecordingLabel } from './RecordingLabel';
 
 export interface LabelCellProps {
-  target: string,
+  target: string;
   labels: RecordingLabel[];
   // Must be specified along with updateFilters.
   labelFilters?: string[];

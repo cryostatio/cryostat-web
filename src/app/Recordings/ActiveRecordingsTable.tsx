@@ -76,7 +76,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
-  const [target, setTarget] = React.useState(""); // connectURL of the target
+  const [targetConnectURL, setTargetConnectURL] = React.useState("");
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -88,7 +88,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [errorMessage, setErrorMessage] = React.useState('');
 
   const targetRecordingFilters = useSelector((state: RootState) => {
-    const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === target);
+    const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL);
     return filters.length > 0? filters[0].active.filters: emptyActiveRecordingFilters;
   }) as RecordingFiltersCategories;
 
@@ -149,12 +149,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe((target) => {
-        setTarget(target.connectUrl);
+        setTargetConnectURL(target.connectUrl);
         dispatch(addTargetIntent(target.connectUrl));
         refreshRecordingList();
       })
     );
-  }, [addSubscription, context, context.target, refreshRecordingList, setTarget]);
+  }, [addSubscription, context, context.target, refreshRecordingList, setTargetConnectURL]);
 
   React.useEffect(() => {
     addSubscription(
@@ -320,8 +320,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
   const handleClearFilters = React.useCallback(() => {
-    dispatch(deleteAllFiltersIntent(target, false));
-  }, [dispatch, target]);
+    dispatch(deleteAllFiltersIntent(targetConnectURL, false));
+  }, [dispatch, targetConnectURL]);
 
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
     if (deleted) {
@@ -398,7 +398,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
             <LabelCell 
-              target={target}
+              target={targetConnectURL}
               updateFilters={updateFilters}
               labelFilters={props.labelFilters}
               labels={parsedLabels} 
@@ -431,7 +431,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       isExpanded,
       tableColumns,
       parsedLabels,
-      target
+      targetConnectURL
     ]);
 
     const childRow = React.useMemo(() => {
@@ -481,7 +481,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const RecordingsToolbar = React.useMemo(() => (
     <ActiveRecordingsToolbar
-      target={target}
+      target={targetConnectURL}
       checkedIndices={checkedIndices}
       targetRecordingFilters={targetRecordingFilters}
       recordings={recordings}
@@ -496,7 +496,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleDeleteRecordings={handleDeleteRecordings}
       deletionDialogsEnabled={isDeleteDialogEnabled}
     />
-  ), [target, checkedIndices, targetRecordingFilters, recordings, filteredRecordings, updateFilters, handleClearFilters, props.archiveEnabled,
+  ), [targetConnectURL, checkedIndices, targetRecordingFilters, recordings, filteredRecordings, updateFilters, handleClearFilters, props.archiveEnabled,
     handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteRecordings, isDeleteDialogEnabled
   ]);
 

@@ -74,7 +74,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
   
-  const [target, setTarget] = React.useState(""); // connectURL of the target
+  const [targetConnectURL, setTargetConnectURL] = React.useState("");
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -85,7 +85,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [isLoading, setIsLoading] = React.useState(false);
   
   const targetRecordingFilters = useSelector((state: RootState) => {
-    const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === target);
+    const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL);
     return filters.length > 0? filters[0].archived.filters: emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
 
@@ -172,8 +172,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
-    dispatch(deleteAllFiltersIntent(target, true));
-  }, [dispatch, target]);
+    dispatch(deleteAllFiltersIntent(targetConnectURL, true));
+  }, [dispatch, targetConnectURL]);
   
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
     if (deleted) {
@@ -190,12 +190,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   React.useEffect(() => {
     addSubscription(
       props.target.subscribe((target) => {
-        setTarget(target.connectUrl);
+        setTargetConnectURL(target.connectUrl);
         dispatch(addTargetIntent(target.connectUrl));
         refreshRecordingList();
       })
     );
-  }, [addSubscription, refreshRecordingList, dispatch, setTarget]);
+  }, [addSubscription, refreshRecordingList, dispatch, setTargetConnectURL]);
 
   React.useEffect(() => {
     addSubscription(
@@ -347,7 +347,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <LabelCell
-              target={target}
+              target={targetConnectURL}
               updateFilters={updateFilters}
               labelFilters={props.labelFilters}
               labels={parsedLabels} 
@@ -375,7 +375,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       parsedLabels, 
       context.api,
       context.api.uploadArchivedRecordingToGrafana,
-      target
+      targetConnectURL
     ]);
 
     const childRow = React.useMemo(() => {
@@ -408,7 +408,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const RecordingsToolbar = React.useMemo(() => (
     <ArchivedRecordingsToolbar 
-      target={target}
+      target={targetConnectURL}
       checkedIndices={checkedIndices}
       targetRecordingFilters={targetRecordingFilters}
       recordings={recordings}
@@ -421,7 +421,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       handleShowUploadModal={() => setShowUploadModal(true)} 
       isUploadsTable={props.isUploadsTable}/>
   ), [
-    target,
+    targetConnectURL,
     checkedIndices,
     targetRecordingFilters, 
     recordings, 

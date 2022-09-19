@@ -126,7 +126,7 @@ export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRec
   }
 }
 
-// Initial states are loaded from local storage if there are any (TODO)
+// Initial states are loaded from local storage if there are any
 const initialState = { 
   list: getFromLocalStorage("TARGET_RECORDING_FILTERS", []) as TargetRecordingFilters[]
 };
