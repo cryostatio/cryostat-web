@@ -122,7 +122,19 @@ jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.reports, 'delete').mockReturnValue();
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true);
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
+  .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
+  .mockReturnValue(true);
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -336,7 +348,7 @@ jest
       expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
     });
 
-    it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
+    it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
       renderWithServiceContextAndReduxStoreWithRoute(
         <ActiveRecordingsTable archiveEnabled={true} />,
         {
@@ -348,9 +360,12 @@ jest
       const checkboxes = screen.getAllByRole('checkbox');
       const selectAllCheck = checkboxes[0];
       userEvent.click(selectAllCheck);
-      userEvent.click(screen.getByText('Delete'));
 
-      expect(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).toBeInTheDocument();
+      userEvent.click(screen.getByText('Delete'));
+      
+      const deleteModal = await screen.findByLabelText(DeleteActiveRecordings.ariaLabel);
+      expect(deleteModal).toBeInTheDocument();
+      expect(deleteModal).toBeVisible();
 
       const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRecording');
       const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');

@@ -122,7 +122,15 @@ jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnVa
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true);
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
+  .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
+  .mockReturnValue(true);
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -254,7 +262,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
   });
 
-  it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
+  it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false}/>,
       {
@@ -268,7 +276,9 @@ describe('<ArchivedRecordingsTable />', () => {
     userEvent.click(selectAllCheck);
     userEvent.click(screen.getByText('Delete'));
 
-    expect(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel));
+    const deleteModal = await screen.findByLabelText(DeleteArchivedRecordings.ariaLabel);
+    expect(deleteModal).toBeInTheDocument();
+    expect(deleteModal).toBeVisible();
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
@@ -297,7 +307,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
 
-    expect(screen.queryByLabelText(DeleteActiveRecordings.ariaLabel)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(DeleteArchivedRecordings.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someRecording');
   });
