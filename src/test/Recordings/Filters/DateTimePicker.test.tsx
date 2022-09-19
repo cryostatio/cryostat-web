@@ -37,7 +37,7 @@
  */
 
 import { DateTimePicker } from "@app/Recordings/Filters/DateTimePicker";
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -71,44 +71,7 @@ describe("<DateTimePicker />", () => {
     expect(calendar).toBeInTheDocument();
     expect(calendar).toBeVisible();
   });
-
-  it('should open time menu when time input is clicked', async () => {
-    render(
-      <DateTimePicker onSubmit={onDateTimeSelect} />
-    );
-
-    const timeInput = screen.getByLabelText("Time Picker");
-    expect(timeInput).toBeInTheDocument();
-    expect(timeInput).toBeVisible();
-
-    userEvent.click(timeInput);
-
-    const timeMenu = await screen.findByRole("menu", { name: "Time Picker"});
-    expect(timeMenu).toBeInTheDocument();
-    expect(timeMenu).toBeVisible();
-  });
-
-  it('should close time menu when time input is clicked', async () => {
-    render(
-      <DateTimePicker onSubmit={onDateTimeSelect} />
-    );
-
-    const timeInput = screen.getByLabelText("Time Picker");
-    expect(timeInput).toBeInTheDocument();
-    expect(timeInput).toBeVisible();
-
-    userEvent.click(timeInput);
-
-    const timeMenu = await screen.findByRole("menu", { name: "Time Picker"});
-    expect(timeMenu).toBeInTheDocument();
-    expect(timeMenu).toBeVisible();
-
-    userEvent.click(document.body); // Click elsewhere
-
-    expect(timeMenu).not.toBeInTheDocument();
-    expect(timeMenu).not.toBeVisible();
-  });
-
+  
   it('should close calendar when calendar icon is clicked', async () => {
     render(
       <DateTimePicker onSubmit={onDateTimeSelect} />
@@ -130,47 +93,6 @@ describe("<DateTimePicker />", () => {
       expect(calendar).not.toBeInTheDocument();
       expect(calendar).not.toBeVisible();
     });
-  });
-
-  it('should disable search icon when no date is selected', () => {
-    render(
-      <DateTimePicker onSubmit={onDateTimeSelect} />
-    );
-
-    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
-    expect(searchIcon).toBeInTheDocument();
-    expect(searchIcon).toBeVisible();
-    expect(searchIcon).toBeDisabled();
-  });
-
-  it('should still disable search icon when time is selected', async () => {
-    render(
-      <DateTimePicker onSubmit={onDateTimeSelect} />
-    );
-
-    const timeInput = screen.getByLabelText("Time Picker");
-    expect(timeInput).toBeInTheDocument();
-    expect(timeInput).toBeVisible();
-
-    userEvent.click(timeInput);
-
-    const timeMenu = await screen.findByRole("menu", { name: "Time Picker"});
-    expect(timeMenu).toBeInTheDocument();
-    expect(timeMenu).toBeVisible();
-
-    const noonOption = within(timeMenu).getByRole('menuitem', { name: "12:00"})
-    expect(noonOption).toBeInTheDocument();
-    expect(noonOption).toBeVisible();
-
-    userEvent.click(noonOption);
-
-    expect(timeMenu).not.toBeInTheDocument();
-    expect(timeMenu).not.toBeVisible();
-
-    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
-    expect(searchIcon).toBeInTheDocument();
-    expect(searchIcon).toBeVisible();
-    expect(searchIcon).toBeDisabled();
   });
 
   it('should enable search icon when date is selected', async () => {
@@ -205,68 +127,6 @@ describe("<DateTimePicker />", () => {
     expect(searchIcon).not.toBeDisabled();
   });
 
-  it('should enable search icon when a valid date is entered', async () => {
-    render(
-      <DateTimePicker onSubmit={onDateTimeSelect} />
-    );
-
-    const dateInput = screen.getByLabelText("Date Picker");
-    expect(dateInput).toBeInTheDocument();
-    expect(dateInput).toBeVisible();
-
-    userEvent.type(dateInput, "2022-09-14");
-    userEvent.type(dateInput, "{enter}");
-
-    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
-    expect(searchIcon).toBeInTheDocument();
-    expect(searchIcon).toBeVisible();
-    expect(searchIcon).not.toBeDisabled();
-  });
-
-  it('should show error when an invalid date is entered', async () => {
-    render(
-      <DateTimePicker onSubmit={onDateTimeSelect} />
-    );
-
-    const dateInput = screen.getByLabelText("Date Picker");
-    expect(dateInput).toBeInTheDocument();
-    expect(dateInput).toBeVisible();
-
-    userEvent.type(dateInput, "invalid_date");
-    userEvent.type(dateInput, "{enter}");
-
-    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
-    expect(searchIcon).toBeInTheDocument();
-    expect(searchIcon).toBeVisible();
-    expect(searchIcon).toBeDisabled();
-
-    const errorMessage = await screen.findByText("Invalid date");
-    expect(errorMessage).toBeInTheDocument();
-    expect(errorMessage).toBeVisible();
-  });
-
-  it('should show error when an invalid time is entered', async () => {
-    render(
-      <DateTimePicker onSubmit={onDateTimeSelect} />
-    );
-
-    const timeInput = screen.getByLabelText("Time Picker");
-    expect(timeInput).toBeInTheDocument();
-    expect(timeInput).toBeVisible();
-
-    userEvent.type(timeInput, "invalid_time");
-    userEvent.type(timeInput, "{enter}");
-
-    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
-    expect(searchIcon).toBeInTheDocument();
-    expect(searchIcon).toBeVisible();
-    expect(searchIcon).toBeDisabled();
-
-    const errorMessage = await screen.findByText("Invalid time format");
-    expect(errorMessage).toBeInTheDocument();
-    expect(errorMessage).toBeVisible();
-  });
-
   it('should update date time when date is selected and search icon is clicked', async () => {
     render(
       <DateTimePicker onSubmit={onDateTimeSelect} />
@@ -276,7 +136,7 @@ describe("<DateTimePicker />", () => {
     expect(calendarIcon).toBeInTheDocument();
     expect(calendarIcon).toBeVisible();
 
-    userEvent.click(calendarIcon);
+    userEvent.click(calendarIcon)
 
     const calendar = await screen.findByRole("dialog");
     expect(calendar).toBeInTheDocument();
@@ -363,5 +223,145 @@ describe("<DateTimePicker />", () => {
     const expectedDate = new Date(currentDate);
     expectedDate.setUTCHours(12, 0);
     expect(onDateTimeSelect).toHaveBeenCalledWith(expectedDate.toISOString());
+  });
+
+  it('should enable search icon when a valid date is entered', async () => {
+    render(
+      <DateTimePicker onSubmit={onDateTimeSelect} />
+    );
+
+    const dateInput = screen.getByLabelText("Date Picker");
+    expect(dateInput).toBeInTheDocument();
+    expect(dateInput).toBeVisible();
+
+    userEvent.type(dateInput, "2022-09-14");
+    userEvent.type(dateInput, "{enter}");
+
+    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
+    expect(searchIcon).toBeInTheDocument();
+    expect(searchIcon).toBeVisible();
+    expect(searchIcon).not.toBeDisabled();
+  });
+
+  it('should show error when an invalid date is entered', async () => {
+    render(
+      <DateTimePicker onSubmit={onDateTimeSelect} />
+    );
+
+    const dateInput = screen.getByLabelText("Date Picker");
+    expect(dateInput).toBeInTheDocument();
+    expect(dateInput).toBeVisible();
+
+    userEvent.type(dateInput, "invalid_date");
+    userEvent.type(dateInput, "{enter}");
+
+    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
+    expect(searchIcon).toBeInTheDocument();
+    expect(searchIcon).toBeVisible();
+    expect(searchIcon).toBeDisabled();
+
+    const errorMessage = await screen.findByText("Invalid date");
+    expect(errorMessage).toBeInTheDocument();
+    expect(errorMessage).toBeVisible();
+  });
+
+  it('should open time menu when time input is clicked', async () => {
+    render(
+      <DateTimePicker onSubmit={onDateTimeSelect} />
+    );
+
+    const timeInput = screen.getByLabelText("Time Picker");
+    expect(timeInput).toBeInTheDocument();
+    expect(timeInput).toBeVisible();
+
+    userEvent.click(timeInput);
+
+    const timeMenu = await screen.findByRole("menu", { name: "Time Picker"});
+    expect(timeMenu).toBeInTheDocument();
+    expect(timeMenu).toBeVisible();
+  });
+
+  it('should close time menu when time input is clicked and then ', async () => {
+    render(
+      <DateTimePicker onSubmit={onDateTimeSelect} />
+    );
+
+    const timeInput = screen.getByLabelText("Time Picker");
+    expect(timeInput).toBeInTheDocument();
+    expect(timeInput).toBeVisible();
+
+    userEvent.click(timeInput);
+
+    const timeMenu = await screen.findByRole("menu", { name: "Time Picker"});
+    expect(timeMenu).toBeInTheDocument();
+    expect(timeMenu).toBeVisible();
+
+    userEvent.click(document.body); // Click elsewhere
+
+    expect(timeMenu).not.toBeInTheDocument();
+    expect(timeMenu).not.toBeVisible();
+  });  
+
+  it('should disable search icon when no date is selected', () => {
+    render(
+      <DateTimePicker onSubmit={onDateTimeSelect} />
+    );
+
+    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
+    expect(searchIcon).toBeInTheDocument();
+    expect(searchIcon).toBeVisible();
+    expect(searchIcon).toBeDisabled();
+  });
+
+  it('should still disable search icon when time is selected', async () => {
+    render(
+      <DateTimePicker onSubmit={onDateTimeSelect} />
+    );
+
+    const timeInput = screen.getByLabelText("Time Picker");
+    expect(timeInput).toBeInTheDocument();
+    expect(timeInput).toBeVisible();
+
+    userEvent.click(timeInput);
+
+    const timeMenu = await screen.findByRole("menu", { name: "Time Picker"});
+    expect(timeMenu).toBeInTheDocument();
+    expect(timeMenu).toBeVisible();
+
+    const noonOption = within(timeMenu).getByRole('menuitem', { name: "12:00"})
+    expect(noonOption).toBeInTheDocument();
+    expect(noonOption).toBeVisible();
+
+    userEvent.click(noonOption);
+
+    expect(timeMenu).not.toBeInTheDocument();
+    expect(timeMenu).not.toBeVisible();
+
+    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
+    expect(searchIcon).toBeInTheDocument();
+    expect(searchIcon).toBeVisible();
+    expect(searchIcon).toBeDisabled();
+  });
+
+  it('should show error when an invalid time is entered', async () => {
+    render(
+      <DateTimePicker onSubmit={onDateTimeSelect} />
+    );
+
+    const timeInput = screen.getByLabelText("Time Picker");
+    expect(timeInput).toBeInTheDocument();
+    expect(timeInput).toBeVisible();
+
+    userEvent.type(timeInput, "invalid_time");
+    userEvent.type(timeInput, "{enter}");
+
+    const searchIcon = screen.getByRole('button', {name: "Search For Date"});
+    expect(searchIcon).toBeInTheDocument();
+    expect(searchIcon).toBeVisible();
+    expect(searchIcon).toBeDisabled();
+
+    const errorMessage = await screen.findByText("Invalid time format");
+    expect(errorMessage).toBeInTheDocument();
+    expect(errorMessage).toBeVisible();
   });
 });
