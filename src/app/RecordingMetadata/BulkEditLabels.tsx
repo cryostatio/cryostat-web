@@ -47,7 +47,7 @@ import { RecordingLabelFields } from './RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import { convertToNumber } from '@app/Recordings/ArchivedRecordingsTable';
+import { hashCode } from '@app/utils/utils';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -67,9 +67,9 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     if (props.isTargetRecording) {
       return (r as ActiveRecording).id;
     } else {
-      return convertToNumber(r.name);
+      return hashCode(r.name);
     }
-  }, [convertToNumber, props.isTargetRecording]);
+  }, [hashCode, props.isTargetRecording]);
 
   const handleUpdateLabels = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
