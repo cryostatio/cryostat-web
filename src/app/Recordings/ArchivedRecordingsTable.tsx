@@ -440,7 +440,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   ]);
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Labels} index={convertToNumber(r.name)}/>)
+    return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Label} index={convertToNumber(r.name)}/>)
   }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const handleModalClose = React.useCallback(() => {

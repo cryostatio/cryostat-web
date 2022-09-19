@@ -85,7 +85,7 @@ const mockArchivedRecording: ArchivedRecording = {
 const mockArchivedRecordingList = [mockArchivedRecording, { ...mockArchivedRecording, name: 'anotherArchivedRecording' } as ArchivedRecording];
 
 const activeCategoryOptions = Object.keys({} as RecordingFiltersCategories);
-const archivedCategoryOptions = [ "Name", "Labels" ];
+const archivedCategoryOptions = [ "Name", "Label" ];
 
 const updateFilters = jest.fn((target: string, options: UpdateFilterOptions) => {});
 
@@ -97,7 +97,7 @@ describe("<RecordingFilters />", () => {
   beforeEach(() => {
     activeRecordingFilters = {
       Name: [ mockActiveRecording.name ],
-      Labels: [ 'someLabel:someValue' ],
+      Label: [ 'someLabel:someValue' ],
       State:[],
       StartedBeforeDate: [],
       StartedAfterDate: [],
@@ -106,7 +106,7 @@ describe("<RecordingFilters />", () => {
 
     archivedRecordingFilters = {
       Name: [ mockArchivedRecording.name ],
-      Labels: [],
+      Label: [],
     } as RecordingFiltersCategories;
 
     preloadedState = { 
@@ -115,7 +115,7 @@ describe("<RecordingFilters />", () => {
           {
             target: mockFooTarget.connectUrl,
             active: {
-              selectedCategory: "Labels",
+              selectedCategory: "Label",
               filters: activeRecordingFilters,
             },
             archived:  {
@@ -154,7 +154,7 @@ describe("<RecordingFilters />", () => {
     expect(categoryDropDown).toBeInTheDocument();
     expect(categoryDropDown).toBeVisible();
 
-    const selectedItem = screen.getByRole('button', { name: "Labels" });
+    const selectedItem = screen.getByRole('button', { name: "Label" });
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
   });
@@ -208,7 +208,7 @@ describe("<RecordingFilters />", () => {
     expect(categoryDropDown).toBeInTheDocument();
     expect(categoryDropDown).toBeVisible();
 
-    const selectedItem = screen.getByRole('button', { name: "Labels" });
+    const selectedItem = screen.getByRole('button', { name: "Label" });
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
@@ -263,7 +263,7 @@ describe("<RecordingFilters />", () => {
       expect(option).toBeVisible();
     });
 
-    // Check that only Name and Labels should be showned
+    // Check that only Name and Label should be showned
     activeCategoryOptions.forEach((category) => {
       if (!archivedCategoryOptions.includes(category)) {
         const option = within(categoryMenu).queryByRole("menuitem", { name: category });
@@ -294,7 +294,7 @@ describe("<RecordingFilters />", () => {
     expect(categoryDropDown).toBeInTheDocument();
     expect(categoryDropDown).toBeVisible();
 
-    const selectedItem = screen.getByRole('button', { name: "Labels" });
+    const selectedItem = screen.getByRole('button', { name: "Label" });
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
@@ -331,7 +331,7 @@ describe("<RecordingFilters />", () => {
     expect(categoryDropDown).toBeInTheDocument();
     expect(categoryDropDown).toBeVisible();
 
-    let selectedItem = screen.getByRole('button', { name: "Labels"});
+    let selectedItem = screen.getByRole('button', { name: "Label"});
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
@@ -357,7 +357,7 @@ describe("<RecordingFilters />", () => {
     expect(newFilterTool).toBeInTheDocument();
     expect(newFilterTool).toBeVisible();
 
-    const prevSelectedItem = screen.queryByRole('button', { name: "Labels"});
+    const prevSelectedItem = screen.queryByRole('button', { name: "Label"});
     expect(prevSelectedItem).not.toBeInTheDocument();
   });
 
@@ -379,12 +379,12 @@ describe("<RecordingFilters />", () => {
       }
     );
     
-    // Labels group
-    let chipGroup = screen.getByRole('group', { name: "Labels" });
+    // Label group
+    let chipGroup = screen.getByRole('group', { name: "Label" });
     expect(chipGroup).toBeInTheDocument();
     expect(chipGroup).toBeVisible();
 
-    let chipGroupName = within(chipGroup).getByText("Labels");
+    let chipGroupName = within(chipGroup).getByText("Label");
     expect(chipGroupName).toBeInTheDocument();
     expect(chipGroupName).toBeVisible();
 
@@ -413,7 +413,7 @@ describe("<RecordingFilters />", () => {
           {
             target: mockFooTarget.connectUrl,
             active: {
-              selectedCategory: "Labels",
+              selectedCategory: "Label",
               filters: emptyActiveRecordingFilters,
             },
             archived:  {

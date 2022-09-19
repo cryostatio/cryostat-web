@@ -64,7 +64,7 @@ import { StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
 
 export interface RecordingFiltersCategories {
   Name: string[],
-  Labels: string[],
+  Label: string[],
   State?: RecordingState[],
   StartedBeforeDate?: string[],
   StartedAfterDate?: string[],
@@ -73,7 +73,7 @@ export interface RecordingFiltersCategories {
 
 export const emptyActiveRecordingFilters = {
   Name: [],
-  Labels: [],
+  Label: [],
   State: [],
   StartedBeforeDate: [],
   StartedAfterDate: [],
@@ -83,7 +83,7 @@ export const emptyActiveRecordingFilters = {
 
 export const emptyArchivedRecordingFilters = {
   Name: [],
-  Labels: [],
+  Label: [],
 } as RecordingFiltersCategories;
 
 export interface RecordingFiltersProps {
@@ -194,7 +194,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <NameFilter recordings={props.recordings} onSubmit={onNameInput} filteredNames={props.filters.Name} />
       </InputGroup>,
       <InputGroup>
-        <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} filteredLabels={props.filters.Labels} />
+        <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} filteredLabels={props.filters.Label} />
       </InputGroup>,
       <InputGroup>
         <RecordingStateFilter filteredStates={props.filters.State} onSelectToggle={onRecordingStateSelectToggle} />
@@ -212,7 +212,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     [
       props.recordings,
       props.filters.Name,
-      props.filters.Labels,
+      props.filters.Label,
       props.filters.State,
       props.filters.DurationSeconds,
       dateTimeMountId,
@@ -290,10 +290,10 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
       }).length;
     });
   }
-  if (!!filters.Labels.length) {
+  if (!!filters.Label.length) {
     filtered = filtered.filter((r) =>
       Object.entries(r.metadata.labels)
-        .filter(([k,v]) => filters.Labels.includes(`${k}:${v}`)).length
+        .filter(([k,v]) => filters.Label.includes(`${k}:${v}`)).length
       );
   }
 

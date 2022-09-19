@@ -505,7 +505,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   ]);
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Labels} index={r.id}/>)
+    return filteredRecordings.map((r) => <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Label} index={r.id}/>)
   }, [filteredRecordings, expandedRows, targetRecordingFilters, checkedIndices]);
 
   const LabelsPanel = React.useMemo(() => (
