@@ -402,6 +402,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     );
   };
 
+  const isDeleteDialogEnabled = React.useMemo(
+    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings), 
+  [context, context.settings, context.settings.deletionDialogsEnabledFor]);
+
   const RecordingsToolbar = React.useMemo(() => (
     <ArchivedRecordingsToolbar 
       target={target}
@@ -413,7 +417,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       handleClearFilters={handleClearFilters}
       handleEditLabels={handleEditLabels}
       handleDeleteRecordings={handleDeleteRecordings}
-      deletionDialogsEnabled={context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings)} 
+      deletionDialogsEnabled={isDeleteDialogEnabled} 
       handleShowUploadModal={() => setShowUploadModal(true)} 
       isUploadsTable={props.isUploadsTable}/>
   ), [
@@ -426,9 +430,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     handleClearFilters,
     handleEditLabels, 
     handleDeleteRecordings,
-    context,
-    context.settings,
-    context.settings.deletionDialogsEnabledFor,
+    isDeleteDialogEnabled,
     setShowUploadModal,
     props.isUploadsTable
   ]);

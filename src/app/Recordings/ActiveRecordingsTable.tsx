@@ -475,6 +475,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     });
   }, [expandedRows, setExpandedRows]);
 
+  const isDeleteDialogEnabled = React.useMemo(
+    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings), 
+  [context, context.settings, context.settings.deletionDialogsEnabledFor]);
+
   const RecordingsToolbar = React.useMemo(() => (
     <ActiveRecordingsToolbar
       target={target}
@@ -490,11 +494,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleEditLabels={handleEditLabels}
       handleStopRecordings={handleStopRecordings}
       handleDeleteRecordings={handleDeleteRecordings}
-      deletionDialogsEnabled={context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings)}
+      deletionDialogsEnabled={isDeleteDialogEnabled}
     />
-
   ), [target, checkedIndices, targetRecordingFilters, recordings, filteredRecordings, updateFilters, handleClearFilters, props.archiveEnabled,
-    handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteRecordings, context, context.settings, context.settings.deletionDialogsEnabledFor
+    handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteRecordings, isDeleteDialogEnabled
   ]);
 
   const recordingRows = React.useMemo(() => {
