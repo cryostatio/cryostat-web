@@ -399,8 +399,12 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
             <LabelCell 
               target={targetConnectURL}
-              updateFilters={updateFilters}
-              labelFilters={props.labelFilters}
+              clickableOptions={
+                {
+                  updateFilters: updateFilters,
+                  labelFilters: props.labelFilters
+                }
+              }
               labels={parsedLabels} 
             />
           </Td>

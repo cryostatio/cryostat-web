@@ -348,8 +348,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
             <LabelCell
               target={targetConnectURL}
-              updateFilters={updateFilters}
-              labelFilters={props.labelFilters}
+              clickableOptions={
+                {
+                  updateFilters: updateFilters,
+                  labelFilters: props.labelFilters
+                }
+              }
               labels={parsedLabels} 
             />
           </Td>

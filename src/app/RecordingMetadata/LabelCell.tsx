@@ -46,31 +46,35 @@ import { RecordingLabel } from './RecordingLabel';
 export interface LabelCellProps {
   target: string;
   labels: RecordingLabel[];
-  // Must be specified along with updateFilters.
-  labelFilters?: string[];
-  // If undefined, labels are not clickable (i.e. display only).
-  updateFilters?: (target: string, updateFilterOptions: UpdateFilterOptions) => void
+  clickableOptions?: { // If undefined, labels are not clickable (i.e. display only) and only displayed in grey.
+    labelFilters: string[];
+    updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void
+  }
 }
 
 export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
-  const labelFilterSet = React.useMemo(() => new Set(props.labelFilters), [props.labelFilters]);
+  const isLabelSelected = React.useCallback((label: RecordingLabel) => {
+    if (props.clickableOptions) {
+      const labelFilterSet = new Set(props.clickableOptions.labelFilters);
+      return labelFilterSet.has(getLabelDisplay(label))
+    }
+    return false;
+  }, [getLabelDisplay]);
 
-  const isLabelSelected = React.useCallback((label: RecordingLabel) => labelFilterSet.has(getLabelDisplay(label)), [labelFilterSet, getLabelDisplay]);
   const getLabelColor = React.useCallback((label: RecordingLabel) => isLabelSelected(label)? "blue": "grey", [isLabelSelected]);
-
   const onLabelSelectToggle = React.useCallback(
     (clickedLabel: RecordingLabel) => {
-      if (props.updateFilters) {
-        props.updateFilters(props.target, {filterKey: "Labels", filterValue: getLabelDisplay(clickedLabel), deleted: isLabelSelected(clickedLabel)})
+      if (props.clickableOptions) {
+        props.clickableOptions.updateFilters(props.target, {filterKey: "Labels", filterValue: getLabelDisplay(clickedLabel), deleted: isLabelSelected(clickedLabel)})
       }
     },
-    [props.updateFilters, props.labelFilters, props.target, getLabelDisplay]);
+    [props.clickableOptions, props.target, getLabelDisplay]);
 
   return (
     <>
       {!!props.labels && props.labels.length? (
         props.labels.map((label) =>
-        props.updateFilters?
+        props.clickableOptions?
           <ClickableLabel
             key={label.key}
             label={label}

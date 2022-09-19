@@ -65,7 +65,7 @@ const mockLabelStringDisplayList = [ `${mockLabel.key}: ${mockLabel.value}`, `${
 const mockLabelStringList = mockLabelStringDisplayList.map((s: string) => s.replace(" ", ""));
 
 describe('<LabelCell />', () => {
-  let onUpdateLabels: ((target: string, updateFilterOptions: UpdateFilterOptions) => void) | undefined;
+  let onUpdateLabels: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
   beforeEach(() => {
     onUpdateLabels = jest.fn((target: string, options: UpdateFilterOptions) => {});
   });
@@ -76,7 +76,7 @@ describe('<LabelCell />', () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
-        <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} labelFilters={[]} updateFilters={onUpdateLabels}/>
+        <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} clickableOptions={{labelFilters:[], updateFilters: onUpdateLabels}} />
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
@@ -84,7 +84,7 @@ describe('<LabelCell />', () => {
 
   it('should display read-only labels', () => {
     render(
-      <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} labelFilters={[]} />
+      <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} />
     );
     
     mockLabelStringDisplayList.forEach((labelAsString) => {
@@ -102,7 +102,7 @@ describe('<LabelCell />', () => {
 
   it('should display clickable labels', () => {
     render(
-      <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} labelFilters={[]} updateFilters={onUpdateLabels} />
+      <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} clickableOptions={{labelFilters:[], updateFilters: onUpdateLabels}} />
     );
     
     let count = 0;
@@ -124,7 +124,7 @@ describe('<LabelCell />', () => {
 
   it('should display placeholder when there is no label', () => {
     render(
-      <LabelCell target={mockFooTarget.connectUrl} labels={[]} labelFilters={[]} updateFilters={onUpdateLabels} />
+      <LabelCell target={mockFooTarget.connectUrl} labels={[]} />
     );
     
     const placeHolder = screen.getByText("-");
