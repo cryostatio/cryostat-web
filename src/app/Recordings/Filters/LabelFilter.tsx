@@ -55,10 +55,10 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
     const onSelect = React.useCallback(
       (_, selection, isPlaceholder) => {
         if (!isPlaceholder) {
-          // No need to close menu as parent rebuilds
+          setIsExpanded(false);
           props.onSubmit(selection);
         }
-      }, [props.onSubmit]
+      }, [props.onSubmit, setIsExpanded]
     );
 
     const labels = React.useMemo(() => {

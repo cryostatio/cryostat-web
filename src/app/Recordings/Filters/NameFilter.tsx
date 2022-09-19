@@ -52,10 +52,10 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
   const onSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       if (!isPlaceholder) {
-        // No need to close menu as parent rebuilds
+        setIsExpanded(false);
         props.onSubmit(selection);
       }
-    }, [props.onSubmit]
+    }, [props.onSubmit, setIsExpanded]
   );
 
   const nameOptions = React.useMemo(() => {
