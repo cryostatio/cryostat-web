@@ -42,9 +42,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 const onDateTimeSelect = jest.fn((date) => { /**Do nothing. Used for checking renders */ });
-const currentDate = new Date(0);
-currentDate.setUTCDate(14);
-currentDate.setUTCFullYear(2022, 8, 14); // 8 is September
+const currentDate = new Date("14 Sep 2022 00:00:00 UTC");
 
 describe("<DateTimePicker />", () => {
   beforeEach(() => {
