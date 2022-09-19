@@ -568,7 +568,6 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
     }
   }, [props.deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
 
-
   const isStopDisabled = React.useMemo(() => {
     if (!props.checkedIndices.length) {
       return true;
@@ -616,7 +615,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
       onAccept={props.handleDeleteRecordings}
       onClose={handleWarningModalClose}
     />
-  }, [props.recordings, props.checkedIndices, props.handleDeleteRecordings, handleWarningModalClose]);
+  }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
 
   return (
     <Toolbar id="active-recordings-toolbar" clearAllFilters={props.handleClearFilters}>

@@ -527,7 +527,7 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
       onAccept={props.handleDeleteRecordings}
       onClose={handleWarningModalClose}
     />
-  }, [warningModalOpen, props.recordings, props.checkedIndices, props.handleDeleteRecordings, handleWarningModalClose]);
+  }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
 
   return (
     <Toolbar id="archived-recordings-toolbar" clearAllFilters={props.handleClearFilters}>
