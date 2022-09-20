@@ -36,9 +36,8 @@
  * SOFTWARE.
  */
 
-export const createBlobURL = (obj: any, timeout: number = 1000) => {
-  const content = JSON.stringify(obj);
-  const blob = new Blob([content], {type: "octet/stream"});
+export const createBlobURL = (content : any, contentType: string, timeout: number = 1000) => {
+  const blob = new Blob([content], {type: contentType});
   const url = window.URL.createObjectURL(blob);
   setTimeout(() => window.URL.revokeObjectURL(url), timeout);
   return url;

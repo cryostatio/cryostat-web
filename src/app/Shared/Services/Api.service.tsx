@@ -441,7 +441,7 @@ export class ApiService {
           recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
         );
         this.downloadFile(
-          createBlobURL(recording.metadata), // Blob for metadata
+          createBlobURL(JSON.stringify(recording.metadata), "application/json"), // Blob for metadata
           recording.name.replace(/\.jfr$/, "") + ".metadata.json"
         );
       });
