@@ -479,10 +479,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     });
   }, [expandedRows, setExpandedRows]);
 
-  const isDeleteDialogEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings), 
-  [context, context.settings, context.settings.deletionDialogsEnabledFor]);
-
   const RecordingsToolbar = React.useMemo(() => (
     <ActiveRecordingsToolbar
       target={targetConnectURL}
@@ -498,10 +494,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleEditLabels={handleEditLabels}
       handleStopRecordings={handleStopRecordings}
       handleDeleteRecordings={handleDeleteRecordings}
-      deletionDialogsEnabled={isDeleteDialogEnabled}
     />
   ), [targetConnectURL, checkedIndices, targetRecordingFilters, recordings, filteredRecordings, updateFilters, handleClearFilters, props.archiveEnabled,
-    handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteRecordings, isDeleteDialogEnabled
+    handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteRecordings,
   ]);
 
   const recordingRows = React.useMemo(() => {
@@ -557,23 +552,27 @@ export interface ActiveRecordingsToolbarProps {
   handleEditLabels: () => void,
   handleStopRecordings: () => void,
   handleDeleteRecordings: () => void,
-  deletionDialogsEnabled: boolean,
 }
 
 const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarProps> = (props) => {
+  const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-  
+
+  const deletionDialogsEnabled = React.useMemo(
+    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings), 
+  [context, context.settings, context.settings.deletionDialogsEnabledFor]);
+
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
   const handleDeleteButton = React.useCallback(() => {
-    if (props.deletionDialogsEnabled) {
+    if (deletionDialogsEnabled) {
       setWarningModalOpen(true);
     } else {
       props.handleDeleteRecordings();
     }
-  }, [props.deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
+  }, [deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
 
   const isStopDisabled = React.useMemo(() => {
     if (!props.checkedIndices.length) {
