@@ -79,11 +79,14 @@ export const emptyActiveRecordingFilters = {
   DurationSeconds: [],
 } as RecordingFiltersCategories;
 
+export const allowedActiveRecordingFilters = Object.keys(emptyActiveRecordingFilters);
 
 export const emptyArchivedRecordingFilters = {
   Name: [],
   Label: [],
 } as RecordingFiltersCategories;
+
+export const allowedArchivedRecordingFilters = Object.keys(emptyArchivedRecordingFilters);
 
 export interface RecordingFiltersProps {
   target: string,
@@ -164,6 +167,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 
   const categoryDropdown = React.useMemo(() => {
+    
     return (
       <Dropdown
           aria-label={"Category Dropdown"} 
@@ -175,7 +179,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
           }
           isOpen={isCategoryDropdownOpen}
           dropdownItems={
-            Object.keys(props.filters).map((cat) => (
+            (!props.isArchived? allowedActiveRecordingFilters: allowedArchivedRecordingFilters).map((cat) => (
               <DropdownItem aria-label={cat} key={cat} onClick={() => onCategorySelect(cat)}>
                 {cat}
               </DropdownItem>
@@ -183,7 +187,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
           }
         />
     );
-  }, [Object.keys(props.filters), isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
+  }, [props.isArchived, allowedActiveRecordingFilters, allowedArchivedRecordingFilters, isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
 
   const filterDropdownItems = React.useMemo(
     () => [
@@ -193,7 +197,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
       <InputGroup>
         <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} filteredLabels={props.filters.Label} />
       </InputGroup>,
-      ...(props.isArchived? 
+      ...(!props.isArchived? 
         [
           <InputGroup>
             <RecordingStateFilter filteredStates={props.filters.State} onSelectToggle={onRecordingStateSelectToggle} />
