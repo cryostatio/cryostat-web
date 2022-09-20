@@ -42,10 +42,8 @@ import {
   DatePicker,
   Flex,
   FlexItem,
-  isValidDate,
   Text,
   TimePicker,
-  yyyyMMddFormat,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -64,7 +62,7 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
     (inputDateValue: string, newDate: Date | undefined) => {
       setSelectedDate(newDate);
     },
-    [isValidDate, yyyyMMddFormat, setSelectedDate]
+    [setSelectedDate]
   );
 
   const onTimeChange = React.useCallback(
