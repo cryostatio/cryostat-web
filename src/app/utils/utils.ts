@@ -52,10 +52,6 @@ export function accessibleRouteChangeHandler() {
   }, 50);
 }
 
-export const menuMountPointId = (isArchived: boolean) => `${!isArchived? "active": "archived"}-recording-drawer`;
-
-export const findDatetimeMenuMountPoint = (id: string) => document.getElementById(id) || document.body;
-
 export const hashCode = (str: string): number => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {

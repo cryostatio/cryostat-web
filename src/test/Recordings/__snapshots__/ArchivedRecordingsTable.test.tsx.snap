@@ -3,6 +3,7 @@
 exports[`<ArchivedRecordingsTable /> renders correctly 1`] = `
 <div
   className="pf-c-drawer pf-m-inline"
+  id="archived-recording-drawer"
 >
   <div
     className="pf-c-drawer__main"

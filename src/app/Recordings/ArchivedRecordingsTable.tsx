@@ -452,7 +452,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   ), [checkedIndices, setShowDetailsPanel]);
 
   return (
-    <Drawer isExpanded={showDetailsPanel} isInline>
+    <Drawer isExpanded={showDetailsPanel} isInline id={"archived-recording-drawer"}>
       <DrawerContent panelContent={LabelsPanel} className='recordings-table-drawer-content'>
         <DrawerContentBody hasPadding>
           <RecordingsTable
