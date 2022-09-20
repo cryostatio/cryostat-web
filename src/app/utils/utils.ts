@@ -35,6 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+export const createBlobURL = (obj: any) => {
+  const content = JSON.stringify(obj);
+  const blob = new Blob([content], {type: "octet/stream"});
+  return window.URL.createObjectURL(blob);
+}
+
 export function accessibleRouteChangeHandler() {
   return window.setTimeout(() => {
     const mainContainer = document.getElementById('primary-app-container');
