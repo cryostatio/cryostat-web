@@ -678,7 +678,7 @@ export class ApiService {
   private downloadFile(url: string, filename: string, download = true): void {
     const anchor = document.createElement('a');
     anchor.setAttribute('style', 'display: none; visibility: hidden;');
-    anchor.target = '_blank;';
+    anchor.target = '_blank';
     if (download) {
       anchor.download = filename;
     }
