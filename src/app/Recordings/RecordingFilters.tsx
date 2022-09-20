@@ -193,20 +193,25 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
       <InputGroup>
         <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} filteredLabels={props.filters.Label} />
       </InputGroup>,
-      <InputGroup>
-        <RecordingStateFilter filteredStates={props.filters.State} onSelectToggle={onRecordingStateSelectToggle} />
-      </InputGroup>,
-      <InputGroup>
-        <DateTimePicker onSubmit={onStartedBeforeInput} />
-      </InputGroup>,
-      <InputGroup>
-        <DateTimePicker onSubmit={onStartedAfterInput} />
-      </InputGroup>,
-      <InputGroup>
-        <DurationFilter durations={props.filters.DurationSeconds} onContinuousDurationSelect={onContinuousDurationSelect} onDurationInput={onDurationInput}></DurationFilter>
-      </InputGroup>,
+      ...(props.isArchived? 
+        [
+          <InputGroup>
+            <RecordingStateFilter filteredStates={props.filters.State} onSelectToggle={onRecordingStateSelectToggle} />
+          </InputGroup>,
+          <InputGroup>
+            <DateTimePicker onSubmit={onStartedBeforeInput} />
+          </InputGroup>,
+          <InputGroup>
+            <DateTimePicker onSubmit={onStartedAfterInput} />
+          </InputGroup>,
+          <InputGroup>
+            <DurationFilter durations={props.filters.DurationSeconds} onContinuousDurationSelect={onContinuousDurationSelect} onDurationInput={onDurationInput}></DurationFilter>
+          </InputGroup>,
+        ]: []
+      )
     ],
     [
+      props.isArchived,
       props.recordings,
       props.filters.Name,
       props.filters.Label,
