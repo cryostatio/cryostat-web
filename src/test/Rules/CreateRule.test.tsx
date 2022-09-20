@@ -95,7 +95,7 @@ const mockTargetFoundNotification = {
 } as NotificationMessage;
 
 
-const history = createMemoryHistory();
+const history = createMemoryHistory({initialEntries: ["/rules"]});
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -113,7 +113,6 @@ jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
 describe('<CreateRule/>', () => {
   beforeEach(() => {
     history.go(-history.length);
-    history.push('/rules');
   });
 
   afterEach(cleanup);

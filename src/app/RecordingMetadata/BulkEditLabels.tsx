@@ -47,6 +47,7 @@ import { RecordingLabelFields } from './RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { hashCode } from '@app/utils/utils';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -62,11 +63,20 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const addSubscription = useSubscriptions();
 
+  const getIdxFromRecording = React.useCallback((r: ArchivedRecording): number =>  {
+    if (props.isTargetRecording) {
+      return (r as ActiveRecording).id;
+    } else {
+      return hashCode(r.name);
+    }
+  }, [hashCode, props.isTargetRecording]);
+
   const handleUpdateLabels = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
-    recordings.forEach((r: ArchivedRecording, idx) => {
+    recordings.forEach((r: ArchivedRecording) => {
+      const idx = getIdxFromRecording(r);
       if (props.checkedIndices.includes(idx)) {
         let updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
         updatedLabels = updatedLabels.filter((label) => {
@@ -106,7 +116,9 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
       let allRecordingLabels = [] as RecordingLabel[][];
-      recordings.forEach((r: ArchivedRecording, idx) => {
+
+      recordings.forEach((r: ArchivedRecording) => {
+        const idx = getIdxFromRecording(r);
         if (props.checkedIndices.includes(idx)) {
           allRecordingLabels.push(parseLabels(r.metadata.labels));
         }
@@ -159,25 +171,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     addSubscription(context.target.target().subscribe(refreshRecordingList));
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
-  React.useEffect(() => {
-    addSubscription(
-      combineLatest([
-        context.target.target(),
-        merge(
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
-          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
-        ),
-      ]).subscribe((parts) => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
-        setRecordings((old) => old.filter((r) => r.name != event.message.recording.name));
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
-
+  // Depends only on RecordingMetadataUpdated notifications
+  // since updates on list of recordings will mount a completely new BulkEditLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
@@ -236,7 +231,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           </Split>
         </StackItem>
         <StackItem>
-          <LabelCell labels={savedCommonLabels} />
+          <LabelCell target='' labels={savedCommonLabels} />
         </StackItem>
         <StackItem>
           {editing ? (
@@ -263,6 +258,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           ) : (
             <Button
               key="edit labels"
+              aria-label='Edit Labels'
               variant="secondary"
               onClick={handleEditLabels}
               isDisabled={!props.checkedIndices.length}

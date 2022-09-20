@@ -37,73 +37,38 @@
  */
 
 
-import {
-  Button,
-  ButtonVariant,
-  DatePicker,
-  Flex,
-  FlexItem,
-  InputGroup,
-  isValidDate,
-  Text,
-  TimePicker,
-  yyyyMMddFormat,
-} from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { RecordingState } from '@app/Shared/Services/Api.service';
 
-export interface DateTimePickerProps {
-  onSubmit: (startDate) => void;
+export interface RecordingStateFilterProps {
+  filteredStates: RecordingState[] | undefined;
+  onSelectToggle: (state: any) => void;
 }
 
-export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
-  const [start, setStart] = React.useState(new Date(0));
-  const [searchDisabled, setSearchDisabled] = React.useState(true);
+export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterProps> = (props) => {
+  const [isOpen, setIsOpen] = React.useState(false);
 
-  const onStartDateChange = React.useCallback(
-    (inputDate, newStartDate) => {
-      if (isValidDate(start) && isValidDate(newStartDate) && inputDate === yyyyMMddFormat(newStartDate)) {
-        setStart(new Date(newStartDate));
-        setSearchDisabled(false);
-      } else {
-        setSearchDisabled(true);
-      }
-    },
-    [start, isValidDate, yyyyMMddFormat]
-  );
-
-  const onStartTimeChange = React.useCallback(
-    (unused, hour, minute) => {
-      let updated = new Date(start);
-      updated.setUTCHours(hour, minute);
-      setStart(updated);
-    },
-    [start, setStart, isValidDate]
-  );
-
-  const handleSubmit = React.useCallback(() => {
-    props.onSubmit(`${start.toISOString()}`);
-  }, [start, props.onSubmit]);
-
+  const onSelect = React.useCallback(
+    (_, selection) => {
+      setIsOpen(false);
+      props.onSelectToggle(selection);
+    }, [setIsOpen, props.onSelectToggle]);
+  
   return (
-    <Flex>
-      <FlexItem>
-        <InputGroup>
-          <DatePicker
-            onChange={onStartDateChange}
-            aria-label="Start date"
-            placeholder="YYYY-MM-DD" />
-          <TimePicker is24Hour aria-label="Start time" className="time-picker" onChange={onStartTimeChange} />
-        </InputGroup>
-        </FlexItem>
-        <FlexItem>
-          <Text>UTC</Text>
-        </FlexItem>
-        <FlexItem>
-          <Button variant={ButtonVariant.control} aria-label="search button for start date" isDisabled={searchDisabled} onClick={handleSubmit}>
-            <SearchIcon />
-          </Button>
-      </FlexItem>
-    </Flex>
+    <Select
+      variant={SelectVariant.checkbox}
+      onToggle={setIsOpen}
+      onSelect={onSelect}
+      selections={props.filteredStates}
+      isOpen={isOpen}
+      aria-label='Filter by state'
+      placeholderText="Filter by state">
+      {
+        Object.values(RecordingState).map((rs) => (
+          <SelectOption aria-label={`${rs} State`} key={rs} value={rs} />
+        ))
+      }
+  </Select>
   );
 };

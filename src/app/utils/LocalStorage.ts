@@ -35,26 +35,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import '@patternfly/react-core/dist/styles/base.css';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { AppRoutes } from '@app/routes';
-import '@app/app.css';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { Provider } from 'react-redux';
-import { store } from '@app/Shared/Redux/ReduxStore';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <Provider store={store}>
-      <Router>
-        <AppLayout>
-          <AppRoutes />
-        </AppLayout>
-      </Router>
-    </Provider>
-  </ServiceContext.Provider>
-);
+export enum LocalStorageKey {
+  TARGET_RECORDING_FILTERS
+}
 
-export { App };
+/**
+ * This is equivalent to:
+ * type LocalStorageKeyStrings = 'ACTIVE_RECORDING_FILTER';
+ */
+type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
+
+export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
+  if (typeof window === "undefined") {
+    return defaultValue;
+  }
+  try {
+    const item = window.localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    return defaultValue;
+  }
+}
+
+export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any) => {
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    }
+  } catch (error) {} // If error (i.e. users disable storage for the site), saving is aborted and skipped.
+}

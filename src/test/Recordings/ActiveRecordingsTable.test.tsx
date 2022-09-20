@@ -36,8 +36,10 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
@@ -63,7 +65,7 @@ const mockRecording: ActiveRecording = {
   maxSize: 0,
   maxAge: 0,
 };
-const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
+const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', id: 1 };
 const mockCreateNotification = {
   message: { target: mockConnectUrl, recording: mockAnotherRecording },
 } as NotificationMessage;
@@ -77,17 +79,15 @@ const mockLabelsNotification = {
 const mockStopNotification = { message: { target: mockConnectUrl, recording: mockRecording } } as NotificationMessage;
 const mockDeleteNotification = mockStopNotification;
 
-const mockHistoryPush = jest.fn();
+const history = createMemoryHistory({initialEntries: ["/recordings"]});
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: '/baseUrl' }),
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
+  useRouteMatch: () => ({ url: history.location.pathname }),
+  useHistory: () => history,
 }));
 
-jest.mock('@app/Recordings/RecordingFilters', () => {
+jest.mock('@app/Recordings/RecordingFilters', () => { // Already tested separately
   return {
     ...jest.requireActual('@app/Recordings/RecordingFilters'),
     RecordingFilters: jest.fn(() => {
@@ -101,6 +101,11 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
+import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
+import { Provider } from 'react-redux';
+import { renderWithServiceContextAndReduxStoreWithRoute } from '../Common';
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
@@ -117,7 +122,19 @@ jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 jest.spyOn(defaultServices.reports, 'delete').mockReturnValue();
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true);
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
+  .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
+  .mockReturnValue(true);
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -155,17 +172,43 @@ jest
   .mockReturnValue(of()); // all other tests
 
   describe('<ActiveRecordingsTable />', () => {
+    let preloadedState: RootState;
+
     beforeEach(() => {
       mockRecording.metadata.labels = mockRecordingLabels;
       mockRecording.state = RecordingState.RUNNING;
+      history.go(-history.length);
+      preloadedState = { 
+        recordingFilters: {
+          list: [  
+            {
+              target: mockTarget.connectUrl,
+              active: {
+                selectedCategory: "Labels",
+                filters: emptyActiveRecordingFilters,
+              },
+              archived:  {
+                selectedCategory: "Name",
+                filters: emptyArchivedRecordingFilters,
+              }
+            } as TargetRecordingFilters
+          ]
+        }
+      };
     });
+
+    afterEach(cleanup);
 
     it('renders correctly', async () => {
       let tree;
       await act(async () => {
         tree = renderer.create(
           <ServiceContext.Provider value={defaultServices}>
-            <ActiveRecordingsTable archiveEnabled={true} />
+            <Provider store={setupStore()}>
+                <Router location={history.location} history={history}>
+                  <ActiveRecordingsTable archiveEnabled={true} />
+                </Router>
+            </Provider>
           </ServiceContext.Provider>
         );
       });
@@ -173,49 +216,59 @@ jest
     });
 
     it('adds a recording after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
       expect(screen.getByText('someRecording')).toBeInTheDocument();
       expect(screen.getByText('anotherRecording')).toBeInTheDocument();
     });
 
     it('updates the recording labels after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
       expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
       expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
     });
 
     it('stops a recording after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
       expect(screen.getByText('STOPPED')).toBeInTheDocument();
       expect(screen.queryByText('RUNNING')).not.toBeInTheDocument();
     });
 
     it('removes a recording after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
       expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
     });
 
     it('displays the toolbar buttons', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       expect(screen.getByText('Create')).toBeInTheDocument();
@@ -226,22 +279,26 @@ jest
     });
 
     it('routes to the Create Flight Recording form when Create is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       userEvent.click(screen.getByText('Create'));
 
-      expect(mockHistoryPush).toHaveBeenCalledWith('/baseUrl/create');
+      expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(["/recordings", "/recordings/create"]);
     });
 
     it('archives the selected recording when Archive is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -256,10 +313,12 @@ jest
     });
 
     it('stops the selected recording when Stop is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -274,10 +333,12 @@ jest
     });
 
     it('opens the labels drawer when Edit Labels is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -287,19 +348,24 @@ jest
       expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
     });
 
-    it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+    it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
       const selectAllCheck = checkboxes[0];
       userEvent.click(selectAllCheck);
-      userEvent.click(screen.getByText('Delete'));
 
-      expect(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).toBeInTheDocument();
+      userEvent.click(screen.getByText('Delete'));
+      
+      const deleteModal = await screen.findByLabelText(DeleteActiveRecordings.ariaLabel);
+      expect(deleteModal).toBeInTheDocument();
+      expect(deleteModal).toBeVisible();
 
       const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRecording');
       const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
@@ -313,10 +379,12 @@ jest
     });
 
     it('deletes the recording when Delete is clicked w/o popup warning', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       const checkboxes = screen.getAllByRole('checkbox');
@@ -332,10 +400,12 @@ jest
     });
 
     it('downloads a recording when Download Recording is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       userEvent.click(screen.getByLabelText('Actions'));
@@ -348,10 +418,12 @@ jest
     });
 
     it('displays the automated analysis report when View Report is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       userEvent.click(screen.getByLabelText('Actions'));
@@ -363,10 +435,12 @@ jest
     });
 
     it('uploads a recording to Grafana when View in Grafana is clicked', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <ActiveRecordingsTable archiveEnabled={true} />
-        </ServiceContext.Provider>
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ActiveRecordingsTable archiveEnabled={true} />,
+        {
+          preloadState: preloadedState,
+          history: history
+        }
       );
 
       userEvent.click(screen.getByLabelText('Actions'));

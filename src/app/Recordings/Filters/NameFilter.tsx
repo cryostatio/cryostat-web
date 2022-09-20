@@ -35,26 +35,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import '@patternfly/react-core/dist/styles/base.css';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { AppRoutes } from '@app/routes';
-import '@app/app.css';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { Provider } from 'react-redux';
-import { store } from '@app/Shared/Redux/ReduxStore';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <Provider store={store}>
-      <Router>
-        <AppLayout>
-          <AppRoutes />
-        </AppLayout>
-      </Router>
-    </Provider>
-  </ServiceContext.Provider>
-);
+import React from 'react';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 
-export { App };
+export interface NameFilterProps {
+  recordings: ArchivedRecording[];
+  filteredNames: string[];
+  onSubmit: (inputName: string) => void;
+}
+
+export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  const onSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        setIsExpanded(false);
+        props.onSubmit(selection);
+      }
+    }, [props.onSubmit, setIsExpanded]
+  );
+
+  const nameOptions = React.useMemo(() => {
+    return props.recordings.map((r) => r.name).filter((n) => !props.filteredNames.includes(n)).map((option, index) => (
+      <SelectOption key={index} value={option} />
+    ));
+  }, [props.recordings, props.filteredNames]);
+
+  return (
+    <Select
+      variant={SelectVariant.typeahead}
+      onToggle={setIsExpanded}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      typeAheadAriaLabel="Filter by name..."
+      placeholderText="Filter by name..."
+      aria-label='Filter by name'
+    >
+      { nameOptions }
+    </Select>
+  );
+};

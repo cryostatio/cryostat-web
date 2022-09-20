@@ -35,26 +35,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import '@patternfly/react-core/dist/styles/base.css';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { AppRoutes } from '@app/routes';
-import '@app/app.css';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { Provider } from 'react-redux';
-import { store } from '@app/Shared/Redux/ReduxStore';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <Provider store={store}>
-      <Router>
-        <AppLayout>
-          <AppRoutes />
-        </AppLayout>
-      </Router>
-    </Provider>
-  </ServiceContext.Provider>
-);
+import { saveToLocalStorage } from "@app/utils/LocalStorage";
+import { combineReducers, configureStore, PreloadedState } from "@reduxjs/toolkit";
+import { recordingFilterReducer as recordingFiltersReducer } from "./RecordingFilterReducer";
 
-export { App };
+export const rootReducer = combineReducers({
+  recordingFilters: recordingFiltersReducer
+});
+
+export const setupStore = (preloadedState?: PreloadedState<RootState>) => configureStore({
+  reducer: rootReducer,
+  preloadedState
+});
+
+export const store = setupStore();
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof rootReducer>;
+export type StateDispatch = typeof store.dispatch;
+export type Store = ReturnType<typeof setupStore>
+
+// Add a subscription to save filter states to local storage
+// if states change.
+store.subscribe(() => saveToLocalStorage("TARGET_RECORDING_FILTERS", store.getState().recordingFilters.list));

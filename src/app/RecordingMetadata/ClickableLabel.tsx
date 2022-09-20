@@ -35,26 +35,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import '@patternfly/react-core/dist/styles/base.css';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { AppRoutes } from '@app/routes';
-import '@app/app.css';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { Provider } from 'react-redux';
-import { store } from '@app/Shared/Redux/ReduxStore';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <Provider store={store}>
-      <Router>
-        <AppLayout>
-          <AppRoutes />
-        </AppLayout>
-      </Router>
-    </Provider>
-  </ServiceContext.Provider>
-);
+import { getLabelDisplay } from "@app/Recordings/Filters/LabelFilter";
+import { Label } from "@patternfly/react-core";
+import React from "react";
+import { RecordingLabel } from "./RecordingLabel";
 
-export { App };
+
+export interface ClickableLabelCellProps {
+  label: RecordingLabel;
+  isSelected: boolean;
+  onLabelClick: (label: RecordingLabel) => void
+}
+
+export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = (props) => {
+  const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
+  const labelColor = React.useMemo(() => props.isSelected? "blue": "grey", [props.isSelected]);
+
+  const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
+  const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
+
+  const style = React.useMemo(() => {
+    if (isHoveredOrFocused) {
+      const defaultStyle = { cursor: "pointer", "--pf-c-label__content--before--BorderWidth": "2.5px"};
+      if (props.isSelected) {
+        return {...defaultStyle, "--pf-c-label__content--before--BorderColor": "#06c"}
+      }
+      return {...defaultStyle, "--pf-c-label__content--before--BorderColor": "#8a8d90"}
+    }
+    return {};
+  }, [props.isSelected, isHoveredOrFocused]);
+
+  const handleLabelClicked = React.useCallback(
+    () => props.onLabelClick(props.label), 
+    [props.label, props.onLabelClick, getLabelDisplay]
+  );
+
+  return <>
+    <Label
+      aria-label={`${props.label.key}: ${props.label.value}`}
+      style={style}
+      onMouseEnter={handleHoveredOrFocused}
+      onMouseLeave={handleNonHoveredOrFocused}
+      onFocus={handleHoveredOrFocused}
+      onClick={handleLabelClicked}
+      key={props.label.key}
+      color={labelColor}
+      >
+        {`${props.label.key}: ${props.label.value}`}
+    </Label>
+  </>;
+}
