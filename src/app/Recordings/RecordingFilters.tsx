@@ -113,7 +113,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
     (category) => {
       setIsCategoryDropdownOpen(false);
       dispatch(updateCategoryIntent(props.target, category, props.isArchived))
-    },[dispatch, setIsCategoryDropdownOpen, props.target, props.isArchived]
+    },[dispatch, updateCategoryIntent, setIsCategoryDropdownOpen, props.target, props.isArchived]
   );
 
   const onDelete = React.useCallback(

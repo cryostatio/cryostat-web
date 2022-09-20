@@ -154,7 +154,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         refreshRecordingList();
       })
     );
-  }, [addSubscription, context, context.target, refreshRecordingList, setTargetConnectURL]);
+  }, [addSubscription, context, context.target, refreshRecordingList, setTargetConnectURL, dispatch, addTargetIntent]);
 
   React.useEffect(() => {
     addSubscription(
@@ -321,7 +321,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(targetConnectURL, false));
-  }, [dispatch, targetConnectURL]);
+  }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
 
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
     if (deleted) {
@@ -333,7 +333,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     } else {
       dispatch(addFilterIntent(target, filterKey, filterValue, false));
     }
-  }, [dispatch]);
+  }, [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]);
 
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {

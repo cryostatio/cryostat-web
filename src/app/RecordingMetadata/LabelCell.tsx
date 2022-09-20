@@ -59,7 +59,7 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
       return labelFilterSet.has(getLabelDisplay(label))
     }
     return false;
-  }, [getLabelDisplay]);
+  }, [getLabelDisplay, props.clickableOptions]);
 
   const getLabelColor = React.useCallback((label: RecordingLabel) => isLabelSelected(label)? "blue": "grey", [isLabelSelected]);
   const onLabelSelectToggle = React.useCallback(

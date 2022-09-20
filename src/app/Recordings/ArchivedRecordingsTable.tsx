@@ -174,7 +174,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(targetConnectURL, true));
-  }, [dispatch, targetConnectURL]);
+  }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
   
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
     if (deleted) {
@@ -186,7 +186,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     } else {
       dispatch(addFilterIntent(target, filterKey, filterValue, true));
     }
-  }, [dispatch]);
+  }, [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]);
 
   React.useEffect(() => {
     addSubscription(
@@ -196,7 +196,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         refreshRecordingList();
       })
     );
-  }, [addSubscription, refreshRecordingList, dispatch, setTargetConnectURL]);
+  }, [addSubscription, refreshRecordingList, dispatch, addTargetIntent, setTargetConnectURL]);
 
   React.useEffect(() => {
     addSubscription(
