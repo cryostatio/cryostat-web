@@ -35,6 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+export const createBlobURL = (content : any, contentType: string, timeout: number = 1000) => {
+  const blob = new Blob([content], {type: contentType});
+  const url = window.URL.createObjectURL(blob);
+  setTimeout(() => window.URL.revokeObjectURL(url), timeout);
+  return url;
+}
+
 export function accessibleRouteChangeHandler() {
   return window.setTimeout(() => {
     const mainContainer = document.getElementById('primary-app-container');

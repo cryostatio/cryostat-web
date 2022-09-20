@@ -45,6 +45,7 @@ import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
 import { NotificationCategory } from './NotificationChannel.service';
 import _ from 'lodash';
+import { createBlobURL } from '@app/utils/utils';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
@@ -438,7 +439,11 @@ export class ApiService {
         this.downloadFile(
           resourceUrl,
           recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
-          );
+        );
+        this.downloadFile(
+          createBlobURL(JSON.stringify(recording.metadata), "application/json"), // Blob for metadata
+          recording.name.replace(/\.jfr$/, "") + ".metadata.json"
+        );
       });
   }
 
@@ -673,7 +678,7 @@ export class ApiService {
   private downloadFile(url: string, filename: string, download = true): void {
     const anchor = document.createElement('a');
     anchor.setAttribute('style', 'display: none; visibility: hidden;');
-    anchor.target = '_blank;'
+    anchor.target = '_blank';
     if (download) {
       anchor.download = filename;
     }
