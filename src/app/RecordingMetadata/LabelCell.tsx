@@ -65,7 +65,7 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
   const onLabelSelectToggle = React.useCallback(
     (clickedLabel: RecordingLabel) => {
       if (props.clickableOptions) {
-        props.clickableOptions.updateFilters(props.target, {filterKey: "Labels", filterValue: getLabelDisplay(clickedLabel), deleted: isLabelSelected(clickedLabel)})
+        props.clickableOptions.updateFilters(props.target, {filterKey: "Label", filterValue: getLabelDisplay(clickedLabel), deleted: isLabelSelected(clickedLabel)})
       }
     },
     [props.clickableOptions, props.target, getLabelDisplay]);
