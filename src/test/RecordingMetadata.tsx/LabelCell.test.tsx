@@ -117,7 +117,7 @@ describe('<LabelCell />', () => {
       expect(onUpdateLabels).toHaveBeenCalledTimes(++count);
       expect(onUpdateLabels).toHaveBeenCalledWith(
         mockFooTarget.connectUrl,
-        {filterKey: "Labels", filterValue: mockLabelStringList[index], deleted: false}
+        {filterKey: "Label", filterValue: mockLabelStringList[index], deleted: false}
       );
     });
   });
