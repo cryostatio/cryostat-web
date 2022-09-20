@@ -36,10 +36,12 @@
  * SOFTWARE.
  */
 
-export const createBlobURL = (obj: any) => {
+export const createBlobURL = (obj: any, timeout: number = 1000) => {
   const content = JSON.stringify(obj);
   const blob = new Blob([content], {type: "octet/stream"});
-  return window.URL.createObjectURL(blob);
+  const url = window.URL.createObjectURL(blob);
+  setTimeout(() => window.URL.revokeObjectURL(url), timeout);
+  return url;
 }
 
 export function accessibleRouteChangeHandler() {
