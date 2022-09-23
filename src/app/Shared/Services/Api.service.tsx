@@ -46,7 +46,6 @@ import { Rule } from '@app/Rules/Rules';
 import { NotificationCategory } from './NotificationChannel.service';
 import _ from 'lodash';
 import { createBlobURL } from '@app/utils/utils';
-import { UPLOADS_SUBDIRECTORY } from '@app/Recordings/ArchivedRecordingsTable';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
@@ -823,3 +822,5 @@ export interface MatchedCredential {
   matchExpression: string;
   targets: Target[];
 }
+
+export const UPLOADS_SUBDIRECTORY: string = 'uploads';

@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -69,7 +69,6 @@ export interface ArchivedRecordingsTableProps {
   isNestedTable: boolean;
 }
 
-
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -89,8 +88,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL);
     return filters.length > 0? filters[0].archived.filters: emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
-
-  const target: Subject<Target> = new BehaviorSubject<Target>({} as Target);
 
   const tableColumns: string[] = [
     'Name',
@@ -290,14 +287,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     const tasks: Observable<any>[] = [];
     addSubscription(
       props.target.subscribe(t => {
-        filteredRecordings.forEach((r: ArchivedRecording, idx) => {
-          if (checkedIndices.includes(idx)) {
+        filteredRecordings.forEach((r: ArchivedRecording) => {
+          if (checkedIndices.includes(hashCode(r.name))) {
             context.reports.delete(r);
             tasks.push(
               context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first())
             );
           }
-        })
+        });
       })
     );
     addSubscription(
@@ -492,8 +489,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     </Drawer>
   );
 };
-
-export const UPLOADS_SUBDIRECTORY: string = 'uploads';
 export interface ArchivedRecordingsToolbarProps {
   target: string,
   checkedIndices: number[],
