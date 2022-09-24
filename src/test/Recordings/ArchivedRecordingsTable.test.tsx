@@ -71,7 +71,9 @@ const mockRecording: ArchivedRecording = {
 
 const mockArchivedRecordingsResponse = {
   data: {
-    archivedRecordings: [mockRecording] as ArchivedRecording[],
+    archivedRecordings: {
+      data: [mockRecording] as ArchivedRecording[],
+    },
   },
 }
 
@@ -152,7 +154,7 @@ jest
   .mockReturnValueOnce(of()) // removes a recording after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockDeleteNotification))
-  
+
   .mockReturnValue(of()); // all other tests
 
 jest.spyOn(window, 'open').mockReturnValue(null);
@@ -161,9 +163,9 @@ describe('<ArchivedRecordingsTable />', () => {
   let preloadedState: RootState;
   beforeEach(() => {
     history.go(-history.length);
-    preloadedState = { 
+    preloadedState = {
       recordingFilters: {
-        list: [  
+        list: [
           {
             target: mockTarget.connectUrl,
             active: {
@@ -374,9 +376,9 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    expect(screen.getByText('someRecording')).toBeInTheDocument(); 
+    expect(screen.getByText('someRecording')).toBeInTheDocument();
 
-    const uploadButton = screen.getByLabelText('add'); 
+    const uploadButton = screen.getByLabelText('add');
     expect(uploadButton).toHaveAttribute('type', 'button')
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -429,7 +431,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
-    
+
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => {
       userEvent.click(submitButton)
