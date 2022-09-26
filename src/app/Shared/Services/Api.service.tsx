@@ -825,4 +825,5 @@ export interface MatchedCredential {
 
 
 // New target specific archived recording apis now enforce a non-empty target field
+// The placeholder targetId for uploaded (non-target) recordings is "uploads"
 export const UPLOADS_SUBDIRECTORY: string = 'uploads';
