@@ -63,7 +63,7 @@ import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategor
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { hashCode } from '@app/utils/utils';
 
-export interface ArchivedRecordingsTableProps { 
+export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
   isUploadsTable: boolean;
   isNestedTable: boolean;
@@ -74,7 +74,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
-  
+
   const [targetConnectURL, setTargetConnectURL] = React.useState("");
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
@@ -84,7 +84,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
-  
+
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL);
     return filters.length > 0? filters[0].archived.filters: emptyArchivedRecordingFilters;
@@ -122,11 +122,13 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return context.api.graphql<any>(`
       query {
         archivedRecordings(filter: { sourceTarget: "${connectUrl}" }) {
-          name
-          downloadUrl
-          reportUrl
-          metadata {
-            labels
+          data {
+            name
+            downloadUrl
+            reportUrl
+            metadata {
+              labels
+            }
           }
         }
       }`)
@@ -136,11 +138,13 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return context.api.graphql<any>(`
       query {
         archivedRecordings(filter: { sourceTarget: "uploads" }) {
-          name
-          downloadUrl
-          reportUrl
-          metadata {
-            labels
+          data {
+            name
+            downloadUrl
+            reportUrl
+            metadata {
+              labels
+            }
           }
         }
       }`)
@@ -152,7 +156,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       addSubscription(
         queryUploadedRecordings()
           .pipe(
-            map(v => v.data.archivedRecordings as ArchivedRecording[])
+            map(v => v.data.archivedRecordings.data as ArchivedRecording[])
           )
         .subscribe(handleRecordings)
       );
@@ -165,7 +169,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           concatMap(target =>
             queryTargetRecordings(target.connectUrl)
           ),
-          map(v => v.data.archivedRecordings as ArchivedRecording[]),
+          map(v => v.data.archivedRecordings.data as ArchivedRecording[]),
         )
         .subscribe(handleRecordings)
       );
@@ -175,7 +179,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(targetConnectURL, true));
   }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
-  
+
   const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
     if (deleted) {
       if (deleteOptions && deleteOptions.all) {
@@ -250,8 +254,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           return;
         }
         setRecordings(old => old.map(
-          o => o.name == event.message.recordingName 
-            ? { ...o, metadata: { labels: event.message.metadata.labels } } 
+          o => o.name == event.message.recordingName
+            ? { ...o, metadata: { labels: event.message.metadata.labels } }
             : o));
       })
     );
@@ -294,7 +298,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       forkJoin(tasks).subscribe()
     );
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
- 
+
   const toggleExpanded = React.useCallback(
     (id: string) => {
       setExpandedRows((expandedRows) => {
@@ -355,7 +359,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
                   labelFilters: props.labelFilters
                 }
               }
-              labels={parsedLabels} 
+              labels={parsedLabels}
             />
           </Td>
           <RecordingActions
@@ -377,7 +381,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       handleToggle,
       updateFilters,
       tableColumns,
-      parsedLabels, 
+      parsedLabels,
       context.api,
       context.api.uploadArchivedRecordingToGrafana,
       targetConnectURL
@@ -408,7 +412,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   };
 
   const RecordingsToolbar = React.useMemo(() => (
-    <ArchivedRecordingsToolbar 
+    <ArchivedRecordingsToolbar
       target={targetConnectURL}
       checkedIndices={checkedIndices}
       targetRecordingFilters={targetRecordingFilters}
@@ -418,17 +422,17 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       handleClearFilters={handleClearFilters}
       handleEditLabels={handleEditLabels}
       handleDeleteRecordings={handleDeleteRecordings}
-      handleShowUploadModal={() => setShowUploadModal(true)} 
+      handleShowUploadModal={() => setShowUploadModal(true)}
       isUploadsTable={props.isUploadsTable}/>
   ), [
     targetConnectURL,
     checkedIndices,
-    targetRecordingFilters, 
-    recordings, 
+    targetRecordingFilters,
+    recordings,
     filteredRecordings,
     updateFilters,
     handleClearFilters,
-    handleEditLabels, 
+    handleEditLabels,
     handleDeleteRecordings,
     setShowUploadModal,
     props.isUploadsTable
@@ -445,7 +449,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const LabelsPanel = React.useMemo(() => (
     <RecordingLabelsPanel
-      setShowPanel={setShowDetailsPanel}  
+      setShowPanel={setShowDetailsPanel}
       isTargetRecording={false}
       checkedIndices={checkedIndices}
     />
@@ -501,7 +505,7 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
   const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings), 
+    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings),
   [context, context.settings, context.settings.deletionDialogsEnabledFor]);
 
   const handleWarningModalClose = React.useCallback(() => {
@@ -517,7 +521,7 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
   }, [deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
 
   const deleteArchivedWarningModal = React.useMemo(() => {
-    return <DeleteWarningModal 
+    return <DeleteWarningModal
       warningType={DeleteWarningType.DeleteArchivedRecordings}
       visible={warningModalOpen}
       onAccept={props.handleDeleteRecordings}
@@ -531,8 +535,8 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
           <RecordingFilters
             target={props.target}
             isArchived={true}
-            recordings={props.recordings} 
-            filters={props.targetRecordingFilters} 
+            recordings={props.recordings}
+            filters={props.targetRecordingFilters}
             updateFilters={props.updateFilters} />
           <ToolbarGroup variant="button-group">
             <ToolbarItem>
@@ -543,7 +547,7 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
             </ToolbarItem>
           </ToolbarGroup>
           { deleteArchivedWarningModal }
-          {props.isUploadsTable ? 
+          {props.isUploadsTable ?
             <ToolbarGroup variant="icon-button-group">
               <ToolbarItem>
                 <Button variant="plain" aria-label="add" onClick={props.handleShowUploadModal}><PlusIcon /></Button>
