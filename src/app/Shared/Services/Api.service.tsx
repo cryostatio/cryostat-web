@@ -575,9 +575,11 @@ export class ApiService {
           targetNodes(filter: { name: "${target.connectUrl}" }) {
             recordings {
               active(filter: { name: "${recordingName}" }) {
-                doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
-                  metadata {
-                    labels
+                data {
+                  doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+                    metadata {
+                      labels
+                    }
                   }
                 }
               }
