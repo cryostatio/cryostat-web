@@ -823,4 +823,6 @@ export interface MatchedCredential {
   targets: Target[];
 }
 
+
+// New target specific archived recording apis now enforce a non-empty target field
 export const UPLOADS_SUBDIRECTORY: string = 'uploads';
