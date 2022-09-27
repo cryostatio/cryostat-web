@@ -19,7 +19,7 @@
     "license:check": "license-check-and-add check -f license-config.json",
     "license:apply": "license-check-and-add add -f license-config.json",
     "lint": "npm-run-all -l -p format:check eslint",
-    "format": "npm-run-all format:apply",
+    "format": "npm-run-all format:check",
     "format:check": "npm-run-all -l license:check prettier:check",
     "format:apply": "npm-run-all -l -p license:apply prettier:apply",
     "prettier:check": "prettier --check './src/**/*.{tsx,ts}'",
