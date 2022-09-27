@@ -68,7 +68,11 @@ export class LoginService {
   private readonly sessionState = new ReplaySubject<SessionState>(1);
   readonly authority: string;
 
-  constructor(private readonly target: TargetService, private readonly jmxCredentials: JmxCredentials, private readonly settings: SettingsService) {
+  constructor(
+    private readonly target: TargetService,
+    private readonly jmxCredentials: JmxCredentials,
+    private readonly settings: SettingsService
+  ) {
     let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
     if (!apiAuthority) {
       apiAuthority = '';
@@ -154,10 +158,16 @@ export class LoginService {
   }
 
   getHeaders(): Observable<Headers> {
-    return combineLatest([this.getToken(), this.getAuthMethod(), this.target.target().pipe(map(target => target.connectUrl), concatMap(connect => this.jmxCredentials.getCredential(connect)))])
-    .pipe(
+    return combineLatest([
+      this.getToken(),
+      this.getAuthMethod(),
+      this.target.target().pipe(
+        map((target) => target.connectUrl),
+        concatMap((connect) => this.jmxCredentials.getCredential(connect))
+      ),
+    ]).pipe(
       map((parts: [string, AuthMethod, Credential | undefined]) => this.getAuthHeaders(parts[0], parts[1], parts[2])),
-      first(),
+      first()
     );
   }
 

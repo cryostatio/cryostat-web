@@ -64,7 +64,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
               first(),
               filter((target) => target !== NO_TARGET),
               map((target) => target.connectUrl),
-              mergeMap(connectUrl => context.jmxCredentials.setCredential(connectUrl, username, password))
+              mergeMap((connectUrl) => context.jmxCredentials.setCredential(connectUrl, username, password))
             )
             .subscribe((result) => {
               if (result) {
@@ -89,10 +89,17 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
       title="Authentication Required"
       description={
         <Text>
-          This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections.
-          Enter credentials specific to this target, or go to <Link onClick={props.onDismiss} to="/security">Security</Link> to add a credential matching multiple targets.
-          Visit <Link onClick={props.onDismiss} to="/settings">Settings</Link> to confirm and configure whether these credentials will be held only for this browser session
-          or stored encrypted in the Cryostat backend.
+          This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the
+          target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
+          <Link onClick={props.onDismiss} to="/security">
+            Security
+          </Link>{' '}
+          to add a credential matching multiple targets. Visit{' '}
+          <Link onClick={props.onDismiss} to="/settings">
+            Settings
+          </Link>{' '}
+          to confirm and configure whether these credentials will be held only for this browser session or stored
+          encrypted in the Cryostat backend.
         </Text>
       }
     >

@@ -46,13 +46,10 @@ export interface Credential {
 }
 
 export class JmxCredentials {
-
   // TODO replace with Redux?
   private readonly store = new Map<string, Credential>();
 
-  constructor(
-    private readonly api: () => ApiService
-  ) { }
+  constructor(private readonly api: () => ApiService) {}
 
   setCredential(targetId: string, username: string, password: string): Observable<boolean> {
     let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION);

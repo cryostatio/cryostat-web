@@ -65,7 +65,16 @@ const notificationChannel = new NotificationChannel(NotificationsInstance, login
 const reports = new ReportService(login, NotificationsInstance);
 const targets = new TargetsService(api, NotificationsInstance, login, notificationChannel);
 
-const defaultServices: Services = { target: TargetInstance, targets, api, jmxCredentials, notificationChannel, reports, settings, login };
+const defaultServices: Services = {
+  target: TargetInstance,
+  targets,
+  api,
+  jmxCredentials,
+  notificationChannel,
+  reports,
+  settings,
+  login,
+};
 
 const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
 

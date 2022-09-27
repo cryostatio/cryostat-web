@@ -105,6 +105,7 @@ const Component = () => {
 
 export const AutoRefresh: UserSetting = {
   title: 'Auto-Refresh',
-  description: 'Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.',
+  description:
+    'Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.',
   content: Component,
 };

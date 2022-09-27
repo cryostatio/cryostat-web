@@ -47,18 +47,13 @@ import { WebSocketDebounce } from './WebSocketDebounce';
 import { AutoRefresh } from './AutoRefresh';
 
 export const Settings: React.FunctionComponent<{}> = () => {
-  const settings =
-    [
-      NotificationControl,
-      CredentialsStorage,
-      DeletionDialogControl,
-      WebSocketDebounce,
-      AutoRefresh,
-    ].map(c => ({
+  const settings = [NotificationControl, CredentialsStorage, DeletionDialogControl, WebSocketDebounce, AutoRefresh].map(
+    (c) => ({
       title: c.title,
       description: c.description,
       element: React.createElement(c.content, null),
-    }));
+    })
+  );
   return (
     <>
       <BreadcrumbPage pageTitle="Settings">
