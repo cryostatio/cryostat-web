@@ -44,6 +44,7 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { Target } from '@app/Shared/Services/Target.service';
 import { of } from 'rxjs';
+import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 
 export const Archives = () => {
   const context = React.useContext(ServiceContext);
@@ -63,7 +64,7 @@ export const Archives = () => {
   notification handling in the ArchivedRecordingsTable. 
   */ 
   const target: Target = { 
-    connectUrl: '',
+    connectUrl: UPLOADS_SUBDIRECTORY,
     alias: '',
   }
 

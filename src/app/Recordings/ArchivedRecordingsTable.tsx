@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -46,7 +46,7 @@ import { PlusIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
+import { Observable, forkJoin, merge, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
@@ -68,7 +68,6 @@ export interface ArchivedRecordingsTableProps {
   isUploadsTable: boolean;
   isNestedTable: boolean;
 }
-
 
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -137,7 +136,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const queryUploadedRecordings = React.useCallback(() => {
     return context.api.graphql<any>(`
       query {
-        archivedRecordings(filter: { sourceTarget: "uploads" }) {
+        archivedRecordings(filter: { sourceTarget: "${UPLOADS_SUBDIRECTORY}" }) {
           data {
             name
             downloadUrl
@@ -286,14 +285,18 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
-    filteredRecordings.forEach((r: ArchivedRecording) => {
-      if (checkedIndices.includes(hashCode(r.name))) {
-        context.reports.delete(r);
-        tasks.push(
-          context.api.deleteArchivedRecording(r.name).pipe(first())
-        );
-      }
-    });
+    addSubscription(
+      props.target.subscribe(t => {
+        filteredRecordings.forEach((r: ArchivedRecording) => {
+          if (checkedIndices.includes(hashCode(r.name))) {
+            context.reports.delete(r);
+            tasks.push(
+              context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first())
+            );
+          }
+        });
+      })
+    );
     addSubscription(
       forkJoin(tasks).subscribe()
     );
@@ -307,6 +310,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       });
     }, [setExpandedRows]
   );
+
 
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
@@ -365,7 +369,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <RecordingActions
             recording={props.recording}
             index={props.index}
-            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.recording.name)}
+            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.sourceTarget, props.recording.name)}
           />
         </Tr>
       );
@@ -439,7 +443,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   ]);
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Label} index={hashCode(r.name)}/>)
+    return filteredRecordings.map((r) => <RecordingRow key={r.name} recording={r} labelFilters={targetRecordingFilters.Label} index={hashCode(r.name)} sourceTarget={props.target}/>)
   }, [filteredRecordings, expandedRows, checkedIndices]);
 
   const handleModalClose = React.useCallback(() => {
@@ -485,7 +489,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     </Drawer>
   );
 };
-
 export interface ArchivedRecordingsToolbarProps {
   target: string,
   checkedIndices: number[],

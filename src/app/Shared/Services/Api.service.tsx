@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay } from 'rxjs';
+import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay, Subject, BehaviorSubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { NO_TARGET, Target, TargetService } from './Target.service';
@@ -314,10 +314,13 @@ export class ApiService {
     ));
   }
 
-  deleteArchivedRecording(recordingName: string): Observable<boolean> {
-    return this.sendRequest('v1', `recordings/${encodeURIComponent(recordingName)}`, {
-      method: 'DELETE'
-    }).pipe(
+  deleteArchivedRecording(connectUrl: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+      'beta', `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`, 
+      {
+        method: 'DELETE'
+      }
+    ).pipe(
       map(resp => resp.ok),
       first(),
     );
@@ -337,9 +340,10 @@ export class ApiService {
     ));
   }
 
-  uploadArchivedRecordingToGrafana(recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-        'v1', `recordings/${encodeURIComponent(recordingName)}/upload`,
+  uploadArchivedRecordingToGrafana(sourceTarget: Observable<Target>, recordingName: string): Observable<boolean> {
+    return sourceTarget.pipe(concatMap(target => 
+      this.sendRequest(
+        'beta', `recordings/${encodeURIComponent(target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
         {
           method: 'POST',
         }
@@ -347,7 +351,7 @@ export class ApiService {
         map(resp => resp.ok),
         first()
       )
-    ;
+    ));
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
@@ -408,7 +412,11 @@ export class ApiService {
 
   downloadReport(recording: ArchivedRecording): void {
     const body = new window.FormData();
-    body.append('resource', recording.reportUrl.replace('/api/v1', '/api/v2.1'));
+    if (isActiveRecording(recording)) {
+      body.append('resource', recording.reportUrl.replace('/api/v1', '/api/v2.1'));
+    } else {
+      body.append('resource', recording.reportUrl.concat('/jwt'));
+    }
     this.sendRequest('v2.1', 'auth/token', {
       method: 'POST',
       body,
@@ -427,7 +435,11 @@ export class ApiService {
 
   downloadRecording(recording: ArchivedRecording): void {
     const body = new window.FormData();
-    body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/v2.1'));
+    if (isActiveRecording(recording)) {
+      body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/v2.1'));
+    } else {
+      body.append('resource', recording.downloadUrl.concat('/jwt'));
+    }
     this.sendRequest('v2.1', 'auth/token', {
       method: 'POST',
       body,
@@ -810,3 +822,8 @@ export interface MatchedCredential {
   matchExpression: string;
   targets: Target[];
 }
+
+
+// New target specific archived recording apis now enforce a non-empty target field
+// The placeholder targetId for uploaded (non-target) recordings is "uploads"
+export const UPLOADS_SUBDIRECTORY: string = 'uploads';
