@@ -40,18 +40,13 @@ import * as React from 'react';
 import { FormProps } from './FormProps';
 
 export const NoopAuthForm: React.FunctionComponent<FormProps> = (props) => {
-
   React.useEffect(() => {
     const noopEvt = {
-      preventDefault: () => {}
+      preventDefault: () => {},
     } as Event;
 
     props.onSubmit(noopEvt, '', AuthMethod.NONE, false);
   }, [props.onSubmit]);
 
-  return (
-    <>
-    </>
-  );
-
-}
+  return <></>;
+};

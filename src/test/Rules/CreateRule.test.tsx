@@ -52,50 +52,47 @@ import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.se
 
 const escapeKeyboardInput = (value: string) => {
   return value.replace(/[{[]/g, '$&$&');
-}
+};
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget: Target = {
   connectUrl: mockConnectUrl,
   alias: 'io.cryostat.Cryostat',
   annotations: {
-    cryostat: new Map<string, string>(
-      [['PORT', '9091']]
-    ),
-    platform: new Map<string, string>()
-  }
+    cryostat: new Map<string, string>([['PORT', '9091']]),
+    platform: new Map<string, string>(),
+  },
 };
 const mockEventTemplate: EventTemplate = {
   name: 'Profiling',
   type: 'TARGET',
   provider: 'some provider',
-  description: 'some description'
+  description: 'some description',
 };
-const mockRule: Rule =  {
+const mockRule: Rule = {
   name: 'mockRule',
   description: 'A mock rule',
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
-  eventSpecifier: "template=Profiling,type=TARGET",
+  eventSpecifier: 'template=Profiling,type=TARGET',
   archivalPeriodSeconds: 0,
   initialDelaySeconds: 0,
   preservedArchives: 0,
   maxAgeSeconds: 0,
-  maxSizeBytes: 0
+  maxSizeBytes: 0,
 };
 
 const mockNewTarget: Target = {
   connectUrl: 'service:jmx:rmi://someUrl1',
   alias: 'someAlias',
-}
+};
 
 const mockTargetFoundNotification = {
   message: {
-    event: { kind: 'FOUND', serviceRef: mockNewTarget }
-  }
+    event: { kind: 'FOUND', serviceRef: mockNewTarget },
+  },
 } as NotificationMessage;
 
-
-const history = createMemoryHistory({initialEntries: ["/rules"]});
+const history = createMemoryHistory({ initialEntries: ['/rules'] });
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -123,7 +120,7 @@ describe('<CreateRule/>', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <Router location={history.location} history={history}>
-            <CreateRule/>
+            <CreateRule />
           </Router>
         </ServiceContext.Provider>
       );
@@ -134,10 +131,10 @@ describe('<CreateRule/>', () => {
   it('should submit form if form input is valid', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <CreateRule/>
-          </Router>
-        </ServiceContext.Provider>
+        <Router location={history.location} history={history}>
+          <CreateRule />
+        </Router>
+      </ServiceContext.Provider>
     );
 
     const nameInput = screen.getByLabelText('Name *');
@@ -176,14 +173,14 @@ describe('<CreateRule/>', () => {
     expect(initialDelayInput).toBeInTheDocument();
     expect(initialDelayInput).toBeVisible();
 
-    const createButton = screen.getByRole('button', {name: /^create$/i});
+    const createButton = screen.getByRole('button', { name: /^create$/i });
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
 
     userEvent.type(nameInput, mockRule.name);
     userEvent.type(descriptionInput, mockRule.description);
     userEvent.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
-    userEvent.selectOptions(templateSelect, [screen.getByText('Profiling')])
+    userEvent.selectOptions(templateSelect, [screen.getByText('Profiling')]);
     userEvent.type(maxSizeInput, `${mockRule.maxSizeBytes}`);
     userEvent.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
     userEvent.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);

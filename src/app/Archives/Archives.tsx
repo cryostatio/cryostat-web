@@ -62,38 +62,36 @@ export const Archives = () => {
   the backend issues a notification with the "target" field set to the empty string, signalling that 
   these recordings are not associated with any target. We can then match on the empty string when performing
   notification handling in the ArchivedRecordingsTable. 
-  */ 
-  const target: Target = { 
+  */
+  const target: Target = {
     connectUrl: UPLOADS_SUBDIRECTORY,
     alias: '',
-  }
+  };
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
-      <Tabs id='archives' activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-        <Tab id='all-targets' eventKey={0} title="All Targets">
+      <Tabs id="archives" activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+        <Tab id="all-targets" eventKey={0} title="All Targets">
           <AllTargetsArchivedRecordingsTable />
         </Tab>
-        <Tab id='uploads' eventKey={1} title="Uploads">
-          <ArchivedRecordingsTable target={of(target)} isUploadsTable={true} isNestedTable={false}/>
+        <Tab id="uploads" eventKey={1} title="Uploads">
+          <ArchivedRecordingsTable target={of(target)} isUploadsTable={true} isNestedTable={false} />
         </Tab>
       </Tabs>
     ) : (
       <EmptyState>
-        <EmptyStateIcon icon={SearchIcon}/>
+        <EmptyStateIcon icon={SearchIcon} />
         <Title headingLevel="h4" size="lg">
           Archives Unavailable
         </Title>
       </EmptyState>
     );
-  }, [archiveEnabled, activeTab])
+  }, [archiveEnabled, activeTab]);
 
   return (
-    <BreadcrumbPage pageTitle='Archives'>
+    <BreadcrumbPage pageTitle="Archives">
       <Card>
-        <CardBody>
-          { cardBody }
-        </CardBody>
+        <CardBody>{cardBody}</CardBody>
       </Card>
     </BreadcrumbPage>
   );

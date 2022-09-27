@@ -88,7 +88,7 @@ const mockActiveLabelsNotification = {
   },
 } as NotificationMessage;
 
-const mockActiveRecordingResponse = [ mockActiveRecording ];
+const mockActiveRecordingResponse = [mockActiveRecording];
 
 const mockArchivedLabelsNotification = {
   message: {
@@ -104,8 +104,8 @@ const mockArchivedRecordingsResponse = {
       {
         recordings: {
           archived: {
-            data: [mockArchivedRecording] as ArchivedRecording[]
-          }
+            data: [mockArchivedRecording] as ArchivedRecording[],
+          },
         },
       },
     ],
@@ -131,8 +131,8 @@ describe('<BulkEditLabels />', () => {
   let emptycheckIndices: number[];
 
   beforeEach(() => {
-    activeCheckedIndices = [ mockActiveRecording.id ];
-    archivedCheckedIndices = [ -553224758 ]; // Hash code of "someArchivedRecording_some_random"
+    activeCheckedIndices = [mockActiveRecording.id];
+    archivedCheckedIndices = [-553224758]; // Hash code of "someArchivedRecording_some_random"
     emptycheckIndices = [];
   });
 
@@ -143,7 +143,7 @@ describe('<BulkEditLabels />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true}  />
+          <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
         </ServiceContext.Provider>
       );
     });
@@ -162,10 +162,10 @@ describe('<BulkEditLabels />', () => {
     expect(label).toBeVisible();
     expect(label.onclick).toBeNull();
 
-    const addLabelButton = screen.queryByRole('button', { name: 'Add Label'});
+    const addLabelButton = screen.queryByRole('button', { name: 'Add Label' });
     expect(addLabelButton).not.toBeInTheDocument();
 
-    const editButton = screen.getByRole('button', {name: "Edit Labels"})
+    const editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
     expect(editButton).not.toBeDisabled();
@@ -177,11 +177,11 @@ describe('<BulkEditLabels />', () => {
         <BulkEditLabels checkedIndices={emptycheckIndices} isTargetRecording={true} />
       </ServiceContext.Provider>
     );
-    
+
     expect(screen.queryByText('someLabel')).not.toBeInTheDocument();
     expect(screen.queryByText('someValue')).not.toBeInTheDocument();
 
-    const placeHolder = screen.getByText("-");
+    const placeHolder = screen.getByText('-');
     expect(placeHolder).toBeInTheDocument();
     expect(placeHolder).toBeVisible();
   });
@@ -193,13 +193,13 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
-    const editButton = screen.getByRole('button', {name: "Edit Labels"})
+    const editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
     userEvent.click(editButton);
 
-    const addLabelButton = screen.getByRole('button', { name: 'Add Label'});
+    const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
@@ -218,7 +218,7 @@ describe('<BulkEditLabels />', () => {
     const saveButton = screen.getByText('Save');
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toBeVisible();
-    
+
     const cancelButton = screen.getByText('Cancel');
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
@@ -263,13 +263,13 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
-    let editButton = screen.getByRole('button', {name: "Edit Labels"})
+    let editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
     userEvent.click(editButton);
 
-    let addLabelButton = screen.getByRole('button', { name: 'Add Label'});
+    let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
@@ -288,14 +288,14 @@ describe('<BulkEditLabels />', () => {
     const saveButton = screen.getByText('Save');
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toBeVisible();
-    
+
     const cancelButton = screen.getByText('Cancel');
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
     userEvent.click(cancelButton);
 
-    editButton = screen.getByRole('button', {name: "Edit Labels"});
+    editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
     expect(addLabelButton).not.toBeInTheDocument();
@@ -309,13 +309,13 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
-    let editButton = screen.getByRole('button', {name: "Edit Labels"})
+    let editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
     userEvent.click(editButton);
 
-    let addLabelButton = screen.getByRole('button', { name: 'Add Label'});
+    let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
@@ -334,13 +334,13 @@ describe('<BulkEditLabels />', () => {
     const saveButton = screen.getByText('Save');
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toBeVisible();
-    
+
     const cancelButton = screen.getByText('Cancel');
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
     userEvent.click(saveButton);
-    
+
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -352,13 +352,13 @@ describe('<BulkEditLabels />', () => {
       </ServiceContext.Provider>
     );
 
-    let editButton = screen.getByRole('button', {name: "Edit Labels"})
+    let editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
     userEvent.click(editButton);
 
-    let addLabelButton = screen.getByRole('button', { name: 'Add Label'});
+    let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
@@ -377,13 +377,13 @@ describe('<BulkEditLabels />', () => {
     const saveButton = screen.getByText('Save');
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toBeVisible();
-    
+
     const cancelButton = screen.getByText('Cancel');
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
     userEvent.click(saveButton);
-    
+
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
 });

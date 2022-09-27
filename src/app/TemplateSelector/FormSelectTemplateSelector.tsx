@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {FormSelect, FormSelectOption, FormSelectOptionGroup} from '@patternfly/react-core';
+import { FormSelect, FormSelectOption, FormSelectOptionGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { EventTemplate, TemplateType } from '../CreateRecording/CreateRecording';
 import { TemplateSelector } from './TemplateSelector';
@@ -47,7 +47,6 @@ export interface FormSelectTemplateSelectorProps {
 }
 
 export const FormSelectTemplateSelector: React.FunctionComponent<FormSelectTemplateSelectorProps> = (props) => {
-
   const [template, setTemplate] = React.useState(props.selected || undefined);
 
   const asSpecifier = (template: EventTemplate | undefined): string => {
@@ -63,38 +62,37 @@ export const FormSelectTemplateSelector: React.FunctionComponent<FormSelectTempl
     const templateType = specifier.split(',')[1] as TemplateType;
     setSpecifier(specifier);
     setTemplate(
-      asSpecifier(
-        props.templates.find(template => template.name === templateName && template.type === templateType)
-      )
+      asSpecifier(props.templates.find((template) => template.name === templateName && template.type === templateType))
     );
     props.onChange(specifier);
   };
 
-  return (<>
-    <FormSelect
-      value={specifier}
-      onChange={handleTemplateChange}
-      aria-label="Event Template Input"
-      id='recording-template'
-    >
-      <TemplateSelector
-        placeholder={ <FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder /> }
-        templates={props.templates}
-        templateMapper={(template: EventTemplate, idx: number, offset: number) =>
-          <FormSelectOption key={idx+offset} value={`${template.name},${template.type}`} label={template.name} />
-        }
-        customGroup={children =>
-          <FormSelectOptionGroup key="-2" label="Custom Templates">
-            { children }
-          </FormSelectOptionGroup>
-        }
-        targetGroup={children =>
-          <FormSelectOptionGroup key="-3" label="Target Templates">
-            { children }
-          </FormSelectOptionGroup>
-        }
-      />
-    </FormSelect>
-  </>);
-
+  return (
+    <>
+      <FormSelect
+        value={specifier}
+        onChange={handleTemplateChange}
+        aria-label="Event Template Input"
+        id="recording-template"
+      >
+        <TemplateSelector
+          placeholder={<FormSelectOption key="-1" value="" label="Select a Template" isPlaceholder />}
+          templates={props.templates}
+          templateMapper={(template: EventTemplate, idx: number, offset: number) => (
+            <FormSelectOption key={idx + offset} value={`${template.name},${template.type}`} label={template.name} />
+          )}
+          customGroup={(children) => (
+            <FormSelectOptionGroup key="-2" label="Custom Templates">
+              {children}
+            </FormSelectOptionGroup>
+          )}
+          targetGroup={(children) => (
+            <FormSelectOptionGroup key="-3" label="Target Templates">
+              {children}
+            </FormSelectOptionGroup>
+          )}
+        />
+      </FormSelect>
+    </>
+  );
 };

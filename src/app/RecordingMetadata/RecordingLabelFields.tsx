@@ -60,21 +60,25 @@ export interface RecordingLabelFieldsProps {
 export const LabelPattern = /^\S+$/;
 
 export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = (props) => {
-  const [validKeys, setValidKeys] = React.useState(Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default));
-  const [validValues, setValidVals] = React.useState(Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default));
-  const [keys, setKeys] = React.useState(!!props.labels ? props.labels.map(l => l.key) : []);
+  const [validKeys, setValidKeys] = React.useState(
+    Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default)
+  );
+  const [validValues, setValidVals] = React.useState(
+    Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default)
+  );
+  const [keys, setKeys] = React.useState(!!props.labels ? props.labels.map((l) => l.key) : []);
 
   const handleKeyChange = React.useCallback(
     (idx, key) => {
       let updatedLabels = [...props.labels];
       updatedLabels[idx].key = key;
       props.setLabels(updatedLabels);
-      
+
       let updatedKeys = [...keys];
       updatedKeys[idx] = key;
       setKeys(updatedKeys);
 
-      updateValidState(idx, LabelPattern.test(key) && (updatedKeys.indexOf(key) == idx), validKeys, setValidKeys);
+      updateValidState(idx, LabelPattern.test(key) && updatedKeys.indexOf(key) == idx, validKeys, setValidKeys);
     },
     [keys, props.labels, props.setLabels, validKeys, setValidKeys]
   );
@@ -83,7 +87,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     (idx, value) => {
       let updatedLabels = [...props.labels];
       updatedLabels[idx].value = value;
-      props.setLabels(updatedLabels); 
+      props.setLabels(updatedLabels);
 
       updateValidState(idx, LabelPattern.test(value), validValues, setValidVals);
     },
@@ -121,29 +125,35 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
   };
 
   const getValidatedOption = (isValid: boolean) => {
-    return isValid ? ValidatedOptions.success: ValidatedOptions.error;
-  }
+    return isValid ? ValidatedOptions.success : ValidatedOptions.error;
+  };
 
-  const matchesLabelSyntax = React.useCallback((l: RecordingLabel) => {
-    return !!l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
-  }, [LabelPattern]);
+  const matchesLabelSyntax = React.useCallback(
+    (l: RecordingLabel) => {
+      return !!l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
+    },
+    [LabelPattern]
+  );
 
-  const isLabelInvalid = React.useCallback((validState: ValidatedOptions, idx: number) => {
-    switch (validState) {
-      case ValidatedOptions.error:
-      case ValidatedOptions.warning:
-        return true;
-      case ValidatedOptions.default:
-        if(!props.labels || !matchesLabelSyntax(props.labels[idx])) {
+  const isLabelInvalid = React.useCallback(
+    (validState: ValidatedOptions, idx: number) => {
+      switch (validState) {
+        case ValidatedOptions.error:
+        case ValidatedOptions.warning:
           return true;
-        }
-      default: return false;
-    }
-  }, [props.labels]);
+        case ValidatedOptions.default:
+          if (!props.labels || !matchesLabelSyntax(props.labels[idx])) {
+            return true;
+          }
+        default:
+          return false;
+      }
+    },
+    [props.labels]
+  );
 
   const allLabelsValid = React.useMemo(() => {
-
-    if(!!props.labels && !props.labels.length) {
+    if (!!props.labels && !props.labels.length) {
       return true;
     }
 
@@ -167,60 +177,61 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
 
   return (
     <>
-      <Button aria-label='Add Label' onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
+      <Button aria-label="Add Label" onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
         Add Label
       </Button>
-      {!!props.labels && props.labels.map((label, idx) => (
-        <Split hasGutter key={idx}>
-          <SplitItem isFilled>
-            <TextInput
-              isRequired
-              type="text"
-              id="label-key-input"
-              name="label-key-input"
-              aria-describedby="label-key-input-helper"
-              aria-label="label key"
-              value={label.key ?? ''}
-              onChange={(key) => handleKeyChange(idx, key)}
-              validated={validKeys[idx]}
-            />
-            <Text>Key</Text>
-            <FormHelperText
-              isHidden={!(validKeys[idx] == ValidatedOptions.error || validValues[idx] == ValidatedOptions.error)}
-              component="div"
-            >
-              <HelperText id="helper-text1">
-                <HelperTextItem variant={'error'}>
-                  Keys must be unique. Labels should not contain whitespace.
-                </HelperTextItem>
-              </HelperText>
-            </FormHelperText>
-          </SplitItem>
-          <SplitItem isFilled>
-            <TextInput
-              isRequired
-              type="text"
-              id="label-value-input"
-              name="label-value-input"
-              aria-describedby="label-value-input-helper"
-              aria-label="label value"
-              value={label.value ?? ''}
-              onChange={(value) => handleValueChange(idx, value)}
-              validated={validValues[idx]}
-            />
-            <Text>Value</Text>
-          </SplitItem>
-          <SplitItem>
-            <Button
-              onClick={() => handleDeleteLabelButtonClick(idx)}
-              variant="link"
-              data-testid="remove-label-button"
-              aria-label="remove label"
-              icon={<CloseIcon color="gray" size="sm" />}
-            />
-          </SplitItem>
-        </Split>
-      ))}
+      {!!props.labels &&
+        props.labels.map((label, idx) => (
+          <Split hasGutter key={idx}>
+            <SplitItem isFilled>
+              <TextInput
+                isRequired
+                type="text"
+                id="label-key-input"
+                name="label-key-input"
+                aria-describedby="label-key-input-helper"
+                aria-label="label key"
+                value={label.key ?? ''}
+                onChange={(key) => handleKeyChange(idx, key)}
+                validated={validKeys[idx]}
+              />
+              <Text>Key</Text>
+              <FormHelperText
+                isHidden={!(validKeys[idx] == ValidatedOptions.error || validValues[idx] == ValidatedOptions.error)}
+                component="div"
+              >
+                <HelperText id="helper-text1">
+                  <HelperTextItem variant={'error'}>
+                    Keys must be unique. Labels should not contain whitespace.
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            </SplitItem>
+            <SplitItem isFilled>
+              <TextInput
+                isRequired
+                type="text"
+                id="label-value-input"
+                name="label-value-input"
+                aria-describedby="label-value-input-helper"
+                aria-label="label value"
+                value={label.value ?? ''}
+                onChange={(value) => handleValueChange(idx, value)}
+                validated={validValues[idx]}
+              />
+              <Text>Value</Text>
+            </SplitItem>
+            <SplitItem>
+              <Button
+                onClick={() => handleDeleteLabelButtonClick(idx)}
+                variant="link"
+                data-testid="remove-label-button"
+                aria-label="remove label"
+                icon={<CloseIcon color="gray" size="sm" />}
+              />
+            </SplitItem>
+          </Split>
+        ))}
     </>
   );
 };

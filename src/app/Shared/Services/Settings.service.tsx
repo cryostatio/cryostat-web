@@ -43,17 +43,16 @@ enum StorageKeys {
   AutoRefreshEnabled = 'auto-refresh-enabled',
   AutoRefreshPeriod = 'auto-refresh-period',
   AutoRefreshUnits = 'auto-refresh-units',
-  DeletionDialogsEnabled = 'deletion-dialogs-enabled',  
+  DeletionDialogsEnabled = 'deletion-dialogs-enabled',
   NotificationsEnabled = 'notifications-enabled',
   WebSocketDebounceMs = 'web-socket-debounce-ms',
 }
 
 export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
-  return Object.keys(obj).filter(k => Number.isNaN(+k)) as K[];
+  return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
 }
 
 export class SettingsService {
-
   autoRefreshEnabled(): boolean {
     return window.localStorage.getItem(StorageKeys.AutoRefreshEnabled) === 'true';
   }
@@ -63,7 +62,7 @@ export class SettingsService {
   }
 
   autoRefreshPeriod(defaultPeriod = 30): number {
-    const raw = window.localStorage.getItem(StorageKeys.AutoRefreshPeriod)
+    const raw = window.localStorage.getItem(StorageKeys.AutoRefreshPeriod);
     if (raw) {
       return Number(raw);
     }
@@ -181,7 +180,7 @@ export class SettingsService {
   }
 
   webSocketDebounceMs(defaultWebSocketDebounceMs = 100): number {
-    const raw = window.localStorage.getItem(StorageKeys.WebSocketDebounceMs)
+    const raw = window.localStorage.getItem(StorageKeys.WebSocketDebounceMs);
     if (raw) {
       return Number(raw);
     }
@@ -192,5 +191,4 @@ export class SettingsService {
   setWebSocketDebounceMs(debounce: number): void {
     window.localStorage.setItem(StorageKeys.WebSocketDebounceMs, String(debounce));
   }
-
 }

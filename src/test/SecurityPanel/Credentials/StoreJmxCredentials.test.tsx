@@ -47,16 +47,37 @@ import '@testing-library/jest-dom';
 import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
-const mockCredential: StoredCredential = { id: 0, matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"', numMatchingTargets: 1 };
-const mockAnotherCredential: StoredCredential = { id: 1, matchExpression: 'target.connectUrl == "service:jmx:rmi://anotherUrl" || target.connectUrl == "service:jmx:rmi://anotherMatchUrl" || target.connectUrl == "service:jmx:rmi://yetAnotherMatchUrl"', numMatchingTargets: 2 };
+const mockCredential: StoredCredential = {
+  id: 0,
+  matchExpression: 'target.connectUrl == "service:jmx:rmi://someUrl"',
+  numMatchingTargets: 1,
+};
+const mockAnotherCredential: StoredCredential = {
+  id: 1,
+  matchExpression:
+    'target.connectUrl == "service:jmx:rmi://anotherUrl" || target.connectUrl == "service:jmx:rmi://anotherMatchUrl" || target.connectUrl == "service:jmx:rmi://yetAnotherMatchUrl"',
+  numMatchingTargets: 2,
+};
 
-const mockTarget: Target = { connectUrl: "service:jmx:rmi://someUrl", alias: "someAlias", };
-const mockAnotherTarget: Target = { connectUrl: "service:jmx:rmi://anotherUrl", alias: "anotherAlias", };
-const mockAnotherMatchingTarget: Target = { connectUrl: "service:jmx:rmi://anotherMatchUrl", alias: "anotherMatchAlias", };
-const mockYetAnotherMatchingTarget: Target = { connectUrl: "service:jmx:rmi://yetAnotherMatchUrl", alias: "yetAnotherMatchAlias" };
+const mockTarget: Target = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'someAlias' };
+const mockAnotherTarget: Target = { connectUrl: 'service:jmx:rmi://anotherUrl', alias: 'anotherAlias' };
+const mockAnotherMatchingTarget: Target = {
+  connectUrl: 'service:jmx:rmi://anotherMatchUrl',
+  alias: 'anotherMatchAlias',
+};
+const mockYetAnotherMatchingTarget: Target = {
+  connectUrl: 'service:jmx:rmi://yetAnotherMatchUrl',
+  alias: 'yetAnotherMatchAlias',
+};
 
-const mockMatchedCredentialResponse: MatchedCredential = { matchExpression: mockCredential.matchExpression, targets: [mockTarget] };
-const mockAnotherMatchedCredentialResponse: MatchedCredential = { matchExpression: mockAnotherCredential.matchExpression, targets: [mockAnotherTarget, mockAnotherMatchingTarget] };
+const mockMatchedCredentialResponse: MatchedCredential = {
+  matchExpression: mockCredential.matchExpression,
+  targets: [mockTarget],
+};
+const mockAnotherMatchedCredentialResponse: MatchedCredential = {
+  matchExpression: mockAnotherCredential.matchExpression,
+  targets: [mockAnotherTarget, mockAnotherMatchingTarget],
+};
 
 jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
   return {
@@ -78,9 +99,13 @@ jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
 
 jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
   const mockCredentialNotification = { message: mockCredential } as NotificationMessage;
-  const evt = { kind: 'LOST', serviceRef:  mockTarget } as TargetDiscoveryEvent;
-  const mockLostTargetNotification = { message: { event: { kind: 'LOST', serviceRef:  mockAnotherTarget } } } as NotificationMessage;
-  const mockFoundTargetNotification = { message: { event: { kind: 'FOUND', serviceRef:  mockYetAnotherMatchingTarget } } } as NotificationMessage;
+  const evt = { kind: 'LOST', serviceRef: mockTarget } as TargetDiscoveryEvent;
+  const mockLostTargetNotification = {
+    message: { event: { kind: 'LOST', serviceRef: mockAnotherTarget } },
+  } as NotificationMessage;
+  const mockFoundTargetNotification = {
+    message: { event: { kind: 'FOUND', serviceRef: mockYetAnotherMatchingTarget } },
+  } as NotificationMessage;
   return {
     ...jest.requireActual('@app/Shared/Services/NotificationChannel.service'),
     NotificationChannel: jest.fn(() => {
@@ -121,7 +146,7 @@ jest.mock('@app/Shared/Services/NotificationChannel.service', () => {
           .mockReturnValueOnce(of(mockFoundTargetNotification))
           .mockReturnValueOnce(of(mockFoundTargetNotification))
 
-          .mockReturnValue(of()) // remaining tests
+          .mockReturnValue(of()), // remaining tests
       };
     }),
   };
@@ -131,9 +156,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
   return {
     ApiService: jest.fn(() => {
       return {
-        deleteCredentials: jest
-          .fn()
-          .mockReturnValue(of(true)),
+        deleteCredentials: jest.fn().mockReturnValue(of(true)),
         getCredentials: jest
           .fn()
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'renders correctly'
@@ -149,7 +172,7 @@ jest.mock('@app/Shared/Services/Api.service', () => {
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'decrements the correct count and updates the correct nested table when a lost target notification is received'
 
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'increments the correct count and updates the correct nested table when a found target notification is received'
-          
+
           .mockReturnValueOnce(of([])) // 'opens the JMX auth modal when Add is clicked'
 
           .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete'
@@ -180,8 +203,7 @@ import { DeleteJMXCredentials, DeleteWarningType } from '@app/Modal/DeleteWarnin
 import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
-jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true);
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValueOnce(true);
 
 describe('<StoreJmxCredentials />', () => {
   it('renders correctly', async () => {
@@ -253,21 +275,27 @@ describe('<StoreJmxCredentials />', () => {
     expect(screen.queryByText('Target')).not.toBeInTheDocument();
     expect(screen.queryByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).not.toBeInTheDocument();
     expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
-    expect(screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).not.toBeInTheDocument();
-    
+    expect(
+      screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
+    ).not.toBeInTheDocument();
+
     const expandButtons = screen.getAllByLabelText('Details');
-    
+
     userEvent.click(expandButtons[0]);
 
     expect(screen.getByText('Target')).toBeInTheDocument();
     expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
     expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
-    expect(screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).not.toBeInTheDocument();
-    
+    expect(
+      screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
+    ).not.toBeInTheDocument();
+
     userEvent.click(expandButtons[1]);
 
     expect(screen.getByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).toBeInTheDocument();
-    expect(screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
+    ).toBeInTheDocument();
   });
 
   it('decrements the correct count and updates the correct nested table when a lost target notification is received', async () => {
@@ -281,9 +309,9 @@ describe('<StoreJmxCredentials />', () => {
     const counts = screen.getAllByText(mockAnotherCredential.numMatchingTargets - 1);
     expect(within(counts[0]).getByText(mockCredential.numMatchingTargets)).toBeTruthy();
     expect(within(counts[1]).getByText(mockAnotherCredential.numMatchingTargets - 1)).toBeTruthy();
-    
+
     const expandButtons = screen.getAllByLabelText('Details');
-   
+
     userEvent.click(expandButtons[0]);
 
     expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
@@ -291,7 +319,9 @@ describe('<StoreJmxCredentials />', () => {
     userEvent.click(expandButtons[1]);
 
     expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
-    expect(screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
+    ).toBeInTheDocument();
   });
 
   it('increments the correct count and updates the correct nested table when a found target notification is received', () => {
@@ -305,17 +335,23 @@ describe('<StoreJmxCredentials />', () => {
     expect(screen.getByText(mockAnotherCredential.numMatchingTargets + 1)).toBeInTheDocument();
 
     const expandButtons = screen.getAllByLabelText('Details');
-   
+
     userEvent.click(expandButtons[0]);
 
     expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
-    expect(screen.queryByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)
+    ).not.toBeInTheDocument();
 
     userEvent.click(expandButtons[1]);
 
     expect(screen.getByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).toBeInTheDocument();
-    expect(screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)).toBeInTheDocument();
-    expect(screen.getByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)
+    ).toBeInTheDocument();
   });
 
   it('opens the JMX auth modal when Add is clicked', () => {

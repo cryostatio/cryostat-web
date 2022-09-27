@@ -61,18 +61,22 @@ const mockRecording: ActiveRecording = {
   maxAge: 0,
 };
 
-const onDurationInput = jest.fn((durationInput) => { /**Do nothing. Used for checking renders */});
-const onContinuousSelect = jest.fn((continuous) => { /**Do nothing. Used for checking renders */});
+const onDurationInput = jest.fn((durationInput) => {
+  /**Do nothing. Used for checking renders */
+});
+const onContinuousSelect = jest.fn((continuous) => {
+  /**Do nothing. Used for checking renders */
+});
 
-describe("<DurationFilter />", () => {
+describe('<DurationFilter />', () => {
   let emptyFilteredDuration: string[];
   let filteredDurationsWithCont: string[];
   let filteredDurationsWithoutCont: string[];
 
   beforeEach(() => {
     emptyFilteredDuration = [];
-    filteredDurationsWithCont = [ `${mockRecording.duration}`, "continuous" ];
-    filteredDurationsWithoutCont = [ `${mockRecording.duration}` ]
+    filteredDurationsWithCont = [`${mockRecording.duration}`, 'continuous'];
+    filteredDurationsWithoutCont = [`${mockRecording.duration}`];
   });
 
   afterEach(cleanup);
@@ -81,119 +85,147 @@ describe("<DurationFilter />", () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
-        <DurationFilter durations={emptyFilteredDuration} onContinuousDurationSelect={onContinuousSelect} onDurationInput={onDurationInput}/>
+        <DurationFilter
+          durations={emptyFilteredDuration}
+          onContinuousDurationSelect={onContinuousSelect}
+          onDurationInput={onDurationInput}
+        />
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it ('should check continous box if continous is in filter', () => {
+  it('should check continous box if continous is in filter', () => {
     render(
-      <DurationFilter durations={filteredDurationsWithCont} onContinuousDurationSelect={onContinuousSelect} onDurationInput={onDurationInput}/>
+      <DurationFilter
+        durations={filteredDurationsWithCont}
+        onContinuousDurationSelect={onContinuousSelect}
+        onDurationInput={onDurationInput}
+      />
     );
 
-    const checkBox = screen.getByRole('checkbox', { name: "Continuous" });
+    const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
     expect(checkBox).toBeInTheDocument();
     expect(checkBox).toBeVisible();
-    expect(checkBox).toHaveAttribute("checked");
+    expect(checkBox).toHaveAttribute('checked');
   });
 
-  it ('should not check continous box if continous is in filter', () => {
+  it('should not check continous box if continous is in filter', () => {
     render(
-      <DurationFilter durations={filteredDurationsWithoutCont} onContinuousDurationSelect={onContinuousSelect} onDurationInput={onDurationInput}/>
+      <DurationFilter
+        durations={filteredDurationsWithoutCont}
+        onContinuousDurationSelect={onContinuousSelect}
+        onDurationInput={onDurationInput}
+      />
     );
 
-    const checkBox = screen.getByRole('checkbox', { name: "Continuous" });
+    const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
     expect(checkBox).toBeInTheDocument();
     expect(checkBox).toBeVisible();
-    expect(checkBox).not.toHaveAttribute("checked");
+    expect(checkBox).not.toHaveAttribute('checked');
   });
 
-  it ('should select continous when clicking unchecked continuous box', () => {
+  it('should select continous when clicking unchecked continuous box', () => {
     const submitContinous = jest.fn((continous) => {
-      filteredDurationsWithoutCont.push("continuous");
+      filteredDurationsWithoutCont.push('continuous');
     });
 
     render(
-      <DurationFilter durations={filteredDurationsWithoutCont} onContinuousDurationSelect={submitContinous} onDurationInput={onDurationInput}/>
+      <DurationFilter
+        durations={filteredDurationsWithoutCont}
+        onContinuousDurationSelect={submitContinous}
+        onDurationInput={onDurationInput}
+      />
     );
 
-    const checkBox = screen.getByRole('checkbox', { name: "Continuous" });
+    const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
     expect(checkBox).toBeInTheDocument();
     expect(checkBox).toBeVisible();
-    expect(checkBox).not.toHaveAttribute("checked");
+    expect(checkBox).not.toHaveAttribute('checked');
 
     userEvent.click(checkBox);
 
     expect(submitContinous).toHaveBeenCalledTimes(1);
     expect(submitContinous).toHaveBeenCalledWith(true);
 
-    expect(filteredDurationsWithoutCont).toStrictEqual([`${mockRecording.duration}`, "continuous"]);
+    expect(filteredDurationsWithoutCont).toStrictEqual([`${mockRecording.duration}`, 'continuous']);
   });
 
-  it ('should unselect continous when clicking checked continuous box', () => {
+  it('should unselect continous when clicking checked continuous box', () => {
     const submitContinous = jest.fn((continous) => {
-      filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => v !== "continuous");
+      filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => v !== 'continuous');
     });
 
     render(
-      <DurationFilter durations={filteredDurationsWithCont} onContinuousDurationSelect={submitContinous} onDurationInput={onDurationInput}/>
+      <DurationFilter
+        durations={filteredDurationsWithCont}
+        onContinuousDurationSelect={submitContinous}
+        onDurationInput={onDurationInput}
+      />
     );
 
-    const checkBox = screen.getByRole('checkbox', { name: "Continuous" });
+    const checkBox = screen.getByRole('checkbox', { name: 'Continuous' });
     expect(checkBox).toBeInTheDocument();
     expect(checkBox).toBeVisible();
-    expect(checkBox).toHaveAttribute("checked");
+    expect(checkBox).toHaveAttribute('checked');
 
     userEvent.click(checkBox);
-    
+
     expect(submitContinous).toHaveBeenCalledTimes(1);
     expect(submitContinous).toHaveBeenCalledWith(false);
     expect(filteredDurationsWithCont).toStrictEqual([`${mockRecording.duration}`]);
   });
 
-  it ('should select a duration when pressing Enter', async () => {
+  it('should select a duration when pressing Enter', async () => {
     const submitDuration = jest.fn((duration) => {
       emptyFilteredDuration.push(duration);
     });
 
     render(
-      <DurationFilter durations={emptyFilteredDuration} onContinuousDurationSelect={onContinuousSelect} onDurationInput={submitDuration}/>
+      <DurationFilter
+        durations={emptyFilteredDuration}
+        onContinuousDurationSelect={onContinuousSelect}
+        onDurationInput={submitDuration}
+      />
     );
 
-    const durationInput = screen.getByLabelText("duration filter");
+    const durationInput = screen.getByLabelText('duration filter');
     expect(durationInput).toBeInTheDocument();
     expect(durationInput).toBeVisible();
 
     userEvent.clear(durationInput);
-    userEvent.type(durationInput, "50");
-    
+    userEvent.type(durationInput, '50');
+
     // Press enter
-    userEvent.type(durationInput, "{enter}");
+    userEvent.type(durationInput, '{enter}');
 
     expect(submitDuration).toHaveBeenCalledTimes(1);
-    expect(submitDuration).toHaveBeenCalledWith(Number("50"));
+    expect(submitDuration).toHaveBeenCalledWith(Number('50'));
     expect(emptyFilteredDuration).toStrictEqual([50]);
   });
 
-  it ('should not select a duration when pressing other keys', async () => {
+  it('should not select a duration when pressing other keys', async () => {
     const submitDuration = jest.fn((duration) => {
       emptyFilteredDuration.push(duration);
     });
 
     render(
-      <DurationFilter durations={emptyFilteredDuration} onContinuousDurationSelect={onContinuousSelect} onDurationInput={submitDuration}/>
+      <DurationFilter
+        durations={emptyFilteredDuration}
+        onContinuousDurationSelect={onContinuousSelect}
+        onDurationInput={submitDuration}
+      />
     );
 
-    const durationInput = screen.getByLabelText("duration filter");
+    const durationInput = screen.getByLabelText('duration filter');
     expect(durationInput).toBeInTheDocument();
     expect(durationInput).toBeVisible();
 
     userEvent.clear(durationInput);
-    userEvent.type(durationInput, "50");
-    
+    userEvent.type(durationInput, '50');
+
     // Press shift
-    userEvent.type(durationInput, "{shift}");
+    userEvent.type(durationInput, '{shift}');
 
     expect(submitDuration).toHaveBeenCalledTimes(0);
     expect(emptyFilteredDuration).toStrictEqual([]);

@@ -48,8 +48,8 @@ const mockRecordingLabels = {
 };
 const mockAnotherRecordingLabels = {
   anotherLabel: 'anotherValue',
-}
-const mockRecordingLabelList = [ 'someLabel:someValue', 'anotherLabel:anotherValue' ]
+};
+const mockRecordingLabelList = ['someLabel:someValue', 'anotherLabel:anotherValue'];
 
 const mockRecording: ActiveRecording = {
   name: 'someRecording',
@@ -65,19 +65,29 @@ const mockRecording: ActiveRecording = {
   maxSize: 0,
   maxAge: 0,
 };
-const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording', metadata: { labels: mockAnotherRecordingLabels }} as ActiveRecording;
-const mockRecordingWithoutLabel = { ...mockRecording, name: 'noLabelRecording', metadata: { labels: {} } } as ActiveRecording;
+const mockAnotherRecording = {
+  ...mockRecording,
+  name: 'anotherRecording',
+  metadata: { labels: mockAnotherRecordingLabels },
+} as ActiveRecording;
+const mockRecordingWithoutLabel = {
+  ...mockRecording,
+  name: 'noLabelRecording',
+  metadata: { labels: {} },
+} as ActiveRecording;
 const mockRecordingList = [mockRecording, mockAnotherRecording, mockRecordingWithoutLabel];
 
-const onLabelInput = jest.fn((label) => { /**Do nothing. Used for checking renders */});
+const onLabelInput = jest.fn((label) => {
+  /**Do nothing. Used for checking renders */
+});
 
-describe("<LabelFilter />", () => {
+describe('<LabelFilter />', () => {
   let emptyFilteredLabels: string[];
   let filteredLabels: string[];
 
   beforeEach(() => {
     emptyFilteredLabels = [];
-    filteredLabels = [ `someLabel:someValue` ];
+    filteredLabels = [`someLabel:someValue`];
   });
 
   afterEach(cleanup);
@@ -92,17 +102,15 @@ describe("<LabelFilter />", () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it ('display label selections when text input is clicked', async () => {
-    render(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels}/>
-    );
-    const labelInput = screen.getByLabelText("Filter by label...");
+  it('display label selections when text input is clicked', async () => {
+    render(<LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />);
+    const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
 
     userEvent.click(labelInput);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by label"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -113,18 +121,16 @@ describe("<LabelFilter />", () => {
     });
   });
 
-  it ('display label selections when dropdown arrow is clicked', async () => {
-    render(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels}/>
-    );
+  it('display label selections when dropdown arrow is clicked', async () => {
+    render(<LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />);
 
-    const dropDownArrow = screen.getByRole("button", { name: "Options menu"});
+    const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
     userEvent.click(dropDownArrow);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by label"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -135,18 +141,16 @@ describe("<LabelFilter />", () => {
     });
   });
 
-  it ('should close selection menu when toggled with dropdown arrow', async () => {
-    render(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels}/>
-    );
+  it('should close selection menu when toggled with dropdown arrow', async () => {
+    render(<LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />);
 
-    const dropDownArrow = screen.getByRole("button", { name: "Options menu"});
+    const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
     userEvent.click(dropDownArrow);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by label"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -161,17 +165,15 @@ describe("<LabelFilter />", () => {
     expect(selectMenu).not.toBeVisible();
   });
 
-  it ('should close selection menu when toggled with text input', async () => {
-    render(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels}/>
-    );
-    const labelInput = screen.getByLabelText("Filter by label...");
+  it('should close selection menu when toggled with text input', async () => {
+    render(<LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={emptyFilteredLabels} />);
+    const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
 
     userEvent.click(labelInput);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by label"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -186,37 +188,35 @@ describe("<LabelFilter />", () => {
     expect(selectMenu).not.toBeVisible();
   });
 
-  it ('should not display selected labels', async () => {
-    render(
-      <LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={filteredLabels}/>
-    );
-    const labelInput = screen.getByLabelText("Filter by label...");
+  it('should not display selected labels', async () => {
+    render(<LabelFilter recordings={mockRecordingList} onSubmit={onLabelInput} filteredLabels={filteredLabels} />);
+    const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
 
     userEvent.click(labelInput);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by label"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
-    
+
     const notToShowLabel = within(selectMenu).queryByText('someLabel:someValue');
     expect(notToShowLabel).not.toBeInTheDocument();
   });
 
-  it ('should select a name when a name option is clicked', async () => {
+  it('should select a name when a name option is clicked', async () => {
     const submitLabelInput = jest.fn((labelInput) => emptyFilteredLabels.push(labelInput));
 
     render(
-      <LabelFilter recordings={mockRecordingList} onSubmit={submitLabelInput} filteredLabels={emptyFilteredLabels}/>
+      <LabelFilter recordings={mockRecordingList} onSubmit={submitLabelInput} filteredLabels={emptyFilteredLabels} />
     );
-    const labelInput = screen.getByLabelText("Filter by label...");
+    const labelInput = screen.getByLabelText('Filter by label...');
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
 
     userEvent.click(labelInput);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by label"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -232,6 +232,6 @@ describe("<LabelFilter />", () => {
 
     expect(submitLabelInput).toBeCalledTimes(1);
     expect(submitLabelInput).toBeCalledWith('someLabel:someValue');
-    expect(emptyFilteredLabels).toStrictEqual([ 'someLabel:someValue' ]);
+    expect(emptyFilteredLabels).toStrictEqual(['someLabel:someValue']);
   });
 });

@@ -55,13 +55,15 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
         setIsExpanded(false);
         props.onSubmit(selection);
       }
-    }, [props.onSubmit, setIsExpanded]
+    },
+    [props.onSubmit, setIsExpanded]
   );
 
   const nameOptions = React.useMemo(() => {
-    return props.recordings.map((r) => r.name).filter((n) => !props.filteredNames.includes(n)).map((option, index) => (
-      <SelectOption key={index} value={option} />
-    ));
+    return props.recordings
+      .map((r) => r.name)
+      .filter((n) => !props.filteredNames.includes(n))
+      .map((option, index) => <SelectOption key={index} value={option} />);
   }, [props.recordings, props.filteredNames]);
 
   return (
@@ -72,9 +74,9 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
       isOpen={isExpanded}
       typeAheadAriaLabel="Filter by name..."
       placeholderText="Filter by name..."
-      aria-label='Filter by name'
+      aria-label="Filter by name"
     >
-      { nameOptions }
+      {nameOptions}
     </Select>
   );
 };

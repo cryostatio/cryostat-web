@@ -46,50 +46,60 @@ import { RecordingLabel } from './RecordingLabel';
 export interface LabelCellProps {
   target: string;
   labels: RecordingLabel[];
-  clickableOptions?: { // If undefined, labels are not clickable (i.e. display only) and only displayed in grey.
+  clickableOptions?: {
+    // If undefined, labels are not clickable (i.e. display only) and only displayed in grey.
     labelFilters: string[];
-    updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void
-  }
+    updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
+  };
 }
 
 export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
-  const isLabelSelected = React.useCallback((label: RecordingLabel) => {
-    if (props.clickableOptions) {
-      const labelFilterSet = new Set(props.clickableOptions.labelFilters);
-      return labelFilterSet.has(getLabelDisplay(label))
-    }
-    return false;
-  }, [getLabelDisplay, props.clickableOptions]);
+  const isLabelSelected = React.useCallback(
+    (label: RecordingLabel) => {
+      if (props.clickableOptions) {
+        const labelFilterSet = new Set(props.clickableOptions.labelFilters);
+        return labelFilterSet.has(getLabelDisplay(label));
+      }
+      return false;
+    },
+    [getLabelDisplay, props.clickableOptions]
+  );
 
-  const getLabelColor = React.useCallback((label: RecordingLabel) => isLabelSelected(label)? "blue": "grey", [isLabelSelected]);
+  const getLabelColor = React.useCallback(
+    (label: RecordingLabel) => (isLabelSelected(label) ? 'blue' : 'grey'),
+    [isLabelSelected]
+  );
   const onLabelSelectToggle = React.useCallback(
     (clickedLabel: RecordingLabel) => {
       if (props.clickableOptions) {
-        props.clickableOptions.updateFilters(props.target, {filterKey: "Label", filterValue: getLabelDisplay(clickedLabel), deleted: isLabelSelected(clickedLabel)})
+        props.clickableOptions.updateFilters(props.target, {
+          filterKey: 'Label',
+          filterValue: getLabelDisplay(clickedLabel),
+          deleted: isLabelSelected(clickedLabel),
+        });
       }
     },
-    [props.clickableOptions, props.target, getLabelDisplay]);
+    [props.clickableOptions, props.target, getLabelDisplay]
+  );
 
   return (
     <>
-      {!!props.labels && props.labels.length? (
+      {!!props.labels && props.labels.length ? (
         props.labels.map((label) =>
-        props.clickableOptions?
-          <ClickableLabel
-            key={label.key}
-            label={label}
-            isSelected={isLabelSelected(label)}
-            onLabelClick={onLabelSelectToggle}
-          /> :
-          <Label
-            aria-label={`${label.key}: ${label.value}`}
-            key={label.key}
-            color={getLabelColor(label)}
-          >
-            {`${label.key}: ${label.value}`}
-          </Label>
-          
-        )) : (
+          props.clickableOptions ? (
+            <ClickableLabel
+              key={label.key}
+              label={label}
+              isSelected={isLabelSelected(label)}
+              onLabelClick={onLabelSelectToggle}
+            />
+          ) : (
+            <Label aria-label={`${label.key}: ${label.value}`} key={label.key} color={getLabelColor(label)}>
+              {`${label.key}: ${label.value}`}
+            </Label>
+          )
+        )
+      ) : (
         <Text>-</Text>
       )}
     </>

@@ -36,7 +36,15 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { FormGroup, Modal, ModalVariant, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  Modal,
+  ModalVariant,
+  Text,
+  TextInput,
+  TextVariants,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { first } from 'rxjs';
@@ -54,18 +62,22 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
 
-  const onSave = React.useCallback((username: string, password: string): Promise<void> => {
-    return new Promise((resolve) => {
-      addSubscription(
-        context.api.postCredentials(matchExpression, username, password)
-          .pipe(first())
-          .subscribe(() => {
-            props.onClose();
-            resolve();
-          })
-      );
-    });
-  }, [props.onClose, context, context.target, context.api, matchExpression]);
+  const onSave = React.useCallback(
+    (username: string, password: string): Promise<void> => {
+      return new Promise((resolve) => {
+        addSubscription(
+          context.api
+            .postCredentials(matchExpression, username, password)
+            .pipe(first())
+            .subscribe(() => {
+              props.onClose();
+              resolve();
+            })
+        );
+      });
+    },
+    [props.onClose, context, context.target, context.api, matchExpression]
+  );
 
   return (
     <Modal
@@ -86,8 +98,9 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
           fieldId="match-expression"
           helperText={
             <Text component={TextVariants.small}>
-              Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.
-              Select a target from the dropdown below to view the context object available within the match expression context and test if the expression matches.
+              Enter a match expression. This is a Java-like code snippet that is evaluated against each target
+              application to determine whether the rule should be applied. Select a target from the dropdown below to
+              view the context object available within the match expression context and test if the expression matches.
             </Text>
           }
           validated={matchExpressionValid}

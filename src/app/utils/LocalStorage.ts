@@ -37,7 +37,7 @@
  */
 
 export enum LocalStorageKey {
-  TARGET_RECORDING_FILTERS
+  TARGET_RECORDING_FILTERS,
 }
 
 /**
@@ -47,7 +47,7 @@ export enum LocalStorageKey {
 type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
 
 export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
-  if (typeof window === "undefined") {
+  if (typeof window === 'undefined') {
     return defaultValue;
   }
   try {
@@ -56,12 +56,12 @@ export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: a
   } catch (error) {
     return defaultValue;
   }
-}
+};
 
 export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any) => {
   try {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       window.localStorage.setItem(key, JSON.stringify(value));
     }
   } catch (error) {} // If error (i.e. users disable storage for the site), saving is aborted and skipped.
-}
+};

@@ -41,9 +41,33 @@ import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  Button,
+  FileUpload,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+  TextInput,
+} from '@patternfly/react-core';
 import { UploadIcon } from '@patternfly/react-icons';
-import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableVariant,
+  IAction,
+  IRowData,
+  IExtraData,
+  ISortBy,
+  SortByDirection,
+  sortable,
+} from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
@@ -71,10 +95,10 @@ export const EventTemplates = () => {
   const addSubscription = useSubscriptions();
 
   const tableColumns = [
-    { title: 'Name', transforms: [ sortable ] },
+    { title: 'Name', transforms: [sortable] },
     'Description',
-    { title: 'Provider', transforms: [ sortable ] },
-    { title: 'Type', transforms: [ sortable ] },
+    { title: 'Provider', transforms: [sortable] },
+    { title: 'Type', transforms: [sortable] },
   ];
 
   React.useEffect(() => {
@@ -83,7 +107,12 @@ export const EventTemplates = () => {
       filtered = templates;
     } else {
       const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter((t: EventTemplate) => t.name.toLowerCase().includes(ft) || t.description.toLowerCase().includes(ft) || t.provider.toLowerCase().includes(ft));
+      filtered = templates.filter(
+        (t: EventTemplate) =>
+          t.name.toLowerCase().includes(ft) ||
+          t.description.toLowerCase().includes(ft) ||
+          t.provider.toLowerCase().includes(ft)
+      );
     }
     const { index, direction } = sortBy;
     if (typeof index === 'number') {
@@ -95,26 +124,39 @@ export const EventTemplates = () => {
     setFilteredTemplates([...filtered]);
   }, [filterText, templates, sortBy]);
 
-  const handleTemplates = React.useCallback((templates) => {
-    setTemplates(templates);
-    setIsLoading(false);
-    setErrorMessage('');
-  }, [setTemplates, setIsLoading, setErrorMessage]);
+  const handleTemplates = React.useCallback(
+    (templates) => {
+      setTemplates(templates);
+      setIsLoading(false);
+      setErrorMessage('');
+    },
+    [setTemplates, setIsLoading, setErrorMessage]
+  );
 
-  const handleError = React.useCallback((error) => {
-    setIsLoading(false);
-    setErrorMessage(error.message);
-  }, [setIsLoading, setErrorMessage]);
+  const handleError = React.useCallback(
+    (error) => {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+    },
+    [setIsLoading, setErrorMessage]
+  );
 
   const refreshTemplates = React.useCallback(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     addSubscription(
-      context.target.target()
-      .pipe(
-        filter(target => target !== NO_TARGET),
-        first(),
-        concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)),
-      ).subscribe(value => handleTemplates(value), err => handleError(err))
+      context.target
+        .target()
+        .pipe(
+          filter((target) => target !== NO_TARGET),
+          first(),
+          concatMap((target) =>
+            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
+          )
+        )
+        .subscribe(
+          (value) => handleTemplates(value),
+          (err) => handleError(err)
+        )
     );
   }, [addSubscription, context, context.target, context.api, setIsLoading, handleTemplates, handleError]);
 
@@ -123,48 +165,65 @@ export const EventTemplates = () => {
       context.target.target().subscribe(() => {
         setFilterText('');
         refreshTemplates();
-      }));
+      })
+    );
   }, [context, context.target, addSubscription, refreshTemplates]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TemplateUploaded)
-        .subscribe(v => setTemplates(old => old.concat(v.message.template)))
+      context.notificationChannel
+        .messages(NotificationCategory.TemplateUploaded)
+        .subscribe((v) => setTemplates((old) => old.concat(v.message.template)))
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TemplateDeleted)
-        .subscribe(v => setTemplates(old => old.filter(o => (o.name != v.message.template.name || o.type != v.message.template.type))))
-    )
+      context.notificationChannel
+        .messages(NotificationCategory.TemplateDeleted)
+        .subscribe((v) =>
+          setTemplates((old) =>
+            old.filter((o) => o.name != v.message.template.name || o.type != v.message.template.type)
+          )
+        )
+    );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
-    const id = window.setInterval(() => refreshTemplates(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    const id = window.setInterval(
+      () => refreshTemplates(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+    );
     return () => window.clearInterval(id);
   }, []);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage("Auth failure");
+      setErrorMessage('Auth failure');
     });
     return () => sub.unsubscribe();
   }, [context.target]);
 
   const displayTemplates = React.useMemo(
-    () => filteredTemplates.map((t: EventTemplate) => ([ t.name, t.description, t.provider, t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase() ])),
+    () =>
+      filteredTemplates.map((t: EventTemplate) => [
+        t.name,
+        t.description,
+        t.provider,
+        t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase(),
+      ]),
     [filteredTemplates]
   );
-  
+
   const handleDelete = (rowData) => {
     addSubscription(
-      context.api.deleteCustomEventTemplate(rowData[0])
-      .pipe(first())
-      .subscribe(() => {} /* do nothing - notification will handle updating state */)
+      context.api
+        .deleteCustomEventTemplate(rowData[0])
+        .pipe(first())
+        .subscribe(() => {} /* do nothing - notification will handle updating state */)
     );
   };
 
@@ -175,37 +234,41 @@ export const EventTemplates = () => {
     let actions = [
       {
         title: 'Create Recording...',
-        onClick: (event, rowId, rowData) => history.push({ pathname: '/recordings/create', state: { template: rowData[0], templateType: String(rowData[3]).toUpperCase() } }),
+        onClick: (event, rowId, rowData) =>
+          history.push({
+            pathname: '/recordings/create',
+            state: { template: rowData[0], templateType: String(rowData[3]).toUpperCase() },
+          }),
       },
     ] as IAction[];
 
     const template: EventTemplate = filteredTemplates[extraData.rowIndex];
-    if ((template.name !== 'ALL')||(template.type !== 'TARGET')) {
+    if (template.name !== 'ALL' || template.type !== 'TARGET') {
       actions = actions.concat([
-          {
-            title: 'Download',
-            onClick: (event, rowId) => context.api.downloadTemplate(filteredTemplates[rowId]),
-          }
+        {
+          title: 'Download',
+          onClick: (event, rowId) => context.api.downloadTemplate(filteredTemplates[rowId]),
+        },
       ]);
     }
     if (template.type === 'CUSTOM') {
       actions = actions.concat([
-          {
-            isSeparator: true,
+        {
+          isSeparator: true,
+        },
+        {
+          title: 'Delete',
+          onClick: (event, rowId, rowData) => {
+            handleDeleteButton(rowData);
           },
-          {
-            title: 'Delete',
-            onClick: (event, rowId, rowData) => {
-              handleDeleteButton(rowData);
-            },
-          }
+        },
       ]);
     }
     return actions;
   };
 
   const handleModalToggle = () => {
-    setModalOpen(v => {
+    setModalOpen((v) => {
       if (v) {
         setUploadFile(undefined);
         setUploadFilename('');
@@ -228,16 +291,17 @@ export const EventTemplates = () => {
     }
     setUploading(true);
     addSubscription(
-      context.api.addCustomEventTemplate(uploadFile)
-      .pipe(first())
-      .subscribe(success => {
-        setUploading(false);
-        if (success) {
-          setUploadFile(undefined);
-          setUploadFilename('');
-          setModalOpen(false);
-        }
-      })
+      context.api
+        .addCustomEventTemplate(uploadFile)
+        .pipe(first())
+        .subscribe((success) => {
+          setUploading(false);
+          if (success) {
+            setUploadFile(undefined);
+            setUploadFilename('');
+            setModalOpen(false);
+          }
+        })
     );
   };
 
@@ -255,15 +319,17 @@ export const EventTemplates = () => {
     setSortBy({ index, direction });
   };
 
-  const handleDeleteButton = React.useCallback((rowData) => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
-      setRowDeleteData(rowData);
-      setWarningModalOpen(true);
-    }
-    else {
-      handleDelete(rowData);
-    }
-  }, [context, context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]);
+  const handleDeleteButton = React.useCallback(
+    (rowData) => {
+      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+        setRowDeleteData(rowData);
+        setWarningModalOpen(true);
+      } else {
+        handleDelete(rowData);
+      }
+    },
+    [context, context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]
+  );
 
   const handleWarningModalAccept = React.useCallback(() => {
     handleDelete(rowDeleteData);
@@ -273,87 +339,105 @@ export const EventTemplates = () => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const toolbar: JSX.Element = (<>
-    <Toolbar id="event-templates-toolbar">
-      <ToolbarContent>
-        <ToolbarGroup variant="filter-group">
-          <ToolbarItem>
-            <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Event template filter" onChange={setFilterText}/>
-          </ToolbarItem>
-        </ToolbarGroup>
-        <ToolbarGroup variant="icon-button-group">
-          <ToolbarItem>
-            <Button key="upload" variant="secondary" onClick={handleModalToggle}>
-              <UploadIcon/>
-            </Button>
-          </ToolbarItem>
-        </ToolbarGroup>
-        <DeleteWarningModal 
-          warningType={DeleteWarningType.DeleteEventTemplates}
-          visible={warningModalOpen}
-          onAccept={handleWarningModalAccept}
-          onClose={handleWarningModalClose} />
-      </ToolbarContent>
-    </Toolbar>
-  </>);
-  
+  const toolbar: JSX.Element = (
+    <>
+      <Toolbar id="event-templates-toolbar">
+        <ToolbarContent>
+          <ToolbarGroup variant="filter-group">
+            <ToolbarItem>
+              <TextInput
+                name="templateFilter"
+                id="templateFilter"
+                type="search"
+                placeholder="Filter..."
+                aria-label="Event template filter"
+                onChange={setFilterText}
+              />
+            </ToolbarItem>
+          </ToolbarGroup>
+          <ToolbarGroup variant="icon-button-group">
+            <ToolbarItem>
+              <Button key="upload" variant="secondary" onClick={handleModalToggle}>
+                <UploadIcon />
+              </Button>
+            </ToolbarItem>
+          </ToolbarGroup>
+          <DeleteWarningModal
+            warningType={DeleteWarningType.DeleteEventTemplates}
+            visible={warningModalOpen}
+            onAccept={handleWarningModalAccept}
+            onClose={handleWarningModalClose}
+          />
+        </ToolbarContent>
+      </Toolbar>
+    </>
+  );
+
   if (errorMessage != '') {
-    return (<ErrorView message={errorMessage}/>);
+    return <ErrorView message={errorMessage} />;
   } else if (isLoading) {
-    return (<>
-      { toolbar }
-      <LoadingView/>
-    </>);
+    return (
+      <>
+        {toolbar}
+        <LoadingView />
+      </>
+    );
   } else {
-    return (<>
-      { toolbar }
-      <Table aria-label="Event Templates table"
-        variant={TableVariant.compact}
-        cells={tableColumns}
-        rows={displayTemplates}
-        actionResolver={actionResolver}
-        sortBy={sortBy}
-        onSort={handleSort}
-      >
-        <TableHeader />
-        <TableBody />
-      </Table>
-
-      <Modal
-        isOpen={modalOpen}
-        variant={ModalVariant.large}
-        showClose={true}
-        onClose={handleModalToggle}
-        title="Create Custom Event Template"
-        description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
+    return (
+      <>
+        {toolbar}
+        <Table
+          aria-label="Event Templates table"
+          variant={TableVariant.compact}
+          cells={tableColumns}
+          rows={displayTemplates}
+          actionResolver={actionResolver}
+          sortBy={sortBy}
+          onSort={handleSort}
         >
-        <Form>
-          <FormGroup
-            label="Template XML"
-            isRequired
-            fieldId="template"
-            validated={fileRejected ? 'error' : 'default'}
-          >
-            <FileUpload
-              id="template-file-upload"
-              value={uploadFile}
-              filename={uploadFilename}
-              onChange={handleFileChange}
-              isLoading={uploading}
-              validated={fileRejected ? 'error' : 'default'}
-              dropzoneProps={{
-                accept: '.xml,.jfc',
-                onDropRejected: handleFileRejected
-              }}
-            />
-          </FormGroup>
-          <ActionGroup>
-            <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>Submit</Button>
-            <Button variant="link" onClick={handleUploadCancel}>Cancel</Button>
-          </ActionGroup>
-        </Form>
-      </Modal>
-    </>);
-  }
+          <TableHeader />
+          <TableBody />
+        </Table>
 
-}
+        <Modal
+          isOpen={modalOpen}
+          variant={ModalVariant.large}
+          showClose={true}
+          onClose={handleModalToggle}
+          title="Create Custom Event Template"
+          description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
+        >
+          <Form>
+            <FormGroup
+              label="Template XML"
+              isRequired
+              fieldId="template"
+              validated={fileRejected ? 'error' : 'default'}
+            >
+              <FileUpload
+                id="template-file-upload"
+                value={uploadFile}
+                filename={uploadFilename}
+                onChange={handleFileChange}
+                isLoading={uploading}
+                validated={fileRejected ? 'error' : 'default'}
+                dropzoneProps={{
+                  accept: '.xml,.jfc',
+                  onDropRejected: handleFileRejected,
+                }}
+              />
+            </FormGroup>
+            <ActionGroup>
+              <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>
+                Submit
+              </Button>
+              <Button variant="link" onClick={handleUploadCancel}>
+                Cancel
+              </Button>
+            </ActionGroup>
+          </Form>
+        </Modal>
+      </>
+    );
+  }
+};

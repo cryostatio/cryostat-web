@@ -61,7 +61,7 @@ export enum NotificationCategory {
   TemplateDeleted = 'TemplateDeleted',
   RuleCreated = 'RuleCreated',
   RuleDeleted = 'RuleDeleted',
-  RecordingMetadataUpdated  = 'RecordingMetadataUpdated',
+  RecordingMetadataUpdated = 'RecordingMetadataUpdated',
   GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
   TargetCredentialsStored = 'TargetCredentialsStored',
   TargetCredentialsDeleted = 'TargetCredentialsDeleted',
@@ -86,157 +86,177 @@ export const messageKeys = new Map([
     // explicitly configure this category with a null message body mapper.
     // This is a special case because this is generated client-side,
     // not sent by the backend
-    NotificationCategory.GrafanaConfiguration, {
+    NotificationCategory.GrafanaConfiguration,
+    {
       title: 'Grafana Configuration',
     },
   ],
   [
-    NotificationCategory.TargetJvmDiscovery, {
+    NotificationCategory.TargetJvmDiscovery,
+    {
       variant: AlertVariant.info,
       title: 'Target JVM Discovery',
-      body: v => {
+      body: (v) => {
         const evt: TargetDiscoveryEvent = v.message.event;
         const target: Target = evt.serviceRef;
         switch (evt.kind) {
           case 'FOUND':
-           return `Target "${target.alias}" appeared (${target.connectUrl})"`;
+            return `Target "${target.alias}" appeared (${target.connectUrl})"`;
           case 'LOST':
             return `Target "${target.alias}" disappeared (${target.connectUrl})"`;
           default:
             return `Received a notification with category ${NotificationCategory.TargetJvmDiscovery} and unrecognized kind ${evt.kind}`;
         }
-      }
+      },
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.WsClientActivity, {
+    NotificationCategory.WsClientActivity,
+    {
       variant: AlertVariant.info,
       title: 'WebSocket Client Activity',
-      body: evt => {
+      body: (evt) => {
         const addr = Object.keys(evt.message)[0];
         const status = evt.message[addr];
-        return `Client at ${addr} ${status}`
-      }
-    } as NotificationMessageMapper
+        return `Client at ${addr} ${status}`;
+      },
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ActiveRecordingCreated, {
+    NotificationCategory.ActiveRecordingCreated,
+    {
       variant: AlertVariant.success,
       title: 'Recording Created',
-      body: evt => `${evt.message.recording.name} created in target: ${evt.message.target}`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recording.name} created in target: ${evt.message.target}`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ActiveRecordingStopped, {
+    NotificationCategory.ActiveRecordingStopped,
+    {
       variant: AlertVariant.success,
       title: 'Recording Stopped',
-      body: evt => `${evt.message.recording.name} was stopped`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recording.name} was stopped`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ActiveRecordingSaved, {
+    NotificationCategory.ActiveRecordingSaved,
+    {
       variant: AlertVariant.success,
       title: 'Recording Saved',
-      body: evt => `${evt.message.recording.name} was archived`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recording.name} was archived`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ActiveRecordingDeleted, {
+    NotificationCategory.ActiveRecordingDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Recording Deleted',
-      body: evt => `${evt.message.recording.name} was deleted`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recording.name} was deleted`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.SnapshotCreated, {
+    NotificationCategory.SnapshotCreated,
+    {
       variant: AlertVariant.success,
       title: 'Snapshot Created',
-      body: evt => `${evt.message.recording.name} was created in target: ${evt.message.target}`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recording.name} was created in target: ${evt.message.target}`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.SnapshotDeleted, {
+    NotificationCategory.SnapshotDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Snapshot Deleted',
-      body: evt => `${evt.message.recording.name} was deleted`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recording.name} was deleted`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ArchivedRecordingCreated, {
+    NotificationCategory.ArchivedRecordingCreated,
+    {
       variant: AlertVariant.success,
       title: 'Archived Recording Uploaded',
-      body: evt => `${evt.message.recording.name} was uploaded into archives`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recording.name} was uploaded into archives`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ArchivedRecordingDeleted, {
+    NotificationCategory.ArchivedRecordingDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Archived Recording Deleted',
-      body: evt => `${evt.message.recording.name} was deleted`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recording.name} was deleted`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.TemplateUploaded, {
+    NotificationCategory.TemplateUploaded,
+    {
       variant: AlertVariant.success,
       title: 'Template Created',
-      body: evt => `${evt.message.template.name} was created`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.template.name} was created`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.TemplateDeleted, {
+    NotificationCategory.TemplateDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Template Deleted',
-      body: evt => `${evt.message.template.name} was deleted`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.template.name} was deleted`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.RuleCreated, {
+    NotificationCategory.RuleCreated,
+    {
       variant: AlertVariant.success,
       title: 'Automated Rule Created',
-      body: evt => `${evt.message.name} was created`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.name} was created`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.RuleDeleted, {
+    NotificationCategory.RuleDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Automated Rule Deleted',
-      body: evt => `${evt.message.name} was deleted`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.name} was deleted`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.RecordingMetadataUpdated, {
+    NotificationCategory.RecordingMetadataUpdated,
+    {
       variant: AlertVariant.success,
       title: 'Recording Metadata Updated',
-      body: evt => `${evt.message.recordingName} metadata was updated`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.recordingName} metadata was updated`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.TargetCredentialsStored, {
+    NotificationCategory.TargetCredentialsStored,
+    {
       variant: AlertVariant.success,
       title: 'Target Credentials Stored',
-      body: evt => `Credentials stored for target: ${evt.message.target}`
-    } as NotificationMessageMapper
+      body: (evt) => `Credentials stored for target: ${evt.message.target}`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.TargetCredentialsDeleted, {
+    NotificationCategory.TargetCredentialsDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Target Credentials Deleted',
-      body: evt => `Credentials deleted for target: ${evt.message.target}`
-    } as NotificationMessageMapper
+      body: (evt) => `Credentials deleted for target: ${evt.message.target}`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.CredentialsStored, {
+    NotificationCategory.CredentialsStored,
+    {
       variant: AlertVariant.success,
       title: 'Credentials Stored',
-      body: evt => `Credentials stored for: ${evt.message.matchExpression}`
-    } as NotificationMessageMapper
+      body: (evt) => `Credentials stored for: ${evt.message.matchExpression}`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.CredentialsDeleted, {
+    NotificationCategory.CredentialsDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Credentials Deleted',
-      body: evt => `Credentials deleted for: ${evt.message.matchExpression}`
-    } as NotificationMessageMapper
+      body: (evt) => `Credentials deleted for: ${evt.message.matchExpression}`,
+    } as NotificationMessageMapper,
   ],
 ]);
 
@@ -247,15 +267,11 @@ interface NotificationMessageMapper {
 }
 
 export class NotificationChannel {
-
   private ws: WebSocketSubject<any> | null = null;
   private readonly _messages = new Subject<NotificationMessage>();
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
-  constructor(
-    private readonly notifications: Notifications,
-    private readonly login: LoginService
-  ) {
+  constructor(private readonly notifications: Notifications, private readonly login: LoginService) {
     messageKeys.forEach((value, key) => {
       if (!value || !value.body || !value.variant) {
         return;
@@ -265,34 +281,44 @@ export class NotificationChannel {
           return;
         }
         const message = value.body(msg);
-        notifications.notify({ title: value.title, message, category: key, variant: value.variant })
+        notifications.notify({ title: value.title, message, category: key, variant: value.variant });
       });
     });
 
     // fallback handler for unknown categories of message
-    this._messages.pipe(
-      filter(msg => !messageKeys.has(msg.meta.category as NotificationCategory))
-    ).subscribe(msg => {
-      const category = NotificationCategory[msg.meta.category as keyof typeof NotificationCategory];
-      notifications.notify({ title: msg.meta.category, message: msg.message, category, variant: AlertVariant.success });
-    });
+    this._messages
+      .pipe(filter((msg) => !messageKeys.has(msg.meta.category as NotificationCategory)))
+      .subscribe((msg) => {
+        const category = NotificationCategory[msg.meta.category as keyof typeof NotificationCategory];
+        notifications.notify({
+          title: msg.meta.category,
+          message: msg.message,
+          category,
+          variant: AlertVariant.success,
+        });
+      });
 
-    const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`)
-      .pipe(
-        concatMap(async resp => {
-          if (resp.ok) {
-            let body: any = await resp.json();
-            return body.notificationsUrl;
-          } else {
-            let body: string = await resp.text();
-            throw new Error(resp.status + ' ' + body);
-          }
-        })
-      );
+    const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`).pipe(
+      concatMap(async (resp) => {
+        if (resp.ok) {
+          let body: any = await resp.json();
+          return body.notificationsUrl;
+        } else {
+          let body: string = await resp.text();
+          throw new Error(resp.status + ' ' + body);
+        }
+      })
+    );
 
-    combineLatest([notificationsUrl, this.login.getToken(), this.login.getAuthMethod(), this.login.getSessionState(), timer(0, 5000)])
-    .pipe(distinctUntilChanged(_.isEqual))
-    .subscribe({
+    combineLatest([
+      notificationsUrl,
+      this.login.getToken(),
+      this.login.getAuthMethod(),
+      this.login.getSessionState(),
+      timer(0, 5000),
+    ])
+      .pipe(distinctUntilChanged(_.isEqual))
+      .subscribe({
         next: (parts: string[]) => {
           const url = parts[0];
           const token = parts[1];
@@ -300,7 +326,7 @@ export class NotificationChannel {
           const sessionState = parseInt(parts[3]);
           let subprotocol: string | undefined = undefined;
 
-          if(sessionState !== SessionState.CREATING_USER_SESSION) {
+          if (sessionState !== SessionState.CREATING_USER_SESSION) {
             return;
           }
 
@@ -321,7 +347,7 @@ export class NotificationChannel {
               next: () => {
                 this._ready.next({ ready: true });
                 this.login.setSessionState(SessionState.USER_SESSION);
-              }
+              },
             },
             closeObserver: {
               next: (evt) => {
@@ -357,29 +383,27 @@ export class NotificationChannel {
                 this._ready.next({ ready: false, code });
                 this.login.setSessionState(sessionState);
                 fn.apply(this.notifications, ['WebSocket connection lost', msg, NotificationCategory.WsClientActivity]);
-              }
-            }
+              },
+            },
           });
 
           this.ws.subscribe({
-            next: v => this._messages.next(v),
-            error: err => this.logError('WebSocket error', err)
+            next: (v) => this._messages.next(v),
+            error: (err) => this.logError('WebSocket error', err),
           });
 
           // message doesn't matter, we just need to send something to the server so that our SubProtocol token can be authenticated
           this.ws.next('connect');
         },
-        error: (err: any) => this.logError('Notifications URL configuration', err)
+        error: (err: any) => this.logError('Notifications URL configuration', err),
       });
 
-    this.login.loggedOut()
-    .subscribe({
+    this.login.loggedOut().subscribe({
       next: () => {
         this.ws?.complete();
       },
-      error: (err: any) => this.logError('Notifications URL configuration', err)
+      error: (err: any) => this.logError('Notifications URL configuration', err),
     });
-
   }
 
   isReady(): Observable<ReadyState> {
@@ -387,14 +411,14 @@ export class NotificationChannel {
   }
 
   messages(category: string): Observable<NotificationMessage> {
-    return this._messages.asObservable().pipe(filter(msg => msg.meta.category === category));
+    return this._messages.asObservable().pipe(filter((msg) => msg.meta.category === category));
   }
 
   private logError(title: string, err: any): void {
     window.console.error(err?.message);
     window.console.error(err?.stack);
 
-    if(!!err?.message) {
+    if (!!err?.message) {
       this.notifications.danger(title, JSON.stringify(err?.message));
     }
   }

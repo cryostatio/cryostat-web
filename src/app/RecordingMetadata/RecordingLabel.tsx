@@ -50,9 +50,9 @@ export const parseLabels = (jsonLabels) => {
 };
 
 export const includesLabel = (arr: RecordingLabel[], searchLabel: RecordingLabel) => {
-  return arr.some(l => isEqualLabel(searchLabel, l));
-}
+  return arr.some((l) => isEqualLabel(searchLabel, l));
+};
 
 const isEqualLabel = (a: RecordingLabel, b: RecordingLabel) => {
-  return (a.key === b.key) && (a.value === b.value);
-}
+  return a.key === b.key && a.value === b.value;
+};

@@ -36,7 +36,14 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Title, EmptyState, EmptyStateIcon, EmptyStateBody, Button, EmptyStateSecondaryActions } from '@patternfly/react-core';
+import {
+  Title,
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateBody,
+  Button,
+  EmptyStateSecondaryActions,
+} from '@patternfly/react-core';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { TableComposable, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
@@ -59,76 +66,84 @@ export interface RecordingsTableProps {
 export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
   let view: JSX.Element;
   if (props.errorMessage != '') {
-    view = (<ErrorView message={props.errorMessage}/>)
+    view = <ErrorView message={props.errorMessage} />;
   } else if (props.isLoading) {
-    view = (<LoadingView/>)
+    view = <LoadingView />;
   } else if (props.isEmpty) {
-    view = (<>
-      <EmptyState>
-        <EmptyStateIcon icon={SearchIcon}/>
-        <Title headingLevel="h4" size="lg">
-          No {props.tableTitle}
-        </Title>
-      </EmptyState>
-    </>);
+    view = (
+      <>
+        <EmptyState>
+          <EmptyStateIcon icon={SearchIcon} />
+          <Title headingLevel="h4" size="lg">
+            No {props.tableTitle}
+          </Title>
+        </EmptyState>
+      </>
+    );
   } else if (props.isEmptyFilterResult) {
-    view = (<>
-      <EmptyState>
-        <EmptyStateIcon icon={SearchIcon}/>
-        <Title headingLevel="h4" size="lg">
-          No {props.tableTitle} found
-        </Title>
-        <EmptyStateBody>
-          No results match this filter criteria. 
-          Remove all filters or clear all filters to show results.
-        </EmptyStateBody>
-        <EmptyStateSecondaryActions>
-          <Button variant="link" onClick={() => props.clearFilters && props.clearFilters(null)}>
-            Clear all filters
-          </Button>
-        </EmptyStateSecondaryActions>
-      </EmptyState>
-    </>);
+    view = (
+      <>
+        <EmptyState>
+          <EmptyStateIcon icon={SearchIcon} />
+          <Title headingLevel="h4" size="lg">
+            No {props.tableTitle} found
+          </Title>
+          <EmptyStateBody>
+            No results match this filter criteria. Remove all filters or clear all filters to show results.
+          </EmptyStateBody>
+          <EmptyStateSecondaryActions>
+            <Button variant="link" onClick={() => props.clearFilters && props.clearFilters(null)}>
+              Clear all filters
+            </Button>
+          </EmptyStateSecondaryActions>
+        </EmptyState>
+      </>
+    );
   } else {
-    view = (<>
-      <TableComposable 
-        aria-label={props.tableTitle} 
-        isStickyHeader={props.isNestedTable} 
-        variant={props.isNestedTable ? 'compact' : undefined}>
-        <Thead>
-          <Tr>
-            <Th
-              key="table-header-check-all"
-              select={{
-                onSelect: props.onHeaderCheck,
-                isSelected: props.isHeaderChecked
-              }}
-            />
-            <Th key="table-header-expand"/>
-            {props.tableColumns.map((key, idx) => (
-              <Th key={`table-header-${key}`}>{key}</Th>
-            ))}
-            <Th key="table-header-actions"/>
-          </Tr>
-        </Thead>
-        { props.children }
-      </TableComposable>
-    </>);
+    view = (
+      <>
+        <TableComposable
+          aria-label={props.tableTitle}
+          isStickyHeader={props.isNestedTable}
+          variant={props.isNestedTable ? 'compact' : undefined}
+        >
+          <Thead>
+            <Tr>
+              <Th
+                key="table-header-check-all"
+                select={{
+                  onSelect: props.onHeaderCheck,
+                  isSelected: props.isHeaderChecked,
+                }}
+              />
+              <Th key="table-header-expand" />
+              {props.tableColumns.map((key, idx) => (
+                <Th key={`table-header-${key}`}>{key}</Th>
+              ))}
+              <Th key="table-header-actions" />
+            </Tr>
+          </Thead>
+          {props.children}
+        </TableComposable>
+      </>
+    );
   }
 
   if (props.isNestedTable) {
-    return (<> 
-      <OuterScrollContainer style={{ height: '500px' }}>
-        { props.toolbar }
-        <InnerScrollContainer>
-          { view }
-        </InnerScrollContainer>
-      </OuterScrollContainer>
-    </>);
+    return (
+      <>
+        <OuterScrollContainer style={{ height: '500px' }}>
+          {props.toolbar}
+          <InnerScrollContainer>{view}</InnerScrollContainer>
+        </OuterScrollContainer>
+      </>
+    );
   }
 
-  return (<>
-    { props.toolbar }
-    { view }
-  </>);
+  return (
+    <>
+      {props.toolbar}
+      {view}
+    </>
+  );
 };

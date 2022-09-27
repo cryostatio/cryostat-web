@@ -37,9 +37,16 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import {NO_TARGET} from '@app/Shared/Services/Target.service';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Toolbar, ToolbarContent, ToolbarItem, ToolbarItemVariant, Pagination, TextInput } from '@patternfly/react-core';
+import {
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+  ToolbarItemVariant,
+  Pagination,
+  TextInput,
+} from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
@@ -64,7 +71,7 @@ type Row = {
   parent?: number;
   isOpen?: boolean;
   fullWidth?: boolean;
-}
+};
 
 export const EventTypes = () => {
   const context = React.useContext(ServiceContext);
@@ -83,34 +90,46 @@ export const EventTypes = () => {
   const tableColumns = [
     {
       title: 'Name',
-      cellFormatters: [expandable]
+      cellFormatters: [expandable],
     },
     'Type ID',
     'Description',
-    'Categories'
+    'Categories',
   ];
 
-  const handleTypes = React.useCallback((types) => {
-    setTypes(types);
-    setIsLoading(false);
-    setErrorMessage('');
-  }, [setTypes, setIsLoading, setErrorMessage]);
+  const handleTypes = React.useCallback(
+    (types) => {
+      setTypes(types);
+      setIsLoading(false);
+      setErrorMessage('');
+    },
+    [setTypes, setIsLoading, setErrorMessage]
+  );
 
-  const handleError = React.useCallback((error) => {
-    setIsLoading(false);
-    setErrorMessage(error.message);
-  }, [setIsLoading, setErrorMessage]);
+  const handleError = React.useCallback(
+    (error) => {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+    },
+    [setIsLoading, setErrorMessage]
+  );
 
   const refreshEvents = React.useCallback(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     addSubscription(
-      context.target.target()
+      context.target
+        .target()
         .pipe(
-          filter(target => target !== NO_TARGET),
+          filter((target) => target !== NO_TARGET),
           first(),
-          concatMap(target => context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`)),
+          concatMap((target) =>
+            context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`)
+          )
         )
-        .subscribe(value => handleTypes(value), err => handleError(err))
+        .subscribe(
+          (value) => handleTypes(value),
+          (err) => handleError(err)
+        )
     );
   }, [addSubscription, context.target, context.api]);
 
@@ -119,12 +138,13 @@ export const EventTypes = () => {
       context.target.target().subscribe(() => {
         setFilterText('');
         refreshEvents();
-      }));
+      })
+    );
   }, [addSubscription, context, context.target, refreshEvents]);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage("Auth failure");
+      setErrorMessage('Auth failure');
     });
     return () => sub.unsubscribe();
   }, [context.target]);
@@ -138,7 +158,7 @@ export const EventTypes = () => {
       return types;
     }
     const includesSubstr = (a, b) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
-    return types.filter(t => {
+    return types.filter((t) => {
       if (includesSubstr(t.name, filterText)) {
         return true;
       }
@@ -151,7 +171,7 @@ export const EventTypes = () => {
       if (includesSubstr(getCategoryString(t), filterText)) {
         return true;
       }
-      return false
+      return false;
     });
   }, [types, filterText]);
 
@@ -161,13 +181,13 @@ export const EventTypes = () => {
 
     const rows: Row[] = [];
     page.forEach((t: EventType, idx: number) => {
-      rows.push({ cells: [ t.name, t.typeId, t.description, getCategoryString(t) ], isOpen: (idx === openRow) });
+      rows.push({ cells: [t.name, t.typeId, t.description, getCategoryString(t)], isOpen: idx === openRow });
       if (idx === openRow) {
         let child = '';
         for (const opt in t.options) {
           child += `${opt}=[${t.options[opt].defaultValue}]\t`;
         }
-        rows.push({ parent: idx, fullWidth: true, cells: [ child ] });
+        rows.push({ parent: idx, fullWidth: true, cells: [child] });
       }
     });
 
@@ -184,7 +204,7 @@ export const EventTypes = () => {
     prevPerPage.current = perPage;
     setOpenRow(-1);
     setPerPage(perPage);
-    setCurrentPage(1 + Math.floor(offset/perPage));
+    setCurrentPage(1 + Math.floor(offset / perPage));
   };
 
   const onCollapse = (event, rowKey, isOpen) => {
@@ -201,34 +221,48 @@ export const EventTypes = () => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   if (errorMessage != '') {
-    return (<ErrorView message={errorMessage}/>)
+    return <ErrorView message={errorMessage} />;
   } else if (isLoading) {
-    return (<LoadingView/>)
+    return <LoadingView />;
   } else {
-    return (<>
-      <Toolbar id="event-types-toolbar">
-        <ToolbarContent>
-          <ToolbarItem>
-            <TextInput name="eventFilter" id="eventFilter" type="search" placeholder="Filter..." aria-label="Event filter" onChange={setFilterText}/>
-          </ToolbarItem>
-          <ToolbarItem variant={ToolbarItemVariant.pagination}>
-            <Pagination
-              itemCount={filterText ? filterTypesByText().length : types.length}
-              page={currentPage}
-              perPage={perPage}
-              onSetPage={onCurrentPage}
-              widgetId="event-types-pagination"
-              onPerPageSelect={onPerPage}
-              isCompact
-            />
-          </ToolbarItem>
-        </ToolbarContent>
-      </Toolbar>
-      <Table aria-label="Event Types table" cells={tableColumns} rows={displayedTypes} onCollapse={onCollapse} variant={TableVariant.compact}>
-        <TableHeader />
-        <TableBody />
-      </Table>
-    </>)
+    return (
+      <>
+        <Toolbar id="event-types-toolbar">
+          <ToolbarContent>
+            <ToolbarItem>
+              <TextInput
+                name="eventFilter"
+                id="eventFilter"
+                type="search"
+                placeholder="Filter..."
+                aria-label="Event filter"
+                onChange={setFilterText}
+              />
+            </ToolbarItem>
+            <ToolbarItem variant={ToolbarItemVariant.pagination}>
+              <Pagination
+                itemCount={filterText ? filterTypesByText().length : types.length}
+                page={currentPage}
+                perPage={perPage}
+                onSetPage={onCurrentPage}
+                widgetId="event-types-pagination"
+                onPerPageSelect={onPerPage}
+                isCompact
+              />
+            </ToolbarItem>
+          </ToolbarContent>
+        </Toolbar>
+        <Table
+          aria-label="Event Types table"
+          cells={tableColumns}
+          rows={displayedTypes}
+          onCollapse={onCollapse}
+          variant={TableVariant.compact}
+        >
+          <TableHeader />
+          <TableBody />
+        </Table>
+      </>
+    );
   }
-
-}
+};

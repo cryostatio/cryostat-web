@@ -43,7 +43,7 @@ import { UserSetting } from './Settings';
 
 const defaultPreferences = {
   webSocketDebounceMs: 100,
-}
+};
 
 const debounceMin = 1;
 const debounceMax = 1000;
@@ -59,54 +59,59 @@ const Component = () => {
   }, [setState, context.settings]);
 
   const handleWebSocketDebounceMinus = React.useCallback(() => {
-    setState(state => {
+    setState((state) => {
       const newState = { ...state };
       let debounce = (state.webSocketDebounceMs || 1) - 1;
       if (debounce < debounceMin) {
         debounce = debounceMin;
       }
       newState.webSocketDebounceMs = debounce;
-      context.settings.setWebSocketDebounceMs(newState.webSocketDebounceMs)
+      context.settings.setWebSocketDebounceMs(newState.webSocketDebounceMs);
       return newState;
     });
   }, [setState, context.settings]);
 
   const handleWebSocketDebouncePlus = React.useCallback(() => {
-    setState(state => {
+    setState((state) => {
       const newState = { ...state };
       let debounce = (state.webSocketDebounceMs || 1) + 1;
       if (debounce > debounceMax) {
         debounce = debounceMax;
       }
       newState.webSocketDebounceMs = debounce;
-      context.settings.setWebSocketDebounceMs(newState.webSocketDebounceMs)
+      context.settings.setWebSocketDebounceMs(newState.webSocketDebounceMs);
       return newState;
     });
   }, [setState, context.settings]);
 
-  const handleWebSocketDebounceChange = React.useCallback(event => {
-    let webSocketDebounceMs = isNaN(event.target.value) ? 0 : Number(event.target.value);
-    if (webSocketDebounceMs < debounceMin) {
-      webSocketDebounceMs = debounceMin;
-    } else if (webSocketDebounceMs > debounceMax) {
-      webSocketDebounceMs = debounceMax;
-    }
-    setState(state => ({ ...state, webSocketDebounceMs }));
-    context.settings.setWebSocketDebounceMs(webSocketDebounceMs);
-  }, [setState, context.settings]);
+  const handleWebSocketDebounceChange = React.useCallback(
+    (event) => {
+      let webSocketDebounceMs = isNaN(event.target.value) ? 0 : Number(event.target.value);
+      if (webSocketDebounceMs < debounceMin) {
+        webSocketDebounceMs = debounceMin;
+      } else if (webSocketDebounceMs > debounceMax) {
+        webSocketDebounceMs = debounceMax;
+      }
+      setState((state) => ({ ...state, webSocketDebounceMs }));
+      context.settings.setWebSocketDebounceMs(webSocketDebounceMs);
+    },
+    [setState, context.settings]
+  );
 
-  return (<>
-    <NumberInput
-      value={state.webSocketDebounceMs}
-      min={debounceMin}
-      max={debounceMax}
-      onChange={handleWebSocketDebounceChange}
-      onMinus={handleWebSocketDebounceMinus}
-      onPlus={handleWebSocketDebouncePlus}
-      unit="ms"
-    />
-  </>);
-}
+  return (
+    <>
+      <NumberInput
+        value={state.webSocketDebounceMs}
+        min={debounceMin}
+        max={debounceMax}
+        onChange={handleWebSocketDebounceChange}
+        onMinus={handleWebSocketDebounceMinus}
+        onPlus={handleWebSocketDebouncePlus}
+        unit="ms"
+      />
+    </>
+  );
+};
 
 export const WebSocketDebounce: UserSetting = {
   title: 'WebSocket Connection Debounce',
@@ -114,5 +119,4 @@ export const WebSocketDebounce: UserSetting = {
     Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages.
     Decrease this time if the web-interface takes a long time to populate on startup.`,
   content: Component,
-}
-
+};

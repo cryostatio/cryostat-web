@@ -47,19 +47,27 @@ export interface DurationFilterProps {
 
 export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (props) => {
   const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(() => props.durations && props.durations.includes("continuous"), 
-  [props.durations]);
+  const isContinuous = React.useMemo(
+    () => props.durations && props.durations.includes('continuous'),
+    [props.durations]
+  );
 
-  const handleContinousCheckBoxChange = React.useCallback((checked, envt) => {
-    props.onContinuousDurationSelect(checked);
-  }, [props.onContinuousDurationSelect]);
+  const handleContinousCheckBoxChange = React.useCallback(
+    (checked, envt) => {
+      props.onContinuousDurationSelect(checked);
+    },
+    [props.onContinuousDurationSelect]
+  );
 
-  const handleEnterKey = React.useCallback((e) => {
-    if (e.key && e.key !== 'Enter') {
-      return;
-    }
-    props.onDurationInput(duration)
-  }, [props.onDurationInput, duration]);
+  const handleEnterKey = React.useCallback(
+    (e) => {
+      if (e.key && e.key !== 'Enter') {
+        return;
+      }
+      props.onDurationInput(duration);
+    },
+    [props.onDurationInput, duration]
+  );
 
   return (
     <Flex>

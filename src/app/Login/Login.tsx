@@ -50,19 +50,21 @@ export const Login = () => {
   const notifications = React.useContext(NotificationsContext);
   const [authMethod, setAuthMethod] = React.useState('');
 
-  const handleSubmit = React.useCallback((evt, token, authMethod, rememberMe) => {
-    setAuthMethod(authMethod);
+  const handleSubmit = React.useCallback(
+    (evt, token, authMethod, rememberMe) => {
+      setAuthMethod(authMethod);
 
-    const sub = serviceContext.login.checkAuth(token, authMethod, rememberMe)
-      .subscribe(authSuccess => {
-        if(!authSuccess) {
+      const sub = serviceContext.login.checkAuth(token, authMethod, rememberMe).subscribe((authSuccess) => {
+        if (!authSuccess) {
           notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
         }
       });
-    () => sub.unsubscribe();
+      () => sub.unsubscribe();
 
-    evt.preventDefault();
-  }, [serviceContext, serviceContext.login, setAuthMethod]);
+      evt.preventDefault();
+    },
+    [serviceContext, serviceContext.login, setAuthMethod]
+  );
 
   React.useEffect(() => {
     const sub = serviceContext.login.getAuthMethod().subscribe(setAuthMethod);
@@ -70,7 +72,7 @@ export const Login = () => {
   }, [serviceContext, serviceContext.login, setAuthMethod]);
 
   const loginForm = React.useMemo(() => {
-    switch(authMethod) {
+    switch (authMethod) {
       case AuthMethod.BASIC:
         return <BasicAuthForm onSubmit={handleSubmit} />;
       case AuthMethod.BEARER:
@@ -83,7 +85,7 @@ export const Login = () => {
   }, [authMethod]);
 
   const descriptionText = React.useMemo(() => {
-    switch(authMethod) {
+    switch (authMethod) {
       case AuthMethod.BASIC:
         return <BasicAuthDescriptionText />;
       case AuthMethod.BEARER:
@@ -97,16 +99,13 @@ export const Login = () => {
     <PageSection>
       <Card>
         <CardHeader>
-          <Title headingLevel="h1" size="lg">Login</Title>
+          <Title headingLevel="h1" size="lg">
+            Login
+          </Title>
         </CardHeader>
-        <CardBody>
-          {loginForm}
-        </CardBody>
-        <CardFooter>
-          {descriptionText}
-        </CardFooter>
+        <CardBody>{loginForm}</CardBody>
+        <CardFooter>{descriptionText}</CardFooter>
       </Card>
     </PageSection>
   );
-
-}
+};

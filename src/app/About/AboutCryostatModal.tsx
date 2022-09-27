@@ -36,22 +36,23 @@
  * SOFTWARE.
  */
 
-import { AboutModal } from "@patternfly/react-core"
-import React from "react"
+import { AboutModal } from '@patternfly/react-core';
+import React from 'react';
 import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
-import { AboutDescription, CRYOSTAT_TRADEMARK } from "./AboutDescription";
+import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
 
-export const AboutCryostatModal = ({isOpen, onClose}) => {
-
-  return(<>
-    <AboutModal
+export const AboutCryostatModal = ({ isOpen, onClose }) => {
+  return (
+    <>
+      <AboutModal
         isOpen={isOpen}
         onClose={onClose}
         trademark={CRYOSTAT_TRADEMARK}
         brandImageSrc={cryostatLogoWhite}
-        brandImageAlt='Cryostat Logo'
+        brandImageAlt="Cryostat Logo"
       >
-      <AboutDescription />
-    </AboutModal>
-    </>);
-}
+        <AboutDescription />
+      </AboutModal>
+    </>
+  );
+};

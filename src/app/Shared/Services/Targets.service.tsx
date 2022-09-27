@@ -57,46 +57,42 @@ export class TargetsService {
     private readonly api: ApiService,
     private readonly notifications: Notifications,
     login: LoginService,
-    notificationChannel: NotificationChannel,
-    ) {
-    login.getSessionState().pipe(
-      concatMap((sessionState) => sessionState === SessionState.USER_SESSION ? this.queryForTargets() : EMPTY)
-      )
+    notificationChannel: NotificationChannel
+  ) {
+    login
+      .getSessionState()
+      .pipe(concatMap((sessionState) => (sessionState === SessionState.USER_SESSION ? this.queryForTargets() : EMPTY)))
       .subscribe(() => {
-      ; // just trigger a startup query
-    });
-    notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
-      .subscribe(v => {
-        const evt: TargetDiscoveryEvent = v.message.event;
-        switch (evt.kind) {
-          case 'FOUND':
-            this._targets$.next(_.unionBy(this._targets$.getValue(), [evt.serviceRef], t => t.connectUrl));
-            break;
-          case 'LOST':
-            this._targets$.next(_.filter(this._targets$.getValue(), t => t.connectUrl !== evt.serviceRef.connectUrl));
-            break;
-          default:
-            break;
-        }
+        // just trigger a startup query
       });
+    notificationChannel.messages(NotificationCategory.TargetJvmDiscovery).subscribe((v) => {
+      const evt: TargetDiscoveryEvent = v.message.event;
+      switch (evt.kind) {
+        case 'FOUND':
+          this._targets$.next(_.unionBy(this._targets$.getValue(), [evt.serviceRef], (t) => t.connectUrl));
+          break;
+        case 'LOST':
+          this._targets$.next(_.filter(this._targets$.getValue(), (t) => t.connectUrl !== evt.serviceRef.connectUrl));
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   queryForTargets(): Observable<void> {
-    return this.api.doGet<Target[]>(`targets`)
-    .pipe(
+    return this.api.doGet<Target[]>(`targets`).pipe(
       first(),
-      tap(targets => this._targets$.next(targets)),
+      tap((targets) => this._targets$.next(targets)),
       map(() => undefined),
-      catchError(err => {
+      catchError((err) => {
         this.notifications.danger('Target List Update Failed', JSON.stringify(err));
         return of(undefined);
-      }),
+      })
     );
   }
 
   targets(): Observable<Target[]> {
     return this._targets$.asObservable();
   }
-
 }
-

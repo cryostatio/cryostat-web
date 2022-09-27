@@ -36,70 +36,70 @@
  * SOFTWARE.
  */
 export enum DeleteWarningType {
-    DeleteActiveRecordings='DeleteActiveRecordings',
-    DeleteArchivedRecordings='DeleteArchivedRecordings',
-    DeleteAutomatedRules='DeleteAutomatedRules',
-    DeleteEventTemplates='DeleteEventTemplates',
-    DeleteJMXCredentials='DeleteJMXCredentials',
+  DeleteActiveRecordings = 'DeleteActiveRecordings',
+  DeleteArchivedRecordings = 'DeleteArchivedRecordings',
+  DeleteAutomatedRules = 'DeleteAutomatedRules',
+  DeleteEventTemplates = 'DeleteEventTemplates',
+  DeleteJMXCredentials = 'DeleteJMXCredentials',
 }
 
 export interface DeleteWarning {
-    id: DeleteWarningType;
-    title: string;
-    label: string;
-    description: string;
-    ariaLabel: string;
+  id: DeleteWarningType;
+  title: string;
+  label: string;
+  description: string;
+  ariaLabel: string;
 }
 
 export const DeleteActiveRecordings: DeleteWarning = {
-    id: DeleteWarningType.DeleteActiveRecordings,
-    title: 'Permanently delete Active Recording?',
-    label: 'Delete Active Recording',
-    description: `Recording and report data will be lost.`,
-    ariaLabel: "Recording delete warning"
-}
+  id: DeleteWarningType.DeleteActiveRecordings,
+  title: 'Permanently delete Active Recording?',
+  label: 'Delete Active Recording',
+  description: `Recording and report data will be lost.`,
+  ariaLabel: 'Recording delete warning',
+};
 
 export const DeleteArchivedRecordings: DeleteWarning = {
-    id: DeleteWarningType.DeleteArchivedRecordings,
-    title: 'Permanently delete Archived Recording?',
-    label: 'Delete Archived Recording',
-    description: `Recording and report data will be lost.`,
-    ariaLabel: "Recording delete warning"
-}
+  id: DeleteWarningType.DeleteArchivedRecordings,
+  title: 'Permanently delete Archived Recording?',
+  label: 'Delete Archived Recording',
+  description: `Recording and report data will be lost.`,
+  ariaLabel: 'Recording delete warning',
+};
 
 export const DeleteAutomatedRules: DeleteWarning = {
-    id: DeleteWarningType.DeleteAutomatedRules,
-    title: 'Permanently delete Automated Rule?',
-    label: 'Delete Automated Rule',
-    description: `Rule data will be lost.`,
-    ariaLabel: "Automated rule delete warning"
-}
+  id: DeleteWarningType.DeleteAutomatedRules,
+  title: 'Permanently delete Automated Rule?',
+  label: 'Delete Automated Rule',
+  description: `Rule data will be lost.`,
+  ariaLabel: 'Automated rule delete warning',
+};
 
 export const DeleteEventTemplates: DeleteWarning = {
-    id: DeleteWarningType.DeleteEventTemplates,
-    title: 'Permanently delete Event Template?',
-    label: 'Delete Event Template',
-    description: `Custom event template data will be lost.`,
-    ariaLabel: "Event template delete warning"
-}
+  id: DeleteWarningType.DeleteEventTemplates,
+  title: 'Permanently delete Event Template?',
+  label: 'Delete Event Template',
+  description: `Custom event template data will be lost.`,
+  ariaLabel: 'Event template delete warning',
+};
 
 export const DeleteJMXCredentials: DeleteWarning = {
-    id: DeleteWarningType.DeleteJMXCredentials,
-    title: 'Permanently delete JMX Credentials?',
-    label: 'Delete JMX Credentials',
-    description: `Credential data for this target will be lost.`,
-    ariaLabel: "JMX Credentials delete warning"
-}
+  id: DeleteWarningType.DeleteJMXCredentials,
+  title: 'Permanently delete JMX Credentials?',
+  label: 'Delete JMX Credentials',
+  description: `Credential data for this target will be lost.`,
+  ariaLabel: 'JMX Credentials delete warning',
+};
 
-export const DeleteWarningKinds : DeleteWarning[] = [
-    DeleteActiveRecordings,
-    DeleteArchivedRecordings,
-    DeleteAutomatedRules,
-    DeleteEventTemplates,
-    DeleteJMXCredentials
+export const DeleteWarningKinds: DeleteWarning[] = [
+  DeleteActiveRecordings,
+  DeleteArchivedRecordings,
+  DeleteAutomatedRules,
+  DeleteEventTemplates,
+  DeleteJMXCredentials,
 ];
 
 export const getFromWarningMap = (warning: DeleteWarningType): DeleteWarning | undefined => {
-    const wt = DeleteWarningKinds.find(t => t.id === warning);
-    return wt;
-}
+  const wt = DeleteWarningKinds.find((t) => t.id === warning);
+  return wt;
+};

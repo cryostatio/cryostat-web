@@ -36,26 +36,27 @@
  * SOFTWARE.
  */
 
-import { saveToLocalStorage } from "@app/utils/LocalStorage";
-import { combineReducers, configureStore, PreloadedState } from "@reduxjs/toolkit";
-import { recordingFilterReducer as recordingFiltersReducer } from "./RecordingFilterReducer";
+import { saveToLocalStorage } from '@app/utils/LocalStorage';
+import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
+import { recordingFilterReducer as recordingFiltersReducer } from './RecordingFilterReducer';
 
 export const rootReducer = combineReducers({
-  recordingFilters: recordingFiltersReducer
+  recordingFilters: recordingFiltersReducer,
 });
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) => configureStore({
-  reducer: rootReducer,
-  preloadedState
-});
+export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
+  configureStore({
+    reducer: rootReducer,
+    preloadedState,
+  });
 
 export const store = setupStore();
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof rootReducer>;
 export type StateDispatch = typeof store.dispatch;
-export type Store = ReturnType<typeof setupStore>
+export type Store = ReturnType<typeof setupStore>;
 
 // Add a subscription to save filter states to local storage
 // if states change.
-store.subscribe(() => saveToLocalStorage("TARGET_RECORDING_FILTERS", store.getState().recordingFilters.list));
+store.subscribe(() => saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list));

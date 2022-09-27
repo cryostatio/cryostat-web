@@ -46,23 +46,26 @@ import { Target } from '@app/Shared/Services/Target.service';
 import userEvent from '@testing-library/user-event';
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 
-const mockFooTarget: Target = { 
-  connectUrl: "service:jmx:rmi://someFooUrl", 
-  alias: 'fooTarget', 
-  annotations: { 
-      cryostat: new Map(), 
-      platform : new Map() 
-  }
+const mockFooTarget: Target = {
+  connectUrl: 'service:jmx:rmi://someFooUrl',
+  alias: 'fooTarget',
+  annotations: {
+    cryostat: new Map(),
+    platform: new Map(),
+  },
 };
 
-const mockLabel = { key: 'someLabel', value: 'someValue'} as RecordingLabel;
+const mockLabel = { key: 'someLabel', value: 'someValue' } as RecordingLabel;
 const mockAnotherLabel = { key: 'anotherLabel', value: 'anotherValue' } as RecordingLabel;
-const mockLabelList = [ mockLabel, mockAnotherLabel ];
+const mockLabelList = [mockLabel, mockAnotherLabel];
 
 // For display
-const mockLabelStringDisplayList = [ `${mockLabel.key}: ${mockLabel.value}`, `${mockAnotherLabel.key}: ${mockAnotherLabel.value}` ]
+const mockLabelStringDisplayList = [
+  `${mockLabel.key}: ${mockLabel.value}`,
+  `${mockAnotherLabel.key}: ${mockAnotherLabel.value}`,
+];
 // For filters and labeling elements
-const mockLabelStringList = mockLabelStringDisplayList.map((s: string) => s.replace(" ", ""));
+const mockLabelStringList = mockLabelStringDisplayList.map((s: string) => s.replace(' ', ''));
 
 describe('<LabelCell />', () => {
   let onUpdateLabels: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
@@ -76,17 +79,19 @@ describe('<LabelCell />', () => {
     let tree;
     await act(async () => {
       tree = renderer.create(
-        <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} clickableOptions={{labelFilters:[], updateFilters: onUpdateLabels}} />
+        <LabelCell
+          target={mockFooTarget.connectUrl}
+          labels={mockLabelList}
+          clickableOptions={{ labelFilters: [], updateFilters: onUpdateLabels }}
+        />
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
   it('should display read-only labels', () => {
-    render(
-      <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} />
-    );
-    
+    render(<LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} />);
+
     mockLabelStringDisplayList.forEach((labelAsString) => {
       const displayedLabel = screen.getByLabelText(labelAsString);
 
@@ -102,9 +107,13 @@ describe('<LabelCell />', () => {
 
   it('should display clickable labels', () => {
     render(
-      <LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} clickableOptions={{labelFilters:[], updateFilters: onUpdateLabels}} />
+      <LabelCell
+        target={mockFooTarget.connectUrl}
+        labels={mockLabelList}
+        clickableOptions={{ labelFilters: [], updateFilters: onUpdateLabels }}
+      />
     );
-    
+
     let count = 0;
     mockLabelStringDisplayList.forEach((labelAsString, index) => {
       const displayedLabel = screen.getByLabelText(labelAsString);
@@ -113,21 +122,20 @@ describe('<LabelCell />', () => {
       expect(displayedLabel).toBeVisible();
 
       userEvent.click(displayedLabel);
-      
+
       expect(onUpdateLabels).toHaveBeenCalledTimes(++count);
-      expect(onUpdateLabels).toHaveBeenCalledWith(
-        mockFooTarget.connectUrl,
-        {filterKey: "Label", filterValue: mockLabelStringList[index], deleted: false}
-      );
+      expect(onUpdateLabels).toHaveBeenCalledWith(mockFooTarget.connectUrl, {
+        filterKey: 'Label',
+        filterValue: mockLabelStringList[index],
+        deleted: false,
+      });
     });
   });
 
   it('should display placeholder when there is no label', () => {
-    render(
-      <LabelCell target={mockFooTarget.connectUrl} labels={[]} />
-    );
-    
-    const placeHolder = screen.getByText("-");
+    render(<LabelCell target={mockFooTarget.connectUrl} labels={[]} />);
+
+    const placeHolder = screen.getByText('-');
     expect(placeHolder).toBeInTheDocument();
     expect(placeHolder).toBeVisible();
     expect(placeHolder.onclick).toBeNull();

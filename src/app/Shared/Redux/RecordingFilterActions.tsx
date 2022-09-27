@@ -36,75 +36,90 @@
  * SOFTWARE.
  */
 
-import { createAction } from "@reduxjs/toolkit";
+import { createAction } from '@reduxjs/toolkit';
 
 // Common action string format: "resource(s)/action"
 export enum RecordingFilterAction {
-  FILTER_ADD = "filter/add",
-  FILTER_DELETE = "filter/delete",
-  FILTER_DELETE_ALL = "filter/delete_all", // Delete all filters in all categories
-  CATEGORY_FILTERS_DELETE ="filters/delete", // Delete all filters of the same category
-  CATEGORY_UPDATE = "category/update",
-  TARGET_ADD = "target/add",
-  TARGET_DELETE = "target/delete"
+  FILTER_ADD = 'filter/add',
+  FILTER_DELETE = 'filter/delete',
+  FILTER_DELETE_ALL = 'filter/delete_all', // Delete all filters in all categories
+  CATEGORY_FILTERS_DELETE = 'filters/delete', // Delete all filters of the same category
+  CATEGORY_UPDATE = 'category/update',
+  TARGET_ADD = 'target/add',
+  TARGET_DELETE = 'target/delete',
 }
 
 export interface RecordingFilterActionPayload {
-  target: string,
-  category?: string,
-  filter?: any,
-  isArchived?: boolean
+  target: string;
+  category?: string;
+  filter?: any;
+  isArchived?: boolean;
 }
 
-export const addFilterIntent = createAction(RecordingFilterAction.FILTER_ADD, (target: string, category: string, filter: any, isArchived: boolean) => ({
-  payload: {
-    target: target,
-    category: category,
-    filter: filter,
-    isArchived: isArchived
-  } as RecordingFilterActionPayload
-}));
+export const addFilterIntent = createAction(
+  RecordingFilterAction.FILTER_ADD,
+  (target: string, category: string, filter: any, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      category: category,
+      filter: filter,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
 
-export const deleteFilterIntent = createAction(RecordingFilterAction.FILTER_DELETE, (target: string, category: string, filter: any, isArchived: boolean) => ({
-  payload: {
-    target: target,
-    category: category,
-    filter: filter,
-    isArchived: isArchived
-  } as RecordingFilterActionPayload
-}));
+export const deleteFilterIntent = createAction(
+  RecordingFilterAction.FILTER_DELETE,
+  (target: string, category: string, filter: any, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      category: category,
+      filter: filter,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
 
-export const deleteCategoryFiltersIntent = createAction(RecordingFilterAction.CATEGORY_FILTERS_DELETE, (target: string, category: string, isArchived: boolean) => ({
-  payload: {
-    target: target,
-    category: category,
-    isArchived: isArchived
-  } as RecordingFilterActionPayload
-}));
+export const deleteCategoryFiltersIntent = createAction(
+  RecordingFilterAction.CATEGORY_FILTERS_DELETE,
+  (target: string, category: string, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      category: category,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
 
-export const deleteAllFiltersIntent = createAction(RecordingFilterAction.FILTER_DELETE_ALL, (target: string, isArchived: boolean) => ({
-  payload: {
-    target: target,
-    isArchived: isArchived
-  } as RecordingFilterActionPayload
-}));
+export const deleteAllFiltersIntent = createAction(
+  RecordingFilterAction.FILTER_DELETE_ALL,
+  (target: string, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
 
-export const updateCategoryIntent = createAction(RecordingFilterAction.CATEGORY_UPDATE, (target: string, category: string, isArchived: boolean) => ({
-  payload: {
-    target: target,
-    category: category,
-    isArchived: isArchived
-  } as RecordingFilterActionPayload
-}));
+export const updateCategoryIntent = createAction(
+  RecordingFilterAction.CATEGORY_UPDATE,
+  (target: string, category: string, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      category: category,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
 
 export const addTargetIntent = createAction(RecordingFilterAction.TARGET_ADD, (target: string) => ({
   payload: {
     target: target,
-  } as RecordingFilterActionPayload
+  } as RecordingFilterActionPayload,
 }));
 
 export const deleteTargetIntent = createAction(RecordingFilterAction.TARGET_DELETE, (target: string) => ({
   payload: {
     target: target,
-  } as RecordingFilterActionPayload
+  } as RecordingFilterActionPayload,
 }));

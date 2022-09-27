@@ -50,41 +50,46 @@ export interface LabelFilterProps {
 export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
 
 export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) => {
-    const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-    const onSelect = React.useCallback(
-      (_, selection, isPlaceholder) => {
-        if (!isPlaceholder) {
-          setIsExpanded(false);
-          props.onSubmit(selection);
-        }
-      }, [props.onSubmit, setIsExpanded]
-    );
+  const onSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        setIsExpanded(false);
+        props.onSubmit(selection);
+      }
+    },
+    [props.onSubmit, setIsExpanded]
+  );
 
-    const labels = React.useMemo(() => {
-      const labels = new Set<string>();
-      props.recordings.forEach((r) => {
-          if (!r || !r.metadata || !r.metadata.labels) return;
-          parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
-      });
-      return Array.from(labels).filter((l) => !props.filteredLabels.includes(l)).sort();
-    }, [props.recordings, parseLabels, getLabelDisplay]);
+  const labels = React.useMemo(() => {
+    const labels = new Set<string>();
+    props.recordings.forEach((r) => {
+      if (!r || !r.metadata || !r.metadata.labels) return;
+      parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
+    });
+    return Array.from(labels)
+      .filter((l) => !props.filteredLabels.includes(l))
+      .sort();
+  }, [props.recordings, parseLabels, getLabelDisplay]);
 
-    return (
-        <Select
-            variant={SelectVariant.typeahead}
-            onToggle={setIsExpanded}
-            onSelect={onSelect}
-            isOpen={isExpanded}
-            aria-label="Filter by label"
-            typeAheadAriaLabel="Filter by label..."
-            placeholderText="Filter by label..."
-        >
-            {labels.map((option, index) => (
-                <SelectOption key={index} value={option} >
-                    <Label key={option} color="grey">{option}</Label>
-                </SelectOption>
-            ))}
-        </Select>
-    );
+  return (
+    <Select
+      variant={SelectVariant.typeahead}
+      onToggle={setIsExpanded}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      aria-label="Filter by label"
+      typeAheadAriaLabel="Filter by label..."
+      placeholderText="Filter by label..."
+    >
+      {labels.map((option, index) => (
+        <SelectOption key={index} value={option}>
+          <Label key={option} color="grey">
+            {option}
+          </Label>
+        </SelectOption>
+      ))}
+    </Select>
+  );
 };

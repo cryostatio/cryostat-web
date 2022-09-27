@@ -36,22 +36,36 @@
  * SOFTWARE.
  */
 
-import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters, RecordingFiltersCategories } from "@app/Recordings/RecordingFilters"
-import { getFromLocalStorage } from "@app/utils/LocalStorage";
-import { createReducer } from "@reduxjs/toolkit"
-import { WritableDraft } from "immer/dist/internal";
-import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent,  deleteTargetIntent, updateCategoryIntent, } from './RecordingFilterActions';
+import {
+  emptyActiveRecordingFilters,
+  emptyArchivedRecordingFilters,
+  RecordingFiltersCategories,
+} from '@app/Recordings/RecordingFilters';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { createReducer } from '@reduxjs/toolkit';
+import { WritableDraft } from 'immer/dist/internal';
+import {
+  addFilterIntent,
+  addTargetIntent,
+  deleteAllFiltersIntent,
+  deleteCategoryFiltersIntent,
+  deleteFilterIntent,
+  deleteTargetIntent,
+  updateCategoryIntent,
+} from './RecordingFilterActions';
 
 export interface TargetRecordingFilters {
-  target: string, // connectURL
-  active: { // active recordings
-    selectedCategory?: string,
-    filters: RecordingFiltersCategories,
-  },
-  archived:  { // archived recordings
-    selectedCategory?: string,
-    filters: RecordingFiltersCategories,
-  }
+  target: string; // connectURL
+  active: {
+    // active recordings
+    selectedCategory?: string;
+    filters: RecordingFiltersCategories;
+  };
+  archived: {
+    // archived recordings
+    selectedCategory?: string;
+    filters: RecordingFiltersCategories;
+  };
 }
 
 export interface UpdateFilterOptions {
@@ -59,14 +73,14 @@ export interface UpdateFilterOptions {
   filterValue?: any;
   deleted?: boolean;
   deleteOptions?: {
-    all: boolean
-  }
+    all: boolean;
+  };
 }
 
 export const createOrUpdateRecordingFilter = (
-  old: RecordingFiltersCategories, 
-  {filterValue, filterKey, deleted = false, deleteOptions}: UpdateFilterOptions): RecordingFiltersCategories => {
-  
+  old: RecordingFiltersCategories,
+  { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
+): RecordingFiltersCategories => {
   let newfilterValues: any[];
   if (!old[filterKey]) {
     newfilterValues = [];
@@ -83,171 +97,178 @@ export const createOrUpdateRecordingFilter = (
     }
   }
 
-  const newFilters = {...old};
+  const newFilters = { ...old };
   newFilters[filterKey] = newfilterValues;
   return newFilters;
-}
-
-export const getTargetRecordingFilter = (state: WritableDraft<{ list: TargetRecordingFilters[]; }>, target: string): TargetRecordingFilters => {
-    const targetFilter = state.list.filter((targetFilters) => targetFilters.target === target);
-    return targetFilter.length > 0? targetFilter[0]: createEmptyTargetRecordingFilters(target);
 };
 
-export const createEmptyTargetRecordingFilters = (target: string) => (
-  {
+export const getTargetRecordingFilter = (
+  state: WritableDraft<{ list: TargetRecordingFilters[] }>,
+  target: string
+): TargetRecordingFilters => {
+  const targetFilter = state.list.filter((targetFilters) => targetFilters.target === target);
+  return targetFilter.length > 0 ? targetFilter[0] : createEmptyTargetRecordingFilters(target);
+};
+
+export const createEmptyTargetRecordingFilters = (target: string) =>
+  ({
     target: target,
     active: {
-      selectedCategory: "Name",
+      selectedCategory: 'Name',
       filters: emptyActiveRecordingFilters,
     },
-    archived:  {
-      selectedCategory: "Name",
+    archived: {
+      selectedCategory: 'Name',
       filters: emptyArchivedRecordingFilters,
-    }
-  } as TargetRecordingFilters
-);
+    },
+  } as TargetRecordingFilters);
 
 export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRecordingFilters, isArchived: boolean) => {
   if (isArchived) {
     return {
-      ...targetRecordingFilter, 
-      archived:  {
+      ...targetRecordingFilter,
+      archived: {
         selectedCategory: targetRecordingFilter.archived.selectedCategory,
         filters: emptyArchivedRecordingFilters,
-      }
-    }
+      },
+    };
   }
   return {
-    ...targetRecordingFilter, 
+    ...targetRecordingFilter,
     active: {
       selectedCategory: targetRecordingFilter.active.selectedCategory,
       filters: emptyActiveRecordingFilters,
-    }
-  }
-}
+    },
+  };
+};
 
 // Initial states are loaded from local storage if there are any
-const initialState = { 
-  list: getFromLocalStorage("TARGET_RECORDING_FILTERS", []) as TargetRecordingFilters[]
+const initialState = {
+  list: getFromLocalStorage('TARGET_RECORDING_FILTERS', []) as TargetRecordingFilters[],
 };
 
 export const recordingFilterReducer = createReducer(initialState, (builder) => {
   builder
-        .addCase(addFilterIntent, (state, {payload}) => {
-          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+    .addCase(addFilterIntent, (state, { payload }) => {
+      const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
-          let newTargetRecordingFilter: TargetRecordingFilters;
-          if (payload.isArchived) {
-            newTargetRecordingFilter = {
-              ...oldTargetRecordingFilter, 
-              archived: {
-                selectedCategory: payload.category,
-                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
-                  filterKey: payload.category!,
-                  filterValue: payload.filter
-                })
-              }}
-          } else {
-            newTargetRecordingFilter = {
-              ...oldTargetRecordingFilter, 
-              active: {
-                selectedCategory: payload.category,
-                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
-                  filterKey: payload.category!,
-                  filterValue: payload.filter
-                })
-              }}
-          }
+      let newTargetRecordingFilter: TargetRecordingFilters;
+      if (payload.isArchived) {
+        newTargetRecordingFilter = {
+          ...oldTargetRecordingFilter,
+          archived: {
+            selectedCategory: payload.category,
+            filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
+              filterKey: payload.category!,
+              filterValue: payload.filter,
+            }),
+          },
+        };
+      } else {
+        newTargetRecordingFilter = {
+          ...oldTargetRecordingFilter,
+          active: {
+            selectedCategory: payload.category,
+            filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
+              filterKey: payload.category!,
+              filterValue: payload.filter,
+            }),
+          },
+        };
+      }
 
-          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
-          state.list.push(newTargetRecordingFilter);
-        })
-        .addCase(deleteFilterIntent, (state, {payload}) => {
-          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+      state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+      state.list.push(newTargetRecordingFilter);
+    })
+    .addCase(deleteFilterIntent, (state, { payload }) => {
+      const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
-          let newTargetRecordingFilter: TargetRecordingFilters;
-          if (payload.isArchived) {
-            newTargetRecordingFilter = {
-              ...oldTargetRecordingFilter, 
-              archived: {
-                selectedCategory: payload.category,
-                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
-                  filterKey: payload.category!,
-                  filterValue: payload.filter,
-                  deleted: true
-                })
-              }}
-          } else {
-            newTargetRecordingFilter = {
-              ...oldTargetRecordingFilter, 
-              active: {
-                selectedCategory: payload.category,
-                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
-                  filterKey: payload.category!,
-                  filterValue: payload.filter,
-                  deleted: true
-                })
-              }}
-          }
+      let newTargetRecordingFilter: TargetRecordingFilters;
+      if (payload.isArchived) {
+        newTargetRecordingFilter = {
+          ...oldTargetRecordingFilter,
+          archived: {
+            selectedCategory: payload.category,
+            filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
+              filterKey: payload.category!,
+              filterValue: payload.filter,
+              deleted: true,
+            }),
+          },
+        };
+      } else {
+        newTargetRecordingFilter = {
+          ...oldTargetRecordingFilter,
+          active: {
+            selectedCategory: payload.category,
+            filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
+              filterKey: payload.category!,
+              filterValue: payload.filter,
+              deleted: true,
+            }),
+          },
+        };
+      }
 
-          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
-          state.list.push(newTargetRecordingFilter);
-        })
-        .addCase(deleteCategoryFiltersIntent, (state, {payload}) => {
-          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+      state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+      state.list.push(newTargetRecordingFilter);
+    })
+    .addCase(deleteCategoryFiltersIntent, (state, { payload }) => {
+      const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
-          let newTargetRecordingFilter: TargetRecordingFilters;
-          if (payload.isArchived) {
-            newTargetRecordingFilter = {
-              ...oldTargetRecordingFilter, 
-              archived: {
-                selectedCategory: payload.category,
-                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
-                  filterKey: payload.category!,
-                  deleted: true,
-                  deleteOptions: {all: true}
-                })
-              }}
-          } else {
-            newTargetRecordingFilter = {
-              ...oldTargetRecordingFilter, 
-              active: {
-                selectedCategory: payload.category,
-                filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
-                  filterKey: payload.category!,
-                  deleted: true,
-                  deleteOptions: {all: true}
-                })
-              }}
-          }
+      let newTargetRecordingFilter: TargetRecordingFilters;
+      if (payload.isArchived) {
+        newTargetRecordingFilter = {
+          ...oldTargetRecordingFilter,
+          archived: {
+            selectedCategory: payload.category,
+            filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.archived.filters, {
+              filterKey: payload.category!,
+              deleted: true,
+              deleteOptions: { all: true },
+            }),
+          },
+        };
+      } else {
+        newTargetRecordingFilter = {
+          ...oldTargetRecordingFilter,
+          active: {
+            selectedCategory: payload.category,
+            filters: createOrUpdateRecordingFilter(oldTargetRecordingFilter.active.filters, {
+              filterKey: payload.category!,
+              deleted: true,
+              deleteOptions: { all: true },
+            }),
+          },
+        };
+      }
 
-          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
-          state.list.push(newTargetRecordingFilter);
-        })
-        .addCase(deleteAllFiltersIntent, (state, {payload}) => {
-          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
-          const newTargetRecordingFilter = deleteAllTargetRecordingFilters(oldTargetRecordingFilter, payload.isArchived!);
-          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
-          state.list.push(newTargetRecordingFilter);
-        })
-        .addCase(updateCategoryIntent, (state, {payload}) => {
-          const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
-          const newTargetRecordingFilter = {...oldTargetRecordingFilter};
-          if (payload.isArchived) {
-            newTargetRecordingFilter.archived.selectedCategory = payload.category;
-          } else {
-            newTargetRecordingFilter.active.selectedCategory = payload.category;
-          }
-          state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
-          state.list.push(newTargetRecordingFilter);
-        })
-        .addCase(addTargetIntent, (state, {payload}) => {
-          const targetRecordingFilter = getTargetRecordingFilter(state, payload.target);
-          state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
-          state.list.push(targetRecordingFilter);
-        })
-        .addCase(deleteTargetIntent, (state, {payload}) => {
-          state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
-        })
+      state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+      state.list.push(newTargetRecordingFilter);
+    })
+    .addCase(deleteAllFiltersIntent, (state, { payload }) => {
+      const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+      const newTargetRecordingFilter = deleteAllTargetRecordingFilters(oldTargetRecordingFilter, payload.isArchived!);
+      state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+      state.list.push(newTargetRecordingFilter);
+    })
+    .addCase(updateCategoryIntent, (state, { payload }) => {
+      const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+      const newTargetRecordingFilter = { ...oldTargetRecordingFilter };
+      if (payload.isArchived) {
+        newTargetRecordingFilter.archived.selectedCategory = payload.category;
+      } else {
+        newTargetRecordingFilter.active.selectedCategory = payload.category;
+      }
+      state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
+      state.list.push(newTargetRecordingFilter);
+    })
+    .addCase(addTargetIntent, (state, { payload }) => {
+      const targetRecordingFilter = getTargetRecordingFilter(state, payload.target);
+      state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
+      state.list.push(targetRecordingFilter);
+    })
+    .addCase(deleteTargetIntent, (state, { payload }) => {
+      state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
+    });
 });
-

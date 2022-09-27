@@ -36,53 +36,54 @@
  * SOFTWARE.
  */
 
-import { getLabelDisplay } from "@app/Recordings/Filters/LabelFilter";
-import { Label } from "@patternfly/react-core";
-import React from "react";
-import { RecordingLabel } from "./RecordingLabel";
-
+import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
+import { Label } from '@patternfly/react-core';
+import React from 'react';
+import { RecordingLabel } from './RecordingLabel';
 
 export interface ClickableLabelCellProps {
   label: RecordingLabel;
   isSelected: boolean;
-  onLabelClick: (label: RecordingLabel) => void
+  onLabelClick: (label: RecordingLabel) => void;
 }
 
 export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = (props) => {
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
-  const labelColor = React.useMemo(() => props.isSelected? "blue": "grey", [props.isSelected]);
+  const labelColor = React.useMemo(() => (props.isSelected ? 'blue' : 'grey'), [props.isSelected]);
 
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
 
   const style = React.useMemo(() => {
     if (isHoveredOrFocused) {
-      const defaultStyle = { cursor: "pointer", "--pf-c-label__content--before--BorderWidth": "2.5px"};
+      const defaultStyle = { cursor: 'pointer', '--pf-c-label__content--before--BorderWidth': '2.5px' };
       if (props.isSelected) {
-        return {...defaultStyle, "--pf-c-label__content--before--BorderColor": "#06c"}
+        return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#06c' };
       }
-      return {...defaultStyle, "--pf-c-label__content--before--BorderColor": "#8a8d90"}
+      return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#8a8d90' };
     }
     return {};
   }, [props.isSelected, isHoveredOrFocused]);
 
   const handleLabelClicked = React.useCallback(
-    () => props.onLabelClick(props.label), 
+    () => props.onLabelClick(props.label),
     [props.label, props.onLabelClick, getLabelDisplay]
   );
 
-  return <>
-    <Label
-      aria-label={`${props.label.key}: ${props.label.value}`}
-      style={style}
-      onMouseEnter={handleHoveredOrFocused}
-      onMouseLeave={handleNonHoveredOrFocused}
-      onFocus={handleHoveredOrFocused}
-      onClick={handleLabelClicked}
-      key={props.label.key}
-      color={labelColor}
+  return (
+    <>
+      <Label
+        aria-label={`${props.label.key}: ${props.label.value}`}
+        style={style}
+        onMouseEnter={handleHoveredOrFocused}
+        onMouseLeave={handleNonHoveredOrFocused}
+        onFocus={handleHoveredOrFocused}
+        onClick={handleLabelClicked}
+        key={props.label.key}
+        color={labelColor}
       >
         {`${props.label.key}: ${props.label.value}`}
-    </Label>
-  </>;
-}
+      </Label>
+    </>
+  );
+};

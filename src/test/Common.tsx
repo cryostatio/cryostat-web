@@ -36,65 +36,64 @@
  * SOFTWARE.
  */
 
-import React, { PropsWithChildren } from 'react'
-import { render } from '@testing-library/react'
-import { Provider } from 'react-redux'
-import { setupStore } from '@app/Shared/Redux/ReduxStore'
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services'
+import React, { PropsWithChildren } from 'react';
+import { render } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { setupStore } from '@app/Shared/Redux/ReduxStore';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Router } from 'react-router-dom';
 
 export const renderWithReduxProvider = (
-    ui: React.ReactElement,
-    {
-        preloadState = {},
-        store = setupStore(preloadState), // Create a new store instance if no store was passed in
-        ...renderOptions
-    } = {}, 
+  ui: React.ReactElement,
+  {
+    preloadState = {},
+    store = setupStore(preloadState), // Create a new store instance if no store was passed in
+    ...renderOptions
+  } = {}
 ) => {
-    const Wrapper = ({children}: PropsWithChildren<{}>) => {
-        return (<Provider store={store}>{children}</Provider>);
-    }
-    return {store, ...render(ui, { wrapper: Wrapper, ...renderOptions})};
-}
+  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+    return <Provider store={store}>{children}</Provider>;
+  };
+  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};
 
 export const renderWithServiceContextAndReduxStore = (
-    ui: React.ReactElement,
-    {
-        preloadState = {},
-        store = setupStore(preloadState), // Create a new store instance if no store was passed in
-        ...renderOptions
-    } = {},
+  ui: React.ReactElement,
+  {
+    preloadState = {},
+    store = setupStore(preloadState), // Create a new store instance if no store was passed in
+    ...renderOptions
+  } = {}
 ) => {
-    const Wrapper = ({children}: PropsWithChildren<{}>) => {
-        return (
-            <ServiceContext.Provider value={defaultServices}>
-                <Provider store={store}>
-                    {children}
-                </Provider>
-            </ServiceContext.Provider>
-        );
-    }
-    return {store, ...render(ui, { wrapper: Wrapper, ...renderOptions})};
-}
+  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+    return (
+      <ServiceContext.Provider value={defaultServices}>
+        <Provider store={store}>{children}</Provider>
+      </ServiceContext.Provider>
+    );
+  };
+  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};
 
 export const renderWithServiceContextAndReduxStoreWithRoute = (
-    ui: React.ReactElement,
-    {
-        preloadState = {},
-        store = setupStore(preloadState), // Create a new store instance if no store was passed in
-        history,
-        ...renderOptions
-    }
+  ui: React.ReactElement,
+  {
+    preloadState = {},
+    store = setupStore(preloadState), // Create a new store instance if no store was passed in
+    history,
+    ...renderOptions
+  }
 ) => {
-    const Wrapper = ({children}: PropsWithChildren<{}>) => {
-        return (
-        <ServiceContext.Provider value={defaultServices}>
-            <Provider store={store}>
-                <Router location={history.location} history={history}>
-                    {children}
-                </Router>
-            </Provider>
-        </ServiceContext.Provider>);
-    }
-    return {store, ...render(ui, { wrapper: Wrapper, ...renderOptions})};
-}
+  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+    return (
+      <ServiceContext.Provider value={defaultServices}>
+        <Provider store={store}>
+          <Router location={history.location} history={history}>
+            {children}
+          </Router>
+        </Provider>
+      </ServiceContext.Provider>
+    );
+  };
+  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};

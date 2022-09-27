@@ -46,18 +46,17 @@ import { TargetService } from './Target.service';
 export enum SessionState {
   NO_USER_SESSION,
   CREATING_USER_SESSION,
-  USER_SESSION
+  USER_SESSION,
 }
 
 export enum AuthMethod {
   BASIC = 'Basic',
   BEARER = 'Bearer',
   NONE = 'None',
-  UNKNOWN = ''
+  UNKNOWN = '',
 }
 
 export class LoginService {
-
   private readonly TOKEN_KEY: string = 'token';
   private readonly USER_KEY: string = 'user';
   private readonly AUTH_METHOD_KEY: string = 'auth_method';
@@ -82,20 +81,20 @@ export class LoginService {
   }
 
   queryAuthMethod(): void {
-      this.checkAuth('', '').subscribe(() => {
-        ; // check auth once at component load to query the server's auth method
-      });
+    this.checkAuth('', '').subscribe(() => {
+      // check auth once at component load to query the server's auth method
+    });
   }
 
   checkAuth(token: string, method: string, rememberMe = true): Observable<boolean> {
     token = Base64.encodeURL(token || this.getTokenFromUrlFragment());
     token = token || this.getCachedEncodedTokenIfAvailable();
 
-    if(this.hasBearerTokenUrlHash()) {
+    if (this.hasBearerTokenUrlHash()) {
       method = AuthMethod.BEARER;
     }
 
-    if(!method) {
+    if (!method) {
       method = this.getCacheItem(this.AUTH_METHOD_KEY);
     }
 
@@ -105,17 +104,16 @@ export class LoginService {
       method: 'POST',
       body: null,
       headers: this.getAuthHeaders(token, method),
-    })
-    .pipe(
-      concatMap(response => {
+    }).pipe(
+      concatMap((response) => {
         if (!this.authMethod.isStopped) {
           this.completeAuthMethod(response.headers.get('X-WWW-Authenticate') || '');
         }
 
-        if(response.status === 302) {
+        if (response.status === 302) {
           const redirectUrl = response.headers.get('X-Location');
 
-          if(redirectUrl) {
+          if (redirectUrl) {
             window.location.replace(redirectUrl);
           }
         }
@@ -124,7 +122,7 @@ export class LoginService {
       }),
       first(),
       tap((jsonResp: AuthV2Response) => {
-        if(jsonResp.meta.status === 'OK') {
+        if (jsonResp.meta.status === 'OK') {
           this.decideRememberCredentials(token, jsonResp.data.result.username, rememberMe);
           this.sessionState.next(SessionState.CREATING_USER_SESSION);
         }
@@ -136,14 +134,14 @@ export class LoginService {
         window.console.error(JSON.stringify(e));
         this.authMethod.complete();
         return of(false);
-      }),
+      })
     );
   }
 
   getAuthHeaders(token: string, method: string): Headers {
     const headers = new window.Headers();
     if (!!token && !!method) {
-      headers.set('Authorization', `${method} ${token}`)
+      headers.set('Authorization', `${method} ${token}`);
     } else if (method === AuthMethod.NONE) {
       headers.set('Authorization', AuthMethod.NONE);
     }
@@ -151,10 +149,9 @@ export class LoginService {
   }
 
   getHeaders(): Observable<Headers> {
-    return combineLatest([this.getToken(), this.getAuthMethod()])
-    .pipe(
+    return combineLatest([this.getToken(), this.getAuthMethod()]).pipe(
       map((parts: [string, AuthMethod]) => this.getAuthHeaders(parts[0], parts[1])),
-      first(),
+      first()
     );
   }
 
@@ -171,7 +168,9 @@ export class LoginService {
   }
 
   getSessionState(): Observable<SessionState> {
-    return this.sessionState.asObservable().pipe(distinctUntilChanged(), debounceTime(this.settings.webSocketDebounceMs()));
+    return this.sessionState
+      .asObservable()
+      .pipe(distinctUntilChanged(), debounceTime(this.settings.webSocketDebounceMs()));
   }
 
   loggedOut(): Observable<void> {
@@ -181,7 +180,7 @@ export class LoginService {
   setLoggedOut(): Observable<boolean> {
     return combineLatest([this.getToken(), this.getAuthMethod()]).pipe(
       first(),
-      concatMap(parts => {
+      concatMap((parts) => {
         const token = parts[0];
         const method = parts[1];
 
@@ -193,37 +192,34 @@ export class LoginService {
           headers: this.getAuthHeaders(token, method),
         });
       }),
-      concatMap(
-        response => {
-          if(response.status === 302) {
-            const redirectUrl = response.headers.get('X-Location');
-            if(!redirectUrl) {
-              throw new HttpError(response);
-            }
-
-            return fromFetch(redirectUrl, {
-              credentials: 'include',
-              mode: 'cors',
-              method: 'POST',
-              body: null,
-            });
-
-          } else {
-            return of(response);
+      concatMap((response) => {
+        if (response.status === 302) {
+          const redirectUrl = response.headers.get('X-Location');
+          if (!redirectUrl) {
+            throw new HttpError(response);
           }
-        }),
-      map(response => response.ok),
-      tap(
-        responseOk => {
-          if(responseOk) {
-            this.resetSessionState();
-            this.navigateToLoginPage();
-         }
-        }),
+
+          return fromFetch(redirectUrl, {
+            credentials: 'include',
+            mode: 'cors',
+            method: 'POST',
+            body: null,
+          });
+        } else {
+          return of(response);
+        }
+      }),
+      map((response) => response.ok),
+      tap((responseOk) => {
+        if (responseOk) {
+          this.resetSessionState();
+          this.navigateToLoginPage();
+        }
+      }),
       catchError((e: Error): ObservableInput<boolean> => {
         window.console.error(JSON.stringify(e));
         return of(false);
-      }),
+      })
     );
   }
 
@@ -245,7 +241,7 @@ export class LoginService {
   }
 
   private getTokenFromUrlFragment(): string {
-    var matches = location.hash.match(new RegExp('access_token'+'=([^&]*)'));
+    var matches = location.hash.match(new RegExp('access_token' + '=([^&]*)'));
     return matches ? matches[1] : '';
   }
 
@@ -262,7 +258,7 @@ export class LoginService {
     this.token.next(token);
     this.username.next(username);
 
-    if(rememberMe && !!token) {
+    if (rememberMe && !!token) {
       this.setCacheItem(this.TOKEN_KEY, token);
       this.setCacheItem(this.USER_KEY, username);
     } else {
@@ -285,7 +281,7 @@ export class LoginService {
 
   private getCacheItem(key: string): string {
     const item = sessionStorage.getItem(key);
-    return (!!item) ? item : '';
+    return !!item ? item : '';
   }
 
   private setCacheItem(key: string, token: string): void {
@@ -300,13 +296,12 @@ export class LoginService {
   private removeCacheItem(key: string): void {
     sessionStorage.removeItem(key);
   }
-
 }
 
 interface AuthV2Response extends ApiV2Response {
   data: {
     result: {
       username: string;
-    }
+    };
   };
 }

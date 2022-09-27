@@ -46,7 +46,7 @@ const defaultPreferences = {
   autoRefreshEnabled: true,
   autoRefreshPeriod: 30,
   autoRefreshUnits: 1_000,
-}
+};
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
@@ -60,35 +60,51 @@ const Component = () => {
     });
   }, [setState, context.settings]);
 
-  const handleAutoRefreshEnabledChange = React.useCallback(autoRefreshEnabled => {
-    setState(state => ({ ...state, autoRefreshEnabled }));
-    context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
-  }, [setState, context.settings]);
+  const handleAutoRefreshEnabledChange = React.useCallback(
+    (autoRefreshEnabled) => {
+      setState((state) => ({ ...state, autoRefreshEnabled }));
+      context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
+    },
+    [setState, context.settings]
+  );
 
-  const handleAutoRefreshPeriodChange = React.useCallback(autoRefreshPeriod => {
-    setState(state => ({ ...state, autoRefreshPeriod }));
-    context.settings.setAutoRefreshPeriod(autoRefreshPeriod);
-  }, [setState, context.settings]);
+  const handleAutoRefreshPeriodChange = React.useCallback(
+    (autoRefreshPeriod) => {
+      setState((state) => ({ ...state, autoRefreshPeriod }));
+      context.settings.setAutoRefreshPeriod(autoRefreshPeriod);
+    },
+    [setState, context.settings]
+  );
 
-  const handleAutoRefreshUnitScalarChange = React.useCallback(autoRefreshUnits => {
-    setState(state => ({ ...state, autoRefreshUnits }));
-    context.settings.setAutoRefreshUnits(autoRefreshUnits);
-  }, [setState, context.settings]);
+  const handleAutoRefreshUnitScalarChange = React.useCallback(
+    (autoRefreshUnits) => {
+      setState((state) => ({ ...state, autoRefreshUnits }));
+      context.settings.setAutoRefreshUnits(autoRefreshUnits);
+    },
+    [setState, context.settings]
+  );
 
-  return (<>
-    <DurationPicker
-      enabled={state.autoRefreshEnabled}
-      period={state.autoRefreshPeriod}
-      onPeriodChange={handleAutoRefreshPeriodChange}
-      unitScalar={state.autoRefreshUnits}
-      onUnitScalarChange={handleAutoRefreshUnitScalarChange}
-    />
-    <Checkbox id="auto-refresh-enabled" label="Enabled" isChecked={state.autoRefreshEnabled} onChange={handleAutoRefreshEnabledChange} />
-  </>);
-}
+  return (
+    <>
+      <DurationPicker
+        enabled={state.autoRefreshEnabled}
+        period={state.autoRefreshPeriod}
+        onPeriodChange={handleAutoRefreshPeriodChange}
+        unitScalar={state.autoRefreshUnits}
+        onUnitScalarChange={handleAutoRefreshUnitScalarChange}
+      />
+      <Checkbox
+        id="auto-refresh-enabled"
+        label="Enabled"
+        isChecked={state.autoRefreshEnabled}
+        onChange={handleAutoRefreshEnabledChange}
+      />
+    </>
+  );
+};
 
 export const AutoRefresh: UserSetting = {
   title: 'Auto-Refresh',
   description: 'Set the refresh period for content views.',
   content: Component,
-}
+};

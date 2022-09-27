@@ -46,38 +46,30 @@ import { WebSocketDebounce } from './WebSocketDebounce';
 import { DeletionDialogControl } from './DeletionDialogControl';
 
 export const Settings: React.FunctionComponent<{}> = () => {
+  const settings = [AutoRefresh, NotificationControl, DeletionDialogControl, WebSocketDebounce].map((c) => ({
+    title: c.title,
+    description: c.description,
+    element: React.createElement(c.content, null),
+  }));
 
-  const settings =
-    [
-      AutoRefresh,
-      NotificationControl,
-      DeletionDialogControl,
-      WebSocketDebounce,
-    ].map(c => ({
-      title: c.title,
-      description: c.description,
-      element: React.createElement(c.content, null),
-    }));
-
-  return (<>
-    <BreadcrumbPage pageTitle="Settings">
-      {
-        settings.map(s => (<>
-          <Card>
-            <CardTitle>
-              <Text component={TextVariants.h1}>{ s.title }</Text>
-              <Text component={TextVariants.small}>{ s.description }</Text>
-            </CardTitle>
-            <CardBody>
-              { s.element }
-            </CardBody>
-          </Card>
-        </>))
-      }
-    </BreadcrumbPage>
-  </>);
-
-}
+  return (
+    <>
+      <BreadcrumbPage pageTitle="Settings">
+        {settings.map((s) => (
+          <>
+            <Card>
+              <CardTitle>
+                <Text component={TextVariants.h1}>{s.title}</Text>
+                <Text component={TextVariants.small}>{s.description}</Text>
+              </CardTitle>
+              <CardBody>{s.element}</CardBody>
+            </Card>
+          </>
+        ))}
+      </BreadcrumbPage>
+    </>
+  );
+};
 
 export interface UserSetting {
   title: string;
