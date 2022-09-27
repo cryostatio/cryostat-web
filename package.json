@@ -26,7 +26,7 @@
     "prettier:apply": "prettier --write './src/**/*.{tsx,ts}'",
     "build:bundle-profile": "webpack --config webpack.prod.js --profile --json > stats.json",
     "build:bundle-analyze": "webpack-bundle-analyzer ./stats.json",
-    "bundle-profile:analyze": "npm-run-all -l build:bundle-profile build:bundle-analyze",
+    "build:bundle-profile-analyze": "npm-run-all -l build:bundle-profile build:bundle-analyze",
     "yarn:install": "yarn install",
     "yarn:frzinstall": "yarn install --frozen-lockfile"
   },
