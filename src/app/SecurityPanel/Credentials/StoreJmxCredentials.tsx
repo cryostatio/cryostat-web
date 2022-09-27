@@ -457,6 +457,10 @@ export const StoreJmxCredentials = () => {
 
 export const StoreJmxCredentialsCard: SecurityCard = {
   title: 'Store JMX Credentials',
-  description: `Credentials that Cryostat uses to connect to target JVMs over JMX are stored here.`,
+  description: `
+  Credentials that Cryostat uses to connect to target JVMs over JMX are stored here.
+  These are stored in encrypted storage managed by the Cryostat backend. Any locally-stored
+  client credentials held by your browser session are not displayed here.
+  `,
   content: StoreJmxCredentials,
 };

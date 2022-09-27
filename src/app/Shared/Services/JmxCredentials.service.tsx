@@ -35,38 +35,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService, TargetInstance } from './Target.service';
-import { TargetsService } from './Targets.service';
+import { Observable, of } from 'rxjs';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { Locations } from '@app/Settings/CredentialsStorage';
 import { ApiService } from './Api.service';
-import { NotificationChannel } from './NotificationChannel.service';
-import { ReportService } from './Report.service';
-import { SettingsService } from './Settings.service';
-import { LoginService } from './Login.service';
-import { JmxCredentials } from './JmxCredentials.service';
 
-export interface Services {
-  target: TargetService;
-  targets: TargetsService;
-  api: ApiService;
-  jmxCredentials: JmxCredentials;
-  notificationChannel: NotificationChannel;
-  reports: ReportService;
-  settings: SettingsService;
-  login: LoginService;
+export interface Credential {
+  username: string;
+  password: string;
 }
 
-const settings = new SettingsService();
-const jmxCredentials = new JmxCredentials(() => api);
-const login = new LoginService(TargetInstance, jmxCredentials, settings);
-const api = new ApiService(TargetInstance, NotificationsInstance, login);
-const notificationChannel = new NotificationChannel(NotificationsInstance, login);
-const reports = new ReportService(login, NotificationsInstance);
-const targets = new TargetsService(api, NotificationsInstance, login, notificationChannel);
+export class JmxCredentials {
 
-const defaultServices: Services = { target: TargetInstance, targets, api, jmxCredentials, notificationChannel, reports, settings, login };
+  // TODO replace with Redux?
+  private readonly store = new Map<string, Credential>();
 
-const ServiceContext: React.Context<Services> = React.createContext(defaultServices);
+  constructor(
+    private readonly api: () => ApiService
+  ) { }
 
-export { ServiceContext, defaultServices };
+  setCredential(targetId: string, username: string, password: string): Observable<boolean> {
+    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION);
+    switch (location) {
+      case Locations.BACKEND.key:
+        return this.api().postCredentials(`target.connectUrl == "${targetId}"`, username, password);
+      case Locations.BROWSER_SESSION.key:
+        this.store.set(targetId, { username, password });
+        return of(true);
+      default:
+        console.warn('Unknown storage location', location);
+        return of(true);
+    }
+  }
+
+  getCredential(targetId: string): Observable<Credential | undefined> {
+    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION);
+    switch (location) {
+      case Locations.BACKEND.key:
+        // if this is stored on the backend then Cryostat should be using those and not prompting us to request from the user
+        return of(undefined);
+      case Locations.BROWSER_SESSION.key:
+        return of(this.store.get(targetId));
+      default:
+        console.warn('Unknown storage location', location);
+        return of(undefined);
+    }
+  }
+}
