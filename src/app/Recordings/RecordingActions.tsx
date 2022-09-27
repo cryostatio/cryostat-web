@@ -35,15 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {NotificationsContext} from '@app/Notifications/Notifications';
-import {ActiveRecording} from '@app/Shared/Services/Api.service';
-import {ServiceContext} from '@app/Shared/Services/Services';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { ActiveRecording } from '@app/Shared/Services/Api.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import {useSubscriptions} from '@app/utils/useSubscriptions';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
-import {Observable} from 'rxjs';
-import {first} from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 export interface RecordingActionsProps {
   index: number;
@@ -60,7 +60,8 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.api.grafanaDatasourceUrl()
+    const sub = context.api
+      .grafanaDatasourceUrl()
       .pipe(first())
       .subscribe(() => setGrafanaEnabled(true));
     return () => sub.unsubscribe();
@@ -69,14 +70,18 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const grafanaUpload = React.useCallback(() => {
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
     addSubscription(
-      props.uploadFn()
-      .pipe(first())
-      .subscribe(success => {
-        if (success) {
-          notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
-          context.api.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
-        }
-      })
+      props
+        .uploadFn()
+        .pipe(first())
+        .subscribe((success) => {
+          if (success) {
+            notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
+            context.api
+              .grafanaDashboardUrl()
+              .pipe(first())
+              .subscribe((url) => window.open(url, '_blank'));
+          }
+        })
     );
   }, [addSubscription, notifications, props.uploadFn, context.api]);
 
@@ -91,21 +96,19 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const actionItems = React.useMemo(() => {
     const actionItems = [
       {
-        title: "Download Recording",
-        onClick: handleDownloadRecording
+        title: 'Download Recording',
+        onClick: handleDownloadRecording,
       },
       {
-        title: "View Report ...",
-        onClick: handleViewReport
-      }
+        title: 'View Report ...',
+        onClick: handleViewReport,
+      },
     ];
     if (grafanaEnabled) {
-      actionItems.push(
-        {
-          title: "View in Grafana ...",
-          onClick: grafanaUpload
-        }
-      );
+      actionItems.push({
+        title: 'View in Grafana ...',
+        onClick: grafanaUpload,
+      });
     }
     return actionItems;
   }, [handleDownloadRecording, handleViewReport, grafanaEnabled, grafanaUpload]);
@@ -114,7 +117,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     <Td
       key={`${props.index}_actions`}
       actions={{
-        items: actionItems
+        items: actionItems,
       }}
     />
   );

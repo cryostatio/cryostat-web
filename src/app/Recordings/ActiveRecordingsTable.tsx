@@ -41,8 +41,19 @@ import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.servic
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions} from '@app/utils/useSubscriptions';
-import { Button, Checkbox, Drawer, DrawerContent, DrawerContentBody, Text, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import {
+  Button,
+  Checkbox,
+  Drawer,
+  DrawerContent,
+  DrawerContentBody,
+  Text,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+} from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -51,13 +62,24 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import { emptyActiveRecordingFilters, filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
+import {
+  emptyActiveRecordingFilters,
+  filterRecordings,
+  RecordingFilters,
+  RecordingFiltersCategories,
+} from './RecordingFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { useDispatch, useSelector } from 'react-redux';
-import { addFilterIntent, addTargetIntent, deleteAllFiltersIntent, deleteCategoryFiltersIntent, deleteFilterIntent } from '@app/Shared/Redux/RecordingFilterActions';
+import {
+  addFilterIntent,
+  addTargetIntent,
+  deleteAllFiltersIntent,
+  deleteCategoryFiltersIntent,
+  deleteFilterIntent,
+} from '@app/Shared/Redux/RecordingFilterActions';
 import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
@@ -75,7 +97,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
-  const [targetConnectURL, setTargetConnectURL] = React.useState("");
+  const [targetConnectURL, setTargetConnectURL] = React.useState('');
   const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ActiveRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
@@ -87,31 +109,33 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [errorMessage, setErrorMessage] = React.useState('');
 
   const targetRecordingFilters = useSelector((state: RootState) => {
-    const filters = state.recordingFilters.list.filter((targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL);
-    return filters.length > 0? filters[0].active.filters: emptyActiveRecordingFilters;
+    const filters = state.recordingFilters.list.filter(
+      (targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL
+    );
+    return filters.length > 0 ? filters[0].active.filters : emptyActiveRecordingFilters;
   }) as RecordingFiltersCategories;
 
-  const tableColumns: string[] = [
-    'Name',
-    'Start Time',
-    'Duration',
-    'State',
-    'Labels',
-  ];
+  const tableColumns: string[] = ['Name', 'Start Time', 'Duration', 'State', 'Labels'];
 
-  const handleRowCheck = React.useCallback((checked, index) => {
-    if (checked) {
-      setCheckedIndices(ci => ([...ci, index]));
-    } else {
-      setHeaderChecked(false);
-      setCheckedIndices(ci => ci.filter(v => v !== index));
-    }
-  }, [setCheckedIndices, setHeaderChecked]);
+  const handleRowCheck = React.useCallback(
+    (checked, index) => {
+      if (checked) {
+        setCheckedIndices((ci) => [...ci, index]);
+      } else {
+        setHeaderChecked(false);
+        setCheckedIndices((ci) => ci.filter((v) => v !== index));
+      }
+    },
+    [setCheckedIndices, setHeaderChecked]
+  );
 
-  const handleHeaderCheck = React.useCallback((event, checked) => {
-    setHeaderChecked(checked);
-    setCheckedIndices(checked ? filteredRecordings.map((r) => r.id) : []);
-  }, [setHeaderChecked, setCheckedIndices, filteredRecordings]);
+  const handleHeaderCheck = React.useCallback(
+    (event, checked) => {
+      setHeaderChecked(checked);
+      setCheckedIndices(checked ? filteredRecordings.map((r) => r.id) : []);
+    },
+    [setHeaderChecked, setCheckedIndices, filteredRecordings]
+  );
 
   const handleCreateRecording = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
@@ -122,26 +146,39 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     setPanelContent(PanelContent.LABELS);
   }, [setShowDetailsPanel, setPanelContent]);
 
-  const handleRecordings = React.useCallback((recordings) => {
-    setRecordings(recordings);
-    setIsLoading(false);
-    setErrorMessage('');
-  }, [setRecordings, setIsLoading, setErrorMessage]);
+  const handleRecordings = React.useCallback(
+    (recordings) => {
+      setRecordings(recordings);
+      setIsLoading(false);
+      setErrorMessage('');
+    },
+    [setRecordings, setIsLoading, setErrorMessage]
+  );
 
-  const handleError = React.useCallback((error) => {
-    setIsLoading(false);
-    setErrorMessage(error.message);
-  }, [setIsLoading, setErrorMessage]);
+  const handleError = React.useCallback(
+    (error) => {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+    },
+    [setIsLoading, setErrorMessage]
+  );
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.target.target()
-      .pipe(
-        filter(target => target !== NO_TARGET),
-        concatMap(target => context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)),
-        first(),
-      ).subscribe(value => handleRecordings(value), err => handleError(err))
+      context.target
+        .target()
+        .pipe(
+          filter((target) => target !== NO_TARGET),
+          concatMap((target) =>
+            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+          ),
+          first()
+        )
+        .subscribe(
+          (value) => handleRecordings(value),
+          (err) => handleError(err)
+        )
     );
   }, [addSubscription, context, context.target, context.api, setIsLoading, handleRecordings, handleError]);
 
@@ -161,16 +198,15 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         context.target.target(),
         merge(
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
-          context.notificationChannel.messages(NotificationCategory.SnapshotCreated),
+          context.notificationChannel.messages(NotificationCategory.SnapshotCreated)
         ),
-      ])
-      .subscribe(parts => {
+      ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        setRecordings(old => old.concat([event.message.recording]));
+        setRecordings((old) => old.concat([event.message.recording]));
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
@@ -181,18 +217,17 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         context.target.target(),
         merge(
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
-          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted),
+          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
         ),
-      ])
-      .subscribe(parts => {
+      ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
 
-        setRecordings((old) =>  old.filter((r) => r.name !== event.message.recording.name));
-        setCheckedIndices(old => old.filter((idx) => idx !==  event.message.recording.id));
+        setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
+        setCheckedIndices((old) => old.filter((idx) => idx !== event.message.recording.id));
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
@@ -202,14 +237,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       combineLatest([
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
-      ])
-      .subscribe(parts => {
+      ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        setRecordings(old => {
+        setRecordings((old) => {
           const updated = [...old];
           for (const r of updated) {
             if (r.name === event.message.recording.name) {
@@ -223,27 +257,29 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
-    addSubscription(context.target.authFailure().subscribe(() => {
-      setErrorMessage("Auth failure");
-    }));
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage('Auth failure');
+      })
+    );
   }, [context, context.target, setErrorMessage, addSubscription]);
 
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-      context.target.target(),
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
-    ])
-      .subscribe(parts => {
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
+      ]).subscribe((parts) => {
         const currentTarget = parts[0];
         const event = parts[1];
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        setRecordings(old => old.map(
-          o => o.name == event.message.recordingName 
-            ? { ...o, metadata: { labels: event.message.metadata.labels } } 
-            : o));
+        setRecordings((old) =>
+          old.map((o) =>
+            o.name == event.message.recordingName ? { ...o, metadata: { labels: event.message.metadata.labels } } : o
+          )
+        );
       })
     );
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
@@ -267,7 +303,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
-    const id = window.setInterval(() => refreshRecordingList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    const id = window.setInterval(
+      () => refreshRecordingList(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+    );
     return () => window.clearInterval(id);
   }, [refreshRecordingList, context, context.settings]);
 
@@ -276,14 +315,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
         handleRowCheck(false, r.id);
-        tasks.push(
-          context.api.archiveRecording(r.name).pipe(first())
-        );
+        tasks.push(context.api.archiveRecording(r.name).pipe(first()));
       }
     });
-    addSubscription(
-      forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error)
-    );
+    addSubscription(forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error));
   }, [filteredRecordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleStopRecordings = React.useCallback(() => {
@@ -292,15 +327,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       if (checkedIndices.includes(r.id)) {
         handleRowCheck(false, r.id);
         if (r.state === RecordingState.RUNNING || r.state === RecordingState.STARTING) {
-          tasks.push(
-            context.api.stopRecording(r.name).pipe(first())
-          );
+          tasks.push(context.api.stopRecording(r.name).pipe(first()));
         }
       }
     });
-    addSubscription(
-      forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
-    );
+    addSubscription(forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error));
   }, [filteredRecordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
 
   const handleDeleteRecordings = React.useCallback(() => {
@@ -308,59 +339,66 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
         context.reports.delete(r);
-        tasks.push(
-          context.api.deleteRecording(r.name).pipe(first())
-        );
+        tasks.push(context.api.deleteRecording(r.name).pipe(first()));
       }
     });
-    addSubscription(
-      forkJoin(tasks).subscribe((() => {} /* do nothing */), window.console.error)
-    );
+    addSubscription(forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error));
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(targetConnectURL, false));
   }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
 
-  const updateFilters = React.useCallback((target, {filterValue, filterKey, deleted = false, deleteOptions}) => {
-    if (deleted) {
-      if (deleteOptions && deleteOptions.all) {
-        dispatch(deleteCategoryFiltersIntent(target, filterKey, false));
+  const updateFilters = React.useCallback(
+    (target, { filterValue, filterKey, deleted = false, deleteOptions }) => {
+      if (deleted) {
+        if (deleteOptions && deleteOptions.all) {
+          dispatch(deleteCategoryFiltersIntent(target, filterKey, false));
+        } else {
+          dispatch(deleteFilterIntent(target, filterKey, filterValue, false));
+        }
       } else {
-        dispatch(deleteFilterIntent(target, filterKey, filterValue, false));
+        dispatch(addFilterIntent(target, filterKey, filterValue, false));
       }
-    } else {
-      dispatch(addFilterIntent(target, filterKey, filterValue, false));
-    }
-  }, [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]);
+    },
+    [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]
+  );
 
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
       return parseLabels(props.recording.metadata.labels);
     }, [props.recording.metadata.labels]);
 
-    const expandedRowId = React.useMemo(() => `active-table-row-${props.recording.name}-${props.recording.startTime}-exp`,
-     [props.recording.name, props.recording.startTime]);
+    const expandedRowId = React.useMemo(
+      () => `active-table-row-${props.recording.name}-${props.recording.startTime}-exp`,
+      [props.recording.name, props.recording.startTime]
+    );
 
     const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [toggleExpanded]);
 
     const isExpanded = React.useMemo(() => {
-      return expandedRows.includes(expandedRowId)
+      return expandedRows.includes(expandedRowId);
     }, [expandedRows, expandedRowId]);
 
-    const handleCheck = React.useCallback((checked) => {
-      handleRowCheck(checked, props.index);
-    }, [handleRowCheck, props.index]);
+    const handleCheck = React.useCallback(
+      (checked) => {
+        handleRowCheck(checked, props.index);
+      },
+      [handleRowCheck, props.index]
+    );
 
     const parentRow = React.useMemo(() => {
       const ISOTime = (props) => {
         const fmt = React.useMemo(() => new Date(props.timeStr).toISOString(), [props.timeStr]);
-        return (<span>{fmt}</span>);
+        return <span>{fmt}</span>;
       };
 
       const RecordingDuration = (props) => {
-        const str = React.useMemo(() => props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`, [props.duration]);
-        return (<span>{str}</span>);
+        const str = React.useMemo(
+          () => (props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`),
+          [props.duration]
+        );
+        return <span>{str}</span>;
       };
 
       return (
@@ -396,15 +434,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             {props.recording.state}
           </Td>
           <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
-            <LabelCell 
+            <LabelCell
               target={targetConnectURL}
-              clickableOptions={
-                {
-                  updateFilters: updateFilters,
-                  labelFilters: props.labelFilters
-                }
-              }
-              labels={parsedLabels} 
+              clickableOptions={{
+                updateFilters: updateFilters,
+                labelFilters: props.labelFilters,
+              }}
+              labels={parsedLabels}
             />
           </Td>
           <RecordingActions
@@ -434,23 +470,18 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       isExpanded,
       tableColumns,
       parsedLabels,
-      targetConnectURL
+      targetConnectURL,
     ]);
 
     const childRow = React.useMemo(() => {
       return (
         <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
-          <Td
-            key={`active-ex-expand-${props.index}`}
-            dataLabel={"Content Details"}
-            colSpan={tableColumns.length + 3}
-          >
+          <Td key={`active-ex-expand-${props.index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
             <ExpandableRowContent>
               <Text>Recording Options:</Text>
               <Text>
-                toDisk = { String(props.recording.toDisk) } &emsp;
-                maxAge = {props.recording.maxAge / 1000}s &emsp;
-                maxSize = { props.recording.maxSize }B
+                toDisk = {String(props.recording.toDisk)} &emsp; maxAge = {props.recording.maxAge / 1000}s &emsp;
+                maxSize = {props.recording.maxSize}B
               </Text>
               <br></br>
               <hr></hr>
@@ -461,7 +492,17 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
         </Tr>
       );
-    }, [props.recording, props.recording.name, props.duration, props.index, isExpanded, tableColumns, props.recording.toDisk, props.recording.maxAge, props.recording.maxSize]);
+    }, [
+      props.recording,
+      props.recording.name,
+      props.duration,
+      props.index,
+      isExpanded,
+      tableColumns,
+      props.recording.toDisk,
+      props.recording.maxAge,
+      props.recording.maxSize,
+    ]);
 
     return (
       <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
@@ -471,51 +512,77 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     );
   };
 
-  const toggleExpanded = React.useCallback((id: string) => {
-    setExpandedRows(expandedRows => {
-      const idx = expandedRows.indexOf(id);
-      return idx >= 0 ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)] : [...expandedRows, id]
-    });
-  }, [expandedRows, setExpandedRows]);
+  const toggleExpanded = React.useCallback(
+    (id: string) => {
+      setExpandedRows((expandedRows) => {
+        const idx = expandedRows.indexOf(id);
+        return idx >= 0
+          ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)]
+          : [...expandedRows, id];
+      });
+    },
+    [expandedRows, setExpandedRows]
+  );
 
-  const RecordingsToolbar = React.useMemo(() => (
-    <ActiveRecordingsToolbar
-      target={targetConnectURL}
-      checkedIndices={checkedIndices}
-      targetRecordingFilters={targetRecordingFilters}
-      recordings={recordings}
-      filteredRecordings={filteredRecordings}
-      updateFilters={updateFilters}
-      handleClearFilters={handleClearFilters}
-      archiveEnabled={props.archiveEnabled}
-      handleCreateRecording={handleCreateRecording}
-      handleArchiveRecordings={handleArchiveRecordings}
-      handleEditLabels={handleEditLabels}
-      handleStopRecordings={handleStopRecordings}
-      handleDeleteRecordings={handleDeleteRecordings}
-    />
-  ), [targetConnectURL, checkedIndices, targetRecordingFilters, recordings, filteredRecordings, updateFilters, handleClearFilters, props.archiveEnabled,
-    handleCreateRecording, handleArchiveRecordings, handleEditLabels, handleStopRecordings, handleDeleteRecordings,
-  ]);
+  const RecordingsToolbar = React.useMemo(
+    () => (
+      <ActiveRecordingsToolbar
+        target={targetConnectURL}
+        checkedIndices={checkedIndices}
+        targetRecordingFilters={targetRecordingFilters}
+        recordings={recordings}
+        filteredRecordings={filteredRecordings}
+        updateFilters={updateFilters}
+        handleClearFilters={handleClearFilters}
+        archiveEnabled={props.archiveEnabled}
+        handleCreateRecording={handleCreateRecording}
+        handleArchiveRecordings={handleArchiveRecordings}
+        handleEditLabels={handleEditLabels}
+        handleStopRecordings={handleStopRecordings}
+        handleDeleteRecordings={handleDeleteRecordings}
+      />
+    ),
+    [
+      targetConnectURL,
+      checkedIndices,
+      targetRecordingFilters,
+      recordings,
+      filteredRecordings,
+      updateFilters,
+      handleClearFilters,
+      props.archiveEnabled,
+      handleCreateRecording,
+      handleArchiveRecordings,
+      handleEditLabels,
+      handleStopRecordings,
+      handleDeleteRecordings,
+    ]
+  );
 
   const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Label} index={r.id}/>)
+    return filteredRecordings.map((r) => (
+      <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Label} index={r.id} />
+    ));
   }, [filteredRecordings, expandedRows, targetRecordingFilters, checkedIndices]);
 
-  const LabelsPanel = React.useMemo(() => (
-    <RecordingLabelsPanel
-      setShowPanel={setShowDetailsPanel}  
-      isTargetRecording={true}
-      checkedIndices={checkedIndices}
-    />
-  ), [checkedIndices, setShowDetailsPanel]);
+  const LabelsPanel = React.useMemo(
+    () => (
+      <RecordingLabelsPanel
+        setShowPanel={setShowDetailsPanel}
+        isTargetRecording={true}
+        checkedIndices={checkedIndices}
+      />
+    ),
+    [checkedIndices, setShowDetailsPanel]
+  );
 
   return (
-    <Drawer isExpanded={showDetailsPanel} isInline id={"active-recording-drawer"}>
+    <Drawer isExpanded={showDetailsPanel} isInline id={'active-recording-drawer'}>
       <DrawerContent
-        panelContent={{[PanelContent.LABELS]: LabelsPanel,}[panelContent]}
-        className='recordings-table-drawer-content'>
-        <DrawerContentBody hasPadding >
+        panelContent={{ [PanelContent.LABELS]: LabelsPanel }[panelContent]}
+        className="recordings-table-drawer-content"
+      >
+        <DrawerContentBody hasPadding>
           <RecordingsTable
             tableTitle="Active Flight Recordings"
             toolbar={RecordingsToolbar}
@@ -525,9 +592,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             isEmpty={!recordings.length}
             isEmptyFilterResult={!filteredRecordings.length}
             clearFilters={handleClearFilters}
-            isLoading ={isLoading}
+            isLoading={isLoading}
             isNestedTable={false}
-            errorMessage ={errorMessage}
+            errorMessage={errorMessage}
           >
             {recordingRows}
           </RecordingsTable>
@@ -538,19 +605,19 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 };
 
 export interface ActiveRecordingsToolbarProps {
-  target: string,
-  checkedIndices: number[],
-  targetRecordingFilters: RecordingFiltersCategories,
-  recordings: ActiveRecording[],
-  filteredRecordings: ActiveRecording[],
-  updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void,
-  handleClearFilters: () => void,
-  archiveEnabled: boolean,
-  handleCreateRecording: () => void,
-  handleArchiveRecordings: () => void,
-  handleEditLabels: () => void,
-  handleStopRecordings: () => void,
-  handleDeleteRecordings: () => void,
+  target: string;
+  checkedIndices: number[];
+  targetRecordingFilters: RecordingFiltersCategories;
+  recordings: ActiveRecording[];
+  filteredRecordings: ActiveRecording[];
+  updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
+  handleClearFilters: () => void;
+  archiveEnabled: boolean;
+  handleCreateRecording: () => void;
+  handleArchiveRecordings: () => void;
+  handleEditLabels: () => void;
+  handleStopRecordings: () => void;
+  handleDeleteRecordings: () => void;
 }
 
 const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarProps> = (props) => {
@@ -558,8 +625,9 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
   const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings), 
-  [context, context.settings, context.settings.deletionDialogsEnabledFor]);
+    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings),
+    [context, context.settings, context.settings.deletionDialogsEnabledFor]
+  );
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
@@ -584,57 +652,78 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
 
   const buttons = React.useMemo(() => {
     let arr = [
-      <Button key="create" variant="primary" onClick={props.handleCreateRecording}>Create</Button>
+      <Button key="create" variant="primary" onClick={props.handleCreateRecording}>
+        Create
+      </Button>,
     ];
     if (props.archiveEnabled) {
-      arr.push((
-        <Button key="archive" variant="secondary" onClick={props.handleArchiveRecordings} isDisabled={!props.checkedIndices.length}>Archive</Button>
-      ));
+      arr.push(
+        <Button
+          key="archive"
+          variant="secondary"
+          onClick={props.handleArchiveRecordings}
+          isDisabled={!props.checkedIndices.length}
+        >
+          Archive
+        </Button>
+      );
     }
     arr = [
       ...arr,
-      <Button key="edit labels" variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>Edit Labels</Button>,
-      <Button key="stop" variant="tertiary" onClick={props.handleStopRecordings} isDisabled={isStopDisabled}>Stop</Button>,
-      <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!props.checkedIndices.length}>Delete</Button>
-    ]
-    return <>
-      {
-        arr.map((btn, idx) => (
-          <ToolbarItem key={idx}>
-            { btn }
-          </ToolbarItem>
-        ))
-      }
-    </>;
-  }, [props.checkedIndices, 
-    props.handleCreateRecording, 
-    props.handleArchiveRecordings, 
-    props.handleEditLabels, 
-    props.handleStopRecordings, 
-    handleDeleteButton]);
+      <Button
+        key="edit labels"
+        variant="secondary"
+        onClick={props.handleEditLabels}
+        isDisabled={!props.checkedIndices.length}
+      >
+        Edit Labels
+      </Button>,
+      <Button key="stop" variant="tertiary" onClick={props.handleStopRecordings} isDisabled={isStopDisabled}>
+        Stop
+      </Button>,
+      <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!props.checkedIndices.length}>
+        Delete
+      </Button>,
+    ];
+    return (
+      <>
+        {arr.map((btn, idx) => (
+          <ToolbarItem key={idx}>{btn}</ToolbarItem>
+        ))}
+      </>
+    );
+  }, [
+    props.checkedIndices,
+    props.handleCreateRecording,
+    props.handleArchiveRecordings,
+    props.handleEditLabels,
+    props.handleStopRecordings,
+    handleDeleteButton,
+  ]);
 
   const deleteActiveWarningModal = React.useMemo(() => {
-    return <DeleteWarningModal 
-      warningType={DeleteWarningType.DeleteActiveRecordings}
-      visible={warningModalOpen}
-      onAccept={props.handleDeleteRecordings}
-      onClose={handleWarningModalClose}
-    />
+    return (
+      <DeleteWarningModal
+        warningType={DeleteWarningType.DeleteActiveRecordings}
+        visible={warningModalOpen}
+        onAccept={props.handleDeleteRecordings}
+        onClose={handleWarningModalClose}
+      />
+    );
   }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
 
   return (
     <Toolbar id="active-recordings-toolbar" clearAllFilters={props.handleClearFilters}>
       <ToolbarContent>
-        <RecordingFilters 
+        <RecordingFilters
           target={props.target}
-          isArchived={false} 
-          recordings={props.recordings} 
-          filters={props.targetRecordingFilters} 
-          updateFilters={props.updateFilters} />
-        <ToolbarGroup variant="button-group">
-          { buttons }
-        </ToolbarGroup>  
-        { deleteActiveWarningModal }
+          isArchived={false}
+          recordings={props.recordings}
+          filters={props.targetRecordingFilters}
+          updateFilters={props.updateFilters}
+        />
+        <ToolbarGroup variant="button-group">{buttons}</ToolbarGroup>
+        {deleteActiveWarningModal}
       </ToolbarContent>
     </Toolbar>
   );

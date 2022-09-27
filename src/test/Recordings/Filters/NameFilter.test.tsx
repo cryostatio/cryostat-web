@@ -63,15 +63,17 @@ const mockRecording: ActiveRecording = {
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
 const mockRecordingList = [mockRecording, mockAnotherRecording];
 
-const onNameInput = jest.fn((nameInput) => { /**Do nothing. Used for checking renders */});
+const onNameInput = jest.fn((nameInput) => {
+  /**Do nothing. Used for checking renders */
+});
 
-describe("<NameFilter />", () => {
+describe('<NameFilter />', () => {
   let emptyFilteredNames: string[];
   let filteredNames: string[];
 
   beforeEach(() => {
     emptyFilteredNames = [];
-    filteredNames = [ mockRecording.name ];
+    filteredNames = [mockRecording.name];
   });
 
   afterEach(cleanup);
@@ -86,17 +88,15 @@ describe("<NameFilter />", () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it ('display name selections when text input is clicked', async () => {
-    render(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames}/>
-    );
-    const nameInput = screen.getByLabelText("Filter by name...");
+  it('display name selections when text input is clicked', async () => {
+    render(<NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />);
+    const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
 
     userEvent.click(nameInput);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by name"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -107,17 +107,15 @@ describe("<NameFilter />", () => {
     });
   });
 
-  it ('display name selections when dropdown arrow is clicked', async () => {
-    render(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames}/>
-    );
-    const dropDownArrow = screen.getByRole("button", { name: "Options menu"});
+  it('display name selections when dropdown arrow is clicked', async () => {
+    render(<NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />);
+    const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
     userEvent.click(dropDownArrow);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by name"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -128,18 +126,16 @@ describe("<NameFilter />", () => {
     });
   });
 
-  it ('should close selection menu when toggled with dropdown arrow', async () => {
-    render(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames}/>
-    );
+  it('should close selection menu when toggled with dropdown arrow', async () => {
+    render(<NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />);
 
-    const dropDownArrow = screen.getByRole("button", { name: "Options menu"});
+    const dropDownArrow = screen.getByRole('button', { name: 'Options menu' });
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
     userEvent.click(dropDownArrow);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by name"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -154,18 +150,16 @@ describe("<NameFilter />", () => {
     expect(selectMenu).not.toBeVisible();
   });
 
-  it ('should close selection menu when toggled with text input', async () => {
-    render(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames}/>
-    );
+  it('should close selection menu when toggled with text input', async () => {
+    render(<NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={emptyFilteredNames} />);
 
-    const nameInput = screen.getByLabelText("Filter by name...");
+    const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
 
     userEvent.click(nameInput);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by name"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -180,38 +174,34 @@ describe("<NameFilter />", () => {
     expect(selectMenu).not.toBeVisible();
   });
 
-  it ('should not display selected names', async () => {
-    render(
-      <NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={filteredNames}/>
-    );
-    const nameInput = screen.getByLabelText("Filter by name...");
+  it('should not display selected names', async () => {
+    render(<NameFilter recordings={mockRecordingList} onSubmit={onNameInput} filteredNames={filteredNames} />);
+    const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
 
     userEvent.click(nameInput);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by name"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
-    
+
     const notToShowName = within(selectMenu).queryByText(mockRecording.name);
     expect(notToShowName).not.toBeInTheDocument();
   });
 
-  it ('should select a name when a name option is clicked', async () => {
+  it('should select a name when a name option is clicked', async () => {
     const submitNameInput = jest.fn((nameInput) => emptyFilteredNames.push(nameInput));
 
-    render(
-      <NameFilter recordings={mockRecordingList} onSubmit={submitNameInput} filteredNames={emptyFilteredNames}/>
-    );
+    render(<NameFilter recordings={mockRecordingList} onSubmit={submitNameInput} filteredNames={emptyFilteredNames} />);
 
-    const nameInput = screen.getByLabelText("Filter by name...");
+    const nameInput = screen.getByLabelText('Filter by name...');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
 
     userEvent.click(nameInput);
 
-    const selectMenu = await screen.findByRole("listbox", {name: "Filter by name"})
+    const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
     expect(selectMenu).toBeVisible();
 
@@ -221,12 +211,12 @@ describe("<NameFilter />", () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(screen.getByText("someRecording"));
+    userEvent.click(screen.getByText('someRecording'));
 
     // NameFilter's parent rebuilds to close menu by default.
 
     expect(submitNameInput).toBeCalledTimes(1);
-    expect(submitNameInput).toBeCalledWith("someRecording");
-    expect(emptyFilteredNames).toStrictEqual([ "someRecording" ]);
+    expect(submitNameInput).toBeCalledWith('someRecording');
+    expect(emptyFilteredNames).toStrictEqual(['someRecording']);
   });
 });

@@ -36,15 +36,7 @@
  * SOFTWARE.
  */
 
-import {
-  Button,
-  ButtonVariant,
-  DatePicker,
-  Flex,
-  FlexItem,
-  Text,
-  TimePicker,
-} from '@patternfly/react-core';
+import { Button, ButtonVariant, DatePicker, Flex, FlexItem, Text, TimePicker } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -53,7 +45,7 @@ export interface DateTimePickerProps {
 }
 
 export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
-  const [selectedDate, setSelectedDate] = React.useState<Date|undefined>();
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
   const [selectedHour, setSelectedHour] = React.useState(0);
   const [selectedMinute, setSelectedMinute] = React.useState(0);
   const [isTimeOpen, setIsTimeOpen] = React.useState(false);
@@ -73,9 +65,12 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
     [setSelectedHour, setSelectedMinute]
   );
 
-  const onTimeToggle = React.useCallback((opened) => {
-    setIsTimeOpen(opened);
-  }, [setIsTimeOpen]);
+  const onTimeToggle = React.useCallback(
+    (opened) => {
+      setIsTimeOpen(opened);
+    },
+    [setIsTimeOpen]
+  );
 
   const handleSubmit = React.useCallback(() => {
     selectedDate!.setUTCHours(selectedHour, selectedMinute);
@@ -91,10 +86,11 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
     <Flex>
       <FlexItem>
         <DatePicker
-            appendTo={elementToAppend}
-            onChange={onDateChange}
-            aria-label="Date Picker"
-            placeholder="YYYY-MM-DD" />
+          appendTo={elementToAppend}
+          onChange={onDateChange}
+          aria-label="Date Picker"
+          placeholder="YYYY-MM-DD"
+        />
         <TimePicker
           isOpen={isTimeOpen}
           setIsOpen={onTimeToggle}
@@ -102,14 +98,19 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
           aria-label="Time Picker"
           className="time-picker"
           menuAppendTo={elementToAppend}
-          onChange={onTimeChange} 
-          />
+          onChange={onTimeChange}
+        />
       </FlexItem>
       <FlexItem>
         <Text>UTC</Text>
       </FlexItem>
       <FlexItem>
-        <Button variant={ButtonVariant.control} aria-label="Search For Date" isDisabled={!selectedDate} onClick={handleSubmit}>
+        <Button
+          variant={ButtonVariant.control}
+          aria-label="Search For Date"
+          isDisabled={!selectedDate}
+          onClick={handleSubmit}
+        >
           <SearchIcon />
         </Button>
       </FlexItem>

@@ -45,7 +45,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { HelpIcon } from '@patternfly/react-icons';
 import { Rule } from './Rules';
 import { from, mergeMap, Observable, of } from 'rxjs';
-import { catchError, first} from 'rxjs/operators';
+import { catchError, first } from 'rxjs/operators';
 
 export interface RuleUploadModalProps {
   visible: boolean;
@@ -53,12 +53,10 @@ export interface RuleUploadModalProps {
 }
 
 export const parseRule = (file: File): Observable<Rule> => {
-  return from(
-    file.text().then(JSON.parse)
-  );
+  return from(file.text().then(JSON.parse));
 };
 
-export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = props => {
+export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
@@ -78,12 +76,15 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
     setAbort(new AbortController());
   }, [setUploadFile, setFilename, setUploading, setRejected, setShowCancelPrompt, setAbort]);
 
-  const handleFileChange = React.useCallback((file, filename) => {
-    setRejected(false);
-    setUploadFile(file);
-    setFilename(filename);
-    setShowCancelPrompt(false);
-  }, [setRejected, setUploadFile, setFilename, setShowCancelPrompt]);
+  const handleFileChange = React.useCallback(
+    (file, filename) => {
+      setRejected(false);
+      setUploadFile(file);
+      setFilename(filename);
+      setShowCancelPrompt(false);
+    },
+    [setRejected, setUploadFile, setFilename, setShowCancelPrompt]
+  );
 
   const handleReject = React.useCallback(() => {
     setRejected(true);
@@ -103,26 +104,26 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
     if (!uploadFile) {
       notifications.warning('Attempted to submit automated rule without a file selected');
       return;
-    } 
+    }
     setUploading(true);
     addSubscription(
       parseRule(uploadFile)
-      .pipe(  
-        first(),
-        mergeMap(rule => context.api.createRule(rule)),
-      catchError((err, _) => {
-        if (err instanceof SyntaxError) {
-          notifications.danger('Automated rule upload failed', err.message);
-        }
-        return of(false);
-      })
-      )
-      .subscribe(success => {
-        setUploading(false);
-        if (success) {
-          handleClose();
-        }
-      })
+        .pipe(
+          first(),
+          mergeMap((rule) => context.api.createRule(rule)),
+          catchError((err, _) => {
+            if (err instanceof SyntaxError) {
+              notifications.danger('Automated rule upload failed', err.message);
+            }
+            return of(false);
+          })
+        )
+        .subscribe((success) => {
+          setUploading(false);
+          if (success) {
+            handleClose();
+          }
+        })
     );
   }, [context.api, notifications, setUploading, uploadFile, handleClose]);
 
@@ -132,64 +133,66 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = pr
     props.onClose();
   }, [abort, reset]);
 
-  return (<>
-    <Prompt
-      when={uploading}
-      message="Are you sure you wish to cancel the file upload?"
-    />
-    <Modal
-      isOpen={props.visible}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={handleClose}
-      title="Upload Automatic Rules"
-      description="Select an Automatic Rules definition file to upload. File must be in valid JSON format."
-      help = {
-        <Popover 
-          headerContent={<div>What's this?</div>}
-          bodyContent={<div>
-            Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM applications. 
-            Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application recording buffer, 
-            and how frequently Cryostat should copy the application recording buffer into Cryostat's own archived storage.
-          </div>}>
-          <Button variant="plain" aria-label="Help">
+  return (
+    <>
+      <Prompt when={uploading} message="Are you sure you wish to cancel the file upload?" />
+      <Modal
+        isOpen={props.visible}
+        variant={ModalVariant.large}
+        showClose={true}
+        onClose={handleClose}
+        title="Upload Automatic Rules"
+        description="Select an Automatic Rules definition file to upload. File must be in valid JSON format."
+        help={
+          <Popover
+            headerContent={<div>What's this?</div>}
+            bodyContent={
+              <div>
+                Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
+                target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
+                much data should be kept in the application recording buffer, and how frequently Cryostat should copy
+                the application recording buffer into Cryostat's own archived storage.
+              </div>
+            }
+          >
+            <Button variant="plain" aria-label="Help">
               <HelpIcon />
-          </Button>
-        </Popover>
-      }
+            </Button>
+          </Popover>
+        }
       >
-      <CancelUploadModal
-        visible={showCancelPrompt}
-        title="Upload in Progress"
-        message="Are you sure you wish to cancel the file upload?"
-        onYes={handleAbort}
-        onNo={() => setShowCancelPrompt(false)}
-      />
-      <Form>
-        <FormGroup
-          label="JSON File"
-          isRequired
-          fieldId="file"
-          validated={rejected ? 'error' : 'default'}
-        >
-          <FileUpload
-            id="file-upload"
-            value={uploadFile}
-            filename={filename}
-            onChange={handleFileChange}
-            isLoading={uploading}
-            validated={rejected ? 'error' : 'default'}
-            dropzoneProps={{
-              accept: '.json',
-              onDropRejected: handleReject
-            }}
-          />
-        </FormGroup>
-        <ActionGroup>
-          <Button variant="primary" onClick={handleSubmit} isDisabled={!filename}>Submit</Button>
-          <Button variant="link" onClick={handleClose}>Cancel</Button>
-        </ActionGroup>
-      </Form>
-    </Modal>
-  </>);
+        <CancelUploadModal
+          visible={showCancelPrompt}
+          title="Upload in Progress"
+          message="Are you sure you wish to cancel the file upload?"
+          onYes={handleAbort}
+          onNo={() => setShowCancelPrompt(false)}
+        />
+        <Form>
+          <FormGroup label="JSON File" isRequired fieldId="file" validated={rejected ? 'error' : 'default'}>
+            <FileUpload
+              id="file-upload"
+              value={uploadFile}
+              filename={filename}
+              onChange={handleFileChange}
+              isLoading={uploading}
+              validated={rejected ? 'error' : 'default'}
+              dropzoneProps={{
+                accept: '.json',
+                onDropRejected: handleReject,
+              }}
+            />
+          </FormGroup>
+          <ActionGroup>
+            <Button variant="primary" onClick={handleSubmit} isDisabled={!filename}>
+              Submit
+            </Button>
+            <Button variant="link" onClick={handleClose}>
+              Cancel
+            </Button>
+          </ActionGroup>
+        </Form>
+      </Modal>
+    </>
+  );
 };

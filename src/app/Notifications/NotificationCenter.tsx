@@ -36,11 +36,23 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Dropdown, DropdownItem, DropdownPosition, KebabToggle,
-  NotificationDrawer, NotificationDrawerBody, NotificationDrawerGroup, NotificationDrawerGroupList, NotificationDrawerHeader,
-  NotificationDrawerList, NotificationDrawerListItem,
-  NotificationDrawerListItemBody, NotificationDrawerListItemHeader, Text,
-  TextVariants } from '@patternfly/react-core';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownPosition,
+  KebabToggle,
+  NotificationDrawer,
+  NotificationDrawerBody,
+  NotificationDrawerGroup,
+  NotificationDrawerGroupList,
+  NotificationDrawerHeader,
+  NotificationDrawerList,
+  NotificationDrawerListItem,
+  NotificationDrawerListItemBody,
+  NotificationDrawerListItemHeader,
+  Text,
+  TextVariants,
+} from '@patternfly/react-core';
 import { Notification, NotificationsContext } from './Notifications';
 import { combineLatest } from 'rxjs';
 
@@ -55,63 +67,68 @@ export interface NotificationDrawerCategory {
   unreadCount: number;
 }
 
-export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = props => {
+export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = (props) => {
   const context = React.useContext(NotificationsContext);
   const [totalUnreadNotificationsCount, setTotalUnreadNotificationsCount] = React.useState(0);
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
   const PROBLEMS_CATEGORY_IDX = 2;
   const [drawerCategories, setDrawerCategories] = React.useState([
-    {title: "Completed Actions", isExpanded: true, notifications: [] as Notification[], unreadCount: 0},
-    {title: "Cryostat Status", isExpanded: false, notifications: [] as Notification[], unreadCount: 0},
-    {title: "Problems", isExpanded: false, notifications: [] as Notification[], unreadCount: 0}
+    { title: 'Completed Actions', isExpanded: true, notifications: [] as Notification[], unreadCount: 0 },
+    { title: 'Cryostat Status', isExpanded: false, notifications: [] as Notification[], unreadCount: 0 },
+    { title: 'Problems', isExpanded: false, notifications: [] as Notification[], unreadCount: 0 },
   ] as NotificationDrawerCategory[]);
 
   const countUnreadNotifications = (notifications: Notification[]) => {
-    return notifications.filter(n => !n.read).length;
-  }
+    return notifications.filter((n) => !n.read).length;
+  };
 
   React.useEffect(() => {
-    const sub = combineLatest([context.actionsNotifications(), context.cryostatStatusNotifications(), context.problemsNotifications()])
-    .subscribe(notificationLists => {
-        setDrawerCategories(drawerCategories => {
-
-          return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
-            category.notifications = notificationLists[idx];
-            category.unreadCount = countUnreadNotifications(notificationLists[idx]);
-            return category;
+    const sub = combineLatest([
+      context.actionsNotifications(),
+      context.cryostatStatusNotifications(),
+      context.problemsNotifications(),
+    ]).subscribe((notificationLists) => {
+      setDrawerCategories((drawerCategories) => {
+        return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
+          category.notifications = notificationLists[idx];
+          category.unreadCount = countUnreadNotifications(notificationLists[idx]);
+          return category;
         });
       });
     });
     return () => sub.unsubscribe();
-  },[context, context.notifications, setDrawerCategories]);
+  }, [context, context.notifications, setDrawerCategories]);
 
   React.useEffect(() => {
-    const sub = context.unreadNotifications().subscribe(s => {
-      setTotalUnreadNotificationsCount(s.length)});
+    const sub = context.unreadNotifications().subscribe((s) => {
+      setTotalUnreadNotificationsCount(s.length);
+    });
     return () => sub.unsubscribe();
   }, [context, context.unreadNotifications, setTotalUnreadNotificationsCount]);
 
   const handleToggleDropdown = React.useCallback(() => {
-    setHeaderDropdownOpen(v => !v);
+    setHeaderDropdownOpen((v) => !v);
   }, [setHeaderDropdownOpen]);
 
-  const handleToggleExpandCategory = React.useCallback((categoryIdx) => {
-    setDrawerCategories(drawerCategories => {
-
-      return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
-        category.isExpanded = (idx === categoryIdx) ? !category.isExpanded : false;
-        return category;
+  const handleToggleExpandCategory = React.useCallback(
+    (categoryIdx) => {
+      setDrawerCategories((drawerCategories) => {
+        return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
+          category.isExpanded = idx === categoryIdx ? !category.isExpanded : false;
+          return category;
+        });
       });
-    });
-  }, [setDrawerCategories]);
+    },
+    [setDrawerCategories]
+  );
 
   // Expands the Problems tab when unread errors/warnings are present
   React.useEffect(() => {
-    if(drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount === 0) {
+    if (drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount === 0) {
       return;
     }
 
-    setDrawerCategories(drawerCategories => {
+    setDrawerCategories((drawerCategories) => {
       return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
         category.isExpanded = idx === PROBLEMS_CATEGORY_IDX;
         return category;
@@ -127,9 +144,12 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     context.clearAll();
   }, [context, context.clearAll]);
 
-  const markRead = React.useCallback((key?: string) => {
-    context.setRead(key);
-  }, [context, context.setRead]);
+  const markRead = React.useCallback(
+    (key?: string) => {
+      context.setRead(key);
+    },
+    [context, context.setRead]
+  );
 
   const timestampToDateTimeString = (timestamp?: number): string => {
     if (!timestamp) {
@@ -137,7 +157,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     }
     const date = new Date(timestamp);
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-  }
+  };
 
   const drawerDropdownItems = [
     <DropdownItem key="markAllRead" onClick={handleMarkAllRead} component="button">
@@ -148,45 +168,44 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     </DropdownItem>,
   ];
 
-  return (<>
-    <NotificationDrawer>
-      <NotificationDrawerHeader count={totalUnreadNotificationsCount} onClose={props.onClose} >
-        <Dropdown
-          isPlain
-          onSelect={handleToggleDropdown}
-          toggle={(<KebabToggle onToggle={handleToggleDropdown} />)}
-          isOpen={isHeaderDropdownOpen}
-          position={DropdownPosition.right}
-          dropdownItems={drawerDropdownItems}
-        />
-      </NotificationDrawerHeader>
-      <NotificationDrawerBody>
-      <NotificationDrawerGroupList>
-        { drawerCategories.map(({title, isExpanded, notifications, unreadCount}, idx) => (
-          <NotificationDrawerGroup
-            title={title}
-            isExpanded={isExpanded}
-            count={unreadCount}
-            onExpand={() => handleToggleExpandCategory(idx)}
-            key={idx}
-          >
-          <NotificationDrawerList isHidden={!isExpanded}>
-                {
-                  notifications.map(({ key, title, message, variant, timestamp, read }) => (
-                    <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read} >
+  return (
+    <>
+      <NotificationDrawer>
+        <NotificationDrawerHeader count={totalUnreadNotificationsCount} onClose={props.onClose}>
+          <Dropdown
+            isPlain
+            onSelect={handleToggleDropdown}
+            toggle={<KebabToggle onToggle={handleToggleDropdown} />}
+            isOpen={isHeaderDropdownOpen}
+            position={DropdownPosition.right}
+            dropdownItems={drawerDropdownItems}
+          />
+        </NotificationDrawerHeader>
+        <NotificationDrawerBody>
+          <NotificationDrawerGroupList>
+            {drawerCategories.map(({ title, isExpanded, notifications, unreadCount }, idx) => (
+              <NotificationDrawerGroup
+                title={title}
+                isExpanded={isExpanded}
+                count={unreadCount}
+                onExpand={() => handleToggleExpandCategory(idx)}
+                key={idx}
+              >
+                <NotificationDrawerList isHidden={!isExpanded}>
+                  {notifications.map(({ key, title, message, variant, timestamp, read }) => (
+                    <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read}>
                       <NotificationDrawerListItemHeader title={title} variant={variant} />
-                      <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)} >
+                      <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)}>
                         <Text component={TextVariants.p}>{message}</Text>
                       </NotificationDrawerListItemBody>
                     </NotificationDrawerListItem>
-                  ))
-                }
-          </NotificationDrawerList>
-          </NotificationDrawerGroup>
-        ))}
-      </NotificationDrawerGroupList>
-      </NotificationDrawerBody>
-    </NotificationDrawer>
-  </>);
-
+                  ))}
+                </NotificationDrawerList>
+              </NotificationDrawerGroup>
+            ))}
+          </NotificationDrawerGroupList>
+        </NotificationDrawerBody>
+      </NotificationDrawer>
+    </>
+  );
 };

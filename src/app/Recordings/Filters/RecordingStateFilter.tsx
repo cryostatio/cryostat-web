@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 
-
 import React from 'react';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { RecordingState } from '@app/Shared/Services/Api.service';
@@ -53,8 +52,10 @@ export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterP
     (_, selection) => {
       setIsOpen(false);
       props.onSelectToggle(selection);
-    }, [setIsOpen, props.onSelectToggle]);
-  
+    },
+    [setIsOpen, props.onSelectToggle]
+  );
+
   return (
     <Select
       variant={SelectVariant.checkbox}
@@ -62,13 +63,12 @@ export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterP
       onSelect={onSelect}
       selections={props.filteredStates}
       isOpen={isOpen}
-      aria-label='Filter by state'
-      placeholderText="Filter by state">
-      {
-        Object.values(RecordingState).map((rs) => (
-          <SelectOption aria-label={`${rs} State`} key={rs} value={rs} />
-        ))
-      }
-  </Select>
+      aria-label="Filter by state"
+      placeholderText="Filter by state"
+    >
+      {Object.values(RecordingState).map((rs) => (
+        <SelectOption aria-label={`${rs} State`} key={rs} value={rs} />
+      ))}
+    </Select>
   );
 };

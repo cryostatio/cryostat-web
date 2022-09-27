@@ -47,44 +47,70 @@ const Component = () => {
   const [state, setState] = React.useState(context.settings.deletionDialogsEnabled());
   const [expanded, setExpanded] = React.useState(false);
 
-  const handleCheckboxChange = React.useCallback((checked, element) => {
-    state.set(DeleteWarningType[element.target.id], checked);
-    context.settings.setDeletionDialogsEnabled(state);
-    setState(new Map(state));
-  }, [state, setState, context.settings]);
+  const handleCheckboxChange = React.useCallback(
+    (checked, element) => {
+      state.set(DeleteWarningType[element.target.id], checked);
+      context.settings.setDeletionDialogsEnabled(state);
+      setState(new Map(state));
+    },
+    [state, setState, context.settings]
+  );
 
-  const handleCheckAll = React.useCallback(checked => {
-    const newState = new Map();
-    Array.from(state.entries()).forEach(v => newState.set(v[0], checked));
-    context.settings.setDeletionDialogsEnabled(newState);
-    setState(newState);
-  }, [state, setState]);
+  const handleCheckAll = React.useCallback(
+    (checked) => {
+      const newState = new Map();
+      Array.from(state.entries()).forEach((v) => newState.set(v[0], checked));
+      context.settings.setDeletionDialogsEnabled(newState);
+      setState(newState);
+    },
+    [state, setState]
+  );
 
   const allChecked = React.useMemo(() => {
-    return Array.from(state.entries()).map(e => e[1]).reduce((a, b) => a && b);
+    return Array.from(state.entries())
+      .map((e) => e[1])
+      .reduce((a, b) => a && b);
   }, [state]);
 
   const switches = React.useMemo(() => {
-    return Array.from(state.entries(), ([key, value]) => <StackItem key={key}><Switch id={key} label={getFromWarningMap(key)?.label || key.toString()} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
+    return Array.from(state.entries(), ([key, value]) => (
+      <StackItem key={key}>
+        <Switch
+          id={key}
+          label={getFromWarningMap(key)?.label || key.toString()}
+          isChecked={value}
+          onChange={handleCheckboxChange}
+        />
+      </StackItem>
+    ));
   }, [state]);
 
-  return (<>
-    <Stack hasGutter>
-      <StackItem key='all-deletion-warnings'><Switch id='all-deletion-warnings' label='All Deletion Warnings' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
-      <Divider />
-      <ExpandableSection
-        toggleText={expanded ? 'Show less' : 'Show more'}
-        onToggle={setExpanded}
-        isExpanded={expanded}
-      >
-        { switches }
-      </ExpandableSection>
-    </Stack>
-  </>);
-}
+  return (
+    <>
+      <Stack hasGutter>
+        <StackItem key="all-deletion-warnings">
+          <Switch
+            id="all-deletion-warnings"
+            label="All Deletion Warnings"
+            isChecked={allChecked}
+            onChange={handleCheckAll}
+          />
+        </StackItem>
+        <Divider />
+        <ExpandableSection
+          toggleText={expanded ? 'Show less' : 'Show more'}
+          onToggle={setExpanded}
+          isExpanded={expanded}
+        >
+          {switches}
+        </ExpandableSection>
+      </Stack>
+    </>
+  );
+};
 
 export const DeletionDialogControl: UserSetting = {
   title: 'Show Deletion Dialogs',
   description: 'Enable or disable deletion dialogs by deletion type.',
   content: Component,
-}
+};

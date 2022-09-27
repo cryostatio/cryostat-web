@@ -36,9 +36,33 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Card, CardBody, EmptyState, EmptyStateIcon, Title, Toolbar, ToolbarContent, ToolbarItem, ToolbarGroup, Button } from '@patternfly/react-core';
+import {
+  Card,
+  CardBody,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
+  Toolbar,
+  ToolbarContent,
+  ToolbarItem,
+  ToolbarGroup,
+  Button,
+} from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
-import { SortByDirection, Table, TableBody, TableHeader, TableVariant, ICell, ISortBy, info, sortable, IRowData, IExtraData, IAction } from '@patternfly/react-table';
+import {
+  SortByDirection,
+  Table,
+  TableBody,
+  TableHeader,
+  TableVariant,
+  ICell,
+  ISortBy,
+  info,
+  sortable,
+  IRowData,
+  IExtraData,
+  IAction,
+} from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -79,63 +103,69 @@ export const Rules = () => {
   const tableColumns = [
     {
       title: 'Name',
-      transforms: [ sortable ],
+      transforms: [sortable],
     },
-    { title: 'Description', },
+    { title: 'Description' },
     {
       title: 'Match Expression',
       transforms: [
         info({
-          tooltip: 'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.'
-        })
+          tooltip:
+            'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
+        }),
       ],
     },
     {
       title: 'Event Specifier',
       transforms: [
         info({
-          tooltip: 'The name and location of the Event Template applied by this rule.'
-        })
+          tooltip: 'The name and location of the Event Template applied by this rule.',
+        }),
       ],
     },
     {
       title: 'Archival Period',
       transforms: [
         info({
-          tooltip: 'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.'
-        })
+          tooltip:
+            'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.',
+        }),
       ],
     },
     {
       title: 'Initial Delay',
       transforms: [
         info({
-          tooltip: 'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.'
-        })
+          tooltip:
+            'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.',
+        }),
       ],
     },
     {
       title: 'Preserved Archives',
       transforms: [
         info({
-          tooltip: 'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.'
-        })
+          tooltip:
+            'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.',
+        }),
       ],
     },
     {
       title: 'Maximum Age',
       transforms: [
         info({
-          tooltip: 'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.'
-        })
+          tooltip:
+            'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.',
+        }),
       ],
     },
     {
       title: 'Maximum Size',
       transforms: [
         info({
-          tooltip: 'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.'
-        })
+          tooltip:
+            'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.',
+        }),
       ],
     },
   ] as ICell[];
@@ -156,29 +186,37 @@ export const Rules = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RuleCreated)
-        .subscribe(v => setRules(old => old.concat(v.message)))
+      context.notificationChannel
+        .messages(NotificationCategory.RuleCreated)
+        .subscribe((v) => setRules((old) => old.concat(v.message)))
     );
   }, [addSubscription, context, context.notificationChannel, setRules]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RuleDeleted)
-        .subscribe(v => setRules(old => old.filter(o => o.name != v.message.name)))
-    )
+      context.notificationChannel
+        .messages(NotificationCategory.RuleDeleted)
+        .subscribe((v) => setRules((old) => old.filter((o) => o.name != v.message.name)))
+    );
   }, [addSubscription, context, context.notificationChannel, setRules]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
-    const id = window.setInterval(() => refreshRules(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    const id = window.setInterval(
+      () => refreshRules(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+    );
     return () => window.clearInterval(id);
   }, []);
 
-  const handleSort = React.useCallback((event, index, direction) => {
-    setSortBy({ index, direction });
-  }, [setSortBy]);
+  const handleSort = React.useCallback(
+    (event, index, direction) => {
+      setSortBy({ index, direction });
+    },
+    [setSortBy]
+  );
 
   const handleCreateRule = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
@@ -194,24 +232,40 @@ export const Rules = () => {
     if (typeof index === 'number') {
       const keys = ['name'];
       const key = keys[index];
-      sorted = rules
-        .sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+      sorted = rules.sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
       sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
     }
-    return sorted.map((r: Rule) => ([ r.name, r.description, r.matchExpression, r.eventSpecifier, r.archivalPeriodSeconds, r.initialDelaySeconds, r.preservedArchives, r.maxAgeSeconds, r.maxSizeBytes ]));
+    return sorted.map((r: Rule) => [
+      r.name,
+      r.description,
+      r.matchExpression,
+      r.eventSpecifier,
+      r.archivalPeriodSeconds,
+      r.initialDelaySeconds,
+      r.preservedArchives,
+      r.maxAgeSeconds,
+      r.maxSizeBytes,
+    ]);
   }, [rules, sortBy]);
 
-  const handleDelete = React.useCallback((rowData: IRowData, clean: boolean = true) => {
-    addSubscription(
-      context.api.deleteRule(rowData[0], clean)
-      .pipe(first())
-      .subscribe(() => {} /* do nothing - notification will handle updating state */)
-    );
-  }, [addSubscription, context, context.api]);
+  const handleDelete = React.useCallback(
+    (rowData: IRowData, clean: boolean = true) => {
+      addSubscription(
+        context.api
+          .deleteRule(rowData[0], clean)
+          .pipe(first())
+          .subscribe(() => {} /* do nothing - notification will handle updating state */)
+      );
+    },
+    [addSubscription, context, context.api]
+  );
 
-  const handleDownload = React.useCallback((rowData: IRowData) => {
-    context.api.downloadRule(rowData[0]);
-  }, [context, context.api]);
+  const handleDownload = React.useCallback(
+    (rowData: IRowData) => {
+      context.api.downloadRule(rowData[0]);
+    },
+    [context, context.api]
+  );
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData): IAction[] => {
     if (typeof extraData.rowIndex == 'undefined') {
@@ -220,7 +274,7 @@ export const Rules = () => {
     return [
       {
         title: 'Download',
-        onClick: (event, rowId, rowData) => handleDownload(rowData)
+        onClick: (event, rowId, rowData) => handleDownload(rowData),
       },
       {
         isSeparator: true,
@@ -230,19 +284,21 @@ export const Rules = () => {
         onClick: (event, rowId, rowData) => {
           setRowDeleteData(rowData);
           handleDeleteButton(rowData);
-        }
-      }
-    ]
+        },
+      },
+    ];
   };
 
-  const handleDeleteButton = React.useCallback((rowData) => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules)) {
-      setWarningModalOpen(true);
-    }
-    else {
-      handleDelete(rowData, cleanRuleEnabled)
-    }
-  }, [context, context.settings, setWarningModalOpen, handleDelete, cleanRuleEnabled]);
+  const handleDeleteButton = React.useCallback(
+    (rowData) => {
+      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules)) {
+        setWarningModalOpen(true);
+      } else {
+        handleDelete(rowData, cleanRuleEnabled);
+      }
+    },
+    [context, context.settings, setWarningModalOpen, handleDelete, cleanRuleEnabled]
+  );
 
   const handleUploadModalClose = React.useCallback(() => {
     setIsUploadModalOpen(false);
@@ -253,28 +309,33 @@ export const Rules = () => {
     if (isLoading) {
       return <LoadingView />;
     } else if (rules.length === 0) {
-      return (<>
-        <EmptyState>
-          <EmptyStateIcon icon={SearchIcon}/>
-          <Title headingLevel="h4" size="lg">
-            No Automated Rules
-          </Title>
-        </EmptyState>
-      </>);
+      return (
+        <>
+          <EmptyState>
+            <EmptyStateIcon icon={SearchIcon} />
+            <Title headingLevel="h4" size="lg">
+              No Automated Rules
+            </Title>
+          </EmptyState>
+        </>
+      );
     } else {
-      return (<>
-        <Table aria-label="Automated Rules table"
-          variant={TableVariant.compact}
-          cells={tableColumns}
-          rows={displayRules}
-          actionResolver={actionResolver}
-          sortBy={sortBy}
-          onSort={handleSort}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
-      </>);
+      return (
+        <>
+          <Table
+            aria-label="Automated Rules table"
+            variant={TableVariant.compact}
+            cells={tableColumns}
+            rows={displayRules}
+            actionResolver={actionResolver}
+            sortBy={sortBy}
+            onSort={handleSort}
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        </>
+      );
     }
   };
 
@@ -286,36 +347,39 @@ export const Rules = () => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  return (<>
-    <BreadcrumbPage pageTitle='Automated Rules' >
-      <Card>
-        <CardBody>
-          <Toolbar id="event-templates-toolbar">
-            <ToolbarContent>
-              <ToolbarGroup variant="icon-button-group">
-                <ToolbarItem>
-                  <Button key="create" variant="primary" onClick={handleCreateRule}>Create</Button>
-                  {' '}
-                  <Button key="upload" variant="secondary" aria-label='Upload' onClick={handleUploadRule}>
-                    <UploadIcon />
-                  </Button>
-                </ToolbarItem>
-              </ToolbarGroup>
-              <RuleDeleteWarningModal
-                warningType={DeleteWarningType.DeleteAutomatedRules}
-                rule={rowDeleteData[0]}
-                visible={warningModalOpen}
-                onAccept={handleWarningModalAccept}
-                onClose={handleWarningModalClose}
-                clean={cleanRuleEnabled}
-                setClean={setCleanRuleEnabled}
-              />
-            </ToolbarContent>
-          </Toolbar>
-          {viewContent()}
-        </CardBody>
-      </Card>
-    </BreadcrumbPage>
-    <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
-  </>);
+  return (
+    <>
+      <BreadcrumbPage pageTitle="Automated Rules">
+        <Card>
+          <CardBody>
+            <Toolbar id="event-templates-toolbar">
+              <ToolbarContent>
+                <ToolbarGroup variant="icon-button-group">
+                  <ToolbarItem>
+                    <Button key="create" variant="primary" onClick={handleCreateRule}>
+                      Create
+                    </Button>{' '}
+                    <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleUploadRule}>
+                      <UploadIcon />
+                    </Button>
+                  </ToolbarItem>
+                </ToolbarGroup>
+                <RuleDeleteWarningModal
+                  warningType={DeleteWarningType.DeleteAutomatedRules}
+                  rule={rowDeleteData[0]}
+                  visible={warningModalOpen}
+                  onAccept={handleWarningModalAccept}
+                  onClose={handleWarningModalClose}
+                  clean={cleanRuleEnabled}
+                  setClean={setCleanRuleEnabled}
+                />
+              </ToolbarContent>
+            </Toolbar>
+            {viewContent()}
+          </CardBody>
+        </Card>
+      </BreadcrumbPage>
+      <RuleUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose}></RuleUploadModal>
+    </>
+  );
 };

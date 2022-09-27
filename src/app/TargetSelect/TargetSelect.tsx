@@ -40,7 +40,19 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, Card, CardActions, CardBody, CardHeader, CardHeaderMain, Select, SelectOption, SelectVariant, Text, TextVariants } from '@patternfly/react-core';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardBody,
+  CardHeader,
+  CardHeaderMain,
+  Select,
+  SelectOption,
+  SelectVariant,
+  Text,
+  TextVariants,
+} from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
@@ -49,12 +61,11 @@ import { CreateTargetModal } from './CreateTargetModal';
 import _ from 'lodash';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
-export const CUSTOM_TARGETS_REALM = "Custom Targets";
-export interface TargetSelectProps {
-}
+export const CUSTOM_TARGETS_REALM = 'Custom Targets';
+export interface TargetSelectProps {}
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
-  const TARGET_KEY = "target";
+  const TARGET_KEY = 'target';
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
   const [selected, setSelected] = React.useState(NO_TARGET);
@@ -63,10 +74,13 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [isLoading, setLoading] = React.useState(false);
   const [isModalOpen, setModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
-  
-  const setCachedTargetSelection = React.useCallback((target) => {
-    localStorage.setItem(TARGET_KEY, JSON.stringify(target));
-  }, [localStorage]);
+
+  const setCachedTargetSelection = React.useCallback(
+    (target) => {
+      localStorage.setItem(TARGET_KEY, JSON.stringify(target));
+    },
+    [localStorage]
+  );
 
   const removeCachedTargetSelection = React.useCallback(() => {
     localStorage.removeItem(TARGET_KEY);
@@ -77,25 +91,28 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     return cachedTarget ? JSON.parse(cachedTarget) : NO_TARGET;
   }, [localStorage]);
 
-  const selectTargetFromCache = React.useCallback((targets) => {
-    if(targets.length === 0) {
-      return;
-    }
+  const selectTargetFromCache = React.useCallback(
+    (targets) => {
+      if (targets.length === 0) {
+        return;
+      }
 
-    try {
-      const cachedTarget = getCachedTargetSelection();
-      const cachedTargetExists = targets.some(target => _.isEqual(cachedTarget, target));
+      try {
+        const cachedTarget = getCachedTargetSelection();
+        const cachedTargetExists = targets.some((target) => _.isEqual(cachedTarget, target));
 
-      if(cachedTargetExists) {
-        context.target.setTarget(cachedTarget);
-      } else {
+        if (cachedTargetExists) {
+          context.target.setTarget(cachedTarget);
+        } else {
+          removeCachedTargetSelection();
+        }
+      } catch (error) {
+        context.target.setTarget(NO_TARGET);
         removeCachedTargetSelection();
       }
-    } catch (error) {
-      context.target.setTarget(NO_TARGET);
-      removeCachedTargetSelection();
-    }
-  }, [context, context.target, getCachedTargetSelection, removeCachedTargetSelection]);
+    },
+    [context, context.target, getCachedTargetSelection, removeCachedTargetSelection]
+  );
 
   React.useEffect(() => {
     addSubscription(
@@ -108,64 +125,76 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
-        .subscribe(v => {
-          const evt: TargetDiscoveryEvent = v.message.event;
-          if (evt.kind === 'LOST') {
-            const target: Target = {
-              connectUrl: evt.serviceRef.connectUrl,
-              alias: evt.serviceRef.alias,
-            }
-            context.target.target().pipe(first()).subscribe((currentTarget) => {
+      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery).subscribe((v) => {
+        const evt: TargetDiscoveryEvent = v.message.event;
+        if (evt.kind === 'LOST') {
+          const target: Target = {
+            connectUrl: evt.serviceRef.connectUrl,
+            alias: evt.serviceRef.alias,
+          };
+          context.target
+            .target()
+            .pipe(first())
+            .subscribe((currentTarget) => {
               if (currentTarget.connectUrl === target.connectUrl && currentTarget.alias === target.alias) {
                 selectNone();
               }
-            })
-          }
-        })
+            });
+        }
+      })
     );
   }, [addSubscription, context, context.notificationChannel, context.target]);
 
   const refreshTargetList = React.useCallback(() => {
     setLoading(true);
-    addSubscription(
-      context.targets.queryForTargets().subscribe(() => setLoading(false))
-    );
+    addSubscription(context.targets.queryForTargets().subscribe(() => setLoading(false)));
   }, [addSubscription, context, context.targets, setLoading]);
 
-  const onSelect = React.useCallback((evt, selection, isPlaceholder) => {
-    if (isPlaceholder) {
-      context.target.setTarget(NO_TARGET);
-      removeCachedTargetSelection();
-    } else {
-      if (selection != selected) {
-        try {
-          context.target.setTarget(selection);
-          setCachedTargetSelection(selection);
-        } catch (error) {
-          notifications.danger("Cannot set target", (error as any).message);
-          context.target.setTarget(NO_TARGET);
+  const onSelect = React.useCallback(
+    (evt, selection, isPlaceholder) => {
+      if (isPlaceholder) {
+        context.target.setTarget(NO_TARGET);
+        removeCachedTargetSelection();
+      } else {
+        if (selection != selected) {
+          try {
+            context.target.setTarget(selection);
+            setCachedTargetSelection(selection);
+          } catch (error) {
+            notifications.danger('Cannot set target', (error as any).message);
+            context.target.setTarget(NO_TARGET);
+          }
         }
       }
-    }
-    setExpanded(false);
-  }, [context, context.target, selected, notifications, setExpanded, removeCachedTargetSelection, setCachedTargetSelection]);
+      setExpanded(false);
+    },
+    [
+      context,
+      context.target,
+      selected,
+      notifications,
+      setExpanded,
+      removeCachedTargetSelection,
+      setCachedTargetSelection,
+    ]
+  );
 
   const selectNone = React.useCallback(() => {
     onSelect(undefined, undefined, true);
   }, [onSelect]);
 
   React.useLayoutEffect(() => {
-    addSubscription(
-      context.target.target().subscribe(setSelected)
-    );
+    addSubscription(context.target.target().subscribe(setSelected));
   }, [addSubscription, context, context.target, setSelected]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
-    const id = window.setInterval(() => refreshTargetList(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    const id = window.setInterval(
+      () => refreshTargetList(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+    );
     return () => window.clearInterval(id);
   }, [context, context.target, context.settings, refreshTargetList]);
 
@@ -173,49 +202,59 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     setModalOpen(true);
   }, [setModalOpen]);
 
-  const createTarget = React.useCallback((target: Target) => {
-    setLoading(true);
-    addSubscription(
-      context.api.createTarget(target)
-        .pipe(first(), catchError(() => of(false)))
-        .subscribe(success => {
-          setLoading(false);
-          setModalOpen(false);
-          if (!success) {
-            notifications.danger('Target Creation Failed');
-          }
-        })
-    );
-  }, [addSubscription, context, context.api, notifications, setLoading, setModalOpen]);
+  const createTarget = React.useCallback(
+    (target: Target) => {
+      setLoading(true);
+      addSubscription(
+        context.api
+          .createTarget(target)
+          .pipe(
+            first(),
+            catchError(() => of(false))
+          )
+          .subscribe((success) => {
+            setLoading(false);
+            setModalOpen(false);
+            if (!success) {
+              notifications.danger('Target Creation Failed');
+            }
+          })
+      );
+    },
+    [addSubscription, context, context.api, notifications, setLoading, setModalOpen]
+  );
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
     addSubscription(
-      context.api.deleteTarget(selected)
-      .pipe(first())
-      .subscribe(() => {
-        selectNone();
-        setLoading(false);
-      }, () => {
-        setLoading(false);
-        let id: string;
-        if (selected.alias === selected.connectUrl) {
-          id = selected.alias;
-        } else {
-          id = `${selected.alias} [${selected.connectUrl}]`
-        }
-        notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
-      })
+      context.api
+        .deleteTarget(selected)
+        .pipe(first())
+        .subscribe(
+          () => {
+            selectNone();
+            setLoading(false);
+          },
+          () => {
+            setLoading(false);
+            let id: string;
+            if (selected.alias === selected.connectUrl) {
+              id = selected.alias;
+            } else {
+              id = `${selected.alias} [${selected.connectUrl}]`;
+            }
+            notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
+          }
+        )
     );
   }, [addSubscription, context, context.api, notifications, selected, setLoading, selectNone]);
 
-  return (<>
+  return (
+    <>
       <Card>
         <CardHeader>
           <CardHeaderMain>
-            <Text component={TextVariants.h4}>
-              Target JVM
-            </Text>
+            <Text component={TextVariants.h4}>Target JVM</Text>
           </CardHeaderMain>
           <CardActions>
             <Button
@@ -227,7 +266,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             />
             <Button
               aria-label="Delete target"
-              isDisabled={isLoading || (selected == NO_TARGET) || (selected.annotations?.cryostat['REALM'] !== CUSTOM_TARGETS_REALM)}
+              isDisabled={
+                isLoading || selected == NO_TARGET || selected.annotations?.cryostat['REALM'] !== CUSTOM_TARGETS_REALM
+              }
               onClick={deleteTarget}
               variant="control"
               icon={<TrashIcon />}
@@ -252,25 +293,26 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             isOpen={expanded}
             aria-label="Select Input"
           >
-          {
-            ([<SelectOption key='placeholder' value='Select Target...' isPlaceholder={true} itemCount={targets.length} />])
-              .concat(
-                targets.map((t: Target) => (
-                  (t.alias == t.connectUrl) || !t.alias ?
-                    <SelectOption
-                      key={t.connectUrl}
-                      value={t}
-                      isPlaceholder={false}
-                    >{`${t.connectUrl}`}</SelectOption>
-                  :
-                    <SelectOption
-                      key={t.connectUrl}
-                      value={t}
-                      isPlaceholder={false}
-                    >{`${t.alias} (${t.connectUrl})`}</SelectOption>
-                ))
-            )
-          }
+            {[
+              <SelectOption
+                key="placeholder"
+                value="Select Target..."
+                isPlaceholder={true}
+                itemCount={targets.length}
+              />,
+            ].concat(
+              targets.map((t: Target) =>
+                t.alias == t.connectUrl || !t.alias ? (
+                  <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>{`${t.connectUrl}`}</SelectOption>
+                ) : (
+                  <SelectOption
+                    key={t.connectUrl}
+                    value={t}
+                    isPlaceholder={false}
+                  >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+                )
+              )
+            )}
           </Select>
         </CardBody>
       </Card>
@@ -279,9 +321,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         onSubmit={(target) => createTarget(target)}
         onDismiss={() => setModalOpen(false)}
       ></CreateTargetModal>
-  </>);
-
-}
+    </>
+  );
+};
 
 interface TargetDiscoveryEvent {
   kind: 'LOST' | 'FOUND';

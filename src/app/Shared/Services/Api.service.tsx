@@ -35,7 +35,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay, Subject, BehaviorSubject } from 'rxjs';
+import {
+  from,
+  Observable,
+  ObservableInput,
+  of,
+  ReplaySubject,
+  forkJoin,
+  throwError,
+  EMPTY,
+  shareReplay,
+  Subject,
+  BehaviorSubject,
+} from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { NO_TARGET, Target, TargetService } from './Target.service';
@@ -63,10 +75,9 @@ export const isHttpError = (toCheck: any): toCheck is HttpError => {
     return false;
   }
   return (toCheck as HttpError).httpResponse !== undefined;
-}
+};
 
 export class ApiService {
-
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
   private readonly grafanaDatasourceUrlSubject = new ReplaySubject<string>(1);
@@ -77,92 +88,95 @@ export class ApiService {
     private readonly notifications: Notifications,
     private readonly login: LoginService
   ) {
-
     // show recording archives when recordings available
-    login.getSessionState().pipe(
-    concatMap((sessionState) => sessionState === SessionState.USER_SESSION ? this.doGet('recordings') : EMPTY)
-    )
-    .subscribe({
-      next: () => {
-        this.archiveEnabled.next(true);
-      },
-      error: () => {
-        this.archiveEnabled.next(false);
-      }
-    });
-
-    const getDatasourceURL = fromFetch(`${this.login.authority}/api/v1/grafana_datasource_url`)
-    .pipe(concatMap(resp => from(resp.json())));
-    const getDashboardURL = fromFetch(`${this.login.authority}/api/v1/grafana_dashboard_url`)
-    .pipe(concatMap(resp => from(resp.json())));
-    const health = fromFetch(`${this.login.authority}/health`)
+    login
+      .getSessionState()
       .pipe(
-        tap((resp: Response) => {
-          if (!resp.ok) {
-            window.console.error(resp);
-            this.notifications.danger('API /health request failed', resp.statusText);
-          }
-        }),
-        concatMap((resp: Response) => from(resp.json())),
-        shareReplay(),
-      );
-    health
-      .subscribe((jsonResp: any) => {
-        this.cryostatVersionSubject.next(jsonResp.cryostatVersion);
+        concatMap((sessionState) => (sessionState === SessionState.USER_SESSION ? this.doGet('recordings') : EMPTY))
+      )
+      .subscribe({
+        next: () => {
+          this.archiveEnabled.next(true);
+        },
+        error: () => {
+          this.archiveEnabled.next(false);
+        },
       });
+
+    const getDatasourceURL = fromFetch(`${this.login.authority}/api/v1/grafana_datasource_url`).pipe(
+      concatMap((resp) => from(resp.json()))
+    );
+    const getDashboardURL = fromFetch(`${this.login.authority}/api/v1/grafana_dashboard_url`).pipe(
+      concatMap((resp) => from(resp.json()))
+    );
+    const health = fromFetch(`${this.login.authority}/health`).pipe(
+      tap((resp: Response) => {
+        if (!resp.ok) {
+          window.console.error(resp);
+          this.notifications.danger('API /health request failed', resp.statusText);
+        }
+      }),
+      concatMap((resp: Response) => from(resp.json())),
+      shareReplay()
+    );
+    health.subscribe((jsonResp: any) => {
+      this.cryostatVersionSubject.next(jsonResp.cryostatVersion);
+    });
     health
-      .pipe(concatMap((jsonResp: any) => {
-        const toFetch: Observable<any>[] = [];
-        const unconfigured: string[] = [];
-        const unavailable: string[] = [];
-        // if datasource or dashboard are not configured, display a warning
-        // if either is configured but not available, display an error
-        // if both configured and available then display nothing and just retrieve the URLs
-        if (jsonResp.datasourceConfigured) {
-          if (jsonResp.datasourceAvailable) {
-            toFetch.push(getDatasourceURL);
+      .pipe(
+        concatMap((jsonResp: any) => {
+          const toFetch: Observable<any>[] = [];
+          const unconfigured: string[] = [];
+          const unavailable: string[] = [];
+          // if datasource or dashboard are not configured, display a warning
+          // if either is configured but not available, display an error
+          // if both configured and available then display nothing and just retrieve the URLs
+          if (jsonResp.datasourceConfigured) {
+            if (jsonResp.datasourceAvailable) {
+              toFetch.push(getDatasourceURL);
+            } else {
+              unavailable.push('datasource URL');
+            }
           } else {
-            unavailable.push('datasource URL');
+            unconfigured.push('datasource URL');
           }
-        } else {
-          unconfigured.push('datasource URL');
-        }
-        if (jsonResp.dashboardConfigured) {
-          if (jsonResp.dashboardAvailable) {
-            toFetch.push(getDashboardURL);
+          if (jsonResp.dashboardConfigured) {
+            if (jsonResp.dashboardAvailable) {
+              toFetch.push(getDashboardURL);
+            } else {
+              unavailable.push('dashboard URL');
+            }
           } else {
-            unavailable.push('dashboard URL');
+            unconfigured.push('dashboard URL');
           }
-        } else {
-          unconfigured.push('dashboard URL');
-        }
-        if (unconfigured.length > 0) {
-          return throwError(() => ({
-            state: 'not configured',
-            message: unconfigured.join(', ') + ' unconfigured',
-          }));
-        }
-        if (unavailable.length > 0) {
-          return throwError(() => ({
-            state: 'unavailable',
-            message: unavailable.join(', ') + ' unavailable',
-          }));
-        }
-        return forkJoin(toFetch);
-      }))
+          if (unconfigured.length > 0) {
+            return throwError(() => ({
+              state: 'not configured',
+              message: unconfigured.join(', ') + ' unconfigured',
+            }));
+          }
+          if (unavailable.length > 0) {
+            return throwError(() => ({
+              state: 'unavailable',
+              message: unavailable.join(', ') + ' unavailable',
+            }));
+          }
+          return forkJoin(toFetch);
+        })
+      )
       .subscribe({
         next: (parts: any) => {
           this.grafanaDatasourceUrlSubject.next(parts[0].grafanaDatasourceUrl);
           this.grafanaDashboardUrlSubject.next(parts[1].grafanaDashboardUrl);
         },
-        error: err => {
+        error: (err) => {
           window.console.error(err);
           if (err.state === 'unavailable') {
             this.notifications.danger(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
           } else {
             this.notifications.warning(`Grafana ${err.state}`, err.message, NotificationCategory.GrafanaConfiguration);
           }
-        }
+        },
       });
   }
 
@@ -172,27 +186,21 @@ export class ApiService {
     if (!!target.alias && !!target.alias.trim()) {
       form.append('alias', target.alias);
     }
-    return this.sendRequest(
-      'v2', `targets`,
-      {
-        method: 'POST',
-        body: form,
-      }
-    ).pipe(
-      map(resp => resp.ok),
-      first(),
+    return this.sendRequest('v2', `targets`, {
+      method: 'POST',
+      body: form,
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
     );
   }
 
   deleteTarget(target: Target): Observable<boolean> {
-    return this.sendRequest(
-      'v2', `targets/${encodeURIComponent(target.connectUrl)}`,
-      {
-        method: 'DELETE',
-      }
-    ).pipe(
-      map(resp => resp.ok),
-      first(),
+    return this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
     );
   }
 
@@ -200,22 +208,22 @@ export class ApiService {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
     return this.sendRequest('v2', 'rules', {
-        method: 'POST',
-        body: JSON.stringify(rule),
-        headers,
-      }).pipe(
-        map(resp => resp.ok),
-        first(),
-      );
+      method: 'POST',
+      body: JSON.stringify(rule),
+      headers,
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
+    );
   }
 
-  deleteRule(name: string, clean: boolean=true): Observable<boolean> {
+  deleteRule(name: string, clean: boolean = true): Observable<boolean> {
     return this.sendRequest('v2', `rules/${name}?clean=${clean}`, {
-        method: 'DELETE',
-      }).pipe(
-        map(resp => resp.ok),
-        first(),
-      );
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
+    );
   }
 
   createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {
@@ -225,7 +233,7 @@ export class ApiService {
     if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
       form.append('duration', String(recordingAttributes.duration));
     }
-    if (!!recordingAttributes.options){
+    if (!!recordingAttributes.options) {
       if (recordingAttributes.options.toDisk != null) {
         form.append('toDisk', String(recordingAttributes.options.toDisk));
       }
@@ -240,30 +248,38 @@ export class ApiService {
       form.append('metadata', JSON.stringify(recordingAttributes.metadata));
     }
 
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
-        method: 'POST',
-        body: form,
-      }).pipe(
-        map(resp => resp.ok),
-        first(),
-      )));
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings`, {
+          method: 'POST',
+          body: form,
+        }).pipe(
+          map((resp) => resp.ok),
+          first()
+        )
+      )
+    );
   }
 
   createSnapshot(): Observable<boolean> {
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
-        method: 'POST',
-      }).pipe(
-        tap(resp => {
-          if (resp.status == 202) {
-            this.notifications.warning('Snapshot Failed to Create', 'The resultant recording was unreadable for some reason, likely due to a lack of Active, non-Snapshot source recordings to take event data from');
-          }
-        }),
-        map(resp => resp.status == 200),
-        first(),
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest('v1', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
+          method: 'POST',
+        }).pipe(
+          tap((resp) => {
+            if (resp.status == 202) {
+              this.notifications.warning(
+                'Snapshot Failed to Create',
+                'The resultant recording was unreadable for some reason, likely due to a lack of Active, non-Snapshot source recordings to take event data from'
+              );
+            }
+          }),
+          map((resp) => resp.status == 200),
+          first()
+        )
       )
-    ));
+    );
   }
 
   isArchiveEnabled(): Observable<boolean> {
@@ -271,102 +287,117 @@ export class ApiService {
   }
 
   archiveRecording(recordingName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest(
-        'v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
-        {
-          method: 'PATCH',
-          body: 'SAVE',
-        }
-      ).pipe(
-        map(resp => resp.ok),
-        first(),
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'v1',
+          `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          {
+            method: 'PATCH',
+            body: 'SAVE',
+          }
+        ).pipe(
+          map((resp) => resp.ok),
+          first()
+        )
       )
-    ));
+    );
   }
 
   stopRecording(recordingName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest(
-        'v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
-        {
-          method: 'PATCH',
-          body: 'STOP',
-        }
-      ).pipe(
-        map(resp => resp.ok),
-        first(),
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'v1',
+          `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          {
+            method: 'PATCH',
+            body: 'STOP',
+          }
+        ).pipe(
+          map((resp) => resp.ok),
+          first()
+        )
       )
-    ));
+    );
   }
 
   deleteRecording(recordingName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest(
-        'v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
-        {
-          method: 'DELETE',
-        }
-      ).pipe(
-        map(resp => resp.ok),
-        first(),
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'v1',
+          `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}`,
+          {
+            method: 'DELETE',
+          }
+        ).pipe(
+          map((resp) => resp.ok),
+          first()
+        )
       )
-    ));
+    );
   }
 
   deleteArchivedRecording(connectUrl: string, recordingName: string): Observable<boolean> {
     return this.sendRequest(
-      'beta', `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`, 
+      'beta',
+      `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}`,
       {
-        method: 'DELETE'
+        method: 'DELETE',
       }
     ).pipe(
-      map(resp => resp.ok),
-      first(),
+      map((resp) => resp.ok),
+      first()
     );
   }
 
   uploadActiveRecordingToGrafana(recordingName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest(
-        'v1', `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/upload`,
-        {
-          method: 'POST',
-        }
-      ).pipe(
-        map(resp => resp.ok),
-        first()
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'v1',
+          `targets/${encodeURIComponent(target.connectUrl)}/recordings/${encodeURIComponent(recordingName)}/upload`,
+          {
+            method: 'POST',
+          }
+        ).pipe(
+          map((resp) => resp.ok),
+          first()
+        )
       )
-    ));
+    );
   }
 
   uploadArchivedRecordingToGrafana(sourceTarget: Observable<Target>, recordingName: string): Observable<boolean> {
-    return sourceTarget.pipe(concatMap(target => 
-      this.sendRequest(
-        'beta', `recordings/${encodeURIComponent(target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
-        {
-          method: 'POST',
-        }
-      ).pipe(
-        map(resp => resp.ok),
-        first()
+    return sourceTarget.pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'beta',
+          `recordings/${encodeURIComponent(target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
+          {
+            method: 'POST',
+          }
+        ).pipe(
+          map((resp) => resp.ok),
+          first()
+        )
       )
-    ));
+    );
   }
 
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
     return this.sendRequest('v1', `templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
       body: null,
-    })
-    .pipe(
-      map(response => {
+    }).pipe(
+      map((response) => {
         if (!response.ok) {
           throw response.statusText;
         }
         return true;
       }),
-      catchError((): ObservableInput<boolean> => of(false)),
+      catchError((): ObservableInput<boolean> => of(false))
     );
   }
 
@@ -376,15 +407,14 @@ export class ApiService {
     return this.sendRequest('v1', `templates`, {
       method: 'POST',
       body,
-    })
-    .pipe(
-      map(response => {
+    }).pipe(
+      map((response) => {
         if (!response.ok) {
           throw response.statusText;
         }
         return true;
       }),
-      catchError((): ObservableInput<boolean> => of(false)),
+      catchError((): ObservableInput<boolean> => of(false))
     );
   }
 
@@ -401,13 +431,21 @@ export class ApiService {
   }
 
   doGet<T>(path: string, apiVersion: ApiVersion = 'v1'): Observable<T> {
-    return this.sendRequest(apiVersion, path, { method: 'GET' }).pipe(map(resp => resp.json()), concatMap(from), first());
+    return this.sendRequest(apiVersion, path, { method: 'GET' }).pipe(
+      map((resp) => resp.json()),
+      concatMap(from),
+      first()
+    );
   }
 
   graphql<T>(query: string): Observable<T> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/graphql');
-    return this.sendRequest('v2.2', 'graphql', { method: 'POST', body: query, headers }).pipe(map(resp => resp.json()), concatMap(from), first());
+    return this.sendRequest('v2.2', 'graphql', { method: 'POST', body: query, headers }).pipe(
+      map((resp) => resp.json()),
+      concatMap(from),
+      first()
+    );
   }
 
   downloadReport(recording: ArchivedRecording): void {
@@ -422,14 +460,11 @@ export class ApiService {
       body,
     })
       .pipe(
-        concatMap(resp => resp.json()),
+        concatMap((resp) => resp.json()),
         map((response: AssetJwtResponse) => response.data.result.resourceUrl)
-      ).subscribe(resourceUrl => {
-        this.downloadFile(
-          resourceUrl,
-          `${recording.name}.report.html`,
-          false
-          );
+      )
+      .subscribe((resourceUrl) => {
+        this.downloadFile(resourceUrl, `${recording.name}.report.html`, false);
       });
   }
 
@@ -445,42 +480,45 @@ export class ApiService {
       body,
     })
       .pipe(
-        concatMap(resp => resp.json()),
+        concatMap((resp) => resp.json()),
         map((response: AssetJwtResponse) => response.data.result.resourceUrl)
-      ).subscribe(resourceUrl => {
+      )
+      .subscribe((resourceUrl) => {
+        this.downloadFile(resourceUrl, recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr'));
         this.downloadFile(
-          resourceUrl,
-          recording.name + (recording.name.endsWith('.jfr') ? '' : '.jfr')
-        );
-        this.downloadFile(
-          createBlobURL(JSON.stringify(recording.metadata), "application/json"), // Blob for metadata
-          recording.name.replace(/\.jfr$/, "") + ".metadata.json"
+          createBlobURL(JSON.stringify(recording.metadata), 'application/json'), // Blob for metadata
+          recording.name.replace(/\.jfr$/, '') + '.metadata.json'
         );
       });
   }
 
   downloadTemplate(template: EventTemplate): void {
-    this.target.target()
-    .pipe(first(), map(target =>
-      `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(target.connectUrl)}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
-    ))
-    .subscribe(resource => {
-      const body = new window.FormData();
-      body.append('resource', resource);
-      this.sendRequest('v2.1', 'auth/token', {
-        method: 'POST',
-        body,
-      })
-        .pipe(
-          concatMap(resp => resp.json()),
-          map((response: AssetJwtResponse) => response.data.result.resourceUrl),
-        ).subscribe(resourceUrl => {
-          this.downloadFile(
-            resourceUrl,
-            `${template.name}.jfc`
-            );
-        });
-    });
+    this.target
+      .target()
+      .pipe(
+        first(),
+        map(
+          (target) =>
+            `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(
+              target.connectUrl
+            )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
+        )
+      )
+      .subscribe((resource) => {
+        const body = new window.FormData();
+        body.append('resource', resource);
+        this.sendRequest('v2.1', 'auth/token', {
+          method: 'POST',
+          body,
+        })
+          .pipe(
+            concatMap((resp) => resp.json()),
+            map((response: AssetJwtResponse) => response.data.result.resourceUrl)
+          )
+          .subscribe((resourceUrl) => {
+            this.downloadFile(resourceUrl, `${template.name}.jfc`);
+          });
+      });
   }
 
   downloadRule(name: string): void {
@@ -489,14 +527,11 @@ export class ApiService {
         first(),
         map((resp) => resp.data.result)
       )
-      .subscribe(rule => {
+      .subscribe((rule) => {
         const filename = `${rule.name}.json`;
         const file = new File([JSON.stringify(rule)], filename);
-        const resourceUrl = URL.createObjectURL(file)
-        this.downloadFile(
-          resourceUrl,
-          filename
-        );
+        const resourceUrl = URL.createObjectURL(file);
+        this.downloadFile(resourceUrl, filename);
         setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
       });
   }
@@ -504,7 +539,7 @@ export class ApiService {
   uploadRecording(file: File, signal?: AbortSignal): Observable<string> {
     window.onbeforeunload = () => true;
     return this.login.getHeaders().pipe(
-      concatMap(headers => {
+      concatMap((headers) => {
         const body = new window.FormData();
         body.append('recording', file);
         return fromFetch(`${this.login.authority}/api/v1/recordings`, {
@@ -516,20 +551,22 @@ export class ApiService {
           signal,
         });
       }),
-      concatMap(v => {
+      concatMap((v) => {
         if (v.ok) {
           return from(v.text());
         }
         throw from(v.text());
       }),
       tap({
-        next: () => window.onbeforeunload = null,
+        next: () => (window.onbeforeunload = null),
         error: (err) => {
           window.onbeforeunload = null;
-          err.subscribe(msg => this.notifications.danger('Upload Failed', msg, NotificationCategory.ArchivedRecordingCreated));
+          err.subscribe((msg) =>
+            this.notifications.danger('Upload Failed', msg, NotificationCategory.ArchivedRecordingCreated)
+          );
         },
-        complete: () => window.onbeforeunload = null,
-      }),
+        complete: () => (window.onbeforeunload = null),
+      })
     );
   }
 
@@ -539,24 +576,23 @@ export class ApiService {
     return this.sendRequest('v2', 'certificates', {
       method: 'POST',
       body,
-    })
-    .pipe(
-      concatMap(resp => {
+    }).pipe(
+      concatMap((resp) => {
         if (resp.ok) {
-          this.notifications.success("Successfully uploaded certificate");
+          this.notifications.success('Successfully uploaded certificate');
           return from(resp.text());
         }
         throw resp.statusText;
-      }),
+      })
     );
   }
 
   postRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
-    return this.target.target()
-    .pipe(
-      filter(target => target !== NO_TARGET),
+    return this.target.target().pipe(
+      filter((target) => target !== NO_TARGET),
       first(),
-      concatMap(target => this.graphql<any>(`
+      concatMap((target) =>
+        this.graphql<any>(`
         query {
           targetNodes(filter: { name: "${target.connectUrl}" }) {
             recordings {
@@ -573,16 +609,16 @@ export class ApiService {
           }
         }`)
       ),
-      map(v => v.data.targetNodes[0].recordings.archived as ArchivedRecording[]),
-    )
+      map((v) => v.data.targetNodes[0].recordings.archived as ArchivedRecording[])
+    );
   }
 
   postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ActiveRecording[]> {
-    return this.target.target()
-    .pipe(
-      filter(target => target !== NO_TARGET),
+    return this.target.target().pipe(
+      filter((target) => target !== NO_TARGET),
       first(),
-      concatMap(target => this.graphql<any>(`
+      concatMap((target) =>
+        this.graphql<any>(`
         query {
           targetNodes(filter: { name: "${target.connectUrl}" }) {
             recordings {
@@ -599,8 +635,8 @@ export class ApiService {
           }
         }`)
       ),
-      map(v => v.data.targetNodes[0].recordings.active as ActiveRecording[]),
-    )
+      map((v) => v.data.targetNodes[0].recordings.active as ActiveRecording[])
+    );
   }
 
   postCredentials(matchExpression: string, username: string, password: string): Observable<boolean> {
@@ -609,53 +645,41 @@ export class ApiService {
     body.append('username', username);
     body.append('password', password);
 
-    return this.sendRequest(
-      'v2.2', 'credentials',
-      {
-        method: 'POST',
-        body,
-      }
-    ).pipe(
-      map(resp => resp.ok),
+    return this.sendRequest('v2.2', 'credentials', {
+      method: 'POST',
+      body,
+    }).pipe(
+      map((resp) => resp.ok),
       first()
     );
   }
 
-  getCredential(id: number) : Observable<MatchedCredential> {
-    return this.sendRequest(
-      'v2.2', `credentials/${id}`,
-      {
-        method: 'GET'
-      }
-    ).pipe(
-      concatMap(resp => resp.json()),
+  getCredential(id: number): Observable<MatchedCredential> {
+    return this.sendRequest('v2.2', `credentials/${id}`, {
+      method: 'GET',
+    }).pipe(
+      concatMap((resp) => resp.json()),
       map((response: CredentialResponse) => response.data.result),
       first()
     );
   }
 
-  getCredentials() : Observable<StoredCredential[]> {
-    return this.sendRequest(
-      'v2.2', `credentials`,
-      {
-        method: 'GET'
-      }
-    ).pipe(
-      concatMap(resp => resp.json()),
+  getCredentials(): Observable<StoredCredential[]> {
+    return this.sendRequest('v2.2', `credentials`, {
+      method: 'GET',
+    }).pipe(
+      concatMap((resp) => resp.json()),
       map((response: CredentialsResponse) => response.data.result),
       first()
     );
   }
 
   deleteCredentials(id: number): Observable<boolean> {
-    return this.sendRequest(
-      'v2.2', `credentials/${id}`,
-      {
-        method: 'DELETE'
-      }
-    ).pipe(
-      map(resp => resp.ok),
-      first(),
+    return this.sendRequest('v2.2', `credentials/${id}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
     );
   }
 
@@ -707,14 +731,12 @@ export class ApiService {
         const jmxAuthScheme = error.httpResponse.headers.get('X-JMX-Authenticate');
         if (jmxAuthScheme === AuthMethod.BASIC) {
           this.target.setAuthFailure();
-          return this.target.authRetry().pipe(
-            mergeMap(() => retry())
-          );
+          return this.target.authRetry().pipe(mergeMap(() => retry()));
         }
       } else if (error.httpResponse.status === 502) {
         this.target.setSslFailure();
       } else {
-        error.httpResponse.text().then(detail => {
+        error.httpResponse.text().then((detail) => {
           this.notifications.danger(`Request failed (${error.httpResponse.status} ${error.message})`, detail);
         });
       }
@@ -727,7 +749,6 @@ export class ApiService {
   private stringifyRecordingLabels(labels: RecordingLabel[]): string {
     return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
   }
-
 }
 
 export interface ApiV2Response {
@@ -742,20 +763,20 @@ interface AssetJwtResponse extends ApiV2Response {
   data: {
     result: {
       resourceUrl: string;
-    }
-  }
+    };
+  };
 }
 
 interface CredentialResponse extends ApiV2Response {
   data: {
     result: MatchedCredential;
-  }
+  };
 }
 
 interface CredentialsResponse extends ApiV2Response {
   data: {
     result: StoredCredential[];
-  }
+  };
 }
 
 export interface ArchivedRecording {
@@ -785,7 +806,7 @@ export enum RecordingState {
 
 export const isActiveRecording = (toCheck: ArchivedRecording): toCheck is ActiveRecording => {
   return (toCheck as ActiveRecording).state !== undefined;
-}
+};
 
 export interface EventTemplate {
   name: string;
@@ -822,7 +843,6 @@ export interface MatchedCredential {
   matchExpression: string;
   targets: Target[];
 }
-
 
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"

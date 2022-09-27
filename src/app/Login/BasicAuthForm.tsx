@@ -50,50 +50,63 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
   const [rememberMe, setRememberMe] = React.useState(true);
 
   React.useEffect(() => {
-    const sub = context.login.getToken().pipe(map(Base64.decode)).subscribe(creds => {
-      if (!creds.includes(':')) {
-        setUsername(creds);
-        return;
-      }
-      let parts: string[] = creds.split(':');
-      setUsername(parts[0]);
-      setPassword(parts[1]);
-    });
+    const sub = context.login
+      .getToken()
+      .pipe(map(Base64.decode))
+      .subscribe((creds) => {
+        if (!creds.includes(':')) {
+          setUsername(creds);
+          return;
+        }
+        let parts: string[] = creds.split(':');
+        setUsername(parts[0]);
+        setPassword(parts[1]);
+      });
     return () => sub.unsubscribe();
   }, [context, context.api, setUsername, setPassword]);
 
-  const handleUserChange = React.useCallback((evt) => {
-    setUsername(evt);
-  }, [setUsername]);
+  const handleUserChange = React.useCallback(
+    (evt) => {
+      setUsername(evt);
+    },
+    [setUsername]
+  );
 
-  const handlePasswordChange = React.useCallback((evt) => {
-    setPassword(evt);
-  }, [setPassword]);
+  const handlePasswordChange = React.useCallback(
+    (evt) => {
+      setPassword(evt);
+    },
+    [setPassword]
+  );
 
-  const handleRememberMeToggle = React.useCallback((evt) => {
-   setRememberMe(evt)
-  }, [setRememberMe]);
+  const handleRememberMeToggle = React.useCallback(
+    (evt) => {
+      setRememberMe(evt);
+    },
+    [setRememberMe]
+  );
 
-  const handleSubmit = React.useCallback((evt) => {
-    props.onSubmit(evt, `${username}:${password}`, AuthMethod.BASIC, rememberMe);
-  }, [props, props.onSubmit, username, password, context.login, rememberMe]);
+  const handleSubmit = React.useCallback(
+    (evt) => {
+      props.onSubmit(evt, `${username}:${password}`, AuthMethod.BASIC, rememberMe);
+    },
+    [props, props.onSubmit, username, password, context.login, rememberMe]
+  );
 
   // FIXME Patternfly Form component onSubmit is not triggered by Enter keydown when the Form contains
   // multiple FormGroups. This key handler is a workaround to allow keyboard-driven use of the form
-  const handleKeyDown = React.useCallback((evt) => {
-    if (evt.key === 'Enter') {
-      handleSubmit(evt);
-    }
-  }, [handleSubmit]);
+  const handleKeyDown = React.useCallback(
+    (evt) => {
+      if (evt.key === 'Enter') {
+        handleSubmit(evt);
+      }
+    },
+    [handleSubmit]
+  );
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormGroup
-        label="Username"
-        isRequired
-        fieldId="username"
-        helperText="Please provide your username"
-      >
+      <FormGroup label="Username" isRequired fieldId="username" helperText="Please provide your username">
         <TextInput
           isRequired
           type="text"
@@ -105,12 +118,7 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
           onKeyDown={handleKeyDown}
         />
       </FormGroup>
-      <FormGroup
-        label="Password"
-        isRequired
-        fieldId="password"
-        helperText="Please provide your password"
-      >
+      <FormGroup label="Password" isRequired fieldId="password" helperText="Please provide your password">
         <TextInput
           isRequired
           type="password"
@@ -124,15 +132,14 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
       </FormGroup>
       <Checkbox id="remember-me" label="Remember Me" isChecked={rememberMe} onChange={handleRememberMeToggle} />
       <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit}>Login</Button>
+        <Button variant="primary" onClick={handleSubmit}>
+          Login
+        </Button>
       </ActionGroup>
     </Form>
   );
-
-}
+};
 
 export const BasicAuthDescriptionText = () => {
-  return (
-    <Text component={TextVariants.p}>The Cryostat server is configured with Basic authentication.</Text>
-  );
-}
+  return <Text component={TextVariants.p}>The Cryostat server is configured with Basic authentication.</Text>;
+};

@@ -86,12 +86,14 @@ const mockLabel = {
   key: 'someLabel',
   value: 'someValue',
 } as RecordingLabel;
-const mockLabelAsString = "someLabel: someValue";
+const mockLabelAsString = 'someLabel: someValue';
 
-const onLabelClick = jest.fn((label: RecordingLabel) => {/**Do nothing. Used for checking renders */});
+const onLabelClick = jest.fn((label: RecordingLabel) => {
+  /**Do nothing. Used for checking renders */
+});
 
-const blueLabelBorderColor = "#06c";
-const greyLabelBorderColor = "#8a8d90";
+const blueLabelBorderColor = '#06c';
+const greyLabelBorderColor = '#8a8d90';
 
 describe('<ClickableLabel />', () => {
   afterEach(cleanup);
@@ -107,77 +109,67 @@ describe('<ClickableLabel />', () => {
   });
 
   it('should display blue when the label is currently selected', () => {
-    render(
-      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>
-    );
-    
+    render(<ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>);
+
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
     expect(label).toBeVisible();
 
-    expect(label.classList.contains("pf-m-blue")).toBe(true);
+    expect(label.classList.contains('pf-m-blue')).toBe(true);
   });
 
   it('should display grey when the label is currently not selected', () => {
-    render(
-      <ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>
-    );
+    render(<ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>);
 
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
     expect(label).toBeVisible();
 
-    expect(label.classList.contains("pf-m-blue")).toBe(false);
+    expect(label.classList.contains('pf-m-blue')).toBe(false);
   });
 
   it('should display hover effect when hovered and is selected', () => {
-    render(
-      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>
-    );
-    
+    render(<ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>);
+
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
     expect(label).toBeVisible();
 
-    expect(label.classList.contains("pf-m-blue")).toBe(true);
+    expect(label.classList.contains('pf-m-blue')).toBe(true);
 
     userEvent.hover(label);
 
     const labelStyle = label.style;
-    expect(labelStyle.cursor).toBe("pointer");
-    expect(labelStyle.getPropertyValue("--pf-c-label__content--before--BorderWidth")).toBe("2.5px");
-    expect(labelStyle.getPropertyValue("--pf-c-label__content--before--BorderColor")).toBe(blueLabelBorderColor);
+    expect(labelStyle.cursor).toBe('pointer');
+    expect(labelStyle.getPropertyValue('--pf-c-label__content--before--BorderWidth')).toBe('2.5px');
+    expect(labelStyle.getPropertyValue('--pf-c-label__content--before--BorderColor')).toBe(blueLabelBorderColor);
   });
 
   it('should display hover effect when hovered and is not selected', () => {
-    render(
-      <ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>
-    );
-    
+    render(<ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>);
+
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
     expect(label).toBeVisible();
 
-    expect(label.classList.contains("pf-m-blue")).toBe(false);
+    expect(label.classList.contains('pf-m-blue')).toBe(false);
 
     userEvent.hover(label);
 
     const labelStyle = label.style;
-    expect(labelStyle.cursor).toBe("pointer");
-    expect(labelStyle.getPropertyValue("--pf-c-label__content--before--BorderWidth")).toBe("2.5px");
-    expect(labelStyle.getPropertyValue("--pf-c-label__content--before--BorderColor")).toBe(greyLabelBorderColor);
+    expect(labelStyle.cursor).toBe('pointer');
+    expect(labelStyle.getPropertyValue('--pf-c-label__content--before--BorderWidth')).toBe('2.5px');
+    expect(labelStyle.getPropertyValue('--pf-c-label__content--before--BorderColor')).toBe(greyLabelBorderColor);
   });
 
   it('should update label filters when clicked', () => {
-    render(
-      <ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>
-    );
-    
+    render(<ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>);
+
     const label = screen.getByLabelText(mockLabelAsString);
     expect(label).toBeInTheDocument();
     expect(label).toBeVisible();
 
-    expect(label.classList.contains("pf-m-blue")).toBe(true);
+    expect(label.classList.contains('pf-m-blue')).toBe(true);
 
     userEvent.click(label);
 

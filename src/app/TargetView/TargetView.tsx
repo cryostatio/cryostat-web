@@ -40,7 +40,7 @@ import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbP
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { NoTargetSelected } from './NoTargetSelected';
-import {Grid, GridItem} from '@patternfly/react-core';
+import { Grid, GridItem } from '@patternfly/react-core';
 
 interface TargetViewProps {
   pageTitle: string;
@@ -53,25 +53,24 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   const [connected, setConnected] = React.useState(false);
 
   React.useLayoutEffect(() => {
-    const sub = context.target.target().subscribe(target => {
+    const sub = context.target.target().subscribe((target) => {
       setConnected(!!target && !!target.connectUrl);
     });
     return () => sub.unsubscribe();
-  }, [context.target])
+  }, [context.target]);
 
   const compact = props.compactSelect == null ? true : props.compactSelect;
 
-  return (<>
-    <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
-      <Grid hasGutter>
-        <GridItem span={compact ? 4 : 12}>
-          <TargetSelect />
-        </GridItem>
-        <GridItem>
-          { connected ? props.children : <NoTargetSelected /> }
-        </GridItem>
-      </Grid>
-    </BreadcrumbPage>
-  </>);
-
-}
+  return (
+    <>
+      <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
+        <Grid hasGutter>
+          <GridItem span={compact ? 4 : 12}>
+            <TargetSelect />
+          </GridItem>
+          <GridItem>{connected ? props.children : <NoTargetSelected />}</GridItem>
+        </Grid>
+      </BreadcrumbPage>
+    </>
+  );
+};

@@ -63,13 +63,16 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const addSubscription = useSubscriptions();
 
-  const getIdxFromRecording = React.useCallback((r: ArchivedRecording): number =>  {
-    if (props.isTargetRecording) {
-      return (r as ActiveRecording).id;
-    } else {
-      return hashCode(r.name);
-    }
-  }, [hashCode, props.isTargetRecording]);
+  const getIdxFromRecording = React.useCallback(
+    (r: ArchivedRecording): number => {
+      if (props.isTargetRecording) {
+        return (r as ActiveRecording).id;
+      } else {
+        return hashCode(r.name);
+      }
+    },
+    [hashCode, props.isTargetRecording]
+  );
 
   const handleUpdateLabels = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
@@ -140,8 +143,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         .pipe(
           filter((target) => target !== NO_TARGET),
           concatMap((target) =>
-            props.isTargetRecording ?
-              context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+            props.isTargetRecording
+              ? context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
               : context.api.graphql<any>(`
                   query {
                     targetNodes(filter: { name: "${target.connectUrl}" }) {
@@ -158,9 +161,11 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
                         }
                       }
                     }
-                  }`),
+                  }`)
           ),
-          map(v => props.isTargetRecording ? v : v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
+          map((v) =>
+            props.isTargetRecording ? v : (v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[])
+          ),
           first()
         )
         .subscribe((value) => setRecordings(value))
@@ -231,7 +236,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           </Split>
         </StackItem>
         <StackItem>
-          <LabelCell target='' labels={savedCommonLabels} />
+          <LabelCell target="" labels={savedCommonLabels} />
         </StackItem>
         <StackItem>
           {editing ? (
@@ -258,7 +263,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           ) : (
             <Button
               key="edit labels"
-              aria-label='Edit Labels'
+              aria-label="Edit Labels"
               variant="secondary"
               onClick={handleEditLabels}
               isDisabled={!props.checkedIndices.length}

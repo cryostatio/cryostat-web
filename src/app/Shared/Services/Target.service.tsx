@@ -46,7 +46,7 @@ export interface Target {
   annotations?: {
     cryostat: Map<string, string>;
     platform: Map<string, string>;
-  }
+  };
 }
 
 class TargetService {
@@ -59,7 +59,7 @@ class TargetService {
     if (target === NO_TARGET || !!target.connectUrl) {
       this._target.next(target);
     } else {
-      throw new Error("Malformed target");
+      throw new Error('Malformed target');
     }
   }
 
@@ -90,9 +90,8 @@ class TargetService {
   setSslFailure(): void {
     this._sslFailure.next();
   }
-
 }
 
 const TargetInstance = new TargetService();
 
-export { TargetService, TargetInstance }
+export { TargetService, TargetInstance };

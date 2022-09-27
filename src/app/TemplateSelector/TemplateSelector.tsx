@@ -47,16 +47,21 @@ export interface TemplateSelectorProps {
 }
 
 export const TemplateSelector: React.FunctionComponent<TemplateSelectorProps> = (props) => {
+  const offset = props.templates.filter((t) => t.type === 'CUSTOM').length;
 
-  const offset = props.templates.filter(t => t.type === "CUSTOM").length;
+  const customs = props.templates
+    .filter((t) => t.type === 'CUSTOM')
+    .map((t: EventTemplate, idx: number) => props.templateMapper(t, idx, offset));
+  const targets = props.templates
+    .filter((t) => t.type === 'TARGET')
+    .map((t: EventTemplate, idx: number) => props.templateMapper(t, idx, offset));
 
-  const customs = props.templates.filter(t => t.type === "CUSTOM").map((t: EventTemplate, idx: number) => props.templateMapper(t, idx, offset));
-  const targets = props.templates.filter(t => t.type === "TARGET").map((t: EventTemplate, idx: number) => props.templateMapper(t, idx, offset));
-
-  return (<>
-    { props.children }
-    { props.placeholder }
-    { props.customGroup(customs) }
-    { props.targetGroup(targets) }
-  </>);
+  return (
+    <>
+      {props.children}
+      {props.placeholder}
+      {props.customGroup(customs)}
+      {props.targetGroup(targets)}
+    </>
+  );
 };

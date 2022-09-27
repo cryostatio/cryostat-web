@@ -36,13 +36,30 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { CodeBlock, CodeBlockCode, Label, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
+import {
+  CodeBlock,
+  CodeBlockCode,
+  Label,
+  Split,
+  SplitItem,
+  Stack,
+  StackItem,
+  Text,
+  Tooltip,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
-import {CheckCircleIcon, ExclamationCircleIcon, HelpIcon, InfoCircleIcon, WarningTriangleIcon} from '@patternfly/react-icons';
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  HelpIcon,
+  InfoCircleIcon,
+  WarningTriangleIcon,
+} from '@patternfly/react-icons';
 
 export interface MatchExpressionEvaluatorProps {
   inlineHint?: boolean;
@@ -57,9 +74,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   const [valid, setValid] = React.useState(ValidatedOptions.default);
 
   React.useEffect(() => {
-    addSubscription(
-      context.target.target().subscribe(setTarget)
-    );
+    addSubscription(context.target.target().subscribe(setTarget));
   }, [addSubscription, context, context.target]);
 
   React.useEffect(() => {
@@ -91,13 +106,29 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   const statusLabel = React.useMemo(() => {
     switch (valid) {
       case ValidatedOptions.success:
-        return (<Label color="green" icon={<CheckCircleIcon />}>Match Expression Matches Selected Target</Label>);
+        return (
+          <Label color="green" icon={<CheckCircleIcon />}>
+            Match Expression Matches Selected Target
+          </Label>
+        );
       case ValidatedOptions.warning:
-        return (<Label color="orange" icon={<WarningTriangleIcon />}>Match Expression Valid, Does Not Match Selected Target</Label>);
+        return (
+          <Label color="orange" icon={<WarningTriangleIcon />}>
+            Match Expression Valid, Does Not Match Selected Target
+          </Label>
+        );
       case ValidatedOptions.error:
-        return (<Label color="red" icon={<ExclamationCircleIcon />}>Invalid Match Expression</Label>);
+        return (
+          <Label color="red" icon={<ExclamationCircleIcon />}>
+            Invalid Match Expression
+          </Label>
+        );
       default:
-        return (<Label color="grey" icon={<InfoCircleIcon />}>No Match Expression</Label>);
+        return (
+          <Label color="grey" icon={<InfoCircleIcon />}>
+            No Match Expression
+          </Label>
+        );
     }
   }, [valid]);
 
@@ -111,56 +142,55 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     body = JSON.stringify(body, null, 2);
     body = body.substring(1, body.length - 1);
     return body;
-  },[target]);
+  }, [target]);
 
-  return (<>
-    <Stack hasGutter>
-      <StackItem>
-        <TargetSelect/>
-      </StackItem>
-      <StackItem>
-        <Split hasGutter isWrappable>
-          <SplitItem>
-            { statusLabel }
-          </SplitItem>
-          <SplitItem>
-            {
-              !props.inlineHint ?
-                <Tooltip content={<div>Hint: try an expression like <br />{ exampleExpression }</div>}>
+  return (
+    <>
+      <Stack hasGutter>
+        <StackItem>
+          <TargetSelect />
+        </StackItem>
+        <StackItem>
+          <Split hasGutter isWrappable>
+            <SplitItem>{statusLabel}</SplitItem>
+            <SplitItem>
+              {!props.inlineHint ? (
+                <Tooltip
+                  content={
+                    <div>
+                      Hint: try an expression like <br />
+                      {exampleExpression}
+                    </div>
+                  }
+                >
                   <HelpIcon />
                 </Tooltip>
-              : <></>
-            }
-          </SplitItem>
-        </Split>
-      </StackItem>
-      {
-        props.inlineHint ?
+              ) : (
+                <></>
+              )}
+            </SplitItem>
+          </Split>
+        </StackItem>
+        {props.inlineHint ? (
           <StackItem>
-            <Text>
-              Hint: try an expression like
-            </Text>
+            <Text>Hint: try an expression like</Text>
             <CodeBlock>
-              <CodeBlockCode>
-                { exampleExpression }
-              </CodeBlockCode>
+              <CodeBlockCode>{exampleExpression}</CodeBlockCode>
             </CodeBlock>
           </StackItem>
-          : <></>
-      }
-      <StackItem>
-        {
-          !!target?.alias && !!target?.connectUrl ?
+        ) : (
+          <></>
+        )}
+        <StackItem>
+          {!!target?.alias && !!target?.connectUrl ? (
             <CodeBlock>
-              <CodeBlockCode>
-                { JSON.stringify(target, null, 2) }
-              </CodeBlockCode>
+              <CodeBlockCode>{JSON.stringify(target, null, 2)}</CodeBlockCode>
             </CodeBlock>
-            :
+          ) : (
             <NoTargetSelected />
-        }
-      </StackItem>
-    </Stack>
-  </>);
-
+          )}
+        </StackItem>
+      </Stack>
+    </>
+  );
 };

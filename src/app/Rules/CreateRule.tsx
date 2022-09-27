@@ -36,9 +36,28 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ActionGroup, Button, Card, CardBody, CardHeader, CardHeaderMain, Form, FormGroup, FormSelect, FormSelectOption, Grid, GridItem, Split, SplitItem, Text, TextInput, TextVariants, ValidatedOptions } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CardHeaderMain,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
+  Grid,
+  GridItem,
+  Split,
+  SplitItem,
+  Text,
+  TextInput,
+  TextVariants,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { catchError, filter, first, mergeMap, toArray} from 'rxjs/operators';
+import { catchError, filter, first, mergeMap, toArray } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
@@ -77,10 +96,13 @@ const Comp = () => {
   const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
 
-  const handleNameChange = React.useCallback((evt) => {
-    setNameValid(RuleNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
-    setName(evt);
-  }, [setNameValid, name, setName]);
+  const handleNameChange = React.useCallback(
+    (evt) => {
+      setNameValid(RuleNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
+      setName(evt);
+    },
+    [setNameValid, name, setName]
+  );
 
   const eventSpecifierString = React.useMemo(() => {
     var str = '';
@@ -93,47 +115,77 @@ const Comp = () => {
     return str;
   }, [template]);
 
-  const handleTemplateChange = React.useCallback((template) => {
-    const parts: string[] = template.split(',');
-    setTemplate(parts[0]);
-    setTemplateType(parts[1]);
-  }, [setTemplate, setTemplateType]);
+  const handleTemplateChange = React.useCallback(
+    (template) => {
+      const parts: string[] = template.split(',');
+      setTemplate(parts[0]);
+      setTemplateType(parts[1]);
+    },
+    [setTemplate, setTemplateType]
+  );
 
-  const handleMaxAgeChange = React.useCallback((evt) => {
-    setMaxAge(Number(evt));
-  }, [setMaxAge]);
+  const handleMaxAgeChange = React.useCallback(
+    (evt) => {
+      setMaxAge(Number(evt));
+    },
+    [setMaxAge]
+  );
 
-  const handleMaxAgeUnitChange = React.useCallback((evt) => {
-    setMaxAgeUnits(Number(evt));
-  }, [setMaxAgeUnits]);
+  const handleMaxAgeUnitChange = React.useCallback(
+    (evt) => {
+      setMaxAgeUnits(Number(evt));
+    },
+    [setMaxAgeUnits]
+  );
 
-  const handleMaxSizeChange = React.useCallback((evt) => {
-    setMaxSize(Number(evt));
-  }, [setMaxSize]);
+  const handleMaxSizeChange = React.useCallback(
+    (evt) => {
+      setMaxSize(Number(evt));
+    },
+    [setMaxSize]
+  );
 
-  const handleMaxSizeUnitChange = React.useCallback((evt) => {
-    setMaxSizeUnits(Number(evt));
-  }, [setMaxSizeUnits]);
+  const handleMaxSizeUnitChange = React.useCallback(
+    (evt) => {
+      setMaxSizeUnits(Number(evt));
+    },
+    [setMaxSizeUnits]
+  );
 
-  const handleArchivalPeriodChange = React.useCallback((evt) => {
-    setArchivalPeriod(Number(evt));
-  }, [setArchivalPeriod]);
+  const handleArchivalPeriodChange = React.useCallback(
+    (evt) => {
+      setArchivalPeriod(Number(evt));
+    },
+    [setArchivalPeriod]
+  );
 
-  const handleArchivalPeriodUnitsChange = React.useCallback((evt) => {
-    setArchivalPeriodUnits(Number(evt));
-  }, [setArchivalPeriodUnits]);
+  const handleArchivalPeriodUnitsChange = React.useCallback(
+    (evt) => {
+      setArchivalPeriodUnits(Number(evt));
+    },
+    [setArchivalPeriodUnits]
+  );
 
-  const handleInitialDelayChange = React.useCallback((evt) => {
-    setInitialDelay(Number(evt));
-  }, [setInitialDelay]);
+  const handleInitialDelayChange = React.useCallback(
+    (evt) => {
+      setInitialDelay(Number(evt));
+    },
+    [setInitialDelay]
+  );
 
-  const handleInitialDelayUnitsChanged = React.useCallback((evt) => {
-    setInitialDelayUnits(Number(evt));
-  }, [setInitialDelayUnits]);
+  const handleInitialDelayUnitsChanged = React.useCallback(
+    (evt) => {
+      setInitialDelayUnits(Number(evt));
+    },
+    [setInitialDelayUnits]
+  );
 
-  const handleSetPreservedArchives = React.useCallback((evt) => {
-    setPreservedArchives(Number(evt));
-  }, [setPreservedArchives]);
+  const handleSetPreservedArchives = React.useCallback(
+    (evt) => {
+      setPreservedArchives(Number(evt));
+    },
+    [setPreservedArchives]
+  );
 
   const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
@@ -154,60 +206,77 @@ const Comp = () => {
       initialDelaySeconds: initialDelay * initialDelayUnits,
       preservedArchives,
       maxAgeSeconds: maxAge * maxAgeUnits,
-      maxSizeBytes: maxSize * maxSizeUnits
+      maxSizeBytes: maxSize * maxSizeUnits,
     };
     addSubscription(
-      context.api.createRule(rule)
-      .pipe(first())
-      .subscribe(success => {
-        if (success) {
-          history.push('/rules');
-        }
-      })
+      context.api
+        .createRule(rule)
+        .pipe(first())
+        .subscribe((success) => {
+          if (success) {
+            history.push('/rules');
+          }
+        })
     );
-  }, [addSubscription, context, context.api, history,
-    name, nameValid, description, matchExpression, eventSpecifierString,
-    archivalPeriod, archivalPeriodUnits, initialDelay, initialDelayUnits,
-    preservedArchives, maxAge, maxAgeUnits, maxSize, maxSizeUnits]);
+  }, [
+    addSubscription,
+    context,
+    context.api,
+    history,
+    name,
+    nameValid,
+    description,
+    matchExpression,
+    eventSpecifierString,
+    archivalPeriod,
+    archivalPeriodUnits,
+    initialDelay,
+    initialDelayUnits,
+    preservedArchives,
+    maxAge,
+    maxAgeUnits,
+    maxSize,
+    maxSizeUnits,
+  ]);
 
   // FIXME Error 427 JMX Authentication is handled differently than Error 502 Untrusted SSL.
   const refreshTemplateList = React.useCallback(() => {
     addSubscription(
-      context.target.target()
-      .pipe(
-        mergeMap(target => 
-          iif(
-            () => target !== NO_TARGET,
-            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`).pipe(
-              catchError(_ => of([] as EventTemplate[])),
-            ),
-            context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
-              mergeMap(x => x),
-              filter(template => (template.provider !== "Cryostat") || (template.name !== "Cryostat")),
-              toArray(),
-            ),       
+      context.target
+        .target()
+        .pipe(
+          mergeMap((target) =>
+            iif(
+              () => target !== NO_TARGET,
+              context.api
+                .doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
+                .pipe(catchError((_) => of([] as EventTemplate[]))),
+              context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
+                mergeMap((x) => x),
+                filter((template) => template.provider !== 'Cryostat' || template.name !== 'Cryostat'),
+                toArray()
+              )
+            )
           ),
-        ),
-        first(),
-      ).subscribe(setTemplates)
+          first()
+        )
+        .subscribe(setTemplates)
     );
   }, [addSubscription, context, context.api, context.target, setTemplates]);
 
   React.useEffect(() => {
-    addSubscription(
-      context.target.target().subscribe(refreshTemplateList)
-    );
+    addSubscription(context.target.target().subscribe(refreshTemplateList));
   }, [addSubscription, context, context.target, refreshTemplateList]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
       title: 'Automated Rules',
       path: '/rules',
-    }
+    },
   ];
 
   return (
-    <BreadcrumbPage pageTitle='Create' breadcrumbs={breadcrumbs} >
+    <BreadcrumbPage pageTitle="Create" breadcrumbs={breadcrumbs}>
       <Grid hasGutter>
         <GridItem xl={7}>
           <Card>
@@ -216,8 +285,8 @@ const Comp = () => {
                 <Text component={TextVariants.small}>
                   Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
                   target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
-                  much data should be kept in the application recording buffer, and how frequently Cryostat should copy the
-                  application recording buffer into Cryostat's own archived storage.
+                  much data should be kept in the application recording buffer, and how frequently Cryostat should copy
+                  the application recording buffer into Cryostat's own archived storage.
                 </Text>
                 <FormGroup
                   label="Name"
@@ -255,8 +324,10 @@ const Comp = () => {
                   fieldId="rule-matchexpr"
                   helperText={
                     <Text component={TextVariants.small}>
-                      Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied.
-                      Select a target from the dropdown on the right to view the context object available within the match expression context and test if the expression matches.
+                      Enter a match expression. This is a Java-like code snippet that is evaluated against each target
+                      application to determine whether the rule should be applied. Select a target from the dropdown on
+                      the right to view the context object available within the match expression context and test if the
+                      expression matches.
                     </Text>
                   }
                   validated={matchExpressionValid}
@@ -275,7 +346,13 @@ const Comp = () => {
                   label="Template"
                   isRequired
                   fieldId="recording-template"
-                  validated={template === null ? ValidatedOptions.default : !!template ? ValidatedOptions.success : ValidatedOptions.error}
+                  validated={
+                    template === null
+                      ? ValidatedOptions.default
+                      : !!template
+                      ? ValidatedOptions.success
+                      : ValidatedOptions.error
+                  }
                   helperText="The Event Template to be applied by this Rule against matching target applications."
                   helperTextInvalid="A Template must be selected"
                 >
@@ -292,27 +369,27 @@ const Comp = () => {
                 >
                   <Split hasGutter={true}>
                     <SplitItem isFilled>
-                        <TextInput
-                          value={maxSize}
-                          isRequired
-                          type="number"
-                          id="maxSize"
-                          aria-label="max size value"
-                          onChange={handleMaxSizeChange}
-                          min="0"
-                        />
-                      </SplitItem>
-                      <SplitItem>
-                        <FormSelect
-                          value={maxSizeUnits}
-                          onChange={handleMaxSizeUnitChange}
-                          aria-label="Max size units input"
-                        >
-                          <FormSelectOption key="1" value="1" label="B" />
-                          <FormSelectOption key="2" value={1024} label="KiB" />
-                          <FormSelectOption key="3" value={1024*1024} label="MiB" />
-                        </FormSelect>
-                      </SplitItem>
+                      <TextInput
+                        value={maxSize}
+                        isRequired
+                        type="number"
+                        id="maxSize"
+                        aria-label="max size value"
+                        onChange={handleMaxSizeChange}
+                        min="0"
+                      />
+                    </SplitItem>
+                    <SplitItem>
+                      <FormSelect
+                        value={maxSizeUnits}
+                        onChange={handleMaxSizeUnitChange}
+                        aria-label="Max size units input"
+                      >
+                        <FormSelectOption key="1" value="1" label="B" />
+                        <FormSelectOption key="2" value={1024} label="KiB" />
+                        <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
+                      </FormSelect>
+                    </SplitItem>
                   </Split>
                 </FormGroup>
                 <FormGroup
@@ -340,7 +417,7 @@ const Comp = () => {
                       >
                         <FormSelectOption key="1" value="1" label="Seconds" />
                         <FormSelectOption key="2" value={60} label="Minutes" />
-                        <FormSelectOption key="3" value={60*60} label="Hours" />
+                        <FormSelectOption key="3" value={60 * 60} label="Hours" />
                       </FormSelect>
                     </SplitItem>
                   </Split>
@@ -370,7 +447,7 @@ const Comp = () => {
                       >
                         <FormSelectOption key="1" value="1" label="Seconds" />
                         <FormSelectOption key="2" value={60} label="Minutes" />
-                        <FormSelectOption key="3" value={60*60} label="Hours" />
+                        <FormSelectOption key="3" value={60 * 60} label="Hours" />
                       </FormSelect>
                     </SplitItem>
                   </Split>
@@ -400,7 +477,7 @@ const Comp = () => {
                       >
                         <FormSelectOption key="1" value="1" label="Seconds" />
                         <FormSelectOption key="2" value={60} label="Minutes" />
-                        <FormSelectOption key="3" value={60*60} label="Hours" />
+                        <FormSelectOption key="3" value={60 * 60} label="Hours" />
                       </FormSelect>
                     </SplitItem>
                   </Split>
@@ -421,8 +498,18 @@ const Comp = () => {
                   />
                 </FormGroup>
                 <ActionGroup>
-                  <Button variant="primary" onClick={handleSubmit} isDisabled={nameValid !== ValidatedOptions.success || !template || !templateType || !matchExpression}>Create</Button>
-                  <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleSubmit}
+                    isDisabled={
+                      nameValid !== ValidatedOptions.success || !template || !templateType || !matchExpression
+                    }
+                  >
+                    Create
+                  </Button>
+                  <Button variant="secondary" onClick={history.goBack}>
+                    Cancel
+                  </Button>
                 </ActionGroup>
               </Form>
             </CardBody>
@@ -432,13 +519,15 @@ const Comp = () => {
           <Card>
             <CardHeader>
               <CardHeaderMain>
-                <Text component={TextVariants.h4}>
-                  Match Expression Evaluator
-                </Text>
+                <Text component={TextVariants.h4}>Match Expression Evaluator</Text>
               </CardHeaderMain>
             </CardHeader>
             <CardBody>
-              <MatchExpressionEvaluator inlineHint matchExpression={matchExpression} onChange={setMatchExpressionValid} />
+              <MatchExpressionEvaluator
+                inlineHint
+                matchExpression={matchExpression}
+                onChange={setMatchExpressionValid}
+              />
             </CardBody>
           </Card>
         </GridItem>

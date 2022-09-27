@@ -47,32 +47,27 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import _ from 'lodash';
 
-export interface MatchedTargetsTableProps { 
-  id: number,
-  matchExpression: string, 
+export interface MatchedTargetsTableProps {
+  id: number;
+  matchExpression: string;
 }
 
 export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  
+
   const [targets, setTargets] = React.useState([] as Target[]);
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
-  const tableColumns: string[] = [
-    'Target',
-  ];
+  const tableColumns: string[] = ['Target'];
 
   const refreshTargetsList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getCredential(props.id)
-      .subscribe(
-        v => { 
-          setTargets(v.targets); 
-          setIsLoading(false);
-        }
-      )
+      context.api.getCredential(props.id).subscribe((v) => {
+        setTargets(v.targets);
+        setIsLoading(false);
+      })
     );
   }, [setIsLoading, addSubscription, context, context.api, setTargets]);
 
@@ -82,17 +77,16 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery)
-      .subscribe(v => {
+      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery).subscribe((v) => {
         const evt: TargetDiscoveryEvent = v.message.event;
         const target: Target = evt.serviceRef;
         if (evt.kind === 'FOUND') {
           const match: boolean = eval(props.matchExpression);
           if (match) {
-            setTargets(old => old.concat(target));
+            setTargets((old) => old.concat(target));
           }
         } else if (evt.kind === 'LOST') {
-          setTargets(old => old.filter(o => !_.isEqual(o, target)));
+          setTargets((old) => old.filter((o) => !_.isEqual(o, target)));
         }
       })
     );
@@ -103,48 +97,47 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
       return (
         <Tr key={`target-${idx}`}>
           <Td key={`target-table-row-${idx}_0`}>
-            {(target.alias == target.connectUrl) || !target.alias ?
-              `${target.connectUrl}`
-            :
-              `${target.alias} (${target.connectUrl})`}
+            {target.alias == target.connectUrl || !target.alias
+              ? `${target.connectUrl}`
+              : `${target.alias} (${target.connectUrl})`}
           </Td>
         </Tr>
       );
-    }); 
-  }, [targets]); 
+    });
+  }, [targets]);
 
   let view: JSX.Element;
   if (isLoading) {
-    view = (<LoadingView/>);
+    view = <LoadingView />;
   } else if (targets.length === 0) {
-    view =(<>
-      <EmptyState>
-        <EmptyStateIcon icon={SearchIcon}/>
-        <Title headingLevel="h4" size="lg">
-          No Targets
-        </Title>
-      </EmptyState>
-    </>);
+    view = (
+      <>
+        <EmptyState>
+          <EmptyStateIcon icon={SearchIcon} />
+          <Title headingLevel="h4" size="lg">
+            No Targets
+          </Title>
+        </EmptyState>
+      </>
+    );
   } else {
-    view = (<>
-      <InnerScrollContainer style={{height: '300px'}}>
-        <TableComposable aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
-          <Thead>
-            <Tr>
-              {tableColumns.map((key) => (
-                <Th key={`table-header-${key}`}>{key}</Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {targetRows}
-          </Tbody>
-        </TableComposable>
-      </InnerScrollContainer>
-    </>);
+    view = (
+      <>
+        <InnerScrollContainer style={{ height: '300px' }}>
+          <TableComposable aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
+            <Thead>
+              <Tr>
+                {tableColumns.map((key) => (
+                  <Th key={`table-header-${key}`}>{key}</Th>
+                ))}
+              </Tr>
+            </Thead>
+            <Tbody>{targetRows}</Tbody>
+          </TableComposable>
+        </InnerScrollContainer>
+      </>
+    );
   }
 
-  return (<>
-    {view}
-  </>);
+  return <>{view}</>;
 };

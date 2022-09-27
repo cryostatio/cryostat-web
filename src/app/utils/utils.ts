@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 
-export const createBlobURL = (content : any, contentType: string, timeout: number = 1000) => {
-  const blob = new Blob([content], {type: contentType});
+export const createBlobURL = (content: any, contentType: string, timeout: number = 1000) => {
+  const blob = new Blob([content], { type: contentType });
   const url = window.URL.createObjectURL(blob);
   setTimeout(() => window.URL.revokeObjectURL(url), timeout);
   return url;
-}
+};
 
 export function accessibleRouteChangeHandler() {
   return window.setTimeout(() => {
@@ -55,7 +55,7 @@ export function accessibleRouteChangeHandler() {
 export const hashCode = (str: string): number => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash = (hash << 5) - hash + str.charCodeAt(i);
     hash |= 0; // Force 32-bit number
   }
   return hash;

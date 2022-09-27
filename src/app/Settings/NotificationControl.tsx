@@ -47,21 +47,29 @@ const Component = () => {
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
   const [expanded, setExpanded] = React.useState(false);
 
-  const handleCheckboxChange = React.useCallback((checked, element) => {
-    state.set(NotificationCategory[element.target.id], checked);
-    context.settings.setNotificationsEnabled(state);
-    setState(new Map(state));
-  }, [state, setState, context.settings]);
+  const handleCheckboxChange = React.useCallback(
+    (checked, element) => {
+      state.set(NotificationCategory[element.target.id], checked);
+      context.settings.setNotificationsEnabled(state);
+      setState(new Map(state));
+    },
+    [state, setState, context.settings]
+  );
 
-  const handleCheckAll = React.useCallback(checked => {
-    const newState = new Map();
-    Array.from(state.entries()).forEach(v => newState.set(v[0], checked));
-    context.settings.setNotificationsEnabled(newState);
-    setState(newState);
-  }, [state, setState]);
+  const handleCheckAll = React.useCallback(
+    (checked) => {
+      const newState = new Map();
+      Array.from(state.entries()).forEach((v) => newState.set(v[0], checked));
+      context.settings.setNotificationsEnabled(newState);
+      setState(newState);
+    },
+    [state, setState]
+  );
 
   const allChecked = React.useMemo(() => {
-    return Array.from(state.entries()).map(e => e[1]).reduce((a, b) => a && b);
+    return Array.from(state.entries())
+      .map((e) => e[1])
+      .reduce((a, b) => a && b);
   }, [state]);
 
   const labels = React.useMemo(() => {
@@ -73,26 +81,34 @@ const Component = () => {
   }, [messageKeys]);
 
   const switches = React.useMemo(() => {
-    return Array.from(state.entries(), ([key, value]) => <StackItem key={key}><Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} /></StackItem>);
+    return Array.from(state.entries(), ([key, value]) => (
+      <StackItem key={key}>
+        <Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} />
+      </StackItem>
+    ));
   }, [state, labels]);
 
-  return (<>
-    <Stack hasGutter>
-      <StackItem key='all-notifications'><Switch id='all-notifications' label='All Notifications' isChecked={allChecked} onChange={handleCheckAll} /></StackItem>
-      <Divider />
-      <ExpandableSection
-        toggleText={expanded ? 'Show less' : 'Show more'}
-        onToggle={setExpanded}
-        isExpanded={expanded}
-      >
-        { switches }
-      </ExpandableSection>
-    </Stack>
-  </>);
-}
+  return (
+    <>
+      <Stack hasGutter>
+        <StackItem key="all-notifications">
+          <Switch id="all-notifications" label="All Notifications" isChecked={allChecked} onChange={handleCheckAll} />
+        </StackItem>
+        <Divider />
+        <ExpandableSection
+          toggleText={expanded ? 'Show less' : 'Show more'}
+          onToggle={setExpanded}
+          isExpanded={expanded}
+        >
+          {switches}
+        </ExpandableSection>
+      </Stack>
+    </>
+  );
+};
 
 export const NotificationControl: UserSetting = {
   title: 'Notifications',
   description: 'Enable or disable notifications by category.',
   content: Component,
-}
+};

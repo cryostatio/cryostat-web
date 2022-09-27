@@ -48,7 +48,7 @@ export interface ArchiveUploadModalProps {
   onClose: () => void;
 }
 
-export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps> = props => {
+export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
@@ -67,12 +67,15 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
     setAbort(new AbortController());
   }, [setUploadFile, setFilename, setUploading, setRejected, setShowCancelPrompt, setAbort]);
 
-  const handleFileChange = React.useCallback((file, filename) => {
-    setRejected(false);
-    setUploadFile(file);
-    setFilename(filename);
-    setShowCancelPrompt(false);
-  }, [setRejected, setUploadFile, setFilename, setShowCancelPrompt]);
+  const handleFileChange = React.useCallback(
+    (file, filename) => {
+      setRejected(false);
+      setUploadFile(file);
+      setFilename(filename);
+      setShowCancelPrompt(false);
+    },
+    [setRejected, setUploadFile, setFilename, setShowCancelPrompt]
+  );
 
   const handleReject = React.useCallback(() => {
     setRejected(true);
@@ -94,9 +97,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
       return;
     }
     setUploading(true);
-    context.api.uploadRecording(uploadFile, abort.signal)
-      .pipe(first())
-      .subscribe(handleClose, reset);
+    context.api.uploadRecording(uploadFile, abort.signal).pipe(first()).subscribe(handleClose, reset);
   }, [context.api, notifications, setUploading, uploadFile, abort, handleClose, reset]);
 
   const handleAbort = React.useCallback(() => {
@@ -105,51 +106,49 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
     props.onClose();
   }, [abort, reset, handleClose]);
 
-  return (<>
-    <Prompt
-      when={uploading}
-      message="Are you sure you wish to cancel the file upload?"
-    />
-    <Modal
-      isOpen={props.visible}
-      variant={ModalVariant.large}
-      showClose={true}
-      onClose={handleClose}
-      title="Re-Upload Archived Recording"
-      description="Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming convention used by Cryostat when archiving recordings."
+  return (
+    <>
+      <Prompt when={uploading} message="Are you sure you wish to cancel the file upload?" />
+      <Modal
+        isOpen={props.visible}
+        variant={ModalVariant.large}
+        showClose={true}
+        onClose={handleClose}
+        title="Re-Upload Archived Recording"
+        description="Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming convention used by Cryostat when archiving recordings."
       >
-      <CancelUploadModal
-        visible={showCancelPrompt}
-        title="Upload in Progress"
-        message="Are you sure you wish to cancel the file upload?"
-        onYes={handleAbort}
-        onNo={() => setShowCancelPrompt(false)}
-      />
-      <Form>
-        <FormGroup
-          label="JFR File"
-          isRequired
-          fieldId="file"
-          validated={rejected ? 'error' : 'default'}
-        >
-          <FileUpload
-            id="file-upload"
-            value={uploadFile}
-            filename={filename}
-            onChange={handleFileChange}
-            isLoading={uploading}
-            validated={rejected ? 'error' : 'default'}
-            dropzoneProps={{
-              accept: '.jfr',
-              onDropRejected: handleReject
-            }}
-          />
-        </FormGroup>
-        <ActionGroup>
-          <Button variant="primary" onClick={handleSubmit} isDisabled={!filename}>Submit</Button>
-          <Button variant="link" onClick={handleClose}>Cancel</Button>
-        </ActionGroup>
-      </Form>
-    </Modal>
-  </>);
+        <CancelUploadModal
+          visible={showCancelPrompt}
+          title="Upload in Progress"
+          message="Are you sure you wish to cancel the file upload?"
+          onYes={handleAbort}
+          onNo={() => setShowCancelPrompt(false)}
+        />
+        <Form>
+          <FormGroup label="JFR File" isRequired fieldId="file" validated={rejected ? 'error' : 'default'}>
+            <FileUpload
+              id="file-upload"
+              value={uploadFile}
+              filename={filename}
+              onChange={handleFileChange}
+              isLoading={uploading}
+              validated={rejected ? 'error' : 'default'}
+              dropzoneProps={{
+                accept: '.jfr',
+                onDropRejected: handleReject,
+              }}
+            />
+          </FormGroup>
+          <ActionGroup>
+            <Button variant="primary" onClick={handleSubmit} isDisabled={!filename}>
+              Submit
+            </Button>
+            <Button variant="link" onClick={handleClose}>
+              Cancel
+            </Button>
+          </ActionGroup>
+        </Form>
+      </Modal>
+    </>
+  );
 };

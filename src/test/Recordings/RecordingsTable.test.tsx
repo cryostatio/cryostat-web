@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { Button, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td } from '@patternfly/react-table';
@@ -46,63 +46,51 @@ import { RecordingsTable } from '@app/Recordings/RecordingsTable';
 const FakeToolbar = () => {
   return (
     <Toolbar>
-      <ToolbarContent> 
-        <ToolbarGroup> 
-          <ToolbarItem> 
-            <Button> 
-              Fake Button 
-            </Button>
+      <ToolbarContent>
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Button>Fake Button</Button>
           </ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>
     </Toolbar>
   );
-}
+};
 
 const fakeTableTitle = 'Test Table';
 
-const fakeTableColumns: string[] = [
-  'Column 1',
-  'Column 2'
-];
+const fakeTableColumns: string[] = ['Column 1', 'Column 2'];
 
-const fakeTableRows  =  (
-    <Tbody>
-      <Tr key='fake-row-1'>
-        <Td></Td> 
-        <Td key='data-1'>
-          Row 1: Fake Column 1 Data
-        </Td>
-        <Td key='data-2'>
-          Row 1: Fake Column 2 Data
-        </Td>
-      </Tr>
-      <Tr key='fake-row-2'>
-        <Td key='data-3'>
-          Row 2: Fake Column 1 Data
-        </Td>
-        <Td key='data-4'>
-          Row 2: Fake Column 2 Data
-        </Td>
-        <Td></Td>
-      </Tr>
-    </Tbody>
+const fakeTableRows = (
+  <Tbody>
+    <Tr key="fake-row-1">
+      <Td></Td>
+      <Td key="data-1">Row 1: Fake Column 1 Data</Td>
+      <Td key="data-2">Row 1: Fake Column 2 Data</Td>
+    </Tr>
+    <Tr key="fake-row-2">
+      <Td key="data-3">Row 2: Fake Column 1 Data</Td>
+      <Td key="data-4">Row 2: Fake Column 2 Data</Td>
+      <Td></Td>
+    </Tr>
+  </Tbody>
 );
 
-const mockHeaderCheckCallback = jest.fn((event, checked) => {/* do nothing */});
-
+const mockHeaderCheckCallback = jest.fn((event, checked) => {
+  /* do nothing */
+});
 
 describe('<RecordingsTable />', () => {
   it('correctly displays the toolbar prop', () => {
     render(
-      <RecordingsTable 
+      <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
         isNestedTable={false}
-        errorMessage=''
+        errorMessage=""
         isHeaderChecked={false}
         onHeaderCheck={mockHeaderCheckCallback}
       >
@@ -115,14 +103,14 @@ describe('<RecordingsTable />', () => {
 
   it('handles a non-nested table', () => {
     render(
-      <RecordingsTable 
+      <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
         isNestedTable={false}
-        errorMessage=''
+        errorMessage=""
         isHeaderChecked={false}
         onHeaderCheck={mockHeaderCheckCallback}
       >
@@ -139,17 +127,16 @@ describe('<RecordingsTable />', () => {
     expect(screen.getByText('Row 2: Fake Column 2 Data')).toBeInTheDocument();
   });
 
-
   it('handles a nested table with sticky header', () => {
-   const { container } = render(
-      <RecordingsTable 
+    const { container } = render(
+      <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
         isNestedTable={true}
-        errorMessage=''
+        errorMessage=""
         isHeaderChecked={false}
         onHeaderCheck={mockHeaderCheckCallback}
       >
@@ -165,14 +152,14 @@ describe('<RecordingsTable />', () => {
 
   it('handles the case where an error occurs', () => {
     render(
-      <RecordingsTable 
+      <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
         isNestedTable={false}
-        errorMessage='some error'
+        errorMessage="some error"
         isHeaderChecked={false}
         onHeaderCheck={mockHeaderCheckCallback}
       >
@@ -185,14 +172,14 @@ describe('<RecordingsTable />', () => {
 
   it('renders correctly when table data is still loading', () => {
     render(
-      <RecordingsTable 
+      <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={true}
         isNestedTable={false}
-        errorMessage=''
+        errorMessage=""
         isHeaderChecked={false}
         onHeaderCheck={mockHeaderCheckCallback}
       >
@@ -201,19 +188,19 @@ describe('<RecordingsTable />', () => {
     );
 
     const spinner = screen.getByRole('progressbar');
-    expect(spinner).toHaveAttribute('aria-valuetext', 'Loading...')
+    expect(spinner).toHaveAttribute('aria-valuetext', 'Loading...');
   });
 
   it('handles an empty table', () => {
     render(
-      <RecordingsTable 
+      <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
         tableTitle={fakeTableTitle}
         isEmpty={true}
         isLoading={false}
         isNestedTable={false}
-        errorMessage=''
+        errorMessage=""
         isHeaderChecked={false}
         onHeaderCheck={mockHeaderCheckCallback}
       >
@@ -226,14 +213,14 @@ describe('<RecordingsTable />', () => {
 
   it('handles the header checkbox callback correctly', () => {
     render(
-      <RecordingsTable 
+      <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
         isNestedTable={false}
-        errorMessage=''
+        errorMessage=""
         isHeaderChecked={false}
         onHeaderCheck={mockHeaderCheckCallback}
       >
@@ -249,14 +236,14 @@ describe('<RecordingsTable />', () => {
 
   it('renders the header checkbox as checked if props.isHeaderChecked == true', () => {
     render(
-      <RecordingsTable 
+      <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
         tableTitle={fakeTableTitle}
         isEmpty={false}
         isLoading={false}
         isNestedTable={false}
-        errorMessage=''
+        errorMessage=""
         isHeaderChecked={true}
         onHeaderCheck={mockHeaderCheckCallback}
       >
