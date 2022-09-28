@@ -58,15 +58,13 @@ export const Settings: React.FunctionComponent<{}> = () => {
     <>
       <BreadcrumbPage pageTitle="Settings">
         {settings.map((s) => (
-          <>
-            <Card>
-              <CardTitle>
-                <Text component={TextVariants.h1}>{s.title}</Text>
-                <Text component={TextVariants.small}>{s.description}</Text>
-              </CardTitle>
-              <CardBody>{s.element}</CardBody>
-            </Card>
-          </>
+          <Card key={s.title}>
+            <CardTitle>
+              <Text component={TextVariants.h1}>{s.title}</Text>
+              <Text component={TextVariants.small}>{s.description}</Text>
+            </CardTitle>
+            <CardBody>{s.element}</CardBody>
+          </Card>
         ))}
       </BreadcrumbPage>
     </>
