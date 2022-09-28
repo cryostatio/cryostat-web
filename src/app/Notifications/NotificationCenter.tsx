@@ -196,7 +196,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
                     <NotificationDrawerListItem key={key} variant={variant} onClick={() => markRead(key)} isRead={read}>
                       <NotificationDrawerListItemHeader title={title} variant={variant} />
                       <NotificationDrawerListItemBody timestamp={timestampToDateTimeString(timestamp)}>
-                        <Text component={TextVariants.p}>{message}</Text>
+                        <Text component={TextVariants.p}>{message as String}</Text>
                       </NotificationDrawerListItemBody>
                     </NotificationDrawerListItem>
                   ))}

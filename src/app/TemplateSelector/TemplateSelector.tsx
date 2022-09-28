@@ -44,6 +44,7 @@ export interface TemplateSelectorProps {
   placeholder: JSX.Element;
   customGroup: (el: JSX.Element[]) => JSX.Element;
   targetGroup: (el: JSX.Element[]) => JSX.Element;
+  children?: React.ReactNode;
 }
 
 export const TemplateSelector: React.FunctionComponent<TemplateSelectorProps> = (props) => {

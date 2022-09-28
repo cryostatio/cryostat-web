@@ -326,7 +326,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
               actionClose={<AlertActionCloseButton onClose={() => handleMarkNotificationRead(key)} />}
               timeout={true}
             >
-              {message}
+              {message as string}
             </Alert>
           ))}
       </AlertGroup>
