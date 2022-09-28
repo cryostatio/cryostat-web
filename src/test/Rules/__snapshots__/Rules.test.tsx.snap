@@ -165,6 +165,71 @@ exports[`<Rules/> renders correctly 1`] = `
         </div>
       </article>
     </div>
+    <div
+      className="pf-l-stack__item"
+    >
+      <article
+        className="pf-c-card"
+        data-ouia-component-id="OUIA-Generated-Card-2"
+        data-ouia-component-type="PF4/Card"
+        data-ouia-safe={true}
+        id=""
+      >
+        <div
+          className="pf-c-card__header"
+        >
+          <div
+            className=""
+          >
+            <h4
+              className=""
+              data-ouia-component-id="OUIA-Generated-Text-1"
+              data-ouia-component-type="PF4/Text"
+              data-ouia-safe={true}
+              data-pf-content={true}
+            >
+              About Automated Rules
+            </h4>
+          </div>
+        </div>
+        <div
+          className="pf-c-card__body"
+        >
+          Automated Rules define a dynamic set of Target JVMs to connect to and start
+           
+          <a
+            href="/recordings"
+            onClick={[Function]}
+          >
+            Active Recordings
+          </a>
+           using a specific 
+          <a
+            href="/events"
+            onClick={[Function]}
+          >
+            Event Template
+          </a>
+           
+          when the Automated Rule is created and when any new matching Target JVMs appear. If your Target JVM connections require JMX Credentials, you can configure these in 
+          <a
+            href="/security"
+            onClick={[Function]}
+          >
+            Security
+          </a>
+          . Automated Rules can be configured to periodically copy the contents of the Active Recording to
+           
+          <a
+            href="/archives"
+            onClick={[Function]}
+          >
+            Archives
+          </a>
+           to ensure you always have up-to-date information about your JVMs.
+        </div>
+      </article>
+    </div>
   </div>
 </section>
 `;
