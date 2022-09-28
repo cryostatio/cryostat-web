@@ -52,7 +52,7 @@ export class JmxCredentials {
   constructor(private readonly api: () => ApiService) {}
 
   setCredential(targetId: string, username: string, password: string): Observable<boolean> {
-    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION);
+    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION.key);
     switch (location) {
       case Locations.BACKEND.key:
         return this.api().postCredentials(`target.connectUrl == "${targetId}"`, username, password);
@@ -61,12 +61,12 @@ export class JmxCredentials {
         return of(true);
       default:
         console.warn('Unknown storage location', location);
-        return of(true);
+        return of(false);
     }
   }
 
   getCredential(targetId: string): Observable<Credential | undefined> {
-    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION);
+    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION.key);
     switch (location) {
       case Locations.BACKEND.key:
         // if this is stored on the backend then Cryostat should be using those and not prompting us to request from the user

@@ -74,12 +74,12 @@ function getLocation(key: string): Location {
 
 const Component = () => {
   const [isExpanded, setExpanded] = React.useState(false);
-  const [selection, setSelection] = React.useState(Locations.BROWSER_SESSION);
+  const [selection, setSelection] = React.useState(Locations.BROWSER_SESSION.key);
 
   const handleSelect = React.useCallback(
     (_, selection) => {
       let location = getLocation(selection);
-      setSelection(location);
+      setSelection(location.key);
       setExpanded(false);
       saveToLocalStorage('JMX_CREDENTIAL_LOCATION', selection);
     },
@@ -87,7 +87,7 @@ const Component = () => {
   );
 
   React.useEffect(() => {
-    handleSelect(undefined, getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION));
+    handleSelect(undefined, getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION.key));
   }, [handleSelect, getFromLocalStorage]);
 
   return (
@@ -97,7 +97,7 @@ const Component = () => {
         onToggle={setExpanded}
         onSelect={handleSelect}
         isOpen={isExpanded}
-        selections={selection.key}
+        selections={selection}
       >
         {locations.map((location) => (
           <SelectOption key={location.key} value={location.key} description={location.description} />
