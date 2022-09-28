@@ -63,7 +63,7 @@ export class Locations {
 
 const locations = [Locations.BROWSER_SESSION, Locations.BACKEND];
 
-function getLocation(key: string): Location {
+const getLocation = (key: string): Location => {
   for (let l of locations) {
     if (l.key === key) {
       return l;
