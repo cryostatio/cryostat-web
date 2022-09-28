@@ -88,7 +88,7 @@ const Component = () => {
 
   React.useEffect(() => {
     handleSelect(undefined, getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION));
-  }, [handleSelect, getLocation, getFromLocalStorage]);
+  }, [handleSelect, getFromLocalStorage]);
 
   return (
     <>
