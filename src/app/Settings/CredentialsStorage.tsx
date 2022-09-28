@@ -70,7 +70,7 @@ const getLocation = (key: string): Location => {
     }
   }
   return Locations.BROWSER_SESSION;
-}
+};
 
 const Component = () => {
   const [isExpanded, setExpanded] = React.useState(false);
