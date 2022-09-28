@@ -36,17 +36,22 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import {
+  Button,
   Card,
   CardBody,
+  CardHeader,
+  CardHeaderMain,
   EmptyState,
   EmptyStateIcon,
+  Text,
+  TextVariants,
   Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
   ToolbarGroup,
-  Button,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -376,6 +381,21 @@ export const Rules = () => {
               </ToolbarContent>
             </Toolbar>
             {viewContent()}
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardHeaderMain>
+              <Text component={TextVariants.h4}>About Automated Rules</Text>
+            </CardHeaderMain>
+          </CardHeader>
+          <CardBody>
+            Automated Rules define a dynamic set of Target JVMs to connect to and start{' '}
+            <Link to="/recordings">Active Recordings</Link> using a specific <Link to="/events">Event Template</Link>{' '}
+            when the Automated Rule is created and when any new matching Target JVMs appear. If your Target JVM
+            connections require JMX Credentials, you can configure these in <Link to="/security">Security</Link>.
+            Automated Rules can be configured to periodically copy the contents of the Active Recording to{' '}
+            <Link to="/archives">Archives</Link> to ensure you always have up-to-date information about your JVMs.
           </CardBody>
         </Card>
       </BreadcrumbPage>
