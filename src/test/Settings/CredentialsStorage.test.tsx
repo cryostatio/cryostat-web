@@ -95,11 +95,14 @@ describe('<CredentialsStorage/>', () => {
 
     userEvent.click(screen.getByRole('button'));
 
+    // as in the other test, the default is Session storage. click the dropdown and select Backend to change selection
     const ul = await screen.findByRole('listbox');
-    const session = within(ul).getByText(sessionStorageValue);
     const backend = within(ul).getByText(backendStorageValue);
     userEvent.click(backend);
-    await waitFor(() => expect(session).not.toBeVisible());
+
+    await waitFor(() => expect(ul).not.toBeVisible()); // expect selection menu to close after user clicks an option
+
+    // expect the selection to be visible, the other not
     expect(screen.getByText(backendStorageValue)).toBeVisible();
     expect(screen.queryByText(sessionStorageValue)).toBeFalsy();
 
