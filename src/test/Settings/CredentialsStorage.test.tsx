@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, waitFor, getByText } from '@testing-library/react';
+import { render, cleanup, screen, waitFor, getByText, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { CredentialsStorage } from '@app/Settings/CredentialsStorage';
@@ -96,8 +96,8 @@ describe('<CredentialsStorage/>', () => {
     userEvent.click(screen.getByRole('button'));
 
     const ul = await screen.findByRole('listbox');
-    const session = getByText(ul, sessionStorageValue);
-    const backend = getByText(ul, backendStorageValue);
+    const session = within(ul).getByText(sessionStorageValue);
+    const backend = within(ul).getByText(backendStorageValue);
     userEvent.click(backend);
     await waitFor(() => expect(session).not.toBeVisible());
     expect(screen.getByText(backendStorageValue)).toBeVisible();
