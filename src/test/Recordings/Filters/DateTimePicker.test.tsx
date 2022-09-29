@@ -46,7 +46,6 @@ const onDateTimeSelect = jest.fn((date) => {
 });
 const currentDate = new Date('14 Sep 2022 00:00:00 UTC');
 
-// See https://github.com/testing-library/user-event/issues/833 with new testing-library versions
 const user = userEvent.setup({
   advanceTimers: jest.advanceTimersByTime,
 });
