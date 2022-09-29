@@ -265,7 +265,7 @@ describe('<StoreJmxCredentials />', () => {
     expect(apiRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('expands to show the correct nested targets', () => {
+  it('expands to show the correct nested targets', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -281,7 +281,7 @@ describe('<StoreJmxCredentials />', () => {
 
     const expandButtons = screen.getAllByLabelText('Details');
 
-    userEvent.click(expandButtons[0]);
+    await userEvent.click(expandButtons[0]);
 
     expect(screen.getByText('Target')).toBeInTheDocument();
     expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
@@ -290,7 +290,7 @@ describe('<StoreJmxCredentials />', () => {
       screen.queryByText(`${mockAnotherMatchingTarget.alias} (${mockAnotherMatchingTarget.connectUrl})`)
     ).not.toBeInTheDocument();
 
-    userEvent.click(expandButtons[1]);
+    await userEvent.click(expandButtons[1]);
 
     expect(screen.getByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).toBeInTheDocument();
     expect(
@@ -312,11 +312,11 @@ describe('<StoreJmxCredentials />', () => {
 
     const expandButtons = screen.getAllByLabelText('Details');
 
-    userEvent.click(expandButtons[0]);
+    await userEvent.click(expandButtons[0]);
 
     expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
 
-    userEvent.click(expandButtons[1]);
+    await userEvent.click(expandButtons[1]);
 
     expect(screen.queryByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).not.toBeInTheDocument();
     expect(
@@ -324,7 +324,7 @@ describe('<StoreJmxCredentials />', () => {
     ).toBeInTheDocument();
   });
 
-  it('increments the correct count and updates the correct nested table when a found target notification is received', () => {
+  it('increments the correct count and updates the correct nested table when a found target notification is received', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
@@ -336,14 +336,14 @@ describe('<StoreJmxCredentials />', () => {
 
     const expandButtons = screen.getAllByLabelText('Details');
 
-    userEvent.click(expandButtons[0]);
+    await userEvent.click(expandButtons[0]);
 
     expect(screen.getByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).toBeInTheDocument();
     expect(
       screen.queryByText(`${mockYetAnotherMatchingTarget.alias} (${mockYetAnotherMatchingTarget.connectUrl})`)
     ).not.toBeInTheDocument();
 
-    userEvent.click(expandButtons[1]);
+    await userEvent.click(expandButtons[1]);
 
     expect(screen.getByText(`${mockAnotherTarget.alias} (${mockAnotherTarget.connectUrl})`)).toBeInTheDocument();
     expect(
@@ -354,20 +354,20 @@ describe('<StoreJmxCredentials />', () => {
     ).toBeInTheDocument();
   });
 
-  it('opens the JMX auth modal when Add is clicked', () => {
+  it('opens the JMX auth modal when Add is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <StoreJmxCredentials />
       </ServiceContext.Provider>
     );
-    userEvent.click(screen.getByText('Add'));
+    await userEvent.click(screen.getByText('Add'));
     expect(screen.getByText('CreateJmxCredentialModal')).toBeInTheDocument();
 
-    userEvent.click(screen.getByLabelText('Close'));
+    await userEvent.click(screen.getByLabelText('Close'));
     expect(screen.queryByText('CreateJmxCredentialModal')).not.toBeInTheDocument();
   });
 
-  it('shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete', () => {
+  it('shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete', async () => {
     const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
     render(
@@ -379,14 +379,14 @@ describe('<StoreJmxCredentials />', () => {
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
     expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
 
-    userEvent.click(screen.getByLabelText('credentials-table-row-0-check'));
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(screen.getByLabelText('credentials-table-row-0-check'));
+    await userEvent.click(screen.getByText('Delete'));
 
     expect(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).toBeInTheDocument();
 
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
-    userEvent.click(screen.getByLabelText("Don't ask me again"));
-    userEvent.click(within(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).getByText('Delete'));
+    await userEvent.click(screen.getByLabelText("Don't ask me again"));
+    await userEvent.click(within(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).getByText('Delete'));
 
     expect(dialogWarningSpy).toBeCalledTimes(1);
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteJMXCredentials, false);
@@ -394,7 +394,7 @@ describe('<StoreJmxCredentials />', () => {
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('makes multiple delete requests when all credentials are deleted at once w/o popup warning', () => {
+  it('makes multiple delete requests when all credentials are deleted at once w/o popup warning', async () => {
     const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
     render(
@@ -410,8 +410,8 @@ describe('<StoreJmxCredentials />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(selectAllCheck);
+    await userEvent.click(screen.getByText('Delete'));
     expect(queryRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledTimes(2);
   });

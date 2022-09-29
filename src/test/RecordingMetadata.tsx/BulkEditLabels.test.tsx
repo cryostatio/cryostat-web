@@ -186,7 +186,7 @@ describe('<BulkEditLabels />', () => {
     expect(placeHolder).toBeVisible();
   });
 
-  it('should display editable labels form when in edit mode', () => {
+  it('should display editable labels form when in edit mode', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
@@ -197,7 +197,7 @@ describe('<BulkEditLabels />', () => {
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
-    userEvent.click(editButton);
+    await userEvent.click(editButton);
 
     const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
@@ -267,7 +267,7 @@ describe('<BulkEditLabels />', () => {
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
-    userEvent.click(editButton);
+    await userEvent.click(editButton);
 
     let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
@@ -293,7 +293,7 @@ describe('<BulkEditLabels />', () => {
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
-    userEvent.click(cancelButton);
+    await userEvent.click(cancelButton);
 
     editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
@@ -313,7 +313,7 @@ describe('<BulkEditLabels />', () => {
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
-    userEvent.click(editButton);
+    await userEvent.click(editButton);
 
     let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
@@ -339,7 +339,7 @@ describe('<BulkEditLabels />', () => {
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
-    userEvent.click(saveButton);
+    await userEvent.click(saveButton);
 
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
@@ -356,7 +356,7 @@ describe('<BulkEditLabels />', () => {
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
-    userEvent.click(editButton);
+    await userEvent.click(editButton);
 
     let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
@@ -382,7 +382,7 @@ describe('<BulkEditLabels />', () => {
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
-    userEvent.click(saveButton);
+    await userEvent.click(saveButton);
 
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });

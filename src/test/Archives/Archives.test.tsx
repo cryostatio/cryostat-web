@@ -117,7 +117,7 @@ describe('<Archives />', () => {
     expect(screen.getByText('Archives Unavailable')).toBeInTheDocument();
   });
 
-  it('handles changing tabs', () => {
+  it('handles changing tabs', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <Archives />
@@ -136,7 +136,7 @@ describe('<Archives />', () => {
     expect(within(secondTab).getByText('Uploads')).toBeTruthy();
 
     // Click the Uploads tab
-    userEvent.click(screen.getByText('Uploads'));
+    await userEvent.click(screen.getByText('Uploads'));
 
     // Assert that the Uploads tab is now selected
     tabsList = screen.getAllByRole('tab');

@@ -124,7 +124,7 @@ describe('<TargetSelect />', () => {
     expect(screen.getByLabelText('Options menu')).toBeInTheDocument();
   });
 
-  it('renders dropdown of multiple discovered targets', () => {
+  it('renders dropdown of multiple discovered targets', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <TargetSelect />
@@ -133,7 +133,7 @@ describe('<TargetSelect />', () => {
 
     expect(screen.getByText(`fooTarget`)).toBeInTheDocument();
 
-    userEvent.click(screen.getByLabelText('Options menu'));
+    await userEvent.click(screen.getByLabelText('Options menu'));
     expect(screen.getByLabelText('Select Input')).toBeInTheDocument();
     expect(screen.getByText(`Select Target...`)).toBeInTheDocument();
     expect(screen.getByText(`fooTarget (service:jmx:rmi://someFooUrl)`)).toBeInTheDocument();
@@ -141,22 +141,22 @@ describe('<TargetSelect />', () => {
     expect(screen.getByText('2')).toBeInTheDocument(); // Number of discoverable targets
   });
 
-  it('creates a target if user completes modal', () => {
+  it('creates a target if user completes modal', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <TargetSelect />
       </ServiceContext.Provider>
     );
     const createButton = screen.getByLabelText('Create target');
-    userEvent.click(createButton);
+    await userEvent.click(createButton);
 
     const textBoxes = screen.getAllByRole('textbox');
 
-    userEvent.type(textBoxes[0], 'service:jmx:rmi://someBazUrl');
-    userEvent.type(textBoxes[1], 'bazTarget');
+    await userEvent.type(textBoxes[0], 'service:jmx:rmi://someBazUrl');
+    await userEvent.type(textBoxes[1], 'bazTarget');
 
     const createTargetRequestSpy = jest.spyOn(defaultServices.api, 'createTarget');
-    userEvent.click(screen.getByText('Create'));
+    await userEvent.click(screen.getByText('Create'));
 
     expect(createTargetRequestSpy).toBeCalledTimes(1);
     expect(createTargetRequestSpy).toBeCalledWith(mockBazTarget);
@@ -172,21 +172,21 @@ describe('<TargetSelect />', () => {
     const deleteButton = screen.getByLabelText('Delete target');
     await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-    userEvent.click(deleteButton);
+    await userEvent.click(deleteButton);
 
     const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
     expect(deleteTargetRequestSpy).toBeCalledTimes(1);
     expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
   });
 
-  it('does nothing when trying to delete non-custom targets', () => {
+  it('does nothing when trying to delete non-custom targets', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <TargetSelect />
       </ServiceContext.Provider>
     );
     const deleteButton = screen.getByLabelText('Delete target');
-    userEvent.click(deleteButton);
+    await userEvent.click(deleteButton);
 
     const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
 
@@ -194,14 +194,14 @@ describe('<TargetSelect />', () => {
     expect(deleteButton).toBeDisabled();
   });
 
-  it('refreshes targets when button clicked', () => {
+  it('refreshes targets when button clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <TargetSelect />
       </ServiceContext.Provider>
     );
     const refreshButton = screen.getByLabelText('Refresh targets');
-    userEvent.click(refreshButton);
+    await userEvent.click(refreshButton);
 
     const refreshTargetsRequestSpy = jest.spyOn(defaultServices.targets, 'queryForTargets');
     expect(refreshTargetsRequestSpy).toBeCalledTimes(1);

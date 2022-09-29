@@ -94,7 +94,7 @@ describe('<NameFilter />', () => {
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
 
-    userEvent.click(nameInput);
+    await userEvent.click(nameInput);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe('<NameFilter />', () => {
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
-    userEvent.click(dropDownArrow);
+    await userEvent.click(dropDownArrow);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
@@ -133,7 +133,7 @@ describe('<NameFilter />', () => {
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
-    userEvent.click(dropDownArrow);
+    await userEvent.click(dropDownArrow);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
@@ -145,7 +145,7 @@ describe('<NameFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(dropDownArrow);
+    await userEvent.click(dropDownArrow);
     expect(selectMenu).not.toBeInTheDocument();
     expect(selectMenu).not.toBeVisible();
   });
@@ -157,7 +157,7 @@ describe('<NameFilter />', () => {
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
 
-    userEvent.click(nameInput);
+    await userEvent.click(nameInput);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
@@ -169,7 +169,7 @@ describe('<NameFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(nameInput);
+    await userEvent.click(nameInput);
     expect(selectMenu).not.toBeInTheDocument();
     expect(selectMenu).not.toBeVisible();
   });
@@ -180,7 +180,7 @@ describe('<NameFilter />', () => {
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
 
-    userEvent.click(nameInput);
+    await userEvent.click(nameInput);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
@@ -199,7 +199,7 @@ describe('<NameFilter />', () => {
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
 
-    userEvent.click(nameInput);
+    await userEvent.click(nameInput);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by name' });
     expect(selectMenu).toBeInTheDocument();
@@ -211,7 +211,7 @@ describe('<NameFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(screen.getByText('someRecording'));
+    await userEvent.click(screen.getByText('someRecording'));
 
     // NameFilter's parent rebuilds to close menu by default.
 

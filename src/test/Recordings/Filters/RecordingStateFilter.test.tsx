@@ -98,7 +98,7 @@ describe('<RecordingStateFilter />', () => {
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await userEvent.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe('<RecordingStateFilter />', () => {
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await userEvent.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe('<RecordingStateFilter />', () => {
       expect(selectOption).toBeVisible();
     });
 
-    userEvent.click(stateDropDown);
+    await userEvent.click(stateDropDown);
     expect(selectMenu).not.toBeInTheDocument();
     expect(selectMenu).not.toBeVisible();
   });
@@ -142,7 +142,7 @@ describe('<RecordingStateFilter />', () => {
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await userEvent.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -175,7 +175,7 @@ describe('<RecordingStateFilter />', () => {
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await userEvent.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -196,7 +196,7 @@ describe('<RecordingStateFilter />', () => {
     expect(uncheckedBox).toBeVisible();
     expect(uncheckedBox).not.toHaveAttribute('checked');
 
-    userEvent.click(uncheckedBox);
+    await userEvent.click(uncheckedBox);
 
     expect(onRecordingStateToggle).toHaveBeenCalledTimes(1);
     expect(onRecordingStateToggle).toHaveBeenCalledWith(mockAnotherRecording.state);
@@ -214,7 +214,7 @@ describe('<RecordingStateFilter />', () => {
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await userEvent.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -235,7 +235,7 @@ describe('<RecordingStateFilter />', () => {
     expect(uncheckedBox).toBeVisible();
     expect(uncheckedBox).toHaveAttribute('checked');
 
-    userEvent.click(uncheckedBox);
+    await userEvent.click(uncheckedBox);
 
     expect(onRecordingStateToggle).toHaveBeenCalledTimes(1);
     expect(onRecordingStateToggle).toHaveBeenCalledWith(mockRecording.state);

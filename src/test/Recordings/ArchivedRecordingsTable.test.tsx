@@ -247,7 +247,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.getByText('Edit Labels')).toBeInTheDocument();
   });
 
-  it('opens the labels drawer when Edit Labels is clicked', () => {
+  it('opens the labels drawer when Edit Labels is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -258,8 +258,8 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Edit Labels'));
+    await userEvent.click(selectAllCheck);
+    await userEvent.click(screen.getByText('Edit Labels'));
     expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
   });
 
@@ -274,8 +274,8 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(selectAllCheck);
+    await userEvent.click(screen.getByText('Delete'));
 
     const deleteModal = await screen.findByLabelText(DeleteArchivedRecordings.ariaLabel);
     expect(deleteModal).toBeInTheDocument();
@@ -283,8 +283,8 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
-    userEvent.click(screen.getByLabelText("Don't ask me again"));
-    userEvent.click(within(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel)).getByText('Delete'));
+    await userEvent.click(screen.getByLabelText("Don't ask me again"));
+    await userEvent.click(within(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
@@ -292,7 +292,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteArchivedRecordings, false);
   });
 
-  it('deletes the recording when Delete is clicked w/o popup warning', () => {
+  it('deletes the recording when Delete is clicked w/o popup warning', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -303,8 +303,8 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(selectAllCheck);
+    await userEvent.click(screen.getByText('Delete'));
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
 
@@ -313,7 +313,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
   });
 
-  it('downloads a recording when Download Recording is clicked', () => {
+  it('downloads a recording when Download Recording is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -322,8 +322,8 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('Download Recording'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(screen.getByText('Download Recording'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
 
@@ -331,7 +331,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(downloadRequestSpy).toBeCalledWith(mockRecording);
   });
 
-  it('displays the automated analysis report when View Report is clicked', () => {
+  it('displays the automated analysis report when View Report is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -340,15 +340,15 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('View Report ...'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(screen.getByText('View Report ...'));
 
     const reportRequestSpy = jest.spyOn(defaultServices.api, 'downloadReport');
 
     expect(reportRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('uploads a recording to Grafana when View in Grafana is clicked', () => {
+  it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -357,8 +357,8 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('View in Grafana ...'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(screen.getByText('View in Grafana ...'));
 
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana');
 
@@ -381,7 +381,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-    userEvent.click(uploadButton);
+    await userEvent.click(uploadButton);
 
     const uploadModal = await screen.findByRole('dialog');
     expect(uploadModal).toBeInTheDocument();
@@ -397,7 +397,7 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('add'));
+    await userEvent.click(screen.getByLabelText('add'));
 
     const modal = await screen.findByRole('dialog');
 
@@ -420,21 +420,21 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(browseButton).toBeVisible();
 
     const submitButton = screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
-    userEvent.click(submitButton);
+    await userEvent.click(submitButton);
 
     const uploadInput = modal.querySelector("input[accept='.jfr'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    userEvent.click(browseButton);
-    userEvent.upload(uploadInput, mockFileUpload);
+    await userEvent.click(browseButton);
+    await userEvent.upload(uploadInput, mockFileUpload);
 
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => {
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
     });
 
     expect(uploadSpy).toHaveBeenCalled();

@@ -273,9 +273,7 @@ Array [
           data-label=""
           onMouseEnter={[Function]}
           scope={null}
-        >
-          
-        </td>
+        />
       </tr>
     </thead>
     <tbody

@@ -105,47 +105,47 @@ describe('<RecordingLabelFields />', () => {
     expect(screen.getByText('Add Label')).toBeInTheDocument();
   });
 
-  it('updates the label key when entering text into the Key input', () => {
+  it('updates the label key when entering text into the Key input', async () => {
     render(<RecordingLabelFields {...mockProps} />);
 
     const labelKeyInput = screen.getAllByLabelText('label key')[0];
-    userEvent.clear(labelKeyInput);
+    await userEvent.clear(labelKeyInput);
 
-    userEvent.type(labelKeyInput, 'someEditedKey');
+    await userEvent.type(labelKeyInput, 'someEditedKey');
     expect(mockProps.labels[0].key).toBe('someEditedKey');
   });
 
-  it('updates the label value when entering text into the Value input', () => {
+  it('updates the label value when entering text into the Value input', async () => {
     render(<RecordingLabelFields {...mockProps} />);
 
     const labelValueInput = screen.getAllByLabelText('label value')[0];
 
-    userEvent.clear(labelValueInput);
+    await userEvent.clear(labelValueInput);
 
-    userEvent.type(labelValueInput, 'someEditedValue');
+    await userEvent.type(labelValueInput, 'someEditedValue');
 
     expect(mockProps.labels[0].value).toBe('someEditedValue');
   });
 
-  it('adds a label when Add Label is clicked', () => {
+  it('adds a label when Add Label is clicked', async () => {
     render(<RecordingLabelFields {...mockProps} />);
 
     expect(screen.getAllByLabelText('label key').length).toBe(2);
     expect(screen.getAllByLabelText('label value').length).toBe(2);
 
-    userEvent.click(screen.getByText('Add Label'));
+    await userEvent.click(screen.getByText('Add Label'));
 
     expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
     expect(mockProps.setLabels).toHaveBeenCalledWith([mockLabel1, mockLabel2, mockEmptyLabel]);
   });
 
-  it('removes the correct label when Delete button is clicked', () => {
+  it('removes the correct label when Delete button is clicked', async () => {
     render(<RecordingLabelFields {...mockProps} />);
 
     expect(screen.getAllByLabelText('label key').length).toBe(2);
     expect(screen.getAllByLabelText('label value').length).toBe(2);
 
-    userEvent.click(screen.getAllByTestId('remove-label-button')[0]);
+    await userEvent.click(screen.getAllByTestId('remove-label-button')[0]);
 
     expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
     expect(mockProps.setLabels).toHaveBeenCalledWith([mockLabel2]);
@@ -157,26 +157,26 @@ describe('<RecordingLabelFields />', () => {
     expect(mockValid).toBe(ValidatedOptions.success);
   });
 
-  it('validates the label key when leaving the input field', () => {
+  it('validates the label key when leaving the input field', async () => {
     render(<RecordingLabelFields {...mockProps} />);
 
     const labelKeyInput = screen.getAllByLabelText('label key')[0];
-    userEvent.click(labelKeyInput);
+    await userEvent.click(labelKeyInput);
 
     // click somewhere else to leave the input field and trigger validation
-    userEvent.click(screen.getAllByLabelText('label value')[0]);
+    await userEvent.click(screen.getAllByLabelText('label value')[0]);
 
     expect(mockValid).toBe(ValidatedOptions.success);
   });
 
-  it('validates the label value when leaving the input field', () => {
+  it('validates the label value when leaving the input field', async () => {
     render(<RecordingLabelFields {...mockProps} />);
 
     const labelValueInput = screen.getAllByLabelText('label value')[0];
-    userEvent.click(labelValueInput);
+    await userEvent.click(labelValueInput);
 
     // click somewhere else to leave the input field and trigger validation
-    userEvent.click(screen.getAllByLabelText('label key')[0]);
+    await userEvent.click(screen.getAllByLabelText('label key')[0]);
 
     expect(mockValid).toBe(ValidatedOptions.success);
   });

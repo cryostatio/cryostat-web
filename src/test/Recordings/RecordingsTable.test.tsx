@@ -211,7 +211,7 @@ describe('<RecordingsTable />', () => {
     expect(screen.getByText(`No ${fakeTableTitle}`)).toBeInTheDocument();
   });
 
-  it('handles the header checkbox callback correctly', () => {
+  it('handles the header checkbox callback correctly', async () => {
     render(
       <RecordingsTable
         toolbar={<FakeToolbar />}
@@ -230,7 +230,7 @@ describe('<RecordingsTable />', () => {
 
     let headerCheckAll = screen.getByLabelText('Select all rows');
     expect(headerCheckAll).not.toHaveAttribute('checked');
-    userEvent.click(headerCheckAll);
+    await userEvent.click(headerCheckAll);
     expect(mockHeaderCheckCallback).toHaveBeenCalledTimes(1);
   });
 

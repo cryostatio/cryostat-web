@@ -225,7 +225,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    userEvent.click(selectedItem);
+    await userEvent.click(selectedItem);
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
@@ -264,7 +264,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    userEvent.click(selectedItem);
+    await userEvent.click(selectedItem);
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
@@ -311,13 +311,13 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    userEvent.click(selectedItem);
+    await userEvent.click(selectedItem);
 
     let categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
     expect(categoryMenu).toBeVisible();
 
-    userEvent.click(selectedItem); // Click again
+    await userEvent.click(selectedItem); // Click again
 
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
@@ -348,7 +348,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    userEvent.click(selectedItem);
+    await userEvent.click(selectedItem);
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
@@ -360,7 +360,7 @@ describe('<RecordingFilters />', () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(within(categoryMenu).getByRole('menuitem', { name: 'Name' }));
+    await userEvent.click(within(categoryMenu).getByRole('menuitem', { name: 'Name' }));
 
     selectedItem = screen.getByRole('button', { name: 'Name' });
     expect(selectedItem).toBeInTheDocument();

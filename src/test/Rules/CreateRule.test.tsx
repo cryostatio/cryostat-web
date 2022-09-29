@@ -177,19 +177,19 @@ describe('<CreateRule/>', () => {
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
 
-    userEvent.type(nameInput, mockRule.name);
-    userEvent.type(descriptionInput, mockRule.description);
-    userEvent.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
-    userEvent.selectOptions(templateSelect, [screen.getByText('Profiling')]);
-    userEvent.type(maxSizeInput, `${mockRule.maxSizeBytes}`);
-    userEvent.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
-    userEvent.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);
-    userEvent.type(preservedArchivesInput, `${mockRule.preservedArchives}`);
-    userEvent.type(initialDelayInput, `${mockRule.initialDelaySeconds}`);
+    await userEvent.type(nameInput, mockRule.name);
+    await userEvent.type(descriptionInput, mockRule.description);
+    await userEvent.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
+    await userEvent.selectOptions(templateSelect, [screen.getByText('Profiling')]);
+    await userEvent.type(maxSizeInput, `${mockRule.maxSizeBytes}`);
+    await userEvent.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
+    await userEvent.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);
+    await userEvent.type(preservedArchivesInput, `${mockRule.preservedArchives}`);
+    await userEvent.type(initialDelayInput, `${mockRule.initialDelaySeconds}`);
 
     await waitFor(() => expect(createButton).not.toBeDisabled());
 
-    userEvent.click(createButton);
+    await userEvent.click(createButton);
 
     expect(createSpy).toHaveBeenCalledTimes(1);
     expect(createSpy).toHaveBeenCalledWith(mockRule);

@@ -134,7 +134,7 @@ describe('<Recordings />', () => {
     expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
   });
 
-  it('handles updating the activeTab state', () => {
+  it('handles updating the activeTab state', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <Recordings />
@@ -153,7 +153,7 @@ describe('<Recordings />', () => {
     expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
 
     // Click the archived recordings tab
-    userEvent.click(screen.getByText('Archived Recordings'));
+    await userEvent.click(screen.getByText('Archived Recordings'));
 
     // Assert that the archived recordings tab is now selected
     tabsList = screen.getAllByRole('tab');

@@ -137,7 +137,7 @@ describe('<Rules/>', () => {
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByRole('button', { name: /Create/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Create/ }));
 
     expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/rules', '/rules/create']);
   });
@@ -151,7 +151,7 @@ describe('<Rules/>', () => {
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByRole('button', { name: 'Upload' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Upload' }));
 
     const modal = await screen.findByRole('dialog');
     expect(modal).toBeInTheDocument();
@@ -178,13 +178,13 @@ describe('<Rules/>', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(await screen.findByText('Delete'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(await screen.findByText('Delete'));
 
     expect(screen.getByLabelText(DeleteAutomatedRules.ariaLabel));
 
-    userEvent.click(screen.getByLabelText("Don't ask me again"));
-    userEvent.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
+    await userEvent.click(screen.getByLabelText("Don't ask me again"));
+    await userEvent.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
@@ -203,8 +203,8 @@ describe('<Rules/>', () => {
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(await screen.findByText('Delete'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(await screen.findByText('Delete'));
 
     expect(screen.queryByLabelText(DeleteAutomatedRules.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
@@ -232,8 +232,8 @@ describe('<Rules/>', () => {
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(await screen.findByText('Download'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(await screen.findByText('Download'));
 
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toBeCalledWith(mockRule.name);
@@ -248,7 +248,7 @@ describe('<Rules/>', () => {
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByRole('button', { name: 'Upload' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Upload' }));
 
     const modal = await screen.findByRole('dialog');
     expect(modal).toBeInTheDocument();
@@ -269,21 +269,21 @@ describe('<Rules/>', () => {
     expect(browseButton).toBeVisible();
 
     const submitButton = screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
-    userEvent.click(submitButton);
+    await userEvent.click(submitButton);
 
     const uploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    userEvent.click(browseButton);
-    userEvent.upload(uploadInput, mockFileUpload);
+    await userEvent.click(browseButton);
+    await userEvent.upload(uploadInput, mockFileUpload);
 
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => {
-      userEvent.click(submitButton);
+      await userEvent.click(submitButton);
     });
 
     expect(createSpy).toHaveBeenCalled();

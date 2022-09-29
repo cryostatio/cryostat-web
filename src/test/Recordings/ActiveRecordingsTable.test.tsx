@@ -116,6 +116,7 @@ jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'downloadReport').mockReturnValue();
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/grafanaUrl'));
+jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
 jest.spyOn(defaultServices.api, 'stopRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValue(of(true));
 
@@ -267,18 +268,18 @@ describe('<ActiveRecordingsTable />', () => {
     expect(screen.getByText('Delete')).toBeInTheDocument();
   });
 
-  it('routes to the Create Flight Recording form when Create is clicked', () => {
+  it('routes to the Create Flight Recording form when Create is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
 
-    userEvent.click(screen.getByText('Create'));
+    await userEvent.click(screen.getByText('Create'));
 
     expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/recordings', '/recordings/create']);
   });
 
-  it('archives the selected recording when Archive is clicked', () => {
+  it('archives the selected recording when Archive is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
@@ -286,8 +287,8 @@ describe('<ActiveRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Archive'));
+    await userEvent.click(selectAllCheck);
+    await userEvent.click(screen.getByText('Archive'));
 
     const archiveRequestSpy = jest.spyOn(defaultServices.api, 'archiveRecording');
 
@@ -295,7 +296,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(archiveRequestSpy).toBeCalledWith('someRecording');
   });
 
-  it('stops the selected recording when Stop is clicked', () => {
+  it('stops the selected recording when Stop is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
@@ -303,8 +304,8 @@ describe('<ActiveRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Stop'));
+    await userEvent.click(selectAllCheck);
+    await userEvent.click(screen.getByText('Stop'));
 
     const stopRequestSpy = jest.spyOn(defaultServices.api, 'stopRecording');
 
@@ -312,7 +313,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(stopRequestSpy).toBeCalledWith('someRecording');
   });
 
-  it('opens the labels drawer when Edit Labels is clicked', () => {
+  it('opens the labels drawer when Edit Labels is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
@@ -320,8 +321,8 @@ describe('<ActiveRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Edit Labels'));
+    await userEvent.click(selectAllCheck);
+    await userEvent.click(screen.getByText('Edit Labels'));
     expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
   });
 
@@ -333,9 +334,9 @@ describe('<ActiveRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
+    await userEvent.click(selectAllCheck);
 
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(screen.getByText('Delete'));
 
     const deleteModal = await screen.findByLabelText(DeleteActiveRecordings.ariaLabel);
     expect(deleteModal).toBeInTheDocument();
@@ -343,8 +344,8 @@ describe('<ActiveRecordingsTable />', () => {
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRecording');
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
-    userEvent.click(screen.getByLabelText("Don't ask me again"));
-    userEvent.click(within(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).getByText('Delete'));
+    await userEvent.click(screen.getByLabelText("Don't ask me again"));
+    await userEvent.click(within(screen.getByLabelText(DeleteActiveRecordings.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toBeCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someRecording');
@@ -352,7 +353,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteActiveRecordings, false);
   });
 
-  it('deletes the recording when Delete is clicked w/o popup warning', () => {
+  it('deletes the recording when Delete is clicked w/o popup warning', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
@@ -360,8 +361,8 @@ describe('<ActiveRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Delete'));
+    await userEvent.click(selectAllCheck);
+    await userEvent.click(screen.getByText('Delete'));
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRecording');
 
@@ -370,14 +371,14 @@ describe('<ActiveRecordingsTable />', () => {
     expect(deleteRequestSpy).toBeCalledWith('someRecording');
   });
 
-  it('downloads a recording when Download Recording is clicked', () => {
+  it('downloads a recording when Download Recording is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('Download Recording'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(screen.getByText('Download Recording'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
 
@@ -385,28 +386,28 @@ describe('<ActiveRecordingsTable />', () => {
     expect(downloadRequestSpy).toBeCalledWith(mockRecording);
   });
 
-  it('displays the automated analysis report when View Report is clicked', () => {
+  it('displays the automated analysis report when View Report is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('View Report ...'));
+    await userEvent.click(screen.getByLabelText('Actions'));
+    await userEvent.click(screen.getByText('View Report ...'));
 
     const reportRequestSpy = jest.spyOn(defaultServices.api, 'downloadReport');
 
     expect(reportRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('uploads a recording to Grafana when View in Grafana is clicked', () => {
+  it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(screen.getByText('View in Grafana ...'));
+    await userEvent.click(await screen.getByLabelText('Actions'));
+    await userEvent.click(await screen.getByText('View in Grafana ...'));
 
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana');
 

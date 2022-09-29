@@ -72,13 +72,11 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     addSubscription(
       props
         .uploadFn()
-        .pipe(first())
         .subscribe((success) => {
           if (success) {
             notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
             context.api
               .grafanaDashboardUrl()
-              .pipe(first())
               .subscribe((url) => window.open(url, '_blank'));
           }
         })

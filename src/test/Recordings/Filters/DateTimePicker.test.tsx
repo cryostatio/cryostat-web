@@ -46,6 +46,11 @@ const onDateTimeSelect = jest.fn((date) => {
 });
 const currentDate = new Date('14 Sep 2022 00:00:00 UTC');
 
+// See https://github.com/testing-library/user-event/issues/833 with new testing-library versions
+const user = userEvent.setup({
+  delay:null
+});
+
 describe('<DateTimePicker />', () => {
   beforeEach(() => {
     // Mock system time
@@ -61,11 +66,11 @@ describe('<DateTimePicker />', () => {
   it('should open calendar when calendar icon is clicked', async () => {
     render(<DateTimePicker onSubmit={onDateTimeSelect} />);
 
-    const calendarIcon = screen.getByRole('button', { name: 'Toggle date picker' });
+    const calendarIcon = await screen.getByRole('button', { name: 'Toggle date picker' });
     expect(calendarIcon).toBeInTheDocument();
     expect(calendarIcon).toBeVisible();
 
-    userEvent.click(calendarIcon);
+    await user.click(calendarIcon);
 
     const calendar = await screen.findByRole('dialog');
     expect(calendar).toBeInTheDocument();
@@ -75,17 +80,17 @@ describe('<DateTimePicker />', () => {
   it('should close calendar when calendar icon is clicked', async () => {
     render(<DateTimePicker onSubmit={onDateTimeSelect} />);
 
-    const calendarIcon = screen.getByRole('button', { name: 'Toggle date picker' });
+    const calendarIcon = await screen.getByRole('button', { name: 'Toggle date picker' });
     expect(calendarIcon).toBeInTheDocument();
     expect(calendarIcon).toBeVisible();
 
-    userEvent.click(calendarIcon);
+    await user.click(calendarIcon);
 
     const calendar = await screen.findByRole('dialog');
     expect(calendar).toBeInTheDocument();
     expect(calendar).toBeVisible();
 
-    userEvent.click(calendarIcon);
+    await user.click(calendarIcon);
 
     await waitFor(() => {
       expect(calendar).not.toBeInTheDocument();
@@ -100,7 +105,7 @@ describe('<DateTimePicker />', () => {
     expect(calendarIcon).toBeInTheDocument();
     expect(calendarIcon).toBeVisible();
 
-    userEvent.click(calendarIcon);
+    await user.click(calendarIcon);
 
     const calendar = await screen.findByRole('dialog');
     expect(calendar).toBeInTheDocument();
@@ -110,7 +115,7 @@ describe('<DateTimePicker />', () => {
     expect(dateOption).toBeInTheDocument();
     expect(dateOption).toBeVisible();
 
-    userEvent.click(dateOption);
+    await user.click(dateOption);
 
     await waitFor(() => {
       expect(calendar).not.toBeInTheDocument();
@@ -130,7 +135,7 @@ describe('<DateTimePicker />', () => {
     expect(calendarIcon).toBeInTheDocument();
     expect(calendarIcon).toBeVisible();
 
-    userEvent.click(calendarIcon);
+    await user.click(calendarIcon);
 
     const calendar = await screen.findByRole('dialog');
     expect(calendar).toBeInTheDocument();
@@ -140,7 +145,7 @@ describe('<DateTimePicker />', () => {
     expect(dateOption).toBeInTheDocument();
     expect(dateOption).toBeVisible();
 
-    userEvent.click(dateOption);
+    await user.click(dateOption);
 
     await waitFor(() => {
       expect(calendar).not.toBeInTheDocument();
@@ -152,7 +157,7 @@ describe('<DateTimePicker />', () => {
     expect(searchIcon).toBeVisible();
     expect(searchIcon).not.toBeDisabled();
 
-    userEvent.click(searchIcon);
+    await user.click(searchIcon);
 
     expect(onDateTimeSelect).toHaveBeenCalledTimes(1);
     expect(onDateTimeSelect).toHaveBeenCalledWith(currentDate.toISOString());
@@ -166,7 +171,7 @@ describe('<DateTimePicker />', () => {
     expect(calendarIcon).toBeInTheDocument();
     expect(calendarIcon).toBeVisible();
 
-    userEvent.click(calendarIcon);
+    await user.click(calendarIcon);
 
     const calendar = await screen.findByRole('dialog');
     expect(calendar).toBeInTheDocument();
@@ -176,7 +181,7 @@ describe('<DateTimePicker />', () => {
     expect(dateOption).toBeInTheDocument();
     expect(dateOption).toBeVisible();
 
-    userEvent.click(dateOption);
+    await user.click(dateOption);
 
     await waitFor(() => {
       expect(calendar).not.toBeInTheDocument();
@@ -188,7 +193,7 @@ describe('<DateTimePicker />', () => {
     expect(timeInput).toBeInTheDocument();
     expect(timeInput).toBeVisible();
 
-    userEvent.click(timeInput);
+    await user.click(timeInput);
 
     const timeMenu = await screen.findByRole('menu', { name: 'Time Picker' });
     expect(timeMenu).toBeInTheDocument();
@@ -198,7 +203,7 @@ describe('<DateTimePicker />', () => {
     expect(noonOption).toBeInTheDocument();
     expect(noonOption).toBeVisible();
 
-    userEvent.click(noonOption);
+    await user.click(noonOption);
 
     expect(timeMenu).not.toBeInTheDocument();
     expect(timeMenu).not.toBeVisible();
@@ -209,7 +214,7 @@ describe('<DateTimePicker />', () => {
     expect(searchIcon).toBeVisible();
     expect(searchIcon).not.toBeDisabled();
 
-    userEvent.click(searchIcon);
+    await user.click(searchIcon);
 
     expect(onDateTimeSelect).toHaveBeenCalledTimes(1);
     const expectedDate = new Date(currentDate);
@@ -224,8 +229,8 @@ describe('<DateTimePicker />', () => {
     expect(dateInput).toBeInTheDocument();
     expect(dateInput).toBeVisible();
 
-    userEvent.type(dateInput, '2022-09-14');
-    userEvent.type(dateInput, '{enter}');
+    await user.type(dateInput, '2022-09-14');
+    await user.type(dateInput, '{enter}');
 
     const searchIcon = screen.getByRole('button', { name: 'Search For Date' });
     expect(searchIcon).toBeInTheDocument();
@@ -240,8 +245,8 @@ describe('<DateTimePicker />', () => {
     expect(dateInput).toBeInTheDocument();
     expect(dateInput).toBeVisible();
 
-    userEvent.type(dateInput, 'invalid_date');
-    userEvent.type(dateInput, '{enter}');
+    await user.type(dateInput, 'invalid_date');
+    await user.type(dateInput, '{enter}');
 
     const searchIcon = screen.getByRole('button', { name: 'Search For Date' });
     expect(searchIcon).toBeInTheDocument();
@@ -260,7 +265,7 @@ describe('<DateTimePicker />', () => {
     expect(timeInput).toBeInTheDocument();
     expect(timeInput).toBeVisible();
 
-    userEvent.click(timeInput);
+    await user.click(timeInput);
 
     const timeMenu = await screen.findByRole('menu', { name: 'Time Picker' });
     expect(timeMenu).toBeInTheDocument();
@@ -274,13 +279,13 @@ describe('<DateTimePicker />', () => {
     expect(timeInput).toBeInTheDocument();
     expect(timeInput).toBeVisible();
 
-    userEvent.click(timeInput);
+    await user.click(timeInput);
 
     const timeMenu = await screen.findByRole('menu', { name: 'Time Picker' });
     expect(timeMenu).toBeInTheDocument();
     expect(timeMenu).toBeVisible();
 
-    userEvent.click(document.body); // Click elsewhere
+    await user.click(document.body); // Click elsewhere
 
     expect(timeMenu).not.toBeInTheDocument();
     expect(timeMenu).not.toBeVisible();
@@ -302,7 +307,7 @@ describe('<DateTimePicker />', () => {
     expect(timeInput).toBeInTheDocument();
     expect(timeInput).toBeVisible();
 
-    userEvent.click(timeInput);
+    await user.click(timeInput);
 
     const timeMenu = await screen.findByRole('menu', { name: 'Time Picker' });
     expect(timeMenu).toBeInTheDocument();
@@ -312,7 +317,7 @@ describe('<DateTimePicker />', () => {
     expect(noonOption).toBeInTheDocument();
     expect(noonOption).toBeVisible();
 
-    userEvent.click(noonOption);
+    await user.click(noonOption);
 
     expect(timeMenu).not.toBeInTheDocument();
     expect(timeMenu).not.toBeVisible();
@@ -330,8 +335,8 @@ describe('<DateTimePicker />', () => {
     expect(timeInput).toBeInTheDocument();
     expect(timeInput).toBeVisible();
 
-    userEvent.type(timeInput, 'invalid_time');
-    userEvent.type(timeInput, '{enter}');
+    await user.type(timeInput, 'invalid_time');
+    await user.type(timeInput, '{enter}');
 
     const searchIcon = screen.getByRole('button', { name: 'Search For Date' });
     expect(searchIcon).toBeInTheDocument();

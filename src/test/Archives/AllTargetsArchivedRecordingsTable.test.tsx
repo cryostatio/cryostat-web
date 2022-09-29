@@ -273,7 +273,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(screen.getByText(`${mockCount3}`)).toBeInTheDocument();
   });
 
-  it('hides targets with zero recordings', () => {
+  it('hides targets with zero recordings', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <AllTargetsArchivedRecordingsTable />
@@ -293,7 +293,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(within(secondTarget).getByText(`${mockCount2}`)).toBeTruthy();
 
     const checkbox = screen.getByLabelText('all-archives-hide-check');
-    userEvent.click(checkbox);
+    await userEvent.click(checkbox);
 
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
@@ -303,7 +303,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(within(thirdTarget).getByText(`${mockCount3}`)).toBeTruthy();
   });
 
-  it('correctly handles the search function', () => {
+  it('correctly handles the search function', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <AllTargetsArchivedRecordingsTable />
@@ -316,7 +316,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     let rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(2);
 
-    userEvent.type(search, '1');
+    await userEvent.type(search, '1');
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(1);
@@ -324,17 +324,17 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
 
-    userEvent.type(search, 'asdasdjhj');
+    await userEvent.type(search, 'asdasdjhj');
     expect(screen.getByText('No Targets')).toBeInTheDocument();
     expect(screen.queryByLabelText('all-archives-table')).not.toBeInTheDocument();
 
-    userEvent.clear(search);
+    await userEvent.clear(search);
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(2);
   });
 
-  it('expands targets to show their <ArchivedRecordingsTable />', () => {
+  it('expands targets to show their <ArchivedRecordingsTable />', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <AllTargetsArchivedRecordingsTable />
@@ -349,7 +349,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
 
     let firstTarget = rows[0];
     const expand = within(firstTarget).getByLabelText('Details');
-    userEvent.click(expand);
+    await userEvent.click(expand);
 
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
@@ -358,14 +358,14 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     let expandedTable = rows[1];
     expect(within(expandedTable).getByText('Archived Recordings Table')).toBeTruthy();
 
-    userEvent.click(expand);
+    await userEvent.click(expand);
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(2);
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
   });
 
-  it('does not expand targets with zero recordings', () => {
+  it('does not expand targets with zero recordings', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <AllTargetsArchivedRecordingsTable />
@@ -373,7 +373,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     );
 
     const checkbox = screen.getByLabelText('all-archives-hide-check');
-    userEvent.click(checkbox);
+    await userEvent.click(checkbox);
 
     let tableBody = screen.getAllByRole('rowgroup')[1];
     let rows = within(tableBody).getAllByRole('row');
@@ -384,7 +384,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(within(thirdTarget).getByText(`${mockCount3}`)).toBeTruthy();
 
     const expand = within(thirdTarget).getByLabelText('Details');
-    userEvent.click(expand);
+    await userEvent.click(expand);
 
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
@@ -429,7 +429,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(within(thirdTarget).getByText(`${mockCount3 + 1}`)).toBeTruthy();
   });
 
-  it('decrements the count when an archived recording is deleted', () => {
+  it('decrements the count when an archived recording is deleted', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <AllTargetsArchivedRecordingsTable />
@@ -437,7 +437,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     );
 
     const checkbox = screen.getByLabelText('all-archives-hide-check');
-    userEvent.click(checkbox);
+    await userEvent.click(checkbox);
 
     let tableBody = screen.getAllByRole('rowgroup')[1];
     let rows = within(tableBody).getAllByRole('row');

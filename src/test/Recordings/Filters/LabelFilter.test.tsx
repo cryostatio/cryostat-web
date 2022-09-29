@@ -108,7 +108,7 @@ describe('<LabelFilter />', () => {
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
 
-    userEvent.click(labelInput);
+    await userEvent.click(labelInput);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
@@ -128,7 +128,7 @@ describe('<LabelFilter />', () => {
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
-    userEvent.click(dropDownArrow);
+    await userEvent.click(dropDownArrow);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
@@ -148,7 +148,7 @@ describe('<LabelFilter />', () => {
     expect(dropDownArrow).toBeInTheDocument();
     expect(dropDownArrow).toBeVisible();
 
-    userEvent.click(dropDownArrow);
+    await userEvent.click(dropDownArrow);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
@@ -160,7 +160,7 @@ describe('<LabelFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(dropDownArrow);
+    await userEvent.click(dropDownArrow);
     expect(selectMenu).not.toBeInTheDocument();
     expect(selectMenu).not.toBeVisible();
   });
@@ -171,7 +171,7 @@ describe('<LabelFilter />', () => {
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
 
-    userEvent.click(labelInput);
+    await userEvent.click(labelInput);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
@@ -183,7 +183,7 @@ describe('<LabelFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(labelInput);
+    await userEvent.click(labelInput);
     expect(selectMenu).not.toBeInTheDocument();
     expect(selectMenu).not.toBeVisible();
   });
@@ -194,7 +194,7 @@ describe('<LabelFilter />', () => {
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
 
-    userEvent.click(labelInput);
+    await userEvent.click(labelInput);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
@@ -214,7 +214,7 @@ describe('<LabelFilter />', () => {
     expect(labelInput).toBeInTheDocument();
     expect(labelInput).toBeVisible();
 
-    userEvent.click(labelInput);
+    await userEvent.click(labelInput);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by label' });
     expect(selectMenu).toBeInTheDocument();
@@ -226,7 +226,7 @@ describe('<LabelFilter />', () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(screen.getByText('someLabel:someValue'));
+    await userEvent.click(screen.getByText('someLabel:someValue'));
 
     // NameFilter's parent rebuilds to close menu by default.
 

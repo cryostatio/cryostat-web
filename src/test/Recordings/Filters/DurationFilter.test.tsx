@@ -125,7 +125,7 @@ describe('<DurationFilter />', () => {
     expect(checkBox).not.toHaveAttribute('checked');
   });
 
-  it('should select continous when clicking unchecked continuous box', () => {
+  it('should select continous when clicking unchecked continuous box', async () => {
     const submitContinous = jest.fn((continous) => {
       filteredDurationsWithoutCont.push('continuous');
     });
@@ -143,7 +143,7 @@ describe('<DurationFilter />', () => {
     expect(checkBox).toBeVisible();
     expect(checkBox).not.toHaveAttribute('checked');
 
-    userEvent.click(checkBox);
+    await userEvent.click(checkBox);
 
     expect(submitContinous).toHaveBeenCalledTimes(1);
     expect(submitContinous).toHaveBeenCalledWith(true);
@@ -151,7 +151,7 @@ describe('<DurationFilter />', () => {
     expect(filteredDurationsWithoutCont).toStrictEqual([`${mockRecording.duration}`, 'continuous']);
   });
 
-  it('should unselect continous when clicking checked continuous box', () => {
+  it('should unselect continous when clicking checked continuous box', async () => {
     const submitContinous = jest.fn((continous) => {
       filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => v !== 'continuous');
     });
@@ -169,7 +169,7 @@ describe('<DurationFilter />', () => {
     expect(checkBox).toBeVisible();
     expect(checkBox).toHaveAttribute('checked');
 
-    userEvent.click(checkBox);
+    await userEvent.click(checkBox);
 
     expect(submitContinous).toHaveBeenCalledTimes(1);
     expect(submitContinous).toHaveBeenCalledWith(false);
@@ -193,11 +193,11 @@ describe('<DurationFilter />', () => {
     expect(durationInput).toBeInTheDocument();
     expect(durationInput).toBeVisible();
 
-    userEvent.clear(durationInput);
-    userEvent.type(durationInput, '50');
+    await userEvent.clear(durationInput);
+    await userEvent.type(durationInput, '50');
 
     // Press enter
-    userEvent.type(durationInput, '{enter}');
+    await userEvent.type(durationInput, '{enter}');
 
     expect(submitDuration).toHaveBeenCalledTimes(1);
     expect(submitDuration).toHaveBeenCalledWith(Number('50'));
@@ -221,11 +221,11 @@ describe('<DurationFilter />', () => {
     expect(durationInput).toBeInTheDocument();
     expect(durationInput).toBeVisible();
 
-    userEvent.clear(durationInput);
-    userEvent.type(durationInput, '50');
+    await userEvent.clear(durationInput);
+    await userEvent.type(durationInput, '50');
 
     // Press shift
-    userEvent.type(durationInput, '{shift}');
+    await userEvent.type(durationInput, '{shift}');
 
     expect(submitDuration).toHaveBeenCalledTimes(0);
     expect(emptyFilteredDuration).toStrictEqual([]);

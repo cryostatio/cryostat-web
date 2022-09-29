@@ -92,7 +92,7 @@ describe('<LabelCell />', () => {
   it('should display read-only labels', () => {
     render(<LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} />);
 
-    mockLabelStringDisplayList.forEach((labelAsString) => {
+    mockLabelStringDisplayList.forEach(async (labelAsString) => {
       const displayedLabel = screen.getByLabelText(labelAsString);
 
       expect(displayedLabel).toBeInTheDocument();
@@ -100,7 +100,7 @@ describe('<LabelCell />', () => {
 
       expect(displayedLabel.onclick).toBeNull();
 
-      userEvent.click(displayedLabel);
+      await userEvent.click(displayedLabel);
       expect(onUpdateLabels).not.toHaveBeenCalled();
     });
   });
@@ -115,13 +115,13 @@ describe('<LabelCell />', () => {
     );
 
     let count = 0;
-    mockLabelStringDisplayList.forEach((labelAsString, index) => {
+    mockLabelStringDisplayList.forEach(async (labelAsString, index) => {
       const displayedLabel = screen.getByLabelText(labelAsString);
 
       expect(displayedLabel).toBeInTheDocument();
       expect(displayedLabel).toBeVisible();
 
-      userEvent.click(displayedLabel);
+      await userEvent.click(displayedLabel);
 
       expect(onUpdateLabels).toHaveBeenCalledTimes(++count);
       expect(onUpdateLabels).toHaveBeenCalledWith(mockFooTarget.connectUrl, {

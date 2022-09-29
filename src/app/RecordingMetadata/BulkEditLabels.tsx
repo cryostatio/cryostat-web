@@ -75,7 +75,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   );
 
   const handleUpdateLabels = React.useCallback(() => {
-    const tasks: Observable<any>[] = [];
+    const tasks: Observable<ActiveRecording[] | ArchivedRecording[]>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
     recordings.forEach((r: ArchivedRecording) => {
@@ -88,8 +88,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
 
         tasks.push(
           props.isTargetRecording
-            ? context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first())
-            : context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first())
+            ? context.api.postTargetRecordingMetadata(r.name, updatedLabels)
+            : context.api.postRecordingMetadata(r.name, updatedLabels)
         );
       }
     });

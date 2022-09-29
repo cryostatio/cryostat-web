@@ -128,7 +128,7 @@ describe('<ClickableLabel />', () => {
     expect(label.classList.contains('pf-m-blue')).toBe(false);
   });
 
-  it('should display hover effect when hovered and is selected', () => {
+  it('should display hover effect when hovered and is selected', async () => {
     render(<ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>);
 
     const label = screen.getByLabelText(mockLabelAsString);
@@ -137,7 +137,7 @@ describe('<ClickableLabel />', () => {
 
     expect(label.classList.contains('pf-m-blue')).toBe(true);
 
-    userEvent.hover(label);
+    await userEvent.hover(label);
 
     const labelStyle = label.style;
     expect(labelStyle.cursor).toBe('pointer');
@@ -145,7 +145,7 @@ describe('<ClickableLabel />', () => {
     expect(labelStyle.getPropertyValue('--pf-c-label__content--before--BorderColor')).toBe(blueLabelBorderColor);
   });
 
-  it('should display hover effect when hovered and is not selected', () => {
+  it('should display hover effect when hovered and is not selected', async () => {
     render(<ClickableLabel label={mockLabel} isSelected={false} onLabelClick={onLabelClick}></ClickableLabel>);
 
     const label = screen.getByLabelText(mockLabelAsString);
@@ -154,7 +154,7 @@ describe('<ClickableLabel />', () => {
 
     expect(label.classList.contains('pf-m-blue')).toBe(false);
 
-    userEvent.hover(label);
+    await userEvent.hover(label);
 
     const labelStyle = label.style;
     expect(labelStyle.cursor).toBe('pointer');
@@ -162,7 +162,7 @@ describe('<ClickableLabel />', () => {
     expect(labelStyle.getPropertyValue('--pf-c-label__content--before--BorderColor')).toBe(greyLabelBorderColor);
   });
 
-  it('should update label filters when clicked', () => {
+  it('should update label filters when clicked', async () => {
     render(<ClickableLabel label={mockLabel} isSelected={true} onLabelClick={onLabelClick}></ClickableLabel>);
 
     const label = screen.getByLabelText(mockLabelAsString);
@@ -171,7 +171,7 @@ describe('<ClickableLabel />', () => {
 
     expect(label.classList.contains('pf-m-blue')).toBe(true);
 
-    userEvent.click(label);
+    await userEvent.click(label);
 
     expect(onLabelClick).toHaveBeenCalledTimes(1);
     expect(onLabelClick).toHaveBeenCalledWith(mockLabel);
