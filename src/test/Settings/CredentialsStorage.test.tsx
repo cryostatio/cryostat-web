@@ -75,6 +75,17 @@ describe('<CredentialsStorage/>', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
+  it('defaults to Session storage', async () => {
+    render(React.createElement(CredentialsStorage.content, null));
+
+    expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
+    expect(saveToLocalStorage).toHaveBeenCalledTimes(1);
+    expect(saveToLocalStorage).lastCalledWith(storageKey, sessionStorageValue);
+
+    expect(screen.getByText(sessionStorageValue)).toBeVisible();
+    expect(screen.queryByText(backendStorageValue)).toBeFalsy();
+  });
+
   it('sets value to local storage when dropdown is clicked', async () => {
     render(React.createElement(CredentialsStorage.content, null));
 
