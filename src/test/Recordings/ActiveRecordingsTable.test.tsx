@@ -227,7 +227,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
     expect(screen.getByText('someRecording')).toBeInTheDocument();
     expect(screen.getByText('anotherRecording')).toBeInTheDocument();
@@ -238,7 +238,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
     expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
@@ -249,7 +249,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
     expect(screen.getByText('STOPPED')).toBeInTheDocument();
     expect(screen.queryByText('RUNNING')).not.toBeInTheDocument();
@@ -260,7 +260,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
     expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
   });
@@ -270,7 +270,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     expect(screen.getByText('Create')).toBeInTheDocument();
@@ -285,7 +285,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     await userEvent.click(screen.getByText('Create'));
@@ -298,7 +298,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -317,7 +317,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -336,7 +336,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -351,7 +351,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -380,7 +380,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -400,7 +400,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     await userEvent.click(screen.getByLabelText('Actions'));
@@ -417,7 +417,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     await userEvent.click(screen.getByLabelText('Actions'));
@@ -433,7 +433,7 @@ describe('<ActiveRecordingsTable />', () => {
       renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
         preloadState: preloadedState,
         history: history,
-      })
+      });
     });
 
     await userEvent.click(await screen.getByLabelText('Actions'));
@@ -445,4 +445,3 @@ describe('<ActiveRecordingsTable />', () => {
     expect(grafanaUploadSpy).toBeCalledWith('someRecording');
   });
 });
-

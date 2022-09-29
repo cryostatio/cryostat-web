@@ -224,7 +224,7 @@ describe('<ArchivedRecordingsTable />', () => {
         }
       );
     });
-    
+
     expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
   });
