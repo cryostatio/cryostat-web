@@ -118,7 +118,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
-      let allRecordingLabels = [] as RecordingLabel[][];
+      const allRecordingLabels = [] as RecordingLabel[][];
 
       recordings.forEach((r: ArchivedRecording) => {
         const idx = getIdxFromRecording(r);

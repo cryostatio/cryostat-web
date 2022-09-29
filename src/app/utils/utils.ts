@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-export const createBlobURL = (content: any, contentType: string, timeout: number = 1000) => {
+export const createBlobURL = (content: any, contentType: string, timeout = 1000) => {
   const blob = new Blob([content], { type: contentType });
   const url = window.URL.createObjectURL(blob);
   setTimeout(() => window.URL.revokeObjectURL(url), timeout);

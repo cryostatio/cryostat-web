@@ -301,10 +301,10 @@ export class NotificationChannel {
     const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`).pipe(
       concatMap(async (resp) => {
         if (resp.ok) {
-          let body: any = await resp.json();
+          const body: any = await resp.json();
           return body.notificationsUrl;
         } else {
-          let body: string = await resp.text();
+          const body: string = await resp.text();
           throw new Error(resp.status + ' ' + body);
         }
       })
@@ -336,7 +336,7 @@ export class NotificationChannel {
             subprotocol = `basic.authorization.cryostat.${token}`;
           }
 
-          if (!!this.ws) {
+          if (this.ws) {
             this.ws.complete();
           }
 
@@ -418,7 +418,7 @@ export class NotificationChannel {
     window.console.error(err?.message);
     window.console.error(err?.stack);
 
-    if (!!err?.message) {
+    if (err?.message) {
       this.notifications.danger(title, JSON.stringify(err?.message));
     }
   }

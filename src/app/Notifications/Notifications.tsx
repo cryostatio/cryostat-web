@@ -115,11 +115,11 @@ export class Notifications {
     return this.notifications().pipe(map((a) => a.filter(Notifications.isProblemNotification)));
   }
 
-  setRead(key?: string, read: boolean = true): void {
+  setRead(key?: string, read = true): void {
     if (!key) {
       return;
     }
-    for (let n of this._notifications) {
+    for (const n of this._notifications) {
       if (n.key === key) {
         n.read = read;
       }
@@ -128,7 +128,7 @@ export class Notifications {
   }
 
   markAllRead(): void {
-    for (let n of this._notifications) {
+    for (const n of this._notifications) {
       n.read = true;
     }
     this._notifications$.next(this._notifications);

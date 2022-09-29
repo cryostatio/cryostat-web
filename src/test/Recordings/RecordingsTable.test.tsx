@@ -228,7 +228,7 @@ describe('<RecordingsTable />', () => {
       </RecordingsTable>
     );
 
-    let headerCheckAll = screen.getByLabelText('Select all rows');
+    const headerCheckAll = screen.getByLabelText('Select all rows');
     expect(headerCheckAll).not.toHaveAttribute('checked');
     await userEvent.click(headerCheckAll);
     expect(mockHeaderCheckCallback).toHaveBeenCalledTimes(1);
@@ -251,7 +251,7 @@ describe('<RecordingsTable />', () => {
       </RecordingsTable>
     );
 
-    let headerCheckAll = screen.getByLabelText('Select all rows');
+    const headerCheckAll = screen.getByLabelText('Select all rows');
     expect(headerCheckAll).toHaveAttribute('checked');
   });
 });

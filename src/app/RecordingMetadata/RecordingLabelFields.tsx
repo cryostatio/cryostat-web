@@ -61,20 +61,20 @@ export const LabelPattern = /^\S+$/;
 
 export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = (props) => {
   const [validKeys, setValidKeys] = React.useState(
-    Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default)
+    Array(props.labels ? props.labels.length : 0).fill(ValidatedOptions.default)
   );
   const [validValues, setValidVals] = React.useState(
-    Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default)
+    Array(props.labels ? props.labels.length : 0).fill(ValidatedOptions.default)
   );
-  const [keys, setKeys] = React.useState(!!props.labels ? props.labels.map((l) => l.key) : []);
+  const [keys, setKeys] = React.useState(props.labels ? props.labels.map((l) => l.key) : []);
 
   const handleKeyChange = React.useCallback(
     (idx, key) => {
-      let updatedLabels = [...props.labels];
+      const updatedLabels = [...props.labels];
       updatedLabels[idx].key = key;
       props.setLabels(updatedLabels);
 
-      let updatedKeys = [...keys];
+      const updatedKeys = [...keys];
       updatedKeys[idx] = key;
       setKeys(updatedKeys);
 
@@ -85,7 +85,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
 
   const handleValueChange = React.useCallback(
     (idx, value) => {
-      let updatedLabels = [...props.labels];
+      const updatedLabels = [...props.labels];
       updatedLabels[idx].value = value;
       props.setLabels(updatedLabels);
 
@@ -113,13 +113,13 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
   );
 
   const removeAtIndex = (idx, arr, setArr) => {
-    let updated = [...arr];
+    const updated = [...arr];
     updated.splice(idx, 1);
     setArr(updated);
   };
 
   const updateValidState = (idx, isValid, arr, setArr) => {
-    let updated = [...arr];
+    const updated = [...arr];
     updated[idx] = getValidatedOption(isValid);
     setArr(updated);
   };

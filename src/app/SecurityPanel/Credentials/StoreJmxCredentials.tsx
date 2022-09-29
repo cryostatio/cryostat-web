@@ -80,7 +80,7 @@ const reducer = (state, action) => {
   switch (action.type) {
     case Actions.HANDLE_REFRESH: {
       const credentials: StoredCredential[] = action.payload.credentials;
-      let counts: number[] = [];
+      const counts: number[] = [];
       for (const c of credentials) {
         counts.push(c.numMatchingTargets);
       }
@@ -92,9 +92,9 @@ const reducer = (state, action) => {
     }
     case Actions.HANDLE_TARGET_NOTIFICATION: {
       const target: Target = action.payload.target;
-      let updated = [...state.counts];
+      const updated = [...state.counts];
       for (let i = 0; i < state.credentials.length; i++) {
-        let match: boolean = eval(state.credentials[i].matchExpression);
+        const match: boolean = eval(state.credentials[i].matchExpression);
         if (match) {
           updated[i] += action.payload.kind === 'FOUND' ? 1 : -1;
         }
@@ -331,8 +331,8 @@ export const StoreJmxCredentials = () => {
 
   const matchExpressionRows = React.useMemo(() => {
     return state.credentials.map((credential, idx) => {
-      let isExpanded: boolean = state.expandedCredentials.includes(credential);
-      let isChecked: boolean = state.checkedCredentials.includes(credential);
+      const isExpanded: boolean = state.expandedCredentials.includes(credential);
+      const isChecked: boolean = state.checkedCredentials.includes(credential);
 
       const handleToggleExpanded = () => {
         if (state.counts[idx] !== 0 || isExpanded) {
@@ -378,7 +378,7 @@ export const StoreJmxCredentials = () => {
 
   const targetRows = React.useMemo(() => {
     return state.credentials.map((credential, idx) => {
-      let isExpanded: boolean = state.expandedCredentials.includes(credential);
+      const isExpanded: boolean = state.expandedCredentials.includes(credential);
 
       return (
         <Tr key={`${idx}_child`} isExpanded={isExpanded}>
@@ -395,7 +395,7 @@ export const StoreJmxCredentials = () => {
   }, [state.credentials, state.expandedCredentials]);
 
   const rowPairs = React.useMemo(() => {
-    let rowPairs: JSX.Element[] = [];
+    const rowPairs: JSX.Element[] = [];
     for (let i = 0; i < matchExpressionRows.length; i++) {
       rowPairs.push(matchExpressionRows[i]);
       rowPairs.push(targetRows[i]);

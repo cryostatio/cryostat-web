@@ -98,7 +98,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   }, [target, props.matchExpression]);
 
   React.useEffect(() => {
-    if (!!props.onChange) {
+    if (props.onChange) {
       props.onChange(valid);
     }
   }, [props.onChange, valid]);

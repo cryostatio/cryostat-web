@@ -313,7 +313,7 @@ describe('<RecordingFilters />', () => {
 
     await userEvent.click(selectedItem);
 
-    let categoryMenu = await screen.findByRole('menu');
+    const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
     expect(categoryMenu).toBeVisible();
 
@@ -455,7 +455,7 @@ describe('<RecordingFilters />', () => {
     );
 
     activeCategoryOptions.forEach((category) => {
-      let chipGroup = screen.queryByRole('group', { name: category });
+      const chipGroup = screen.queryByRole('group', { name: category });
       expect(chipGroup).not.toBeInTheDocument();
     });
   });

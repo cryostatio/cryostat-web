@@ -89,7 +89,7 @@ export class SettingsService {
 
   deletionDialogsEnabled(): Map<DeleteWarningType, boolean> {
     const raw = window.localStorage.getItem(StorageKeys.DeletionDialogsEnabled);
-    if (!!raw) {
+    if (raw) {
       try {
         const map = JSON.parse(raw);
         if (typeof map === 'object') {
@@ -138,7 +138,7 @@ export class SettingsService {
 
   notificationsEnabled(): Map<NotificationCategory, boolean> {
     const raw = window.localStorage.getItem(StorageKeys.NotificationsEnabled);
-    if (!!raw) {
+    if (raw) {
       try {
         const map = JSON.parse(raw);
         if (typeof map === 'object') {

@@ -254,7 +254,7 @@ export const Rules = () => {
   }, [rules, sortBy]);
 
   const handleDelete = React.useCallback(
-    (rowData: IRowData, clean: boolean = true) => {
+    (rowData: IRowData, clean = true) => {
       addSubscription(
         context.api
           .deleteRule(rowData[0], clean)

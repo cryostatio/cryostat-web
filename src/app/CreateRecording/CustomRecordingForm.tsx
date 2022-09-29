@@ -134,18 +134,18 @@ export const CustomRecordingForm = (props) => {
   );
 
   const getEventString = React.useCallback(() => {
-    var str = '';
-    if (!!template) {
+    let str = '';
+    if (template) {
       str += `template=${template}`;
     }
-    if (!!templateType) {
+    if (templateType) {
       str += `,type=${templateType}`;
     }
     return str;
   }, [template, templateType]);
 
   const getFormattedLabels = React.useCallback(() => {
-    let obj = {};
+    const obj = {};
 
     labels.forEach((l) => {
       if (!!l.key && !!l.value) {
@@ -346,11 +346,7 @@ export const CustomRecordingForm = (props) => {
           isRequired
           fieldId="recording-template"
           validated={
-            template === null
-              ? ValidatedOptions.default
-              : !!template
-              ? ValidatedOptions.success
-              : ValidatedOptions.error
+            template === null ? ValidatedOptions.default : template ? ValidatedOptions.success : ValidatedOptions.error
           }
           helperTextInvalid="A Template must be selected"
         >

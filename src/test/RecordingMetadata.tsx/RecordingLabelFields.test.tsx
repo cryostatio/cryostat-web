@@ -70,7 +70,7 @@ describe('<RecordingLabelFields />', () => {
     mockValid = ValidatedOptions.default;
   });
 
-  let mockProps = {
+  const mockProps = {
     labels: mockLabels,
     setLabels: jest.fn(() => (l: RecordingLabel[]) => {
       mockLabels = l.slice();

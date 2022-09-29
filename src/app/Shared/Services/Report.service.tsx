@@ -50,8 +50,8 @@ export class ReportService {
     if (!recording?.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
-    let stored = sessionStorage.getItem(this.key(recording));
-    if (!!stored) {
+    const stored = sessionStorage.getItem(this.key(recording));
+    if (stored) {
       return of(stored);
     }
     return this.login.getHeaders().pipe(

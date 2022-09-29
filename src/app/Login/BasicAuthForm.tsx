@@ -58,7 +58,7 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
           setUsername(creds);
           return;
         }
-        let parts: string[] = creds.split(':');
+        const parts: string[] = creds.split(':');
         setUsername(parts[0]);
         setPassword(parts[1]);
       });

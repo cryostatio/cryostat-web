@@ -105,11 +105,11 @@ const Comp = () => {
   );
 
   const eventSpecifierString = React.useMemo(() => {
-    var str = '';
-    if (!!template) {
+    let str = '';
+    if (template) {
       str += `template=${template}`;
     }
-    if (!!templateType) {
+    if (templateType) {
       str += `,type=${templateType}`;
     }
     return str;
@@ -349,7 +349,7 @@ const Comp = () => {
                   validated={
                     template === null
                       ? ValidatedOptions.default
-                      : !!template
+                      : template
                       ? ValidatedOptions.success
                       : ValidatedOptions.error
                   }

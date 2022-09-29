@@ -72,9 +72,9 @@ const mockRecording: ArchivedRecording = {
 };
 
 describe('<RecordingLabelsPanel />', () => {
-  let isTargetRecording = true;
-  let checkedIndices = [];
-  let recordings = [mockRecording];
+  const isTargetRecording = true;
+  const checkedIndices = [];
+  const recordings = [mockRecording];
 
   const props = {
     setShowPanel: jest.fn(() => (showPanel: boolean) => {}),

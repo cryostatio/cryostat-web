@@ -85,7 +85,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         for (let i = 0; i < targets.length; i++) {
           if (targets[i].connectUrl === connectUrl) {
             setCounts((old) => {
-              let updated = [...old];
+              const updated = [...old];
               updated[i] += delta;
               return updated;
             });
@@ -98,8 +98,8 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
     const handleTargetsAndCounts = React.useCallback(
       (targetNodes) => {
-        let updatedTargets: Target[] = [];
-        let updatedCounts: number[] = [];
+        const updatedTargets: Target[] = [];
+        const updatedCounts: number[] = [];
         for (const node of targetNodes) {
           const target: Target = {
             connectUrl: node.target.serviceUri,
@@ -179,7 +179,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         });
         setExpandedTargets((old) => old.filter((o) => !_.isEqual(o, target)));
         setCounts((old) => {
-          let updated = [...old];
+          const updated = [...old];
           updated.splice(idx, 1);
           return updated;
         });
@@ -276,7 +276,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     );
 
     const isHidden = React.useMemo(() => {
-      let isHidden: boolean[] = [];
+      const isHidden: boolean[] = [];
       targets.map((target, idx) => {
         isHidden.push(!searchedTargets.includes(target) || (hideEmptyTargets && counts[idx] === 0));
       });
@@ -285,7 +285,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
     const targetRows = React.useMemo(() => {
       return targets.map((target, idx) => {
-        let isExpanded: boolean = expandedTargets.includes(target);
+        const isExpanded: boolean = expandedTargets.includes(target);
 
         const handleToggle = () => {
           if (counts[idx] !== 0 || isExpanded) {
@@ -320,7 +320,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
     const recordingRows = React.useMemo(() => {
       return targets.map((target, idx) => {
-        let isExpanded: boolean = expandedTargets.includes(target);
+        const isExpanded: boolean = expandedTargets.includes(target);
 
         return (
           <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
@@ -337,7 +337,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     }, [targets, expandedTargets, isHidden]);
 
     const rowPairs = React.useMemo(() => {
-      let rowPairs: JSX.Element[] = [];
+      const rowPairs: JSX.Element[] = [];
       for (let i = 0; i < targetRows.length; i++) {
         rowPairs.push(targetRows[i]);
         rowPairs.push(recordingRows[i]);

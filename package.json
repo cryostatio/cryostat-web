@@ -21,7 +21,7 @@
     "lint": "npm-run-all -l -p format eslint",
     "format": "npm-run-all format:check",
     "format:check": "npm-run-all -l license:check prettier:check",
-    "format:apply": "npm-run-all -l -p license:apply prettier:apply",
+    "format:apply": "npm-run-all -l -p license:apply eslint:apply prettier:apply",
     "prettier:check": "prettier --check './src/**/*.{tsx,ts}'",
     "prettier:apply": "prettier --write './src/**/*.{tsx,ts}'",
     "build:bundle-profile": "webpack --config webpack.prod.js --profile --json > stats.json",

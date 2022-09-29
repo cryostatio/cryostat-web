@@ -151,7 +151,7 @@ export class LoginService {
       headers.set('Authorization', AuthMethod.NONE);
     }
     if (jmxCredential) {
-      let basic = `${jmxCredential.username}:${jmxCredential.password}`;
+      const basic = `${jmxCredential.username}:${jmxCredential.password}`;
       headers.set('X-JMX-Authorization', `Basic ${Base64.encode(basic)}`);
     }
     return headers;
@@ -257,12 +257,12 @@ export class LoginService {
   }
 
   private getTokenFromUrlFragment(): string {
-    var matches = location.hash.match(new RegExp('access_token' + '=([^&]*)'));
+    const matches = location.hash.match(new RegExp('access_token' + '=([^&]*)'));
     return matches ? matches[1] : '';
   }
 
   private hasBearerTokenUrlHash(): boolean {
-    var matches = location.hash.match('token_type=Bearer');
+    const matches = location.hash.match('token_type=Bearer');
     return !!matches;
   }
 
@@ -297,7 +297,7 @@ export class LoginService {
 
   private getCacheItem(key: string): string {
     const item = sessionStorage.getItem(key);
-    return !!item ? item : '';
+    return item ? item : '';
   }
 
   private setCacheItem(key: string, token: string): void {

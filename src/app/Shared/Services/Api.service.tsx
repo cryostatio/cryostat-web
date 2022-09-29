@@ -217,7 +217,7 @@ export class ApiService {
     );
   }
 
-  deleteRule(name: string, clean: boolean = true): Observable<boolean> {
+  deleteRule(name: string, clean = true): Observable<boolean> {
     return this.sendRequest('v2', `rules/${name}?clean=${clean}`, {
       method: 'DELETE',
     }).pipe(
@@ -233,7 +233,7 @@ export class ApiService {
     if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
       form.append('duration', String(recordingAttributes.duration));
     }
-    if (!!recordingAttributes.options) {
+    if (recordingAttributes.options) {
       if (recordingAttributes.options.toDisk != null) {
         form.append('toDisk', String(recordingAttributes.options.toDisk));
       }
@@ -244,7 +244,7 @@ export class ApiService {
         form.append('maxSize', String(recordingAttributes.options.maxSize));
       }
     }
-    if (!!recordingAttributes.metadata) {
+    if (recordingAttributes.metadata) {
       form.append('metadata', JSON.stringify(recordingAttributes.metadata));
     }
 
@@ -846,4 +846,4 @@ export interface MatchedCredential {
 
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
-export const UPLOADS_SUBDIRECTORY: string = 'uploads';
+export const UPLOADS_SUBDIRECTORY = 'uploads';

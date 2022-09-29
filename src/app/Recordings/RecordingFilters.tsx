@@ -279,7 +279,7 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
 
   let filtered = recordings;
 
-  if (!!filters.Name.length) {
+  if (filters.Name.length) {
     filtered = filtered.filter((r) => filters.Name.includes(r.name));
   }
   if (!!filters.State && !!filters.State.length) {
@@ -314,7 +314,7 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
       }).length;
     });
   }
-  if (!!filters.Label.length) {
+  if (filters.Label.length) {
     filtered = filtered.filter(
       (r) => Object.entries(r.metadata.labels).filter(([k, v]) => filters.Label.includes(`${k}:${v}`)).length
     );

@@ -85,7 +85,7 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
       notifications.warning('Attempted to submit certificate upload without a file selected');
       return;
     }
-    let type = uploadFile.type;
+    const type = uploadFile.type;
     if (type != 'application/x-x509-ca-cert' && type != 'application/pkix-cert') {
       notifications.warning('File format is not compatible');
       return;
