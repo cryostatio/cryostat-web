@@ -95,8 +95,7 @@ describe('<CredentialsStorage/>', () => {
 
     userEvent.click(screen.getByRole('button'));
 
-    await screen.findByRole('listbox');
-    const ul = screen.getByRole('listbox');
+    const ul = await screen.findByRole('listbox');
     const session = getByText(ul, sessionStorageValue);
     const backend = getByText(ul, backendStorageValue);
     userEvent.click(backend);
