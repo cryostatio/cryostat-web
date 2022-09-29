@@ -282,9 +282,7 @@ describe('<Rules/>', () => {
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await tlr.act(async () => {
-      await userEvent.click(submitButton);
-    });
+    await userEvent.click(submitButton);
 
     expect(createSpy).toHaveBeenCalled();
     expect(createSpy).toHaveBeenCalledWith(mockRule);

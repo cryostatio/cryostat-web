@@ -199,62 +199,75 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('adds a recording after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+  it('adds a recording after receiving a notification', async () => {
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
+
     expect(screen.getByText('someRecording')).toBeInTheDocument();
     expect(screen.getByText('anotherRecording')).toBeInTheDocument();
   });
 
-  it('updates the recording labels after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+  it('updates the recording labels after receiving a notification', async () => {
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
+    
     expect(screen.getByText('someLabel: someUpdatedValue')).toBeInTheDocument();
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
   });
 
-  it('removes a recording after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+  it('removes a recording after receiving a notification', async () => {
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
+
     expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
   });
 
-  it('displays the toolbar buttons', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+  it('displays the toolbar buttons', async () => {
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
 
     expect(screen.getByText('Delete')).toBeInTheDocument();
     expect(screen.getByText('Edit Labels')).toBeInTheDocument();
   });
 
   it('opens the labels drawer when Edit Labels is clicked', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
@@ -264,13 +277,15 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
@@ -293,13 +308,15 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('deletes the recording when Delete is clicked w/o popup warning', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
@@ -314,13 +331,15 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('downloads a recording when Download Recording is clicked', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
 
     await userEvent.click(screen.getByLabelText('Actions'));
     await userEvent.click(screen.getByText('Download Recording'));
@@ -332,13 +351,15 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('displays the automated analysis report when View Report is clicked', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
 
     await userEvent.click(screen.getByLabelText('Actions'));
     await userEvent.click(screen.getByText('View Report ...'));
@@ -349,13 +370,15 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
-      {
-        preloadState: preloadedState,
-        history: history,
-      }
-    );
+    await act(async () => {
+      renderWithServiceContextAndReduxStoreWithRoute(
+        <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+        {
+          preloadState: preloadedState,
+          history: history,
+        }
+      );
+    });
 
     await userEvent.click(screen.getByLabelText('Actions'));
     await userEvent.click(screen.getByText('View in Grafana ...'));
@@ -433,9 +456,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await tlr.act(async () => {
-      await userEvent.click(submitButton);
-    });
+    await userEvent.click(submitButton);
 
     expect(uploadSpy).toHaveBeenCalled();
     expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, expect.anything());
