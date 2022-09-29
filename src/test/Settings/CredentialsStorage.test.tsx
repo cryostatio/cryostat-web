@@ -101,6 +101,8 @@ describe('<CredentialsStorage/>', () => {
     const backend = getByText(ul, backendStorageValue);
     userEvent.click(backend);
     await waitFor(() => expect(session).not.toBeVisible());
+    expect(screen.getByText(backendStorageValue)).toBeVisible();
+    expect(screen.queryByText(sessionStorageValue)).toBeFalsy();
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(2);
