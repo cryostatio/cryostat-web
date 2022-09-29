@@ -37,7 +37,7 @@
  */
 
 import * as React from 'react';
-import { NumberInput, Text, TextVariants } from '@patternfly/react-core';
+import { NumberInput } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { UserSetting } from './Settings';
 

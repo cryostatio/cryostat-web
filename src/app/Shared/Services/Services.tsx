@@ -44,11 +44,13 @@ import { NotificationChannel } from './NotificationChannel.service';
 import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
 import { LoginService } from './Login.service';
+import { JmxCredentials } from './JmxCredentials.service';
 
 export interface Services {
   target: TargetService;
   targets: TargetsService;
   api: ApiService;
+  jmxCredentials: JmxCredentials;
   notificationChannel: NotificationChannel;
   reports: ReportService;
   settings: SettingsService;
@@ -56,7 +58,8 @@ export interface Services {
 }
 
 const settings = new SettingsService();
-const login = new LoginService(TargetInstance, settings);
+const jmxCredentials = new JmxCredentials(() => api);
+const login = new LoginService(TargetInstance, jmxCredentials, settings);
 const api = new ApiService(TargetInstance, NotificationsInstance, login);
 const notificationChannel = new NotificationChannel(NotificationsInstance, login);
 const reports = new ReportService(login, NotificationsInstance);
@@ -66,6 +69,7 @@ const defaultServices: Services = {
   target: TargetInstance,
   targets,
   api,
+  jmxCredentials,
   notificationChannel,
   reports,
   settings,

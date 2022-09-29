@@ -36,35 +36,61 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { StoreJmxCredentialsCard } from './Credentials/StoreJmxCredentials';
-import { ImportCertificate } from './ImportCertificate';
+import '@testing-library/jest-dom';
+import renderer, { act } from 'react-test-renderer';
+import { cleanup } from '@testing-library/react';
 
-export const SecurityPanel = () => {
-  const securityCards = [ImportCertificate, StoreJmxCredentialsCard].map((c) => ({
-    title: c.title,
-    description: c.description,
-    element: React.createElement(c.content, null),
-  }));
+import { Text } from '@patternfly/react-core';
+import { Settings } from '@app/Settings/Settings';
 
-  return (
-    <BreadcrumbPage pageTitle="Security">
-      {securityCards.map((s) => (
-        <Card key={s.title}>
-          <CardTitle>
-            <Text component={TextVariants.h1}>{s.title}</Text>
-            <Text component={TextVariants.small}>{s.description}</Text>
-          </CardTitle>
-          <CardBody>{s.element}</CardBody>
-        </Card>
-      ))}
-    </BreadcrumbPage>
-  );
-};
+jest.mock('@app/Settings/NotificationControl', () => ({
+  NotificationControl: {
+    title: 'Notification Control Title',
+    description: 'Notification Control Description',
+    content: () => <Text>Notification Control Component</Text>,
+  },
+}));
 
-export interface SecurityCard {
-  title: string;
-  description: JSX.Element | string;
-  content: React.FunctionComponent;
-}
+jest.mock('@app/Settings/CredentialsStorage', () => ({
+  CredentialsStorage: {
+    title: 'Credentials Storage Title',
+    description: 'Credentials Storage Description',
+    content: () => <Text>Credentials Storage Component</Text>,
+  },
+}));
+
+jest.mock('@app/Settings/DeletionDialogControl', () => ({
+  DeletionDialogControl: {
+    title: 'Deletion Dialog Control Title',
+    description: 'Deletion Dialog Control Description',
+    content: () => <Text>Deletion Dialog Control Component</Text>,
+  },
+}));
+
+jest.mock('@app/Settings/WebSocketDebounce', () => ({
+  WebSocketDebounce: {
+    title: 'WebSocket Debounce Title',
+    description: 'WebSocket Debounce Description',
+    content: () => <Text>WebSocket Debounce Component</Text>,
+  },
+}));
+
+jest.mock('@app/Settings/AutoRefresh', () => ({
+  AutoRefresh: {
+    title: 'AutoRefresh Title',
+    description: 'AutoRefresh Description',
+    content: () => <Text>AutoRefresh Component</Text>,
+  },
+}));
+
+describe('<Settings/>', () => {
+  afterEach(cleanup);
+
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(<Settings />);
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+});

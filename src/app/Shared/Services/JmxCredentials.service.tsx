@@ -35,36 +35,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { StoreJmxCredentialsCard } from './Credentials/StoreJmxCredentials';
-import { ImportCertificate } from './ImportCertificate';
+import { Observable, of } from 'rxjs';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { Locations } from '@app/Settings/CredentialsStorage';
+import { ApiService } from './Api.service';
 
-export const SecurityPanel = () => {
-  const securityCards = [ImportCertificate, StoreJmxCredentialsCard].map((c) => ({
-    title: c.title,
-    description: c.description,
-    element: React.createElement(c.content, null),
-  }));
+export interface Credential {
+  username: string;
+  password: string;
+}
 
-  return (
-    <BreadcrumbPage pageTitle="Security">
-      {securityCards.map((s) => (
-        <Card key={s.title}>
-          <CardTitle>
-            <Text component={TextVariants.h1}>{s.title}</Text>
-            <Text component={TextVariants.small}>{s.description}</Text>
-          </CardTitle>
-          <CardBody>{s.element}</CardBody>
-        </Card>
-      ))}
-    </BreadcrumbPage>
-  );
-};
+export class JmxCredentials {
+  // TODO replace with Redux?
+  private readonly store = new Map<string, Credential>();
 
-export interface SecurityCard {
-  title: string;
-  description: JSX.Element | string;
-  content: React.FunctionComponent;
+  constructor(private readonly api: () => ApiService) {}
+
+  setCredential(targetId: string, username: string, password: string): Observable<boolean> {
+    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION.key);
+    switch (location) {
+      case Locations.BACKEND.key:
+        return this.api().postCredentials(`target.connectUrl == "${targetId}"`, username, password);
+      case Locations.BROWSER_SESSION.key:
+        this.store.set(targetId, { username, password });
+        return of(true);
+      default:
+        console.warn('Unknown storage location', location);
+        return of(false);
+    }
+  }
+
+  getCredential(targetId: string): Observable<Credential | undefined> {
+    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION.key);
+    switch (location) {
+      case Locations.BACKEND.key:
+        // if this is stored on the backend then Cryostat should be using those and not prompting us to request from the user
+        return of(undefined);
+      case Locations.BROWSER_SESSION.key:
+        return of(this.store.get(targetId));
+      default:
+        console.warn('Unknown storage location', location);
+        return of(undefined);
+    }
+  }
 }

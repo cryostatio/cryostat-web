@@ -57,7 +57,6 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
 
   const handleSave = React.useCallback(() => {
     props.onSave(username, password).then(() => {
-      clear();
       context.target.setAuthRetry();
     });
   }, [context, context.target, clear, props.onSave, username, password]);

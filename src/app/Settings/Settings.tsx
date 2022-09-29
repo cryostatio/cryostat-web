@@ -40,31 +40,31 @@ import * as React from 'react';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
-import { AutoRefresh } from './AutoRefresh';
 import { NotificationControl } from './NotificationControl';
-import { WebSocketDebounce } from './WebSocketDebounce';
+import { CredentialsStorage } from './CredentialsStorage';
 import { DeletionDialogControl } from './DeletionDialogControl';
+import { WebSocketDebounce } from './WebSocketDebounce';
+import { AutoRefresh } from './AutoRefresh';
 
 export const Settings: React.FunctionComponent<{}> = () => {
-  const settings = [AutoRefresh, NotificationControl, DeletionDialogControl, WebSocketDebounce].map((c) => ({
-    title: c.title,
-    description: c.description,
-    element: React.createElement(c.content, null),
-  }));
-
+  const settings = [NotificationControl, CredentialsStorage, DeletionDialogControl, WebSocketDebounce, AutoRefresh].map(
+    (c) => ({
+      title: c.title,
+      description: c.description,
+      element: React.createElement(c.content, null),
+    })
+  );
   return (
     <>
       <BreadcrumbPage pageTitle="Settings">
         {settings.map((s) => (
-          <>
-            <Card>
-              <CardTitle>
-                <Text component={TextVariants.h1}>{s.title}</Text>
-                <Text component={TextVariants.small}>{s.description}</Text>
-              </CardTitle>
-              <CardBody>{s.element}</CardBody>
-            </Card>
-          </>
+          <Card key={s.title}>
+            <CardTitle>
+              <Text component={TextVariants.h1}>{s.title}</Text>
+              <Text component={TextVariants.small}>{s.description}</Text>
+            </CardTitle>
+            <CardBody>{s.element}</CardBody>
+          </Card>
         ))}
       </BreadcrumbPage>
     </>
@@ -73,6 +73,6 @@ export const Settings: React.FunctionComponent<{}> = () => {
 
 export interface UserSetting {
   title: string;
-  description: string;
+  description: JSX.Element | string;
   content: React.FunctionComponent;
 }

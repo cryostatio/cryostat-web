@@ -42,6 +42,7 @@ import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, 
 import { SettingsService } from './Settings.service';
 import { ApiV2Response, HttpError } from './Api.service';
 import { TargetService } from './Target.service';
+import { Credential, JmxCredentials } from './JmxCredentials.service';
 
 export enum SessionState {
   NO_USER_SESSION,
@@ -67,7 +68,11 @@ export class LoginService {
   private readonly sessionState = new ReplaySubject<SessionState>(1);
   readonly authority: string;
 
-  constructor(private readonly target: TargetService, private readonly settings: SettingsService) {
+  constructor(
+    private readonly target: TargetService,
+    private readonly jmxCredentials: JmxCredentials,
+    private readonly settings: SettingsService
+  ) {
     let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
     if (!apiAuthority) {
       apiAuthority = '';
@@ -138,19 +143,30 @@ export class LoginService {
     );
   }
 
-  getAuthHeaders(token: string, method: string): Headers {
+  getAuthHeaders(token: string, method: string, jmxCredential?: Credential): Headers {
     const headers = new window.Headers();
     if (!!token && !!method) {
       headers.set('Authorization', `${method} ${token}`);
     } else if (method === AuthMethod.NONE) {
       headers.set('Authorization', AuthMethod.NONE);
     }
+    if (jmxCredential) {
+      let basic = `${jmxCredential.username}:${jmxCredential.password}`;
+      headers.set('X-JMX-Authorization', `Basic ${Base64.encode(basic)}`);
+    }
     return headers;
   }
 
   getHeaders(): Observable<Headers> {
-    return combineLatest([this.getToken(), this.getAuthMethod()]).pipe(
-      map((parts: [string, AuthMethod]) => this.getAuthHeaders(parts[0], parts[1])),
+    return combineLatest([
+      this.getToken(),
+      this.getAuthMethod(),
+      this.target.target().pipe(
+        map((target) => target.connectUrl),
+        concatMap((connect) => this.jmxCredentials.getCredential(connect))
+      ),
+    ]).pipe(
+      map((parts: [string, AuthMethod, Credential | undefined]) => this.getAuthHeaders(parts[0], parts[1], parts[2])),
       first()
     );
   }

@@ -64,8 +64,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
               first(),
               filter((target) => target !== NO_TARGET),
               map((target) => target.connectUrl),
-              map((connectUrl) => `target.connectUrl == "${connectUrl}"`),
-              mergeMap((matchExpression) => context.api.postCredentials(matchExpression, username, password))
+              mergeMap((connectUrl) => context.jmxCredentials.setCredential(connectUrl, username, password))
             )
             .subscribe((result) => {
               if (result) {
@@ -95,7 +94,12 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
           <Link onClick={props.onDismiss} to="/security">
             Security
           </Link>{' '}
-          to add a credential matching multiple targets.
+          to add a credential matching multiple targets. Visit{' '}
+          <Link onClick={props.onDismiss} to="/settings">
+            Settings
+          </Link>{' '}
+          to confirm and configure whether these credentials will be held only for this browser session or stored
+          encrypted in the Cryostat backend.
         </Text>
       }
     >

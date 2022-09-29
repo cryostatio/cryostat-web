@@ -38,6 +38,8 @@
 
 export enum LocalStorageKey {
   TARGET_RECORDING_FILTERS,
+  JMX_CREDENTIAL_LOCATION,
+  JMX_CREDENTIALS,
 }
 
 /**

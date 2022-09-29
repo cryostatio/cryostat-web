@@ -36,12 +36,15 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
 import {
   Badge,
   Button,
   Checkbox,
   EmptyState,
   EmptyStateIcon,
+  Text,
   Title,
   Toolbar,
   ToolbarContent,
@@ -62,7 +65,6 @@ import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
-import _ from 'lodash';
 
 const enum Actions {
   HANDLE_REFRESH,
@@ -457,6 +459,14 @@ export const StoreJmxCredentials = () => {
 
 export const StoreJmxCredentialsCard: SecurityCard = {
   title: 'Store JMX Credentials',
-  description: `Credentials that Cryostat uses to connect to target JVMs over JMX are stored here.`,
+  description: (
+    <Text>
+      Credentials that Cryostat uses to connect to target JVMs over JMX are stored here. These are stored in encrypted
+      storage managed by the Cryostat backend. These credentials may be used for manually managing recordings and event
+      templates on target JVMs, as well as for Automated Rules which run in the background and open unattended target
+      connections. Any locally-stored client credentials held by your browser session are not displayed here. See{' '}
+      <Link to="/settings">Settings</Link> to configure locally-stored credentials.
+    </Text>
+  ),
   content: StoreJmxCredentials,
 };
