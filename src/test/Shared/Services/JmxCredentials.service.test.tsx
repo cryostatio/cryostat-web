@@ -71,7 +71,7 @@ describe('JmxCredentials.service', () => {
   });
 
   it('should not check storage on instantiation', () => {
-    expect(getFromLocalStorage as jest.Mock).not.toHaveBeenCalled();
+    expect(getFromLocalStorage).not.toHaveBeenCalled();
   });
 
   describe('with invalid location selected in storage', () => {
