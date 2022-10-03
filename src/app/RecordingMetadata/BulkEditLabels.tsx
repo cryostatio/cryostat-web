@@ -241,12 +241,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         <StackItem>
           {editing ? (
             <>
-              <RecordingLabelFields
-                labels={commonLabels}
-                setLabels={setCommonLabels}
-                valid={valid}
-                setValid={setValid}
-              />
+              <RecordingLabelFields labels={commonLabels} setLabels={setCommonLabels} setValid={setValid} />
               <Split hasGutter>
                 <SplitItem>
                   <Button variant="primary" onClick={handleUpdateLabels} isDisabled={valid != ValidatedOptions.success}>

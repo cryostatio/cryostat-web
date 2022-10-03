@@ -370,7 +370,7 @@ export const CustomRecordingForm = (props) => {
               </Tooltip>
             }
           >
-            <RecordingLabelFields labels={labels} setLabels={setLabels} valid={labelsValid} setValid={setLabelsValid} />
+            <RecordingLabelFields labels={labels} setLabels={setLabels} setValid={setLabelsValid} />
           </FormGroup>
         </ExpandableSection>
         <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">

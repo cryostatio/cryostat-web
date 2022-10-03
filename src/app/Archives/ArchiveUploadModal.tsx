@@ -177,25 +177,12 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
               label="Labels"
               fieldId="labels"
               labelIcon={
-                <Tooltip
-                  content={
-                    <Text>
-                      Unique key-value pairs containing information about the recording. Uploaded labels will overwrite
-                      existing ones in the editor.
-                    </Text>
-                  }
-                >
+                <Tooltip content={<Text>Unique key-value pairs containing information about the recording.</Text>}>
                   <HelpIcon noVerticalAlign />
                 </Tooltip>
               }
             >
-              <RecordingLabelFields
-                isUploadable
-                labels={labels}
-                setLabels={setLabels}
-                valid={valid}
-                setValid={setValid}
-              />
+              <RecordingLabelFields isUploadable labels={labels} setLabels={setLabels} setValid={setValid} />
             </FormGroup>
           </ExpandableSection>
           <ActionGroup>

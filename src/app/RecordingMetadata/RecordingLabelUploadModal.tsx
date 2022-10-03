@@ -57,8 +57,9 @@ export const parseLabels = (file: File): Observable<RecordingLabel[]> => {
       .then(JSON.parse)
       .then((obj) => {
         const labels: RecordingLabel[] = [];
-        const labelObj = obj['labels']
-        if (labelObj) { // Ifno
+        const labelObj = obj['labels'];
+        if (labelObj) {
+          // Ifno
           Object.keys(labelObj).forEach((key) => {
             labels.push({
               key: key,
