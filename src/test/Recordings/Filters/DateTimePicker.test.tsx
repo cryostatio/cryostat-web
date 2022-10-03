@@ -36,21 +36,22 @@
  * SOFTWARE.
  */
 
-import { DateTimePicker } from '@app/Recordings/Filters/DateTimePicker';
-import { cleanup, render, screen, waitFor, within, act } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 const onDateTimeSelect = jest.fn((date) => {
   /**Do nothing. Used for checking renders */
 });
+
+// Mock system time
 const currentDate = new Date('14 Sep 2022 00:00:00 UTC');
+jest.useFakeTimers('modern').setSystemTime(currentDate);
+
+import { DateTimePicker } from '@app/Recordings/Filters/DateTimePicker';
 
 describe('<DateTimePicker />', () => {
-  beforeEach(() => {
-    // Mock system time
-    jest.useFakeTimers('modern').setSystemTime(currentDate);
-  });
+  afterAll(jest.useRealTimers);
 
   afterEach(cleanup);
 
