@@ -108,7 +108,7 @@ export const Rules = () => {
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
 
   const tableColumns = [
-    { title: 'Enabled', },
+    { title: 'Enabled' },
     {
       title: 'Name',
       transforms: [sortable],
@@ -234,11 +234,12 @@ export const Rules = () => {
     setIsUploadModalOpen(true);
   }, [setIsUploadModalOpen]);
 
-  const handleToggle = React.useCallback((rule: Rule, enabled: boolean): void => {
-    addSubscription(
-      context.api.updateRule({ ...rule, enabled }).subscribe(() => refreshRules())
-    );
-  }, [context, context.api, addSubscription, refreshRules]);
+  const handleToggle = React.useCallback(
+    (rule: Rule, enabled: boolean): void => {
+      addSubscription(context.api.updateRule({ ...rule, enabled }).subscribe(() => refreshRules()));
+    },
+    [context, context.api, addSubscription, refreshRules]
+  );
 
   const displayRules = React.useMemo(() => {
     const { index, direction } = sortBy;
@@ -252,10 +253,10 @@ export const Rules = () => {
     return sorted.map((r: Rule) => [
       <>
         <Switch
-          label=''
+          label=""
           aria-label={`${r.name} is enabled`}
           isChecked={r.enabled}
-          onChange={state => handleToggle(r, state)}
+          onChange={(state) => handleToggle(r, state)}
         />
       </>,
       r.name,
