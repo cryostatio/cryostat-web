@@ -120,11 +120,12 @@ export const RecordingLabelUploadModal: React.FunctionComponent<RecordingLabelUp
     setUploading(true);
     addSubscription(
       parseLabels(uploadFile).subscribe((labels) => {
+        reset();
         props.onClose();
         props.onSubmit(labels);
       })
     );
-  }, [notifications, setUploading, uploadFile, addSubscription, props.onSubmit, props.onClose]);
+  }, [notifications, setUploading, uploadFile, addSubscription, props.onSubmit, props.onClose, reset]);
 
   const handleAbort = React.useCallback(() => {
     abort.abort();
