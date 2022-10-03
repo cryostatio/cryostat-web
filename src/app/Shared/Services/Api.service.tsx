@@ -549,12 +549,14 @@ export class ApiService {
       });
   }
 
-  uploadRecording(file: File, signal?: AbortSignal): Observable<string> {
+  uploadRecording(file: File, labels: Object, signal?: AbortSignal): Observable<string> {
     window.onbeforeunload = () => true;
     return this.login.getHeaders().pipe(
       concatMap((headers) => {
         const body = new window.FormData();
         body.append('recording', file);
+        body.append('labels', JSON.stringify(labels));
+
         return fromFetch(`${this.login.authority}/api/v1/recordings`, {
           credentials: 'include',
           mode: 'cors',

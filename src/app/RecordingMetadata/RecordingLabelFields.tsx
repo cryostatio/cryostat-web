@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { CloseIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { CloseIcon, PlusCircleIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   Button,
   FormHelperText,
@@ -49,12 +49,14 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { LabelUploadModal } from './RecordingLabelUploadModal';
 
 export interface RecordingLabelFieldsProps {
   labels: RecordingLabel[];
   setLabels: (labels: RecordingLabel[]) => void;
   valid: ValidatedOptions;
   setValid: (isValid: ValidatedOptions) => void;
+  isUploadable?: boolean;
 }
 
 export const LabelPattern = /^\S+$/;
@@ -67,6 +69,12 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     Array(!!props.labels ? props.labels.length : 0).fill(ValidatedOptions.default)
   );
   const [keys, setKeys] = React.useState(!!props.labels ? props.labels.map((l) => l.key) : []);
+
+  const [uploadVisible, setUploadVisible] = React.useState(false);
+
+  const handleModalClose = React.useCallback(() => setUploadVisible(false), [setUploadVisible]);
+
+  const handleModalOpen = React.useCallback(() => setUploadVisible(true), [setUploadVisible]);
 
   const handleKeyChange = React.useCallback(
     (idx, key) => {
@@ -171,6 +179,13 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     return allKeysValid && allValuesValid;
   }, [validKeys, validValues]);
 
+  const handleLabelUpload = React.useCallback(
+    (labels: RecordingLabel[]) => {
+      props.setLabels([...props.labels, ...labels]);
+    },
+    [props.labels, props.setLabels]
+  );
+
   React.useEffect(() => {
     props.setValid(getValidatedOption(allLabelsValid));
   }, [validKeys, validValues]);
@@ -180,6 +195,18 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       <Button aria-label="Add Label" onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
         Add Label
       </Button>
+      {props.isUploadable && (
+        <>
+          <Button aria-label="Upload Label" onClick={handleModalOpen} variant="link" icon={<UploadIcon />}>
+            Upload Label
+          </Button>
+          <LabelUploadModal
+            onSubmit={handleLabelUpload}
+            visible={uploadVisible}
+            onClose={handleModalClose}
+          ></LabelUploadModal>
+        </>
+      )}
       {!!props.labels &&
         props.labels.map((label, idx) => (
           <Split hasGutter key={idx}>
@@ -200,8 +227,8 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
                 isHidden={!(validKeys[idx] == ValidatedOptions.error || validValues[idx] == ValidatedOptions.error)}
                 component="div"
               >
-                <HelperText id="helper-text1">
-                  <HelperTextItem variant={'error'}>
+                <HelperText id="key-error-text">
+                  <HelperTextItem variant='error'>
                     Keys must be unique. Labels should not contain whitespace.
                   </HelperTextItem>
                 </HelperText>
