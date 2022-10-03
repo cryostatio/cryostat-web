@@ -139,6 +139,7 @@ export const RecordingLabelUploadModal: React.FunctionComponent<RecordingLabelUp
     <>
       <Prompt when={uploading} message="Are you sure you wish to cancel the file upload?" />
       <Modal
+        aria-label='Upload Metadata Modal'
         isOpen={props.visible}
         variant={ModalVariant.medium}
         showClose={true}
