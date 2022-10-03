@@ -49,7 +49,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { LabelUploadModal } from './RecordingLabelUploadModal';
+import { RecordingLabelUploadModal } from './RecordingLabelUploadModal';
 
 export interface RecordingLabelFieldsProps {
   labels: RecordingLabel[];
@@ -158,11 +158,11 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
           <Button aria-label="Upload Label" onClick={handleModalOpen} variant="link" icon={<UploadIcon />}>
             Upload Label
           </Button>
-          <LabelUploadModal
+          <RecordingLabelUploadModal
             onSubmit={handleLabelUpload}
             visible={uploadVisible}
             onClose={handleModalClose}
-          ></LabelUploadModal>
+          ></RecordingLabelUploadModal>
         </>
       )}
       {props.labels.map((label, idx) => (

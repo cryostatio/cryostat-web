@@ -44,7 +44,7 @@ import { RecordingLabel } from './RecordingLabel';
 import { from, Observable } from 'rxjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 
-export interface LabelUploadModalProps {
+export interface RecordingLabelUploadModalProps {
   visible: boolean;
   onClose: () => void;
   onSubmit: (labels: RecordingLabel[]) => void;
@@ -72,7 +72,7 @@ export const parseLabels = (file: File): Observable<RecordingLabel[]> => {
   );
 };
 
-export const LabelUploadModal: React.FunctionComponent<LabelUploadModalProps> = (props) => {
+export const RecordingLabelUploadModal: React.FunctionComponent<RecordingLabelUploadModalProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
 
