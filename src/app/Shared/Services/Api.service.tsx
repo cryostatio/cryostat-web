@@ -217,6 +217,19 @@ export class ApiService {
     );
   }
 
+  updateRule(rule: Rule): Observable<boolean> {
+    const headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+    return this.sendRequest('v2', `rules/${rule.name}`, {
+      method: 'PATCH',
+      body: JSON.stringify(rule),
+      headers,
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
+    );
+  }
+
   deleteRule(name: string, clean: boolean = true): Observable<boolean> {
     return this.sendRequest('v2', `rules/${name}?clean=${clean}`, {
       method: 'DELETE',

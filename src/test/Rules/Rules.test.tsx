@@ -53,6 +53,7 @@ const mockRule: Rule = {
   name: 'mockRule',
   description: 'A mock rule',
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
+  enabled: true,
   eventSpecifier: 'template=Profiling,type=TARGET',
   archivalPeriodSeconds: 0,
   initialDelaySeconds: 0,
@@ -78,6 +79,7 @@ jest.mock('react-router-dom', () => ({
 
 const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
 const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
+const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
 jest
   .spyOn(defaultServices.api, 'doGet')
   .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
@@ -237,6 +239,21 @@ describe('<Rules/>', () => {
 
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toBeCalledWith(mockRule.name);
+  });
+
+  it('updates a rule when the switch is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByRole('checkbox'));
+
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: !mockRule.enabled });
   });
 
   it('upload a rule file when Submit is clicked', async () => {

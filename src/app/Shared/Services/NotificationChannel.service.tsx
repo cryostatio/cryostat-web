@@ -60,6 +60,7 @@ export enum NotificationCategory {
   TemplateUploaded = 'TemplateUploaded',
   TemplateDeleted = 'TemplateDeleted',
   RuleCreated = 'RuleCreated',
+  RuleUpdated = 'RuleUpdated',
   RuleDeleted = 'RuleDeleted',
   RecordingMetadataUpdated = 'RecordingMetadataUpdated',
   GrafanaConfiguration = 'GrafanaConfiguration', // generated client-side
@@ -208,6 +209,14 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Automated Rule Created',
       body: (evt) => `${evt.message.name} was created`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.RuleUpdated,
+    {
+      variant: AlertVariant.success,
+      title: 'Automated Rule Updated',
+      body: (evt) => `${evt.message.name} was ` + (evt.message.enabled ? 'enabled' : 'disabled'),
     } as NotificationMessageMapper,
   ],
   [
