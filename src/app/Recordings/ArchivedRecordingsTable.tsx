@@ -490,6 +490,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       <RecordingLabelsPanel
         setShowPanel={setShowDetailsPanel}
         isTargetRecording={false}
+        isUploadsTable={props.isUploadsTable}
         checkedIndices={checkedIndices}
       />
     ),

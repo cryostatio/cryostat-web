@@ -628,6 +628,22 @@ export class ApiService {
     );
   }
 
+  postUploadedRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
+    return this.graphql<any>(`
+      query {
+        archivedRecordings(filter: {sourceTarget: "${UPLOADS_SUBDIRECTORY}", name: "${recordingName}" }) {
+          data {
+            doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+              metadata {
+                labels
+              }
+            }
+          }
+        }
+      }`
+    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
+  }
+
   postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ActiveRecording[]> {
     return this.target.target().pipe(
       filter((target) => target !== NO_TARGET),

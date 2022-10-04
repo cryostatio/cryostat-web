@@ -49,6 +49,7 @@ import React from 'react';
 export interface RecordingLabelsPanelProps {
   setShowPanel: (showPanel: React.SetStateAction<boolean>) => void;
   isTargetRecording: boolean;
+  isUploadsTable?: boolean;
   checkedIndices: number[];
 }
 
@@ -65,7 +66,11 @@ export const RecordingLabelsPanel: React.FunctionComponent<RecordingLabelsPanelP
         </DrawerActions>
       </DrawerHead>
       <DrawerPanelBody>
-        <BulkEditLabels isTargetRecording={props.isTargetRecording} checkedIndices={props.checkedIndices} />
+        <BulkEditLabels
+          isTargetRecording={props.isTargetRecording}
+          checkedIndices={props.checkedIndices}
+          isUploadsTable={props.isUploadsTable}
+        />
       </DrawerPanelBody>
     </DrawerPanelContent>
   );
