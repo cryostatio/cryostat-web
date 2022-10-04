@@ -241,8 +241,7 @@ describe('<Rules/>', () => {
     expect(screen.queryByText(mockRule.name)).not.toBeInTheDocument();
   });
 
-  it.skip('update a rule when receiving a notification', async () => {
-    // FIXME skipped because the two spans with .pf-m-on and .pf-m-off both appear visible in the DOM?
+  it('update a rule when receiving a notification', async () => {
     const subj = new Subject<NotificationMessage>();
     const mockNotifications = {
       messages: (category: string) => (category === NotificationCategory.RuleUpdated ? subj.asObservable() : of()),
@@ -261,20 +260,19 @@ describe('<Rules/>', () => {
 
     expect(await screen.findByText(mockRule.name)).toBeInTheDocument();
 
+    let labels = container.querySelectorAll('label');
+    expect(labels).toHaveLength(1);
+    let label = labels[0];
+    expect(label).toHaveClass('switch-toggle-true');
+    expect(label).not.toHaveClass('switch-toggle-false');
+
     doAct(() => subj.next(mockUpdateNotification));
 
-    const labels = container.querySelectorAll('label');
+    labels = container.querySelectorAll('label');
     expect(labels).toHaveLength(1);
-    const label = labels[0];
-    expect(label.querySelectorAll(':scope > .pf-c-switch__label')).toHaveLength(2);
-
-    const onState = label.querySelector(':scope > .pf-c-switch__label.pf-m-on');
-    expect(onState).toBeInTheDocument();
-    expect(onState).not.toBeVisible();
-
-    const offState = label.querySelector(':scope > .pf-c-switch__label.pf-m-off');
-    expect(offState).toBeInTheDocument();
-    expect(offState).toBeVisible();
+    label = labels[0];
+    expect(label).not.toHaveClass('switch-toggle-true');
+    expect(label).toHaveClass('switch-toggle-false');
   });
 
   it('downloads a rule when Download is clicked', async () => {

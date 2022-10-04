@@ -268,8 +268,8 @@ export const Rules = () => {
     return sorted.map((r: Rule) => [
       <>
         <Switch
-          label=""
           aria-label={`${r.name} is enabled`}
+          className={'switch-toggle-' + String(r.enabled)}
           isChecked={r.enabled}
           onChange={(state) => handleToggle(r, state)}
         />
