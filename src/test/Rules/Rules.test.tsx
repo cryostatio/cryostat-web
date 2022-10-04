@@ -266,8 +266,7 @@ describe('<Rules/>', () => {
     const labels = container.querySelectorAll('label');
     expect(labels).toHaveLength(1);
     const label = labels[0];
-    const spans = label.querySelectorAll(':scope > .pf-c-switch__label');
-    expect(spans).toHaveLength(2);
+    expect(label.querySelectorAll(':scope > .pf-c-switch__label')).toHaveLength(2);
 
     const onState = label.querySelector(':scope > .pf-c-switch__label.pf-m-on');
     expect(onState).toBeInTheDocument();
