@@ -56,10 +56,11 @@ import {
 import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
-
 import { CreateTargetModal } from './CreateTargetModal';
 import _ from 'lodash';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 export interface TargetSelectProps {}
@@ -73,12 +74,12 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [isModalOpen, setModalOpen] = React.useState(false);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+
   const addSubscription = useSubscriptions();
 
   const setCachedTargetSelection = React.useCallback(
-    (target) => {
-      localStorage.setItem(TARGET_KEY, JSON.stringify(target));
-    },
+    (target) => localStorage.setItem(TARGET_KEY, JSON.stringify(target)),
     [localStorage]
   );
 
@@ -114,42 +115,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     [context, context.target, getCachedTargetSelection, removeCachedTargetSelection]
   );
 
-  React.useEffect(() => {
-    addSubscription(
-      context.targets.targets().subscribe((targets) => {
-        setTargets(targets);
-        selectTargetFromCache(targets);
-      })
-    );
-  }, [addSubscription, context, context.targets, setTargets]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery).subscribe((v) => {
-        const evt: TargetDiscoveryEvent = v.message.event;
-        if (evt.kind === 'LOST') {
-          const target: Target = {
-            connectUrl: evt.serviceRef.connectUrl,
-            alias: evt.serviceRef.alias,
-          };
-          context.target
-            .target()
-            .pipe(first())
-            .subscribe((currentTarget) => {
-              if (currentTarget.connectUrl === target.connectUrl && currentTarget.alias === target.alias) {
-                selectNone();
-              }
-            });
-        }
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, context.target]);
-
-  const refreshTargetList = React.useCallback(() => {
-    setLoading(true);
-    addSubscription(context.targets.queryForTargets().subscribe(() => setLoading(false)));
-  }, [addSubscription, context, context.targets, setLoading]);
-
   const onSelect = React.useCallback(
     (evt, selection, isPlaceholder) => {
       if (isPlaceholder) {
@@ -182,6 +147,42 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const selectNone = React.useCallback(() => {
     onSelect(undefined, undefined, true);
   }, [onSelect]);
+
+  const refreshTargetList = React.useCallback(() => {
+    setLoading(true);
+    addSubscription(context.targets.queryForTargets().subscribe(() => setLoading(false)));
+  }, [addSubscription, context, context.targets, setLoading]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.targets.targets().subscribe((targets) => {
+        setTargets(targets);
+        selectTargetFromCache(targets);
+      })
+    );
+  }, [addSubscription, context, context.targets, setTargets, selectTargetFromCache]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery).subscribe((v) => {
+        const evt: TargetDiscoveryEvent = v.message.event;
+        if (evt.kind === 'LOST') {
+          const target: Target = {
+            connectUrl: evt.serviceRef.connectUrl,
+            alias: evt.serviceRef.alias,
+          };
+          context.target
+            .target()
+            .pipe(first())
+            .subscribe((currentTarget) => {
+              if (currentTarget.connectUrl === target.connectUrl && currentTarget.alias === target.alias) {
+                selectNone();
+              }
+            });
+        }
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, context.target, selectNone]);
 
   React.useLayoutEffect(() => {
     addSubscription(context.target.target().subscribe(setSelected));
@@ -223,6 +224,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     },
     [addSubscription, context, context.api, notifications, setLoading, setModalOpen]
   );
+  const deletionDialogsEnabled = React.useMemo(
+    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteCustomTargets),
+    [context, context.settings, context.settings.deletionDialogsEnabledFor]
+  );
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
@@ -249,6 +254,53 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     );
   }, [addSubscription, context, context.api, notifications, selected, setLoading, selectNone]);
 
+  const handleDeleteButton = React.useCallback(() => {
+    if (deletionDialogsEnabled) {
+      setWarningModalOpen(true);
+    } else {
+      deleteTarget();
+    }
+  }, [deletionDialogsEnabled, setWarningModalOpen, deleteTarget]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const handleCreateModalClose = React.useCallback(() => {
+    setModalOpen(false);
+  }, [setModalOpen]);
+
+  const deleteArchivedWarningModal = React.useMemo(() => {
+    return (
+      <DeleteWarningModal
+        warningType={DeleteWarningType.DeleteCustomTargets}
+        visible={warningModalOpen}
+        onAccept={deleteTarget}
+        onClose={handleWarningModalClose}
+      />
+    );
+  }, [warningModalOpen, deleteTarget, handleWarningModalClose]);
+
+  const selectOptions = React.useMemo(
+    () =>
+      [
+        <SelectOption key="placeholder" value="Select Target..." isPlaceholder={true} itemCount={targets.length} />,
+      ].concat(
+        targets.map((t: Target) =>
+          t.alias == t.connectUrl || !t.alias ? (
+            <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>{`${t.connectUrl}`}</SelectOption>
+          ) : (
+            <SelectOption
+              key={t.connectUrl}
+              value={t}
+              isPlaceholder={false}
+            >{`${t.alias} (${t.connectUrl})`}</SelectOption>
+          )
+        )
+      ),
+    [targets]
+  );
+
   return (
     <>
       <Card>
@@ -269,7 +321,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               isDisabled={
                 isLoading || selected == NO_TARGET || selected.annotations?.cryostat['REALM'] !== CUSTOM_TARGETS_REALM
               }
-              onClick={deleteTarget}
+              onClick={handleDeleteButton}
               variant="control"
               icon={<TrashIcon />}
             />
@@ -293,34 +345,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             isOpen={expanded}
             aria-label="Select Input"
           >
-            {[
-              <SelectOption
-                key="placeholder"
-                value="Select Target..."
-                isPlaceholder={true}
-                itemCount={targets.length}
-              />,
-            ].concat(
-              targets.map((t: Target) =>
-                t.alias == t.connectUrl || !t.alias ? (
-                  <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>{`${t.connectUrl}`}</SelectOption>
-                ) : (
-                  <SelectOption
-                    key={t.connectUrl}
-                    value={t}
-                    isPlaceholder={false}
-                  >{`${t.alias} (${t.connectUrl})`}</SelectOption>
-                )
-              )
-            )}
+            {selectOptions}
           </Select>
         </CardBody>
       </Card>
       <CreateTargetModal
         visible={isModalOpen}
-        onSubmit={(target) => createTarget(target)}
-        onDismiss={() => setModalOpen(false)}
+        onSubmit={createTarget}
+        onDismiss={handleCreateModalClose}
       ></CreateTargetModal>
+      {deleteArchivedWarningModal}
     </>
   );
 };
