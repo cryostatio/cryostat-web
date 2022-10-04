@@ -588,29 +588,15 @@ describe('<ArchivedRecordingsTable />', () => {
 
     userEvent.click(uploadeLabelButton);
 
-    const labelUploadModal = await screen.findByLabelText('Upload Metadata Modal');
-    expect(labelUploadModal).toBeInTheDocument();
-    expect(labelUploadModal).toBeVisible();
-
-    const labelUploadInput = labelUploadModal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
+    const labelUploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(labelUploadInput).toBeInTheDocument();
 
-    const labelBrowseButton = await within(labelUploadModal).findByRole('button', { name: 'Browse...' });
-    expect(labelBrowseButton).toBeInTheDocument();
-    expect(labelBrowseButton).toBeVisible();
-
-    userEvent.click(labelBrowseButton);
-    userEvent.upload(labelUploadInput, mockMetadataFile);
+    await tlr.act(async () => {
+      userEvent.upload(labelUploadInput, mockMetadataFile);
+    });
 
     expect(labelUploadInput.files).not.toBe(null);
     expect(labelUploadInput.files![0]).toStrictEqual(mockMetadataFile);
-
-    const metadataSubmitButton = within(labelUploadModal).getByRole('button', { name: 'Submit' });
-    expect(metadataSubmitButton).toBeInTheDocument();
-    expect(metadataSubmitButton).toBeVisible();
-
-    await waitFor(() => expect(metadataSubmitButton).not.toBeDisabled());
-    await tlr.act(async () => userEvent.click(metadataSubmitButton));
 
     const submitButton = within(modal).getByRole('button', { name: 'Submit' });
     expect(submitButton).toBeInTheDocument();

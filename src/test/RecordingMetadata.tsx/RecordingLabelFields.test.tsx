@@ -259,22 +259,6 @@ describe('<RecordingLabelFields />', () => {
     expect(uploadButton).toBeVisible();
   });
 
-  it('shows upload modal when upload is enabled and upload button is clicked', async () => {
-    mockProps.isUploadable = true;
-
-    renderWithRouter(<RecordingLabelFields {...mockProps} />, { history });
-
-    const uploadButton = screen.getByRole('button', { name: 'Upload Label' });
-    expect(uploadButton).toBeInTheDocument();
-    expect(uploadButton).toBeVisible();
-
-    userEvent.click(uploadButton);
-
-    const labelUploadModal = await screen.findByRole('dialog');
-    expect(labelUploadModal).toBeInTheDocument();
-    expect(labelUploadModal).toBeVisible();
-  });
-
   it('updates label list when upload is enabled and upload is submitted', async () => {
     mockProps.isUploadable = true;
 
@@ -285,30 +269,16 @@ describe('<RecordingLabelFields />', () => {
     expect(uploadButton).toBeVisible();
 
     userEvent.click(uploadButton);
-
-    const labelUploadModal = await screen.findByRole('dialog');
-    expect(labelUploadModal).toBeInTheDocument();
-    expect(labelUploadModal).toBeVisible();
-
-    const labelUploadInput = labelUploadModal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
+    
+    const labelUploadInput = document.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(labelUploadInput).toBeInTheDocument();
 
-    const labelBrowseButton = await within(labelUploadModal).findByRole('button', { name: 'Browse...' });
-    expect(labelBrowseButton).toBeInTheDocument();
-    expect(labelBrowseButton).toBeVisible();
-
-    userEvent.click(labelBrowseButton);
-    userEvent.upload(labelUploadInput, mockMetadataFile);
+    await tlr.act(async () => {
+      userEvent.upload(labelUploadInput, mockMetadataFile);
+    });
 
     expect(labelUploadInput.files).not.toBe(null);
     expect(labelUploadInput.files![0]).toStrictEqual(mockMetadataFile);
-
-    const metadataSubmitButton = within(labelUploadModal).getByRole('button', { name: 'Submit' });
-    expect(metadataSubmitButton).toBeInTheDocument();
-    expect(metadataSubmitButton).toBeVisible();
-
-    await waitFor(() => expect(metadataSubmitButton).not.toBeDisabled());
-    await tlr.act(async () => userEvent.click(metadataSubmitButton));
 
     expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
     expect(mockProps.setLabels).toHaveBeenCalledWith([
