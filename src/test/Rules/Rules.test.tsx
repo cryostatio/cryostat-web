@@ -46,7 +46,11 @@ import * as tlr from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
-import { NotificationCategory, NotificationChannel, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import {
+  NotificationCategory,
+  NotificationChannel,
+  NotificationMessage,
+} from '@app/Shared/Services/NotificationChannel.service';
 import { DeleteAutomatedRules, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 const mockRule: Rule = {
@@ -241,12 +245,12 @@ describe('<Rules/>', () => {
     // FIXME skipped because the two spans with .pf-m-on and .pf-m-off both appear visible in the DOM?
     const subj = new Subject<NotificationMessage>();
     const mockNotifications = {
-      messages: (category: string) => category === NotificationCategory.RuleUpdated ? subj.asObservable() : of()
+      messages: (category: string) => (category === NotificationCategory.RuleUpdated ? subj.asObservable() : of()),
     } as NotificationChannel;
     const services: Services = {
       ...defaultServices,
-      notificationChannel: mockNotifications
-    }
+      notificationChannel: mockNotifications,
+    };
     const { container } = render(
       <ServiceContext.Provider value={services}>
         <Router location={history.location} history={history}>
