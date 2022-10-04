@@ -122,8 +122,11 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     if (!props.labels.length) {
       return true;
     }
-    return props.labels.reduce((prev, curr, idx) => isLabelValid(curr) && prev, true);
-  }, [props.labels, isLabelValid]);
+    return props.labels.reduce(
+      (prev, curr, idx) => isLabelValid(curr) && !isDuplicateKey(curr.key, props.labels) && prev,
+      true
+    );
+  }, [props.labels, isLabelValid, isDuplicateKey]);
 
   const validKeys = React.useMemo(() => {
     const arr = Array(props.labels.length).fill(ValidatedOptions.default);
@@ -149,26 +152,30 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     props.setValid(getValidatedOption(allLabelsValid));
   }, [props.setValid, allLabelsValid, getValidatedOption]);
 
-  const handleUploadLabel = React.useCallback((e) => {
-    const files = e.target.files;
-    if (files && files.length) {
-      const labelFile = e.target.files[0] as File;
-      setLoading(true);
-      addSubscription(
-        parseLabels(labelFile).subscribe((labels) => {
-          setLoading(false);
-          props.setLabels([...props.labels, ...labels]);
-        })
-      );
-    }
-  }, [props.setLabels, props.labels, addSubscription]);
+  const handleUploadLabel = React.useCallback(
+    (e) => {
+      const files = e.target.files;
+      if (files && files.length) {
+        const labelFile = e.target.files[0] as File;
+        setLoading(true);
+        addSubscription(
+          parseLabels(labelFile).subscribe((labels) => {
+            setLoading(false);
+            props.setLabels([...props.labels, ...labels]);
+          })
+        );
+      }
+    },
+    [props.setLabels, props.labels, addSubscription]
+  );
 
   const openLabelFileBrowse = React.useCallback(() => {
     inputRef.current && inputRef.current.click();
   }, [inputRef]);
 
-  return (
-    loading? <LoadingView/>:
+  return loading ? (
+    <LoadingView />
+  ) : (
     <>
       <Button aria-label="Add Label" onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
         Add Label
@@ -178,7 +185,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
           <Button aria-label="Upload Label" onClick={openLabelFileBrowse} variant="link" icon={<UploadIcon />}>
             Upload Label
           </Button>
-          <input ref={inputRef} accept={'.json'} type='file' style={{display: 'none'}} onChange={handleUploadLabel}/>
+          <input ref={inputRef} accept={'.json'} type="file" style={{ display: 'none' }} onChange={handleUploadLabel} />
         </>
       )}
       {props.labels.map((label, idx) => (

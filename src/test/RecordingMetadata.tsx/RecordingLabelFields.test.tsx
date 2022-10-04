@@ -269,7 +269,7 @@ describe('<RecordingLabelFields />', () => {
     expect(uploadButton).toBeVisible();
 
     userEvent.click(uploadButton);
-    
+
     const labelUploadInput = document.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(labelUploadInput).toBeInTheDocument();
 
