@@ -48,6 +48,7 @@ import { HelpIcon } from '@patternfly/react-icons';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { hashCode } from '@app/utils/utils';
+import { uploadAsTarget } from '@app/Archives/Archives';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -212,7 +213,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        props.isUploadsTable? of(uploadAsTarget) : context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
@@ -236,13 +237,13 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     if (!recordings.length && editing) {
       setEditing(false);
     }
-  }, [recordings, props.checkedIndices, setCommonLabels, setSavedCommonLabels]);
+  }, [recordings, setCommonLabels, setSavedCommonLabels, updateCommonLabels, setEditing]);
 
   React.useEffect(() => {
     if (!props.checkedIndices.length) {
       setEditing(false);
     }
-  }, [props.checkedIndices]);
+  }, [props.checkedIndices, setEditing]);
 
   return (
     <>

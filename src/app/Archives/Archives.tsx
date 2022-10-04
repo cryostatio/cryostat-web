@@ -46,6 +46,18 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { of } from 'rxjs';
 import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 
+/*
+  This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
+  The connectUrl is the 'uploads' because for actions performed on uploaded archived recordings,
+  the backend issues a notification with the "target" field set to the 'uploads', signalling that 
+  these recordings are not associated with any target. We can then match on the 'uploads' when performing
+  notification handling in the ArchivedRecordingsTable.
+*/
+export const uploadAsTarget: Target = {
+    connectUrl: UPLOADS_SUBDIRECTORY,
+    alias: '',
+};
+
 export const Archives = () => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
@@ -55,18 +67,6 @@ export const Archives = () => {
     const sub = context.api.isArchiveEnabled().subscribe(setArchiveEnabled);
     return () => sub.unsubscribe();
   }, [context.api]);
-
-  /*
-  This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
-  The connectUrl is the empty string because for actions performed on uploaded archived recordings,
-  the backend issues a notification with the "target" field set to the empty string, signalling that 
-  these recordings are not associated with any target. We can then match on the empty string when performing
-  notification handling in the ArchivedRecordingsTable. 
-  */
-  const uploadAsTarget: Target = {
-    connectUrl: UPLOADS_SUBDIRECTORY,
-    alias: '',
-  };
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
