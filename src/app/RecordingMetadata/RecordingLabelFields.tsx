@@ -49,7 +49,9 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { RecordingLabelUploadModal } from './RecordingLabelUploadModal';
+import { parseLabels } from '@app/Archives/ArchiveUploadModal';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 
 export interface RecordingLabelFieldsProps {
   labels: RecordingLabel[];
@@ -69,11 +71,10 @@ const matchesLabelSyntax = (l: RecordingLabel) => {
 };
 
 export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = (props) => {
-  const [uploadVisible, setUploadVisible] = React.useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null); // Use ref to refer to child component
+  const addSubscription = useSubscriptions();
 
-  const handleModalClose = React.useCallback(() => setUploadVisible(false), [setUploadVisible]);
-
-  const handleModalOpen = React.useCallback(() => setUploadVisible(true), [setUploadVisible]);
+  const [loading, setLoading] = React.useState(false);
 
   const handleKeyChange = React.useCallback(
     (idx, key) => {
@@ -148,21 +149,36 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     props.setValid(getValidatedOption(allLabelsValid));
   }, [props.setValid, allLabelsValid, getValidatedOption]);
 
+  const handleUploadLabel = React.useCallback((e) => {
+    const files = e.target.files;
+    if (files && files.length) {
+      const labelFile = e.target.files[0] as File;
+      setLoading(true);
+      addSubscription(
+        parseLabels(labelFile).subscribe((labels) => {
+          setLoading(false);
+          props.setLabels([...props.labels, ...labels]);
+        })
+      );
+    }
+  }, [props.setLabels, props.labels, addSubscription]);
+
+  const openLabelFileBrowse = React.useCallback(() => {
+    inputRef.current && inputRef.current.click();
+  }, [inputRef]);
+
   return (
+    loading? <LoadingView/>:
     <>
       <Button aria-label="Add Label" onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
         Add Label
       </Button>
       {props.isUploadable && (
         <>
-          <Button aria-label="Upload Label" onClick={handleModalOpen} variant="link" icon={<UploadIcon />}>
+          <Button aria-label="Upload Label" onClick={openLabelFileBrowse} variant="link" icon={<UploadIcon />}>
             Upload Label
           </Button>
-          <RecordingLabelUploadModal
-            onSubmit={handleLabelUpload}
-            visible={uploadVisible}
-            onClose={handleModalClose}
-          ></RecordingLabelUploadModal>
+          <input ref={inputRef} accept={'.json'} type='file' style={{display: 'none'}} onChange={handleUploadLabel}/>
         </>
       )}
       {props.labels.map((label, idx) => (
