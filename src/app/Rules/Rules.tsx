@@ -209,6 +209,21 @@ export const Rules = () => {
   }, [addSubscription, context, context.notificationChannel, setRules]);
 
   React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RuleUpdated).subscribe((msg) => {
+        setRules((old) => {
+          for (const r of old) {
+            if (r.name === msg.message.name) {
+              r.enabled = msg.message.enabled;
+            }
+          }
+          return [...old];
+        });
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRules]);
+
+  React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
@@ -240,21 +255,6 @@ export const Rules = () => {
     },
     [context, context.api, addSubscription]
   );
-
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RuleUpdated).subscribe((msg) => {
-        setRules((old) => {
-          for (const r of old) {
-            if (r.name === msg.message.name) {
-              r.enabled = msg.message.enabled;
-            }
-          }
-          return [...old];
-        });
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setRules]);
 
   const displayRules = React.useMemo(() => {
     const { index, direction } = sortBy;
