@@ -65,9 +65,15 @@ const mockRecordingLabels = {
 const mockUploadedRecordingLabels = {
   someUploaded: 'someUploadedValue',
 };
-const mockMetadataFileName = "mock.metadata.json";
-const mockMetadataFile = new File([JSON.stringify({labels: {...mockUploadedRecordingLabels}})], mockMetadataFileName, { type: 'json'});
-mockMetadataFile.text  = jest.fn(() => new Promise((resolve, _) => resolve(JSON.stringify({labels: {...mockUploadedRecordingLabels}}))));
+const mockMetadataFileName = 'mock.metadata.json';
+const mockMetadataFile = new File(
+  [JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })],
+  mockMetadataFileName,
+  { type: 'json' }
+);
+mockMetadataFile.text = jest.fn(
+  () => new Promise((resolve, _) => resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })))
+);
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
@@ -440,7 +446,7 @@ describe('<ArchivedRecordingsTable />', () => {
     const submitButton = within(modal).getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
-    
+
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => {
       userEvent.click(submitButton);
@@ -452,7 +458,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
   it('uploads an archived recording with labels from editors when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
-    
+
     renderWithServiceContextAndReduxStoreWithRoute(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
@@ -493,28 +499,28 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
 
-    const metadataEditorToggle = within(modal).getByText("Show metadata options");
+    const metadataEditorToggle = within(modal).getByText('Show metadata options');
     expect(metadataEditorToggle).toBeInTheDocument();
     expect(metadataEditorToggle).toBeVisible();
 
     userEvent.click(metadataEditorToggle);
 
-    const addLabelButton = await within(modal).findByRole("button", {name: "Add Label"});
+    const addLabelButton = await within(modal).findByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
     userEvent.click(addLabelButton);
 
-    const keyInput = await within(modal).findByLabelText("Label Key");
+    const keyInput = await within(modal).findByLabelText('Label Key');
     expect(keyInput).toBeInTheDocument();
     expect(keyInput).toBeVisible();
 
-    const valueInput = await within(modal).findByLabelText("Label Value");
+    const valueInput = await within(modal).findByLabelText('Label Value');
     expect(valueInput).toBeInTheDocument();
     expect(valueInput).toBeVisible();
 
-    userEvent.type(keyInput, "someLabel");
-    userEvent.type(valueInput, "someValue");
+    userEvent.type(keyInput, 'someLabel');
+    userEvent.type(valueInput, 'someValue');
 
     const submitButton = within(modal).getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
     expect(submitButton).toBeInTheDocument();
@@ -524,12 +530,12 @@ describe('<ArchivedRecordingsTable />', () => {
     await tlr.act(async () => userEvent.click(submitButton));
 
     expect(uploadSpy).toHaveBeenCalled();
-    expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, { someLabel: "someValue" }, expect.anything());
+    expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, { someLabel: 'someValue' }, expect.anything());
   });
 
   it('uploads an archived recording with labels from uploads when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
-    
+
     renderWithServiceContextAndReduxStoreWithRoute(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
@@ -570,19 +576,19 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
 
-    const metadataEditorToggle = within(modal).getByText("Show metadata options");
+    const metadataEditorToggle = within(modal).getByText('Show metadata options');
     expect(metadataEditorToggle).toBeInTheDocument();
     expect(metadataEditorToggle).toBeVisible();
 
     userEvent.click(metadataEditorToggle);
 
-    const uploadeLabelButton = await within(modal).findByRole("button", {name: "Upload Label"});
+    const uploadeLabelButton = await within(modal).findByRole('button', { name: 'Upload Label' });
     expect(uploadeLabelButton).toBeInTheDocument();
     expect(uploadeLabelButton).toBeVisible();
 
     userEvent.click(uploadeLabelButton);
 
-    const labelUploadModal = await screen.findByLabelText("Upload Metadata Modal");
+    const labelUploadModal = await screen.findByLabelText('Upload Metadata Modal');
     expect(labelUploadModal).toBeInTheDocument();
     expect(labelUploadModal).toBeVisible();
 
@@ -595,11 +601,11 @@ describe('<ArchivedRecordingsTable />', () => {
 
     userEvent.click(labelBrowseButton);
     userEvent.upload(labelUploadInput, mockMetadataFile);
-   
+
     expect(labelUploadInput.files).not.toBe(null);
     expect(labelUploadInput.files![0]).toStrictEqual(mockMetadataFile);
 
-    const metadataSubmitButton = within(labelUploadModal).getByRole("button", { name: "Submit"})
+    const metadataSubmitButton = within(labelUploadModal).getByRole('button', { name: 'Submit' });
     expect(metadataSubmitButton).toBeInTheDocument();
     expect(metadataSubmitButton).toBeVisible();
 
@@ -609,7 +615,7 @@ describe('<ArchivedRecordingsTable />', () => {
     const submitButton = within(modal).getByRole('button', { name: 'Submit' });
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
-    
+
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => userEvent.click(submitButton));
 

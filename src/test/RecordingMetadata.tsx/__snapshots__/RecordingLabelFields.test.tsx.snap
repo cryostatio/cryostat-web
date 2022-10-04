@@ -47,8 +47,8 @@ Array [
       <input
         aria-describedby="label-key-input-helper"
         aria-invalid={false}
-        aria-label="label key"
-        className="pf-c-form-control"
+        aria-label="Label Key"
+        className="pf-c-form-control pf-m-success"
         data-ouia-component-id="OUIA-Generated-TextInputBase-1"
         data-ouia-component-type="PF4/TextInput"
         data-ouia-safe={true}
@@ -77,7 +77,7 @@ Array [
       >
         <div
           className="pf-c-helper-text"
-          id="helper-text1"
+          id="label-error-text"
         >
           <div
             className="pf-c-helper-text__item pf-m-error"
@@ -97,8 +97,8 @@ Array [
       <input
         aria-describedby="label-value-input-helper"
         aria-invalid={false}
-        aria-label="label value"
-        className="pf-c-form-control"
+        aria-label="Label Value"
+        className="pf-c-form-control pf-m-success"
         data-ouia-component-id="OUIA-Generated-TextInputBase-2"
         data-ouia-component-type="PF4/TextInput"
         data-ouia-safe={true}
@@ -128,12 +128,11 @@ Array [
     >
       <button
         aria-disabled={false}
-        aria-label="remove label"
+        aria-label="Remove Label"
         className="pf-c-button pf-m-link"
         data-ouia-component-id="OUIA-Generated-Button-link-2"
         data-ouia-component-type="PF4/Button"
         data-ouia-safe={true}
-        data-testid="remove-label-button"
         disabled={false}
         onClick={[Function]}
         role={null}
@@ -173,8 +172,8 @@ Array [
       <input
         aria-describedby="label-key-input-helper"
         aria-invalid={false}
-        aria-label="label key"
-        className="pf-c-form-control"
+        aria-label="Label Key"
+        className="pf-c-form-control pf-m-success"
         data-ouia-component-id="OUIA-Generated-TextInputBase-3"
         data-ouia-component-type="PF4/TextInput"
         data-ouia-safe={true}
@@ -203,7 +202,7 @@ Array [
       >
         <div
           className="pf-c-helper-text"
-          id="helper-text1"
+          id="label-error-text"
         >
           <div
             className="pf-c-helper-text__item pf-m-error"
@@ -223,8 +222,8 @@ Array [
       <input
         aria-describedby="label-value-input-helper"
         aria-invalid={false}
-        aria-label="label value"
-        className="pf-c-form-control"
+        aria-label="Label Value"
+        className="pf-c-form-control pf-m-success"
         data-ouia-component-id="OUIA-Generated-TextInputBase-4"
         data-ouia-component-type="PF4/TextInput"
         data-ouia-safe={true}
@@ -254,12 +253,11 @@ Array [
     >
       <button
         aria-disabled={false}
-        aria-label="remove label"
+        aria-label="Remove Label"
         className="pf-c-button pf-m-link"
         data-ouia-component-id="OUIA-Generated-Button-link-3"
         data-ouia-component-type="PF4/Button"
         data-ouia-safe={true}
-        data-testid="remove-label-button"
         disabled={false}
         onClick={[Function]}
         role={null}

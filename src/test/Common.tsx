@@ -97,3 +97,14 @@ export const renderWithServiceContextAndReduxStoreWithRoute = (
   };
   return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
+
+export const renderWithWithRoute = (ui: React.ReactElement, { history, ...renderOptions }) => {
+  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+    return (
+      <Router location={history.location} history={history}>
+        {children}
+      </Router>
+    );
+  };
+  return { ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};
