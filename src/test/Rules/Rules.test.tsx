@@ -91,21 +91,27 @@ jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // open view to create rules
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // opens upload modal
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // delete a rule when clicked with popup
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // delete a rule when clicked w/o popup
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // remove a rule when receiving notification
   .mockReturnValueOnce(of(mockDeleteNotification))
+  .mockReturnValueOnce(of())
 
   .mockReturnValue(of()); // other tests
 

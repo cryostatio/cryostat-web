@@ -236,10 +236,25 @@ export const Rules = () => {
 
   const handleToggle = React.useCallback(
     (rule: Rule, enabled: boolean): void => {
-      addSubscription(context.api.updateRule({ ...rule, enabled }).subscribe(() => refreshRules()));
+      addSubscription(context.api.updateRule({ ...rule, enabled }).subscribe());
     },
     [context, context.api, addSubscription, refreshRules]
   );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RuleUpdated).subscribe((msg) => {
+        setRules((old) => {
+          for (const r of old) {
+            if (r.name === msg.message.name) {
+              r.enabled = msg.message.enabled;
+            }
+          }
+          return [...old];
+        });
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRules]);
 
   const displayRules = React.useMemo(() => {
     const { index, direction } = sortBy;
