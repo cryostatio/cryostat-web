@@ -150,7 +150,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     } else {
       observable = props.isUploadsTable
         ? context.api
-            .graphql<any>(`
+            .graphql<any>(
+              `
               query {
                 archivedRecordings(filter: { sourceTarget: "${UPLOADS_SUBDIRECTORY}" }) {
                   data {
@@ -162,7 +163,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
                     }
                   }
                 }
-              }`)
+              }`
+            )
             .pipe(
               map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
               first()
@@ -213,7 +215,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        props.isUploadsTable? of(uploadAsTarget) : context.target.target(),
+        props.isUploadsTable ? of(uploadAsTarget) : context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];

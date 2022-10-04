@@ -54,8 +54,8 @@ import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
   notification handling in the ArchivedRecordingsTable.
 */
 export const uploadAsTarget: Target = {
-    connectUrl: UPLOADS_SUBDIRECTORY,
-    alias: '',
+  connectUrl: UPLOADS_SUBDIRECTORY,
+  alias: '',
 };
 
 export const Archives = () => {

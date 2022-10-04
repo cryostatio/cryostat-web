@@ -629,7 +629,8 @@ export class ApiService {
   }
 
   postUploadedRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
-    return this.graphql<any>(`
+    return this.graphql<any>(
+      `
       query {
         archivedRecordings(filter: {sourceTarget: "${UPLOADS_SUBDIRECTORY}", name: "${recordingName}" }) {
           data {

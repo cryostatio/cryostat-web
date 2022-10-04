@@ -57,6 +57,28 @@ import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { from, Observable } from 'rxjs';
+
+export const parseLabels = (file: File): Observable<RecordingLabel[]> => {
+  return from(
+    file
+      .text()
+      .then(JSON.parse)
+      .then((obj) => {
+        const labels: RecordingLabel[] = [];
+        const labelObj = obj['labels'];
+        if (labelObj) {
+          Object.keys(labelObj).forEach((key) => {
+            labels.push({
+              key: key,
+              value: labelObj[key],
+            });
+          });
+        }
+        return labels;
+      })
+  );
+};
 
 export interface ArchiveUploadModalProps {
   visible: boolean;
