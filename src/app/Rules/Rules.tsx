@@ -45,6 +45,7 @@ import {
   CardHeaderMain,
   EmptyState,
   EmptyStateIcon,
+  Switch,
   Text,
   TextVariants,
   Title,
@@ -83,6 +84,7 @@ export interface Rule {
   name: string;
   description: string;
   matchExpression: string;
+  enabled: boolean;
   eventSpecifier: string;
   archivalPeriodSeconds: number;
   initialDelaySeconds: number;
@@ -106,6 +108,7 @@ export const Rules = () => {
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
 
   const tableColumns = [
+    { title: 'Enabled' },
     {
       title: 'Name',
       transforms: [sortable],
@@ -206,6 +209,21 @@ export const Rules = () => {
   }, [addSubscription, context, context.notificationChannel, setRules]);
 
   React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.RuleUpdated).subscribe((msg) => {
+        setRules((old) => {
+          for (const r of old) {
+            if (r.name === msg.message.name) {
+              r.enabled = msg.message.enabled;
+            }
+          }
+          return [...old];
+        });
+      })
+    );
+  }, [addSubscription, context, context.notificationChannel, setRules]);
+
+  React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
@@ -231,6 +249,13 @@ export const Rules = () => {
     setIsUploadModalOpen(true);
   }, [setIsUploadModalOpen]);
 
+  const handleToggle = React.useCallback(
+    (rule: Rule, enabled: boolean): void => {
+      addSubscription(context.api.updateRule({ ...rule, enabled }).subscribe());
+    },
+    [context, context.api, addSubscription]
+  );
+
   const displayRules = React.useMemo(() => {
     const { index, direction } = sortBy;
     let sorted = [...rules];
@@ -241,6 +266,14 @@ export const Rules = () => {
       sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
     }
     return sorted.map((r: Rule) => [
+      <>
+        <Switch
+          aria-label={`${r.name} is enabled`}
+          className={'switch-toggle-' + String(r.enabled)}
+          isChecked={r.enabled}
+          onChange={(state) => handleToggle(r, state)}
+        />
+      </>,
       r.name,
       r.description,
       r.matchExpression,
@@ -251,13 +284,13 @@ export const Rules = () => {
       r.maxAgeSeconds,
       r.maxSizeBytes,
     ]);
-  }, [rules, sortBy]);
+  }, [rules, sortBy, handleToggle]);
 
   const handleDelete = React.useCallback(
     (rowData: IRowData, clean: boolean = true) => {
       addSubscription(
         context.api
-          .deleteRule(rowData[0], clean)
+          .deleteRule(rowData[1], clean)
           .pipe(first())
           .subscribe(() => {} /* do nothing - notification will handle updating state */)
       );
@@ -267,7 +300,7 @@ export const Rules = () => {
 
   const handleDownload = React.useCallback(
     (rowData: IRowData) => {
-      context.api.downloadRule(rowData[0]);
+      context.api.downloadRule(rowData[1]);
     },
     [context, context.api]
   );

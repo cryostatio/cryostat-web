@@ -51,6 +51,7 @@ import {
   GridItem,
   Split,
   SplitItem,
+  Switch,
   Text,
   TextInput,
   TextVariants,
@@ -81,6 +82,7 @@ const Comp = () => {
   const [name, setName] = React.useState('');
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [description, setDescription] = React.useState('');
+  const [enabled, setEnabled] = React.useState(true);
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
@@ -200,6 +202,7 @@ const Comp = () => {
     const rule: Rule = {
       name,
       description,
+      enabled,
       matchExpression,
       eventSpecifier: eventSpecifierString,
       archivalPeriodSeconds: archivalPeriod * archivalPeriodUnits,
@@ -226,6 +229,7 @@ const Comp = () => {
     name,
     nameValid,
     description,
+    enabled,
     matchExpression,
     eventSpecifierString,
     archivalPeriod,
@@ -340,6 +344,22 @@ const Comp = () => {
                     aria-describedby="rule-matchexpr-helper"
                     onChange={setMatchExpression}
                     validated={matchExpressionValid}
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Enabled"
+                  isRequired
+                  fieldId="rule-enabled"
+                  helperText={`Rules take effect when created if enabled and will be matched against all
+                  discovered target applications immediately. When new target applications appear they are
+                  checked against all enabled rules. Disabled rules have no effect but are available to be
+                  enabled in the future.`}
+                >
+                  <Switch
+                    id="rule-enabled"
+                    aria-label="Apply this rule to matching targets"
+                    isChecked={enabled}
+                    onChange={setEnabled}
                   />
                 </FormGroup>
                 <FormGroup

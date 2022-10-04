@@ -38,21 +38,26 @@
 import * as React from 'react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, within, waitFor } from '@testing-library/react';
+import { act as doAct, render, cleanup, screen, within, waitFor } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
+import {
+  NotificationCategory,
+  NotificationChannel,
+  NotificationMessage,
+} from '@app/Shared/Services/NotificationChannel.service';
 import { DeleteAutomatedRules, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 const mockRule: Rule = {
   name: 'mockRule',
   description: 'A mock rule',
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
+  enabled: true,
   eventSpecifier: 'template=Profiling,type=TARGET',
   archivalPeriodSeconds: 0,
   initialDelaySeconds: 0,
@@ -68,6 +73,8 @@ mockFileUpload.text = jest.fn(() => new Promise((resolve, _) => resolve(JSON.str
 
 const mockDeleteNotification = { message: { ...mockRule } } as NotificationMessage;
 
+const mockUpdateNotification = { message: { ...mockRule, enabled: false } } as NotificationMessage;
+
 const history = createMemoryHistory({ initialEntries: ['/rules'] });
 
 jest.mock('react-router-dom', () => ({
@@ -78,9 +85,10 @@ jest.mock('react-router-dom', () => ({
 
 const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
 const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
+const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
 jest
   .spyOn(defaultServices.api, 'doGet')
-  .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
+  .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly empty
   .mockReturnValue(of(mockRuleListResponse));
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValueOnce(true);
@@ -89,21 +97,31 @@ jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // open view to create rules
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // opens upload modal
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // delete a rule when clicked with popup
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // delete a rule when clicked w/o popup
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // remove a rule when receiving notification
   .mockReturnValueOnce(of(mockDeleteNotification))
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // update a rule when receiving notification
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockUpdateNotification))
 
   .mockReturnValue(of()); // other tests
 
@@ -223,6 +241,40 @@ describe('<Rules/>', () => {
     expect(screen.queryByText(mockRule.name)).not.toBeInTheDocument();
   });
 
+  it('update a rule when receiving a notification', async () => {
+    const subj = new Subject<NotificationMessage>();
+    const mockNotifications = {
+      messages: (category: string) => (category === NotificationCategory.RuleUpdated ? subj.asObservable() : of()),
+    } as NotificationChannel;
+    const services: Services = {
+      ...defaultServices,
+      notificationChannel: mockNotifications,
+    };
+    const { container } = render(
+      <ServiceContext.Provider value={services}>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    expect(await screen.findByText(mockRule.name)).toBeInTheDocument();
+
+    let labels = container.querySelectorAll('label');
+    expect(labels).toHaveLength(1);
+    let label = labels[0];
+    expect(label).toHaveClass('switch-toggle-true');
+    expect(label).not.toHaveClass('switch-toggle-false');
+
+    doAct(() => subj.next(mockUpdateNotification));
+
+    labels = container.querySelectorAll('label');
+    expect(labels).toHaveLength(1);
+    label = labels[0];
+    expect(label).not.toHaveClass('switch-toggle-true');
+    expect(label).toHaveClass('switch-toggle-false');
+  });
+
   it('downloads a rule when Download is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
@@ -237,6 +289,21 @@ describe('<Rules/>', () => {
 
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toBeCalledWith(mockRule.name);
+  });
+
+  it('updates a rule when the switch is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByRole('checkbox'));
+
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: !mockRule.enabled });
   });
 
   it('upload a rule file when Submit is clicked', async () => {

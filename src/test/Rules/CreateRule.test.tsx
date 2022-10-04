@@ -73,6 +73,7 @@ const mockRule: Rule = {
   name: 'mockRule',
   description: 'A mock rule',
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
+  enabled: true,
   eventSpecifier: 'template=Profiling,type=TARGET',
   archivalPeriodSeconds: 0,
   initialDelaySeconds: 0,
