@@ -43,7 +43,7 @@ import { setupStore } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Router } from 'react-router-dom';
 
-export const renderWithReduxProvider = (
+export const renderWithReduxStore = (
   ui: React.ReactElement,
   {
     preloadState = {},
@@ -75,7 +75,7 @@ export const renderWithServiceContextAndReduxStore = (
   return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
 
-export const renderWithServiceContextAndReduxStoreWithRoute = (
+export const renderWithServiceContextAndReduxStoreWithRouter = (
   ui: React.ReactElement,
   {
     preloadState = {},
@@ -98,7 +98,7 @@ export const renderWithServiceContextAndReduxStoreWithRoute = (
   return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
 
-export const renderWithWithRoute = (ui: React.ReactElement, { history, ...renderOptions }) => {
+export const renderWithRouter = (ui: React.ReactElement, { history, ...renderOptions }) => {
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
       <Router location={history.location} history={history}>

@@ -54,7 +54,7 @@ import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
 import { Provider } from 'react-redux';
-import { renderWithServiceContextAndReduxStoreWithRoute } from '../Common';
+import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -212,7 +212,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('adds a recording after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -224,7 +224,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('updates the recording labels after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -236,7 +236,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('removes a recording after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -247,7 +247,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('displays the toolbar buttons', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -260,7 +260,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('opens the labels drawer when Edit Labels is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -276,7 +276,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -305,7 +305,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('deletes the recording when Delete is clicked w/o popup warning', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -326,7 +326,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('downloads a recording when Download Recording is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -344,7 +344,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('displays the automated analysis report when View Report is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -361,7 +361,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('uploads a recording to Grafana when View in Grafana is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -378,7 +378,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('renders correctly the Uploads table', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -403,7 +403,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('uploads an archived recording without labels when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -459,7 +459,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('uploads an archived recording with labels from editors when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -536,7 +536,7 @@ describe('<ArchivedRecordingsTable />', () => {
   it('uploads an archived recording with labels from uploads when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,

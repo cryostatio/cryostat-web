@@ -44,7 +44,7 @@ import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import '@testing-library/jest-dom';
 import { RecordingLabelFields, RecordingLabelFieldsProps } from '@app/RecordingMetadata/RecordingLabelFields';
 import { ValidatedOptions } from '@patternfly/react-core';
-import { renderWithWithRoute } from '../Common';
+import { renderWithRouter } from '../Common';
 import { createMemoryHistory } from 'history';
 
 const history = createMemoryHistory();
@@ -252,7 +252,7 @@ describe('<RecordingLabelFields />', () => {
   it('shows upload button when upload is enabled ', () => {
     mockProps.isUploadable = true;
 
-    renderWithWithRoute(<RecordingLabelFields {...mockProps} />, { history });
+    renderWithRouter(<RecordingLabelFields {...mockProps} />, { history });
 
     const uploadButton = screen.getByRole('button', { name: 'Upload Label' });
     expect(uploadButton).toBeInTheDocument();
@@ -262,7 +262,7 @@ describe('<RecordingLabelFields />', () => {
   it('shows upload modal when upload is enabled and upload button is clicked', async () => {
     mockProps.isUploadable = true;
 
-    renderWithWithRoute(<RecordingLabelFields {...mockProps} />, { history });
+    renderWithRouter(<RecordingLabelFields {...mockProps} />, { history });
 
     const uploadButton = screen.getByRole('button', { name: 'Upload Label' });
     expect(uploadButton).toBeInTheDocument();
@@ -278,7 +278,7 @@ describe('<RecordingLabelFields />', () => {
   it('updates label list when upload is enabled and upload is submitted', async () => {
     mockProps.isUploadable = true;
 
-    renderWithWithRoute(<RecordingLabelFields {...mockProps} />, { history });
+    renderWithRouter(<RecordingLabelFields {...mockProps} />, { history });
 
     const uploadButton = screen.getByRole('button', { name: 'Upload Label' });
     expect(uploadButton).toBeInTheDocument();
