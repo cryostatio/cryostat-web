@@ -38,15 +38,15 @@
 import * as React from 'react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, within, waitFor } from '@testing-library/react';
+import { act as doAct, render, cleanup, screen, within, waitFor } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
+import { NotificationCategory, NotificationChannel, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { DeleteAutomatedRules, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 const mockRule: Rule = {
@@ -69,6 +69,8 @@ mockFileUpload.text = jest.fn(() => new Promise((resolve, _) => resolve(JSON.str
 
 const mockDeleteNotification = { message: { ...mockRule } } as NotificationMessage;
 
+const mockUpdateNotification = { message: { ...mockRule, enabled: false } } as NotificationMessage;
+
 const history = createMemoryHistory({ initialEntries: ['/rules'] });
 
 jest.mock('react-router-dom', () => ({
@@ -82,7 +84,7 @@ const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(
 const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
 jest
   .spyOn(defaultServices.api, 'doGet')
-  .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
+  .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly empty
   .mockReturnValue(of(mockRuleListResponse));
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValueOnce(true);
@@ -112,6 +114,10 @@ jest
   .mockReturnValueOnce(of()) // remove a rule when receiving notification
   .mockReturnValueOnce(of(mockDeleteNotification))
   .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // update a rule when receiving notification
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockUpdateNotification))
 
   .mockReturnValue(of()); // other tests
 
@@ -229,6 +235,43 @@ describe('<Rules/>', () => {
     );
 
     expect(screen.queryByText(mockRule.name)).not.toBeInTheDocument();
+  });
+
+  it.skip('update a rule when receiving a notification', async () => {
+    // FIXME skipped because the two spans with .pf-m-on and .pf-m-off both appear visible in the DOM?
+    const subj = new Subject<NotificationMessage>();
+    const mockNotifications = {
+      messages: (category: string) => category === NotificationCategory.RuleUpdated ? subj.asObservable() : of()
+    } as NotificationChannel;
+    const services: Services = {
+      ...defaultServices,
+      notificationChannel: mockNotifications
+    }
+    const { container } = render(
+      <ServiceContext.Provider value={services}>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    expect(await screen.findByText(mockRule.name)).toBeInTheDocument();
+
+    doAct(() => subj.next(mockUpdateNotification));
+
+    const labels = container.querySelectorAll('label');
+    expect(labels).toHaveLength(1);
+    const label = labels[0];
+    const spans = label.querySelectorAll(':scope > .pf-c-switch__label');
+    expect(spans).toHaveLength(2);
+
+    const onState = label.querySelector(':scope > .pf-c-switch__label.pf-m-on');
+    expect(onState).toBeInTheDocument();
+    expect(onState).not.toBeVisible();
+
+    const offState = label.querySelector(':scope > .pf-c-switch__label.pf-m-off');
+    expect(offState).toBeInTheDocument();
+    expect(offState).toBeVisible();
   });
 
   it('downloads a rule when Download is clicked', async () => {
