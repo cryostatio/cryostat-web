@@ -37,9 +37,9 @@
  */
 import * as React from 'react';
 import renderer from 'react-test-renderer';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-
+import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
 
 import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
@@ -65,27 +65,30 @@ const mockFooTarget: Target = {
 const mockBarTarget: Target = { ...mockFooTarget, connectUrl: mockBarConnectUrl, alias: 'barTarget' };
 const mockBazTarget: Target = { connectUrl: mockBazConnectUrl, alias: 'bazTarget' };
 
+const history = createMemoryHistory();
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useRouteMatch: () => ({ url: '/baseUrl' }),
+  useRouteMatch: () => ({ url: history.location.pathname }),
+  useHistory: () => history,
 }));
 
 jest
   .spyOn(defaultServices.target, 'target')
-  .mockReturnValue(of(mockFooTarget))
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of(mockFooTarget))
-  .mockReturnValueOnce(of(mockFooTarget))
-  .mockReturnValueOnce(of(mockFooTarget))
-  .mockReturnValueOnce(of(mockBazTarget)); // does nothing when trying to delete non-custom targets
+  .mockReturnValueOnce(of()) // renders correctly
+  .mockReturnValueOnce(of()) // contains the correct information
+  .mockReturnValueOnce(of(mockFooTarget)) // renders dropdown of multiple discovered targets
+  .mockReturnValueOnce(of(mockFooTarget)) // creates a target if user completes modal
+  .mockReturnValueOnce(of(mockFooTarget)) // deletes target when delete button clicked
+  .mockReturnValueOnce(of(mockBazTarget)) // does nothing when trying to delete non-custom targets
+  .mockReturnValue(of(mockFooTarget)); // other tests
 
 jest
   .spyOn(defaultServices.targets, 'targets')
-  .mockReturnValue(of([mockFooTarget, mockBarTarget]))
-  .mockReturnValueOnce(of([mockFooTarget]))
-  .mockReturnValueOnce(of([mockFooTarget]))
-  .mockReturnValueOnce(of([mockFooTarget, mockBarTarget])); // renders dropdown of multiple discovered targets
+  .mockReturnValueOnce(of([mockFooTarget])) // renders correctly
+  .mockReturnValueOnce(of([mockFooTarget])) // contains the correct information
+  .mockReturnValueOnce(of([mockFooTarget, mockBarTarget])) // renders dropdown of multiple discovered targets
+  .mockReturnValue(of([mockFooTarget, mockBarTarget])); // other tests
 
 jest.spyOn(defaultServices.api, 'createTarget').mockReturnValue(of(true));
 
@@ -94,6 +97,15 @@ jest.spyOn(defaultServices.api, 'deleteTarget').mockReturnValue(of(true));
 jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
 
 jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
+
+jest
+  .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(true) // renders correctly
+  .mockReturnValueOnce(true) // contains the correct information
+  .mockReturnValueOnce(true) // renders dropdown of multiple discovered targets
+  .mockReturnValueOnce(true) // creates a target if user completes modal
+  .mockReturnValueOnce(false) // deletes target when delete button clicked
+  .mockReturnValue(true); // other tests
 
 afterEach(cleanup);
 
@@ -142,6 +154,7 @@ describe('<TargetSelect />', () => {
   });
 
   it('creates a target if user completes modal', () => {
+    const createTargetRequestSpy = jest.spyOn(defaultServices.api, 'createTarget');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <TargetSelect />
@@ -155,7 +168,6 @@ describe('<TargetSelect />', () => {
     userEvent.type(textBoxes[0], 'service:jmx:rmi://someBazUrl');
     userEvent.type(textBoxes[1], 'bazTarget');
 
-    const createTargetRequestSpy = jest.spyOn(defaultServices.api, 'createTarget');
     userEvent.click(screen.getByText('Create'));
 
     expect(createTargetRequestSpy).toBeCalledTimes(1);
@@ -180,6 +192,7 @@ describe('<TargetSelect />', () => {
   });
 
   it('does nothing when trying to delete non-custom targets', () => {
+    const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
     render(
       <ServiceContext.Provider value={defaultServices}>
         <TargetSelect />
@@ -187,8 +200,6 @@ describe('<TargetSelect />', () => {
     );
     const deleteButton = screen.getByLabelText('Delete target');
     userEvent.click(deleteButton);
-
-    const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
 
     expect(deleteTargetRequestSpy).toBeCalledTimes(0);
     expect(deleteButton).toBeDisabled();
@@ -205,5 +216,35 @@ describe('<TargetSelect />', () => {
 
     const refreshTargetsRequestSpy = jest.spyOn(defaultServices.targets, 'queryForTargets');
     expect(refreshTargetsRequestSpy).toBeCalledTimes(1);
+  });
+
+  it('deletes target when warning modal is accepted', async () => {
+    const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <TargetSelect />
+      </ServiceContext.Provider>
+    );
+
+    const deleteButton = screen.getByLabelText('Delete target');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeVisible();
+
+    await waitFor(() => expect(deleteButton).not.toBeDisabled());
+
+    userEvent.click(deleteButton);
+
+    const warningDialog = await screen.findByRole('dialog');
+    expect(warningDialog).toBeInTheDocument();
+    expect(warningDialog).toBeVisible();
+
+    const acceptDeleteButton = within(warningDialog).getByText('Delete');
+    expect(acceptDeleteButton).toBeInTheDocument();
+    expect(acceptDeleteButton).toBeVisible();
+
+    userEvent.click(acceptDeleteButton);
+
+    expect(deleteTargetRequestSpy).toBeCalledTimes(1);
+    expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
   });
 });

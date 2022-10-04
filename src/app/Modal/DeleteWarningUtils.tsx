@@ -41,6 +41,7 @@ export enum DeleteWarningType {
   DeleteAutomatedRules = 'DeleteAutomatedRules',
   DeleteEventTemplates = 'DeleteEventTemplates',
   DeleteJMXCredentials = 'DeleteJMXCredentials',
+  DeleteCustomTargets = 'DeleteCustomTargets',
 }
 
 export interface DeleteWarning {
@@ -91,12 +92,21 @@ export const DeleteJMXCredentials: DeleteWarning = {
   ariaLabel: 'JMX Credentials delete warning',
 };
 
+export const DeleteCustomTargets: DeleteWarning = {
+  id: DeleteWarningType.DeleteCustomTargets,
+  title: 'Permanently delete Custom Target?',
+  label: 'Delete Custom Targets',
+  description: `Custom target information will be lost.`,
+  ariaLabel: 'Custom Targets delete warning',
+};
+
 export const DeleteWarningKinds: DeleteWarning[] = [
   DeleteActiveRecordings,
   DeleteArchivedRecordings,
   DeleteAutomatedRules,
   DeleteEventTemplates,
   DeleteJMXCredentials,
+  DeleteCustomTargets,
 ];
 
 export const getFromWarningMap = (warning: DeleteWarningType): DeleteWarning | undefined => {

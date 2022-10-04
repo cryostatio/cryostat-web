@@ -68,7 +68,7 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
     props.onSubmit({ connectUrl, alias: alias.trim() || connectUrl });
     setConnectUrl('');
     setAlias('');
-  }, [props.onSubmit, connectUrl, alias]);
+  }, [props.onSubmit, connectUrl, alias, setConnectUrl, setAlias]);
 
   const handleKeyDown = React.useCallback(
     (evt) => {
