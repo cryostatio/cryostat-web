@@ -63,7 +63,7 @@ export const Archives = () => {
   these recordings are not associated with any target. We can then match on the empty string when performing
   notification handling in the ArchivedRecordingsTable. 
   */
-  const target: Target = {
+  const uploadAsTarget: Target = {
     connectUrl: UPLOADS_SUBDIRECTORY,
     alias: '',
   };
@@ -75,7 +75,7 @@ export const Archives = () => {
           <AllTargetsArchivedRecordingsTable />
         </Tab>
         <Tab id="uploads" eventKey={1} title="Uploads">
-          <ArchivedRecordingsTable target={of(target)} isUploadsTable={true} isNestedTable={false} />
+          <ArchivedRecordingsTable target={of(uploadAsTarget)} isUploadsTable={true} isNestedTable={false} />
         </Tab>
       </Tabs>
     ) : (
