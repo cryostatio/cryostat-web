@@ -238,7 +238,7 @@ export const Rules = () => {
     (rule: Rule, enabled: boolean): void => {
       addSubscription(context.api.updateRule({ ...rule, enabled }).subscribe());
     },
-    [context, context.api, addSubscription, refreshRules]
+    [context, context.api, addSubscription]
   );
 
   React.useEffect(() => {
