@@ -36,10 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
@@ -98,16 +96,11 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 });
 
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import {
-  emptyActiveRecordingFilters,
-  emptyArchivedRecordingFilters,
-  RecordingFiltersCategories,
-} from '@app/Recordings/RecordingFilters';
+import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
-import { Provider } from 'react-redux';
 import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
@@ -135,20 +128,12 @@ jest
   .mockReturnValueOnce(true)
   .mockReturnValueOnce(true)
   .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
   .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
   .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
   .mockReturnValue(true);
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
-  .mockReturnValueOnce(of()) // renders correctly
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
   .mockReturnValueOnce(of(mockCreateNotification)) // adds a recording table after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -202,22 +187,6 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <Provider store={setupStore()}>
-            <Router location={history.location} history={history}>
-              <ActiveRecordingsTable archiveEnabled={true} />
-            </Router>
-          </Provider>
-        </ServiceContext.Provider>
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
 
   it('adds a recording after receiving a notification', () => {
     renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
@@ -370,13 +339,15 @@ describe('<ActiveRecordingsTable />', () => {
     expect(deleteRequestSpy).toBeCalledWith('someRecording');
   });
 
-  it('downloads a recording when Download Recording is clicked', () => {
+  it('downloads a recording when Download Recording is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await act(async () => {
+      userEvent.click(screen.getByLabelText('Actions'));
+    });
     userEvent.click(screen.getByText('Download Recording'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
@@ -385,13 +356,15 @@ describe('<ActiveRecordingsTable />', () => {
     expect(downloadRequestSpy).toBeCalledWith(mockRecording);
   });
 
-  it('displays the automated analysis report when View Report is clicked', () => {
+  it('displays the automated analysis report when View Report is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await act(async () => {
+      userEvent.click(screen.getByLabelText('Actions'));
+    });
     userEvent.click(screen.getByText('View Report ...'));
 
     const reportRequestSpy = jest.spyOn(defaultServices.api, 'downloadReport');
@@ -399,13 +372,15 @@ describe('<ActiveRecordingsTable />', () => {
     expect(reportRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('uploads a recording to Grafana when View in Grafana is clicked', () => {
+  it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await act(async () => {
+      userEvent.click(screen.getByLabelText('Actions'));
+    });
     userEvent.click(screen.getByText('View in Grafana ...'));
 
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana');

@@ -40,10 +40,17 @@ import { ActiveRecording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
+
+export interface RowAction {
+  title: string | React.ReactNode;
+  key: string;
+  onClick: () => void;
+}
 
 export interface RecordingActionsProps {
   index: number;
@@ -56,6 +63,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const addSubscription = useSubscriptions();
 
@@ -97,28 +105,48 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
     const actionItems = [
       {
         title: 'Download Recording',
+        key: 'download-recording',
         onClick: handleDownloadRecording,
       },
       {
         title: 'View Report ...',
+        key: 'view-report',
         onClick: handleViewReport,
       },
-    ];
+    ] as RowAction[];
     if (grafanaEnabled) {
       actionItems.push({
         title: 'View in Grafana ...',
+        key: 'view-in-grafana',
         onClick: grafanaUpload,
       });
     }
     return actionItems;
   }, [handleDownloadRecording, handleViewReport, grafanaEnabled, grafanaUpload]);
 
+  const onSelect = React.useCallback(
+    (action: RowAction) => {
+      setIsOpen(false);
+      action.onClick();
+    },
+    [setIsOpen]
+  );
+
   return (
-    <Td
-      key={`${props.index}_actions`}
-      actions={{
-        items: actionItems,
-      }}
-    />
+    <Td isActionCell>
+      <Dropdown
+        menuAppendTo={document.body}
+        position="right"
+        direction="down"
+        toggle={<KebabToggle id="toggle-kebab" onToggle={setIsOpen} />}
+        isPlain
+        isOpen={isOpen}
+        dropdownItems={actionItems.map((action) => (
+          <DropdownItem key={action.key} onClick={() => onSelect(action)}>
+            {action.title}
+          </DropdownItem>
+        ))}
+      />
+    </Td>
   );
 };
