@@ -404,7 +404,7 @@ export const Rules = () => {
                 </ToolbarGroup>
                 <RuleDeleteWarningModal
                   warningType={DeleteWarningType.DeleteAutomatedRules}
-                  rule={rowDeleteData[0]}
+                  rule={rowDeleteData[1]}
                   visible={warningModalOpen}
                   onAccept={handleWarningModalAccept}
                   onClose={handleWarningModalClose}
