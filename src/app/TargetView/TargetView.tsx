@@ -41,6 +41,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { NoTargetSelected } from './NoTargetSelected';
 import { Grid, GridItem } from '@patternfly/react-core';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 interface TargetViewProps {
   pageTitle: string;
@@ -51,13 +52,15 @@ interface TargetViewProps {
 export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [connected, setConnected] = React.useState(false);
+  const addSubscription = useSubscriptions();
 
-  React.useLayoutEffect(() => {
-    const sub = context.target.target().subscribe((target) => {
-      setConnected(!!target && !!target.connectUrl);
-    });
-    return () => sub.unsubscribe();
-  }, [context.target]);
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe((target) => {
+        setConnected(!!target && !!target.connectUrl);
+      })
+    );
+  }, [context.target, addSubscription]);
 
   const compact = props.compactSelect == null ? true : props.compactSelect;
 

@@ -35,24 +35,62 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Card, CardBody, CardHeader, Text, TextVariants } from '@patternfly/react-core';
-import { DisconnectedIcon } from '@patternfly/react-icons';
+import { Dashboard } from '@app/Dashboard/Dashboard';
+import { act } from 'react-test-renderer';
+import renderer from 'react-test-renderer';
+import React from 'react';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { of } from 'rxjs';
+import { render, screen } from '@testing-library/react';
 
-export const NoTargetSelected: React.FunctionComponent = () => {
-  return (
-    <>
-      <Card>
-        <CardHeader>
-          <Text component={TextVariants.h4}>
-            <DisconnectedIcon />
-            &nbsp; No target selected
-          </Text>
-        </CardHeader>
-        <CardBody>
-          <Text component={TextVariants.p}>To view this content, select a JVM target.</Text>
-        </CardBody>
-      </Card>
-    </>
-  );
+const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
+// Test fails if new Map([['REALM', 'Custom Targets']]) is used, most likely since 'cryostat' Map is not being utilized
+const mockFooTarget: Target = {
+  connectUrl: mockFooConnectUrl,
+  alias: 'fooTarget',
+  annotations: {
+    cryostat: new Map(),
+    platform: new Map(),
+  },
 };
+
+jest.mock('@app/TargetSelect/TargetSelect', () => ({
+  TargetSelect: (props) => <div>Target Select</div>,
+}));
+
+jest
+  .spyOn(defaultServices.target, 'target')
+  .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
+  .mockReturnValueOnce(of()) //
+  .mockReturnValue(of(mockFooTarget));
+
+describe('<Dashboard />', () => {
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <Dashboard></Dashboard>
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('shows helper texts if no target is selected', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Dashboard></Dashboard>
+      </ServiceContext.Provider>
+    );
+
+    const helperTextTitle = screen.getByText('No target selected');
+    expect(helperTextTitle).toBeInTheDocument();
+    expect(helperTextTitle).toBeVisible();
+
+    const helperText = screen.getByText('To view this content, select a JVM target.');
+    expect(helperText).toBeInTheDocument();
+    expect(helperText).toBeVisible();
+  });
+});
