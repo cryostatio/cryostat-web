@@ -184,7 +184,7 @@ exports[`<TargetSelect /> renders correctly 1`] = `
           <span
             className="pf-c-select__toggle-text"
           >
-            Select Target...
+            Select target...
           </span>
         </div>
         <span
