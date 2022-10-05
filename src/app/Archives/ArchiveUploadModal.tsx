@@ -46,6 +46,7 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
+  Popover,
   Text,
   Tooltip,
   ValidatedOptions,
@@ -171,6 +172,21 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
         onClose={handleClose}
         title="Re-Upload Archived Recording"
         description="Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming convention used by Cryostat when archiving recordings."
+        help={
+          <Popover
+            headerContent={<div>Archive Naming Conventions</div>}
+            bodyContent={
+              <Text>
+                Uploaded recordings must follow Cryostat's naming conventions for archives: <b>target_recording-name_timestamp.jfr</b>.
+                For example, es-andrewazor-demo-Main_recording-name_20221005T193305Z.jfr
+              </Text>
+            }
+          >
+            <Button variant="plain" aria-label="Help">
+              <HelpIcon />
+            </Button>
+          </Popover>
+        }
       >
         <CancelUploadModal
           visible={showCancelPrompt}
