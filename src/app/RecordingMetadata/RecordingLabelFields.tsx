@@ -182,8 +182,8 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       </Button>
       {props.isUploadable && (
         <>
-          <Button aria-label="Upload Label" onClick={openLabelFileBrowse} variant="link" icon={<UploadIcon />}>
-            Upload Label
+          <Button aria-label="Upload Labels" onClick={openLabelFileBrowse} variant="link" icon={<UploadIcon />}>
+            Upload Labels
           </Button>
           <input ref={inputRef} accept={'.json'} type="file" style={{ display: 'none' }} onChange={handleUploadLabel} />
         </>

@@ -582,7 +582,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     userEvent.click(metadataEditorToggle);
 
-    const uploadeLabelButton = await within(modal).findByRole('button', { name: 'Upload Label' });
+    const uploadeLabelButton = await within(modal).findByRole('button', { name: 'Upload Labels' });
     expect(uploadeLabelButton).toBeInTheDocument();
     expect(uploadeLabelButton).toBeVisible();
 

@@ -211,7 +211,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
             <Button
               variant="primary"
               onClick={handleSubmit}
-              isDisabled={!filename && valid !== ValidatedOptions.success}
+              isDisabled={!filename || valid !== ValidatedOptions.success}
             >
               Submit
             </Button>

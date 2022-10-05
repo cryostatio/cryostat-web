@@ -254,7 +254,7 @@ describe('<RecordingLabelFields />', () => {
 
     renderWithRouter(<RecordingLabelFields {...mockProps} />, { history });
 
-    const uploadButton = screen.getByRole('button', { name: 'Upload Label' });
+    const uploadButton = screen.getByRole('button', { name: 'Upload Labels' });
     expect(uploadButton).toBeInTheDocument();
     expect(uploadButton).toBeVisible();
   });
@@ -264,7 +264,7 @@ describe('<RecordingLabelFields />', () => {
 
     renderWithRouter(<RecordingLabelFields {...mockProps} />, { history });
 
-    const uploadButton = screen.getByRole('button', { name: 'Upload Label' });
+    const uploadButton = screen.getByRole('button', { name: 'Upload Labels' });
     expect(uploadButton).toBeInTheDocument();
     expect(uploadButton).toBeVisible();
 
