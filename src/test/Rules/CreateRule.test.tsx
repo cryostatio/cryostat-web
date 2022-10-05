@@ -108,7 +108,7 @@ jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
 jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
 
-describe('<CreateRule/>', () => {
+describe('<CreateRule />', () => {
   beforeEach(() => {
     history.go(-history.length);
   });

@@ -125,7 +125,7 @@ jest
 
   .mockReturnValue(of()); // other tests
 
-describe('<Rules/>', () => {
+describe('<Rules />', () => {
   beforeEach(() => {
     history.go(-history.length);
   });
