@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<CreateRule/> renders correctly 1`] = `
+exports[`<CreateRule /> renders correctly 1`] = `
 <section
   className="pf-c-page__main-section"
 >
