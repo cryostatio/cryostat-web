@@ -159,7 +159,7 @@ describe('<CreateRule />', () => {
     expect(authFailText).toBeInTheDocument();
     expect(authFailText).toBeVisible();
 
-    const retryButton = screen.getByText("Retry");
+    const retryButton = screen.getByText('Retry');
     expect(retryButton).toBeInTheDocument();
     expect(retryButton).toBeVisible();
   });
