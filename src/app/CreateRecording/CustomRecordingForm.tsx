@@ -344,7 +344,7 @@ export const CustomRecordingForm = (props) => {
               <Checkbox
                 label="Archive on Stop"
                 isDisabled={continuous}
-                isChecked={archiveOnStop}
+                isChecked={archiveOnStop && !continuous}
                 onChange={setArchiveOnStop}
                 aria-label="ArchiveOnStop checkbox"
                 id="recording-archive-on-stop"
