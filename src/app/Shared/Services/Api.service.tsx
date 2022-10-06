@@ -246,6 +246,7 @@ export class ApiService {
     if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
       form.append('duration', String(recordingAttributes.duration));
     }
+    form.append('archiveOnStop', String(recordingAttributes.archiveOnStop));
     if (!!recordingAttributes.options) {
       if (recordingAttributes.options.toDisk != null) {
         form.append('toDisk', String(recordingAttributes.options.toDisk));
@@ -859,6 +860,7 @@ export interface RecordingAttributes {
   name: string;
   events: string;
   duration?: number;
+  archiveOnStop?: boolean;
   options?: RecordingOptions;
   metadata?: Metadata;
 }
