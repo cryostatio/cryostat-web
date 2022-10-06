@@ -69,6 +69,7 @@ import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { iif, of } from 'rxjs';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -97,6 +98,7 @@ const Comp = () => {
   const [initialDelay, setInitialDelay] = React.useState(0);
   const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const handleNameChange = React.useCallback(
     (evt) => {
@@ -189,6 +191,11 @@ const Comp = () => {
     [setPreservedArchives]
   );
 
+  const handleError = React.useCallback(
+    (error) => setErrorMessage(error.message),
+    [setErrorMessage]
+  );
+
   const handleSubmit = React.useCallback((): void => {
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
@@ -253,8 +260,7 @@ const Comp = () => {
             iif(
               () => target !== NO_TARGET,
               context.api
-                .doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
-                .pipe(catchError((_) => of([] as EventTemplate[]))),
+                .doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
               context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
                 mergeMap((x) => x),
                 filter((template) => template.provider !== 'Cryostat' || template.name !== 'Cryostat'),
@@ -264,7 +270,10 @@ const Comp = () => {
           ),
           first()
         )
-        .subscribe(setTemplates)
+        .subscribe({
+          next: setTemplates,
+          error: handleError,
+        })
     );
   }, [addSubscription, context, context.api, context.target, setTemplates]);
 
@@ -283,7 +292,7 @@ const Comp = () => {
     <BreadcrumbPage pageTitle="Create" breadcrumbs={breadcrumbs}>
       <Grid hasGutter>
         <GridItem xl={7}>
-          <Card>
+          {errorMessage? <ErrorView message={errorMessage} title={"Fail to retrieve event templates"}></ErrorView>: <Card>
             <CardBody>
               <Form>
                 <Text component={TextVariants.small}>
@@ -533,7 +542,7 @@ const Comp = () => {
                 </ActionGroup>
               </Form>
             </CardBody>
-          </Card>
+          </Card>}
         </GridItem>
         <GridItem xl={5}>
           <Card>

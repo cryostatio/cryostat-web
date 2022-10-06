@@ -36,23 +36,26 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Bullseye, Text } from '@patternfly/react-core';
+import { EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 export interface ErrorViewProps {
+  title: string;
   message: string;
 }
 
 export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
   return (
     <>
-      <br />
-      <Bullseye>
-        <ExclamationCircleIcon size="md" color="Red" />
-      </Bullseye>
-      <Bullseye>
-        <Text>Error:&nbsp;{props.message}</Text>
-      </Bullseye>
+      <EmptyState>
+        <EmptyStateIcon icon={ExclamationCircleIcon} color={"#a30000"} />
+        <Title headingLevel="h4" size="lg">
+          {props.title}
+        </Title>
+        <EmptyStateBody>
+          {props.message}
+        </EmptyStateBody>
+      </EmptyState>
     </>
   );
 };
