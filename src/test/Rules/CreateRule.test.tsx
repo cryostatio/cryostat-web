@@ -134,13 +134,13 @@ describe('<CreateRule />', () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
       target: () => of(mockTarget),
-      authFailure: () => subj.asObservable()
+      authFailure: () => subj.asObservable(),
     } as TargetService;
     const services: Services = {
       ...defaultServices,
       target: mockTargetSvc,
     };
-    
+
     render(
       <ServiceContext.Provider value={services}>
         <Router location={history.location} history={history}>
@@ -151,11 +151,11 @@ describe('<CreateRule />', () => {
 
     await doAct(async () => subj.next());
 
-    const failTitle = screen.getByText("Fail to retrieve event templates");
+    const failTitle = screen.getByText('Fail to retrieve event templates');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 
-    const authFailText = screen.getByText("Auth failure");
+    const authFailText = screen.getByText('Auth failure');
     expect(authFailText).toBeInTheDocument();
     expect(authFailText).toBeVisible();
   });
