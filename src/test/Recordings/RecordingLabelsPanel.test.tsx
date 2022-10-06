@@ -37,10 +37,8 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { of } from 'rxjs';
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
@@ -58,7 +56,6 @@ jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
 import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { Drawer, DrawerContent } from '@patternfly/react-core';
-import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -69,6 +66,7 @@ const mockRecording: ArchivedRecording = {
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
+  size: 2048,
 };
 
 describe('<RecordingLabelsPanel />', () => {

@@ -38,10 +38,10 @@
 
 import React from 'react';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { Recording } from '@app/Shared/Services/Api.service';
 
 export interface NameFilterProps {
-  recordings: ArchivedRecording[];
+  recordings: Recording[];
   filteredNames: string[];
   onSubmit: (inputName: string) => void;
 }

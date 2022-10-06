@@ -38,11 +38,11 @@
 
 import React from 'react';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { Recording } from '@app/Shared/Services/Api.service';
 import { parseLabels, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 
 export interface LabelFilterProps {
-  recordings: ArchivedRecording[];
+  recordings: Recording[];
   filteredLabels: string[];
   onSubmit: (inputLabel: string) => void;
 }
