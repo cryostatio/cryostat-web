@@ -68,9 +68,11 @@ export interface RecordingsTableProps {
 export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
   let view: JSX.Element;
   if (props.errorMessage != '') {
-    view =  <>
-      <ErrorView message={props.errorMessage} title={"Error retrieving recordings"}></ErrorView>
-  </>;
+    view = (
+      <>
+        <ErrorView message={props.errorMessage} title={'Error retrieving recordings'}></ErrorView>
+      </>
+    );
   } else if (props.isLoading) {
     view = <LoadingView />;
   } else if (props.isEmpty) {

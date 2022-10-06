@@ -48,13 +48,11 @@ export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
   return (
     <>
       <EmptyState>
-        <EmptyStateIcon icon={ExclamationCircleIcon} color={"#a30000"} />
+        <EmptyStateIcon icon={ExclamationCircleIcon} color={'#a30000'} />
         <Title headingLevel="h4" size="lg">
           {props.title}
         </Title>
-        <EmptyStateBody>
-          {props.message}
-        </EmptyStateBody>
+        <EmptyStateBody>{props.message}</EmptyStateBody>
       </EmptyState>
     </>
   );

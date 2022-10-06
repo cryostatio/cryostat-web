@@ -221,7 +221,7 @@ export const EventTypes = () => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   if (errorMessage != '') {
-    return <ErrorView message={errorMessage} title={"Fail to retrieve event types"}/>;
+    return <ErrorView message={errorMessage} title={'Fail to retrieve event types'} />;
   } else if (isLoading) {
     return <LoadingView />;
   } else {
