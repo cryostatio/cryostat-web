@@ -84,6 +84,7 @@ export const CustomRecordingForm = (props) => {
   );
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [continuous, setContinuous] = React.useState(false);
+  const [archiveOnStop, setArchiveOnStop] = React.useState(true);
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
@@ -231,6 +232,7 @@ export const CustomRecordingForm = (props) => {
       name: recordingName,
       events: getEventString(),
       duration: continuous ? undefined : duration * (durationUnit / 1000),
+      archiveOnStop: archiveOnStop && !continuous,
       options: options,
       metadata: { labels: getFormattedLabels() },
     };
@@ -320,19 +322,36 @@ export const CustomRecordingForm = (props) => {
           helperText={
             continuous
               ? 'A continuous recording will never be automatically stopped'
+              : archiveOnStop
+              ? 'Time before the recording is automatically stopped and copied to archive'
               : 'Time before the recording is automatically stopped'
           }
           helperTextInvalid="A recording may only have a positive integer duration"
           fieldId="recording-duration"
         >
-          <Checkbox
-            label="Continuous"
-            isChecked={continuous}
-            onChange={handleContinuousChange}
-            aria-label="Continuous checkbox"
-            id="recording-continuous"
-            name="recording-continuous"
-          />
+          <Split hasGutter>
+            <SplitItem>
+              <Checkbox
+                label="Continuous"
+                isChecked={continuous}
+                onChange={handleContinuousChange}
+                aria-label="Continuous checkbox"
+                id="recording-continuous"
+                name="recording-continuous"
+              />
+            </SplitItem>
+            <SplitItem>
+              <Checkbox
+                label="Archive on Stop"
+                isDisabled={continuous}
+                isChecked={archiveOnStop}
+                onChange={setArchiveOnStop}
+                aria-label="ArchiveOnStop checkbox"
+                id="recording-archive-on-stop"
+                name="recording-archive-on-stop"
+              />
+            </SplitItem>
+          </Split>
           <DurationPicker
             enabled={!continuous}
             period={duration}
