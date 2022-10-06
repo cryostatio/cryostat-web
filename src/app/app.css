@@ -77,3 +77,6 @@ html, body, #root {
   --pf-c-chip__text--MaxWidth: 100ch;
 }
 
+.recording-table-container {
+  height: 512px; 
+}
