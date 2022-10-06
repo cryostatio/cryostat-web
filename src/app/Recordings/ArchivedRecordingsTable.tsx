@@ -523,6 +523,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             toolbar={RecordingsToolbar}
             tableColumns={tableColumns}
             tableFooter={
+              filteredRecordings.length > 0 && 
               <TableComposable borders={false}>
                 <Tbody>
                   <Tr>
