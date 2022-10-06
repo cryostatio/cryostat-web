@@ -36,11 +36,9 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
 import { Text } from '@patternfly/react-core';
-import renderer, { act } from 'react-test-renderer';
 import { screen, within, waitFor, cleanup } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -48,12 +46,11 @@ import userEvent from '@testing-library/user-event';
 import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
-import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
-import { Provider } from 'react-redux';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
@@ -80,6 +77,7 @@ const mockRecording: ArchivedRecording = {
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
+  size: 2048,
 };
 
 const mockArchivedRecordingsResponse = {
@@ -147,7 +145,7 @@ jest
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
-  .mockReturnValueOnce(of()) // renders correctly
+  .mockReturnValueOnce(of()) // renders the recording table correctly
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -195,20 +193,55 @@ describe('<ArchivedRecordingsTable />', () => {
 
   afterEach(cleanup);
 
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <Provider store={setupStore()}>
-            <Router location={history.location} history={history}>
-              <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />
-            </Router>
-          </Provider>
-        </ServiceContext.Provider>
-      );
+  it('renders the recording table correctly', () => {
+    renderWithServiceContextAndReduxStoreWithRouter(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
+
+    ['Delete', 'Edit Labels'].map((text) => {
+      const button = screen.getByText(text);
+      expect(button).toBeInTheDocument();
+      expect(button).toBeVisible();
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+
+    ['Name', 'Size', 'Labels'].map((text) => {
+      const header = screen.getByText(text);
+      expect(header).toBeInTheDocument();
+      expect(header).toBeVisible();
+    });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    expect(checkboxes.length).toBe(2);
+    checkboxes.forEach((checkbox) => {
+      expect(checkbox).toBeInTheDocument();
+      expect(checkbox).toBeVisible();
+    });
+
+    const name = screen.getByText(mockRecording.name);
+    expect(name).toBeInTheDocument();
+    expect(name).toBeVisible();
+
+    const size = screen.getByText('2 KB');
+    expect(size).toBeInTheDocument();
+    expect(size).toBeVisible();
+
+    Object.keys(mockRecordingLabels).forEach((key) => {
+      const label = screen.getByText(`${key}: ${mockRecordingLabels[key]}`);
+      expect(label).toBeInTheDocument();
+      expect(label).toBeVisible();
+    });
+
+    const actionIcon = screen.getByRole('button', { name: 'Actions' });
+    expect(actionIcon).toBeInTheDocument();
+    expect(actionIcon).toBeVisible();
+
+    const totalSize = screen.getByText(`Total size: 2 KB`);
+    expect(totalSize).toBeInTheDocument();
+    expect(totalSize).toBeVisible();
   });
 
   it('adds a recording after receiving a notification', () => {
@@ -325,7 +358,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
   });
 
-  it('downloads a recording when Download Recording is clicked', () => {
+  it('downloads a recording when Download Recording is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -334,7 +367,9 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await tlr.act(async () => {
+      userEvent.click(screen.getByLabelText('Actions'));
+    });
     userEvent.click(screen.getByText('Download Recording'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
@@ -343,7 +378,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(downloadRequestSpy).toBeCalledWith(mockRecording);
   });
 
-  it('displays the automated analysis report when View Report is clicked', () => {
+  it('displays the automated analysis report when View Report is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -352,7 +387,9 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await tlr.act(async () => {
+      userEvent.click(screen.getByLabelText('Actions'));
+    });
     userEvent.click(screen.getByText('View Report ...'));
 
     const reportRequestSpy = jest.spyOn(defaultServices.api, 'downloadReport');
@@ -360,7 +397,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(reportRequestSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('uploads a recording to Grafana when View in Grafana is clicked', () => {
+  it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -369,7 +406,9 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await tlr.act(async () => {
+      userEvent.click(screen.getByLabelText('Actions'));
+    });
     userEvent.click(screen.getByText('View in Grafana ...'));
 
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana');

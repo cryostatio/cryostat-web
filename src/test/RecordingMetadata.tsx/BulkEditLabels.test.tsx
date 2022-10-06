@@ -63,6 +63,7 @@ const mockArchivedRecording: ArchivedRecording = {
   downloadUrl: 'http://downloadUrl',
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
+  size: 2048,
 };
 
 const mockActiveRecording: ActiveRecording = {

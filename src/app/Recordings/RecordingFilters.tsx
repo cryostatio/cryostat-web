@@ -35,8 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import {
   Dropdown,
   DropdownItem,
@@ -55,7 +53,7 @@ import { DurationFilter } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
-import { RecordingState } from '@app/Shared/Services/Api.service';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { updateCategoryIntent } from '@app/Shared/Redux/RecordingFilterActions';
@@ -91,7 +89,7 @@ export const allowedArchivedRecordingFilters = Object.keys(emptyArchivedRecordin
 export interface RecordingFiltersProps {
   target: string;
   isArchived: boolean;
-  recordings: ArchivedRecording[];
+  recordings: Recording[];
   filters: RecordingFiltersCategories;
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }

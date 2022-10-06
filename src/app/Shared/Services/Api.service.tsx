@@ -461,7 +461,7 @@ export class ApiService {
     );
   }
 
-  downloadReport(recording: ArchivedRecording): void {
+  downloadReport(recording: Recording): void {
     const body = new window.FormData();
     if (isActiveRecording(recording)) {
       body.append('resource', recording.reportUrl.replace('/api/v1', '/api/v2.1'));
@@ -481,7 +481,7 @@ export class ApiService {
       });
   }
 
-  downloadRecording(recording: ArchivedRecording): void {
+  downloadRecording(recording: Recording): void {
     const body = new window.FormData();
     if (isActiveRecording(recording)) {
       body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/v2.1'));
@@ -816,9 +816,10 @@ export interface ArchivedRecording {
   downloadUrl: string;
   reportUrl: string;
   metadata: Metadata;
+  size: number;
 }
 
-export interface ActiveRecording extends ArchivedRecording {
+export interface ActiveRecording extends Omit<ArchivedRecording, 'size'> {
   id: number;
   state: RecordingState;
   duration: number;
@@ -835,8 +836,9 @@ export enum RecordingState {
   RUNNING = 'RUNNING',
   STOPPING = 'STOPPING',
 }
+export type Recording = ActiveRecording | ArchivedRecording;
 
-export const isActiveRecording = (toCheck: ArchivedRecording): toCheck is ActiveRecording => {
+export const isActiveRecording = (toCheck: Recording): toCheck is ActiveRecording => {
   return (toCheck as ActiveRecording).state !== undefined;
 };
 

@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ActiveRecording, isHttpError } from '@app/Shared/Services/Api.service';
+import { Recording, isHttpError } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Spinner } from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
@@ -44,7 +44,7 @@ import { isGenerationError } from '@app/Shared/Services/Report.service';
 
 export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
   isExpanded: boolean;
-  recording: ActiveRecording;
+  recording: Recording;
 }
 
 export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo((props) => {

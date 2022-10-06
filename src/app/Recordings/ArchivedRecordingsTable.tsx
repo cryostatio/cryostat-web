@@ -50,13 +50,19 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Text,
+  TextVariants,
+  FlexItem,
+  Flex,
+  Chip,
+  Badge,
 } from '@patternfly/react-core';
-import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
 import { PlusIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, forkJoin, merge, combineLatest, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
@@ -77,7 +83,7 @@ import {
   deleteFilterIntent,
 } from '@app/Shared/Redux/RecordingFilterActions';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { hashCode } from '@app/utils/utils';
+import { formatBytes, hashCode } from '@app/utils/utils';
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
@@ -107,7 +113,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
 
-  const tableColumns: string[] = ['Name', 'Labels'];
+  const tableColumns: string[] = ['Name', 'Labels', 'Size'];
 
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
@@ -153,6 +159,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             metadata {
               labels
             }
+            size
           }
         }
       }`);
@@ -171,6 +178,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             metadata {
               labels
             }
+            size
           }
         }
       }`);
@@ -382,7 +390,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
-          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
+          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[2]}>
             <LabelCell
               target={targetConnectURL}
               clickableOptions={{
@@ -391,6 +399,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               }}
               labels={parsedLabels}
             />
+          </Td>
+          <Td key={`archived-table-row-${props.index}_4`} dataLabel={tableColumns[1]}>
+            {formatBytes(props.recording.size)}
           </Td>
           <RecordingActions
             recording={props.recording}
@@ -497,6 +508,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     [checkedIndices, setShowDetailsPanel, props.isUploadsTable]
   );
 
+  const totalArchiveSize = React.useMemo(() => {
+    let size = 0;
+    filteredRecordings.forEach((r) => (size += r.size));
+    return size;
+  }, [filteredRecordings]);
+
   return (
     <Drawer isExpanded={showDetailsPanel} isInline id={'archived-recording-drawer'}>
       <DrawerContent panelContent={LabelsPanel} className="recordings-table-drawer-content">
@@ -505,6 +522,18 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             tableTitle="Archived Flight Recordings"
             toolbar={RecordingsToolbar}
             tableColumns={tableColumns}
+            tableFooter={
+              <TableComposable borders={false}>
+                <Tbody>
+                  <Tr>
+                    <Td></Td>
+                    <Td width={15}>
+                      <b>Total size: {formatBytes(totalArchiveSize)}</b>
+                    </Td>
+                  </Tr>
+                </Tbody>
+              </TableComposable>
+            }
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}
             isLoading={isLoading}
