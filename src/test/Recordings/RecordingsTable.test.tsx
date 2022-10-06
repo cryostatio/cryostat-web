@@ -167,7 +167,7 @@ describe('<RecordingsTable />', () => {
       </RecordingsTable>
     );
 
-    expect(screen.getByText('Error: some error')).toBeInTheDocument();
+    expect(screen.getByText('some error')).toBeInTheDocument();
   });
 
   it('renders correctly when table data is still loading', () => {
