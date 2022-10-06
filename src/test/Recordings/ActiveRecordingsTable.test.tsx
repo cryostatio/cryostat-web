@@ -108,7 +108,7 @@ import {
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
 import { Provider } from 'react-redux';
-import { renderWithServiceContextAndReduxStoreWithRoute } from '../Common';
+import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
@@ -220,7 +220,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('adds a recording after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -229,7 +229,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('updates the recording labels after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -238,7 +238,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('stops a recording after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -247,7 +247,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('removes a recording after receiving a notification', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -255,7 +255,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('displays the toolbar buttons', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -268,7 +268,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('routes to the Create Flight Recording form when Create is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -279,7 +279,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('archives the selected recording when Archive is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -296,7 +296,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('stops the selected recording when Stop is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -313,7 +313,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('opens the labels drawer when Edit Labels is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -326,7 +326,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -353,7 +353,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('deletes the recording when Delete is clicked w/o popup warning', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -371,7 +371,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('downloads a recording when Download Recording is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -386,7 +386,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('displays the automated analysis report when View Report is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -400,7 +400,7 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('uploads a recording to Grafana when View in Grafana is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });

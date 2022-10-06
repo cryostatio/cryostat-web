@@ -267,7 +267,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        props.target,
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
@@ -490,10 +490,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       <RecordingLabelsPanel
         setShowPanel={setShowDetailsPanel}
         isTargetRecording={false}
+        isUploadsTable={props.isUploadsTable}
         checkedIndices={checkedIndices}
       />
     ),
-    [checkedIndices, setShowDetailsPanel]
+    [checkedIndices, setShowDetailsPanel, props.isUploadsTable]
   );
 
   return (

@@ -50,7 +50,7 @@ import { Toolbar, ToolbarContent } from '@patternfly/react-core';
 import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { renderWithReduxProvider } from '../Common';
+import { renderWithReduxStore } from '../Common';
 
 const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
@@ -146,7 +146,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display currently selected category for active recordings', () => {
-    renderWithReduxProvider(
+    renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -173,7 +173,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display currently selected category for archived recordings', () => {
-    renderWithReduxProvider(
+    renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -200,7 +200,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display category menu for active recordings when clicked', async () => {
-    renderWithReduxProvider(
+    renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -239,7 +239,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display category menu for archived recordings when clicked', async () => {
-    renderWithReduxProvider(
+    renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -286,7 +286,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should close category menu when toggled', async () => {
-    renderWithReduxProvider(
+    renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -323,7 +323,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should switch filter input if a category is selected ', async () => {
-    renderWithReduxProvider(
+    renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -375,7 +375,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should approriate chips for filtered categories', () => {
-    renderWithReduxProvider(
+    renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -437,7 +437,7 @@ describe('<RecordingFilters />', () => {
         ],
       },
     };
-    renderWithReduxProvider(
+    renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters

@@ -37,11 +37,49 @@
  */
 import * as React from 'react';
 import { Prompt } from 'react-router-dom';
-import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  Button,
+  ExpandableSection,
+  FileUpload,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  Popover,
+  Text,
+  Tooltip,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
+import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
+import { HelpIcon } from '@patternfly/react-icons';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { from, Observable } from 'rxjs';
+
+export const parseLabels = (file: File): Observable<RecordingLabel[]> => {
+  return from(
+    file
+      .text()
+      .then(JSON.parse)
+      .then((obj) => {
+        const labels: RecordingLabel[] = [];
+        const labelObj = obj['labels'];
+        if (labelObj) {
+          Object.keys(labelObj).forEach((key) => {
+            labels.push({
+              key: key,
+              value: labelObj[key],
+            });
+          });
+        }
+        return labels;
+      })
+  );
+};
 
 export interface ArchiveUploadModalProps {
   visible: boolean;
@@ -51,12 +89,25 @@ export interface ArchiveUploadModalProps {
 export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
+
   const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
   const [filename, setFilename] = React.useState('' as string | undefined);
   const [uploading, setUploading] = React.useState(false);
   const [rejected, setRejected] = React.useState(false);
   const [showCancelPrompt, setShowCancelPrompt] = React.useState(false);
   const [abort, setAbort] = React.useState(new AbortController());
+  const [labels, setLabels] = React.useState([] as RecordingLabel[]);
+  const [valid, setValid] = React.useState(ValidatedOptions.success);
+
+  const getFormattedLabels = React.useCallback(() => {
+    const formattedLabels = {};
+    labels.forEach((l) => {
+      if (l.key && l.value) {
+        formattedLabels[l.key] = l.value;
+      }
+    });
+    return formattedLabels;
+  }, [labels]);
 
   const reset = React.useCallback(() => {
     setUploadFile(undefined);
@@ -65,7 +116,9 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
     setRejected(true);
     setShowCancelPrompt(false);
     setAbort(new AbortController());
-  }, [setUploadFile, setFilename, setUploading, setRejected, setShowCancelPrompt, setAbort]);
+    setLabels([] as RecordingLabel[]);
+    setValid(ValidatedOptions.success);
+  }, [setUploadFile, setFilename, setUploading, setRejected, setShowCancelPrompt, setAbort, setLabels, setValid]);
 
   const handleFileChange = React.useCallback(
     (file, filename) => {
@@ -89,7 +142,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
       reset();
       props.onClose();
     }
-  }, [uploading, setShowCancelPrompt, reset]);
+  }, [uploading, setShowCancelPrompt, reset, props.onClose]);
 
   const handleSubmit = React.useCallback(() => {
     if (!uploadFile) {
@@ -97,14 +150,17 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
       return;
     }
     setUploading(true);
-    context.api.uploadRecording(uploadFile, abort.signal).pipe(first()).subscribe(handleClose, reset);
-  }, [context.api, notifications, setUploading, uploadFile, abort, handleClose, reset]);
+    context.api
+      .uploadRecording(uploadFile, getFormattedLabels(), abort.signal)
+      .pipe(first())
+      .subscribe(handleClose, reset);
+  }, [context.api, notifications, setUploading, uploadFile, abort.signal, handleClose, reset, getFormattedLabels]);
 
   const handleAbort = React.useCallback(() => {
     abort.abort();
     reset();
     props.onClose();
-  }, [abort, reset, handleClose]);
+  }, [abort.abort, reset, props.onClose]);
 
   return (
     <>
@@ -115,7 +171,28 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
         showClose={true}
         onClose={handleClose}
         title="Re-Upload Archived Recording"
-        description="Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming convention used by Cryostat when archiving recordings."
+        description={
+          <Text>
+            <span>
+              Select a JDK Flight Recorder file to re-upload. Files must be .jfr binary format and follow the naming
+              convention used by Cryostat when archiving recordings
+            </span>{' '}
+            <Tooltip
+              content={
+                <Text>
+                  Archive naming conventions: <b>target-name_recordingName_timestamp.jfr</b>.
+                  <br />
+                  For example: io-cryostat-Cryostat_profiling_timestamp.jfr
+                </Text>
+              }
+            >
+              <sup style={{ cursor: 'pointer' }}>
+                <b>[?]</b>
+              </sup>
+            </Tooltip>
+            <span>.</span>
+          </Text>
+        }
       >
         <CancelUploadModal
           visible={showCancelPrompt}
@@ -124,7 +201,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
           onYes={handleAbort}
           onNo={() => setShowCancelPrompt(false)}
         />
-        <Form>
+        <Form isHorizontal>
           <FormGroup label="JFR File" isRequired fieldId="file" validated={rejected ? 'error' : 'default'}>
             <FileUpload
               id="file-upload"
@@ -139,8 +216,25 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
               }}
             />
           </FormGroup>
+          <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
+            <FormGroup
+              label="Labels"
+              fieldId="labels"
+              labelIcon={
+                <Tooltip content={<Text>Unique key-value pairs containing information about the recording.</Text>}>
+                  <HelpIcon noVerticalAlign />
+                </Tooltip>
+              }
+            >
+              <RecordingLabelFields isUploadable labels={labels} setLabels={setLabels} setValid={setValid} />
+            </FormGroup>
+          </ExpandableSection>
           <ActionGroup>
-            <Button variant="primary" onClick={handleSubmit} isDisabled={!filename}>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              isDisabled={!filename || valid !== ValidatedOptions.success}
+            >
               Submit
             </Button>
             <Button variant="link" onClick={handleClose}>

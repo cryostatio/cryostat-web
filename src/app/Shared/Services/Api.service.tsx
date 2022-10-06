@@ -549,12 +549,14 @@ export class ApiService {
       });
   }
 
-  uploadRecording(file: File, signal?: AbortSignal): Observable<string> {
+  uploadRecording(file: File, labels: Object, signal?: AbortSignal): Observable<string> {
     window.onbeforeunload = () => true;
     return this.login.getHeaders().pipe(
       concatMap((headers) => {
         const body = new window.FormData();
         body.append('recording', file);
+        body.append('labels', JSON.stringify(labels));
+
         return fromFetch(`${this.login.authority}/api/v1/recordings`, {
           credentials: 'include',
           mode: 'cors',
@@ -624,6 +626,23 @@ export class ApiService {
       ),
       map((v) => v.data.targetNodes[0].recordings.archived as ArchivedRecording[])
     );
+  }
+
+  postUploadedRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
+    return this.graphql<any>(
+      `
+      query {
+        archivedRecordings(filter: {sourceTarget: "${UPLOADS_SUBDIRECTORY}", name: "${recordingName}" }) {
+          data {
+            doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+              metadata {
+                labels
+              }
+            }
+          }
+        }
+      }`
+    ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
   }
 
   postTargetRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ActiveRecording[]> {

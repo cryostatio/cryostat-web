@@ -39,18 +39,20 @@ import * as React from 'react';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
-import { combineLatest, concatMap, filter, first, forkJoin, map, merge, Observable } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, map, merge, Observable, of } from 'rxjs';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { RecordingLabelFields } from './RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { hashCode } from '@app/utils/utils';
+import { uploadAsTarget } from '@app/Archives/Archives';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
+  isUploadsTable?: boolean;
   checkedIndices: number[];
 }
 
@@ -64,13 +66,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const addSubscription = useSubscriptions();
 
   const getIdxFromRecording = React.useCallback(
-    (r: ArchivedRecording): number => {
-      if (props.isTargetRecording) {
-        return (r as ActiveRecording).id;
-      } else {
-        return hashCode(r.name);
-      }
-    },
+    (r: ArchivedRecording): number => (props.isTargetRecording ? (r as ActiveRecording).id : hashCode(r.name)),
     [hashCode, props.isTargetRecording]
   );
 
@@ -85,10 +81,11 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         updatedLabels = updatedLabels.filter((label) => {
           return !includesLabel(toDelete, label);
         });
-
         tasks.push(
           props.isTargetRecording
             ? context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first())
+            : props.isUploadsTable
+            ? context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first())
             : context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first())
         );
       }
@@ -114,7 +111,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const handleCancel = React.useCallback(() => {
     setEditing(false);
     setCommonLabels(savedCommonLabels);
-  }, [setEditing, savedCommonLabels]);
+  }, [setEditing, setCommonLabels, savedCommonLabels]);
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
@@ -127,50 +124,87 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         }
       });
 
-      const updatedCommonLabels = allRecordingLabels.reduce(
-        (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
-        allRecordingLabels[0]
-      );
+      const updatedCommonLabels =
+        allRecordingLabels.length > 0
+          ? allRecordingLabels.reduce(
+              (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
+              allRecordingLabels[0]
+            )
+          : [];
+
       setLabels(updatedCommonLabels);
     },
     [recordings, props.checkedIndices]
   );
 
   const refreshRecordingList = React.useCallback(() => {
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => target !== NO_TARGET),
-          concatMap((target) =>
-            props.isTargetRecording
-              ? context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
-              : context.api.graphql<any>(`
-                  query {
-                    targetNodes(filter: { name: "${target.connectUrl}" }) {
-                      recordings {
-                        archived {
-                          data {
-                            name
-                            downloadUrl
-                            reportUrl
-                            metadata {
-                              labels
-                            }
-                          }
+    let observable: Observable<ArchivedRecording[]>;
+    if (props.isTargetRecording) {
+      observable = context.target.target().pipe(
+        filter((target) => target !== NO_TARGET),
+        concatMap((target) =>
+          context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+        ),
+        first()
+      );
+    } else {
+      observable = props.isUploadsTable
+        ? context.api
+            .graphql<any>(
+              `
+              query {
+                archivedRecordings(filter: { sourceTarget: "${UPLOADS_SUBDIRECTORY}" }) {
+                  data {
+                    name
+                    downloadUrl
+                    reportUrl
+                    metadata {
+                      labels
+                    }
+                  }
+                }
+              }`
+            )
+            .pipe(
+              map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
+              first()
+            )
+        : context.target.target().pipe(
+            filter((target) => target !== NO_TARGET),
+            concatMap((target) =>
+              context.api.graphql<any>(`
+              query {
+                targetNodes(filter: { name: "${target.connectUrl}" }) {
+                  recordings {
+                    archived {
+                      data {
+                        name
+                        downloadUrl
+                        reportUrl
+                        metadata {
+                          labels
                         }
                       }
                     }
-                  }`)
-          ),
-          map((v) =>
-            props.isTargetRecording ? v : (v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[])
-          ),
-          first()
-        )
-        .subscribe((value) => setRecordings(value))
-    );
-  }, [addSubscription, props.isTargetRecording, context, context.target, context.api, setRecordings]);
+                  }
+                }
+              }`)
+            ),
+            map((v) => v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
+            first()
+          );
+    }
+
+    addSubscription(observable.subscribe((value) => setRecordings(value)));
+  }, [
+    addSubscription,
+    props.isTargetRecording,
+    props.isUploadsTable,
+    context,
+    context.target,
+    context.api,
+    setRecordings,
+  ]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshRecordingList));
@@ -181,7 +215,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
+        props.isUploadsTable ? of(uploadAsTarget) : context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
@@ -205,13 +239,13 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     if (!recordings.length && editing) {
       setEditing(false);
     }
-  }, [recordings, props.checkedIndices, setCommonLabels, setSavedCommonLabels]);
+  }, [recordings, setCommonLabels, setSavedCommonLabels, updateCommonLabels, setEditing]);
 
   React.useEffect(() => {
     if (!props.checkedIndices.length) {
       setEditing(false);
     }
-  }, [props.checkedIndices]);
+  }, [props.checkedIndices, setEditing]);
 
   return (
     <>
@@ -241,12 +275,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         <StackItem>
           {editing ? (
             <>
-              <RecordingLabelFields
-                labels={commonLabels}
-                setLabels={setCommonLabels}
-                valid={valid}
-                setValid={setValid}
-              />
+              <RecordingLabelFields labels={commonLabels} setLabels={setCommonLabels} setValid={setValid} />
               <Split hasGutter>
                 <SplitItem>
                   <Button variant="primary" onClick={handleUpdateLabels} isDisabled={valid != ValidatedOptions.success}>
