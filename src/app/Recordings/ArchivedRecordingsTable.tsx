@@ -50,13 +50,19 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Text,
+  TextVariants,
+  FlexItem,
+  Flex,
+  Chip,
+  Badge,
 } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import { PlusIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { Observable, forkJoin, merge, combineLatest, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, forkJoin, merge, combineLatest } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
@@ -502,6 +508,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     [checkedIndices, setShowDetailsPanel, props.isUploadsTable]
   );
 
+  const totalArchiveSize = React.useMemo(() => {
+    let size = 0;
+    filteredRecordings.forEach((r) => (size += r.size));
+    return size;
+  }, [filteredRecordings]);
+
   return (
     <Drawer isExpanded={showDetailsPanel} isInline id={'archived-recording-drawer'}>
       <DrawerContent panelContent={LabelsPanel} className="recordings-table-drawer-content">
@@ -510,6 +522,13 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             tableTitle="Archived Flight Recordings"
             toolbar={RecordingsToolbar}
             tableColumns={tableColumns}
+            tableFooter={
+              <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} style={{ marginTop: '2em' }}>
+                <FlexItem>
+                  <b style={{ fontSize: '1.2em' }}>Total size: {formatBytes(totalArchiveSize)}</b>
+                </FlexItem>
+              </Flex>
+            }
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}
             isLoading={isLoading}

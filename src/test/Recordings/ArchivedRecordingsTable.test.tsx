@@ -46,7 +46,7 @@ import userEvent from '@testing-library/user-event';
 import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import {  defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
@@ -194,7 +194,7 @@ describe('<ArchivedRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders the recording table correctly', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(
+    renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -238,6 +238,10 @@ describe('<ArchivedRecordingsTable />', () => {
     const actionIcon = screen.getByRole('button', { name: 'Actions' });
     expect(actionIcon).toBeInTheDocument();
     expect(actionIcon).toBeVisible();
+
+    const totalSize = screen.getByText(`Total size: 2 KB`);
+    expect(totalSize).toBeInTheDocument();
+    expect(totalSize).toBeVisible();
   });
 
   it('adds a recording after receiving a notification', () => {

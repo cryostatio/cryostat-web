@@ -197,7 +197,7 @@ describe('<ActiveRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders the recording table correctly', () => {
-    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });

@@ -66,7 +66,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const addSubscription = useSubscriptions();
 
   const getIdxFromRecording = React.useCallback(
-    (r: Recording): number => props.isTargetRecording? (r as ActiveRecording).id: hashCode(r.name),
+    (r: Recording): number => (props.isTargetRecording ? (r as ActiveRecording).id : hashCode(r.name)),
     [hashCode, props.isTargetRecording]
   );
 

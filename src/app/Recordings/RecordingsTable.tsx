@@ -53,6 +53,7 @@ export interface RecordingsTableProps {
   toolbar: React.ReactElement;
   tableColumns: string[];
   tableTitle: string;
+  tableFooter?: string | React.ReactNode;
   isEmpty: boolean;
   isEmptyFilterResult?: boolean;
   isHeaderChecked: boolean;
@@ -103,6 +104,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
     view = (
       <>
         <TableComposable
+          scrolling=""
           aria-label={props.tableTitle}
           isStickyHeader={props.isNestedTable}
           variant={props.isNestedTable ? 'compact' : undefined}
@@ -129,21 +131,13 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
     );
   }
 
-  if (props.isNestedTable) {
-    return (
-      <>
-        <OuterScrollContainer style={{ height: '500px' }}>
-          {props.toolbar}
-          <InnerScrollContainer>{view}</InnerScrollContainer>
-        </OuterScrollContainer>
-      </>
-    );
-  }
-
   return (
     <>
-      {props.toolbar}
-      {view}
+      <OuterScrollContainer style={{ height: '500px' }}>
+        {props.toolbar}
+        <InnerScrollContainer>{view}</InnerScrollContainer>
+        {props.tableFooter}
+      </OuterScrollContainer>
     </>
   );
 };
