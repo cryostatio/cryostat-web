@@ -133,7 +133,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
 
   return (
     <>
-      <OuterScrollContainer className='recording-table-container'>
+      <OuterScrollContainer className="recording-table-container">
         {props.toolbar}
         <InnerScrollContainer>{view}</InnerScrollContainer>
         {props.tableFooter}
