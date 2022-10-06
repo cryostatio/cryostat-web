@@ -201,7 +201,7 @@ describe('<ArchivedRecordingsTable />', () => {
         history: history,
       }
     );
-    
+
     ['Delete', 'Edit Labels'].map((text) => {
       const button = screen.getByText(text);
       expect(button).toBeInTheDocument();
@@ -235,7 +235,7 @@ describe('<ArchivedRecordingsTable />', () => {
       expect(label).toBeVisible();
     });
 
-    const actionIcon = screen.getByRole('button', {name: "Actions"});
+    const actionIcon = screen.getByRole('button', { name: 'Actions' });
     expect(actionIcon).toBeInTheDocument();
     expect(actionIcon).toBeVisible();
   });

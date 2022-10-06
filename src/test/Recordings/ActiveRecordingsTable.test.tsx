@@ -201,7 +201,7 @@ describe('<ActiveRecordingsTable />', () => {
       preloadState: preloadedState,
       history: history,
     });
-    
+
     ['Create', 'Edit Labels', 'Stop', 'Delete'].map((text) => {
       const button = screen.getByText(text);
       expect(button).toBeInTheDocument();
@@ -229,7 +229,9 @@ describe('<ActiveRecordingsTable />', () => {
     expect(startTime).toBeInTheDocument();
     expect(startTime).toBeVisible();
 
-    const duration = screen.getByText(mockRecording.continuous || mockRecording.duration === 0? "Continuous": `${mockRecording.duration/1000}s`);
+    const duration = screen.getByText(
+      mockRecording.continuous || mockRecording.duration === 0 ? 'Continuous' : `${mockRecording.duration / 1000}s`
+    );
     expect(duration).toBeInTheDocument();
     expect(duration).toBeVisible();
 
@@ -243,7 +245,7 @@ describe('<ActiveRecordingsTable />', () => {
       expect(label).toBeVisible();
     });
 
-    const actionIcon = screen.getByRole('button', {name: "Actions"});
+    const actionIcon = screen.getByRole('button', { name: 'Actions' });
     expect(actionIcon).toBeInTheDocument();
     expect(actionIcon).toBeVisible();
   });
