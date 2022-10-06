@@ -67,13 +67,14 @@ import {
 import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
-import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
+import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -82,6 +83,7 @@ interface IAppLayout {
 const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
+  const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
   const logoProps = {
     href: '/',
@@ -102,108 +104,121 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const location = useLocation();
 
   React.useEffect(() => {
-    const sub = serviceContext.target.authFailure().subscribe(() => {
-      setShowAuthModal(true);
-    });
-    return () => sub.unsubscribe();
-  }, [serviceContext.target]);
+    addSubscription(
+      serviceContext.target.authFailure().subscribe(() => {
+        setShowAuthModal(true);
+      })
+    );
+  }, [serviceContext.target, setShowAuthModal, addSubscription]);
 
   React.useEffect(() => {
-    const sub = notificationsContext.notifications().subscribe(setNotifications);
-    return () => sub.unsubscribe();
-  }, []);
+    addSubscription(notificationsContext.notifications().subscribe(setNotifications));
+  }, [notificationsContext.notifications, addSubscription]);
 
   React.useEffect(() => {
-    const sub = notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length));
-    return () => sub.unsubscribe();
+    addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
   }, [
-    notificationsContext,
     notificationsContext.unreadNotifications,
     unreadNotificationsCount,
     setUnreadNotificationsCount,
+    addSubscription,
   ]);
 
   React.useEffect(() => {
-    const sub = notificationsContext
-      .unreadNotifications()
-      .pipe(
-        map((notifications: Notification[]) =>
-          _.filter(notifications, (n) => n.variant === AlertVariant.danger || n.variant === AlertVariant.warning)
+    addSubscription(
+      notificationsContext
+        .unreadNotifications()
+        .pipe(
+          map((notifications: Notification[]) =>
+            _.filter(notifications, (n) => n.variant === AlertVariant.danger || n.variant === AlertVariant.warning)
+          )
         )
-      )
-      .subscribe((s) => setErrorNotificationsCount(s.length));
-    return () => sub.unsubscribe();
+        .subscribe((s) => setErrorNotificationsCount(s.length))
+    );
   }, [
     notificationsContext,
     notificationsContext.unreadNotifications,
     unreadNotificationsCount,
     setUnreadNotificationsCount,
+    addSubscription,
   ]);
 
-  const dismissAuthModal = () => {
+  const dismissAuthModal = React.useCallback(() => {
     setShowAuthModal(false);
-  };
+  }, [setShowAuthModal]);
+
   const handleMarkNotificationRead = React.useCallback(
-    (key) => {
-      notificationsContext.setRead(key, true);
-    },
-    [notificationsContext]
+    (key) => notificationsContext.setRead(key, true),
+    [notificationsContext.setRead]
   );
 
   React.useEffect(() => {
-    const sub = serviceContext.target.sslFailure().subscribe(() => {
-      setShowSslErrorModal(true);
-    });
-    return () => sub.unsubscribe();
-  }, [serviceContext.target]);
+    addSubscription(
+      serviceContext.target.sslFailure().subscribe(() => {
+        setShowSslErrorModal(true);
+      })
+    );
+  }, [serviceContext.target, serviceContext.target.sslFailure, setShowSslErrorModal, addSubscription]);
 
-  const dismissSslErrorModal = () => {
-    setShowSslErrorModal(false);
-  };
+  const dismissSslErrorModal = React.useCallback(() => setShowSslErrorModal(false), [setShowSslErrorModal]);
 
-  const onNavToggleMobile = () => {
-    setIsNavOpenMobile(!isNavOpenMobile);
-  };
-  const onNavToggle = () => {
-    setIsNavOpen(!isNavOpen);
-  };
-  const onPageResize = (props: { mobileView: boolean; windowSize: number }) => {
-    setIsMobileView(props.mobileView);
-  };
-  const mobileOnSelect = (selected) => {
-    if (isMobileView) setIsNavOpenMobile(false);
-  };
-  const handleSettingsButtonClick = () => {
+  const onNavToggleMobile = React.useCallback(() => {
+    setIsNavOpenMobile((isNavOpenMobile) => !isNavOpenMobile);
+  }, [setIsNavOpenMobile]);
+
+  const onNavToggle = React.useCallback(() => {
+    setIsNavOpen((isNavOpen) => !isNavOpen);
+  }, [setIsNavOpen]);
+
+  const onPageResize = React.useCallback(
+    (props: { mobileView: boolean; windowSize: number }) => {
+      setIsMobileView(props.mobileView);
+    },
+    [setIsMobileView]
+  );
+
+  const mobileOnSelect = React.useCallback(
+    (selected) => {
+      if (isMobileView) {
+        setIsNavOpenMobile(false);
+      }
+    },
+    [isMobileView, setIsNavOpenMobile]
+  );
+
+  const handleSettingsButtonClick = React.useCallback(() => {
     routerHistory.push('/settings');
-  };
-  const handleNotificationCenterToggle = () => {
-    setNotificationDrawerExpanded(!isNotificationDrawerExpanded);
-  };
-  const handleCloseNotificationCenter = () => {
+  }, [routerHistory.push]);
+
+  const handleNotificationCenterToggle = React.useCallback(() => {
+    setNotificationDrawerExpanded((isNotificationDrawerExpanded) => !isNotificationDrawerExpanded);
+  }, [setNotificationDrawerExpanded]);
+
+  const handleCloseNotificationCenter = React.useCallback(() => {
     setNotificationDrawerExpanded(false);
-  };
-  const handleAboutModalToggle = () => {
-    setAboutModalOpen(!aboutModalOpen);
-  };
+  }, [setNotificationDrawerExpanded]);
+
+  const handleAboutModalToggle = React.useCallback(() => {
+    setAboutModalOpen((aboutModalOpen) => !aboutModalOpen);
+  }, [setAboutModalOpen]);
 
   React.useEffect(() => {
-    const sub = serviceContext.login.getSessionState().subscribe((sessionState) => {
-      setShowUserIcon(sessionState === SessionState.USER_SESSION);
-    });
-    return () => sub.unsubscribe();
-  }, [serviceContext.target]);
+    addSubscription(
+      serviceContext.login.getSessionState().subscribe((sessionState) => {
+        setShowUserIcon(sessionState === SessionState.USER_SESSION);
+      })
+    );
+  }, [serviceContext.login, serviceContext.login.getSessionState, setShowUserIcon, addSubscription]);
 
   const handleLogout = React.useCallback(() => {
-    const sub = serviceContext.login.setLoggedOut().subscribe();
-    return () => sub.unsubscribe();
-  }, [serviceContext.login]);
+    addSubscription(serviceContext.login.setLoggedOut().subscribe());
+  }, [serviceContext.login, serviceContext.login.setLoggedOut, addSubscription]);
 
   const handleUserInfoToggle = React.useCallback(() => setShowUserInfoDropdown((v) => !v), [setShowUserInfoDropdown]);
 
   React.useEffect(() => {
-    const sub = serviceContext.login.getUsername().subscribe(setUsername);
-    return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.login]);
+    addSubscription(serviceContext.login.getUsername().subscribe(setUsername));
+  }, [serviceContext, serviceContext.login, addSubscription, setUsername]);
 
   const userInfoItems = [
     <DropdownGroup key={0}>
@@ -247,6 +262,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       </PageHeaderTools>
     </>
   );
+
   const Header = (
     <>
       <PageHeader
