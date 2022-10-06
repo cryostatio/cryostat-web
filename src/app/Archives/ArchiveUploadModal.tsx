@@ -180,8 +180,9 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
             <Tooltip
               content={
                 <Text>
-                  Archive Conventions: <b>target-name_recordingName_timestamp.jfr</b>. <br />
-                  For example: es-andrewazor-demo-Main_recording-name_20221005T193305Z.jfr
+                  Archive naming conventions: <b>target-name_recordingName_timestamp.jfr</b>.
+                  <br />
+                  For example: io-cryostat-Cryostat_profiling_timestamp.jfr
                 </Text>
               }
             >
