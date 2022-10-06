@@ -41,16 +41,17 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export const Recordings = () => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
+  const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.api.isArchiveEnabled().subscribe(setArchiveEnabled);
-    return () => sub.unsubscribe();
-  }, [context.api]);
+    addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
+  }, [context.api, context.api.isArchiveEnabled, addSubscription]);
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (

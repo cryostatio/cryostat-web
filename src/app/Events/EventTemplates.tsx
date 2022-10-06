@@ -54,6 +54,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
   TextInput,
+  Text,
 } from '@patternfly/react-core';
 import { UploadIcon } from '@patternfly/react-icons';
 import {
@@ -71,7 +72,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
@@ -374,7 +375,27 @@ export const EventTemplates = () => {
   );
 
   if (errorMessage != '') {
-    return <ErrorView message={errorMessage} title={'Fail to retrieve event templates'} />;
+    const isAuthError = React.useMemo(() => errorMessage === authFailMessage, [errorMessage, authFailMessage]);
+
+    const authRetry = React.useCallback(() => {
+      context.target.setAuthRetry();
+    }, [context.target, context.target.setAuthRetry]);
+
+    return (
+      <ErrorView
+        message={
+          <>
+            <Text>{errorMessage}</Text>
+            {isAuthError && (
+              <Button variant="link" onClick={authRetry}>
+                Retry
+              </Button>
+            )}
+          </>
+        }
+        title={'Fail to retrieve event templates'}
+      />
+    );
   } else if (isLoading) {
     return (
       <>

@@ -39,9 +39,10 @@ import * as React from 'react';
 import { EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
+export const authFailMessage = 'Auth failure';
 export interface ErrorViewProps {
-  title: string;
-  message: string;
+  title: string | React.ReactNode;
+  message: string | React.ReactNode;
 }
 
 export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {

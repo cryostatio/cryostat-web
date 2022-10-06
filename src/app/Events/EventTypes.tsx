@@ -46,11 +46,13 @@ import {
   ToolbarItemVariant,
   Pagination,
   TextInput,
+  Text,
+  Button,
 } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
 
 export interface EventType {
   name: string;
@@ -221,7 +223,27 @@ export const EventTypes = () => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   if (errorMessage != '') {
-    return <ErrorView message={errorMessage} title={'Fail to retrieve event types'} />;
+    const isAuthError = React.useMemo(() => errorMessage === authFailMessage, [errorMessage, authFailMessage]);
+
+    const authRetry = React.useCallback(() => {
+      context.target.setAuthRetry();
+    }, [context.target, context.target.setAuthRetry]);
+
+    return (
+      <ErrorView
+        message={
+          <>
+            <Text>{errorMessage}</Text>
+            {isAuthError && (
+              <Button variant="link" onClick={authRetry}>
+                Retry
+              </Button>
+            )}
+          </>
+        }
+        title={'Fail to retrieve event types'}
+      />
+    );
   } else if (isLoading) {
     return <LoadingView />;
   } else {
