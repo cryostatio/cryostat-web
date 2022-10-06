@@ -128,7 +128,7 @@ describe('<TargetSelect />', () => {
     );
 
     expect(screen.getByText('Target JVM')).toBeInTheDocument();
-    expect(screen.getByText(`Select Target...`)).toBeInTheDocument();
+    expect(screen.getByText(`Select target...`)).toBeInTheDocument();
 
     expect(screen.getByLabelText('Create target')).toBeInTheDocument();
     expect(screen.getByLabelText('Delete target')).toBeInTheDocument();
@@ -147,7 +147,7 @@ describe('<TargetSelect />', () => {
 
     userEvent.click(screen.getByLabelText('Options menu'));
     expect(screen.getByLabelText('Select Input')).toBeInTheDocument();
-    expect(screen.getByText(`Select Target...`)).toBeInTheDocument();
+    expect(screen.getByText(`Select target...`)).toBeInTheDocument();
     expect(screen.getByText(`fooTarget (service:jmx:rmi://someFooUrl)`)).toBeInTheDocument();
     expect(screen.getByText(`barTarget (service:jmx:rmi://someBarUrl)`)).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument(); // Number of discoverable targets

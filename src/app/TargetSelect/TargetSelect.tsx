@@ -284,7 +284,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const selectOptions = React.useMemo(
     () =>
       [
-        <SelectOption key="placeholder" value="Select Target..." isPlaceholder={true} itemCount={targets.length} />,
+        <SelectOption key="placeholder" value="Select target..." isPlaceholder={true} itemCount={targets.length} />,
       ].concat(
         targets.map((t: Target) =>
           t.alias == t.connectUrl || !t.alias ? (
