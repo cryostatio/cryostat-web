@@ -77,7 +77,7 @@ import {
   deleteFilterIntent,
 } from '@app/Shared/Redux/RecordingFilterActions';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { hashCode } from '@app/utils/utils';
+import { formatBytes, hashCode } from '@app/utils/utils';
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
@@ -107,7 +107,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
 
-  const tableColumns: string[] = ['Name', 'Labels'];
+  const tableColumns: string[] = ['Name', 'Size', 'Labels'];
 
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
@@ -153,6 +153,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             metadata {
               labels
             }
+            size
           }
         }
       }`);
@@ -171,6 +172,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             metadata {
               labels
             }
+            size
           }
         }
       }`);
@@ -382,7 +384,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
-          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
+          <Td key={`archived-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
+            {formatBytes(props.recording.size)}
+          </Td>
+          <Td key={`active-table-row-${props.index}_4`} dataLabel={tableColumns[2]}>
             <LabelCell
               target={targetConnectURL}
               clickableOptions={{

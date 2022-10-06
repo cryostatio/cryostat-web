@@ -60,3 +60,16 @@ export const hashCode = (str: string): number => {
   }
   return hash;
 };
+
+export const sizeUnits = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+export const formatBytes = (bytes: number, decimals = 2): string => {
+  if (bytes <= 0) return '0 B';
+
+  const k = 1024; // 1 KB
+  const dm = Math.max(decimals, 0); // Decimal places
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizeUnits[i]}`;
+}
