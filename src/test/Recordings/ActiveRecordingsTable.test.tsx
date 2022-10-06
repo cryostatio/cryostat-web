@@ -57,7 +57,7 @@ const mockRecording: ActiveRecording = {
   startTime: 1234567890,
   id: 0,
   state: RecordingState.RUNNING,
-  duration: 0,
+  duration: 1000, // 1000ms
   continuous: false,
   toDisk: false,
   maxSize: 0,
@@ -128,12 +128,20 @@ jest
   .mockReturnValueOnce(true)
   .mockReturnValueOnce(true)
   .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
   .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
   .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
   .mockReturnValue(true);
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
+  .mockReturnValueOnce(of()) // renders the recording table correctly
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
   .mockReturnValueOnce(of(mockCreateNotification)) // adds a recording table after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -187,6 +195,58 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   afterEach(cleanup);
+
+  it('renders the recording table correctly', () => {
+    renderWithServiceContextAndReduxStoreWithRoute(<ActiveRecordingsTable archiveEnabled={true} />, {
+      preloadState: preloadedState,
+      history: history,
+    });
+    
+    ['Create', 'Edit Labels', 'Stop', 'Delete'].map((text) => {
+      const button = screen.getByText(text);
+      expect(button).toBeInTheDocument();
+      expect(button).toBeVisible();
+    });
+
+    ['Name', 'Start Time', 'Duration', 'State', 'Labels'].map((text) => {
+      const header = screen.getByText(text);
+      expect(header).toBeInTheDocument();
+      expect(header).toBeVisible();
+    });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    expect(checkboxes.length).toBe(2);
+    checkboxes.forEach((checkbox) => {
+      expect(checkbox).toBeInTheDocument();
+      expect(checkbox).toBeVisible();
+    });
+
+    const name = screen.getByText(mockRecording.name);
+    expect(name).toBeInTheDocument();
+    expect(name).toBeVisible();
+
+    const startTime = screen.getByText(new Date(mockRecording.startTime).toISOString());
+    expect(startTime).toBeInTheDocument();
+    expect(startTime).toBeVisible();
+
+    const duration = screen.getByText(mockRecording.continuous || mockRecording.duration === 0? "Continuous": `${mockRecording.duration/1000}s`);
+    expect(duration).toBeInTheDocument();
+    expect(duration).toBeVisible();
+
+    const state = screen.getByText(mockRecording.state);
+    expect(state).toBeInTheDocument();
+    expect(state).toBeVisible();
+
+    Object.keys(mockRecordingLabels).forEach((key) => {
+      const label = screen.getByText(`${key}: ${mockRecordingLabels[key]}`);
+      expect(label).toBeInTheDocument();
+      expect(label).toBeVisible();
+    });
+
+    const actionIcon = screen.getByRole('button', {name: "Actions"});
+    expect(actionIcon).toBeInTheDocument();
+    expect(actionIcon).toBeVisible();
+  });
 
   it('adds a recording after receiving a notification', () => {
     renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {

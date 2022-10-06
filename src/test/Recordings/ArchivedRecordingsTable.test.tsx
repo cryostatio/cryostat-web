@@ -138,12 +138,18 @@ jest
   .mockReturnValueOnce(true)
   .mockReturnValueOnce(true)
   .mockReturnValueOnce(true)
+  .mockReturnValueOnce(true)
   .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
   .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
   .mockReturnValue(true);
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
+  .mockReturnValueOnce(of()) // renders the recording table correctly
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
+
   .mockReturnValueOnce(of(mockCreateNotification)) // adds a recording table after receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
@@ -186,6 +192,53 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   afterEach(cleanup);
+
+  it('renders the recording table correctly', () => {
+    renderWithServiceContextAndReduxStoreWithRoute(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
+    
+    ['Delete', 'Edit Labels'].map((text) => {
+      const button = screen.getByText(text);
+      expect(button).toBeInTheDocument();
+      expect(button).toBeVisible();
+    });
+
+    ['Name', 'Size', 'Labels'].map((text) => {
+      const header = screen.getByText(text);
+      expect(header).toBeInTheDocument();
+      expect(header).toBeVisible();
+    });
+
+    const checkboxes = screen.getAllByRole('checkbox');
+    expect(checkboxes.length).toBe(2);
+    checkboxes.forEach((checkbox) => {
+      expect(checkbox).toBeInTheDocument();
+      expect(checkbox).toBeVisible();
+    });
+
+    const name = screen.getByText(mockRecording.name);
+    expect(name).toBeInTheDocument();
+    expect(name).toBeVisible();
+
+    const size = screen.getByText('2 KB');
+    expect(size).toBeInTheDocument();
+    expect(size).toBeVisible();
+
+    Object.keys(mockRecordingLabels).forEach((key) => {
+      const label = screen.getByText(`${key}: ${mockRecordingLabels[key]}`);
+      expect(label).toBeInTheDocument();
+      expect(label).toBeVisible();
+    });
+
+    const actionIcon = screen.getByRole('button', {name: "Actions"});
+    expect(actionIcon).toBeInTheDocument();
+    expect(actionIcon).toBeVisible();
+  });
 
   it('adds a recording after receiving a notification', () => {
     renderWithServiceContextAndReduxStoreWithRouter(
