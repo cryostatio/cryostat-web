@@ -211,7 +211,7 @@ const Comp = () => {
     maxSizeUnits,
   ]);
 
-  const handleTemlateList = React.useCallback(
+  const handleTemplateList = React.useCallback(
     (templates) => {
       setTemplates(templates);
       setErrorMessage('');
@@ -239,7 +239,7 @@ const Comp = () => {
           first()
         )
         .subscribe({
-          next: handleTemlateList,
+          next: handleTemplateList,
           error: handleError,
         })
     );
