@@ -175,10 +175,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           ),
           first()
         )
-        .subscribe(
-          (value) => handleRecordings(value),
-          (err) => handleError(err)
-        )
+        .subscribe({
+          next: handleRecordings,
+          error: handleError,
+        })
     );
   }, [addSubscription, context, context.target, context.api, setIsLoading, handleRecordings, handleError]);
 

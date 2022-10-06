@@ -374,7 +374,7 @@ export const EventTemplates = () => {
   );
 
   if (errorMessage != '') {
-    return <ErrorView message={errorMessage} />;
+    return <ErrorView message={errorMessage} title={'Fail to retrieve event templates'} />;
   } else if (isLoading) {
     return (
       <>

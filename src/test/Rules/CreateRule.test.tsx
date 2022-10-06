@@ -38,16 +38,16 @@
 import * as React from 'react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, waitFor } from '@testing-library/react';
+import { act as doAct, render, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rule } from '@app/Rules/Rules';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { CreateRule } from '@app/Rules/CreateRule';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
-import { Target } from '@app/Shared/Services/Target.service';
+import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 const escapeKeyboardInput = (value: string) => {
@@ -107,6 +107,7 @@ jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate])
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
 jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
+jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
 describe('<CreateRule />', () => {
   beforeEach(() => {
@@ -127,6 +128,36 @@ describe('<CreateRule />', () => {
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('should show error view if failing to retrieve templates', async () => {
+    const subj = new Subject<void>();
+    const mockTargetSvc = {
+      target: () => of(mockTarget),
+      authFailure: () => subj.asObservable(),
+    } as TargetService;
+    const services: Services = {
+      ...defaultServices,
+      target: mockTargetSvc,
+    };
+
+    render(
+      <ServiceContext.Provider value={services}>
+        <Router location={history.location} history={history}>
+          <CreateRule />
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    await doAct(async () => subj.next());
+
+    const failTitle = screen.getByText('Fail to retrieve event templates');
+    expect(failTitle).toBeInTheDocument();
+    expect(failTitle).toBeVisible();
+
+    const authFailText = screen.getByText('Auth failure');
+    expect(authFailText).toBeInTheDocument();
+    expect(authFailText).toBeVisible();
   });
 
   it('should submit form if form input is valid', async () => {

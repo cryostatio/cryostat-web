@@ -541,7 +541,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             isEmptyFilterResult={!filteredRecordings.length}
             clearFilters={handleClearFilters}
             isNestedTable={props.isNestedTable}
-            errorMessage=""
+            errorMessage={''}
           >
             {recordingRows}
           </RecordingsTable>
