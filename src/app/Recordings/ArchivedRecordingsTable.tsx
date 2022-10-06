@@ -57,7 +57,7 @@ import {
   Chip,
   Badge,
 } from '@patternfly/react-core';
-import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
 import { PlusIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
@@ -113,7 +113,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
 
-  const tableColumns: string[] = ['Name', 'Size', 'Labels'];
+  const tableColumns: string[] = ['Name', 'Labels', 'Size'];
 
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
@@ -390,10 +390,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
             {props.recording.name}
           </Td>
-          <Td key={`archived-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            {formatBytes(props.recording.size)}
-          </Td>
-          <Td key={`active-table-row-${props.index}_4`} dataLabel={tableColumns[2]}>
+          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[2]}>
             <LabelCell
               target={targetConnectURL}
               clickableOptions={{
@@ -402,6 +399,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               }}
               labels={parsedLabels}
             />
+          </Td>
+          <Td key={`archived-table-row-${props.index}_4`} dataLabel={tableColumns[1]}>
+            {formatBytes(props.recording.size)}
           </Td>
           <RecordingActions
             recording={props.recording}
@@ -523,11 +523,16 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             toolbar={RecordingsToolbar}
             tableColumns={tableColumns}
             tableFooter={
-              <Flex justifyContent={{ default: 'justifyContentFlexEnd' }} style={{ marginTop: '2em' }}>
-                <FlexItem>
-                  <b style={{ fontSize: '1.2em' }}>Total size: {formatBytes(totalArchiveSize)}</b>
-                </FlexItem>
-              </Flex>
+              <TableComposable borders={false}>
+                <Tbody>
+                  <Tr>
+                    <Td></Td>
+                    <Td width={15}>
+                      <b>Total size: {formatBytes(totalArchiveSize)}</b>
+                    </Td>
+                  </Tr>
+                </Tbody>
+              </TableComposable>
             }
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}
