@@ -523,16 +523,18 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             toolbar={RecordingsToolbar}
             tableColumns={tableColumns}
             tableFooter={
-              <TableComposable borders={false}>
-                <Tbody>
-                  <Tr>
-                    <Td></Td>
-                    <Td width={15}>
-                      <b>Total size: {formatBytes(totalArchiveSize)}</b>
-                    </Td>
-                  </Tr>
-                </Tbody>
-              </TableComposable>
+              filteredRecordings.length > 0 && (
+                <TableComposable borders={false}>
+                  <Tbody>
+                    <Tr>
+                      <Td></Td>
+                      <Td width={15}>
+                        <b>Total size: {formatBytes(totalArchiveSize)}</b>
+                      </Td>
+                    </Tr>
+                  </Tbody>
+                </TableComposable>
+              )
             }
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}

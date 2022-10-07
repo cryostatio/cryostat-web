@@ -43,12 +43,13 @@ import {
   EmptyStateBody,
   Button,
   EmptyStateSecondaryActions,
+  Text,
 } from '@patternfly/react-core';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { TableComposable, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { ErrorView } from '@app/ErrorView/ErrorView';
+import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface RecordingsTableProps {
   toolbar: React.ReactElement;
@@ -66,11 +67,17 @@ export interface RecordingsTableProps {
 }
 
 export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
+  const context = React.useContext(ServiceContext);
   let view: JSX.Element;
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
   if (props.errorMessage != '') {
     view = (
       <>
-        <ErrorView message={props.errorMessage} title={'Error retrieving recordings'}></ErrorView>
+        <ErrorView title={'Error retrieving recordings'} message={props.errorMessage} retry={authRetry}></ErrorView>
       </>
     );
   } else if (props.isLoading) {

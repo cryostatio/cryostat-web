@@ -51,6 +51,8 @@ import {
   GridItem,
   Split,
   SplitItem,
+  Stack,
+  StackItem,
   Switch,
   Text,
   TextInput,
@@ -69,7 +71,7 @@ import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { iif } from 'rxjs';
-import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -219,7 +221,6 @@ const Comp = () => {
     [setTemplate, setErrorMessage]
   );
 
-  // FIXME Error 427 JMX Authentication is handled differently than Error 502 Untrusted SSL.
   const refreshTemplateList = React.useCallback(() => {
     addSubscription(
       context.target
@@ -252,10 +253,10 @@ const Comp = () => {
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
-        setErrorMessage('Auth failure');
+        setErrorMessage(authFailMessage);
       })
     );
-  }, [context.target, setErrorMessage, addSubscription]);
+  }, [context.target, authFailMessage, setErrorMessage, addSubscription]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
@@ -264,12 +265,16 @@ const Comp = () => {
     },
   ];
 
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
   return (
     <BreadcrumbPage pageTitle="Create" breadcrumbs={breadcrumbs}>
       <Grid hasGutter>
         <GridItem xl={7}>
           {errorMessage ? (
-            <ErrorView message={errorMessage} title={'Fail to retrieve event templates'}></ErrorView>
+            <ErrorView title={'Error retrieving event templates'} message={errorMessage} retry={authRetry}></ErrorView>
           ) : (
             <Card>
               <CardBody>

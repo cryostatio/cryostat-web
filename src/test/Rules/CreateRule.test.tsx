@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { of, Subject } from 'rxjs';
+import { of, retry, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
 import { act as doAct, render, cleanup, screen, waitFor } from '@testing-library/react';
@@ -151,13 +151,17 @@ describe('<CreateRule />', () => {
 
     await doAct(async () => subj.next());
 
-    const failTitle = screen.getByText('Fail to retrieve event templates');
+    const failTitle = screen.getByText('Error retrieving event templates');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 
     const authFailText = screen.getByText('Auth failure');
     expect(authFailText).toBeInTheDocument();
     expect(authFailText).toBeVisible();
+
+    const retryButton = screen.getByText('Retry');
+    expect(retryButton).toBeInTheDocument();
+    expect(retryButton).toBeVisible();
   });
 
   it('should submit form if form input is valid', async () => {
