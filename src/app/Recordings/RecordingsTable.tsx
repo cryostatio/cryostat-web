@@ -48,7 +48,7 @@ import {
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { TableComposable, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface RecordingsTableProps {

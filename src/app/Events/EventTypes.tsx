@@ -146,7 +146,7 @@ export const EventTypes = () => {
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage('Auth failure');
+      setErrorMessage(authFailMessage);
     });
     return () => sub.unsubscribe();
   }, [context.target]);
@@ -227,7 +227,7 @@ export const EventTypes = () => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   if (errorMessage != '') {
-    return <ErrorView title={'Fail to retrieve event types'} message={errorMessage} retry={authRetry} />;
+    return <ErrorView title={'Error retrieving event types'} message={errorMessage} retry={authRetry} />;
   } else if (isLoading) {
     return <LoadingView />;
   } else {

@@ -151,7 +151,7 @@ describe('<CreateRule />', () => {
 
     await doAct(async () => subj.next());
 
-    const failTitle = screen.getByText('Fail to retrieve event templates');
+    const failTitle = screen.getByText('Error retrieving event templates');
     expect(failTitle).toBeInTheDocument();
     expect(failTitle).toBeVisible();
 

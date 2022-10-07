@@ -274,7 +274,7 @@ const Comp = () => {
       <Grid hasGutter>
         <GridItem xl={7}>
           {errorMessage ? (
-            <ErrorView title={'Fail to retrieve event templates'} message={errorMessage} retry={authRetry}></ErrorView>
+            <ErrorView title={'Error retrieving event templates'} message={errorMessage} retry={authRetry}></ErrorView>
           ) : (
             <Card>
               <CardBody>

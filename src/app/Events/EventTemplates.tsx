@@ -203,7 +203,7 @@ export const EventTemplates = () => {
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage('Auth failure');
+      setErrorMessage(authFailMessage);
     });
     return () => sub.unsubscribe();
   }, [context.target]);
@@ -379,7 +379,7 @@ export const EventTemplates = () => {
   }, [context.target, context.target.setAuthRetry]);
 
   if (errorMessage != '') {
-    return <ErrorView title={'Fail to retrieve event templates'} message={errorMessage} retry={authRetry} />;
+    return <ErrorView title={'Error retrieving event templates'} message={errorMessage} retry={authRetry} />;
   } else if (isLoading) {
     return (
       <>
