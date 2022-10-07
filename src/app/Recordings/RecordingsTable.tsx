@@ -77,19 +77,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
   if (props.errorMessage != '') {
     view = (
       <>
-        <ErrorView
-          message={
-            <>
-              <Text>{props.errorMessage}</Text>
-              {props.errorMessage === authFailMessage && (
-                <Button variant="link" onClick={authRetry}>
-                  Retry
-                </Button>
-              )}
-            </>
-          }
-          title={'Error retrieving recordings'}
-        ></ErrorView>
+        <ErrorView title={'Error retrieving recordings'} message={props.errorMessage} retry={authRetry}></ErrorView>
       </>
     );
   } else if (props.isLoading) {

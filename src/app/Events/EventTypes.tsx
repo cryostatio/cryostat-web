@@ -227,21 +227,7 @@ export const EventTypes = () => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   if (errorMessage != '') {
-    return (
-      <ErrorView
-        message={
-          <>
-            <Text>{errorMessage}</Text>
-            {errorMessage === authFailMessage && (
-              <Button variant="link" onClick={authRetry}>
-                Retry
-              </Button>
-            )}
-          </>
-        }
-        title={'Fail to retrieve event types'}
-      />
-    );
+    return <ErrorView title={'Fail to retrieve event types'} message={errorMessage} retry={authRetry} />;
   } else if (isLoading) {
     return <LoadingView />;
   } else {

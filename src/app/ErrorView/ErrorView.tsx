@@ -36,13 +36,23 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/react-core';
+import {
+  Button,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  Title,
+  Text,
+  StackItem,
+  Stack,
+} from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 export const authFailMessage = 'Auth failure';
 export interface ErrorViewProps {
   title: string | React.ReactNode;
   message: string | React.ReactNode;
+  retry?: () => void;
 }
 
 export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
@@ -53,7 +63,21 @@ export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
         <Title headingLevel="h4" size="lg">
           {props.title}
         </Title>
-        <EmptyStateBody>{props.message}</EmptyStateBody>
+        <EmptyStateBody>
+          <>
+            <Stack>
+              <StackItem>{props.message}</StackItem>
+              {props.retry && (
+                <StackItem>
+                  <Button variant="link" onClick={props.retry}>
+                    Retry
+                  </Button>
+                </StackItem>
+              )}
+            </Stack>
+            <Text></Text>
+          </>
+        </EmptyStateBody>
       </EmptyState>
     </>
   );

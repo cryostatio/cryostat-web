@@ -379,21 +379,7 @@ export const EventTemplates = () => {
   }, [context.target, context.target.setAuthRetry]);
 
   if (errorMessage != '') {
-    return (
-      <ErrorView
-        message={
-          <>
-            <Text>{errorMessage}</Text>
-            {errorMessage === authFailMessage && (
-              <Button variant="link" onClick={authRetry}>
-                Retry
-              </Button>
-            )}
-          </>
-        }
-        title={'Fail to retrieve event templates'}
-      />
-    );
+    return <ErrorView title={'Fail to retrieve event templates'} message={errorMessage} retry={authRetry} />;
   } else if (isLoading) {
     return (
       <>
