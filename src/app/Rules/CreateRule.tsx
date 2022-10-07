@@ -265,8 +265,6 @@ const Comp = () => {
     },
   ];
 
-  const isAuthError = React.useMemo(() => errorMessage === authFailMessage, [errorMessage, authFailMessage]);
-
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
@@ -280,7 +278,7 @@ const Comp = () => {
               message={
                 <>
                   <Text>{errorMessage}</Text>
-                  {isAuthError && (
+                  {errorMessage === authFailMessage && (
                     <Button variant="link" onClick={authRetry}>
                       Retry
                     </Button>

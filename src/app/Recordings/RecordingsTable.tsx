@@ -69,23 +69,19 @@ export interface RecordingsTableProps {
 export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
   let view: JSX.Element;
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
   if (props.errorMessage != '') {
-    const isAuthError = React.useMemo(
-      () => props.errorMessage === authFailMessage,
-      [props.errorMessage, authFailMessage]
-    );
-
-    const authRetry = React.useCallback(() => {
-      context.target.setAuthRetry();
-    }, [context.target, context.target.setAuthRetry]);
-
     view = (
       <>
         <ErrorView
           message={
             <>
               <Text>{props.errorMessage}</Text>
-              {isAuthError && (
+              {props.errorMessage === authFailMessage && (
                 <Button variant="link" onClick={authRetry}>
                   Retry
                 </Button>

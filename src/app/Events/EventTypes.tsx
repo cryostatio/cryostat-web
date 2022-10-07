@@ -221,20 +221,18 @@ export const EventTypes = () => {
     }
   };
 
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
   // TODO replace table with data list so collapsed event options can be custom formatted
   if (errorMessage != '') {
-    const isAuthError = React.useMemo(() => errorMessage === authFailMessage, [errorMessage, authFailMessage]);
-
-    const authRetry = React.useCallback(() => {
-      context.target.setAuthRetry();
-    }, [context.target, context.target.setAuthRetry]);
-
     return (
       <ErrorView
         message={
           <>
             <Text>{errorMessage}</Text>
-            {isAuthError && (
+            {errorMessage === authFailMessage && (
               <Button variant="link" onClick={authRetry}>
                 Retry
               </Button>

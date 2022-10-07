@@ -374,19 +374,17 @@ export const EventTemplates = () => {
     </>
   );
 
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
   if (errorMessage != '') {
-    const isAuthError = React.useMemo(() => errorMessage === authFailMessage, [errorMessage, authFailMessage]);
-
-    const authRetry = React.useCallback(() => {
-      context.target.setAuthRetry();
-    }, [context.target, context.target.setAuthRetry]);
-
     return (
       <ErrorView
         message={
           <>
             <Text>{errorMessage}</Text>
-            {isAuthError && (
+            {errorMessage === authFailMessage && (
               <Button variant="link" onClick={authRetry}>
                 Retry
               </Button>
