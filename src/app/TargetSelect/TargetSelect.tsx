@@ -148,11 +148,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     onSelect(undefined, undefined, true);
   }, [onSelect]);
 
-  const refreshTargetList = React.useCallback(() => {
-    setLoading(true);
-    addSubscription(context.targets.queryForTargets().subscribe(() => setLoading(false)));
-  }, [addSubscription, context, context.targets, setLoading]);
-
   React.useEffect(() => {
     addSubscription(
       context.targets.targets().subscribe((targets) => {
@@ -187,17 +182,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   React.useLayoutEffect(() => {
     addSubscription(context.target.target().subscribe(setSelected));
   }, [addSubscription, context, context.target, setSelected]);
-
-  React.useEffect(() => {
-    if (!context.settings.autoRefreshEnabled()) {
-      return;
-    }
-    const id = window.setInterval(
-      () => refreshTargetList(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
-    );
-    return () => window.clearInterval(id);
-  }, [context, context.target, context.settings, refreshTargetList]);
 
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
@@ -324,13 +308,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               onClick={handleDeleteButton}
               variant="control"
               icon={<TrashIcon />}
-            />
-            <Button
-              aria-label="Refresh targets"
-              isDisabled={isLoading}
-              onClick={refreshTargetList}
-              variant="control"
-              icon={<Spinner2Icon />}
             />
           </CardActions>
         </CardHeader>

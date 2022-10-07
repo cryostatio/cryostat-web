@@ -132,7 +132,6 @@ describe('<TargetSelect />', () => {
 
     expect(screen.getByLabelText('Create target')).toBeInTheDocument();
     expect(screen.getByLabelText('Delete target')).toBeInTheDocument();
-    expect(screen.getByLabelText('Refresh targets')).toBeInTheDocument();
     expect(screen.getByLabelText('Options menu')).toBeInTheDocument();
   });
 
@@ -203,19 +202,6 @@ describe('<TargetSelect />', () => {
 
     expect(deleteTargetRequestSpy).toBeCalledTimes(0);
     expect(deleteButton).toBeDisabled();
-  });
-
-  it('refreshes targets when button clicked', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
-    const refreshButton = screen.getByLabelText('Refresh targets');
-    userEvent.click(refreshButton);
-
-    const refreshTargetsRequestSpy = jest.spyOn(defaultServices.targets, 'queryForTargets');
-    expect(refreshTargetsRequestSpy).toBeCalledTimes(1);
   });
 
   it('deletes target when warning modal is accepted', async () => {
