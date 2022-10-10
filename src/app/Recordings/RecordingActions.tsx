@@ -68,12 +68,13 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.api
-      .grafanaDatasourceUrl()
-      .pipe(first())
-      .subscribe(() => setGrafanaEnabled(true));
-    return () => sub.unsubscribe();
-  }, [context.api, setGrafanaEnabled]);
+    addSubscription(
+      context.api
+        .grafanaDatasourceUrl()
+        .pipe(first())
+        .subscribe(() => setGrafanaEnabled(true))
+    );
+  }, [context.api, setGrafanaEnabled, addSubscription]);
 
   const grafanaUpload = React.useCallback(() => {
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);

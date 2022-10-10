@@ -54,7 +54,6 @@ import {
   ToolbarGroup,
   ToolbarItem,
   TextInput,
-  Text,
 } from '@patternfly/react-core';
 import { UploadIcon } from '@patternfly/react-icons';
 import {
@@ -72,7 +71,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
@@ -95,12 +94,15 @@ export const EventTemplates = () => {
   const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
   const addSubscription = useSubscriptions();
 
-  const tableColumns = [
-    { title: 'Name', transforms: [sortable] },
-    'Description',
-    { title: 'Provider', transforms: [sortable] },
-    { title: 'Type', transforms: [sortable] },
-  ];
+  const tableColumns = React.useMemo(
+    () => [
+      { title: 'Name', transforms: [sortable] },
+      'Description',
+      { title: 'Provider', transforms: [sortable] },
+      { title: 'Type', transforms: [sortable] },
+    ],
+    [sortable]
+  );
 
   React.useEffect(() => {
     let filtered;
@@ -219,14 +221,17 @@ export const EventTemplates = () => {
     [filteredTemplates]
   );
 
-  const handleDelete = (rowData) => {
-    addSubscription(
-      context.api
-        .deleteCustomEventTemplate(rowData[0])
-        .pipe(first())
-        .subscribe(() => {} /* do nothing - notification will handle updating state */)
-    );
-  };
+  const handleDelete = React.useCallback(
+    (rowData) => {
+      addSubscription(
+        context.api
+          .deleteCustomEventTemplate(rowData[0])
+          .pipe(first())
+          .subscribe(() => {} /* do nothing - notification will handle updating state */)
+      );
+    },
+    [addSubscription, context.api]
+  );
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
     if (typeof extraData.rowIndex == 'undefined') {
@@ -268,7 +273,7 @@ export const EventTemplates = () => {
     return actions;
   };
 
-  const handleModalToggle = () => {
+  const handleModalToggle = React.useCallback(() => {
     setModalOpen((v) => {
       if (v) {
         setUploadFile(undefined);
@@ -277,15 +282,18 @@ export const EventTemplates = () => {
       }
       return !v;
     });
-  };
+  }, [setModalOpen, setUploadFile, setUploadFilename, setUploading]);
 
-  const handleFileChange = (value, filename) => {
-    setFileRejected(false);
-    setUploadFile(value);
-    setUploadFilename(filename);
-  };
+  const handleFileChange = React.useCallback(
+    (value, filename) => {
+      setFileRejected(false);
+      setUploadFile(value);
+      setUploadFilename(filename);
+    },
+    [setFileRejected, setUploadFile, setUploadFilename]
+  );
 
-  const handleUploadSubmit = () => {
+  const handleUploadSubmit = React.useCallback(() => {
     if (!uploadFile) {
       window.console.error('Attempted to submit template upload without a file selected');
       return;
@@ -304,21 +312,33 @@ export const EventTemplates = () => {
           }
         })
     );
-  };
+  }, [
+    uploadFile,
+    window.console,
+    setUploading,
+    addSubscription,
+    context.api,
+    setUploadFile,
+    setUploadFilename,
+    setModalOpen,
+  ]);
 
-  const handleUploadCancel = () => {
+  const handleUploadCancel = React.useCallback(() => {
     setUploadFile(undefined);
     setUploadFilename('');
     setModalOpen(false);
-  };
+  }, [setUploadFile, setUploadFilename, setModalOpen]);
 
-  const handleFileRejected = () => {
+  const handleFileRejected = React.useCallback(() => {
     setFileRejected(true);
-  };
+  }, [setFileRejected]);
 
-  const handleSort = (event, index, direction) => {
-    setSortBy({ index, direction });
-  };
+  const handleSort = React.useCallback(
+    (event, index, direction) => {
+      setSortBy({ index, direction });
+    },
+    [setSortBy]
+  );
 
   const handleDeleteButton = React.useCallback(
     (rowData) => {
@@ -379,7 +399,13 @@ export const EventTemplates = () => {
   }, [context.target, context.target.setAuthRetry]);
 
   if (errorMessage != '') {
-    return <ErrorView title={'Error retrieving event templates'} message={errorMessage} retry={authRetry} />;
+    return (
+      <ErrorView
+        title={'Error retrieving event templates'}
+        message={errorMessage}
+        retry={isAuthFail(errorMessage) ? authRetry : undefined}
+      />
+    );
   } else if (isLoading) {
     return (
       <>

@@ -48,7 +48,7 @@ import {
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { TableComposable, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer } from '@patternfly/react-table';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { ErrorView } from '@app/ErrorView/ErrorView';
+import { ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface RecordingsTableProps {
@@ -77,7 +77,11 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
   if (props.errorMessage != '') {
     view = (
       <>
-        <ErrorView title={'Error retrieving recordings'} message={props.errorMessage} retry={authRetry}></ErrorView>
+        <ErrorView
+          title={'Error retrieving recordings'}
+          message={props.errorMessage}
+          retry={isAuthFail(props.errorMessage) ? authRetry : undefined}
+        />
       </>
     );
   } else if (props.isLoading) {
