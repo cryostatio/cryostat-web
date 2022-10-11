@@ -258,11 +258,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
-    addSubscription(
-      context.target.authFailure().subscribe(() => {
-        setErrorMessage(authFailMessage);
-      })
-    );
+    addSubscription(context.target.authFailure().subscribe(() => setErrorMessage(authFailMessage)));
   }, [context, context.target, setErrorMessage, addSubscription]);
 
   React.useEffect(() => {

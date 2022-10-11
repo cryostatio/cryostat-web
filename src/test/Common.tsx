@@ -62,12 +62,13 @@ export const renderWithServiceContextAndReduxStore = (
   {
     preloadState = {},
     store = setupStore(preloadState), // Create a new store instance if no store was passed in
+    services = defaultServices,
     ...renderOptions
   } = {}
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
-      <ServiceContext.Provider value={defaultServices}>
+      <ServiceContext.Provider value={services}>
         <Provider store={store}>{children}</Provider>
       </ServiceContext.Provider>
     );
@@ -80,13 +81,14 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
   {
     preloadState = {},
     store = setupStore(preloadState), // Create a new store instance if no store was passed in
+    services = defaultServices,
     history,
     ...renderOptions
   }
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
-      <ServiceContext.Provider value={defaultServices}>
+      <ServiceContext.Provider value={services}>
         <Provider store={store}>
           <Router location={history.location} history={history}>
             {children}

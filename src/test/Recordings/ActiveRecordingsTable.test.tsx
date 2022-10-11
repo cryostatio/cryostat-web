@@ -40,7 +40,7 @@ import { createMemoryHistory } from 'history';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
@@ -96,22 +96,23 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 });
 
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
-import { defaultServices } from '@app/Shared/Services/Services';
+import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
-import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
+import { TargetService } from '@app/Shared/Services/Target.service';
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockRecording]));
 jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
 jest.spyOn(defaultServices.api, 'downloadReport').mockReturnValue();
-jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/grafanaUrl'));
+jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
+jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));
 jest.spyOn(defaultServices.api, 'stopRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValue(of(true));
-
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
@@ -167,6 +168,8 @@ jest
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockDeleteNotification))
   .mockReturnValue(of()); // all other tests
+
+jest.spyOn(window, 'open').mockReturnValue(null);
 
 describe('<ActiveRecordingsTable />', () => {
   let preloadedState: RootState;
@@ -449,5 +452,37 @@ describe('<ActiveRecordingsTable />', () => {
 
     expect(grafanaUploadSpy).toHaveBeenCalledTimes(1);
     expect(grafanaUploadSpy).toBeCalledWith('someRecording');
+  });
+
+  it('should show error view if failing to retrieve recordings', async () => {
+    const subj = new Subject<void>();
+    const mockTargetSvc = {
+      target: () => of(mockTarget),
+      authFailure: () => subj.asObservable(),
+    } as TargetService;
+    const services: Services = {
+      ...defaultServices,
+      target: mockTargetSvc,
+    };
+
+    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
+      preloadState: preloadedState,
+      history: history,
+      services,
+    });
+
+    await act(async () => subj.next());
+
+    const failTitle = screen.getByText('Error retrieving recordings');
+    expect(failTitle).toBeInTheDocument();
+    expect(failTitle).toBeVisible();
+
+    const authFailText = screen.getByText('Auth failure');
+    expect(authFailText).toBeInTheDocument();
+    expect(authFailText).toBeVisible();
+
+    const retryButton = screen.getByText('Retry');
+    expect(retryButton).toBeInTheDocument();
+    expect(retryButton).toBeVisible();
   });
 });

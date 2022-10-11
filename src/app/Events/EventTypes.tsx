@@ -46,13 +46,11 @@ import {
   ToolbarItemVariant,
   Pagination,
   TextInput,
-  Text,
-  Button,
 } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 
 export interface EventType {
   name: string;
@@ -75,6 +73,10 @@ type Row = {
   fullWidth?: boolean;
 };
 
+const getCategoryString = (eventType: EventType): string => {
+  return eventType.category.join(', ').trim();
+};
+
 export const EventTypes = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -89,15 +91,18 @@ export const EventTypes = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const tableColumns = [
-    {
-      title: 'Name',
-      cellFormatters: [expandable],
-    },
-    'Type ID',
-    'Description',
-    'Categories',
-  ];
+  const tableColumns = React.useMemo(
+    () => [
+      {
+        title: 'Name',
+        cellFormatters: [expandable],
+      },
+      'Type ID',
+      'Description',
+      'Categories',
+    ],
+    [expandable]
+  );
 
   const handleTypes = React.useCallback(
     (types) => {
@@ -128,10 +133,10 @@ export const EventTypes = () => {
             context.api.doGet<EventType[]>(`targets/${encodeURIComponent(target.connectUrl)}/events`)
           )
         )
-        .subscribe(
-          (value) => handleTypes(value),
-          (err) => handleError(err)
-        )
+        .subscribe({
+          next: handleTypes,
+          error: handleError,
+        })
     );
   }, [addSubscription, context.target, context.api]);
 
@@ -145,15 +150,8 @@ export const EventTypes = () => {
   }, [addSubscription, context, context.target, refreshEvents]);
 
   React.useEffect(() => {
-    const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage(authFailMessage);
-    });
-    return () => sub.unsubscribe();
+    addSubscription(context.target.authFailure().subscribe(() => setErrorMessage(authFailMessage)));
   }, [context.target]);
-
-  const getCategoryString = (eventType: EventType): string => {
-    return eventType.category.join(', ').trim();
-  };
 
   const filterTypesByText = React.useCallback(() => {
     if (!filterText) {
@@ -196,30 +194,39 @@ export const EventTypes = () => {
     setDisplayedTypes(rows);
   }, [currentPage, perPage, filterTypesByText, openRow]);
 
-  const onCurrentPage = (evt, currentPage) => {
-    setOpenRow(-1);
-    setCurrentPage(currentPage);
-  };
-
-  const onPerPage = (evt, perPage) => {
-    const offset = (currentPage - 1) * prevPerPage.current;
-    prevPerPage.current = perPage;
-    setOpenRow(-1);
-    setPerPage(perPage);
-    setCurrentPage(1 + Math.floor(offset / perPage));
-  };
-
-  const onCollapse = (event, rowKey, isOpen) => {
-    if (isOpen) {
-      if (openRow === -1) {
-        setOpenRow(rowKey);
-      } else {
-        setOpenRow(rowKey > openRow ? rowKey - 1 : rowKey);
-      }
-    } else {
+  const onCurrentPage = React.useCallback(
+    (evt, currentPage) => {
       setOpenRow(-1);
-    }
-  };
+      setCurrentPage(currentPage);
+    },
+    [setOpenRow, setCurrentPage]
+  );
+
+  const onPerPage = React.useCallback(
+    (evt, perPage) => {
+      const offset = (currentPage - 1) * prevPerPage.current;
+      prevPerPage.current = perPage;
+      setOpenRow(-1);
+      setPerPage(perPage);
+      setCurrentPage(1 + Math.floor(offset / perPage));
+    },
+    [currentPage, prevPerPage, setOpenRow, setPerPage, setCurrentPage]
+  );
+
+  const onCollapse = React.useCallback(
+    (event, rowKey, isOpen) => {
+      if (isOpen) {
+        if (openRow === -1) {
+          setOpenRow(rowKey);
+        } else {
+          setOpenRow(rowKey > openRow ? rowKey - 1 : rowKey);
+        }
+      } else {
+        setOpenRow(-1);
+      }
+    },
+    [setOpenRow, openRow]
+  );
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
@@ -227,7 +234,13 @@ export const EventTypes = () => {
 
   // TODO replace table with data list so collapsed event options can be custom formatted
   if (errorMessage != '') {
-    return <ErrorView title={'Error retrieving event types'} message={errorMessage} retry={authRetry} />;
+    return (
+      <ErrorView
+        title={'Error retrieving event types'}
+        message={errorMessage}
+        retry={isAuthFail(errorMessage) ? authRetry : undefined}
+      />
+    );
   } else if (isLoading) {
     return <LoadingView />;
   } else {

@@ -51,8 +51,6 @@ import {
   GridItem,
   Split,
   SplitItem,
-  Stack,
-  StackItem,
   Switch,
   Text,
   TextInput,
@@ -71,7 +69,7 @@ import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { iif } from 'rxjs';
-import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -274,7 +272,11 @@ const Comp = () => {
       <Grid hasGutter>
         <GridItem xl={7}>
           {errorMessage ? (
-            <ErrorView title={'Error retrieving event templates'} message={errorMessage} retry={authRetry}></ErrorView>
+            <ErrorView
+              title={'Error retrieving event templates'}
+              message={errorMessage}
+              retry={isAuthFail(errorMessage) ? authRetry : undefined}
+            />
           ) : (
             <Card>
               <CardBody>

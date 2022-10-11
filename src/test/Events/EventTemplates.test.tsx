@@ -37,15 +37,16 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
+import { act as doAct, render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { MessageMeta, MessageType, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { EventTemplates } from '@app/Events/EventTemplates';
 import userEvent from '@testing-library/user-event';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { TargetService } from '@app/Shared/Services/Target.service';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -238,5 +239,37 @@ describe('<EventTemplates />', () => {
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(screen.queryByLabelText('Event template delete warning')).not.toBeInTheDocument();
+  });
+
+  it('should show error view if failing to retrieve event templates', async () => {
+    const subj = new Subject<void>();
+    const mockTargetSvc = {
+      target: () => of(mockTarget),
+      authFailure: () => subj.asObservable(),
+    } as TargetService;
+    const services: Services = {
+      ...defaultServices,
+      target: mockTargetSvc,
+    };
+
+    render(
+      <ServiceContext.Provider value={services}>
+        <EventTemplates />
+      </ServiceContext.Provider>
+    );
+
+    await doAct(async () => subj.next());
+
+    const failTitle = screen.getByText('Error retrieving event templates');
+    expect(failTitle).toBeInTheDocument();
+    expect(failTitle).toBeVisible();
+
+    const authFailText = screen.getByText('Auth failure');
+    expect(authFailText).toBeInTheDocument();
+    expect(authFailText).toBeVisible();
+
+    const retryButton = screen.getByText('Retry');
+    expect(retryButton).toBeInTheDocument();
+    expect(retryButton).toBeVisible();
   });
 });
