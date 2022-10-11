@@ -38,6 +38,7 @@
 
 import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
 import React from 'react';
+import build from '@app/build.json';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 
@@ -85,21 +86,21 @@ export const AboutDescription = () => {
           </TextListItem>
           <TextListItem component="dt">Homepage</TextListItem>
           <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href="https://cryostat.io">
+            <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>
               cryostat.io
             </Text>
           </TextListItem>
           <TextListItem component="dt">Bugs</TextListItem>
           <TextListItem component="dd">
             <Text>
-              <Text component={TextVariants.a} target="_blank" href="https://github.com/cryostatio/cryostat/issues">
+              <Text component={TextVariants.a} target="_blank" href={build.knownIssuesUrl}>
                 Known Issues
               </Text>
               &nbsp;|&nbsp;
               <Text
                 component={TextVariants.a}
                 target="_blank"
-                href={`https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+${cryostatVersion}`}
+                href={build.fileIssueUrl.replace('__REPLACE_VERSION__', cryostatVersion || 'unknown')}
               >
                 File a Report
               </Text>
@@ -107,17 +108,13 @@ export const AboutDescription = () => {
           </TextListItem>
           <TextListItem component="dt">Mailing List</TextListItem>
           <TextListItem component="dd">
-            <Text component={TextVariants.a} target="_blank" href="https://groups.google.com/g/cryostat-development">
-              Google Groups
+            <Text component={TextVariants.a} target="_blank" href={build.mailingListUrl}>
+              {build.mailingListName}
             </Text>
           </TextListItem>
           <TextListItem component="dt">Open Source License</TextListItem>
           <TextListItem component="dd">
-            <Text
-              component={TextVariants.a}
-              target="_blank"
-              href="https://github.com/cryostatio/cryostat/blob/main/LICENSE"
-            >
+            <Text component={TextVariants.a} target="_blank" href={build.licenseUrl}>
               License
             </Text>
           </TextListItem>

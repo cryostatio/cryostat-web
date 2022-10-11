@@ -1,0 +1,9 @@
+{
+  "productName": "Cryostat",
+  "homePageUrl": "https://cryostat.io",
+  "knownIssuesUrl": "https://github.com/cryostatio/cryostat/issues",
+  "fileIssueUrl": "https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+__REPLACE_VERSION__",
+  "mailingListName": "Google Groups",
+  "mailingListUrl": "https://groups.google.com/g/cryostat-development",
+  "licenseUrl": "https://github.com/cryostatio/cryostat/blob/main/LICENSE"
+}

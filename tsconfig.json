@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.jsx",
-    "**/*.js"
+    "**/*.js",
+    "**/*.json"
   ],
   "exclude": ["node_modules"]
 }
