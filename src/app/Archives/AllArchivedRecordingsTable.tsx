@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import { ArchivedRecording, LOST_TARGET, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -68,8 +68,6 @@ import { LabelCell } from '../RecordingMetadata/LabelCell';
 
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-
-import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import {
@@ -85,7 +83,12 @@ import { RecordingActions } from '@app/Recordings/RecordingActions';
 import { ReportFrame } from '@app/Recordings/ReportFrame';
 import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
-import { emptyArchivedRecordingFilters, filterRecordings, RecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import {
+  emptyArchivedRecordingFilters,
+  filterRecordings,
+  RecordingFilters,
+  RecordingFiltersCategories,
+} from '@app/Recordings/RecordingFilters';
 
 export interface AllArchivedRecordingsTableProps {
   isUploadsTable: boolean;
@@ -97,20 +100,16 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
-  const [targetConnectURL, setTargetConnectURL] = React.useState('');
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const targetRecordingFilters = useSelector((state: RootState) => {
-    const filters = state.recordingFilters.list.filter(
-      (targetFilter: TargetRecordingFilters) => targetFilter.target === targetConnectURL
-    );
+    const filters = state.recordingFilters.list;
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
 
@@ -142,7 +141,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   const handleRecordings = React.useCallback(
     (recordings) => {
-      console.log(recordings)
+      console.log(recordings);
       setRecordings(recordings);
       setIsLoading(false);
     },
@@ -151,15 +150,12 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
-      addSubscription(
-        context.api.doGet<ArchivedRecording[]>(`recordings`)
-          .subscribe(handleRecordings)
-      );
+    addSubscription(context.api.doGet<ArchivedRecording[]>(`recordings`).subscribe(handleRecordings));
   }, [addSubscription, context.api, setIsLoading, handleRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
-    dispatch(deleteAllFiltersIntent(targetConnectURL, true));
-  }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
+    dispatch(deleteAllFiltersIntent(LOST_TARGET, true));
+  }, [dispatch, deleteAllFiltersIntent]);
 
   const updateFilters = React.useCallback(
     (target, { filterValue, filterKey, deleted = false, deleteOptions }) => {
@@ -176,29 +172,21 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]
   );
 
-  // React.useEffect(() => {
-  //   addSubscription(
-  //     combineLatest([
-  //       props.target,
-  //       merge(
-  //         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated),
-  //         context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved)
-  //       ),
-  //     ]).subscribe((parts) => {
-  //       const currentTarget = parts[0];
-  //       const event = parts[1];
-  //       if (currentTarget.connectUrl != event.message.target) {
-  //         return;
-  //       }
-  //       setRecordings((old) => old.concat(event.message.recording));
-  //     })
-  //   );
-  // }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  React.useEffect(() => {
+    refreshRecordingList();
+  }, []);
 
   React.useEffect(() => {
     addSubscription(
-        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
-      .subscribe((evt) => {
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe((evt) => {
+        setRecordings((old) => old.concat(evt.message.recording));
+      })
+    );
+  }, [addSubscription, context.notificationChannel, setRecordings]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((evt) => {
         setRecordings((old) => old.filter((r) => r.name !== evt.message.recording.name));
         setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(evt.message.recording.name)));
       })
@@ -207,8 +195,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   React.useEffect(() => {
     addSubscription(
-        context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
-        .subscribe((evt) => {
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe((evt) => {
         setRecordings((old) =>
           old.map((o) =>
             o.name == evt.message.recordingName ? { ...o, metadata: { labels: evt.message.metadata.labels } } : o
@@ -246,13 +233,12 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
-        filteredRecordings.forEach((r: ArchivedRecording) => {
-          if (checkedIndices.includes(hashCode(r.name))) {
-            context.reports.delete(r);
-            tasks.push(context.api.deleteAllArchivedRecording(r.name).pipe(first()));
-          }
-        }
-    );
+    filteredRecordings.forEach((r: ArchivedRecording) => {
+      if (checkedIndices.includes(hashCode(r.name))) {
+        context.reports.delete(r);
+        tasks.push(context.api.deleteAllArchivedRecording(r.name).pipe(first()));
+      }
+    });
     addSubscription(forkJoin(tasks).subscribe());
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
@@ -315,7 +301,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
           </Td>
           <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[2]}>
             <LabelCell
-              target={targetConnectURL}
+              target={LOST_TARGET}
               clickableOptions={{
                 updateFilters: updateFilters,
                 labelFilters: props.labelFilters,
@@ -326,11 +312,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
           <Td key={`archived-table-row-${props.index}_4`} dataLabel={tableColumns[1]}>
             {formatBytes(props.recording.size)}
           </Td>
-          <RecordingActions
-            recording={props.recording}
-            index={props.index}
-            uploadFn={() => of(true)}
-          />
+          <RecordingActions recording={props.recording} index={props.index} uploadFn={() => of(true)} />
         </Tr>
       );
     }, [
@@ -348,7 +330,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
       parsedLabels,
       context.api,
       context.api.uploadArchivedRecordingToGrafana,
-      targetConnectURL,
     ]);
 
     const childRow = React.useMemo(() => {
@@ -374,7 +355,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const RecordingsToolbar = React.useMemo(
     () => (
       <ArchivedRecordingsToolbar
-        target={targetConnectURL}
+        target={LOST_TARGET}
         checkedIndices={checkedIndices}
         targetRecordingFilters={targetRecordingFilters}
         recordings={recordings}
@@ -386,7 +367,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
       />
     ),
     [
-      targetConnectURL,
       checkedIndices,
       targetRecordingFilters,
       recordings,
@@ -395,7 +375,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
       handleClearFilters,
       handleEditLabels,
       handleDeleteRecordings,
-      setShowUploadModal,
       props.isUploadsTable,
     ]
   );
@@ -407,7 +386,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
         recording={r}
         labelFilters={targetRecordingFilters.Label}
         index={hashCode(r.name)}
-        sourceTarget={UPLOADS_SUBDIRECTORY}
+        sourceTarget={LOST_TARGET}
       />
     ));
   }, [filteredRecordings, expandedRows, checkedIndices]);

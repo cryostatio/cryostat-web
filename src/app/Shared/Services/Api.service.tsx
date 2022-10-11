@@ -367,13 +367,9 @@ export class ApiService {
   }
 
   deleteAllArchivedRecording(recordingName: string): Observable<boolean> {
-    return this.sendRequest(
-      'v1',
-      `recordings/${encodeURIComponent(recordingName)}`,
-      {
-        method: 'DELETE',
-      }
-    ).pipe(
+    return this.sendRequest('v1', `recordings/${encodeURIComponent(recordingName)}`, {
+      method: 'DELETE',
+    }).pipe(
       map((resp) => resp.ok),
       first()
     );
@@ -896,3 +892,5 @@ export interface MatchedCredential {
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
 export const UPLOADS_SUBDIRECTORY: string = 'uploads';
+// The placeholder targetId for recordings that were unable to be transferred to a resolvable target
+export const LOST_TARGET: string = 'lost';
