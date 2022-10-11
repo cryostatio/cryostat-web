@@ -366,6 +366,19 @@ export class ApiService {
     );
   }
 
+  deleteAllArchivedRecording(recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+      'v1',
+      `recordings/${encodeURIComponent(recordingName)}`,
+      {
+        method: 'DELETE',
+      }
+    ).pipe(
+      map((resp) => resp.ok),
+      first()
+    );
+  }
+
   uploadActiveRecordingToGrafana(recordingName: string): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
