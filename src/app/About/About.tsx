@@ -37,6 +37,7 @@
  */
 
 import React from 'react';
+import build from '@app/build.json';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
@@ -47,7 +48,7 @@ export const About = () => {
     <BreadcrumbPage pageTitle="About">
       <Card>
         <CardHeader>
-          <Brand alt="Cryostat" src={cryostatLogoHorizontal} className="cryostat-logo" />
+          <Brand alt={build.productName} src={cryostatLogoHorizontal} className="cryostat-logo" />
         </CardHeader>
         <CardBody>
           <AboutDescription />
