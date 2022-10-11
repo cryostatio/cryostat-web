@@ -70,20 +70,28 @@ export const AboutDescription = () => {
     return result.groups?.describe || 'main';
   }, [cryostatVersion, notificationsContext]);
 
+  const versionComponent = React.useMemo(() => {
+    if (build.commitHashUrl) {
+      return (
+        <Text
+          component={TextVariants.a}
+          target="_blank"
+          href={build.commitHashUrl.replace('__REPLACE_HASH__', cryostatCommitHash || '')}
+        >
+          {cryostatVersion}
+        </Text>
+      );
+    } else {
+      return <Text component={TextVariants.p}>{cryostatVersion}</Text>;
+    }
+  }, [build.commitHashUrl, cryostatCommitHash]);
+
   return (
     <>
       <TextContent>
         <TextList component="dl">
           <TextListItem component="dt">Version</TextListItem>
-          <TextListItem component="dd">
-            <Text
-              component={TextVariants.a}
-              target="_blank"
-              href={`https://github.com/cryostatio/cryostat/commits/${cryostatCommitHash}`}
-            >
-              {cryostatVersion}
-            </Text>
-          </TextListItem>
+          <TextListItem component="dd">{versionComponent}</TextListItem>
           <TextListItem component="dt">Homepage</TextListItem>
           <TextListItem component="dd">
             <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>
