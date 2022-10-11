@@ -500,9 +500,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       props.recording.maxAge,
       props.recording.maxSize,
     ]);
-
     return (
-      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
+      <Tbody key={props.index} isExpanded={isExpanded}>
         {parentRow}
         {childRow}
       </Tbody>

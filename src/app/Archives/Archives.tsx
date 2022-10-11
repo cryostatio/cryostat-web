@@ -45,6 +45,7 @@ import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable
 import { Target } from '@app/Shared/Services/Target.service';
 import { of } from 'rxjs';
 import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 /*
   This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
@@ -58,14 +59,16 @@ export const uploadAsTarget: Target = {
   alias: '',
 };
 
-export const Archives = () => {
+export interface ArchivesProps {}
+
+export const Archives: React.FunctionComponent<ArchivesProps> = () => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.api.isArchiveEnabled().subscribe(setArchiveEnabled);
-    return () => sub.unsubscribe();
+    addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
   }, [context.api]);
 
   const cardBody = React.useMemo(() => {

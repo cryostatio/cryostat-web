@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
+import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -56,10 +56,9 @@ import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from 
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import _ from 'lodash';
 
 export interface AllTargetsArchivedRecordingsTableProps {}
 
@@ -68,45 +67,39 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     const context = React.useContext(ServiceContext);
 
     const [targets, setTargets] = React.useState([] as Target[]);
-    const [counts, setCounts] = React.useState([] as number[]);
-    const [search, setSearch] = React.useState('');
+    const [counts, setCounts] = React.useState(new Map<string, number>());
+    const [searchText, setSearchText] = React.useState('');
     const [searchedTargets, setSearchedTargets] = React.useState([] as Target[]);
     const [expandedTargets, setExpandedTargets] = React.useState([] as Target[]);
     const [hideEmptyTargets, setHideEmptyTargets] = React.useState(true);
     const [isLoading, setIsLoading] = React.useState(false);
     const addSubscription = useSubscriptions();
 
-    const searchedTargetsRef = React.useRef(searchedTargets);
-
-    const tableColumns: string[] = ['Target', 'Count'];
+    const tableColumns: string[] = React.useMemo(() => ['Target', 'Count'], []);
 
     const updateCount = React.useCallback(
       (connectUrl: string, delta: number) => {
-        for (let i = 0; i < targets.length; i++) {
-          if (targets[i].connectUrl === connectUrl) {
-            setCounts((old) => {
-              let updated = [...old];
-              updated[i] += delta;
-              return updated;
-            });
-            break;
-          }
-        }
+        setCounts((old) => {
+          const newMap = new Map<string, number>(old);
+          const curr = newMap.get(connectUrl) || 0;
+          newMap.set(connectUrl, curr + delta);
+          return newMap;
+        });
       },
-      [targets, setCounts]
+      [setCounts]
     );
 
     const handleTargetsAndCounts = React.useCallback(
-      (targetNodes) => {
-        let updatedTargets: Target[] = [];
-        let updatedCounts: number[] = [];
+      (targetNodes: any) => {
+        const updatedTargets: Target[] = [];
+        const updatedCounts = new Map<string, number>();
         for (const node of targetNodes) {
           const target: Target = {
             connectUrl: node.target.serviceUri,
             alias: node.target.alias,
           };
           updatedTargets.push(target);
-          updatedCounts.push(node.recordings.archived.aggregate.count as number);
+          updatedCounts.set(target.connectUrl, node.recordings.archived.aggregate.count as number);
         }
         setTargets(updatedTargets);
         setCounts(updatedCounts);
@@ -161,7 +154,11 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
         }`
             )
             .subscribe((v) =>
-              setCounts((old) => old.concat(v.data.targetNodes[0].recordings.archived.aggregate.count as number))
+              setCounts((old) => {
+                const newMap = new Map<string, number>(old);
+                newMap.set(target.connectUrl, v.data.targetNodes[0].recordings.archived.aggregate.count as number);
+                return newMap;
+              })
             )
         );
       },
@@ -170,18 +167,14 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
     const handleLostTarget = React.useCallback(
       (target: Target) => {
-        let idx;
         setTargets((old) => {
-          for (idx = 0; idx < old.length; idx++) {
-            if (_.isEqual(target, old[idx])) break;
-          }
-          return old.filter((o) => !_.isEqual(o, target));
+          return old.filter((t) => !isEqualTarget(t, target));
         });
-        setExpandedTargets((old) => old.filter((o) => !_.isEqual(o, target)));
+        setExpandedTargets((old) => old.filter((t) => !isEqualTarget(t, target)));
         setCounts((old) => {
-          let updated = [...old];
-          updated.splice(idx, 1);
-          return updated;
+          const newMap = new Map<string, number>(old);
+          newMap.delete(target.connectUrl);
+          return newMap;
         });
       },
       [setTargets, setExpandedTargets, setCounts]
@@ -203,13 +196,35 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       [setTargets, getCountForNewTarget, handleLostTarget]
     );
 
-    React.useEffect(() => {
-      refreshTargetsAndCounts();
-    }, []);
+    const handleSearchInput = React.useCallback(
+      (searchInput) => {
+        setSearchText(searchInput);
+      },
+      [setSearchText]
+    );
+
+    const handleSearchInputClear = React.useCallback(() => {
+      handleSearchInput('');
+    }, [handleSearchInput]);
 
     React.useEffect(() => {
-      searchedTargetsRef.current = searchedTargets;
-    });
+      refreshTargetsAndCounts();
+    }, [refreshTargetsAndCounts]);
+
+    React.useEffect(() => {
+      let updatedSearchedTargets: Target[];
+      if (!searchText) {
+        updatedSearchedTargets = targets;
+      } else {
+        const formattedSearchText = searchText.trim().toLowerCase();
+        updatedSearchedTargets = targets.filter(
+          (t: Target) =>
+            t.alias.toLowerCase().includes(formattedSearchText) ||
+            t.connectUrl.toLowerCase().includes(formattedSearchText)
+        );
+      }
+      setSearchedTargets(updatedSearchedTargets);
+    }, [searchText, targets, setSearchedTargets]);
 
     React.useEffect(() => {
       if (!context.settings.autoRefreshEnabled()) {
@@ -223,27 +238,10 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     }, [context.target, context.settings, refreshTargetsAndCounts]);
 
     React.useEffect(() => {
-      let updatedSearchedTargets;
-      if (!search) {
-        updatedSearchedTargets = targets;
-      } else {
-        const searchText = search.trim().toLowerCase();
-        updatedSearchedTargets = targets.filter(
-          (t: Target) => t.alias.toLowerCase().includes(searchText) || t.connectUrl.toLowerCase().includes(searchText)
-        );
-      }
-
-      if (!_.isEqual(searchedTargetsRef.current, updatedSearchedTargets)) {
-        setSearchedTargets(updatedSearchedTargets);
-      }
-    }, [search, targets]);
-
-    React.useEffect(() => {
       addSubscription(
         context.notificationChannel
           .messages(NotificationCategory.TargetJvmDiscovery)
-          .pipe(concatMap((v) => of(handleTargetNotification(v.message.event))))
-          .subscribe(() => {} /* do nothing - callback will have already handled updating state */)
+          .subscribe((v) => handleTargetNotification(v.message.event))
       );
     }, [addSubscription, context, context.notificationChannel, handleTargetNotification]);
 
@@ -265,30 +263,30 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
     const toggleExpanded = React.useCallback(
       (target) => {
-        const idx = expandedTargets.indexOf(target);
+        const idx = indexOfTarget(expandedTargets, target);
         setExpandedTargets((expandedTargets) =>
           idx >= 0
             ? [...expandedTargets.slice(0, idx), ...expandedTargets.slice(idx + 1, expandedTargets.length)]
             : [...expandedTargets, target]
         );
       },
-      [expandedTargets]
+      [expandedTargets, setExpandedTargets]
     );
 
     const isHidden = React.useMemo(() => {
-      let isHidden: boolean[] = [];
-      targets.map((target, idx) => {
-        isHidden.push(!searchedTargets.includes(target) || (hideEmptyTargets && counts[idx] === 0));
+      return targets.map((target) => {
+        return (
+          !includesTarget(searchedTargets, target) || (hideEmptyTargets && (counts.get(target.connectUrl) || 0) === 0)
+        );
       });
-      return isHidden;
     }, [targets, searchedTargets, hideEmptyTargets, counts]);
 
     const targetRows = React.useMemo(() => {
       return targets.map((target, idx) => {
-        let isExpanded: boolean = expandedTargets.includes(target);
+        let isExpanded: boolean = includesTarget(expandedTargets, target);
 
         const handleToggle = () => {
-          if (counts[idx] !== 0 || isExpanded) {
+          if ((counts.get(target.connectUrl) || 0) !== 0 || isExpanded) {
             toggleExpanded(target);
           }
         };
@@ -311,7 +309,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
                 : `${target.alias} (${target.connectUrl})`}
             </Td>
             <Td key={`target-table-row-${idx}_3`}>
-              <Badge key={`${idx}_count`}>{counts[idx]}</Badge>
+              <Badge key={`${idx}_count`}>{counts.get(target.connectUrl) || 0}</Badge>
             </Td>
           </Tr>
         );
@@ -320,7 +318,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
     const recordingRows = React.useMemo(() => {
       return targets.map((target, idx) => {
-        let isExpanded: boolean = expandedTargets.includes(target);
+        let isExpanded: boolean = includesTarget(expandedTargets, target);
 
         return (
           <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
@@ -391,9 +389,9 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
               <ToolbarItem>
                 <SearchInput
                   placeholder="Search"
-                  value={search}
-                  onChange={setSearch}
-                  onClear={(evt) => setSearch('')}
+                  value={searchText}
+                  onChange={handleSearchInput}
+                  onClear={handleSearchInputClear}
                 />
               </ToolbarItem>
             </ToolbarGroup>
@@ -402,7 +400,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
                 <Checkbox
                   name={`all-archives-hide-check`}
                   label="Hide targets with zero recordings"
-                  onChange={(v) => setHideEmptyTargets((old) => !old)}
+                  onChange={setHideEmptyTargets}
                   isChecked={hideEmptyTargets}
                   id={`all-archives-hide-check`}
                   aria-label={`all-archives-hide-check`}
