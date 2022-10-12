@@ -76,7 +76,6 @@ export const AgentLiveProbes = () => {
     if (!filterText) {
       filtered = templates;
     } else {
-      console.log("did we get here?");
       const ft = filterText.trim().toLowerCase();
       filtered = templates.filter((t: EventProbe) => t.label.toLowerCase().includes(ft) || t.description.toLowerCase().includes(ft)
         || t.class.toLowerCase().includes(ft) || t.stacktrace.toLowerCase().includes(ft) ||
@@ -93,25 +92,25 @@ export const AgentLiveProbes = () => {
   }, [filterText, templates, sortBy]);
 
   const handleTemplates = React.useCallback((templates) => {
-    console.log(templates);
     templates = JSON.parse(templates);
     setTemplates(templates);
-    setIsLoading(false);
     setErrorMessage('');
+    setIsLoading(false);
   }, [setTemplates, setIsLoading, setErrorMessage]);
 
   const handleError = React.useCallback((error) => {
-    setIsLoading(false);
     setErrorMessage(error.message);
+    setIsLoading(false);
   }, [setIsLoading, setErrorMessage]);
 
   const refreshTemplates = React.useCallback(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     addSubscription(
       context.target.target()
       .pipe(
+        filter(target => target !== NO_TARGET),
+        first(),
         concatMap(target => context.api.getActiveProbes()),
-        first()
       ).subscribe(value => handleTemplates(value), err => handleError(err))
     );
   }, [addSubscription, context, context.target, context.api, setIsLoading, handleTemplates, handleError]);
@@ -148,9 +147,16 @@ export const AgentLiveProbes = () => {
     addSubscription(
       context.api.removeProbes()
       .pipe(first())
-      .subscribe(() => {})
+      .subscribe(() => {refreshTemplates();})
       );
   };
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TargetProbesGet)
+        .subscribe(v => setTemplates(old => old.concat(v.message.probes)))
+    );
+  }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
   if (errorMessage != '') {
     return (<ErrorView message={errorMessage}/>)
@@ -160,6 +166,11 @@ export const AgentLiveProbes = () => {
     return (<>
       <Toolbar id="event-templates-toolbar">
         <ToolbarContent>
+        <ToolbarGroup variant="filter-group">
+            <ToolbarItem>
+              <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Probe template filter" onChange={setFilterText}/>
+            </ToolbarItem>
+          </ToolbarGroup>
           <ToolbarGroup variant="icon-button-group">
             <ToolbarItem>
               <Button key="create" variant="primary" onClick={handleModalToggle}>Remove Probes</Button>

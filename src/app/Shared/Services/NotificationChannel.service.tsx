@@ -59,6 +59,9 @@ export enum NotificationCategory {
   ArchivedRecordingDeleted = 'ArchivedRecordingDeleted',
   TemplateUploaded = 'TemplateUploaded',
   TemplateDeleted = 'TemplateDeleted',
+  ProbeTemplateUploaded = 'ProbeTemplateUploaded',
+  ProbeTemplateDeleted = 'ProbeTemplateDeleted',
+  TargetProbesGet = 'TargetProbesGet',
   RuleCreated = 'RuleCreated',
   RuleDeleted = 'RuleDeleted',
   RecordingMetadataUpdated  = 'RecordingMetadataUpdated',
@@ -183,9 +186,23 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper
   ],
   [
+    NotificationCategory.ProbeTemplateUploaded, {
+      variant: AlertVariant.success,
+      title: 'Probe Template Created',
+      body: evt => `${evt.message.template.name} was created`
+    } as NotificationMessageMapper
+  ],
+  [
     NotificationCategory.TemplateDeleted, {
       variant: AlertVariant.success,
       title: 'Template Deleted',
+      body: evt => `${evt.message.template.name} was deleted`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.ProbeTemplateDeleted, {
+      variant: AlertVariant.success,
+      title: 'Probe Template Deleted',
       body: evt => `${evt.message.template.name} was deleted`
     } as NotificationMessageMapper
   ],
@@ -222,6 +239,13 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Target Credentials Deleted',
       body: evt => `Credentials deleted for target: ${evt.message.target}`
+    } as NotificationMessageMapper
+  ],
+  [
+    NotificationCategory.TargetProbesGet, {
+      variant: AlertVariant.success,
+      title: 'Target Probes Fetched',
+      body: evt => `Probes Fetched: ${evt.message.probes}`
     } as NotificationMessageMapper
   ],
   [

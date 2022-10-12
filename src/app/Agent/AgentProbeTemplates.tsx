@@ -77,7 +77,6 @@ export const AgentProbeTemplates = () => {
     if (!filterText) {
       filtered = templates;
     } else {
-      console.log("did we get here?");
       const ft = filterText.trim().toLowerCase();
       filtered = templates.filter((t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft));
     }
@@ -92,7 +91,6 @@ export const AgentProbeTemplates = () => {
   }, [filterText, templates, sortBy]);
 
   const handleTemplates = React.useCallback((templates) => {
-    console.log(templates);
     templates = JSON.parse(templates);
     setTemplates(templates);
     setIsLoading(false);
@@ -110,7 +108,7 @@ export const AgentProbeTemplates = () => {
       context.target.target()
       .pipe(
         concatMap(target => context.api.getProbeTemplates()),
-        first()
+        first(),
       ).subscribe(value => handleTemplates(value), err => handleError(err))
     );
   }, [addSubscription, context, context.target, context.api, setIsLoading, handleTemplates, handleError]);
@@ -147,7 +145,7 @@ export const AgentProbeTemplates = () => {
     addSubscription(
       context.api.deleteCustomProbeTemplate(rowData[0])
       .pipe(first())
-      .subscribe(() => {} /* do nothing - notification will handle updating state */)
+      .subscribe(() => {})
     );
   };
 
@@ -217,6 +215,20 @@ export const AgentProbeTemplates = () => {
       })
     );
   };
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ProbeTemplateUploaded)
+        .subscribe(v => refreshTemplates())
+    );
+  }, [addSubscription, context, context.notificationChannel, setTemplates]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.TemplateDeleted)
+        .subscribe(v => refreshTemplates())
+    )
+  }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
   const handleUploadCancel = () => {
     setUploadFile(undefined);
