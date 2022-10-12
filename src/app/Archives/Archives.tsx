@@ -69,7 +69,7 @@ export const Archives: React.FunctionComponent<ArchivesProps> = () => {
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
-  }, [context.api]);
+  }, [context.api, addSubscription, setArchiveEnabled]);
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
