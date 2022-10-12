@@ -441,7 +441,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     }, [props.recording, props.recording.name, props.index, isExpanded, tableColumns]);
 
     return (
-      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
+      <Tbody key={props.index} isExpanded={isExpanded}>
         {parentRow}
         {childRow}
       </Tbody>
