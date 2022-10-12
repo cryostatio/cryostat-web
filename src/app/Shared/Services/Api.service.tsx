@@ -793,6 +793,10 @@ export class ApiService {
   }
 }
 
+export interface AllArchivesResponse {
+  
+}
+
 export interface ApiV2Response {
   meta: {
     status: string;
@@ -819,6 +823,10 @@ interface CredentialsResponse extends ApiV2Response {
   data: {
     result: StoredCredential[];
   };
+}
+
+export interface RecordingDirectory {
+  targetId: string;
 }
 
 export interface ArchivedRecording {
@@ -876,6 +884,7 @@ export interface RecordingAttributes {
 
 export interface Metadata {
   labels: Object;
+  targetId?: string;
 }
 
 export interface StoredCredential {

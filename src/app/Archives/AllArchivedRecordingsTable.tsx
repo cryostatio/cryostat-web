@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ArchivedRecording, LOST_TARGET, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import { AllArchivesResponse, ArchivedRecording, LOST_TARGET, RecordingDirectory, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -83,12 +83,8 @@ import { RecordingActions } from '@app/Recordings/RecordingActions';
 import { ReportFrame } from '@app/Recordings/ReportFrame';
 import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
-import {
-  emptyArchivedRecordingFilters,
-  filterRecordings,
-  RecordingFilters,
-  RecordingFiltersCategories,
-} from '@app/Recordings/RecordingFilters';
+import { emptyArchivedRecordingFilters, filterRecordings, RecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 
 export interface AllArchivedRecordingsTableProps {
   isUploadsTable: boolean;
@@ -101,12 +97,14 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const dispatch = useDispatch<StateDispatch>();
 
   const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
+  const [directories, setDirectories] = React.useState([] as RecordingDirectory[]);
   const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
   const [headerChecked, setHeaderChecked] = React.useState(false);
   const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
   const [expandedRows, setExpandedRows] = React.useState([] as string[]);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [expandedDirectories, setExpandedDirectories] = React.useState([] as RecordingDirectory[]);
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list;
@@ -139,19 +137,23 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     setShowDetailsPanel(true);
   }, [setShowDetailsPanel]);
 
-  const handleRecordings = React.useCallback(
-    (recordings) => {
-      console.log(recordings);
-      setRecordings(recordings);
-      setIsLoading(false);
-    },
-    [setRecordings, setIsLoading]
-  );
+  const setDirectoriesAndRecordings = React.useCallback((response: AllArchivesResponse) => {
+    for (const [directory, recordings] of Object.entries(response)) {
+      console.log(recordings)
+      console.log(directory);
+        setDirectories((dirs) => dirs.concat({targetId: directory}));
+        setRecordings((old) => old.concat(recordings));
+    }
+  }, []);
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
-    addSubscription(context.api.doGet<ArchivedRecording[]>(`recordings`).subscribe(handleRecordings));
-  }, [addSubscription, context.api, setIsLoading, handleRecordings]);
+      addSubscription(
+            context.api.doGet<AllArchivesResponse>('recordings', 'beta').subscribe((resp) => {
+          setDirectoriesAndRecordings(resp);
+        })
+      );
+  }, [addSubscription, context.api, setIsLoading, setDirectoriesAndRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(LOST_TARGET, true));
@@ -176,38 +178,49 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     refreshRecordingList();
   }, []);
 
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe((evt) => {
-        setRecordings((old) => old.concat(evt.message.recording));
-      })
-    );
-  }, [addSubscription, context.notificationChannel, setRecordings]);
+  // React.useEffect(() => {
+  //   addSubscription(
+  //         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated
+  //     ).subscribe((evt) => {
+  //       setRecordings((old) => old.concat(evt.message.recording));
+  //     })
+  //   );
+  // }, [addSubscription, context.notificationChannel, setRecordings]);
 
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((evt) => {
-        setRecordings((old) => old.filter((r) => r.name !== evt.message.recording.name));
-        setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(evt.message.recording.name)));
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
+  // React.useEffect(() => {
+  //   addSubscription(
+  //       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
+  //     .subscribe((evt) => {
+  //       setRecordings((old) => old.filter((r) => r.name !== evt.message.recording.name));
+  //       setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(evt.message.recording.name)));
+  //     })
+  //   );
+  // }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
 
-  React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe((evt) => {
-        setRecordings((old) =>
-          old.map((o) =>
-            o.name == evt.message.recordingName ? { ...o, metadata: { labels: evt.message.metadata.labels } } : o
-          )
-        );
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  // React.useEffect(() => {
+  //   addSubscription(
+  //       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
+  //       .subscribe((evt) => {
+  //       setRecordings((old) =>
+  //         old.map((o) =>
+  //           o.name == evt.message.recordingName ? { ...o, metadata: { labels: evt.message.metadata.labels } } : o
+  //         )
+  //       );
+  //     })
+  //   );
+  // }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
   }, [recordings, targetRecordingFilters, setFilteredRecordings, filterRecordings]);
+
+  React.useEffect(() => {
+    addSubscription(
+          context.api.doGet<AllArchivesResponse>('recordings', 'beta').subscribe((resp) => {
+        setDirectoriesAndRecordings(resp);
+      })
+    );
+  }, [addSubscription, context.api, setDirectoriesAndRecordings]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -233,12 +246,13 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
-    filteredRecordings.forEach((r: ArchivedRecording) => {
-      if (checkedIndices.includes(hashCode(r.name))) {
-        context.reports.delete(r);
-        tasks.push(context.api.deleteAllArchivedRecording(r.name).pipe(first()));
-      }
-    });
+        filteredRecordings.forEach((r: ArchivedRecording) => {
+          if (checkedIndices.includes(hashCode(r.name))) {
+            context.reports.delete(r);
+            tasks.push(context.api.deleteAllArchivedRecording(r.name).pipe(first()));
+          }
+        }
+    );
     addSubscription(forkJoin(tasks).subscribe());
   }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
@@ -312,7 +326,11 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
           <Td key={`archived-table-row-${props.index}_4`} dataLabel={tableColumns[1]}>
             {formatBytes(props.recording.size)}
           </Td>
-          <RecordingActions recording={props.recording} index={props.index} uploadFn={() => of(true)} />
+          <RecordingActions
+            recording={props.recording}
+            index={props.index}
+            uploadFn={() => of(true)}
+          />
         </Tr>
       );
     }, [
@@ -379,17 +397,36 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
     ]
   );
 
-  const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => (
+
+  const recordingRows = React.useCallback((sourceTarget: string) => {
+    return filteredRecordings.filter((r) => r.metadata.targetId === sourceTarget).map((r) => (
       <RecordingRow
         key={r.name}
         recording={r}
         labelFilters={targetRecordingFilters.Label}
         index={hashCode(r.name)}
-        sourceTarget={LOST_TARGET}
+        sourceTarget={r.metadata.targetId}
       />
     ));
   }, [filteredRecordings, expandedRows, checkedIndices]);
+
+  const directoryRows = React.useMemo(() => {
+    return directories.map((r, idx) => {
+      let isExpanded: boolean = expandedDirectories.includes(r);
+      return (
+        <Tr key={`${idx}_child`} isExpanded={isExpanded} >
+          <Td key={`target-ex-expand-${idx}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
+            {isExpanded ? (
+              <ExpandableRowContent>
+                <ArchivedRecordingsTable target={of(NO_TARGET)} isUploadsTable={false} isNestedTable={true} />
+              </ExpandableRowContent>
+            ) : null}
+          </Td>
+        </Tr>
+      );
+    });
+  }, [directories, recordingRows]);
+
 
   const LabelsPanel = React.useMemo(
     () => (
@@ -440,7 +477,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
             isNestedTable={false}
             errorMessage={''}
           >
-            {recordingRows}
+            {directoryRows}
           </RecordingsTable>
         </DrawerContentBody>
       </DrawerContent>
