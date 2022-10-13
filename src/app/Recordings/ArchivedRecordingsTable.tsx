@@ -50,12 +50,6 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Text,
-  TextVariants,
-  FlexItem,
-  Flex,
-  Chip,
-  Badge,
 } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
 import { PlusIcon } from '@patternfly/react-icons';
@@ -143,7 +137,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleRecordings = React.useCallback(
     (recordings) => {
-      console.log(recordings)
       setRecordings(recordings);
       setIsLoading(false);
     },
@@ -210,7 +203,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           .subscribe(handleRecordings)
       );
     }
-  }, [addSubscription, context.api, setIsLoading, handleRecordings, queryTargetRecordings, queryUploadedRecordings]);
+  }, [addSubscription, context.api, setIsLoading, handleRecordings, queryTargetRecordings, queryUploadedRecordings, props.directoryRecordings]);
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(targetConnectURL, true));
@@ -232,7 +225,6 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   );
 
   React.useEffect(() => {
-    console.log("EFFECT")
     addSubscription(
       props.target.subscribe((target) => {
         setTargetConnectURL(target.connectUrl);
@@ -259,7 +251,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         setRecordings((old) => old.concat(event.message.recording));
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  }, [addSubscription, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
@@ -267,14 +259,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         props.target,
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted),
       ]).subscribe((parts) => {
-        console.log("HERE")
         const currentTarget = parts[0];
         const event = parts[1];
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        console.log("HERE2")
-
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
         setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(event.message.recording.name)));
       })
@@ -527,9 +516,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         isTargetRecording={false}
         isUploadsTable={props.isUploadsTable}
         checkedIndices={checkedIndices}
+        directory={props.directory}
+        directoryRecordings={props.directoryRecordings}
       />
     ),
-    [checkedIndices, setShowDetailsPanel, props.isUploadsTable]
+    [checkedIndices, setShowDetailsPanel, props.isUploadsTable, props.directoryRecordings]
   );
 
   const totalArchiveSize = React.useMemo(() => {

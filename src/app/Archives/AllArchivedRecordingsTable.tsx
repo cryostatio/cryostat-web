@@ -77,18 +77,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
     const tableColumns: string[] = React.useMemo(() => ['Directories', 'Count'], []);
 
-    const updateCount = React.useCallback(
-      (connectUrl: string, delta: number) => {
-        setCounts((old) => {
-          const newMap = new Map<string, number>(old);
-          const curr = newMap.get(connectUrl) || 0;
-          newMap.set(connectUrl, curr + delta);
-          return newMap;
-        });
-      },
-      [setCounts]
-    );
-
     const handleDirectoriesAndCounts = React.useCallback(
       (directories: RecordingDirectory []) => {
         const updatedDirectories: RecordingDirectory[] = [];
@@ -153,21 +141,31 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
       return () => window.clearInterval(id);
     }, [context.settings, refreshDirectoriesAndCounts]);
 
+    
+
+    React.useEffect(() => {
+      addSubscription(
+        context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe((v) => {
+          refreshDirectoriesAndCounts();
+        })
+      );
+    }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
+
     React.useEffect(() => {
       addSubscription(
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe((v) => {
-          updateCount(v.message.target, 1);
+          refreshDirectoriesAndCounts();
         })
       );
-    }, [addSubscription, context.notificationChannel, updateCount]);
+    }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
 
     React.useEffect(() => {
       addSubscription(
         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
-          updateCount(v.message.target, -1);
+          refreshDirectoriesAndCounts();
         })
       );
-    }, [addSubscription, context, context.notificationChannel, updateCount]);
+    }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
 
     const toggleExpanded = React.useCallback(
       (dir) => {

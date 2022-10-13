@@ -422,6 +422,25 @@ export class ApiService {
     );
   }
 
+  transformAndStringifyToRawLabels(labels: RecordingLabel[]) {
+    const rawLabels = {};
+    for (const label of labels) {
+      rawLabels[label.key] = label.value;
+    }
+    return JSON.stringify(rawLabels);
+  }
+
+
+  postRecordingMetadataFromPath(subdirectoryName: string, recordingName: string, labels: RecordingLabel[]): Observable<boolean> {
+    return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/metadata/labels`, {
+      method: 'POST',
+      body: this.transformAndStringifyToRawLabels(labels),
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
+    );
+  }
+
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
     return this.sendRequest('v1', `templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
