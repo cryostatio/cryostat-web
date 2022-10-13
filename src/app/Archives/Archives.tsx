@@ -79,7 +79,7 @@ export const Archives: React.FunctionComponent<ArchivesProps> = () => {
           <AllTargetsArchivedRecordingsTable />
         </Tab>
         <Tab id="all-archives" eventKey={1} title="All Archives">
-            <AllArchivedRecordingsTable />
+          <AllArchivedRecordingsTable />
         </Tab>
         <Tab id="uploads" eventKey={2} title="Uploads">
           <ArchivedRecordingsTable target={of(uploadAsTarget)} isUploadsTable={true} isNestedTable={false} />

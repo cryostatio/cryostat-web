@@ -184,13 +184,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     setIsLoading(true);
     if (props.directory) {
       handleRecordings(props.directoryRecordings);
-    }
-    else if (props.isUploadsTable) {
-        addSubscription(
-          queryUploadedRecordings()
-            .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]))
-            .subscribe(handleRecordings)
-        );
+    } else if (props.isUploadsTable) {
+      addSubscription(
+        queryUploadedRecordings()
+          .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]))
+          .subscribe(handleRecordings)
+      );
     } else {
       addSubscription(
         props.target
@@ -203,7 +202,15 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           .subscribe(handleRecordings)
       );
     }
-  }, [addSubscription, context.api, setIsLoading, handleRecordings, queryTargetRecordings, queryUploadedRecordings, props.directoryRecordings]);
+  }, [
+    addSubscription,
+    context.api,
+    setIsLoading,
+    handleRecordings,
+    queryTargetRecordings,
+    queryUploadedRecordings,
+    props.directoryRecordings,
+  ]);
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(targetConnectURL, true));
@@ -414,9 +421,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <RecordingActions
             recording={props.recording}
             index={props.index}
-            uploadFn={props.directory ? 
-              () => context.api.uploadArchivedRecordingToGrafanaFromPath(props.directory!!.jvmId, props.recording.name) :
-              () => context.api.uploadArchivedRecordingToGrafana(props.sourceTarget, props.recording.name) }
+            uploadFn={
+              props.directory
+                ? () =>
+                    context.api.uploadArchivedRecordingToGrafanaFromPath(props.directory!!.jvmId, props.recording.name)
+                : () => context.api.uploadArchivedRecordingToGrafana(props.sourceTarget, props.recording.name)
+            }
           />
         </Tr>
       );

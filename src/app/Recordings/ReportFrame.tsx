@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Recording, isHttpError, RecordingDirectory } from '@app/Shared/Services/Api.service';
+import { Recording, isHttpError } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Spinner } from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
@@ -59,22 +59,24 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
     if (!props.isExpanded) {
       return;
     }
-    addSubscription(context.reports
-      .report(recording)
-      .pipe(first())
-      .subscribe(
-        (report) => setReport(report),
-        (err) => {
-          if (isGenerationError(err)) {
-            err.messageDetail.pipe(first()).subscribe((detail) => setReport(detail));
-          } else if (isHttpError(err)) {
-            setReport(err.message);
-          } else {
-            setReport(JSON.stringify(err));
+    addSubscription(
+      context.reports
+        .report(recording)
+        .pipe(first())
+        .subscribe(
+          (report) => setReport(report),
+          (err) => {
+            if (isGenerationError(err)) {
+              err.messageDetail.pipe(first()).subscribe((detail) => setReport(detail));
+            } else if (isHttpError(err)) {
+              setReport(err.message);
+            } else {
+              setReport(JSON.stringify(err));
+            }
           }
-        }
-      ));
-  }, [context, context.reports, recording, isExpanded, setReport, props, props.isExpanded, props.recording]);
+        )
+    );
+  }, [addSubscription, context.reports, recording, isExpanded, setReport, props, props.isExpanded, props.recording]);
 
   const onLoad = () => setLoaded(true);
 
