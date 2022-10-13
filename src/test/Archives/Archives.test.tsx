@@ -48,8 +48,16 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
-    ArchivedRecordingsTable: jest.fn((props) => {
+    ArchivedRecordingsTable: jest.fn(() => {
       return <div>Uploads Table</div>;
+    }),
+  };
+});
+
+jest.mock('@app/Archives/AllArchivedRecordingsTable', () => {
+  return {
+    AllArchivedRecordingsTable: jest.fn(() => {
+      return <div>All Archives Table</div>;
     }),
   };
 });
@@ -133,7 +141,11 @@ describe('<Archives />', () => {
 
     let secondTab = tabsList[1];
     expect(secondTab).toHaveAttribute('aria-selected', 'false');
-    expect(within(secondTab).getByText('Uploads')).toBeTruthy();
+    expect(within(secondTab).getByText('All Archives')).toBeTruthy();
+
+    let thirdTab = tabsList[2];
+    expect(thirdTab).toHaveAttribute('aria-selected', 'false');
+    expect(within(thirdTab).getByText('Uploads')).toBeTruthy();
 
     // Click the Uploads tab
     userEvent.click(screen.getByText('Uploads'));
@@ -146,7 +158,11 @@ describe('<Archives />', () => {
     expect(within(firstTab).getByText('All Targets')).toBeTruthy();
 
     secondTab = tabsList[1];
-    expect(secondTab).toHaveAttribute('aria-selected', 'true');
-    expect(within(secondTab).getByText('Uploads')).toBeTruthy();
+    expect(secondTab).toHaveAttribute('aria-selected', 'false');
+    expect(within(secondTab).getByText('All Archives')).toBeTruthy();
+
+    thirdTab = tabsList[2];
+    expect(thirdTab).toHaveAttribute('aria-selected', 'true');
+    expect(within(thirdTab).getByText('Uploads')).toBeTruthy();
   });
 });
