@@ -36,527 +36,297 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { AllArchivesResponse, ArchivedRecording, LOST_TARGET, RecordingDirectory, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
-  Button,
-  Checkbox,
-  Drawer,
-  DrawerContent,
-  DrawerContentBody,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Text,
-  TextVariants,
-  FlexItem,
-  Flex,
-  Chip,
+  SearchInput,
   Badge,
+  Checkbox,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
 } from '@patternfly/react-core';
-import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
-import { PlusIcon } from '@patternfly/react-icons';
-
-import { Observable, forkJoin, merge, combineLatest, of } from 'rxjs';
-import { concatMap, filter, first, map } from 'rxjs/operators';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
-import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
-import { LabelCell } from '../RecordingMetadata/LabelCell';
-
-import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { useDispatch, useSelector } from 'react-redux';
-import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
-import {
-  addFilterIntent,
-  addTargetIntent,
-  deleteAllFiltersIntent,
-  deleteCategoryFiltersIntent,
-  deleteFilterIntent,
-} from '@app/Shared/Redux/RecordingFilterActions';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { formatBytes, hashCode } from '@app/utils/utils';
-import { RecordingActions } from '@app/Recordings/RecordingActions';
-import { ReportFrame } from '@app/Recordings/ReportFrame';
-import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
-import { RecordingsTable } from '@app/Recordings/RecordingsTable';
-import { emptyArchivedRecordingFilters, filterRecordings, RecordingFilters, RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
+import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { AllArchivesResponse, RecordingDirectory } from '@app/Shared/Services/Api.service';
 
-export interface AllArchivedRecordingsTableProps {
-  isUploadsTable: boolean;
-  isNestedTable: boolean;
-}
+export interface AllArchivedRecordingsTableProps {}
 
-export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedRecordingsTableProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const dispatch = useDispatch<StateDispatch>();
+export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedRecordingsTableProps> =
+  () => {
+    const context = React.useContext(ServiceContext);
 
-  const [recordings, setRecordings] = React.useState([] as ArchivedRecording[]);
-  const [directories, setDirectories] = React.useState([] as RecordingDirectory[]);
-  const [filteredRecordings, setFilteredRecordings] = React.useState([] as ArchivedRecording[]);
-  const [headerChecked, setHeaderChecked] = React.useState(false);
-  const [checkedIndices, setCheckedIndices] = React.useState([] as number[]);
-  const [expandedRows, setExpandedRows] = React.useState([] as string[]);
-  const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [expandedDirectories, setExpandedDirectories] = React.useState([] as RecordingDirectory[]);
+    const [directories, setDirectories] = React.useState([] as RecordingDirectory[]);
+    const [counts, setCounts] = React.useState(new Map<string, number>());
+    const [searchText, setSearchText] = React.useState('');
+    const [searchedDirectories, setSearchedDirectories] = React.useState([] as RecordingDirectory[]);
+    const [expandedDirectories, setExpandedDirectories] = React.useState([] as RecordingDirectory[]);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const addSubscription = useSubscriptions();
 
-  const targetRecordingFilters = useSelector((state: RootState) => {
-    const filters = state.recordingFilters.list;
-    return filters.length > 0 ? filters[0].archived.filters : emptyArchivedRecordingFilters;
-  }) as RecordingFiltersCategories;
+    const tableColumns: string[] = React.useMemo(() => ['Directories', 'Count'], []);
 
-  const tableColumns: string[] = ['Name', 'Labels', 'Size'];
+    const updateCount = React.useCallback(
+      (connectUrl: string, delta: number) => {
+        setCounts((old) => {
+          const newMap = new Map<string, number>(old);
+          const curr = newMap.get(connectUrl) || 0;
+          newMap.set(connectUrl, curr + delta);
+          return newMap;
+        });
+      },
+      [setCounts]
+    );
 
-  const handleHeaderCheck = React.useCallback(
-    (event, checked) => {
-      setHeaderChecked(checked);
-      setCheckedIndices(checked ? filteredRecordings.map((r) => hashCode(r.name)) : []);
-    },
-    [setHeaderChecked, setCheckedIndices, filteredRecordings]
-  );
+    const handleDirectoriesAndCounts = React.useCallback(
+      (directories: RecordingDirectory []) => {
+        const updatedDirectories: RecordingDirectory[] = [];
+        const updatedCounts = new Map<string, number>();
+        for (const dir of directories) {
+          updatedDirectories.push(dir);
+          updatedCounts.set(dir.connectUrl, dir.recordings.length as number);
+        }
+        setDirectories(updatedDirectories);
+        setCounts(updatedCounts);
+        setIsLoading(false);
+      },
+      [setDirectories, setCounts, setIsLoading]
+    );
 
-  const handleRowCheck = React.useCallback(
-    (checked, index) => {
-      if (checked) {
-        setCheckedIndices((ci) => [...ci, index]);
-      } else {
-        setHeaderChecked(false);
-        setCheckedIndices((ci) => ci.filter((v) => v !== index));
-      }
-    },
-    [setCheckedIndices, setHeaderChecked]
-  );
-
-  const handleEditLabels = React.useCallback(() => {
-    setShowDetailsPanel(true);
-  }, [setShowDetailsPanel]);
-
-  const setDirectoriesAndRecordings = React.useCallback((response: AllArchivesResponse) => {
-    for (const [directory, recordings] of Object.entries(response)) {
-      console.log(recordings)
-      console.log(directory);
-        setDirectories((dirs) => dirs.concat({targetId: directory}));
-        setRecordings((old) => old.concat(recordings));
-    }
-  }, []);
-
-  const refreshRecordingList = React.useCallback(() => {
-    setIsLoading(true);
+    const refreshDirectoriesAndCounts = React.useCallback(() => {
+      setIsLoading(true);
       addSubscription(
-            context.api.doGet<AllArchivesResponse>('recordings', 'beta').subscribe((resp) => {
-          setDirectoriesAndRecordings(resp);
+        context.api.doGet<RecordingDirectory[]>('fs/recordings', 'beta')
+          .subscribe(handleDirectoriesAndCounts)
+      );
+    }, [addSubscription, context.api, setIsLoading, handleDirectoriesAndCounts]);
+
+    const handleSearchInput = React.useCallback(
+      (searchInput) => {
+        setSearchText(searchInput);
+      },
+      [setSearchText]
+    );
+
+    const handleSearchInputClear = React.useCallback(() => {
+      handleSearchInput('');
+    }, [handleSearchInput]);
+
+    React.useEffect(() => {
+      refreshDirectoriesAndCounts();
+    }, [refreshDirectoriesAndCounts]);
+
+    React.useEffect(() => {
+      let updatedSearchedDirectories: RecordingDirectory[];
+      if (!searchText) {
+        updatedSearchedDirectories = directories;
+      } else {
+        const formattedSearchText = searchText.trim().toLowerCase();
+        updatedSearchedDirectories = directories.filter(
+          (d: RecordingDirectory) =>
+            d.jvmId.toLowerCase().includes(formattedSearchText) ||
+            d.connectUrl.toLowerCase().includes(formattedSearchText)
+        );
+      }
+      setSearchedDirectories(updatedSearchedDirectories);
+    }, [searchText, directories, setSearchedDirectories]);
+
+    React.useEffect(() => {
+      if (!context.settings.autoRefreshEnabled()) {
+        return;
+      }
+      const id = window.setInterval(
+        () => refreshDirectoriesAndCounts(),
+        context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+      );
+      return () => window.clearInterval(id);
+    }, [context.settings, refreshDirectoriesAndCounts]);
+
+    React.useEffect(() => {
+      addSubscription(
+        context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe((v) => {
+          updateCount(v.message.target, 1);
         })
       );
-  }, [addSubscription, context.api, setIsLoading, setDirectoriesAndRecordings]);
+    }, [addSubscription, context.notificationChannel, updateCount]);
 
-  const handleClearFilters = React.useCallback(() => {
-    dispatch(deleteAllFiltersIntent(LOST_TARGET, true));
-  }, [dispatch, deleteAllFiltersIntent]);
+    React.useEffect(() => {
+      addSubscription(
+        context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
+          updateCount(v.message.target, -1);
+        })
+      );
+    }, [addSubscription, context, context.notificationChannel, updateCount]);
 
-  const updateFilters = React.useCallback(
-    (target, { filterValue, filterKey, deleted = false, deleteOptions }) => {
-      if (deleted) {
-        if (deleteOptions && deleteOptions.all) {
-          dispatch(deleteCategoryFiltersIntent(target, filterKey, true));
-        } else {
-          dispatch(deleteFilterIntent(target, filterKey, filterValue, true));
+    const toggleExpanded = React.useCallback(
+      (dir) => {
+        const idx = indexOfDirectory(expandedDirectories, dir);
+        setExpandedDirectories((expandedTargets) =>
+          idx >= 0
+            ? [...expandedTargets.slice(0, idx), ...expandedTargets.slice(idx + 1, expandedTargets.length)]
+            : [...expandedTargets, dir]
+        );
+      },
+      [expandedDirectories, setExpandedDirectories]
+    );
+
+    const includesDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): boolean => {
+      return arr.some((t) => t.connectUrl === dir.connectUrl);
+    };
+    
+    const indexOfDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): number => {
+      let index = -1;
+      arr.forEach((t, idx) => {
+        if (t.connectUrl === dir.connectUrl) {
+          index = idx;
         }
-      } else {
-        dispatch(addFilterIntent(target, filterKey, filterValue, true));
-      }
-    },
-    [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]
-  );
+      });
+      return index;
+    };
 
-  React.useEffect(() => {
-    refreshRecordingList();
-  }, []);
+    const isHidden = React.useMemo(() => {
+      return directories.map((dir) => {
+        return (
+          !includesDirectory(searchedDirectories, dir) || ((counts.get(dir.connectUrl) || 0) === 0)
+        );
+      });
+    }, [directories, searchedDirectories, counts]);
 
-  // React.useEffect(() => {
-  //   addSubscription(
-  //         context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated
-  //     ).subscribe((evt) => {
-  //       setRecordings((old) => old.concat(evt.message.recording));
-  //     })
-  //   );
-  // }, [addSubscription, context.notificationChannel, setRecordings]);
+    const directoryRows = React.useMemo(() => {
+      return directories.map((dir, idx) => {
+        let isExpanded: boolean = includesDirectory(expandedDirectories, dir);
 
-  // React.useEffect(() => {
-  //   addSubscription(
-  //       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted)
-  //     .subscribe((evt) => {
-  //       setRecordings((old) => old.filter((r) => r.name !== evt.message.recording.name));
-  //       setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(evt.message.recording.name)));
-  //     })
-  //   );
-  // }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
+        const handleToggle = () => {
+          if ((counts.get(dir.connectUrl) || 0) !== 0 || isExpanded) {
+            toggleExpanded(dir);
+          }
+        };
 
-  // React.useEffect(() => {
-  //   addSubscription(
-  //       context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated)
-  //       .subscribe((evt) => {
-  //       setRecordings((old) =>
-  //         old.map((o) =>
-  //           o.name == evt.message.recordingName ? { ...o, metadata: { labels: evt.message.metadata.labels } } : o
-  //         )
-  //       );
-  //     })
-  //   );
-  // }, [addSubscription, context, context.notificationChannel, setRecordings]);
+        return (
+          <Tr key={`${idx}_parent`} isHidden={isHidden[idx]}>
+            <Td
+              key={`directory-table-row-${idx}_1`}
+              id={`directory-ex-toggle-${idx}`}
+              aria-controls={`directory-ex-expand-${idx}`}
+              expand={{
+                rowIndex: idx,
+                isExpanded: isExpanded,
+                onToggle: handleToggle,
+              }}
+            />
+            <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0]}>
+              {dir.jvmId == dir.connectUrl || !dir.jvmId
+                ? `${dir.connectUrl}`
+                : `${dir.jvmId} (${dir.connectUrl})`}
+            </Td>
+            <Td key={`directory-table-row-${idx}_3`}>
+              <Badge key={`${idx}_count`}>{counts.get(dir.connectUrl) || 0}</Badge>
+            </Td>
+          </Tr>
+        );
+      });
+    }, [directories, expandedDirectories, counts, isHidden]);
 
-  React.useEffect(() => {
-    setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
-  }, [recordings, targetRecordingFilters, setFilteredRecordings, filterRecordings]);
+    const recordingRows = React.useMemo(() => {
+      return directories.map((dir, idx) => {
+        let isExpanded: boolean = includesDirectory(expandedDirectories, dir);
 
-  React.useEffect(() => {
-    addSubscription(
-          context.api.doGet<AllArchivesResponse>('recordings', 'beta').subscribe((resp) => {
-        setDirectoriesAndRecordings(resp);
-      })
-    );
-  }, [addSubscription, context.api, setDirectoriesAndRecordings]);
-
-  React.useEffect(() => {
-    if (!context.settings.autoRefreshEnabled()) {
-      return;
-    }
-    const id = window.setInterval(
-      () => refreshRecordingList(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
-    );
-    return () => window.clearInterval(id);
-  }, [context, context.settings, refreshRecordingList]);
-
-  React.useEffect(() => {
-    setCheckedIndices((ci) => {
-      const filteredRecordingIdx = new Set(filteredRecordings.map((r) => hashCode(r.name)));
-      return ci.filter((idx) => filteredRecordingIdx.has(idx));
-    });
-  }, [filteredRecordings, setCheckedIndices]);
-
-  React.useEffect(() => {
-    setHeaderChecked(checkedIndices.length === filteredRecordings.length);
-  }, [setHeaderChecked, checkedIndices]);
-
-  const handleDeleteRecordings = React.useCallback(() => {
-    const tasks: Observable<any>[] = [];
-        filteredRecordings.forEach((r: ArchivedRecording) => {
-          if (checkedIndices.includes(hashCode(r.name))) {
-            context.reports.delete(r);
-            tasks.push(context.api.deleteAllArchivedRecording(r.name).pipe(first()));
+        const getTargetFromDirectory = (dir: RecordingDirectory): Target => {
+          return {
+            connectUrl: dir.connectUrl,
+            alias: dir.jvmId,
           }
         }
-    );
-    addSubscription(forkJoin(tasks).subscribe());
-  }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
 
-  const toggleExpanded = React.useCallback(
-    (id: string) => {
-      setExpandedRows((expandedRows) => {
-        const idx = expandedRows.indexOf(id);
-        return idx >= 0
-          ? [...expandedRows.slice(0, idx), ...expandedRows.slice(idx + 1, expandedRows.length)]
-          : [...expandedRows, id];
+        return (
+          <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
+            <Td key={`directory-ex-expand-${idx}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
+              {isExpanded ? (
+                <ExpandableRowContent>
+                  <ArchivedRecordingsTable directory={dir} target={of(getTargetFromDirectory(dir))} isUploadsTable={false} isNestedTable={true} directoryRecordings={dir.recordings} />
+                </ExpandableRowContent>
+              ) : null}
+            </Td>
+          </Tr>
+        );
       });
-    },
-    [setExpandedRows]
-  );
+    }, [directories, expandedDirectories, isHidden]);
 
-  const RecordingRow = (props) => {
-    const parsedLabels = React.useMemo(() => {
-      return parseLabels(props.recording.metadata.labels);
-    }, [props.recording.metadata.labels]);
+    const rowPairs = React.useMemo(() => {
+      let rowPairs: JSX.Element[] = [];
+      for (let i = 0; i < directoryRows.length; i++) {
+        rowPairs.push(directoryRows[i]);
+        rowPairs.push(recordingRows[i]);
+      }
+      return rowPairs;
+    }, [directoryRows, recordingRows]);
 
-    const expandedRowId = React.useMemo(() => `archived-table-row-${props.index}-exp`, [props.index]);
-    const handleToggle = React.useCallback(() => {
-      toggleExpanded(expandedRowId);
-    }, [toggleExpanded, expandedRowId]);
+    const noDirectories = React.useMemo(() => {
+      return isHidden.reduce((a, b) => a && b, true);
+    }, [isHidden]);
 
-    const isExpanded = React.useMemo(() => {
-      return expandedRows.includes(expandedRowId);
-    }, [expandedRows, expandedRowId]);
-
-    const handleCheck = React.useCallback(
-      (checked) => {
-        handleRowCheck(checked, props.index);
-      },
-      [handleRowCheck, props.index]
-    );
-
-    const parentRow = React.useMemo(() => {
-      return (
-        <Tr key={`${props.index}_parent`}>
-          <Td key={`archived-table-row-${props.index}_0`}>
-            <Checkbox
-              name={`archived-table-row-${props.index}-check`}
-              onChange={handleCheck}
-              isChecked={checkedIndices.includes(props.index)}
-              id={`archived-table-row-${props.index}-check`}
-            />
-          </Td>
-          <Td
-            key={`archived-table-row-${props.index}_1`}
-            id={`archived-ex-toggle-${props.index}`}
-            aria-controls={`archived-ex-expand-${props.index}`}
-            expand={{
-              rowIndex: props.index,
-              isExpanded: isExpanded,
-              onToggle: handleToggle,
-            }}
-          />
-          <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
-            {props.recording.name}
-          </Td>
-          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[2]}>
-            <LabelCell
-              target={LOST_TARGET}
-              clickableOptions={{
-                updateFilters: updateFilters,
-                labelFilters: props.labelFilters,
-              }}
-              labels={parsedLabels}
-            />
-          </Td>
-          <Td key={`archived-table-row-${props.index}_4`} dataLabel={tableColumns[1]}>
-            {formatBytes(props.recording.size)}
-          </Td>
-          <RecordingActions
-            recording={props.recording}
-            index={props.index}
-            uploadFn={() => of(true)}
-          />
-        </Tr>
+    let view: JSX.Element;
+    if (isLoading) {
+      view = <LoadingView />;
+    } else if (noDirectories) {
+      view = (
+        <>
+          <EmptyState>
+            <EmptyStateIcon icon={SearchIcon} />
+            <Title headingLevel="h4" size="lg">
+              No Archived Recordings
+            </Title>
+          </EmptyState>
+        </>
       );
-    }, [
-      props.recording,
-      props.recording.metadata.labels,
-      props.recording.name,
-      props.index,
-      props.labelFilters,
-      checkedIndices,
-      isExpanded,
-      handleCheck,
-      handleToggle,
-      updateFilters,
-      tableColumns,
-      parsedLabels,
-      context.api,
-      context.api.uploadArchivedRecordingToGrafana,
-    ]);
-
-    const childRow = React.useMemo(() => {
-      return (
-        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
-          <Td key={`archived-ex-expand-${props.index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
-            <ExpandableRowContent>
-              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-            </ExpandableRowContent>
-          </Td>
-        </Tr>
+    } else {
+      view = (
+        <>
+          <TableComposable aria-label="all-archives-directory-table">
+            <Thead>
+              <Tr>
+                <Th key="table-header-expand" />
+                {tableColumns.map((key) => (
+                  <Th key={`table-header-${key}`} width={key === 'Directories' ? 90 : 15}>
+                    {key}
+                  </Th>
+                ))}
+              </Tr>
+            </Thead>
+            <Tbody>{rowPairs}</Tbody>
+          </TableComposable>
+        </>
       );
-    }, [props.recording, props.recording.name, props.index, isExpanded, tableColumns]);
+    }
 
     return (
-      <Tbody key={props.index} isExpanded={isExpanded[props.index]}>
-        {parentRow}
-        {childRow}
-      </Tbody>
+      <>
+        <Toolbar id="all-archives-directory-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <SearchInput
+                  placeholder="Search"
+                  value={searchText}
+                  onChange={handleSearchInput}
+                  onClear={handleSearchInputClear}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+        {view}
+      </>
     );
   };
-
-  const RecordingsToolbar = React.useMemo(
-    () => (
-      <ArchivedRecordingsToolbar
-        target={LOST_TARGET}
-        checkedIndices={checkedIndices}
-        targetRecordingFilters={targetRecordingFilters}
-        recordings={recordings}
-        filteredRecordings={filteredRecordings}
-        updateFilters={updateFilters}
-        handleClearFilters={handleClearFilters}
-        handleEditLabels={handleEditLabels}
-        handleDeleteRecordings={handleDeleteRecordings}
-      />
-    ),
-    [
-      checkedIndices,
-      targetRecordingFilters,
-      recordings,
-      filteredRecordings,
-      updateFilters,
-      handleClearFilters,
-      handleEditLabels,
-      handleDeleteRecordings,
-      props.isUploadsTable,
-    ]
-  );
-
-
-  const recordingRows = React.useCallback((sourceTarget: string) => {
-    return filteredRecordings.filter((r) => r.metadata.targetId === sourceTarget).map((r) => (
-      <RecordingRow
-        key={r.name}
-        recording={r}
-        labelFilters={targetRecordingFilters.Label}
-        index={hashCode(r.name)}
-        sourceTarget={r.metadata.targetId}
-      />
-    ));
-  }, [filteredRecordings, expandedRows, checkedIndices]);
-
-  const directoryRows = React.useMemo(() => {
-    return directories.map((r, idx) => {
-      let isExpanded: boolean = expandedDirectories.includes(r);
-      return (
-        <Tr key={`${idx}_child`} isExpanded={isExpanded} >
-          <Td key={`target-ex-expand-${idx}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 1}>
-            {isExpanded ? (
-              <ExpandableRowContent>
-                <ArchivedRecordingsTable target={of(NO_TARGET)} isUploadsTable={false} isNestedTable={true} />
-              </ExpandableRowContent>
-            ) : null}
-          </Td>
-        </Tr>
-      );
-    });
-  }, [directories, recordingRows]);
-
-
-  const LabelsPanel = React.useMemo(
-    () => (
-      <RecordingLabelsPanel
-        setShowPanel={setShowDetailsPanel}
-        isTargetRecording={false}
-        isUploadsTable={false}
-        checkedIndices={checkedIndices}
-      />
-    ),
-    [checkedIndices, setShowDetailsPanel]
-  );
-
-  const totalArchiveSize = React.useMemo(() => {
-    let size = 0;
-    filteredRecordings.forEach((r) => (size += r.size));
-    return size;
-  }, [filteredRecordings]);
-
-  return (
-    <Drawer isExpanded={showDetailsPanel} isInline id={'archived-recording-drawer'}>
-      <DrawerContent panelContent={LabelsPanel} className="recordings-table-drawer-content">
-        <DrawerContentBody hasPadding>
-          <RecordingsTable
-            tableTitle="Archived Flight Recordings"
-            toolbar={RecordingsToolbar}
-            tableColumns={tableColumns}
-            tableFooter={
-              filteredRecordings.length > 0 && (
-                <TableComposable borders={false}>
-                  <Tbody>
-                    <Tr>
-                      <Td></Td>
-                      <Td width={15}>
-                        <b>Total size: {formatBytes(totalArchiveSize)}</b>
-                      </Td>
-                    </Tr>
-                  </Tbody>
-                </TableComposable>
-              )
-            }
-            isHeaderChecked={headerChecked}
-            onHeaderCheck={handleHeaderCheck}
-            isLoading={isLoading}
-            isEmpty={!recordings.length}
-            isEmptyFilterResult={!filteredRecordings.length}
-            clearFilters={handleClearFilters}
-            isNestedTable={false}
-            errorMessage={''}
-          >
-            {directoryRows}
-          </RecordingsTable>
-        </DrawerContentBody>
-      </DrawerContent>
-    </Drawer>
-  );
-};
-export interface ArchivedRecordingsToolbarProps {
-  target: string;
-  checkedIndices: number[];
-  targetRecordingFilters: RecordingFiltersCategories;
-  recordings: ArchivedRecording[];
-  filteredRecordings: ArchivedRecording[];
-  updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
-  handleClearFilters: () => void;
-  handleEditLabels: () => void;
-  handleDeleteRecordings: () => void;
-}
-
-const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolbarProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-
-  const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings),
-    [context, context.settings, context.settings.deletionDialogsEnabledFor]
-  );
-
-  const handleWarningModalClose = React.useCallback(() => {
-    setWarningModalOpen(false);
-  }, [setWarningModalOpen]);
-
-  const handleDeleteButton = React.useCallback(() => {
-    if (deletionDialogsEnabled) {
-      setWarningModalOpen(true);
-    } else {
-      props.handleDeleteRecordings();
-    }
-  }, [deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
-
-  const deleteArchivedWarningModal = React.useMemo(() => {
-    return (
-      <DeleteWarningModal
-        warningType={DeleteWarningType.DeleteArchivedRecordings}
-        visible={warningModalOpen}
-        onAccept={props.handleDeleteRecordings}
-        onClose={handleWarningModalClose}
-      />
-    );
-  }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
-
-  return (
-    <Toolbar id="archived-recordings-toolbar" clearAllFilters={props.handleClearFilters}>
-      <ToolbarContent>
-        <RecordingFilters
-          target={props.target}
-          isArchived={true}
-          recordings={props.recordings}
-          filters={props.targetRecordingFilters}
-          updateFilters={props.updateFilters}
-        />
-        <ToolbarGroup variant="button-group">
-          <ToolbarItem>
-            <Button
-              key="edit labels"
-              variant="secondary"
-              onClick={props.handleEditLabels}
-              isDisabled={!props.checkedIndices.length}
-            >
-              Edit Labels
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button variant="danger" onClick={handleDeleteButton} isDisabled={!props.checkedIndices.length}>
-              Delete
-            </Button>
-          </ToolbarItem>
-        </ToolbarGroup>
-        {deleteArchivedWarningModal}
-      </ToolbarContent>
-    </Toolbar>
-  );
-};

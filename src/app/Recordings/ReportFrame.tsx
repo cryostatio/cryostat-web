@@ -36,11 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Recording, isHttpError } from '@app/Shared/Services/Api.service';
+import { Recording, isHttpError, RecordingDirectory } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Spinner } from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
 import { isGenerationError } from '@app/Shared/Services/Report.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
   isExpanded: boolean;
@@ -48,6 +49,7 @@ export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
 }
 
 export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo((props) => {
+  const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [report, setReport] = React.useState(undefined as string | undefined);
   const [loaded, setLoaded] = React.useState(false);
@@ -57,7 +59,7 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
     if (!props.isExpanded) {
       return;
     }
-    const sub = context.reports
+    addSubscription(context.reports
       .report(recording)
       .pipe(first())
       .subscribe(
@@ -71,8 +73,7 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
             setReport(JSON.stringify(err));
           }
         }
-      );
-    return () => sub.unsubscribe();
+      ));
   }, [context, context.reports, recording, isExpanded, setReport, props, props.isExpanded, props.recording]);
 
   const onLoad = () => setLoaded(true);

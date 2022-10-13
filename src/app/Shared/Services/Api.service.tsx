@@ -366,15 +366,6 @@ export class ApiService {
     );
   }
 
-  deleteAllArchivedRecording(recordingName: string): Observable<boolean> {
-    return this.sendRequest('v1', `recordings/${encodeURIComponent(recordingName)}`, {
-      method: 'DELETE',
-    }).pipe(
-      map((resp) => resp.ok),
-      first()
-    );
-  }
-
   uploadActiveRecordingToGrafana(recordingName: string): Observable<boolean> {
     return this.target.target().pipe(
       concatMap((target) =>
@@ -406,6 +397,28 @@ export class ApiService {
           first()
         )
       )
+    );
+  }
+
+  // from file system path functions
+  uploadArchivedRecordingToGrafanaFromPath(subdirectoryName: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+          'beta',
+          `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/upload`,
+          {
+            method: 'POST',
+          }
+        ).pipe(
+          map((resp) => resp.ok),
+          first()
+        );
+  }
+  deleteArchivedRecordingFromPath(subdirectoryName: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
     );
   }
 
@@ -826,7 +839,9 @@ interface CredentialsResponse extends ApiV2Response {
 }
 
 export interface RecordingDirectory {
-  targetId: string;
+  connectUrl: string;
+  jvmId: string;
+  recordings: ArchivedRecording[];
 }
 
 export interface ArchivedRecording {
@@ -901,5 +916,3 @@ export interface MatchedCredential {
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
 export const UPLOADS_SUBDIRECTORY: string = 'uploads';
-// The placeholder targetId for recordings that were unable to be transferred to a resolvable target
-export const LOST_TARGET: string = 'lost';
