@@ -35,18 +35,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {NotificationsContext} from '@app/Notifications/Notifications';
-import {ActiveRecording} from '@app/Shared/Services/Api.service';
-import {ServiceContext} from '@app/Shared/Services/Services';
-import {useSubscriptions} from '@app/utils/useSubscriptions';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { ActiveRecording } from '@app/Shared/Services/Api.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import { Td } from '@patternfly/react-table';
 import * as React from 'react';
-import {Observable} from 'rxjs';
-import {first} from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
+
+export interface RowAction {
+  title: string | React.ReactNode;
+  key: string;
+  onClick: () => void;
+}
 
 export interface RecordingActionsProps {
   index: number;
   recording: ActiveRecording;
+  sourceTarget?: Observable<Target>;
   uploadFn: () => Observable<boolean>;
 }
 
@@ -54,27 +63,34 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [grafanaEnabled, setGrafanaEnabled] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.api.grafanaDatasourceUrl()
-      .pipe(first())
-      .subscribe(() => setGrafanaEnabled(true));
-    return () => sub.unsubscribe();
-  }, [context.api, setGrafanaEnabled]);
+    addSubscription(
+      context.api
+        .grafanaDatasourceUrl()
+        .pipe(first())
+        .subscribe(() => setGrafanaEnabled(true))
+    );
+  }, [context.api, setGrafanaEnabled, addSubscription]);
 
   const grafanaUpload = React.useCallback(() => {
     notifications.info('Upload Started', `Recording "${props.recording.name}" uploading...`);
     addSubscription(
-      props.uploadFn()
-      .pipe(first())
-      .subscribe(success => {
-        if (success) {
-          notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
-          context.api.grafanaDashboardUrl().pipe(first()).subscribe(url => window.open(url, '_blank'));
-        }
-      })
+      props
+        .uploadFn()
+        .pipe(first())
+        .subscribe((success) => {
+          if (success) {
+            notifications.success('Upload Success', `Recording "${props.recording.name}" uploaded`);
+            context.api
+              .grafanaDashboardUrl()
+              .pipe(first())
+              .subscribe((url) => window.open(url, '_blank'));
+          }
+        })
     );
   }, [addSubscription, notifications, props.uploadFn, context.api]);
 
@@ -89,31 +105,49 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   const actionItems = React.useMemo(() => {
     const actionItems = [
       {
-        title: "Download Recording",
-        onClick: handleDownloadRecording
+        title: 'Download Recording',
+        key: 'download-recording',
+        onClick: handleDownloadRecording,
       },
       {
-        title: "View Report ...",
-        onClick: handleViewReport
-      }
-    ];
+        title: 'View Report ...',
+        key: 'view-report',
+        onClick: handleViewReport,
+      },
+    ] as RowAction[];
     if (grafanaEnabled) {
-      actionItems.push(
-        {
-          title: "View in Grafana ...",
-          onClick: grafanaUpload
-        }
-      );
+      actionItems.push({
+        title: 'View in Grafana ...',
+        key: 'view-in-grafana',
+        onClick: grafanaUpload,
+      });
     }
     return actionItems;
   }, [handleDownloadRecording, handleViewReport, grafanaEnabled, grafanaUpload]);
 
+  const onSelect = React.useCallback(
+    (action: RowAction) => {
+      setIsOpen(false);
+      action.onClick();
+    },
+    [setIsOpen]
+  );
+
   return (
-    <Td
-      key={`${props.index}_actions`}
-      actions={{
-        items: actionItems
-      }}
-    />
+    <Td isActionCell>
+      <Dropdown
+        menuAppendTo={document.body}
+        position="right"
+        direction="down"
+        toggle={<KebabToggle id="toggle-kebab" onToggle={setIsOpen} />}
+        isPlain
+        isOpen={isOpen}
+        dropdownItems={actionItems.map((action) => (
+          <DropdownItem key={action.key} onClick={() => onSelect(action)}>
+            {action.title}
+          </DropdownItem>
+        ))}
+      />
+    </Td>
   );
 };

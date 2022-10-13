@@ -65,6 +65,6 @@ export const SecurityPanel = () => {
 
 export interface SecurityCard {
   title: string;
-  description: string;
+  description: JSX.Element | string;
   content: React.FunctionComponent;
 }

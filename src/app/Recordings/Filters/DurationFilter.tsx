@@ -37,55 +37,59 @@
  */
 
 import React from 'react';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
 
-export interface NameFilterProps {
-  recordings: ArchivedRecording[];
-  onSubmit: (inputName) => void;
+export interface DurationFilterProps {
+  durations: string[] | undefined;
+  onDurationInput: (e: any) => void;
+  onContinuousDurationSelect: (checked: boolean) => void;
 }
 
-export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
-  const addSubscription = useSubscriptions();
-  const context = React.useContext(ServiceContext);
-
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState('');
-  const [names, setNames] = React.useState([] as string[]);
-
-  const onSelect = React.useCallback(
-    (event, selection, isPlaceholder) => {
-      if (isPlaceholder) {
-        setIsOpen(false);
-        setSelected('');
-      } else {
-        setSelected(selection);
-        props.onSubmit(selection);
-      }
-    },
-    [props.onSubmit, setIsOpen, setSelected]
+export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (props) => {
+  const [duration, setDuration] = React.useState(30);
+  const isContinuous = React.useMemo(
+    () => props.durations && props.durations.includes('continuous'),
+    [props.durations]
   );
 
-  React.useEffect(() => {
-    setNames(props.recordings.map((r) => r.name));
-  }, [setNames, props.recordings]);
+  const handleContinousCheckBoxChange = React.useCallback(
+    (checked, envt) => {
+      props.onContinuousDurationSelect(checked);
+    },
+    [props.onContinuousDurationSelect]
+  );
+
+  const handleEnterKey = React.useCallback(
+    (e) => {
+      if (e.key && e.key !== 'Enter') {
+        return;
+      }
+      props.onDurationInput(duration);
+    },
+    [props.onDurationInput, duration]
+  );
 
   return (
-    <Select
-      variant={SelectVariant.typeahead}
-      typeAheadAriaLabel="Filter by name..."
-      onToggle={setIsOpen}
-      onSelect={onSelect}
-      selections={selected}
-      isOpen={isOpen}
-      aria-labelledby="Filter by recording name"
-      placeholderText="Filter by name..."
-    >
-      {names.map((option, index) => (
-        <SelectOption key={index} value={option} />
-      ))}
-    </Select>
+    <Flex>
+      <FlexItem>
+        <TextInput
+          type="number"
+          value={duration}
+          id="duration-input"
+          aria-label="duration filter"
+          onChange={(e) => setDuration(Number(e))}
+          min="0"
+          onKeyDown={handleEnterKey}
+        />
+      </FlexItem>
+      <FlexItem>
+        <Checkbox
+          label="Continuous"
+          id="continuous-checkbox"
+          isChecked={isContinuous}
+          onChange={handleContinousCheckBoxChange}
+        />
+      </FlexItem>
+    </Flex>
   );
 };

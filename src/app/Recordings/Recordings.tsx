@@ -41,31 +41,34 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export const Recordings = () => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
+  const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = context.api.isArchiveEnabled().subscribe(setArchiveEnabled);
-    return () => sub.unsubscribe();
-  }, [context.api]);
+    addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
+  }, [context.api, context.api.isArchiveEnabled, addSubscription]);
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
-      <Tabs id='recordings'activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-        <Tab id='active-recordings' eventKey={0} title="Active Recordings">
+      <Tabs id="recordings" activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+        <Tab id="active-recordings" eventKey={0} title="Active Recordings">
           <ActiveRecordingsTable archiveEnabled={true} />
         </Tab>
-        <Tab id='archived-recordings' eventKey={1} title="Archived Recordings">
-          <ArchivedRecordingsTable target={context.target.target()} isUploadsTable={false} isNestedTable={false}/>
+        <Tab id="archived-recordings" eventKey={1} title="Archived Recordings">
+          <ArchivedRecordingsTable target={context.target.target()} isUploadsTable={false} isNestedTable={false} />
         </Tab>
       </Tabs>
     ) : (
       <>
-        <CardHeader><Text component={TextVariants.h4}>Active Recordings</Text></CardHeader>
-        <ActiveRecordingsTable archiveEnabled={false}/>
+        <CardHeader>
+          <Text component={TextVariants.h4}>Active Recordings</Text>
+        </CardHeader>
+        <ActiveRecordingsTable archiveEnabled={false} />
       </>
     );
   }, [archiveEnabled, activeTab]);
@@ -73,9 +76,7 @@ export const Recordings = () => {
   return (
     <TargetView pageTitle="Recordings">
       <Card>
-        <CardBody>
-          { cardBody }
-        </CardBody>
+        <CardBody>{cardBody}</CardBody>
       </Card>
     </TargetView>
   );

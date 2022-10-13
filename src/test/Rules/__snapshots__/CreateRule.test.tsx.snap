@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<CreateRule/> renders correctly 1`] = `
+exports[`<CreateRule /> renders correctly 1`] = `
 <section
   className="pf-c-page__main-section"
 >
@@ -250,6 +250,87 @@ exports[`<CreateRule/> renders correctly 1`] = `
                     >
                       Enter a match expression. This is a Java-like code snippet that is evaluated against each target application to determine whether the rule should be applied. Select a target from the dropdown on the right to view the context object available within the match expression context and test if the expression matches.
                     </small>
+                  </div>
+                </div>
+                <div
+                  className="pf-c-form__group"
+                >
+                  <div
+                    className="pf-c-form__group-label"
+                  >
+                    <label
+                      className="pf-c-form__label"
+                      htmlFor="rule-enabled"
+                    >
+                      <span
+                        className="pf-c-form__label-text"
+                      >
+                        Enabled
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className="pf-c-form__label-required"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                     
+                  </div>
+                  <div
+                    className="pf-c-form__group-control"
+                  >
+                    <label
+                      className="pf-c-switch"
+                      data-ouia-component-id="OUIA-Generated-Switch-1"
+                      data-ouia-component-type="PF4/Switch"
+                      data-ouia-safe={true}
+                      htmlFor="rule-enabled"
+                    >
+                      <input
+                        aria-label="Apply this rule to matching targets"
+                        aria-labelledby={null}
+                        checked={true}
+                        className="pf-c-switch__input"
+                        disabled={false}
+                        id="rule-enabled"
+                        onChange={[Function]}
+                        type="checkbox"
+                      />
+                      <span
+                        className="pf-c-switch__toggle"
+                      >
+                        <div
+                          aria-hidden="true"
+                          className="pf-c-switch__toggle-icon"
+                        >
+                          <svg
+                            aria-hidden={true}
+                            aria-labelledby={null}
+                            fill="currentColor"
+                            height="1em"
+                            role="img"
+                            style={null}
+                            viewBox="0 0 512 512"
+                            width="1em"
+                          >
+                            <path
+                              d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                            />
+                          </svg>
+                        </div>
+                      </span>
+                    </label>
+                    <div
+                      aria-live="polite"
+                      className="pf-c-form__helper-text"
+                      id="rule-enabled-helper"
+                    >
+                      Rules take effect when created if enabled and will be matched against all
+                  discovered target applications immediately. When new target applications appear they are
+                  checked against all enabled rules. Disabled rules have no effect but are available to be
+                  enabled in the future.
+                    </div>
                   </div>
                 </div>
                 <div
@@ -905,15 +986,16 @@ exports[`<CreateRule/> renders correctly 1`] = `
                           </span>
                         </button>
                         <button
-                          aria-disabled={false}
+                          aria-disabled={true}
                           aria-label="Delete target"
-                          className="pf-c-button pf-m-control"
+                          className="pf-c-button pf-m-control pf-m-disabled"
                           data-ouia-component-id="OUIA-Generated-Button-control-2"
                           data-ouia-component-type="PF4/Button"
                           data-ouia-safe={true}
-                          disabled={false}
+                          disabled={true}
                           onClick={[Function]}
                           role={null}
+                          tabIndex={null}
                           type="button"
                         >
                           <span
@@ -935,41 +1017,6 @@ exports[`<CreateRule/> renders correctly 1`] = `
                             >
                               <path
                                 d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
-                              />
-                            </svg>
-                          </span>
-                        </button>
-                        <button
-                          aria-disabled={false}
-                          aria-label="Refresh targets"
-                          className="pf-c-button pf-m-control"
-                          data-ouia-component-id="OUIA-Generated-Button-control-3"
-                          data-ouia-component-type="PF4/Button"
-                          data-ouia-safe={true}
-                          disabled={false}
-                          onClick={[Function]}
-                          role={null}
-                          type="button"
-                        >
-                          <span
-                            className="pf-c-button__icon pf-m-start"
-                          >
-                            <svg
-                              aria-hidden={true}
-                              aria-labelledby={null}
-                              fill="currentColor"
-                              height="1em"
-                              role="img"
-                              style={
-                                Object {
-                                  "verticalAlign": "-0.125em",
-                                }
-                              }
-                              viewBox="0 0 1024 1024"
-                              width="1em"
-                            >
-                              <path
-                                d="M515.8,0 C655.3,0 781.6,58.4 873.4,150.2 L968.9,54.7 C989,34.5 1024,48.8 1024,77.3 L1024,352 C1024,369.7 1009.2,384.1 991.5,384 L716.8,384 C688.3,384 674,349.5 694.2,329.3 L783,240.5 C713.5,171.1 617.8,128 512,128 C300.4,128 128,300.2 128,512 C128,723.8 300.2,895.1 511.9,895 C606.9,895 693.9,861.2 761,803.9 C773.7,793.1 792.6,793.8 804.4,805.6 L849.6,850.9 C862.6,864 861.9,885.4 848,897.6 C758,976.3 640.3,1024 511.7,1024 C229.1,1024 0,797 0,510.7 C0,226.2 235,0 515.8,0"
                               />
                             </svg>
                           </span>

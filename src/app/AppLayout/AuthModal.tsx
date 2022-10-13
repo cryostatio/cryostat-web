@@ -54,26 +54,31 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const onSave = React.useCallback((username: string, password: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      addSubscription(
-        context.target.target().pipe(
-          first(),
-          filter(target => target !== NO_TARGET),
-          map(target => target.connectUrl),
-          map(connectUrl => `target.connectUrl == "${connectUrl}"`),
-          mergeMap(matchExpression => context.api.postCredentials(matchExpression, username, password))
-        ).subscribe(result => {
-          if (result) {
-            props.onSave();
-            resolve();
-          } else {
-            reject();
-          }
-        })
-      );
-    });
-  }, [context, context.target, context.api, props.onSave]);
+  const onSave = React.useCallback(
+    (username: string, password: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        addSubscription(
+          context.target
+            .target()
+            .pipe(
+              first(),
+              filter((target) => target !== NO_TARGET),
+              map((target) => target.connectUrl),
+              mergeMap((connectUrl) => context.jmxCredentials.setCredential(connectUrl, username, password))
+            )
+            .subscribe((result) => {
+              if (result) {
+                props.onSave();
+                resolve();
+              } else {
+                reject();
+              }
+            })
+        );
+      });
+    },
+    [context, context.target, context.api, props.onSave]
+  );
 
   return (
     <Modal
@@ -84,8 +89,17 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
       title="Authentication Required"
       description={
         <Text>
-          This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the target when establishing JMX connections.
-          Enter credentials specific to this target, or go to <Link onClick={props.onDismiss} to="/security">Security</Link> to add a credential matching multiple targets.
+          This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the
+          target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
+          <Link onClick={props.onDismiss} to="/security">
+            Security
+          </Link>{' '}
+          to add a credential matching multiple targets. Visit{' '}
+          <Link onClick={props.onDismiss} to="/settings">
+            Settings
+          </Link>{' '}
+          to confirm and configure whether these credentials will be held only for this browser session or stored
+          encrypted in the Cryostat backend.
         </Text>
       }
     >

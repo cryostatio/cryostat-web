@@ -35,6 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+export const createBlobURL = (content: any, contentType: string, timeout: number = 1000) => {
+  const blob = new Blob([content], { type: contentType });
+  const url = window.URL.createObjectURL(blob);
+  setTimeout(() => window.URL.revokeObjectURL(url), timeout);
+  return url;
+};
+
 export function accessibleRouteChangeHandler() {
   return window.setTimeout(() => {
     const mainContainer = document.getElementById('primary-app-container');
@@ -43,3 +51,25 @@ export function accessibleRouteChangeHandler() {
     }
   }, 50);
 }
+
+export const hashCode = (str: string): number => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0; // Force 32-bit number
+  }
+  return hash;
+};
+
+export const sizeUnits = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+export const formatBytes = (bytes: number, decimals = 2): string => {
+  if (bytes <= 0) return '0 B';
+
+  const k = 1024; // 1 KB
+  const dm = Math.max(decimals, 0); // Decimal places
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizeUnits[i]}`;
+};

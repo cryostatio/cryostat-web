@@ -53,9 +53,10 @@ export interface Notification {
 }
 
 export class Notifications {
-
   private readonly _notifications: Notification[] = [];
-  private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>(this._notifications);
+  private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>(
+    this._notifications
+  );
 
   notify(notification: Notification): void {
     if (!notification.key) {
@@ -93,34 +94,25 @@ export class Notifications {
   }
 
   unreadNotifications(): Observable<Notification[]> {
-    return this.notifications()
-    .pipe(
-      map(a => a.filter(n => !n.read))
-    );
+    return this.notifications().pipe(map((a) => a.filter((n) => !n.read)));
   }
 
   actionsNotifications(): Observable<Notification[]> {
-    return this.notifications()
-    .pipe(
-      map(a => a.filter(n => this.isActionNotification(n)))
-    );
+    return this.notifications().pipe(map((a) => a.filter((n) => this.isActionNotification(n))));
   }
 
   cryostatStatusNotifications(): Observable<Notification[]> {
-    return this.notifications()
-    .pipe(
-      map(a => a.filter(n =>
-        (this.isWsClientActivity(n) || this.isJvmDiscovery(n))
-        && !Notifications.isProblemNotification(n)
-      ))
+    return this.notifications().pipe(
+      map((a) =>
+        a.filter(
+          (n) => (this.isWsClientActivity(n) || this.isJvmDiscovery(n)) && !Notifications.isProblemNotification(n)
+        )
+      )
     );
   }
 
   problemsNotifications(): Observable<Notification[]> {
-    return this.notifications()
-    .pipe(
-      map(a => a.filter(Notifications.isProblemNotification))
-    );
+    return this.notifications().pipe(map((a) => a.filter(Notifications.isProblemNotification)));
   }
 
   setRead(key?: string, read: boolean = true): void {
@@ -150,21 +142,19 @@ export class Notifications {
   }
 
   private isActionNotification(n: Notification): boolean {
-    return !this.isWsClientActivity(n)
-      && !this.isJvmDiscovery(n)
-      && !Notifications.isProblemNotification(n);
+    return !this.isWsClientActivity(n) && !this.isJvmDiscovery(n) && !Notifications.isProblemNotification(n);
   }
 
   private isWsClientActivity(n: Notification): boolean {
-    return (n.category === NotificationCategory.WsClientActivity);
+    return n.category === NotificationCategory.WsClientActivity;
   }
 
   private isJvmDiscovery(n: Notification): boolean {
-    return (n.category === NotificationCategory.TargetJvmDiscovery);
+    return n.category === NotificationCategory.TargetJvmDiscovery;
   }
 
   static isProblemNotification(n: Notification): boolean {
-    return (n.variant === AlertVariant.warning) || (n.variant === AlertVariant.danger);
+    return n.variant === AlertVariant.warning || n.variant === AlertVariant.danger;
   }
 }
 
@@ -173,4 +163,3 @@ const NotificationsInstance = new Notifications();
 const NotificationsContext = React.createContext(NotificationsInstance);
 
 export { NotificationsContext, NotificationsInstance };
-

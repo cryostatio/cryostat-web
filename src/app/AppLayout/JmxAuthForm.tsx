@@ -57,7 +57,6 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
 
   const handleSave = React.useCallback(() => {
     props.onSave(username, password).then(() => {
-      clear();
       context.target.setAuthRetry();
     });
   }, [context, context.target, clear, props.onSave, username, password]);
@@ -67,15 +66,18 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
     props.onDismiss();
   }, [clear, props.onDismiss]);
 
-  const handleKeyUp = React.useCallback((event: React.KeyboardEvent): void => {
-    if (event.code === 'Enter') {
-      handleSave();
-    }
-  }, [handleSave]);
+  const handleKeyUp = React.useCallback(
+    (event: React.KeyboardEvent): void => {
+      if (event.code === 'Enter') {
+        handleSave();
+      }
+    },
+    [handleSave]
+  );
 
   return (
     <Form>
-      { props.children }
+      {props.children}
       <FormGroup isRequired label="Username" fieldId="username">
         <TextInput
           value={username}

@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ActiveRecording, isHttpError } from '@app/Shared/Services/Api.service';
+import { Recording, isHttpError } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Spinner } from '@patternfly/react-core';
 import { first } from 'rxjs/operators';
@@ -44,7 +44,7 @@ import { isGenerationError } from '@app/Shared/Services/Report.service';
 
 export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
   isExpanded: boolean;
-  recording: ActiveRecording;
+  recording: Recording;
 }
 
 export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo((props) => {
@@ -57,24 +57,30 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
     if (!props.isExpanded) {
       return;
     }
-    const sub = context.reports.report(recording).pipe(
-      first()
-    ).subscribe(report => setReport(report), err => {
-      if (isGenerationError(err)) {
-        err.messageDetail.pipe(first()).subscribe(detail => setReport(detail));
-      } else if (isHttpError(err)) {
-        setReport(err.message);
-      } else {
-        setReport(JSON.stringify(err));
-      }
-    });
-    return () =>  sub.unsubscribe();
+    const sub = context.reports
+      .report(recording)
+      .pipe(first())
+      .subscribe(
+        (report) => setReport(report),
+        (err) => {
+          if (isGenerationError(err)) {
+            err.messageDetail.pipe(first()).subscribe((detail) => setReport(detail));
+          } else if (isHttpError(err)) {
+            setReport(err.message);
+          } else {
+            setReport(JSON.stringify(err));
+          }
+        }
+      );
+    return () => sub.unsubscribe();
   }, [context, context.reports, recording, isExpanded, setReport, props, props.isExpanded, props.recording]);
 
   const onLoad = () => setLoaded(true);
 
-  return (<>
-    { !loaded && <Spinner /> }
-    <iframe title="Automated Analysis" srcDoc={report} {...rest} onLoad={onLoad} hidden={!(loaded && isExpanded)} />
-  </>);
+  return (
+    <>
+      {!loaded && <Spinner />}
+      <iframe title="Automated Analysis" srcDoc={report} {...rest} onLoad={onLoad} hidden={!(loaded && isExpanded)} />
+    </>
+  );
 });

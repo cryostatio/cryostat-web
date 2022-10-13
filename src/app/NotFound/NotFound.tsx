@@ -44,9 +44,9 @@ import {
   EmptyStateIcon,
   EmptyStateBody,
   EmptyStateSecondaryActions,
-  Title
+  Title,
 } from '@patternfly/react-core';
-import '@app/app.css'
+import '@app/app.css';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
 import { IAppRoute, routes, flatten } from '@app/routes';
 
@@ -54,29 +54,30 @@ const NotFound: React.FunctionComponent = () => {
   const cards = flatten(routes)
     .filter((route: IAppRoute): boolean => !!route.description)
     .sort((a: IAppRoute, b: IAppRoute): number => a.title.localeCompare(b.title))
-    .map((route: IAppRoute) =>
+    .map((route: IAppRoute) => (
       <NotFoundCard
         title={route.title}
         bodyText={route.description}
         linkText={`View ${route.title.toLocaleLowerCase()}`}
         linkPath={route.path}
-      />);
+      />
+    ));
 
-  return (<>
-    <EmptyState className='pf-c-empty-state-not-found'>
-      <EmptyStateIcon icon={MapMarkedAltIcon} />
-      <Title headingLevel="h4" size="lg" >
-        404: We couldn't find that page
-      </Title>
-      <EmptyStateBody>
-        One of the following pages might have what you're looking for.
-      </EmptyStateBody>
-      <EmptyStateSecondaryActions>
-        { cards }
-      </EmptyStateSecondaryActions>
-      <Button variant="primary" component={props => <Link {...props} to="/"/>}>Take me home</Button>
-    </EmptyState>
-  </>);
+  return (
+    <>
+      <EmptyState className="pf-c-empty-state-not-found">
+        <EmptyStateIcon icon={MapMarkedAltIcon} />
+        <Title headingLevel="h4" size="lg">
+          404: We couldn't find that page
+        </Title>
+        <EmptyStateBody>One of the following pages might have what you're looking for.</EmptyStateBody>
+        <EmptyStateSecondaryActions>{cards}</EmptyStateSecondaryActions>
+        <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
+          Take me home
+        </Button>
+      </EmptyState>
+    </>
+  );
 };
 
 export { NotFound };

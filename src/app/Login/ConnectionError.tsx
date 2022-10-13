@@ -41,12 +41,10 @@ import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 export const ConnectionError = () => (
   <EmptyState>
-    <EmptyStateIcon variant='container' component={ExclamationCircleIcon} />
+    <EmptyStateIcon variant="container" component={ExclamationCircleIcon} />
     <Title size="lg" headingLevel="h4">
       Unable to connect
     </Title>
-    <EmptyStateBody>
-      Check your connection and reload the page.
-    </EmptyStateBody>
+    <EmptyStateBody>Check your connection and reload the page.</EmptyStateBody>
   </EmptyState>
 );

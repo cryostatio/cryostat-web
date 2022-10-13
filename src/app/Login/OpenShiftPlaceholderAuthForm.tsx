@@ -50,57 +50,57 @@ export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = 
   const [showPermissionDenied, setShowPermissionDenied] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = combineLatest([serviceContext.login.getSessionState(), notifications.problemsNotifications()])
-      .subscribe(parts => {
+    const sub = combineLatest([
+      serviceContext.login.getSessionState(),
+      notifications.problemsNotifications(),
+    ]).subscribe((parts) => {
       const sessionState = parts[0];
       const errors = parts[1];
-      const missingCryostatPermissions = errors.find(error => error.title.includes('401')) !== undefined;
+      const missingCryostatPermissions = errors.find((error) => error.title.includes('401')) !== undefined;
 
       setShowPermissionDenied(sessionState === SessionState.NO_USER_SESSION && missingCryostatPermissions);
     });
     return () => sub.unsubscribe();
   }, [setShowPermissionDenied]);
 
-
-  const handleSubmit = React.useCallback((evt) => {
-    // Triggers a redirect to OpenShift Container Platform login page
-    props.onSubmit(evt, 'anInvalidToken', AuthMethod.BEARER, true);
-  }, [props, props.onSubmit, serviceContext.login]);
+  const handleSubmit = React.useCallback(
+    (evt) => {
+      // Triggers a redirect to OpenShift Container Platform login page
+      props.onSubmit(evt, 'anInvalidToken', AuthMethod.BEARER, true);
+    },
+    [props, props.onSubmit, serviceContext.login]
+  );
 
   const permissionDenied = (
     <EmptyState>
-      <EmptyStateIcon variant='container' component={LockIcon} />
+      <EmptyStateIcon variant="container" component={LockIcon} />
       <Title size="lg" headingLevel="h4">
         Access Permissions Needed
       </Title>
       <EmptyStateBody>
         <Text>
-        {`To continue, add permissions to your current account or login with a
+          {`To continue, add permissions to your current account or login with a
         different account. For more info, see the User Authentication section of the `}
         </Text>
         <Text
-              component={TextVariants.a}
-              target="_blank"
-              href='https://github.com/cryostatio/cryostat-operator#user-authentication'
-            >
+          component={TextVariants.a}
+          target="_blank"
+          href="https://github.com/cryostatio/cryostat-operator#user-authentication"
+        >
           Cryostat Operator README.
         </Text>
       </EmptyStateBody>
-      <Button variant="primary" onClick={handleSubmit}>Retry Login</Button>
+      <Button variant="primary" onClick={handleSubmit}>
+        Retry Login
+      </Button>
     </EmptyState>
   );
 
-  return (
-    <>
-    { showPermissionDenied && permissionDenied }
-    </>
-  );
-}
+  return <>{showPermissionDenied && permissionDenied}</>;
+};
 
 export const OpenShiftAuthDescriptionText = () => {
   return (
-    <Text component={TextVariants.p}>
-      The Cryostat server is configured to use OpenShift OAuth authentication.
-    </Text>
+    <Text component={TextVariants.p}>The Cryostat server is configured to use OpenShift OAuth authentication.</Text>
   );
-}
+};

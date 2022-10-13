@@ -44,55 +44,57 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { Target } from '@app/Shared/Services/Target.service';
 import { of } from 'rxjs';
+import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
-export const Archives = () => {
+/*
+  This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
+  The connectUrl is the 'uploads' because for actions performed on uploaded archived recordings,
+  the backend issues a notification with the "target" field set to the 'uploads', signalling that 
+  these recordings are not associated with any target. We can then match on the 'uploads' when performing
+  notification handling in the ArchivedRecordingsTable.
+*/
+export const uploadAsTarget: Target = {
+  connectUrl: UPLOADS_SUBDIRECTORY,
+  alias: '',
+};
+
+export interface ArchivesProps {}
+
+export const Archives: React.FunctionComponent<ArchivesProps> = () => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.api.isArchiveEnabled().subscribe(setArchiveEnabled);
-    return () => sub.unsubscribe();
-  }, [context.api]);
-
-  /*
-  This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
-  The connectUrl is the empty string because for actions performed on uploaded archived recordings,
-  the backend issues a notification with the "target" field set to the empty string, signalling that 
-  these recordings are not associated with any target. We can then match on the empty string when performing
-  notification handling in the ArchivedRecordingsTable. 
-  */ 
-  const target: Target = { 
-    connectUrl: '',
-    alias: '',
-  }
+    addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
+  }, [context.api, addSubscription, setArchiveEnabled]);
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
-      <Tabs id='archives' activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-        <Tab id='all-targets' eventKey={0} title="All Targets">
+      <Tabs id="archives" activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+        <Tab id="all-targets" eventKey={0} title="All Targets">
           <AllTargetsArchivedRecordingsTable />
         </Tab>
-        <Tab id='uploads' eventKey={1} title="Uploads">
-          <ArchivedRecordingsTable target={of(target)} isUploadsTable={true} isNestedTable={false}/>
+        <Tab id="uploads" eventKey={1} title="Uploads">
+          <ArchivedRecordingsTable target={of(uploadAsTarget)} isUploadsTable={true} isNestedTable={false} />
         </Tab>
       </Tabs>
     ) : (
       <EmptyState>
-        <EmptyStateIcon icon={SearchIcon}/>
+        <EmptyStateIcon icon={SearchIcon} />
         <Title headingLevel="h4" size="lg">
           Archives Unavailable
         </Title>
       </EmptyState>
     );
-  }, [archiveEnabled, activeTab])
+  }, [archiveEnabled, activeTab]);
 
   return (
-    <BreadcrumbPage pageTitle='Archives'>
+    <BreadcrumbPage pageTitle="Archives">
       <Card>
-        <CardBody>
-          { cardBody }
-        </CardBody>
+        <CardBody>{cardBody}</CardBody>
       </Card>
     </BreadcrumbPage>
   );

@@ -39,6 +39,24 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
 export const NO_TARGET = {} as Target;
 
+export const includesTarget = (arr: Target[], target: Target): boolean => {
+  return arr.some((t) => t.connectUrl === target.connectUrl);
+};
+
+export const isEqualTarget = (a: Target, b: Target): boolean => {
+  return a.connectUrl === b.connectUrl;
+};
+
+export const indexOfTarget = (arr: Target[], target: Target): number => {
+  let index = -1;
+  arr.forEach((t, idx) => {
+    if (t.connectUrl === target.connectUrl) {
+      index = idx;
+    }
+  });
+  return index;
+};
+
 export interface Target {
   connectUrl: string;
   alias: string;
@@ -46,7 +64,7 @@ export interface Target {
   annotations?: {
     cryostat: Map<string, string>;
     platform: Map<string, string>;
-  }
+  };
 }
 
 class TargetService {
@@ -59,7 +77,7 @@ class TargetService {
     if (target === NO_TARGET || !!target.connectUrl) {
       this._target.next(target);
     } else {
-      throw new Error("Malformed target");
+      throw new Error('Malformed target');
     }
   }
 
@@ -90,9 +108,8 @@ class TargetService {
   setSslFailure(): void {
     this._sslFailure.next();
   }
-
 }
 
 const TargetInstance = new TargetService();
 
-export { TargetService, TargetInstance }
+export { TargetService, TargetInstance };

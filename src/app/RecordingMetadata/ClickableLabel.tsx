@@ -36,74 +36,54 @@
  * SOFTWARE.
  */
 
-
-import {
-  Button,
-  ButtonVariant,
-  DatePicker,
-  Flex,
-  FlexItem,
-  InputGroup,
-  isValidDate,
-  Text,
-  TimePicker,
-  yyyyMMddFormat,
-} from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
+import { Label } from '@patternfly/react-core';
 import React from 'react';
+import { RecordingLabel } from './RecordingLabel';
 
-export interface DateTimePickerProps {
-  onSubmit: (startDate) => void;
+export interface ClickableLabelCellProps {
+  label: RecordingLabel;
+  isSelected: boolean;
+  onLabelClick: (label: RecordingLabel) => void;
 }
 
-export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
-  const [start, setStart] = React.useState(new Date(0));
-  const [searchDisabled, setSearchDisabled] = React.useState(true);
+export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = (props) => {
+  const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
+  const labelColor = React.useMemo(() => (props.isSelected ? 'blue' : 'grey'), [props.isSelected]);
 
-  const onStartDateChange = React.useCallback(
-    (inputDate, newStartDate) => {
-      if (isValidDate(start) && isValidDate(newStartDate) && inputDate === yyyyMMddFormat(newStartDate)) {
-        setStart(new Date(newStartDate));
-        setSearchDisabled(false);
-      } else {
-        setSearchDisabled(true);
+  const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
+  const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
+
+  const style = React.useMemo(() => {
+    if (isHoveredOrFocused) {
+      const defaultStyle = { cursor: 'pointer', '--pf-c-label__content--before--BorderWidth': '2.5px' };
+      if (props.isSelected) {
+        return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#06c' };
       }
-    },
-    [start, isValidDate, yyyyMMddFormat]
-  );
+      return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#8a8d90' };
+    }
+    return {};
+  }, [props.isSelected, isHoveredOrFocused]);
 
-  const onStartTimeChange = React.useCallback(
-    (unused, hour, minute) => {
-      let updated = new Date(start);
-      updated.setUTCHours(hour, minute);
-      setStart(updated);
-    },
-    [start, setStart, isValidDate]
+  const handleLabelClicked = React.useCallback(
+    () => props.onLabelClick(props.label),
+    [props.label, props.onLabelClick, getLabelDisplay]
   );
-
-  const handleSubmit = React.useCallback(() => {
-    props.onSubmit(`${start.toISOString()}`);
-  }, [start, props.onSubmit]);
 
   return (
-    <Flex>
-      <FlexItem>
-        <InputGroup>
-          <DatePicker
-            onChange={onStartDateChange}
-            aria-label="Start date"
-            placeholder="YYYY-MM-DD" />
-          <TimePicker is24Hour aria-label="Start time" className="time-picker" onChange={onStartTimeChange} />
-        </InputGroup>
-        </FlexItem>
-        <FlexItem>
-          <Text>UTC</Text>
-        </FlexItem>
-        <FlexItem>
-          <Button variant={ButtonVariant.control} aria-label="search button for start date" isDisabled={searchDisabled} onClick={handleSubmit}>
-            <SearchIcon />
-          </Button>
-      </FlexItem>
-    </Flex>
+    <>
+      <Label
+        aria-label={`${props.label.key}: ${props.label.value}`}
+        style={style}
+        onMouseEnter={handleHoveredOrFocused}
+        onMouseLeave={handleNonHoveredOrFocused}
+        onFocus={handleHoveredOrFocused}
+        onClick={handleLabelClicked}
+        key={props.label.key}
+        color={labelColor}
+      >
+        {`${props.label.key}: ${props.label.value}`}
+      </Label>
+    </>
   );
 };

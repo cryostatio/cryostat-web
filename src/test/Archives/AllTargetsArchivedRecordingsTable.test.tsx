@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer'
+import renderer, { act } from 'react-test-renderer';
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services'
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
 import { Target } from '@app/Shared/Services/Target.service';
@@ -61,7 +61,7 @@ const mockNewAlias = 'newTarget';
 const mockNewTarget: Target = {
   connectUrl: mockNewConnectUrl,
   alias: mockNewAlias,
-}
+};
 const mockCount1 = 1;
 const mockCount2 = 3;
 const mockCount3 = 0;
@@ -69,26 +69,26 @@ const mockNewCount = 12;
 
 const mockTargetFoundNotification = {
   message: {
-    event: { kind: 'FOUND', serviceRef: mockNewTarget }
-  }
+    event: { kind: 'FOUND', serviceRef: mockNewTarget },
+  },
 } as NotificationMessage;
 
 const mockTargetLostNotification = {
   message: {
-    event: { kind: 'LOST', serviceRef: mockTarget1 }
-  }
+    event: { kind: 'LOST', serviceRef: mockTarget1 },
+  },
 } as NotificationMessage;
 
 const mockRecordingSavedNotification = {
   message: {
-    target: mockConnectUrl3
-  }
+    target: mockConnectUrl3,
+  },
 } as NotificationMessage;
 
 const mockRecordingDeletedNotification = {
   message: {
-    target: mockConnectUrl1
-  }
+    target: mockConnectUrl1,
+  },
 } as NotificationMessage;
 
 const mockTargetsAndCountsResponse = {
@@ -98,44 +98,44 @@ const mockTargetsAndCountsResponse = {
         recordings: {
           archived: {
             aggregate: {
-              count: mockCount1
-            }
-          }
+              count: mockCount1,
+            },
+          },
         },
         target: {
           alias: mockAlias1,
-          serviceUri: mockConnectUrl1
-        }
+          serviceUri: mockConnectUrl1,
+        },
       },
       {
         recordings: {
           archived: {
             aggregate: {
-              count: mockCount2
-            }
-          }
+              count: mockCount2,
+            },
+          },
         },
         target: {
           alias: mockAlias2,
-          serviceUri: mockConnectUrl2
-        }
+          serviceUri: mockConnectUrl2,
+        },
       },
       {
         recordings: {
           archived: {
             aggregate: {
-              count: mockCount3
-            }
-          }
+              count: mockCount3,
+            },
+          },
         },
         target: {
           alias: mockAlias3,
-          serviceUri: mockConnectUrl3
-        }
-      }
-    ]
-  }
-}
+          serviceUri: mockConnectUrl3,
+        },
+      },
+    ],
+  },
+};
 
 const mockNewTargetCountResponse = {
   data: {
@@ -144,28 +144,29 @@ const mockNewTargetCountResponse = {
         recordings: {
           archived: {
             aggregate: {
-              count: mockNewCount
-            }
-          }
-        }
+              count: mockNewCount,
+            },
+          },
+        },
       },
-    ]
-  }
-}
+    ],
+  },
+};
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
     ArchivedRecordingsTable: jest.fn((props) => {
-      return (
-        <div>
-          Archived Recordings Table
-        </div>
-      )
-    })
+      return <div>Archived Recordings Table</div>;
+    }),
   };
 });
 
-jest.spyOn(defaultServices.api, 'graphql')
+jest.mock('@app/Shared/Services/Target.service', () => ({
+  ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
+}));
+
+jest
+  .spyOn(defaultServices.api, 'graphql')
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // renders correctly
 
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // has the correct table elements
@@ -181,68 +182,49 @@ jest.spyOn(defaultServices.api, 'graphql')
   .mockReturnValueOnce(of(mockTargetsAndCountsResponse)) // adds a target upon receiving a notification
   .mockReturnValueOnce(of(mockNewTargetCountResponse))
 
-  .mockReturnValue(of(mockTargetsAndCountsResponse)) // remaining tests
+  .mockReturnValue(of(mockTargetsAndCountsResponse)); // remaining tests
 
-jest.spyOn(defaultServices.notificationChannel, 'messages')
+jest
+  .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // has the correct table elements
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // hides targets with zero recordings
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // correctly handles the search function
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // expands targets to show their <ArchivedRecordingsTable />
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // does not expand targets with zero recordings
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockTargetFoundNotification)) // adds a target upon receiving a notification
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockTargetLostNotification)) // removes a target upon receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // increments the count when an archived recording is saved
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockRecordingSavedNotification))
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // decrements the count when an archived recording is deleted
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of(mockRecordingDeletedNotification))
+  .mockReturnValueOnce(of(mockRecordingDeletedNotification));
 
 describe('<AllTargetsArchivedRecordingsTable />', () => {
   it('renders correctly', async () => {
@@ -282,11 +264,11 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
       </ServiceContext.Provider>
     );
 
-    // By default targets with zero recordings are hidden so the only rows 
+    // By default targets with zero recordings are hidden so the only rows
     // in the table should be mockTarget1 (mockCount1 == 1) and mockTarget2 (mockCount2 == 3)
     let tableBody = screen.getAllByRole('rowgroup')[1];
     let rows = within(tableBody).getAllByRole('row');
-    expect(rows).toHaveLength(2); 
+    expect(rows).toHaveLength(2);
     const firstTarget = rows[0];
     expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
@@ -299,7 +281,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
 
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
-    expect(rows).toHaveLength(3); 
+    expect(rows).toHaveLength(3);
     const thirdTarget = rows[2];
     expect(within(thirdTarget).getByText(`${mockAlias3} (${mockConnectUrl3})`)).toBeTruthy();
     expect(within(thirdTarget).getByText(`${mockCount3}`)).toBeTruthy();
@@ -313,15 +295,15 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     );
 
     const search = screen.getByLabelText('Search input');
-    
+
     let tableBody = screen.getAllByRole('rowgroup')[1];
     let rows = within(tableBody).getAllByRole('row');
-    expect(rows).toHaveLength(2); 
-    
+    expect(rows).toHaveLength(2);
+
     userEvent.type(search, '1');
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
-    expect(rows).toHaveLength(1); 
+    expect(rows).toHaveLength(1);
     const firstTarget = rows[0];
     expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
@@ -333,7 +315,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     userEvent.clear(search);
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
-    expect(rows).toHaveLength(2); 
+    expect(rows).toHaveLength(2);
   });
 
   it('expands targets to show their <ArchivedRecordingsTable />', () => {
@@ -344,7 +326,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     );
 
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
-    
+
     let tableBody = screen.getAllByRole('rowgroup')[1];
     let rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(2);
@@ -428,7 +410,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(rows).toHaveLength(3);
 
     const thirdTarget = rows[2];
-    expect(within(thirdTarget).getByText(`${mockCount3+1}`)).toBeTruthy();
+    expect(within(thirdTarget).getByText(`${mockCount3 + 1}`)).toBeTruthy();
   });
 
   it('decrements the count when an archived recording is deleted', () => {
@@ -446,6 +428,6 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
 
     const firstTarget = rows[0];
     expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();
-    expect(within(firstTarget).getByText(`${mockCount1-1}`)).toBeTruthy();    
+    expect(within(firstTarget).getByText(`${mockCount1 - 1}`)).toBeTruthy();
   });
 });

@@ -61,9 +61,9 @@ export interface EventTemplate {
   type: TemplateType;
 }
 
-export type TemplateType = "TARGET" | "CUSTOM";
+export type TemplateType = 'TARGET' | 'CUSTOM';
 
-const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
+const Comp: React.FunctionComponent<RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
@@ -72,25 +72,27 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
 
   const handleCreateRecording = (recordingAttributes: RecordingAttributes): void => {
     addSubscription(
-      context.api.createRecording(recordingAttributes)
-      .pipe(first())
-      .subscribe(success => {
-        if (success) {
-          history.push('/recordings');
-        }
-      })
+      context.api
+        .createRecording(recordingAttributes)
+        .pipe(first())
+        .subscribe((success) => {
+          if (success) {
+            history.push('/recordings');
+          }
+        })
     );
   };
 
   const handleCreateSnapshot = (): void => {
     addSubscription(
-      context.api.createSnapshot()
-      .pipe(first())
-      .subscribe(success => {
-        if (success) {
-          history.push('/recordings');
-        }
-      })
+      context.api
+        .createSnapshot()
+        .pipe(first())
+        .subscribe((success) => {
+          if (success) {
+            history.push('/recordings');
+          }
+        })
     );
   };
 
@@ -100,7 +102,8 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
             <Tab eventKey={0} title="Custom Flight Recording">
-              <CustomRecordingForm onSubmit={handleCreateRecording}
+              <CustomRecordingForm
+                onSubmit={handleCreateRecording}
                 recordingName={props?.location?.state?.recordingName}
                 template={props?.location?.state?.template}
                 templateType={props?.location?.state?.templateType}
@@ -108,7 +111,7 @@ const Comp: React.FunctionComponent< RouteComponentProps<{}, StaticContext, Crea
               />
             </Tab>
             <Tab eventKey={1} title="Snapshot Recording">
-              <SnapshotRecordingForm onSubmit={handleCreateSnapshot}/>
+              <SnapshotRecordingForm onSubmit={handleCreateSnapshot} />
             </Tab>
           </Tabs>
         </CardBody>

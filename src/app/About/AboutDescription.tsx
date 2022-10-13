@@ -36,10 +36,11 @@
  * SOFTWARE.
  */
 
-import { Text, TextContent, TextList, TextListItem, TextVariants } from "@patternfly/react-core"
-import React from "react"
-import { ServiceContext } from "@app/Shared/Services/Services";
-import { NotificationsContext } from "@app/Notifications/Notifications";
+import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
+import React from 'react';
+import build from '@app/build.json';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationsContext } from '@app/Notifications/Notifications';
 
 export const CRYOSTAT_TRADEMARK = 'Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0';
 
@@ -51,7 +52,7 @@ export const AboutDescription = () => {
   React.useEffect(() => {
     const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
     return () => sub.unsubscribe();
-  }, [serviceContext])
+  }, [serviceContext]);
 
   const cryostatCommitHash = React.useMemo(() => {
     if (!cryostatVersion) {
@@ -60,60 +61,73 @@ export const AboutDescription = () => {
     const expr = /^(?<describe>[a-zA-Z0-9-_.]+-[0-9]+-[a-z0-9]+)(?:-dirty)?$/;
     const result = cryostatVersion.match(expr);
     if (!result) {
-      notificationsContext.warning('Cryostat Version Parse Failure', `Could not parse Cryostat version string '${cryostatVersion}'.`);
+      notificationsContext.warning(
+        'Cryostat Version Parse Failure',
+        `Could not parse Cryostat version string '${cryostatVersion}'.`
+      );
       return 'main';
     }
     return result.groups?.describe || 'main';
   }, [cryostatVersion, notificationsContext]);
 
-  return(<>
+  const versionComponent = React.useMemo(() => {
+    if (build.commitHashUrl) {
+      return (
+        <Text
+          component={TextVariants.a}
+          target="_blank"
+          href={build.commitHashUrl.replace('__REPLACE_HASH__', cryostatCommitHash || '')}
+        >
+          {cryostatVersion}
+        </Text>
+      );
+    } else {
+      return <Text component={TextVariants.p}>{cryostatVersion}</Text>;
+    }
+  }, [build.commitHashUrl, cryostatCommitHash]);
+
+  return (
+    <>
       <TextContent>
-      <TextList component="dl">
-        <TextListItem component="dt">
-          Version
-        </TextListItem>
-        <TextListItem component="dd">
-          <Text
-            component={TextVariants.a}
-            target="_blank"
-            href={`https://github.com/cryostatio/cryostat/commits/${cryostatCommitHash}`}
-          >{cryostatVersion}</Text>
-        </TextListItem>
-        <TextListItem component="dt">
-          Homepage
-        </TextListItem>
-        <TextListItem component="dd">
-          <Text component={TextVariants.a} target="_blank" href='https://cryostat.io'>cryostat.io</Text>
-        </TextListItem>
-        <TextListItem component="dt">
-          Bugs
-        </TextListItem>
-        <TextListItem component="dd">
-          <Text>
-          <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/issues'>Known Issues</Text>
-          &nbsp;|&nbsp;
-          <Text
-            component={TextVariants.a}
-            target="_blank"
-            href={`https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+${cryostatVersion}`}
-          >
-            File a Report
-          </Text>
-          </Text>
-        </TextListItem>
-        <TextListItem component="dt">
-          Mailing List
-        </TextListItem>
-        <TextListItem component="dd">
-          <Text component={TextVariants.a} target="_blank" href='https://groups.google.com/g/cryostat-development'>Google Groups</Text>
-        </TextListItem>
-        <TextListItem component="dt">
-          Open Source License
-        </TextListItem>
-        <TextListItem component="dd">
-          <Text component={TextVariants.a} target="_blank" href='https://github.com/cryostatio/cryostat/blob/main/LICENSE'>License</Text>
-        </TextListItem>
-      </TextList>
-    </TextContent>
-    </>);
-}
+        <TextList component="dl">
+          <TextListItem component="dt">Version</TextListItem>
+          <TextListItem component="dd">{versionComponent}</TextListItem>
+          <TextListItem component="dt">Homepage</TextListItem>
+          <TextListItem component="dd">
+            <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>
+              cryostat.io
+            </Text>
+          </TextListItem>
+          <TextListItem component="dt">Bugs</TextListItem>
+          <TextListItem component="dd">
+            <Text>
+              <Text component={TextVariants.a} target="_blank" href={build.knownIssuesUrl}>
+                Known Issues
+              </Text>
+              &nbsp;|&nbsp;
+              <Text
+                component={TextVariants.a}
+                target="_blank"
+                href={build.fileIssueUrl.replace('__REPLACE_VERSION__', cryostatVersion || 'unknown')}
+              >
+                File a Report
+              </Text>
+            </Text>
+          </TextListItem>
+          <TextListItem component="dt">Mailing List</TextListItem>
+          <TextListItem component="dd">
+            <Text component={TextVariants.a} target="_blank" href={build.mailingListUrl}>
+              {build.mailingListName}
+            </Text>
+          </TextListItem>
+          <TextListItem component="dt">Open Source License</TextListItem>
+          <TextListItem component="dd">
+            <Text component={TextVariants.a} target="_blank" href={build.licenseUrl}>
+              License
+            </Text>
+          </TextListItem>
+        </TextList>
+      </TextContent>
+    </>
+  );
+};

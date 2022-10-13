@@ -36,7 +36,18 @@
  * SOFTWARE.
  */
 import { Target } from '@app/Shared/Services/Target.service';
-import { ActionGroup, AlertVariant, Button, ButtonType, Form, FormGroup, Modal, ModalVariant, TextInput, ValidatedOptions } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  AlertVariant,
+  Button,
+  ButtonType,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  TextInput,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import * as React from 'react';
 
 export interface CreateTargetModalProps {
@@ -57,69 +68,67 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
     props.onSubmit({ connectUrl, alias: alias.trim() || connectUrl });
     setConnectUrl('');
     setAlias('');
-  }, [props.onSubmit, connectUrl, alias]);
+  }, [props.onSubmit, connectUrl, alias, setConnectUrl, setAlias]);
 
-  const handleKeyDown = React.useCallback((evt) => {
-    if (evt.key === 'Enter') {
-      createTarget();
-    }
-  }, [createTarget]);
+  const handleKeyDown = React.useCallback(
+    (evt) => {
+      if (evt.key === 'Enter') {
+        createTarget();
+      }
+    },
+    [createTarget]
+  );
 
   const handleSubmit = React.useCallback(() => {
-    const isValid = connectUrl
-      && (connectUrl.match(jmxServiceUrlFormat) || connectUrl.match(hostPortPairFormat));
+    const isValid = connectUrl && (connectUrl.match(jmxServiceUrlFormat) || connectUrl.match(hostPortPairFormat));
 
-    if(isValid) {
+    if (isValid) {
       createTarget();
     } else {
       setValidConnectUrl(ValidatedOptions.error);
     }
   }, [createTarget, setValidConnectUrl]);
 
-  return (<>
-    <Modal
-      isOpen={props.visible}
-      variant={ModalVariant.small}
-      showClose={true}
-      onClose={props.onDismiss}
-      title="Create Target"
-      description="Create a custom target connection"
-    >
-      <Form isHorizontal>
-        <FormGroup
-          label="Connection URL"
-          isRequired
-          fieldId="connect-url"
-          helperText="JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi"
-          helperTextInvalid={'Must be a JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi, or host:port pair'}
-          validated={validConnectUrl}
-        >
-          <TextInput
-            value={connectUrl}
+  return (
+    <>
+      <Modal
+        isOpen={props.visible}
+        variant={ModalVariant.small}
+        showClose={true}
+        onClose={props.onDismiss}
+        title="Create Target"
+        description="Create a custom target connection"
+      >
+        <Form isHorizontal>
+          <FormGroup
+            label="Connection URL"
             isRequired
-            type="text"
-            id="connect-url"
-            onChange={setConnectUrl}
-            onKeyDown={handleKeyDown}
-          />
-        </FormGroup>
-        <FormGroup
-          label="Alias"
-          fieldId="alias"
-          helperText="Connection Nickname"
-        >
-          <TextInput
-            value={alias}
-            type="text"
-            id="alias"
-            onChange={setAlias}
-            onKeyDown={handleKeyDown}
-          />
-        </FormGroup>
-      </Form>
-      <ActionGroup>
-        <Button variant="primary" type={ButtonType.submit} isDisabled={!connectUrl} onClick={handleSubmit}>Create</Button>
-      </ActionGroup>
-    </Modal>
-  </>);
-}
+            fieldId="connect-url"
+            helperText="JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi"
+            helperTextInvalid={
+              'Must be a JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi, or host:port pair'
+            }
+            validated={validConnectUrl}
+          >
+            <TextInput
+              value={connectUrl}
+              isRequired
+              type="text"
+              id="connect-url"
+              onChange={setConnectUrl}
+              onKeyDown={handleKeyDown}
+            />
+          </FormGroup>
+          <FormGroup label="Alias" fieldId="alias" helperText="Connection Nickname">
+            <TextInput value={alias} type="text" id="alias" onChange={setAlias} onKeyDown={handleKeyDown} />
+          </FormGroup>
+        </Form>
+        <ActionGroup>
+          <Button variant="primary" type={ButtonType.submit} isDisabled={!connectUrl} onClick={handleSubmit}>
+            Create
+          </Button>
+        </ActionGroup>
+      </Modal>
+    </>
+  );
+};

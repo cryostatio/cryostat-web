@@ -40,31 +40,53 @@ import * as _ from 'lodash';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { IAppRoute, navGroups, routes } from '@app/routes';
-import { Alert, AlertGroup, AlertVariant, AlertActionCloseButton,
-  Brand, Button, Dropdown, DropdownGroup, DropdownItem, DropdownToggle, Nav, NavGroup, NavItem, NavList, NotificationBadge, Page, PageHeader,
-  PageHeaderTools, PageHeaderToolsGroup, PageHeaderToolsItem, PageSidebar, SkipToContent
+import {
+  Alert,
+  AlertGroup,
+  AlertVariant,
+  AlertActionCloseButton,
+  Brand,
+  Button,
+  Dropdown,
+  DropdownGroup,
+  DropdownItem,
+  DropdownToggle,
+  Nav,
+  NavGroup,
+  NavItem,
+  NavList,
+  NotificationBadge,
+  Page,
+  PageHeader,
+  PageHeaderTools,
+  PageHeaderToolsGroup,
+  PageHeaderToolsItem,
+  PageSidebar,
+  SkipToContent,
 } from '@patternfly/react-core';
 import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
-import { map, } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
-import { Notification, Notifications, NotificationsContext } from '@app/Notifications/Notifications';
+import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 interface IAppLayout {
   children: React.ReactNode;
 }
 
-const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
+const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
+  const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
   const logoProps = {
-    href: '/'
+    href: '/',
   };
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
@@ -82,133 +104,153 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
   const location = useLocation();
 
   React.useEffect(() => {
-    const sub = serviceContext.target.authFailure().subscribe(() => {
-      setShowAuthModal(true);
-    });
-    return () => sub.unsubscribe();
-  }, [serviceContext.target]);
+    addSubscription(
+      serviceContext.target.authFailure().subscribe(() => {
+        setShowAuthModal(true);
+      })
+    );
+  }, [serviceContext.target, setShowAuthModal, addSubscription]);
 
   React.useEffect(() => {
-    const sub = notificationsContext.notifications().subscribe(setNotifications);
-    return () => sub.unsubscribe();
-  }, []);
+    addSubscription(notificationsContext.notifications().subscribe(setNotifications));
+  }, [notificationsContext.notifications, addSubscription]);
 
   React.useEffect(() => {
-    const sub = notificationsContext.unreadNotifications().subscribe(s => setUnreadNotificationsCount(s.length));
-    return () => sub.unsubscribe();
-  }, [notificationsContext, notificationsContext.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
+    addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
+  }, [
+    notificationsContext.unreadNotifications,
+    unreadNotificationsCount,
+    setUnreadNotificationsCount,
+    addSubscription,
+  ]);
 
   React.useEffect(() => {
-    const sub = notificationsContext
-      .unreadNotifications()
-      .pipe(map((notifications: Notification[]) =>
-        _.filter(notifications, n => n.variant === AlertVariant.danger || n.variant === AlertVariant.warning)
-      ))
-      .subscribe(s => setErrorNotificationsCount(s.length));
-    return () => sub.unsubscribe();
-  }, [notificationsContext, notificationsContext.unreadNotifications, unreadNotificationsCount, setUnreadNotificationsCount]);
+    addSubscription(
+      notificationsContext
+        .unreadNotifications()
+        .pipe(
+          map((notifications: Notification[]) =>
+            _.filter(notifications, (n) => n.variant === AlertVariant.danger || n.variant === AlertVariant.warning)
+          )
+        )
+        .subscribe((s) => setErrorNotificationsCount(s.length))
+    );
+  }, [
+    notificationsContext,
+    notificationsContext.unreadNotifications,
+    unreadNotificationsCount,
+    setUnreadNotificationsCount,
+    addSubscription,
+  ]);
 
-  const dismissAuthModal = () => {
+  const dismissAuthModal = React.useCallback(() => {
     setShowAuthModal(false);
-  };
-  const handleMarkNotificationRead = React.useCallback(key => {
-    notificationsContext.setRead(key, true);
-  }, [notificationsContext]);
+  }, [setShowAuthModal]);
+
+  const handleMarkNotificationRead = React.useCallback(
+    (key) => notificationsContext.setRead(key, true),
+    [notificationsContext.setRead]
+  );
 
   React.useEffect(() => {
-    const sub = serviceContext.target.sslFailure().subscribe(() => {
-      setShowSslErrorModal(true);
-    });
-    return () => sub.unsubscribe();
-  }, [serviceContext.target]);
+    addSubscription(
+      serviceContext.target.sslFailure().subscribe(() => {
+        setShowSslErrorModal(true);
+      })
+    );
+  }, [serviceContext.target, serviceContext.target.sslFailure, setShowSslErrorModal, addSubscription]);
 
-  const dismissSslErrorModal = () => {
-    setShowSslErrorModal(false);
-  }
+  const dismissSslErrorModal = React.useCallback(() => setShowSslErrorModal(false), [setShowSslErrorModal]);
 
-  const onNavToggleMobile = () => {
-    setIsNavOpenMobile(!isNavOpenMobile);
-  };
-  const onNavToggle = () => {
-    setIsNavOpen(!isNavOpen);
-  }
-  const onPageResize = (props: { mobileView: boolean; windowSize: number }) => {
-    setIsMobileView(props.mobileView);
-  };
-  const mobileOnSelect = (selected) => {
-    if(isMobileView) setIsNavOpenMobile(false)
-  };
-  const handleSettingsButtonClick = () => {
+  const onNavToggleMobile = React.useCallback(() => {
+    setIsNavOpenMobile((isNavOpenMobile) => !isNavOpenMobile);
+  }, [setIsNavOpenMobile]);
+
+  const onNavToggle = React.useCallback(() => {
+    setIsNavOpen((isNavOpen) => !isNavOpen);
+  }, [setIsNavOpen]);
+
+  const onPageResize = React.useCallback(
+    (props: { mobileView: boolean; windowSize: number }) => {
+      setIsMobileView(props.mobileView);
+    },
+    [setIsMobileView]
+  );
+
+  const mobileOnSelect = React.useCallback(
+    (selected) => {
+      if (isMobileView) {
+        setIsNavOpenMobile(false);
+      }
+    },
+    [isMobileView, setIsNavOpenMobile]
+  );
+
+  const handleSettingsButtonClick = React.useCallback(() => {
     routerHistory.push('/settings');
-  };
-  const handleNotificationCenterToggle = () => {
-    setNotificationDrawerExpanded(!isNotificationDrawerExpanded);
-  };
-  const handleCloseNotificationCenter = () => {
+  }, [routerHistory.push]);
+
+  const handleNotificationCenterToggle = React.useCallback(() => {
+    setNotificationDrawerExpanded((isNotificationDrawerExpanded) => !isNotificationDrawerExpanded);
+  }, [setNotificationDrawerExpanded]);
+
+  const handleCloseNotificationCenter = React.useCallback(() => {
     setNotificationDrawerExpanded(false);
-  };
-  const handleAboutModalToggle = () => {
-    setAboutModalOpen(!aboutModalOpen);
-  };
+  }, [setNotificationDrawerExpanded]);
+
+  const handleAboutModalToggle = React.useCallback(() => {
+    setAboutModalOpen((aboutModalOpen) => !aboutModalOpen);
+  }, [setAboutModalOpen]);
 
   React.useEffect(() => {
-    const sub = serviceContext.login.getSessionState().subscribe(sessionState => {
-      setShowUserIcon(sessionState === SessionState.USER_SESSION);
-    });
-    return () => sub.unsubscribe();
-  }, [serviceContext.target]);
+    addSubscription(
+      serviceContext.login.getSessionState().subscribe((sessionState) => {
+        setShowUserIcon(sessionState === SessionState.USER_SESSION);
+      })
+    );
+  }, [serviceContext.login, serviceContext.login.getSessionState, setShowUserIcon, addSubscription]);
 
   const handleLogout = React.useCallback(() => {
-      const sub = serviceContext.login.setLoggedOut().subscribe();
-      return () => sub.unsubscribe();
-  }, [serviceContext.login]);
+    addSubscription(serviceContext.login.setLoggedOut().subscribe());
+  }, [serviceContext.login, serviceContext.login.setLoggedOut, addSubscription]);
 
-  const handleUserInfoToggle = React.useCallback(() =>
-    setShowUserInfoDropdown(v => !v),
-    [setShowUserInfoDropdown]);
+  const handleUserInfoToggle = React.useCallback(() => setShowUserInfoDropdown((v) => !v), [setShowUserInfoDropdown]);
 
   React.useEffect(() => {
-    const sub = serviceContext.login.getUsername().subscribe(setUsername);
-    return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.login]);
+    addSubscription(serviceContext.login.getUsername().subscribe(setUsername));
+  }, [serviceContext, serviceContext.login, addSubscription, setUsername]);
 
   const userInfoItems = [
     <DropdownGroup key={0}>
       <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
-    </DropdownGroup>
+    </DropdownGroup>,
   ];
 
   const UserInfoToggle = (
     <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-      {username || <UserIcon color="white" size="sm"/>}
+      {username || <UserIcon color="white" size="sm" />}
     </DropdownToggle>
   );
 
-  const HeaderTools = (<>
-    <PageHeaderTools>
-      <PageHeaderToolsGroup>
-        <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded} >
-          <NotificationBadge
-            count={unreadNotificationsCount}
-            variant={errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'}
-            onClick={handleNotificationCenterToggle} aria-label='Notifications'
+  const HeaderTools = (
+    <>
+      <PageHeaderTools>
+        <PageHeaderToolsGroup>
+          <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded}>
+            <NotificationBadge
+              count={unreadNotificationsCount}
+              variant={errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'}
+              onClick={handleNotificationCenterToggle}
+              aria-label="Notifications"
             >
-            <BellIcon />
-          </NotificationBadge>
-        </PageHeaderToolsItem>
-        <PageHeaderToolsItem>
-          <Button
-            onClick={handleSettingsButtonClick}
-            variant='link'
-            icon={<CogIcon color='white 'size='sm' />}
-          />
-          <Button
-            onClick={handleAboutModalToggle}
-            variant='link'
-            icon={<HelpIcon color='white' size='sm' />}
-          />
-        </PageHeaderToolsItem>
-        <PageHeaderToolsItem visibility={{default: showUserIcon ? 'visible' : 'hidden'}} >
+              <BellIcon />
+            </NotificationBadge>
+          </PageHeaderToolsItem>
+          <PageHeaderToolsItem>
+            <Button onClick={handleSettingsButtonClick} variant="link" icon={<CogIcon color="white " size="sm" />} />
+            <Button onClick={handleAboutModalToggle} variant="link" icon={<HelpIcon color="white" size="sm" />} />
+          </PageHeaderToolsItem>
+          <PageHeaderToolsItem visibility={{ default: showUserIcon ? 'visible' : 'hidden' }}>
             <Dropdown
               isPlain={true}
               isOpen={showUserInfoDropdown}
@@ -216,23 +258,24 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
               dropdownItems={userInfoItems}
             />
           </PageHeaderToolsItem>
-      </PageHeaderToolsGroup>
-    </PageHeaderTools>
-  </>);
-  const Header = (<>
-    <PageHeader
-      logo={<Brand alt="Cryostat" src={cryostatLogoHorizontal} className="cryostat-logo" />}
-      logoProps={logoProps}
-      showNavToggle
-      isNavOpen={isNavOpen}
-      onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
-      headerTools={HeaderTools}
-    />
-    <AboutCryostatModal
-      isOpen={aboutModalOpen}
-      onClose={handleAboutModalToggle}
-    />
-  </>);
+        </PageHeaderToolsGroup>
+      </PageHeaderTools>
+    </>
+  );
+
+  const Header = (
+    <>
+      <PageHeader
+        logo={<Brand alt="Cryostat" src={cryostatLogoHorizontal} className="cryostat-logo" />}
+        logoProps={logoProps}
+        showNavToggle
+        isNavOpen={isNavOpen}
+        onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
+        headerTools={HeaderTools}
+      />
+      <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleAboutModalToggle} />
+    </>
+  );
 
   const isActiveRoute = (route: IAppRoute): boolean => {
     const match = matchPath(location.pathname, route.path);
@@ -253,70 +296,71 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({children}) => {
       <NavList id="nav-list-simple">
         {navGroups.map((title) => {
           return (
-          <NavGroup title={title}>
-            {routes.filter(route => route.navGroup === title)
-              .map((route, idx) => {
-                return (
-                route.label && (
-                <NavItem key={`${route.label}-${idx}`} id={`${route.label}-${idx}`} isActive={isActiveRoute(route)}>
-                  <NavLink exact to={route.path} activeClassName="pf-m-current">{route.label}</NavLink>
-                </NavItem>
-                ));
-              })}
-          </NavGroup>
+            <NavGroup title={title} key={title}>
+              {routes
+                .filter((route) => route.navGroup === title)
+                .map((route, idx) => {
+                  return (
+                    route.label && (
+                      <NavItem
+                        key={`${route.label}-${idx}`}
+                        id={`${route.label}-${idx}`}
+                        isActive={isActiveRoute(route)}
+                      >
+                        <NavLink exact to={route.path} activeClassName="pf-m-current">
+                          {route.label}
+                        </NavLink>
+                      </NavItem>
+                    )
+                  );
+                })}
+            </NavGroup>
           );
         })}
       </NavList>
     </Nav>
   );
-  const Sidebar = (
-    <PageSidebar
-      theme="dark"
-      nav={Navigation}
-      isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />
-  );
-  const PageSkipToContent = (
-    <SkipToContent href="#primary-app-container">
-      Skip to Content
-    </SkipToContent>
-  );
-  const NotificationDrawer = React.useMemo(() => (<NotificationCenter onClose={handleCloseNotificationCenter} />), []);
-  return (<>
-    <AlertGroup isToast>
-      {
-        notifications
-          .filter(n => !n.read)
-          .filter(n => serviceContext.settings.notificationsEnabledFor(NotificationCategory[n.category || '']))
+  const Sidebar = <PageSidebar theme="dark" nav={Navigation} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />;
+  const PageSkipToContent = <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>;
+  const NotificationDrawer = React.useMemo(() => <NotificationCenter onClose={handleCloseNotificationCenter} />, []);
+  return (
+    <>
+      <AlertGroup isToast>
+        {notifications
+          .filter((n) => !n.read)
+          .filter((n) => serviceContext.settings.notificationsEnabledFor(NotificationCategory[n.category || '']))
           .sort((prev, curr) => {
-            if(!prev.timestamp) return -1;
-            if(!curr.timestamp) return 1;
+            if (!prev.timestamp) return -1;
+            if (!curr.timestamp) return 1;
             return prev.timestamp - curr.timestamp;
           })
-          .map(( { key, title, message, variant } ) => (
+          .map(({ key, title, message, variant }) => (
             <Alert
               variant={variant}
+              key={title}
               title={title}
               actionClose={<AlertActionCloseButton onClose={() => handleMarkNotificationRead(key)} />}
               timeout={true}
-            >{message}
+            >
+              {message}
             </Alert>
-        ))
-      }
-    </AlertGroup>
-    <Page
-      mainContainerId="primary-app-container"
-      header={Header}
-      sidebar={Sidebar}
-      notificationDrawer={NotificationDrawer}
-      isNotificationDrawerExpanded={isNotificationDrawerExpanded}
-      onPageResize={onPageResize}
-      skipToContent={PageSkipToContent}>
-      {children}
-    </Page>
-    <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={dismissAuthModal}/>
-    <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal}/>
-  </>);
-}
+          ))}
+      </AlertGroup>
+      <Page
+        mainContainerId="primary-app-container"
+        header={Header}
+        sidebar={Sidebar}
+        notificationDrawer={NotificationDrawer}
+        isNotificationDrawerExpanded={isNotificationDrawerExpanded}
+        onPageResize={onPageResize}
+        skipToContent={PageSkipToContent}
+      >
+        {children}
+      </Page>
+      <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={dismissAuthModal} />
+      <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
+    </>
+  );
+};
 
 export { AppLayout };
-

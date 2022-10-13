@@ -38,64 +38,62 @@
 import * as React from 'react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { of } from 'rxjs';
+import { of, retry, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, waitFor } from '@testing-library/react';
+import { act as doAct, render, cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rule } from '@app/Rules/Rules';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { CreateRule } from '@app/Rules/CreateRule';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
-import { Target } from '@app/Shared/Services/Target.service';
+import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 
 const escapeKeyboardInput = (value: string) => {
   return value.replace(/[{[]/g, '$&$&');
-}
+};
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget: Target = {
   connectUrl: mockConnectUrl,
   alias: 'io.cryostat.Cryostat',
   annotations: {
-    cryostat: new Map<string, string>(
-      [['PORT', '9091']]
-    ),
-    platform: new Map<string, string>()
-  }
+    cryostat: new Map<string, string>([['PORT', '9091']]),
+    platform: new Map<string, string>(),
+  },
 };
 const mockEventTemplate: EventTemplate = {
   name: 'Profiling',
   type: 'TARGET',
   provider: 'some provider',
-  description: 'some description'
+  description: 'some description',
 };
-const mockRule: Rule =  {
+const mockRule: Rule = {
   name: 'mockRule',
   description: 'A mock rule',
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
-  eventSpecifier: "template=Profiling,type=TARGET",
+  enabled: true,
+  eventSpecifier: 'template=Profiling,type=TARGET',
   archivalPeriodSeconds: 0,
   initialDelaySeconds: 0,
   preservedArchives: 0,
   maxAgeSeconds: 0,
-  maxSizeBytes: 0
+  maxSizeBytes: 0,
 };
 
 const mockNewTarget: Target = {
   connectUrl: 'service:jmx:rmi://someUrl1',
   alias: 'someAlias',
-}
+};
 
 const mockTargetFoundNotification = {
   message: {
-    event: { kind: 'FOUND', serviceRef: mockNewTarget }
-  }
+    event: { kind: 'FOUND', serviceRef: mockNewTarget },
+  },
 } as NotificationMessage;
 
-
-const history = createMemoryHistory();
+const history = createMemoryHistory({ initialEntries: ['/rules'] });
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -109,11 +107,11 @@ jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate])
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
 jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
+jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
-describe('<CreateRule/>', () => {
+describe('<CreateRule />', () => {
   beforeEach(() => {
     history.go(-history.length);
-    history.push('/rules');
   });
 
   afterEach(cleanup);
@@ -124,7 +122,7 @@ describe('<CreateRule/>', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <Router location={history.location} history={history}>
-            <CreateRule/>
+            <CreateRule />
           </Router>
         </ServiceContext.Provider>
       );
@@ -132,13 +130,47 @@ describe('<CreateRule/>', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
+  it('should show error view if failing to retrieve templates', async () => {
+    const subj = new Subject<void>();
+    const mockTargetSvc = {
+      target: () => of(mockTarget),
+      authFailure: () => subj.asObservable(),
+    } as TargetService;
+    const services: Services = {
+      ...defaultServices,
+      target: mockTargetSvc,
+    };
+
+    render(
+      <ServiceContext.Provider value={services}>
+        <Router location={history.location} history={history}>
+          <CreateRule />
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    await doAct(async () => subj.next());
+
+    const failTitle = screen.getByText('Error retrieving event templates');
+    expect(failTitle).toBeInTheDocument();
+    expect(failTitle).toBeVisible();
+
+    const authFailText = screen.getByText('Auth failure');
+    expect(authFailText).toBeInTheDocument();
+    expect(authFailText).toBeVisible();
+
+    const retryButton = screen.getByText('Retry');
+    expect(retryButton).toBeInTheDocument();
+    expect(retryButton).toBeVisible();
+  });
+
   it('should submit form if form input is valid', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <CreateRule/>
-          </Router>
-        </ServiceContext.Provider>
+        <Router location={history.location} history={history}>
+          <CreateRule />
+        </Router>
+      </ServiceContext.Provider>
     );
 
     const nameInput = screen.getByLabelText('Name *');
@@ -177,14 +209,14 @@ describe('<CreateRule/>', () => {
     expect(initialDelayInput).toBeInTheDocument();
     expect(initialDelayInput).toBeVisible();
 
-    const createButton = screen.getByRole('button', {name: /^create$/i});
+    const createButton = screen.getByRole('button', { name: /^create$/i });
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
 
     userEvent.type(nameInput, mockRule.name);
     userEvent.type(descriptionInput, mockRule.description);
     userEvent.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
-    userEvent.selectOptions(templateSelect, [screen.getByText('Profiling')])
+    userEvent.selectOptions(templateSelect, [screen.getByText('Profiling')]);
     userEvent.type(maxSizeInput, `${mockRule.maxSizeBytes}`);
     userEvent.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
     userEvent.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);

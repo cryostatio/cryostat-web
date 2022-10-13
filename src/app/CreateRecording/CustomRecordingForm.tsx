@@ -38,7 +38,23 @@
 import * as React from 'react';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ActionGroup, Button, Checkbox, ExpandableSection, Form, FormGroup, FormSelect, FormSelectOption, Split, SplitItem, Text, TextInput, TextVariants, Tooltip, ValidatedOptions } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  Button,
+  Checkbox,
+  ExpandableSection,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
+  Split,
+  SplitItem,
+  Text,
+  TextInput,
+  TextVariants,
+  Tooltip,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap } from 'rxjs/operators';
@@ -63,15 +79,20 @@ export const CustomRecordingForm = (props) => {
   const history = useHistory();
   const addSubscription = useSubscriptions();
 
-  const [recordingName, setRecordingName] = React.useState(props.recordingName || props?.location?.state?.recordingName || '');
+  const [recordingName, setRecordingName] = React.useState(
+    props.recordingName || props?.location?.state?.recordingName || ''
+  );
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [continuous, setContinuous] = React.useState(false);
+  const [archiveOnStop, setArchiveOnStop] = React.useState(true);
   const [duration, setDuration] = React.useState(30);
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template ||  null);
-  const [templateType, setTemplateType] = React.useState(props.templateType || props?.location?.state?.templateType || null as TemplateType | null);
+  const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template || null);
+  const [templateType, setTemplateType] = React.useState(
+    props.templateType || props?.location?.state?.templateType || (null as TemplateType | null)
+  );
   const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
@@ -80,26 +101,38 @@ export const CustomRecordingForm = (props) => {
   const [labels, setLabels] = React.useState([] as RecordingLabel[]);
   const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
 
-  const handleContinuousChange = React.useCallback((checked) => {
-    setContinuous(checked);
-    setDuration(0);
-    setDurationValid(checked ? ValidatedOptions.success : ValidatedOptions.error)
-  }, [setContinuous, setDuration, setDurationValid]);
+  const handleContinuousChange = React.useCallback(
+    (checked) => {
+      setContinuous(checked);
+      setDuration(0);
+      setDurationValid(checked ? ValidatedOptions.success : ValidatedOptions.error);
+    },
+    [setContinuous, setDuration, setDurationValid]
+  );
 
-  const handleDurationChange = React.useCallback((evt) => {
-    setDuration(Number(evt));
-    setDurationValid(DurationPattern.test(evt) ? ValidatedOptions.success : ValidatedOptions.error);
-  }, [setDurationValid, setDuration]);
+  const handleDurationChange = React.useCallback(
+    (evt) => {
+      setDuration(Number(evt));
+      setDurationValid(DurationPattern.test(evt) ? ValidatedOptions.success : ValidatedOptions.error);
+    },
+    [setDurationValid, setDuration]
+  );
 
-  const handleDurationUnitChange = React.useCallback((evt) => {
-    setDurationUnit(Number(evt));
-  }, [setDurationUnit]);
+  const handleDurationUnitChange = React.useCallback(
+    (evt) => {
+      setDurationUnit(Number(evt));
+    },
+    [setDurationUnit]
+  );
 
-  const handleTemplateChange = React.useCallback((template) => {
-    const parts: string[] = template.split(',');
-    setTemplate(parts[0]);
-    setTemplateType(parts[1]);
-  }, [setTemplate, setTemplateType]);
+  const handleTemplateChange = React.useCallback(
+    (template) => {
+      const parts: string[] = template.split(',');
+      setTemplate(parts[0]);
+      setTemplateType(parts[1]);
+    },
+    [setTemplate, setTemplateType]
+  );
 
   const getEventString = React.useCallback(() => {
     var str = '';
@@ -114,48 +147,69 @@ export const CustomRecordingForm = (props) => {
 
   const getFormattedLabels = React.useCallback(() => {
     let obj = {};
-  
-      labels.forEach(l => { 
-        if(!!l.key && !!l.value) {
-          obj[l.key] = l.value;
-        }
-      });
+
+    labels.forEach((l) => {
+      if (!!l.key && !!l.value) {
+        obj[l.key] = l.value;
+      }
+    });
 
     return obj;
-  }, [labels])
+  }, [labels]);
 
-  const handleRecordingNameChange = React.useCallback((name) => {
-    setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
-    setRecordingName(name);
-  }, [setNameValid, setRecordingName]);
+  const handleRecordingNameChange = React.useCallback(
+    (name) => {
+      setNameValid(RecordingNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
+      setRecordingName(name);
+    },
+    [setNameValid, setRecordingName]
+  );
 
-  const handleMaxAgeChange = React.useCallback((evt) => {
-    setMaxAge(Number(evt));
-  }, [setMaxAge]);
+  const handleMaxAgeChange = React.useCallback(
+    (evt) => {
+      setMaxAge(Number(evt));
+    },
+    [setMaxAge]
+  );
 
-  const handleMaxAgeUnitChange = React.useCallback((evt) => {
-    setMaxAgeUnits(Number(evt));
-  }, [setMaxAgeUnits]);
+  const handleMaxAgeUnitChange = React.useCallback(
+    (evt) => {
+      setMaxAgeUnits(Number(evt));
+    },
+    [setMaxAgeUnits]
+  );
 
-  const handleMaxSizeChange = React.useCallback((evt) => {
-    setMaxSize(Number(evt));
-  }, [setMaxSize]);
+  const handleMaxSizeChange = React.useCallback(
+    (evt) => {
+      setMaxSize(Number(evt));
+    },
+    [setMaxSize]
+  );
 
-  const handleMaxSizeUnitChange = React.useCallback((evt) => {
-    setMaxSizeUnits(Number(evt));
-  }, [setMaxSizeUnits]);
+  const handleMaxSizeUnitChange = React.useCallback(
+    (evt) => {
+      setMaxSizeUnits(Number(evt));
+    },
+    [setMaxSizeUnits]
+  );
 
-  const handleToDiskChange = React.useCallback((checked, evt) => {
-    setToDisk(evt.target.checked);
-  }, [setToDisk]);
+  const handleToDiskChange = React.useCallback(
+    (checked, evt) => {
+      setToDisk(evt.target.checked);
+    },
+    [setToDisk]
+  );
 
-  const setRecordingOptions = React.useCallback((options: RecordingOptions) => {
-    // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
-    setMaxAge(options.maxAge || 0);
-    setMaxAgeUnits(1);
-    setMaxSize(options.maxSize || 0);
-    setMaxSizeUnits(1);
-  }, [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits]);
+  const setRecordingOptions = React.useCallback(
+    (options: RecordingOptions) => {
+      // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
+      setMaxAge(options.maxAge || 0);
+      setMaxAgeUnits(1);
+      setMaxSize(options.maxSize || 0);
+      setMaxSizeUnits(1);
+    },
+    [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits]
+  );
 
   const handleSubmit = React.useCallback(() => {
     const notificationMessages: string[] = [];
@@ -171,131 +225,189 @@ export const CustomRecordingForm = (props) => {
 
     const options: RecordingOptions = {
       toDisk: toDisk,
-      maxAge: toDisk? continuous? maxAge * maxAgeUnits : undefined : undefined,
-      maxSize: toDisk? maxSize * maxSizeUnits : undefined
-    }
+      maxAge: toDisk ? (continuous ? maxAge * maxAgeUnits : undefined) : undefined,
+      maxSize: toDisk ? maxSize * maxSizeUnits : undefined,
+    };
     const recordingAttributes: RecordingAttributes = {
       name: recordingName,
       events: getEventString(),
-      duration: continuous ? undefined : duration * (durationUnit/1000),
+      duration: continuous ? undefined : duration * (durationUnit / 1000),
+      archiveOnStop: archiveOnStop && !continuous,
       options: options,
-      metadata: { labels: getFormattedLabels }
-    }
+      metadata: { labels: getFormattedLabels() },
+    };
     props.onSubmit(recordingAttributes);
-  }, [getEventString, getFormattedLabels, continuous, 
-    duration, durationUnit, maxAge, maxAgeUnits, maxSize, maxSizeUnits, 
-    nameValid, notifications, notifications.warning, recordingName, toDisk]);
+  }, [
+    getEventString,
+    getFormattedLabels,
+    continuous,
+    duration,
+    durationUnit,
+    maxAge,
+    maxAgeUnits,
+    maxSize,
+    maxSizeUnits,
+    nameValid,
+    notifications,
+    notifications.warning,
+    recordingName,
+    toDisk,
+  ]);
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target()
-      .pipe(concatMap(target => context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)))
-      .subscribe(setTemplates)
-    )
+      context.target
+        .target()
+        .pipe(
+          concatMap((target) =>
+            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
+          )
+        )
+        .subscribe(setTemplates)
+    );
   }, [addSubscription, context, context.target, setTemplates]);
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target()
-      .pipe(concatMap(target => context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`)))
-      .subscribe(setRecordingOptions)
-    )
+      context.target
+        .target()
+        .pipe(
+          concatMap((target) =>
+            context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`)
+          )
+        )
+        .subscribe(setRecordingOptions)
+    );
   }, [addSubscription, context, context.target, setRecordingOptions]);
 
-  const isFormInvalid : boolean = React.useMemo(() => {
-    return nameValid !== ValidatedOptions.success || durationValid !== ValidatedOptions.success || !template || !templateType || labelsValid !== ValidatedOptions.success;
+  const isFormInvalid: boolean = React.useMemo(() => {
+    return (
+      nameValid !== ValidatedOptions.success ||
+      durationValid !== ValidatedOptions.success ||
+      !template ||
+      !templateType ||
+      labelsValid !== ValidatedOptions.success
+    );
   }, [nameValid, durationValid, template, templateType, labelsValid]);
 
-  return (<>
-    <Text component={TextVariants.small}>
-      JDK Flight Recordings are compact records of events which have occurred within the target JVM.
-      Many event types are built-in to the JVM itself, while others are user-defined.
-    </Text>
-    <Form isHorizontal>
-      <FormGroup
-        label="Name"
-        isRequired
-        fieldId="recording-name"
-        helperText="Enter a recording name. This will be unique within the target JVM"
-        helperTextInvalid="A recording name may only contain letters, numbers, and underscores"
-        validated={nameValid}
-      >
-        <TextInput
-          value={recordingName}
+  return (
+    <>
+      <Text component={TextVariants.small}>
+        JDK Flight Recordings are compact records of events which have occurred within the target JVM. Many event types
+        are built-in to the JVM itself, while others are user-defined.
+      </Text>
+      <Form isHorizontal>
+        <FormGroup
+          label="Name"
           isRequired
-          type="text"
-          id="recording-name"
-          aria-describedby="recording-name-helper"
-          onChange={handleRecordingNameChange}
+          fieldId="recording-name"
+          helperText="Enter a recording name. This will be unique within the target JVM"
+          helperTextInvalid="A recording name may only contain letters, numbers, and underscores"
           validated={nameValid}
-        />
-      </FormGroup>
-      <FormGroup
-        label="Duration"
-        isRequired
-        validated={durationValid}
-        helperText={continuous ? "A continuous recording will never be automatically stopped" : "Time before the recording is automatically stopped"}
-        helperTextInvalid="A recording may only have a positive integer duration"
-        fieldId="recording-duration"
-      >
-        <Checkbox
-          label="Continuous"
-          isChecked={continuous}
-          onChange={handleContinuousChange}
-          aria-label="Continuous checkbox"
-          id="recording-continuous"
-          name="recording-continuous"
-        />
-        <DurationPicker enabled={!continuous} period={duration} onPeriodChange={handleDurationChange} unitScalar={durationUnit} onUnitScalarChange={handleDurationUnitChange} />
-      </FormGroup>
-      <FormGroup
-        label="Template"
-        isRequired
-        fieldId="recording-template"
-        validated={template === null ? ValidatedOptions.default : !!template ? ValidatedOptions.success : ValidatedOptions.error}
-        helperTextInvalid="A Template must be selected"
-      >
-        <FormSelectTemplateSelector
-          selected={`${template},${templateType}`}
-          templates={templates}
-          onChange={handleTemplateChange}
-        />
-      </FormGroup>
-      <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
-      <FormGroup
-      label="Labels"
-      fieldId="labels"
-      labelIcon={
-        <Tooltip content={<div>Unique key-value pairs containing information about the recording.</div>}>
-          <HelpIcon noVerticalAlign />
-        </Tooltip>
-      }
-    >
-      <RecordingLabelFields labels={labels} setLabels={setLabels} valid={labelsValid} setValid={setLabelsValid}/>
-    </FormGroup>
-      </ExpandableSection>
-      <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
-        <Form>
-          <Text component={TextVariants.small}>
-            A value of 0 for maximum size or age means unbounded.
-          </Text>
+        >
+          <TextInput
+            value={recordingName}
+            isRequired
+            type="text"
+            id="recording-name"
+            aria-describedby="recording-name-helper"
+            onChange={handleRecordingNameChange}
+            validated={nameValid}
+          />
+        </FormGroup>
+        <FormGroup
+          label="Duration"
+          isRequired
+          validated={durationValid}
+          helperText={
+            continuous
+              ? 'A continuous recording will never be automatically stopped'
+              : archiveOnStop
+              ? 'Time before the recording is automatically stopped and copied to archive'
+              : 'Time before the recording is automatically stopped'
+          }
+          helperTextInvalid="A recording may only have a positive integer duration"
+          fieldId="recording-duration"
+        >
+          <Split hasGutter>
+            <SplitItem>
+              <Checkbox
+                label="Continuous"
+                isChecked={continuous}
+                onChange={handleContinuousChange}
+                aria-label="Continuous checkbox"
+                id="recording-continuous"
+                name="recording-continuous"
+              />
+            </SplitItem>
+            <SplitItem>
+              <Checkbox
+                label="Archive on Stop"
+                isDisabled={continuous}
+                isChecked={archiveOnStop && !continuous}
+                onChange={setArchiveOnStop}
+                aria-label="ArchiveOnStop checkbox"
+                id="recording-archive-on-stop"
+                name="recording-archive-on-stop"
+              />
+            </SplitItem>
+          </Split>
+          <DurationPicker
+            enabled={!continuous}
+            period={duration}
+            onPeriodChange={handleDurationChange}
+            unitScalar={durationUnit}
+            onUnitScalarChange={handleDurationUnitChange}
+          />
+        </FormGroup>
+        <FormGroup
+          label="Template"
+          isRequired
+          fieldId="recording-template"
+          validated={
+            template === null
+              ? ValidatedOptions.default
+              : !!template
+              ? ValidatedOptions.success
+              : ValidatedOptions.error
+          }
+          helperTextInvalid="A Template must be selected"
+        >
+          <FormSelectTemplateSelector
+            selected={`${template},${templateType}`}
+            templates={templates}
+            onChange={handleTemplateChange}
+          />
+        </FormGroup>
+        <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
           <FormGroup
-            fieldId="To Disk"
-            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
+            label="Labels"
+            fieldId="labels"
+            labelIcon={
+              <Tooltip content={<div>Unique key-value pairs containing information about the recording.</div>}>
+                <HelpIcon noVerticalAlign />
+              </Tooltip>
+            }
           >
-            <Checkbox
-              label="To Disk"
-              id="toDisk-checkbox"
-              isChecked={toDisk}
-              onChange={handleToDiskChange} />
+            <RecordingLabelFields labels={labels} setLabels={setLabels} setValid={setLabelsValid} />
           </FormGroup>
-          <FormGroup
-            label="Maximum size"
-            fieldId="maxSize"
-            helperText="The maximum size of recording data saved to disk"
-          >
-            <Split hasGutter={true}>
-              <SplitItem isFilled>
+        </ExpandableSection>
+        <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
+          <Form>
+            <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
+            <FormGroup
+              fieldId="To Disk"
+              helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
+            >
+              <Checkbox label="To Disk" id="toDisk-checkbox" isChecked={toDisk} onChange={handleToDiskChange} />
+            </FormGroup>
+            <FormGroup
+              label="Maximum size"
+              fieldId="maxSize"
+              helperText="The maximum size of recording data saved to disk"
+            >
+              <Split hasGutter={true}>
+                <SplitItem isFilled>
                   <TextInput
                     value={maxSize}
                     isRequired
@@ -316,49 +428,54 @@ export const CustomRecordingForm = (props) => {
                   >
                     <FormSelectOption key="1" value="1" label="B" />
                     <FormSelectOption key="2" value={1024} label="KiB" />
-                    <FormSelectOption key="3" value={1024*1024} label="MiB" />
+                    <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
                   </FormSelect>
                 </SplitItem>
-            </Split>
-          </FormGroup>
-          <FormGroup
-            label="Maximum age"
-            fieldId="maxAge"
-            helperText="The maximum age of recording data stored to disk"
-          >
-            <Split hasGutter={true}>
-              <SplitItem isFilled>
-                <TextInput
-                  value={maxAge}
-                  isRequired
-                  type="number"
-                  id="maxAgeDuration"
-                  aria-label="Max age duration"
-                  onChange={handleMaxAgeChange}
-                  min="0"
-                  isDisabled={!continuous || !toDisk}
-                />
-              </SplitItem>
-              <SplitItem>
-                <FormSelect
-                  value={maxAgeUnits}
-                  onChange={handleMaxAgeUnitChange}
-                  aria-label="Max Age units Input"
-                  isDisabled={!continuous || !toDisk}
-                >
-                  <FormSelectOption key="1" value="1" label="Seconds" />
-                  <FormSelectOption key="2" value={60} label="Minutes" />
-                  <FormSelectOption key="3" value={60*60} label="Hours" />
-                </FormSelect>
-              </SplitItem>
-            </Split>
-          </FormGroup>
-        </Form>
-      </ExpandableSection>
-      <ActionGroup>
-        <Button variant="primary" onClick={handleSubmit} isDisabled={isFormInvalid}>Create</Button>
-        <Button variant="secondary" onClick={history.goBack}>Cancel</Button>
-      </ActionGroup>
-    </Form>
-  </>);
-}
+              </Split>
+            </FormGroup>
+            <FormGroup
+              label="Maximum age"
+              fieldId="maxAge"
+              helperText="The maximum age of recording data stored to disk"
+            >
+              <Split hasGutter={true}>
+                <SplitItem isFilled>
+                  <TextInput
+                    value={maxAge}
+                    isRequired
+                    type="number"
+                    id="maxAgeDuration"
+                    aria-label="Max age duration"
+                    onChange={handleMaxAgeChange}
+                    min="0"
+                    isDisabled={!continuous || !toDisk}
+                  />
+                </SplitItem>
+                <SplitItem>
+                  <FormSelect
+                    value={maxAgeUnits}
+                    onChange={handleMaxAgeUnitChange}
+                    aria-label="Max Age units Input"
+                    isDisabled={!continuous || !toDisk}
+                  >
+                    <FormSelectOption key="1" value="1" label="Seconds" />
+                    <FormSelectOption key="2" value={60} label="Minutes" />
+                    <FormSelectOption key="3" value={60 * 60} label="Hours" />
+                  </FormSelect>
+                </SplitItem>
+              </Split>
+            </FormGroup>
+          </Form>
+        </ExpandableSection>
+        <ActionGroup>
+          <Button variant="primary" onClick={handleSubmit} isDisabled={isFormInvalid}>
+            Create
+          </Button>
+          <Button variant="secondary" onClick={history.goBack}>
+            Cancel
+          </Button>
+        </ActionGroup>
+      </Form>
+    </>
+  );
+};

@@ -51,14 +51,14 @@ export interface DeleteWarningProps {
 export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose }: DeleteWarningProps): JSX.Element => {
   const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
-  
+
   const realWarningType = getFromWarningMap(warningType);
 
   const onAcceptClose = React.useCallback(() => {
     onAccept();
     onClose();
     if (doNotAsk && !!realWarningType) {
-        context.settings.setDeletionDialogsEnabledFor(realWarningType.id, false);
+      context.settings.setDeletionDialogsEnabledFor(realWarningType.id, false);
     }
   }, [onAccept, onClose, doNotAsk, context, context.settings]);
 
@@ -72,7 +72,7 @@ export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose }: 
       isOpen={visible}
       showClose
       onClose={onClose}
-      actions={[  
+      actions={[
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
@@ -82,14 +82,10 @@ export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose }: 
               Cancel
             </Button>
           </Split>
-        </Stack> 
+        </Stack>,
       ]}
     >
-      <Checkbox id="do-not-ask-enabled" 
-        label="Don't ask me again" 
-        isChecked={doNotAsk} 
-        onChange={setDoNotAsk}
-      />
-    </Modal>  
+      <Checkbox id="do-not-ask-enabled" label="Don't ask me again" isChecked={doNotAsk} onChange={setDoNotAsk} />
+    </Modal>
   );
 };

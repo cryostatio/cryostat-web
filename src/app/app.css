@@ -58,7 +58,7 @@ html, body, #root {
   padding-right: 10rem;
 }
 .cryostat-logo {
-  height: 2em;
+  height: 2em !important;
 }
 
 .recordings-table-drawer-content {
@@ -77,3 +77,6 @@ html, body, #root {
   --pf-c-chip__text--MaxWidth: 100ch;
 }
 
+.recording-table-container {
+  height: 512px; 
+}

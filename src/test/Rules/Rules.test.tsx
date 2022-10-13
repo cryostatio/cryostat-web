@@ -38,37 +38,44 @@
 import * as React from 'react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, within, waitFor } from '@testing-library/react';
+import { act as doAct, render, cleanup, screen, within, waitFor } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
+import {
+  NotificationCategory,
+  NotificationChannel,
+  NotificationMessage,
+} from '@app/Shared/Services/NotificationChannel.service';
 import { DeleteAutomatedRules, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
-const mockRule: Rule =  {
+const mockRule: Rule = {
   name: 'mockRule',
   description: 'A mock rule',
   matchExpression: "target.alias == 'io.cryostat.Cryostat' || target.annotations.cryostat['PORT'] == 9091",
-  eventSpecifier: "template=Profiling,type=TARGET",
+  enabled: true,
+  eventSpecifier: 'template=Profiling,type=TARGET',
   archivalPeriodSeconds: 0,
   initialDelaySeconds: 0,
   preservedArchives: 0,
   maxAgeSeconds: 0,
-  maxSizeBytes: 0
+  maxSizeBytes: 0,
 };
 const mockRuleListResponse = { data: { result: [mockRule] as Rule[] } };
 const mockRuleListEmptyResponse = { data: { result: [] as Rule[] } };
 
-const mockFileUpload = new File([JSON.stringify(mockRule)], `${mockRule.name}.json`, {type: 'json'});
-mockFileUpload.text = jest.fn(() => new Promise( (resolve, _) => resolve(JSON.stringify(mockRule))));
+const mockFileUpload = new File([JSON.stringify(mockRule)], `${mockRule.name}.json`, { type: 'json' });
+mockFileUpload.text = jest.fn(() => new Promise((resolve, _) => resolve(JSON.stringify(mockRule))));
 
-const mockDeleteNotification = { message: {...mockRule} } as NotificationMessage;
+const mockDeleteNotification = { message: { ...mockRule } } as NotificationMessage;
 
-const history = createMemoryHistory();
+const mockUpdateNotification = { message: { ...mockRule, enabled: false } } as NotificationMessage;
+
+const history = createMemoryHistory({ initialEntries: ['/rules'] });
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -78,38 +85,49 @@ jest.mock('react-router-dom', () => ({
 
 const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
 const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
-jest.spyOn(defaultServices.api, 'doGet')
-  .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly
+const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
+jest
+  .spyOn(defaultServices.api, 'doGet')
+  .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly empty
   .mockReturnValue(of(mockRuleListResponse));
 
-jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true);
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValueOnce(true);
 
-jest.spyOn(defaultServices.notificationChannel, 'messages')
+jest
+  .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // open view to create rules
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // opens upload modal
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // delete a rule when clicked with popup
-  .mockReturnValueOnce(of()) 
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // delete a rule when clicked w/o popup
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // remove a rule when receiving notification
   .mockReturnValueOnce(of(mockDeleteNotification))
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of()) // update a rule when receiving notification
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockUpdateNotification))
 
   .mockReturnValue(of()); // other tests
 
-describe('<Rules/>', () => {
+describe('<Rules />', () => {
   beforeEach(() => {
     history.go(-history.length);
-    history.push('/rules');
   });
 
   afterEach(cleanup);
@@ -120,7 +138,7 @@ describe('<Rules/>', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <Router location={history.location} history={history}>
-            <Rules/>
+            <Rules />
           </Router>
         </ServiceContext.Provider>
       );
@@ -131,27 +149,27 @@ describe('<Rules/>', () => {
   it('opens create rule view when Create is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <Rules/>
-          </Router>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
       </ServiceContext.Provider>
     );
 
     userEvent.click(screen.getByRole('button', { name: /Create/ }));
 
-    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/', '/rules', '/rules/create']);
+    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/rules', '/rules/create']);
   });
 
   it('opens upload modal when upload icon is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <Rules/>
-          </Router>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByRole('button', { name: 'Upload'}));
+    userEvent.click(screen.getByRole('button', { name: 'Upload' }));
 
     const modal = await screen.findByRole('dialog');
     expect(modal).toBeInTheDocument();
@@ -169,9 +187,9 @@ describe('<Rules/>', () => {
   it('shows a popup when Delete is clicked and then deletes the Rule after clicking confirmation Delete', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <Rules/>
-          </Router>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
       </ServiceContext.Provider>
     );
 
@@ -195,9 +213,9 @@ describe('<Rules/>', () => {
   it('deletes a rule when Delete is clicked w/o popup warning', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <Rules/>
-          </Router>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
       </ServiceContext.Provider>
     );
 
@@ -214,21 +232,55 @@ describe('<Rules/>', () => {
   it('remove a rule when receiving a notification', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <Rules/>
-          </Router>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
       </ServiceContext.Provider>
     );
 
     expect(screen.queryByText(mockRule.name)).not.toBeInTheDocument();
   });
 
+  it('update a rule when receiving a notification', async () => {
+    const subj = new Subject<NotificationMessage>();
+    const mockNotifications = {
+      messages: (category: string) => (category === NotificationCategory.RuleUpdated ? subj.asObservable() : of()),
+    } as NotificationChannel;
+    const services: Services = {
+      ...defaultServices,
+      notificationChannel: mockNotifications,
+    };
+    const { container } = render(
+      <ServiceContext.Provider value={services}>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    expect(await screen.findByText(mockRule.name)).toBeInTheDocument();
+
+    let labels = container.querySelectorAll('label');
+    expect(labels).toHaveLength(1);
+    let label = labels[0];
+    expect(label).toHaveClass('switch-toggle-true');
+    expect(label).not.toHaveClass('switch-toggle-false');
+
+    doAct(() => subj.next(mockUpdateNotification));
+
+    labels = container.querySelectorAll('label');
+    expect(labels).toHaveLength(1);
+    label = labels[0];
+    expect(label).not.toHaveClass('switch-toggle-true');
+    expect(label).toHaveClass('switch-toggle-false');
+  });
+
   it('downloads a rule when Download is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <Rules/>
-          </Router>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
       </ServiceContext.Provider>
     );
 
@@ -239,16 +291,31 @@ describe('<Rules/>', () => {
     expect(downloadSpy).toBeCalledWith(mockRule.name);
   });
 
-  it('upload a rule file when Submit is clicked', async () => {
+  it('updates a rule when the switch is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <Rules/>
-          </Router>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
       </ServiceContext.Provider>
     );
 
-    userEvent.click(screen.getByRole('button', { name: 'Upload'}));
+    userEvent.click(screen.getByRole('checkbox'));
+
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: !mockRule.enabled });
+  });
+
+  it('upload a rule file when Submit is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <Router location={history.location} history={history}>
+          <Rules />
+        </Router>
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByRole('button', { name: 'Upload' }));
 
     const modal = await screen.findByRole('dialog');
     expect(modal).toBeInTheDocument();
@@ -258,15 +325,17 @@ describe('<Rules/>', () => {
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
-    const fileUploadDropZone = await within(modal).findByLabelText('Drag a file here or browse to upload') as HTMLInputElement;
+    const fileUploadDropZone = (await within(modal).findByLabelText(
+      'Drag a file here or browse to upload'
+    )) as HTMLInputElement;
     expect(fileUploadDropZone).toBeInTheDocument();
     expect(fileUploadDropZone).toBeVisible();
 
-    const browseButton = await within(modal).findByRole('button', { name: 'Browse...'});
+    const browseButton = await within(modal).findByRole('button', { name: 'Browse...' });
     expect(browseButton).toBeInTheDocument();
     expect(browseButton).toBeVisible();
 
-    const submitButton = screen.getByRole('button', {name: 'Submit'}) as HTMLButtonElement;
+    const submitButton = screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
     userEvent.click(submitButton);
 
     const uploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
@@ -281,7 +350,7 @@ describe('<Rules/>', () => {
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => {
-      userEvent.click(submitButton)
+      userEvent.click(submitButton);
     });
 
     expect(createSpy).toHaveBeenCalled();

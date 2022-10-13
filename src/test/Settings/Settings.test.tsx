@@ -36,40 +36,61 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Checkbox } from '@patternfly/react-core';
-import { Tbody, Td, Tr  } from '@patternfly/react-table';
+import '@testing-library/jest-dom';
+import renderer, { act } from 'react-test-renderer';
+import { cleanup } from '@testing-library/react';
 
-export interface CredentialsTableRowProps {
-  key: number;
-  index: number;
-  matchExpression: string;
-  isChecked: boolean;
-  label: string;
-  handleCheck: (state: boolean, index: number) => void;
-}
+import { Text } from '@patternfly/react-core';
+import { Settings } from '@app/Settings/Settings';
 
-export const CredentialsTableRow: React.FunctionComponent<CredentialsTableRowProps> = (props: CredentialsTableRowProps) => {
+jest.mock('@app/Settings/NotificationControl', () => ({
+  NotificationControl: {
+    title: 'Notification Control Title',
+    description: 'Notification Control Description',
+    content: () => <Text>Notification Control Component</Text>,
+  },
+}));
 
-  const handleCheck = React.useCallback((checked: boolean) => {
-    props.handleCheck(checked, props.index);
-  }, [props, props.handleCheck]);
+jest.mock('@app/Settings/CredentialsStorage', () => ({
+  CredentialsStorage: {
+    title: 'Credentials Storage Title',
+    description: 'Credentials Storage Description',
+    content: () => <Text>Credentials Storage Component</Text>,
+  },
+}));
 
-  return (
-    <Tbody key={props.index}>
-      <Tr key={`${props.index}`}>
-        <Td key={`credentials-table-row-${props.index}_0`}>
-          <Checkbox
-            name={`credentials-table-row-${props.index}-check`}
-            onChange={handleCheck}
-            isChecked={props.isChecked}
-            id={`credentials-table-row-${props.index}-check`}
-            aria-label={`credentials-table-row-${props.index}-check`}
-          />
-        </Td>
-        <Td key={`credentials-table-row-${props.index}_1`} dataLabel={props.label}>
-          {props.matchExpression}
-        </Td>
-      </Tr>
-    </Tbody>
-  );
-};
+jest.mock('@app/Settings/DeletionDialogControl', () => ({
+  DeletionDialogControl: {
+    title: 'Deletion Dialog Control Title',
+    description: 'Deletion Dialog Control Description',
+    content: () => <Text>Deletion Dialog Control Component</Text>,
+  },
+}));
+
+jest.mock('@app/Settings/WebSocketDebounce', () => ({
+  WebSocketDebounce: {
+    title: 'WebSocket Debounce Title',
+    description: 'WebSocket Debounce Description',
+    content: () => <Text>WebSocket Debounce Component</Text>,
+  },
+}));
+
+jest.mock('@app/Settings/AutoRefresh', () => ({
+  AutoRefresh: {
+    title: 'AutoRefresh Title',
+    description: 'AutoRefresh Description',
+    content: () => <Text>AutoRefresh Component</Text>,
+  },
+}));
+
+describe('<Settings/>', () => {
+  afterEach(cleanup);
+
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(<Settings />);
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+});

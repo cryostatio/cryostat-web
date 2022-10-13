@@ -40,11 +40,11 @@ import * as React from 'react';
 import { Button, Modal } from '@patternfly/react-core';
 
 export interface CancelUploadModalProps {
-    visible: boolean;
-    onYes: () => void;
-    onNo: () => void;
-    title: string;
-    message: string;
+  visible: boolean;
+  onYes: () => void;
+  onNo: () => void;
+  title: string;
+  message: string;
 }
 
 export const CancelUploadModal: React.FunctionComponent<CancelUploadModalProps> = (props) => {
@@ -61,11 +61,10 @@ export const CancelUploadModal: React.FunctionComponent<CancelUploadModalProps> 
         </Button>,
         <Button variant="secondary" onClick={props.onNo}>
           No
-        </Button>
+        </Button>,
       ]}
     >
       {props.message}
     </Modal>
   );
-}
-
+};

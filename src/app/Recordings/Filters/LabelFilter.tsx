@@ -38,65 +38,58 @@
 
 import React from 'react';
 import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { Recording } from '@app/Shared/Services/Api.service';
+import { parseLabels, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 
 export interface LabelFilterProps {
-    recordings: ArchivedRecording[];
-    onSubmit: (inputName) => void;
+  recordings: Recording[];
+  filteredLabels: string[];
+  onSubmit: (inputLabel: string) => void;
 }
 
+export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
+
 export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) => {
-    const addSubscription = useSubscriptions();
-    const context = React.useContext(ServiceContext);
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [selected, setSelected] = React.useState('');
-    const [labels, setLabels] = React.useState([] as string[]);
+  const onSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        setIsExpanded(false);
+        props.onSubmit(selection);
+      }
+    },
+    [props.onSubmit, setIsExpanded]
+  );
 
-    const onSelect = React.useCallback(
-        (event, selection, isPlaceholder) => {
-            if (isPlaceholder) {
-                setIsOpen(false);
-                setSelected('');
-            } else {
-                setSelected(selection);
-                props.onSubmit(selection);
-            }
-        },
-        [props.onSubmit, setIsOpen, setSelected]
-    );
+  const labels = React.useMemo(() => {
+    const labels = new Set<string>();
+    props.recordings.forEach((r) => {
+      if (!r || !r.metadata || !r.metadata.labels) return;
+      parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
+    });
+    return Array.from(labels)
+      .filter((l) => !props.filteredLabels.includes(l))
+      .sort();
+  }, [props.recordings, parseLabels, getLabelDisplay]);
 
-    React.useEffect(() => {
-        setLabels(old => {
-            let updated = new Set(old);
-            props.recordings.forEach((r) => {
-                if (!r || !r.metadata) return;
-                Object.entries(r.metadata.labels).map(([k, v]) =>
-                    updated.add(`${k}:${v}`)
-                );
-            });
-            return Array.from(updated);
-        });
-    }, [setLabels, props.recordings]);
-
-    return (
-        <Select
-            variant={SelectVariant.typeahead}
-            typeAheadAriaLabel="Filter by label"
-            onToggle={setIsOpen}
-            onSelect={onSelect}
-            selections={selected}
-            isOpen={isOpen}
-            aria-labelledby="Select a labels"
-            placeholderText="Filter by label..."
-        >
-            {labels.map((option, index) => (
-                <SelectOption key={option} value={option} >
-                    <Label key={option} color="grey">{option}</Label>
-                </SelectOption>
-            ))}
-        </Select>
-    );
+  return (
+    <Select
+      variant={SelectVariant.typeahead}
+      onToggle={setIsExpanded}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      aria-label="Filter by label"
+      typeAheadAriaLabel="Filter by label..."
+      placeholderText="Filter by label..."
+    >
+      {labels.map((option, index) => (
+        <SelectOption key={index} value={option}>
+          <Label key={option} color="grey">
+            {option}
+          </Label>
+        </SelectOption>
+      ))}
+    </Select>
+  );
 };

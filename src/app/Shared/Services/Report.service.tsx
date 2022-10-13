@@ -38,16 +38,15 @@
 import { Observable, from, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, first, tap } from 'rxjs/operators';
-import { isActiveRecording, RecordingState, ArchivedRecording } from './Api.service';
+import { isActiveRecording, RecordingState, Recording } from './Api.service';
 import { Notifications } from '@app/Notifications/Notifications';
 import { Base64 } from 'js-base64';
 import { LoginService } from './Login.service';
 
 export class ReportService {
+  constructor(private login: LoginService, private notifications: Notifications) {}
 
-  constructor(private login: LoginService, private notifications: Notifications) { }
-
-  report(recording: ArchivedRecording): Observable<string> {
+  report(recording: Recording): Observable<string> {
     if (!recording?.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
@@ -56,7 +55,7 @@ export class ReportService {
       return of(stored);
     }
     return this.login.getHeaders().pipe(
-      concatMap(headers =>
+      concatMap((headers) =>
         fromFetch(recording.reportUrl, {
           method: 'GET',
           mode: 'cors',
@@ -64,7 +63,7 @@ export class ReportService {
           headers,
         })
       ),
-      concatMap(resp => {
+      concatMap((resp) => {
         if (resp.ok) {
           return from(resp.text());
         } else {
@@ -78,7 +77,7 @@ export class ReportService {
         }
       }),
       tap({
-        next: report => {
+        next: (report) => {
           const isArchived = !isActiveRecording(recording);
           const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
           if (isArchived || isActivedStopped) {
@@ -90,32 +89,31 @@ export class ReportService {
             }
           }
         },
-        error: err => {
+        error: (err) => {
           this.notifications.danger(err.name, err.message);
           if (isGenerationError(err) && err.status >= 500) {
-            err.messageDetail.pipe(first()).subscribe(detail => {
+            err.messageDetail.pipe(first()).subscribe((detail) => {
               sessionStorage.setItem(this.key(recording), `<p>${detail}</p>`);
             });
           }
-        }
+        },
       })
     );
   }
 
-  delete(recording: ArchivedRecording): void {
+  delete(recording: Recording): void {
     sessionStorage.removeItem(this.key(recording));
   }
 
-  private key(recording: ArchivedRecording): string {
+  private key(recording: Recording): string {
     return Base64.encode(`report.${recording.reportUrl}`);
   }
-
 }
 
 export type GenerationError = Error & {
   status: number;
   messageDetail: Observable<string>;
-}
+};
 
 export const isGenerationError = (toCheck: any): toCheck is GenerationError => {
   if ((toCheck as GenerationError).name === undefined) {
@@ -131,4 +129,4 @@ export const isGenerationError = (toCheck: any): toCheck is GenerationError => {
     return false;
   }
   return true;
-}
+};

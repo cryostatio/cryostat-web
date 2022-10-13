@@ -39,43 +39,53 @@ import * as React from 'react';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActiveRecording, ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, ArchivedRecording, Recording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
-import { combineLatest, concatMap, filter, first, forkJoin, merge, Observable } from 'rxjs';
+import { combineLatest, concatMap, filter, first, forkJoin, map, merge, Observable, of } from 'rxjs';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { RecordingLabelFields } from './RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { hashCode } from '@app/utils/utils';
+import { uploadAsTarget } from '@app/Archives/Archives';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
+  isUploadsTable?: boolean;
   checkedIndices: number[];
 }
 
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const [recordings, setRecordings] = React.useState([] as ActiveRecording[]);
+  const [recordings, setRecordings] = React.useState([] as Recording[]);
   const [editing, setEditing] = React.useState(false);
   const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
   const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as RecordingLabel[]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const addSubscription = useSubscriptions();
 
+  const getIdxFromRecording = React.useCallback(
+    (r: Recording): number => (props.isTargetRecording ? (r as ActiveRecording).id : hashCode(r.name)),
+    [hashCode, props.isTargetRecording]
+  );
+
   const handleUpdateLabels = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
-    recordings.forEach((r: ArchivedRecording, idx) => {
+    recordings.forEach((r: Recording) => {
+      const idx = getIdxFromRecording(r);
       if (props.checkedIndices.includes(idx)) {
         let updatedLabels = [...parseLabels(r.metadata.labels), ...commonLabels];
         updatedLabels = updatedLabels.filter((label) => {
           return !includesLabel(toDelete, label);
         });
-
         tasks.push(
           props.isTargetRecording
             ? context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first())
+            : props.isUploadsTable
+            ? context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first())
             : context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first())
         );
       }
@@ -101,68 +111,111 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const handleCancel = React.useCallback(() => {
     setEditing(false);
     setCommonLabels(savedCommonLabels);
-  }, [setEditing, savedCommonLabels]);
+  }, [setEditing, setCommonLabels, savedCommonLabels]);
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
       let allRecordingLabels = [] as RecordingLabel[][];
-      recordings.forEach((r: ArchivedRecording, idx) => {
+
+      recordings.forEach((r: Recording) => {
+        const idx = getIdxFromRecording(r);
         if (props.checkedIndices.includes(idx)) {
           allRecordingLabels.push(parseLabels(r.metadata.labels));
         }
       });
 
-      const updatedCommonLabels = allRecordingLabels.reduce(
-        (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
-        allRecordingLabels[0]
-      );
+      const updatedCommonLabels =
+        allRecordingLabels.length > 0
+          ? allRecordingLabels.reduce(
+              (prev, curr) => prev.filter((label) => includesLabel(curr, label)),
+              allRecordingLabels[0]
+            )
+          : [];
+
       setLabels(updatedCommonLabels);
     },
     [recordings, props.checkedIndices]
   );
 
   const refreshRecordingList = React.useCallback(() => {
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => target !== NO_TARGET),
-          concatMap((target) =>
-            context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
-          ),
-          first()
-        )
-        .subscribe((value) => setRecordings(value))
-    );
-  }, [addSubscription, context, context.target, context.api, setRecordings]);
+    let observable: Observable<Recording[]>;
+    if (props.isTargetRecording) {
+      observable = context.target.target().pipe(
+        filter((target) => target !== NO_TARGET),
+        concatMap((target) =>
+          context.api.doGet<ActiveRecording[]>(`targets/${encodeURIComponent(target.connectUrl)}/recordings`)
+        ),
+        first()
+      );
+    } else {
+      observable = props.isUploadsTable
+        ? context.api
+            .graphql<any>(
+              `
+              query {
+                archivedRecordings(filter: { sourceTarget: "${UPLOADS_SUBDIRECTORY}" }) {
+                  data {
+                    name
+                    downloadUrl
+                    reportUrl
+                    metadata {
+                      labels
+                    }
+                  }
+                }
+              }`
+            )
+            .pipe(
+              map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
+              first()
+            )
+        : context.target.target().pipe(
+            filter((target) => target !== NO_TARGET),
+            concatMap((target) =>
+              context.api.graphql<any>(`
+              query {
+                targetNodes(filter: { name: "${target.connectUrl}" }) {
+                  recordings {
+                    archived {
+                      data {
+                        name
+                        downloadUrl
+                        reportUrl
+                        metadata {
+                          labels
+                        }
+                      }
+                    }
+                  }
+                }
+              }`)
+            ),
+            map((v) => v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
+            first()
+          );
+    }
+
+    addSubscription(observable.subscribe((value) => setRecordings(value)));
+  }, [
+    addSubscription,
+    props.isTargetRecording,
+    props.isUploadsTable,
+    context,
+    context.target,
+    context.api,
+    setRecordings,
+  ]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshRecordingList));
   }, [addSubscription, context, context.target, refreshRecordingList]);
 
+  // Depends only on RecordingMetadataUpdated notifications
+  // since updates on list of recordings will mount a completely new BulkEditLabels.
   React.useEffect(() => {
     addSubscription(
       combineLatest([
-        context.target.target(),
-        merge(
-          context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
-          context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
-        ),
-      ]).subscribe((parts) => {
-        const currentTarget = parts[0];
-        const event = parts[1];
-        if (currentTarget.connectUrl != event.message.target) {
-          return;
-        }
-        setRecordings((old) => old.filter((r) => r.name != event.message.recording.name));
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
-
-  React.useEffect(() => {
-    addSubscription(
-      combineLatest([
-        context.target.target(),
+        props.isUploadsTable ? of(uploadAsTarget) : context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
       ]).subscribe((parts) => {
         const currentTarget = parts[0];
@@ -186,13 +239,13 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     if (!recordings.length && editing) {
       setEditing(false);
     }
-  }, [recordings, props.checkedIndices, setCommonLabels, setSavedCommonLabels]);
+  }, [recordings, setCommonLabels, setSavedCommonLabels, updateCommonLabels, setEditing]);
 
   React.useEffect(() => {
     if (!props.checkedIndices.length) {
       setEditing(false);
     }
-  }, [props.checkedIndices]);
+  }, [props.checkedIndices, setEditing]);
 
   return (
     <>
@@ -217,17 +270,12 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           </Split>
         </StackItem>
         <StackItem>
-          <LabelCell labels={savedCommonLabels} />
+          <LabelCell target="" labels={savedCommonLabels} />
         </StackItem>
         <StackItem>
           {editing ? (
             <>
-              <RecordingLabelFields
-                labels={commonLabels}
-                setLabels={setCommonLabels}
-                valid={valid}
-                setValid={setValid}
-              />
+              <RecordingLabelFields labels={commonLabels} setLabels={setCommonLabels} setValid={setValid} />
               <Split hasGutter>
                 <SplitItem>
                   <Button variant="primary" onClick={handleUpdateLabels} isDisabled={valid != ValidatedOptions.success}>
@@ -244,6 +292,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
           ) : (
             <Button
               key="edit labels"
+              aria-label="Edit Labels"
               variant="secondary"
               onClick={handleEditLabels}
               isDisabled={!props.checkedIndices.length}
