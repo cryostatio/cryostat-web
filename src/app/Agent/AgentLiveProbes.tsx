@@ -46,7 +46,7 @@ import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraD
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { EventProbe } from '@app/Shared/Services/Api.service';
 
 export const AgentLiveProbes = () => {
@@ -158,8 +158,18 @@ export const AgentLiveProbes = () => {
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
+
   if (errorMessage != '') {
-    return (<ErrorView message={errorMessage}/>)
+    return (<ErrorView
+      title={'Error retrieving event templates'}
+      message={errorMessage}
+      retry={isAuthFail(errorMessage) ? authRetry : undefined}
+    />)
   } else if (isLoading) {
     return (<LoadingView/>)
   } else {
