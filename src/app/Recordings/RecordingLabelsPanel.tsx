@@ -37,6 +37,7 @@
  */
 
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
+import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/Api.service';
 import {
   DrawerActions,
   DrawerCloseButton,
@@ -51,6 +52,8 @@ export interface RecordingLabelsPanelProps {
   isTargetRecording: boolean;
   isUploadsTable?: boolean;
   checkedIndices: number[];
+  directory?: RecordingDirectory;
+  directoryRecordings?: ArchivedRecording[];
 }
 
 export const RecordingLabelsPanel: React.FunctionComponent<RecordingLabelsPanelProps> = (props) => {
@@ -70,6 +73,8 @@ export const RecordingLabelsPanel: React.FunctionComponent<RecordingLabelsPanelP
           isTargetRecording={props.isTargetRecording}
           checkedIndices={props.checkedIndices}
           isUploadsTable={props.isUploadsTable}
+          directory={props.directory}
+          directoryRecordings={props.directoryRecordings}
         />
       </DrawerPanelBody>
     </DrawerPanelContent>

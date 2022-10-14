@@ -39,6 +39,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
+import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
@@ -77,7 +78,10 @@ export const Archives: React.FunctionComponent<ArchivesProps> = () => {
         <Tab id="all-targets" eventKey={0} title="All Targets">
           <AllTargetsArchivedRecordingsTable />
         </Tab>
-        <Tab id="uploads" eventKey={1} title="Uploads">
+        <Tab id="all-archives" eventKey={1} title="All Archives">
+          <AllArchivedRecordingsTable />
+        </Tab>
+        <Tab id="uploads" eventKey={2} title="Uploads">
           <ArchivedRecordingsTable target={of(uploadAsTarget)} isUploadsTable={true} isNestedTable={false} />
         </Tab>
       </Tabs>

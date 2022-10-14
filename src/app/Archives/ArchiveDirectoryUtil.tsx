@@ -35,55 +35,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Recording, isHttpError } from '@app/Shared/Services/Api.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { Spinner } from '@patternfly/react-core';
-import { first } from 'rxjs/operators';
-import { isGenerationError } from '@app/Shared/Services/Report.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 
-export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
-  isExpanded: boolean;
-  recording: Recording;
-}
+import { RecordingDirectory } from '@app/Shared/Services/Api.service';
+import { Target } from '@app/Shared/Services/Target.service';
 
-export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo((props) => {
-  const addSubscription = useSubscriptions();
-  const context = React.useContext(ServiceContext);
-  const [report, setReport] = React.useState(undefined as string | undefined);
-  const [loaded, setLoaded] = React.useState(false);
-  const { isExpanded, recording, ...rest } = props;
+export const includesDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): boolean => {
+  return arr.some((t) => t.connectUrl === dir.connectUrl);
+};
 
-  React.useLayoutEffect(() => {
-    if (!props.isExpanded) {
-      return;
+export const indexOfDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): number => {
+  let index = -1;
+  arr.forEach((d, idx) => {
+    if (d.connectUrl === dir.connectUrl) {
+      index = idx;
     }
-    addSubscription(
-      context.reports
-        .report(recording)
-        .pipe(first())
-        .subscribe(
-          (report) => setReport(report),
-          (err) => {
-            if (isGenerationError(err)) {
-              err.messageDetail.pipe(first()).subscribe((detail) => setReport(detail));
-            } else if (isHttpError(err)) {
-              setReport(err.message);
-            } else {
-              setReport(JSON.stringify(err));
-            }
-          }
-        )
-    );
-  }, [addSubscription, context.reports, recording, isExpanded, setReport, props]);
+  });
+  return index;
+};
 
-  const onLoad = () => setLoaded(true);
-
-  return (
-    <>
-      {!loaded && <Spinner />}
-      <iframe title="Automated Analysis" srcDoc={report} {...rest} onLoad={onLoad} hidden={!(loaded && isExpanded)} />
-    </>
-  );
-});
+export const getTargetFromDirectory = (dir: RecordingDirectory): Target => {
+  return {
+    connectUrl: dir.connectUrl,
+    alias: dir.jvmId,
+  };
+};
