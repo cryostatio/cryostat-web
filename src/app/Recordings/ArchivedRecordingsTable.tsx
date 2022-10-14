@@ -36,7 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ArchivedRecording, RecordingDirectory, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import {
+  ArchivedRecording,
+  Recording,
+  RecordingDirectory,
+  UPLOADS_SUBDIRECTORY,
+} from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -333,6 +338,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           tasks.push(context.api.deleteArchivedRecordingFromPath(directory.jvmId, r.name).pipe(first()));
         }
       });
+      addSubscription(forkJoin(tasks).subscribe());
     } else {
       addSubscription(
         props.target.subscribe((t) => {
@@ -342,11 +348,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               tasks.push(context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first()));
             }
           });
+          addSubscription(forkJoin(tasks).subscribe());
         })
       );
     }
-    addSubscription(forkJoin(tasks).subscribe());
-  }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription, props.directory]);
+  }, [addSubscription, filteredRecordings, checkedIndices, context.reports, context.api, props.directory]);
 
   const toggleExpanded = React.useCallback(
     (id: string) => {
@@ -424,7 +430,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             uploadFn={
               props.directory
                 ? () =>
-                    context.api.uploadArchivedRecordingToGrafanaFromPath(props.directory!!.jvmId, props.recording.name)
+                    context.api.uploadArchivedRecordingToGrafanaFromPath(props.directory!.jvmId, props.recording.name)
                 : () => context.api.uploadArchivedRecordingToGrafana(props.sourceTarget, props.recording.name)
             }
           />
@@ -580,9 +586,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   );
 };
 
-export interface RecordingRowProps {
+interface RecordingRowProps {
   key: string;
-  recording: any;
+  recording: ArchivedRecording;
   labelFilters: string[];
   index: number;
   sourceTarget: Observable<Target>;

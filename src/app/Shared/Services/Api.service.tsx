@@ -919,7 +919,6 @@ export interface RecordingAttributes {
 
 export interface Metadata {
   labels: Object;
-  targetId?: string;
 }
 
 export interface StoredCredential {

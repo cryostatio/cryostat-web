@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Shared/Services/Target.service';
+import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -47,7 +47,6 @@ import {
   ToolbarItem,
   SearchInput,
   Badge,
-  Checkbox,
   EmptyState,
   EmptyStateIcon,
   Title,
@@ -56,10 +55,9 @@ import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from 
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { AllArchivesResponse, RecordingDirectory } from '@app/Shared/Services/Api.service';
+import { RecordingDirectory } from '@app/Shared/Services/Api.service';
+import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
 
 export interface AllArchivedRecordingsTableProps {}
 
@@ -74,7 +72,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
-  const tableColumns: string[] = React.useMemo(() => ['Directories', 'Count'], []);
+  const tableColumns: string[] = React.useMemo(() => ['Directory', 'Count'], []);
 
   const handleDirectoriesAndCounts = React.useCallback(
     (directories: RecordingDirectory[]) => {
@@ -166,28 +164,17 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const toggleExpanded = React.useCallback(
     (dir) => {
       const idx = indexOfDirectory(expandedDirectories, dir);
-      setExpandedDirectories((expandedTargets) =>
+      setExpandedDirectories((prevExpandedDirectories) =>
         idx >= 0
-          ? [...expandedTargets.slice(0, idx), ...expandedTargets.slice(idx + 1, expandedTargets.length)]
-          : [...expandedTargets, dir]
+          ? [
+              ...prevExpandedDirectories.slice(0, idx),
+              ...prevExpandedDirectories.slice(idx + 1, prevExpandedDirectories.length),
+            ]
+          : [...prevExpandedDirectories, dir]
       );
     },
     [expandedDirectories, setExpandedDirectories]
   );
-
-  const includesDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): boolean => {
-    return arr.some((t) => t.connectUrl === dir.connectUrl);
-  };
-
-  const indexOfDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): number => {
-    let index = -1;
-    arr.forEach((t, idx) => {
-      if (t.connectUrl === dir.connectUrl) {
-        index = idx;
-      }
-    });
-    return index;
-  };
 
   const isHidden = React.useMemo(() => {
     return directories.map((dir) => {
@@ -231,13 +218,6 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   const recordingRows = React.useMemo(() => {
     return directories.map((dir, idx) => {
       let isExpanded: boolean = includesDirectory(expandedDirectories, dir);
-
-      const getTargetFromDirectory = (dir: RecordingDirectory): Target => {
-        return {
-          connectUrl: dir.connectUrl,
-          alias: dir.jvmId,
-        };
-      };
 
       return (
         <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
@@ -289,12 +269,12 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
   } else {
     view = (
       <>
-        <TableComposable aria-label="all-archives-directory-table">
+        <TableComposable aria-label="all-archives-table">
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
               {tableColumns.map((key) => (
-                <Th key={`table-header-${key}`} width={key === 'Directories' ? 90 : 15}>
+                <Th key={`table-header-${key}`} width={key === 'Directory' ? 90 : 15}>
                   {key}
                 </Th>
               ))}
@@ -308,7 +288,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   return (
     <>
-      <Toolbar id="all-archives-directory-toolbar">
+      <Toolbar id="all-archives-toolbar">
         <ToolbarContent>
           <ToolbarGroup variant="filter-group">
             <ToolbarItem>
