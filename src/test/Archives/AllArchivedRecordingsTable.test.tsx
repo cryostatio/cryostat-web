@@ -204,7 +204,7 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(screen.getByLabelText('all-archives-table')).toBeInTheDocument();
     expect(screen.getByText('Directory')).toBeInTheDocument();
     expect(screen.getByText('Count')).toBeInTheDocument();
-    expect(screen.getByText(`${mockJvmId1} (${mockConnectUrl1})`)).toBeInTheDocument();
+    expect(screen.getByText(`${mockConnectUrl1}`)).toBeInTheDocument();
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
@@ -226,7 +226,7 @@ describe('<AllArchivedRecordingsTable />', () => {
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(1);
     const firstTarget = rows[0];
-    expect(within(firstTarget).getByText(`${mockJvmId1} (${mockConnectUrl1})`)).toBeTruthy();
+    expect(within(firstTarget).getByText(`${mockConnectUrl1}`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
 
     userEvent.type(search, 'asdasdjhj');
@@ -282,7 +282,7 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(rows).toHaveLength(3);
 
     const thirdTarget = rows[2];
-    expect(within(thirdTarget).getByText(`${mockJvmId3} (${mockConnectUrl3})`)).toBeTruthy();
+    expect(within(thirdTarget).getByText(`${mockConnectUrl3}`)).toBeTruthy();
     expect(within(thirdTarget).getByText(4)).toBeTruthy();
   });
 
@@ -297,7 +297,7 @@ describe('<AllArchivedRecordingsTable />', () => {
     let rows = within(tableBody).getAllByRole('row');
 
     const thirdTarget = rows[2];
-    expect(within(thirdTarget).getByText(`${mockJvmId3} (${mockConnectUrl3})`)).toBeTruthy();
+    expect(within(thirdTarget).getByText(`${mockConnectUrl3}`)).toBeTruthy();
     expect(within(thirdTarget).getByText(2)).toBeTruthy();
   });
 });
