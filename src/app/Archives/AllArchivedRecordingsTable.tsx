@@ -37,7 +37,6 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -49,7 +48,11 @@ import {
   Badge,
   EmptyState,
   EmptyStateIcon,
+  Text,
   Title,
+  Tooltip,
+  Split,
+  SplitItem,
 } from '@patternfly/react-core';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
@@ -58,6 +61,7 @@ import { of } from 'rxjs';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RecordingDirectory } from '@app/Shared/Services/Api.service';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
+import { HelpIcon } from '@patternfly/react-icons';
 
 export interface AllArchivedRecordingsTableProps {}
 
@@ -205,7 +209,16 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
             }}
           />
           <Td key={`directory-table-row-${idx}_2`} dataLabel={tableColumns[0]}>
-            {dir.jvmId == dir.connectUrl || !dir.jvmId ? `${dir.connectUrl}` : `${dir.jvmId} (${dir.connectUrl})`}
+            <Split hasGutter>
+              <SplitItem>
+                <Text>{dir.connectUrl}</Text>
+              </SplitItem>
+              <SplitItem>
+                <Tooltip hidden={!dir.jvmId} content={`JVM hash ID: ${dir.jvmId}`}>
+                  <HelpIcon />
+                </Tooltip>
+              </SplitItem>
+            </Split>
           </Td>
           <Td key={`directory-table-row-${idx}_3`}>
             <Badge key={`${idx}_count`}>{counts.get(dir.connectUrl) || 0}</Badge>
