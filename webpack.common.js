@@ -16,7 +16,7 @@ module.exports = env => {
       new ForkTsCheckerPlugin(),
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'index.html'),
-        favicon: './src/app/assets/cryostat-3-icon-16px.png',
+        favicon: './src/app/assets/favicon.ico',
       }),
     ],
     // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
