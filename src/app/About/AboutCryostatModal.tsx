@@ -38,18 +38,20 @@
 
 import { AboutModal } from '@patternfly/react-core';
 import React from 'react';
-import cryostatLogoWhite from '@app/assets/logo-cryostat-3.svg';
+import build from '@app/build.json';
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
 
 export const AboutCryostatModal = ({ isOpen, onClose }) => {
   return (
     <>
       <AboutModal
+        productName={build.productName}
+        brandImageSrc={cryostatLogo}
+        brandImageAlt="Cryostat Logo"
         isOpen={isOpen}
         onClose={onClose}
         trademark={CRYOSTAT_TRADEMARK}
-        brandImageSrc={cryostatLogoWhite}
-        brandImageAlt="Cryostat Logo"
       >
         <AboutDescription />
       </AboutModal>

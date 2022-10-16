@@ -39,10 +39,6 @@ html, body, #root {
   height: 100%;
 }
 
-.pf-c-about-modal-box__brand-image {
-  height: 8em;
-}
-
 .pf-c-card-not-found {
   text-align: left;
   margin-left: 1rem;
@@ -57,6 +53,7 @@ html, body, #root {
   padding-left: 10rem;
   padding-right: 10rem;
 }
+
 .cryostat-logo {
   height: 2em !important;
 }
@@ -78,5 +75,5 @@ html, body, #root {
 }
 
 .recording-table-container {
-  height: 512px; 
+  height: 512px;
 }
