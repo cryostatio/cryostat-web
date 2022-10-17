@@ -43,6 +43,7 @@ import { Recording } from '@app/Shared/Services/Api.service';
 export interface NameFilterProps {
   recordings: Recording[];
   filteredNames: string[];
+  menuAppendTo?: HTMLElement | (() => HTMLElement) | 'inline' | 'parent';
   onSubmit: (inputName: string) => void;
 }
 
@@ -75,7 +76,7 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
       typeAheadAriaLabel="Filter by name..."
       placeholderText="Filter by name..."
       aria-label="Filter by name"
-      menuAppendTo="parent"
+      menuAppendTo={props.menuAppendTo}
     >
       {nameOptions}
     </Select>
