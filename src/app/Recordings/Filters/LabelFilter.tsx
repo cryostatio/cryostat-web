@@ -82,6 +82,7 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
       aria-label="Filter by label"
       typeAheadAriaLabel="Filter by label..."
       placeholderText="Filter by label..."
+      menuAppendTo="parent"
     >
       {labels.map((option, index) => (
         <SelectOption key={index} value={option}>
