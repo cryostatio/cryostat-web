@@ -75,6 +75,7 @@ export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
       typeAheadAriaLabel="Filter by name..."
       placeholderText="Filter by name..."
       aria-label="Filter by name"
+      maxHeight="16em"
     >
       {nameOptions}
     </Select>
