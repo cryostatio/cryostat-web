@@ -207,7 +207,6 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
           recordings={props.recordings}
           onSubmit={onNameInput}
           filteredNames={props.filters.Name}
-          menuAppendTo="parent"
         />
       </InputGroup>,
       <InputGroup>
@@ -215,7 +214,6 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
           recordings={props.recordings}
           onSubmit={onLabelInput}
           filteredLabels={props.filters.Label}
-          menuAppendTo="parent"
         />
       </InputGroup>,
       ...(!props.isArchived

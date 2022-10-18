@@ -44,7 +44,6 @@ import { parseLabels, RecordingLabel } from '@app/RecordingMetadata/RecordingLab
 export interface LabelFilterProps {
   recordings: Recording[];
   filteredLabels: string[];
-  menuAppendTo?: HTMLElement | (() => HTMLElement) | 'inline' | 'parent';
   onSubmit: (inputLabel: string) => void;
 }
 
@@ -83,7 +82,6 @@ export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) =>
       aria-label="Filter by label"
       typeAheadAriaLabel="Filter by label..."
       placeholderText="Filter by label..."
-      menuAppendTo={props.menuAppendTo}
     >
       {labels.map((option, index) => (
         <SelectOption key={index} value={option}>

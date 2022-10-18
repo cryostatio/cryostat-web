@@ -77,16 +77,11 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
     props.onSubmit(`${selectedDate!.toISOString()}`);
   }, [selectedDate, selectedHour, selectedMinute, props.onSubmit]);
 
-  // Append the popover date menu to the higher component in the tree to avoid cut-off.
-  // Potential cause: A parent container has "overflow: hidden".
-  // Caution: Lose accessibility support if using document.body
-  const elementToAppend = document.body;
-
   return (
     <Flex>
       <FlexItem>
         <DatePicker
-          appendTo={elementToAppend}
+          appendTo="parent"
           onChange={onDateChange}
           aria-label="Date Picker"
           placeholder="YYYY-MM-DD"
@@ -97,7 +92,7 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
           is24Hour
           aria-label="Time Picker"
           className="time-picker"
-          menuAppendTo={elementToAppend}
+          menuAppendTo="parent"
           onChange={onTimeChange}
         />
       </FlexItem>

@@ -120,10 +120,11 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
     view = (
       <>
         <TableComposable
+          isStickyHeader
           scrolling=""
           aria-label={props.tableTitle}
-          isStickyHeader={props.isNestedTable}
           variant={props.isNestedTable ? 'compact' : undefined}
+          style={{zIndex: 99}} // z-index of filters Select dropdown is 100 
         >
           <Thead>
             <Tr>
