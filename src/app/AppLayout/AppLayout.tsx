@@ -71,7 +71,7 @@ import { Notification, NotificationsContext } from '@app/Notifications/Notificat
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
-import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
+import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -266,7 +266,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const Header = (
     <>
       <PageHeader
-        logo={<Brand alt="Cryostat" src={cryostatLogoHorizontal} className="cryostat-logo" />}
+        logo={<Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />}
         logoProps={logoProps}
         showNavToggle
         isNavOpen={isNavOpen}
