@@ -75,5 +75,5 @@ html, body, #root {
 }
 
 .recording-table-container {
-  max-height: 32rem; 
+  height: 32rem;
 }
