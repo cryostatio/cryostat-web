@@ -203,18 +203,10 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const filterDropdownItems = React.useMemo(
     () => [
       <InputGroup>
-        <NameFilter
-          recordings={props.recordings}
-          onSubmit={onNameInput}
-          filteredNames={props.filters.Name}
-        />
+        <NameFilter recordings={props.recordings} onSubmit={onNameInput} filteredNames={props.filters.Name} />
       </InputGroup>,
       <InputGroup>
-        <LabelFilter
-          recordings={props.recordings}
-          onSubmit={onLabelInput}
-          filteredLabels={props.filters.Label}
-        />
+        <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} filteredLabels={props.filters.Label} />
       </InputGroup>,
       ...(!props.isArchived
         ? [

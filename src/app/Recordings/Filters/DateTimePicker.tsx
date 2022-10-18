@@ -80,12 +80,7 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
   return (
     <Flex>
       <FlexItem>
-        <DatePicker
-          appendTo="parent"
-          onChange={onDateChange}
-          aria-label="Date Picker"
-          placeholder="YYYY-MM-DD"
-        />
+        <DatePicker appendTo="parent" onChange={onDateChange} aria-label="Date Picker" placeholder="YYYY-MM-DD" />
         <TimePicker
           isOpen={isTimeOpen}
           setIsOpen={onTimeToggle}
