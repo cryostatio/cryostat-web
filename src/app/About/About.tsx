@@ -38,7 +38,7 @@
 
 import React from 'react';
 import build from '@app/build.json';
-import cryostatLogoHorizontal from '@app/assets/logo-cryostat-3-horizontal.svg';
+import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_default.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
 import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
@@ -48,7 +48,7 @@ export const About = () => {
     <BreadcrumbPage pageTitle="About">
       <Card>
         <CardHeader>
-          <Brand alt={build.productName} src={cryostatLogoHorizontal} className="cryostat-logo" />
+          <Brand alt={build.productName} src={cryostatLogo} className="cryostat-logo" />
         </CardHeader>
         <CardBody>
           <AboutDescription />
