@@ -123,7 +123,7 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
   } else {
     view = (
       <>
-        <InnerScrollContainer style={{ maxHeight: '24em'}}>
+        <InnerScrollContainer style={{ maxHeight: '24em' }}>
           <TableComposable aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
             <Thead>
               <Tr>
