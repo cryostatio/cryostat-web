@@ -58,7 +58,14 @@ const mockCustomEventTemplate: ProbeTemplate = {
     xml: '<some><dummy><xml></xml></dummy></some>'
 };
 
-const mockAnotherTemplate = {...mockCustomEventTemplate, name: 'anotherProbeTemplate'}
+const mockAnotherTemplate: ProbeTemplate = {
+  name: 'anotherProbeTemplate',
+  xml: '<some><other><xml></xml></dummy></some>'
+};
+
+const mockData : ProbeTemplate[] = [
+  mockCustomEventTemplate, mockAnotherTemplate
+];
 
 const mockCreateTemplateNotification = { 
   meta: {
@@ -88,7 +95,6 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true) // show deletion warning
   .mockReturnValue(false); // don't ask again
 
 jest.spyOn(defaultServices.api, 'addCustomProbeTemplate').mockReturnValue(of(true));
@@ -96,7 +102,14 @@ jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(
 jest.spyOn(defaultServices.api, 'insertProbes').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
 
-jest.spyOn(defaultServices.api, 'getProbeTemplates').mockReturnValue(of([mockCustomEventTemplate]));
+jest.spyOn(defaultServices.api, 'getProbeTemplates')
+.mockReturnValueOnce(of([mockCustomEventTemplate])) // Renders Correctly
+.mockReturnValueOnce(of([mockCustomEventTemplate]))
+.mockReturnValueOnce(of(mockData)) // Adds a probe template
+.mockReturnValueOnce(of(mockData))
+.mockReturnValueOnce(of([])) // Removes a probe template
+.mockReturnValueOnce(of([]))
+.mockReturnValue(of([mockCustomEventTemplate])); // All other tests
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
@@ -107,13 +120,12 @@ jest
   .mockReturnValueOnce(of())
   
   .mockReturnValueOnce(of(mockCreateTemplateNotification)) // adds a template after receiving a notification
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
-
   .mockReturnValueOnce(of(mockDeleteTemplateNotification)) // removes a template after receiving a notification
-  .mockReturnValue(of()); // all other tests
 
-  describe('<EventTemplates />', () => {
+  .mockReturnValue(of()); // All Other tests
+  
+
+  describe('<AgentProbeTemplates />', () => {
     it('renders correctly', async () => {
       let tree;
       await act(async () => {
@@ -133,8 +145,7 @@ jest
         </ServiceContext.Provider>
       );
 
-      expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
-      expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
+      expect(screen.getByText('someProbeTemplate')).toBeInTheDocument();
     });
 
     it('removes a recording after receiving a notification', () => {
@@ -143,7 +154,7 @@ jest
           <AgentProbeTemplates />
         </ServiceContext.Provider>
       );
-      expect(screen.queryByText('anotherEventTemplate')).not.toBeInTheDocument();
+      expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
     });
 
     it('displays the column header fields', () => {
@@ -187,11 +198,11 @@ jest
       const deleteAction = screen.getByText('Delete');
       userEvent.click(deleteAction);
 
-      expect(screen.getByLabelText('Event template delete warning'));
+      //expect(screen.getByLabelText('Event template delete warning'));
 
       const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate');
 
       expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-      expect(deleteRequestSpy).toBeCalledWith('someEventTemplate');;
+      expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');;
     });
   });

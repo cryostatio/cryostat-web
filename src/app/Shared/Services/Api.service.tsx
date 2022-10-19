@@ -569,7 +569,7 @@ export class ApiService {
   getProbeTemplates(): Observable<ProbeTemplate[]> {
     return this.sendRequest('v2', 'probes', { method: 'GET' }).
       pipe(concatMap(resp => resp.json()), 
-      map(response => response.data.result),
+      map((response : ProbeTemplateResponse) => response.data.result),
       first());
   }
 
@@ -936,6 +936,12 @@ interface CredentialResponse extends ApiV2Response {
   data: {
     result: MatchedCredential;
   };
+}
+
+interface ProbeTemplateResponse extends ApiV2Response {
+  data: {
+    result: ProbeTemplate[];
+  }
 }
 
 interface CredentialsResponse extends ApiV2Response {

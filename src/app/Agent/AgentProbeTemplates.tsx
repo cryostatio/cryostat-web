@@ -48,6 +48,8 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
 export const AgentProbeTemplates = () => {
 
@@ -65,12 +67,15 @@ export const AgentProbeTemplates = () => {
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const addSubscription = useSubscriptions();
 
-  const tableColumns = [
+  const tableColumns = React.useMemo(
+    () => [
     { title: 'name', transforms: [ sortable ] },
-    { title: 'xml' , transforms: [ sortable ] }
-  ];
+    { title: 'xml' , transforms: [ sortable ] },
+  ], [sortable]);
 
   React.useEffect(() => {
     let filtered;
@@ -78,7 +83,11 @@ export const AgentProbeTemplates = () => {
       filtered = templates;
     } else {
       const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter((t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft));
+      filtered = templates.filter(
+        (t: ProbeTemplate) => 
+          t.name.toLowerCase().includes(ft) ||
+          t.xml.toLowerCase().includes(ft)
+        );
     }
     const { index, direction } = sortBy;
     if (typeof index === 'number') {
@@ -91,7 +100,7 @@ export const AgentProbeTemplates = () => {
   }, [filterText, templates, sortBy]);
 
   const handleTemplates = React.useCallback((templates) => {
-    templates = JSON.parse(templates);
+    console.log(templates);
     setTemplates(templates);
     setIsLoading(false);
     setErrorMessage('');
@@ -107,7 +116,7 @@ export const AgentProbeTemplates = () => {
     addSubscription(
       context.target.target()
       .pipe(
-        concatMap(target => context.api.getProbeTemplates()),
+        concatMap((target) => context.api.getProbeTemplates()),
         first(),
       ).subscribe(value => handleTemplates(value), err => handleError(err))
     );
@@ -137,8 +146,9 @@ export const AgentProbeTemplates = () => {
   }, [context.target]);
 
   const displayTemplates = React.useMemo(
-    () => templates.map((t: ProbeTemplate) => ([ t.name , t.xml])),
-    [templates]
+    () =>
+    filteredTemplates.map((t: ProbeTemplate) => ([ t.name , t.xml])),
+    [filteredTemplates]
   );
 
   const handleDelete = (rowData) => {
@@ -173,7 +183,7 @@ export const AgentProbeTemplates = () => {
         },
         {
           title: 'Delete',
-          onClick: (event, rowId, rowData) => handleDelete(rowData)
+          onClick: (event, rowId, rowData) => handleDeleteButton(rowData)
         }
     ]);
     return actions;
@@ -237,6 +247,27 @@ export const AgentProbeTemplates = () => {
     setModalOpen(false);
   };
 
+  const handleDeleteButton = React.useCallback(
+    (rowData) => {
+      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+        setRowDeleteData(rowData);
+        setWarningModalOpen(true);
+      } else {
+        handleDelete(rowData);
+      }
+    },
+    [context, context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]
+  );
+
+  const handleWarningModalAccept = React.useCallback(() => {
+    handleDelete(rowDeleteData);
+  }, [handleDelete, rowDeleteData]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+
   const handleFileRejected = () => {
     setFileRejected(true);
   };
@@ -272,6 +303,12 @@ export const AgentProbeTemplates = () => {
               <Button key="create" variant="primary" onClick={handleModalToggle}>Upload</Button>
             </ToolbarItem>
           </ToolbarGroup>
+          <DeleteWarningModal
+            warningType={DeleteWarningType.DeleteEventTemplates}
+            visible={warningModalOpen}
+            onAccept={handleWarningModalAccept}
+            onClose={handleWarningModalClose}
+          />
         </ToolbarContent>
       </Toolbar>
       <Table aria-label="Probe Templates Table"
