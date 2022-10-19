@@ -36,7 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import {
+  ArchivedRecording,
+  Recording,
+  RecordingDirectory,
+  UPLOADS_SUBDIRECTORY,
+} from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -50,12 +55,6 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Text,
-  TextVariants,
-  FlexItem,
-  Flex,
-  Chip,
-  Badge,
 } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
 import { PlusIcon } from '@patternfly/react-icons';
@@ -89,6 +88,8 @@ export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
   isUploadsTable: boolean;
   isNestedTable: boolean;
+  directory?: RecordingDirectory;
+  directoryRecordings?: ArchivedRecording[];
 }
 
 export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordingsTableProps> = (props) => {
@@ -186,7 +187,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const refreshRecordingList = React.useCallback(() => {
     setIsLoading(true);
-    if (props.isUploadsTable) {
+    if (props.directory) {
+      handleRecordings(props.directoryRecordings);
+    } else if (props.isUploadsTable) {
       addSubscription(
         queryUploadedRecordings()
           .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]))
@@ -204,7 +207,15 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           .subscribe(handleRecordings)
       );
     }
-  }, [addSubscription, context, context.api, setIsLoading, handleRecordings]);
+  }, [
+    addSubscription,
+    context.api,
+    setIsLoading,
+    handleRecordings,
+    queryTargetRecordings,
+    queryUploadedRecordings,
+    props.directoryRecordings,
+  ]);
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(targetConnectURL, true));
@@ -252,7 +263,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         setRecordings((old) => old.concat(event.message.recording));
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  }, [addSubscription, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
@@ -265,12 +276,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-
         setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
         setCheckedIndices((old) => old.filter((idx) => idx !== hashCode(event.message.recording.name)));
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setRecordings, setCheckedIndices]);
+  }, [addSubscription, context.notificationChannel, setRecordings, setCheckedIndices]);
 
   React.useEffect(() => {
     addSubscription(
@@ -320,18 +330,29 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const handleDeleteRecordings = React.useCallback(() => {
     const tasks: Observable<any>[] = [];
-    addSubscription(
-      props.target.subscribe((t) => {
-        filteredRecordings.forEach((r: ArchivedRecording) => {
-          if (checkedIndices.includes(hashCode(r.name))) {
-            context.reports.delete(r);
-            tasks.push(context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first()));
-          }
-        });
-      })
-    );
-    addSubscription(forkJoin(tasks).subscribe());
-  }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
+    if (props.directory) {
+      const directory = props.directory;
+      filteredRecordings.forEach((r: ArchivedRecording) => {
+        if (checkedIndices.includes(hashCode(r.name))) {
+          context.reports.delete(r);
+          tasks.push(context.api.deleteArchivedRecordingFromPath(directory.jvmId, r.name).pipe(first()));
+        }
+      });
+      addSubscription(forkJoin(tasks).subscribe());
+    } else {
+      addSubscription(
+        props.target.subscribe((t) => {
+          filteredRecordings.forEach((r: ArchivedRecording) => {
+            if (checkedIndices.includes(hashCode(r.name))) {
+              context.reports.delete(r);
+              tasks.push(context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first()));
+            }
+          });
+          addSubscription(forkJoin(tasks).subscribe());
+        })
+      );
+    }
+  }, [addSubscription, filteredRecordings, checkedIndices, context.reports, context.api, props.directory]);
 
   const toggleExpanded = React.useCallback(
     (id: string) => {
@@ -345,7 +366,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     [setExpandedRows]
   );
 
-  const RecordingRow = (props) => {
+  const RecordingRow = (props: RecordingRowProps) => {
     const parsedLabels = React.useMemo(() => {
       return parseLabels(props.recording.metadata.labels);
     }, [props.recording.metadata.labels]);
@@ -406,7 +427,12 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           <RecordingActions
             recording={props.recording}
             index={props.index}
-            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.sourceTarget, props.recording.name)}
+            uploadFn={
+              props.directory
+                ? () =>
+                    context.api.uploadArchivedRecordingToGrafanaFromPath(props.directory!.jvmId, props.recording.name)
+                : () => context.api.uploadArchivedRecordingToGrafana(props.sourceTarget, props.recording.name)
+            }
           />
         </Tr>
       );
@@ -414,6 +440,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       props.recording,
       props.recording.metadata.labels,
       props.recording.name,
+      props.directory,
+      props.sourceTarget,
       props.index,
       props.labelFilters,
       checkedIndices,
@@ -487,6 +515,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         labelFilters={targetRecordingFilters.Label}
         index={hashCode(r.name)}
         sourceTarget={props.target}
+        directory={props.directory}
       />
     ));
   }, [filteredRecordings, expandedRows, checkedIndices]);
@@ -503,9 +532,11 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         isTargetRecording={false}
         isUploadsTable={props.isUploadsTable}
         checkedIndices={checkedIndices}
+        directory={props.directory}
+        directoryRecordings={props.directoryRecordings}
       />
     ),
-    [checkedIndices, setShowDetailsPanel, props.isUploadsTable]
+    [checkedIndices, setShowDetailsPanel, props.isUploadsTable, props.directoryRecordings]
   );
 
   const totalArchiveSize = React.useMemo(() => {
@@ -554,6 +585,16 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     </Drawer>
   );
 };
+
+interface RecordingRowProps {
+  key: string;
+  recording: ArchivedRecording;
+  labelFilters: string[];
+  index: number;
+  sourceTarget: Observable<Target>;
+  directory?: RecordingDirectory;
+}
+
 export interface ArchivedRecordingsToolbarProps {
   target: string;
   checkedIndices: number[];

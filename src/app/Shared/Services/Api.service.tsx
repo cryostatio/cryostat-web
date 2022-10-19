@@ -400,6 +400,50 @@ export class ApiService {
     );
   }
 
+  // from file system path functions
+  uploadArchivedRecordingToGrafanaFromPath(subdirectoryName: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/upload`, {
+      method: 'POST',
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
+    );
+  }
+  deleteArchivedRecordingFromPath(subdirectoryName: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest('beta', `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}`, {
+      method: 'DELETE',
+    }).pipe(
+      map((resp) => resp.ok),
+      first()
+    );
+  }
+
+  transformAndStringifyToRawLabels(labels: RecordingLabel[]) {
+    const rawLabels = {};
+    for (const label of labels) {
+      rawLabels[label.key] = label.value;
+    }
+    return JSON.stringify(rawLabels);
+  }
+
+  postRecordingMetadataFromPath(
+    subdirectoryName: string,
+    recordingName: string,
+    labels: RecordingLabel[]
+  ): Observable<boolean> {
+    return this.sendRequest(
+      'beta',
+      `fs/recordings/${subdirectoryName}/${encodeURIComponent(recordingName)}/metadata/labels`,
+      {
+        method: 'POST',
+        body: this.transformAndStringifyToRawLabels(labels),
+      }
+    ).pipe(
+      map((resp) => resp.ok),
+      first()
+    );
+  }
+
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
     return this.sendRequest('v1', `templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
@@ -870,6 +914,8 @@ export class ApiService {
   }
 }
 
+export interface AllArchivesResponse {}
+
 export interface ApiV2Response {
   meta: {
     status: string;
@@ -896,6 +942,12 @@ interface CredentialsResponse extends ApiV2Response {
   data: {
     result: StoredCredential[];
   };
+}
+
+export interface RecordingDirectory {
+  connectUrl: string;
+  jvmId: string;
+  recordings: ArchivedRecording[];
 }
 
 export interface ArchivedRecording {

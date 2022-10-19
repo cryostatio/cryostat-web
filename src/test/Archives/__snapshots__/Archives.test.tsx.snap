@@ -102,12 +102,29 @@ exports[`<Archives /> renders correctly 1`] = `
                 role="presentation"
               >
                 <button
-                  aria-controls="pf-tab-section-1-uploads"
+                  aria-controls="pf-tab-section-1-all-archives"
                   aria-selected={false}
                   className="pf-c-tabs__link"
                   data-ouia-component-type="PF4/TabButton"
                   data-ouia-safe={true}
-                  id="pf-tab-1-uploads"
+                  id="pf-tab-1-all-archives"
+                  onClick={[Function]}
+                  role="tab"
+                >
+                  All Archives
+                </button>
+              </li>
+              <li
+                className="pf-c-tabs__item"
+                role="presentation"
+              >
+                <button
+                  aria-controls="pf-tab-section-2-uploads"
+                  aria-selected={false}
+                  className="pf-c-tabs__link"
+                  data-ouia-component-type="PF4/TabButton"
+                  data-ouia-safe={true}
+                  id="pf-tab-2-uploads"
                   onClick={[Function]}
                   role="tab"
                 >
@@ -157,12 +174,26 @@ exports[`<Archives /> renders correctly 1`] = `
             </div>
           </section>
           <section
-            aria-labelledby="pf-tab-1-uploads"
+            aria-labelledby="pf-tab-1-all-archives"
             className="pf-c-tab-content"
             data-ouia-component-type="PF4/TabContent"
             data-ouia-safe={true}
             hidden={true}
-            id="pf-tab-section-1-uploads"
+            id="pf-tab-section-1-all-archives"
+            role="tabpanel"
+            tabIndex={0}
+          >
+            <div>
+              All Archives Table
+            </div>
+          </section>
+          <section
+            aria-labelledby="pf-tab-2-uploads"
+            className="pf-c-tab-content"
+            data-ouia-component-type="PF4/TabContent"
+            data-ouia-safe={true}
+            hidden={true}
+            id="pf-tab-section-2-uploads"
             role="tabpanel"
             tabIndex={0}
           >

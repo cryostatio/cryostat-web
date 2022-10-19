@@ -246,7 +246,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
       </ServiceContext.Provider>
     );
 
-    expect(screen.getByLabelText('all-archives-table')).toBeInTheDocument();
+    expect(screen.getByLabelText('all-targets-table')).toBeInTheDocument();
     expect(screen.getByText('Target')).toBeInTheDocument();
     expect(screen.getByText('Count')).toBeInTheDocument();
     expect(screen.getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeInTheDocument();
@@ -276,7 +276,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     expect(within(secondTarget).getByText(`${mockAlias2} (${mockConnectUrl2})`)).toBeTruthy();
     expect(within(secondTarget).getByText(`${mockCount2}`)).toBeTruthy();
 
-    const checkbox = screen.getByLabelText('all-archives-hide-check');
+    const checkbox = screen.getByLabelText('all-targets-hide-check');
     userEvent.click(checkbox);
 
     tableBody = screen.getAllByRole('rowgroup')[1];
@@ -310,7 +310,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
 
     userEvent.type(search, 'asdasdjhj');
     expect(screen.getByText('No Targets')).toBeInTheDocument();
-    expect(screen.queryByLabelText('all-archives-table')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('all-targets-table')).not.toBeInTheDocument();
 
     userEvent.clear(search);
     tableBody = screen.getAllByRole('rowgroup')[1];
@@ -356,7 +356,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
       </ServiceContext.Provider>
     );
 
-    const checkbox = screen.getByLabelText('all-archives-hide-check');
+    const checkbox = screen.getByLabelText('all-targets-hide-check');
     userEvent.click(checkbox);
 
     let tableBody = screen.getAllByRole('rowgroup')[1];
@@ -420,7 +420,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
       </ServiceContext.Provider>
     );
 
-    const checkbox = screen.getByLabelText('all-archives-hide-check');
+    const checkbox = screen.getByLabelText('all-targets-hide-check');
     userEvent.click(checkbox);
 
     let tableBody = screen.getAllByRole('rowgroup')[1];

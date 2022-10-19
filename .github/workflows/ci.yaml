@@ -32,5 +32,5 @@ jobs:
     - uses: bahmutov/npm-install@v1
     - run: yarn format:check
   # - run: yarn lint
-    - run: yarn build
+    - run: yarn build:notests
     - run: yarn test:ci

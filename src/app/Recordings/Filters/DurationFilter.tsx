@@ -53,7 +53,7 @@ export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (pro
   );
 
   const handleContinousCheckBoxChange = React.useCallback(
-    (checked, envt) => {
+    (checked, evt) => {
       props.onContinuousDurationSelect(checked);
     },
     [props.onContinuousDurationSelect]

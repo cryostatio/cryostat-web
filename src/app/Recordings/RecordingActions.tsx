@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { ActiveRecording } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -54,7 +54,7 @@ export interface RowAction {
 
 export interface RecordingActionsProps {
   index: number;
-  recording: ActiveRecording;
+  recording: Recording;
   sourceTarget?: Observable<Target>;
   uploadFn: () => Observable<boolean>;
 }

@@ -7,7 +7,7 @@ Array [
     data-ouia-component-id="OUIA-Generated-Toolbar-1"
     data-ouia-component-type="PF4/Toolbar"
     data-ouia-safe={true}
-    id="all-archives-toolbar"
+    id="all-targets-toolbar"
   >
     <div
       className="pf-c-toolbar__content"
@@ -79,21 +79,21 @@ Array [
             >
               <input
                 aria-invalid={false}
-                aria-label="all-archives-hide-check"
+                aria-label="all-targets-hide-check"
                 checked={true}
                 className="pf-c-check__input"
                 data-ouia-component-id="OUIA-Generated-Checkbox-1"
                 data-ouia-component-type="PF4/Checkbox"
                 data-ouia-safe={true}
                 disabled={false}
-                id="all-archives-hide-check"
-                name="all-archives-hide-check"
+                id="all-targets-hide-check"
+                name="all-targets-hide-check"
                 onChange={[Function]}
                 type="checkbox"
               />
               <label
                 className="pf-c-check__label"
-                htmlFor="all-archives-hide-check"
+                htmlFor="all-targets-hide-check"
               >
                 Hide targets with zero recordings
               </label>
@@ -103,7 +103,7 @@ Array [
       </div>
       <div
         className="pf-c-toolbar__expandable-content"
-        id="all-archives-toolbar-expandable-content-2"
+        id="all-targets-toolbar-expandable-content-2"
       >
         <div
           className="pf-c-toolbar__group"
@@ -120,7 +120,7 @@ Array [
     </div>
   </div>,
   <table
-    aria-label="all-archives-table"
+    aria-label="all-targets-table"
     className="pf-c-table pf-m-grid-md"
     data-ouia-component-id="OUIA-Generated-Table-1"
     data-ouia-component-type="PF4/Table"

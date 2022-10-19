@@ -364,7 +364,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
     } else {
       view = (
         <>
-          <TableComposable aria-label="all-archives-table">
+          <TableComposable aria-label="all-targets-table">
             <Thead>
               <Tr>
                 <Th key="table-header-expand" />
@@ -383,7 +383,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
 
     return (
       <>
-        <Toolbar id="all-archives-toolbar">
+        <Toolbar id="all-targets-toolbar">
           <ToolbarContent>
             <ToolbarGroup variant="filter-group">
               <ToolbarItem>
@@ -398,12 +398,12 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
             <ToolbarGroup>
               <ToolbarItem>
                 <Checkbox
-                  name={`all-archives-hide-check`}
+                  name={`all-targets-hide-check`}
                   label="Hide targets with zero recordings"
                   onChange={setHideEmptyTargets}
                   isChecked={hideEmptyTargets}
-                  id={`all-archives-hide-check`}
-                  aria-label={`all-archives-hide-check`}
+                  id={`all-targets-hide-check`}
+                  aria-label={`all-targets-hide-check`}
                 />
               </ToolbarItem>
             </ToolbarGroup>

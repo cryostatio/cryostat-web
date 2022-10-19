@@ -39,7 +39,13 @@ import * as React from 'react';
 import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActiveRecording, ArchivedRecording, Recording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import {
+  ActiveRecording,
+  ArchivedRecording,
+  Recording,
+  RecordingDirectory,
+  UPLOADS_SUBDIRECTORY,
+} from '@app/Shared/Services/Api.service';
 import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
 import { combineLatest, concatMap, filter, first, forkJoin, map, merge, Observable, of } from 'rxjs';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
@@ -54,6 +60,8 @@ export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
   isUploadsTable?: boolean;
   checkedIndices: number[];
+  directory?: RecordingDirectory;
+  directoryRecordings?: ArchivedRecording[];
 }
 
 export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (props) => {
@@ -81,26 +89,34 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         updatedLabels = updatedLabels.filter((label) => {
           return !includesLabel(toDelete, label);
         });
-        tasks.push(
-          props.isTargetRecording
-            ? context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first())
-            : props.isUploadsTable
-            ? context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first())
-            : context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first())
-        );
+        if (props.directory) {
+          tasks.push(
+            context.api.postRecordingMetadataFromPath(props.directory.jvmId, r.name, updatedLabels).pipe(first())
+          );
+        }
+        if (props.isTargetRecording) {
+          tasks.push(context.api.postTargetRecordingMetadata(r.name, updatedLabels).pipe(first()));
+        } else if (props.isUploadsTable) {
+          tasks.push(context.api.postUploadedRecordingMetadata(r.name, updatedLabels).pipe(first()));
+        } else {
+          tasks.push(context.api.postRecordingMetadata(r.name, updatedLabels).pipe(first()));
+        }
       }
     });
     addSubscription(forkJoin(tasks).subscribe(() => setEditing((editing) => !editing)));
   }, [
+    addSubscription,
     recordings,
     props.checkedIndices,
     props.isTargetRecording,
+    props.isUploadsTable,
+    props.directory,
+    props.directoryRecordings,
     editing,
     setEditing,
     commonLabels,
     savedCommonLabels,
     parseLabels,
-    context,
     context.api,
   ]);
 
@@ -139,7 +155,9 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
 
   const refreshRecordingList = React.useCallback(() => {
     let observable: Observable<Recording[]>;
-    if (props.isTargetRecording) {
+    if (props.directoryRecordings) {
+      observable = of(props.directoryRecordings);
+    } else if (props.isTargetRecording) {
       observable = context.target.target().pipe(
         filter((target) => target !== NO_TARGET),
         concatMap((target) =>
@@ -200,6 +218,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     addSubscription,
     props.isTargetRecording,
     props.isUploadsTable,
+    props.directoryRecordings,
     context,
     context.target,
     context.api,
@@ -230,7 +249,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         );
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setRecordings]);
+  }, [addSubscription, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);

@@ -36,25 +36,26 @@
  * SOFTWARE.
  */
 
-import { AboutModal } from '@patternfly/react-core';
-import React from 'react';
-import build from '@app/build.json';
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
-import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
+import { RecordingDirectory } from '@app/Shared/Services/Api.service';
+import { Target } from '@app/Shared/Services/Target.service';
 
-export const AboutCryostatModal = ({ isOpen, onClose }) => {
-  return (
-    <>
-      <AboutModal
-        productName={build.productName}
-        brandImageSrc={cryostatLogo}
-        brandImageAlt="Cryostat Logo"
-        isOpen={isOpen}
-        onClose={onClose}
-        trademark={CRYOSTAT_TRADEMARK}
-      >
-        <AboutDescription />
-      </AboutModal>
-    </>
-  );
+export const includesDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): boolean => {
+  return arr.some((t) => t.connectUrl === dir.connectUrl);
+};
+
+export const indexOfDirectory = (arr: RecordingDirectory[], dir: RecordingDirectory): number => {
+  let index = -1;
+  arr.forEach((d, idx) => {
+    if (d.connectUrl === dir.connectUrl) {
+      index = idx;
+    }
+  });
+  return index;
+};
+
+export const getTargetFromDirectory = (dir: RecordingDirectory): Target => {
+  return {
+    connectUrl: dir.connectUrl,
+    alias: dir.jvmId,
+  };
 };
