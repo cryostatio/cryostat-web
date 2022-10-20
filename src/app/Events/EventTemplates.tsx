@@ -129,6 +129,7 @@ export const EventTemplates = () => {
 
   const handleTemplates = React.useCallback(
     (templates) => {
+      setTemplates(templates);
       setIsLoading(false);
       setErrorMessage('');
     },
