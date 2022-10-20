@@ -37,8 +37,21 @@
  */
 import * as React from 'react';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
+import {
+  Card,
+  CardBody,
+  CardHeaderMain,
+  CardHeader,
+  Stack,
+  StackItem,
+  Tab,
+  Tabs,
+  Text,
+  TextVariants,
+} from '@patternfly/react-core';
 import { EventTemplates } from './EventTemplates';
+import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
+import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { EventTypes } from './EventTypes';
 
 export const Events = () => {
@@ -51,18 +64,52 @@ export const Events = () => {
   return (
     <>
       <TargetView pageTitle="Events">
-        <Card>
-          <CardBody>
-            <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
-              <Tab eventKey={0} title="Event Templates">
-                <EventTemplates />
-              </Tab>
-              <Tab eventKey={1} title="Event Types">
-                <EventTypes />
-              </Tab>
-            </Tabs>
-          </CardBody>
-        </Card>
+        <Stack hasGutter>
+          <StackItem>
+            <Card>
+              <CardBody>
+                <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
+                  <Tab eventKey={0} title="Event Templates">
+                    <EventTemplates />
+                  </Tab>
+                  <Tab eventKey={1} title="Event Types">
+                    <EventTypes />
+                  </Tab>
+                </Tabs>
+              </CardBody>
+            </Card>
+          </StackItem>
+          <StackItem>
+            <Card>
+              <CardHeader>
+                <CardHeaderMain>
+                  <Text component={TextVariants.h4}>About the JMC Agent</Text>
+                </CardHeaderMain>
+              </CardHeader>
+              <CardBody>
+                The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make
+                use of the JMC Agent, the agent jar must be present in the same container as the target, and the target
+                must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met the
+                user can upload probe templates to Cryostat and insert/remove them from targets, as well as view
+                currently active probes.
+              </CardBody>
+            </Card>
+          </StackItem>
+          <StackItem>
+            <Card>
+              <CardBody>
+                <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
+                  <Tab eventKey={2} title="Probe Templates">
+                    <AgentProbeTemplates />
+                  </Tab>
+                  <Tab eventKey={3} title="Live Configuration">
+                    <AgentLiveProbes />
+                  </Tab>
+                </Tabs>
+              </CardBody>
+            </Card>
+          </StackItem>
+        </Stack>
       </TargetView>
     </>
   );

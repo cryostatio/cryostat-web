@@ -39,7 +39,6 @@ import * as React from 'react';
 import { CreateRecording } from '@app/CreateRecording/CreateRecording';
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { Events } from '@app/Events/Events';
-import { Agent } from '@app/Agent/Agent';
 import { Login } from '@app/Login/Login';
 import { NotFound } from '@app/NotFound/NotFound';
 import { Recordings } from '@app/Recordings/Recordings';
@@ -145,16 +144,6 @@ const routes: IAppRoute[] = [
     path: '/events',
     title: 'Events',
     description: 'View available JFR event templates and types for target JVMs, as well as upload custom templates.',
-    navGroup: CONSOLE,
-  },
-  {
-    component: Agent,
-    exact: true,
-    label: 'JMC Agent',
-    path: '/jmcagent',
-    title: 'JMC Agent',
-    description:
-      'View available JMC Agent probe templates for target JVMs, as well as upload custom templates and insert probes.',
     navGroup: CONSOLE,
   },
   {

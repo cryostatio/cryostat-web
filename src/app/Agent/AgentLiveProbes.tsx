@@ -212,7 +212,10 @@ export const AgentLiveProbes = () => {
     return (
       <ErrorView
         title={'Error retrieving events'}
-        message={errorMessage}
+        message={
+          'This is commonly caused by the agent not being loaded/active, check that the target was started with the agent (-javaagent:/path/to/agent.jar) ' +
+          errorMessage
+        }
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
     );
