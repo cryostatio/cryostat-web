@@ -227,7 +227,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Probe Template Deleted',
-      body: (evt) => `${evt.message.template.name} was deleted`,
+      body: (evt) => `${evt.message.probeTemplate} was deleted`,
     } as NotificationMessageMapper,
   ],
   [

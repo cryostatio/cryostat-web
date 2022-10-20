@@ -81,22 +81,6 @@ export const Events = () => {
           </StackItem>
           <StackItem>
             <Card>
-              <CardHeader>
-                <CardHeaderMain>
-                  <Text component={TextVariants.h4}>About the JMC Agent</Text>
-                </CardHeaderMain>
-              </CardHeader>
-              <CardBody>
-                The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make
-                use of the JMC Agent, the agent jar must be present in the same container as the target, and the target
-                must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met the
-                user can upload probe templates to Cryostat and insert/remove them from targets, as well as view
-                currently active probes.
-              </CardBody>
-            </Card>
-          </StackItem>
-          <StackItem>
-            <Card>
               <CardBody>
                 <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
                   <Tab eventKey={2} title="Probe Templates">

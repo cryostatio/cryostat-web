@@ -2,6 +2,36 @@
 
 exports[`<AgentProbeTemplates /> renders correctly 1`] = `
 Array [
+  <article
+    className="pf-c-card"
+    data-ouia-component-id="OUIA-Generated-Card-1"
+    data-ouia-component-type="PF4/Card"
+    data-ouia-safe={true}
+    id=""
+  >
+    <div
+      className="pf-c-card__header"
+    >
+      <div
+        className=""
+      >
+        <h4
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-1"
+          data-ouia-component-type="PF4/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+        >
+          About the JMC Agent
+        </h4>
+      </div>
+    </div>
+    <div
+      className="pf-c-card__body"
+    >
+      The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make use of the JMC Agent, the agent jar must be present in the same container as the target, and the target must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met the user can upload probe templates to Cryostat and insert/remove them from targets, as well as view currently active probes.
+    </div>
+  </article>,
   <div
     className="pf-c-toolbar"
     data-ouia-component-id="OUIA-Generated-Toolbar-1"
