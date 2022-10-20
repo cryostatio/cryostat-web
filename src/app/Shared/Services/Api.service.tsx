@@ -483,9 +483,7 @@ export class ApiService {
           method: 'DELETE',
         }).pipe(
           tap((resp) => {
-            if (resp.status == 200) {
-              this.notifications.success('Probes Removed');
-            } else if (resp.status == 400) {
+            if (resp.status == 400) {
               this.notifications.warning('Failed to remove Probes', 'The probes failed to be removed from the target');
             }
           }),
@@ -507,9 +505,7 @@ export class ApiService {
           }
         ).pipe(
           tap((resp) => {
-            if (resp.status == 200) {
-              this.notifications.success('Probes Inserted');
-            } else if (resp.status == 400) {
+            if (resp.status == 400) {
               this.notifications.warning(
                 'Failed to Insert Probes',
                 'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent'
