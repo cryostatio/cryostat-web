@@ -40,9 +40,33 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem, TextInput } from '@patternfly/react-core';
+import {
+  ActionGroup,
+  Button,
+  FileUpload,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+  TextInput,
+} from '@patternfly/react-core';
 import { PlusIcon } from '@patternfly/react-icons';
-import { Table, TableBody, TableHeader, TableVariant, IAction, IRowData, IExtraData, ISortBy, SortByDirection, sortable } from '@patternfly/react-table';
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableVariant,
+  IAction,
+  IRowData,
+  IExtraData,
+  ISortBy,
+  SortByDirection,
+  sortable,
+} from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
@@ -50,7 +74,6 @@ import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView
 import { EventProbe } from '@app/Shared/Services/Api.service';
 
 export const AgentLiveProbes = () => {
-
   const context = React.useContext(ServiceContext);
   const history = useHistory();
 
@@ -63,11 +86,11 @@ export const AgentLiveProbes = () => {
   const addSubscription = useSubscriptions();
 
   const tableColumns = [
-    { title: 'ID', transforms: [ sortable ] },
-    { title: 'Label', transforms: [ sortable ] },
-    { title: 'Class' , transforms: [ sortable ] },
-    { title: 'Description' , transforms: [ sortable ] },
-    { title: 'Method' , transforms: [ sortable ] }
+    { title: 'ID', transforms: [sortable] },
+    { title: 'Label', transforms: [sortable] },
+    { title: 'Class', transforms: [sortable] },
+    { title: 'Description', transforms: [sortable] },
+    { title: 'Method', transforms: [sortable] },
   ];
 
   React.useEffect(() => {
@@ -76,8 +99,14 @@ export const AgentLiveProbes = () => {
       filtered = templates;
     } else {
       const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter((t: EventProbe) => t.name.toLowerCase().includes(ft) || t.description.toLowerCase().includes(ft)
-        || t.clazz.toLowerCase().includes(ft) || t.methodDescriptor.toLowerCase().includes(ft) || t.methodName.toLowerCase().includes(ft));
+      filtered = templates.filter(
+        (t: EventProbe) =>
+          t.name.toLowerCase().includes(ft) ||
+          t.description.toLowerCase().includes(ft) ||
+          t.clazz.toLowerCase().includes(ft) ||
+          t.methodDescriptor.toLowerCase().includes(ft) ||
+          t.methodName.toLowerCase().includes(ft)
+      );
     }
     const { index, direction } = sortBy;
     if (typeof index === 'number') {
@@ -89,27 +118,38 @@ export const AgentLiveProbes = () => {
     setFilteredTemplates([...filtered]);
   }, [filterText, templates, sortBy]);
 
-  const handleTemplates = React.useCallback((templates) => {
-    console.log(templates);
-    setTemplates(templates);
-    setErrorMessage('');
-    setIsLoading(false);
-  }, [setTemplates, setIsLoading, setErrorMessage]);
+  const handleTemplates = React.useCallback(
+    (templates) => {
+      console.log(templates);
+      setTemplates(templates);
+      setErrorMessage('');
+      setIsLoading(false);
+    },
+    [setTemplates, setIsLoading, setErrorMessage]
+  );
 
-  const handleError = React.useCallback((error) => {
-    setErrorMessage(error.message);
-    setIsLoading(false);
-  }, [setIsLoading, setErrorMessage]);
+  const handleError = React.useCallback(
+    (error) => {
+      setErrorMessage(error.message);
+      setIsLoading(false);
+    },
+    [setIsLoading, setErrorMessage]
+  );
 
   const refreshTemplates = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.target.target()
-      .pipe(
-        filter(target => target !== NO_TARGET),
-        first(),
-        concatMap(target => context.api.getActiveProbes()),
-      ).subscribe(value => handleTemplates(value), err => handleError(err))
+      context.target
+        .target()
+        .pipe(
+          filter((target) => target !== NO_TARGET),
+          first(),
+          concatMap((target) => context.api.getActiveProbes())
+        )
+        .subscribe(
+          (value) => handleTemplates(value),
+          (err) => handleError(err)
+        )
     );
   }, [addSubscription, context, context.target, context.api, setIsLoading, handleTemplates, handleError]);
 
@@ -118,83 +158,97 @@ export const AgentLiveProbes = () => {
       context.target.target().subscribe(() => {
         setFilterText('');
         refreshTemplates();
-      }));
+      })
+    );
   }, [context, context.target, addSubscription, refreshTemplates]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
-    const id = window.setInterval(() => refreshTemplates(), context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits());
+    const id = window.setInterval(
+      () => refreshTemplates(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+    );
     return () => window.clearInterval(id);
   }, []);
 
   React.useEffect(() => {
     const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage("Auth failure");
+      setErrorMessage('Auth failure');
     });
     return () => sub.unsubscribe();
   }, [context.target]);
 
   const displayTemplates = React.useMemo(
-    () => templates.map((t: EventProbe) => ([t.id, t.name , t.clazz , t.description , t.methodName + t.methodDescriptor ])),
+    () => templates.map((t: EventProbe) => [t.id, t.name, t.clazz, t.description, t.methodName + t.methodDescriptor]),
     [templates]
   );
 
   const handleModalToggle = () => {
     addSubscription(
-      context.api.removeProbes()
-      .pipe(first())
-      .subscribe(() => {refreshTemplates();})
-      );
+      context.api
+        .removeProbes()
+        .pipe(first())
+        .subscribe(() => {
+          refreshTemplates();
+        })
+    );
   };
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied)
-        .subscribe(v => refreshTemplates())
+      context.notificationChannel
+        .messages(NotificationCategory.ProbeTemplateApplied)
+        .subscribe((v) => refreshTemplates())
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
-
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
 
-
   if (errorMessage != '') {
-    return (<ErrorView
-      title={'Error retrieving events'}
-      message={errorMessage}
-      retry={isAuthFail(errorMessage) ? authRetry : undefined}
-    />)
+    return (
+      <ErrorView
+        title={'Error retrieving events'}
+        message={errorMessage}
+        retry={isAuthFail(errorMessage) ? authRetry : undefined}
+      />
+    );
   } else if (isLoading) {
-    return (<LoadingView/>)
+    return <LoadingView />;
   } else {
-    return (<>
-      <Toolbar id="event-templates-toolbar">
-        <ToolbarContent>
-        <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-              <TextInput name="templateFilter" id="templateFilter" type="search" placeholder="Filter..." aria-label="Probe template filter" onChange={setFilterText}/>
-            </ToolbarItem>
-          </ToolbarGroup>
-          <ToolbarGroup variant="icon-button-group">
-            <ToolbarItem>
-              <Button key="create" variant="primary" onClick={handleModalToggle}>Remove Probes</Button>
-            </ToolbarItem>
-          </ToolbarGroup>
-        </ToolbarContent>
-      </Toolbar>
-      <Table aria-label="Active Events"
-        variant={TableVariant.compact}
-        cells={tableColumns}
-        rows={displayTemplates}
-      >
-        <TableHeader />
-        <TableBody />
-      </Table>
-    </>);
+    return (
+      <>
+        <Toolbar id="event-templates-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <TextInput
+                  name="templateFilter"
+                  id="templateFilter"
+                  type="search"
+                  placeholder="Filter..."
+                  aria-label="Probe template filter"
+                  onChange={setFilterText}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarGroup variant="icon-button-group">
+              <ToolbarItem>
+                <Button key="create" variant="primary" onClick={handleModalToggle}>
+                  Remove Probes
+                </Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+        <Table aria-label="Active Events" variant={TableVariant.compact} cells={tableColumns} rows={displayTemplates}>
+          <TableHeader />
+          <TableBody />
+        </Table>
+      </>
+    );
   }
-
-}
+};

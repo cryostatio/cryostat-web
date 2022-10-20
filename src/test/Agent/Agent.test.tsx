@@ -51,37 +51,35 @@ import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
 
-const mockMessageType = {type: "application", subtype: "json"} as MessageType;
+const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
 const mockCustomEventTemplate: ProbeTemplate = {
-    name: 'someProbeTemplate',
-    xml: '<some><dummy><xml></xml></dummy></some>'
+  name: 'someProbeTemplate',
+  xml: '<some><dummy><xml></xml></dummy></some>',
 };
 
 const mockAnotherTemplate: ProbeTemplate = {
   name: 'anotherProbeTemplate',
-  xml: '<some><other><xml></xml></dummy></some>'
+  xml: '<some><other><xml></xml></dummy></some>',
 };
 
-const mockData : ProbeTemplate[] = [
-  mockCustomEventTemplate, mockAnotherTemplate
-];
+const mockData: ProbeTemplate[] = [mockCustomEventTemplate, mockAnotherTemplate];
 
-const mockCreateTemplateNotification = { 
+const mockCreateTemplateNotification = {
   meta: {
     category: 'ProbeTemplateUploaded',
-    type: mockMessageType
+    type: mockMessageType,
   } as MessageMeta,
-  message: { 
-    template: mockAnotherTemplate 
-  } 
+  message: {
+    template: mockAnotherTemplate,
+  },
 } as NotificationMessage;
-const mockDeleteTemplateNotification = 
-{...mockCreateTemplateNotification, 
+const mockDeleteTemplateNotification = {
+  ...mockCreateTemplateNotification,
   meta: {
-  category: 'ProbeTemplateDeleted',
-  type: mockMessageType
-  }
+    category: 'ProbeTemplateDeleted',
+    type: mockMessageType,
+  },
 };
 
 const mockHistoryPush = jest.fn();
@@ -94,22 +92,22 @@ jest.mock('react-router-dom', () => ({
   }),
 }));
 
-jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValue(false); // don't ask again
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(false); // don't ask again
 
 jest.spyOn(defaultServices.api, 'addCustomProbeTemplate').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'insertProbes').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
 
-jest.spyOn(defaultServices.api, 'getProbeTemplates')
-.mockReturnValueOnce(of([mockCustomEventTemplate])) // Renders Correctly
-.mockReturnValueOnce(of([mockCustomEventTemplate]))
-.mockReturnValueOnce(of(mockData)) // Adds a probe template
-.mockReturnValueOnce(of(mockData))
-.mockReturnValueOnce(of([])) // Removes a probe template
-.mockReturnValueOnce(of([]))
-.mockReturnValue(of([mockCustomEventTemplate])); // All other tests
+jest
+  .spyOn(defaultServices.api, 'getProbeTemplates')
+  .mockReturnValueOnce(of([mockCustomEventTemplate])) // Renders Correctly
+  .mockReturnValueOnce(of([mockCustomEventTemplate]))
+  .mockReturnValueOnce(of(mockData)) // Adds a probe template
+  .mockReturnValueOnce(of(mockData))
+  .mockReturnValueOnce(of([])) // Removes a probe template
+  .mockReturnValueOnce(of([]))
+  .mockReturnValue(of([mockCustomEventTemplate])); // All other tests
 
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
@@ -118,91 +116,89 @@ jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
-  
+
   .mockReturnValueOnce(of(mockCreateTemplateNotification)) // adds a template after receiving a notification
   .mockReturnValueOnce(of(mockDeleteTemplateNotification)) // removes a template after receiving a notification
 
   .mockReturnValue(of()); // All Other tests
-  
 
-  describe('<AgentProbeTemplates />', () => {
-    it('renders correctly', async () => {
-      let tree;
-      await act(async () => {
-        tree = renderer.create(
-          <ServiceContext.Provider value={defaultServices}>
-            <AgentProbeTemplates />
-          </ServiceContext.Provider>
-        );
-      });
-      expect(tree.toJSON()).toMatchSnapshot();
-    });
-
-    it('adds a recording after receiving a notification', () => {
-      render(
+describe('<AgentProbeTemplates />', () => {
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <AgentProbeTemplates />
         </ServiceContext.Provider>
       );
-
-      expect(screen.getByText('someProbeTemplate')).toBeInTheDocument();
     });
-
-    it('removes a recording after receiving a notification', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <AgentProbeTemplates />
-        </ServiceContext.Provider>
-      );
-      expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
-    });
-
-    it('displays the column header fields', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <AgentProbeTemplates />
-        </ServiceContext.Provider>
-      );
-      expect(screen.getByText('name')).toBeInTheDocument();
-      expect(screen.getByText('xml')).toBeInTheDocument();
-    });
-
-    it('shows a popup when uploading', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <AgentProbeTemplates />
-        </ServiceContext.Provider>
-      );
-      expect(screen.queryByLabelText('Create Custom Probe Template')).not.toBeInTheDocument();
-
-      const buttons = screen.getAllByRole('button');
-      const uploadButton = buttons[0];
-      userEvent.click(uploadButton);
-
-      expect(screen.getByLabelText('Create Custom Probe Template'));
-
-    });
-
-    it('Tests that delete works correctly', () => {
-      render(
-        <ServiceContext.Provider value={defaultServices}>
-          <AgentProbeTemplates />
-        </ServiceContext.Provider>
-      );
-   
-      userEvent.click(screen.getByLabelText('Actions'));
-
-      expect(screen.getByText('Insert Probes...'));
-      expect(screen.getByText('Delete'));
-
-      const deleteAction = screen.getByText('Delete');
-      userEvent.click(deleteAction);
-
-      //expect(screen.getByLabelText('Event template delete warning'));
-
-      const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate');
-
-      expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-      expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');;
-    });
+    expect(tree.toJSON()).toMatchSnapshot();
   });
+
+  it('adds a recording after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('someProbeTemplate')).toBeInTheDocument();
+  });
+
+  it('removes a recording after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+    expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
+  });
+
+  it('displays the column header fields', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+    expect(screen.getByText('name')).toBeInTheDocument();
+    expect(screen.getByText('xml')).toBeInTheDocument();
+  });
+
+  it('shows a popup when uploading', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+    expect(screen.queryByLabelText('Create Custom Probe Template')).not.toBeInTheDocument();
+
+    const buttons = screen.getAllByRole('button');
+    const uploadButton = buttons[0];
+    userEvent.click(uploadButton);
+
+    expect(screen.getByLabelText('Create Custom Probe Template'));
+  });
+
+  it('Tests that delete works correctly', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByLabelText('Actions'));
+
+    expect(screen.getByText('Insert Probes...'));
+    expect(screen.getByText('Delete'));
+
+    const deleteAction = screen.getByText('Delete');
+    userEvent.click(deleteAction);
+
+    //expect(screen.getByLabelText('Event template delete warning'));
+
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate');
+
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
+  });
+});

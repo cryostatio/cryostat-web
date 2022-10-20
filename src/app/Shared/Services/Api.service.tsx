@@ -477,72 +477,81 @@ export class ApiService {
   }
 
   removeProbes(): Observable<boolean> {
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
-        method: 'DELETE',
-      }).pipe(
-        tap(resp => {
-          if (resp.status == 200) {
-            this.notifications.success('Probes Removed');
-          } else if (resp.status == 400) {
-            this.notifications.warning('Failed to remove Probes', 'The probes failed to be removed from the target');
-          }
-        }),
-        map(resp => resp.status == 200),
-        first(),
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
+          method: 'DELETE',
+        }).pipe(
+          tap((resp) => {
+            if (resp.status == 200) {
+              this.notifications.success('Probes Removed');
+            } else if (resp.status == 400) {
+              this.notifications.warning('Failed to remove Probes', 'The probes failed to be removed from the target');
+            }
+          }),
+          map((resp) => resp.status == 200),
+          first()
+        )
       )
-      ));
+    );
   }
 
   insertProbes(templateName: string): Observable<boolean> {
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes/${encodeURIComponent(templateName)}`, {
-        method: 'POST',
-      }).pipe(
-        tap(resp => {
-          if (resp.status == 200) {
-            this.notifications.success('Probes Inserted');
-          } else if (resp.status == 400) {
-            this.notifications.warning('Failed to Insert Probes', 'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent');
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'v2',
+          `targets/${encodeURIComponent(target.connectUrl)}/probes/${encodeURIComponent(templateName)}`,
+          {
+            method: 'POST',
           }
-        }),
-        map(resp => resp.status == 200),
-        first(),
+        ).pipe(
+          tap((resp) => {
+            if (resp.status == 200) {
+              this.notifications.success('Probes Inserted');
+            } else if (resp.status == 400) {
+              this.notifications.warning(
+                'Failed to Insert Probes',
+                'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent'
+              );
+            }
+          }),
+          map((resp) => resp.status == 200),
+          first()
+        )
       )
-    ));
+    );
   }
 
   addCustomProbeTemplate(file: File): Observable<boolean> {
     const body = new window.FormData();
     body.append('probeTemplate', file);
-    return this.sendRequest('v2', `probes/`+file.name, {
+    return this.sendRequest('v2', `probes/` + file.name, {
       method: 'POST',
       body,
-    })
-    .pipe(
-      map(response => {
+    }).pipe(
+      map((response) => {
         if (!response.ok) {
           throw response.statusText;
         }
         return true;
       }),
-      catchError((): ObservableInput<boolean> => of(false)),
+      catchError((): ObservableInput<boolean> => of(false))
     );
-  }  
+  }
 
   deleteCustomProbeTemplate(templateName: string): Observable<boolean> {
     return this.sendRequest('v2', `probes/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
       body: null,
-    })
-    .pipe(
-      map(response => {
+    }).pipe(
+      map((response) => {
         if (!response.ok) {
           throw response.statusText;
         }
         return true;
       }),
-      catchError((): ObservableInput<boolean> => of(false)),
+      catchError((): ObservableInput<boolean> => of(false))
     );
   }
 
@@ -567,22 +576,26 @@ export class ApiService {
   }
 
   getProbeTemplates(): Observable<ProbeTemplate[]> {
-    return this.sendRequest('v2', 'probes', { method: 'GET' }).
-      pipe(concatMap(resp => resp.json()), 
-      map((response : ProbeTemplateResponse) => response.data.result),
-      first());
+    return this.sendRequest('v2', 'probes', { method: 'GET' }).pipe(
+      concatMap((resp) => resp.json()),
+      map((response: ProbeTemplateResponse) => response.data.result),
+      first()
+    );
   }
 
   getActiveProbes(): Observable<EventProbe[]> {
-    return this.target.target().pipe(concatMap(target =>
-      this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
-        method: 'GET'
-      }).pipe(
-      concatMap(resp => resp.json()), 
-      map((response : EventProbesResponse)=> response.data.result),
-      first()
-      )));
-    }
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
+          method: 'GET',
+        }).pipe(
+          concatMap((resp) => resp.json()),
+          map((response: EventProbesResponse) => response.data.result),
+          first()
+        )
+      )
+    );
+  }
 
   graphql<T>(query: string): Observable<T> {
     const headers = new Headers();
@@ -1030,7 +1043,7 @@ export interface StoredCredential {
 export interface ProbeTemplate {
   name: string;
   xml: string;
-}  
+}
 
 export interface EventProbe {
   id: string;

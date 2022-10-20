@@ -199,35 +199,40 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ProbeTemplateUploaded, {
+    NotificationCategory.ProbeTemplateUploaded,
+    {
       variant: AlertVariant.success,
       title: 'Probe Template Created',
-      body: evt => `${evt.message.template.name} was created`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.template.name} was created`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ProbeTemplateApplied, {
+    NotificationCategory.ProbeTemplateApplied,
+    {
       variant: AlertVariant.success,
       title: 'Probe Template Applied',
-      body: evt => `${evt.message.probeTemplate} was inserted`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.probeTemplate} was inserted`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.TemplateDeleted, {
+    NotificationCategory.TemplateDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Template Deleted',
       body: (evt) => `${evt.message.template.name} was deleted`,
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.ProbeTemplateDeleted, {
+    NotificationCategory.ProbeTemplateDeleted,
+    {
       variant: AlertVariant.success,
       title: 'Probe Template Deleted',
-      body: evt => `${evt.message.template.name} was deleted`
-    } as NotificationMessageMapper
+      body: (evt) => `${evt.message.template.name} was deleted`,
+    } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.RuleCreated, {
+    NotificationCategory.RuleCreated,
+    {
       variant: AlertVariant.success,
       title: 'Automated Rule Created',
       body: (evt) => `${evt.message.name} was created`,
@@ -274,7 +279,8 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper,
   ],
   [
-    NotificationCategory.CredentialsStored, {
+    NotificationCategory.CredentialsStored,
+    {
       variant: AlertVariant.success,
       title: 'Credentials Stored',
       body: (evt) => `Credentials stored for: ${evt.message.matchExpression}`,
