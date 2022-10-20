@@ -61,7 +61,7 @@ export enum NotificationCategory {
   TemplateDeleted = 'TemplateDeleted',
   ProbeTemplateUploaded = 'ProbeTemplateUploaded',
   ProbeTemplateDeleted = 'ProbeTemplateDeleted',
-  TargetProbesGet = 'TargetProbesGet',
+  ProbeTemplateApplied = 'ProbeTemplateApplied',
   RuleCreated = 'RuleCreated',
   RuleUpdated = 'RuleUpdated',
   RuleDeleted = 'RuleDeleted',
@@ -206,6 +206,13 @@ export const messageKeys = new Map([
     } as NotificationMessageMapper
   ],
   [
+    NotificationCategory.ProbeTemplateApplied, {
+      variant: AlertVariant.success,
+      title: 'Probe Template Applied',
+      body: evt => `${evt.message.probeTemplate} was inserted`
+    } as NotificationMessageMapper
+  ],
+  [
     NotificationCategory.TemplateDeleted, {
       variant: AlertVariant.success,
       title: 'Template Deleted',
@@ -265,13 +272,6 @@ export const messageKeys = new Map([
       title: 'Target Credentials Deleted',
       body: (evt) => `Credentials deleted for target: ${evt.message.target}`,
     } as NotificationMessageMapper,
-  ],
-  [
-    NotificationCategory.TargetProbesGet, {
-      variant: AlertVariant.success,
-      title: 'Target Probes Fetched',
-      body: evt => `Probes Fetched: ${evt.message.probes}`
-    } as NotificationMessageMapper
   ],
   [
     NotificationCategory.CredentialsStored, {

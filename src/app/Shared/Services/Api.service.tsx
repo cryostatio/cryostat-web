@@ -576,10 +576,12 @@ export class ApiService {
   getActiveProbes(): Observable<EventProbe[]> {
     return this.target.target().pipe(concatMap(target =>
       this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
-        method: 'GET',
-      }).pipe(concatMap(resp => resp.json()), 
-      map(response => response.data.result),
-      first())));
+        method: 'GET'
+      }).pipe(
+      concatMap(resp => resp.json()), 
+      map((response : EventProbesResponse)=> response.data.result),
+      first()
+      )));
     }
 
   graphql<T>(query: string): Observable<T> {
@@ -941,7 +943,13 @@ interface CredentialResponse extends ApiV2Response {
 interface ProbeTemplateResponse extends ApiV2Response {
   data: {
     result: ProbeTemplate[];
-  }
+  };
+}
+
+interface EventProbesResponse extends ApiV2Response {
+  data: {
+    result: EventProbe[];
+  };
 }
 
 interface CredentialsResponse extends ApiV2Response {
@@ -1025,13 +1033,21 @@ export interface ProbeTemplate {
 }  
 
 export interface EventProbe {
-  label: string;
+  id: string;
+  name: string;
+  clazz: string;
   description: string;
-  class: string;
-  rethrow: string;
-  stacktrace: string;
-  methodname: string;
+  path: string;
+  recordStackTrace: boolean;
+  useRethrow: boolean;
+  methodName: string;
+  methodDescriptor: string;
+  location: string;
+  returnValue: string;
+  parameters: string;
+  fields: string;
 }
+
 export interface MatchedCredential {
   matchExpression: string;
   targets: Target[];

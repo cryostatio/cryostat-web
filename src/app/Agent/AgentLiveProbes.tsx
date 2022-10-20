@@ -63,11 +63,10 @@ export const AgentLiveProbes = () => {
   const addSubscription = useSubscriptions();
 
   const tableColumns = [
+    { title: 'ID', transforms: [ sortable ] },
     { title: 'Label', transforms: [ sortable ] },
-    { title: 'Description' , transforms: [ sortable ] },
     { title: 'Class' , transforms: [ sortable ] },
-    { title: 'Stacktrace' , transforms: [ sortable ] },
-    { title: 'Rethrow' , transforms: [ sortable ] },
+    { title: 'Description' , transforms: [ sortable ] },
     { title: 'Method' , transforms: [ sortable ] }
   ];
 
@@ -77,13 +76,12 @@ export const AgentLiveProbes = () => {
       filtered = templates;
     } else {
       const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter((t: EventProbe) => t.label.toLowerCase().includes(ft) || t.description.toLowerCase().includes(ft)
-        || t.class.toLowerCase().includes(ft) || t.stacktrace.toLowerCase().includes(ft) ||
-        t.rethrow.toLowerCase().includes(ft) || t.methodname.toLowerCase().includes(ft));
+      filtered = templates.filter((t: EventProbe) => t.name.toLowerCase().includes(ft) || t.description.toLowerCase().includes(ft)
+        || t.clazz.toLowerCase().includes(ft) || t.methodDescriptor.toLowerCase().includes(ft) || t.methodName.toLowerCase().includes(ft));
     }
     const { index, direction } = sortBy;
     if (typeof index === 'number') {
-      const keys = ['Label', 'Description', 'Class', 'Stacktrace', 'Rethrow', 'Method'];
+      const keys = ['ID', 'Label', 'Description', 'Class', 'Method'];
       const key = keys[index];
       const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
       filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
@@ -92,7 +90,7 @@ export const AgentLiveProbes = () => {
   }, [filterText, templates, sortBy]);
 
   const handleTemplates = React.useCallback((templates) => {
-    templates = JSON.parse(templates);
+    console.log(templates);
     setTemplates(templates);
     setErrorMessage('');
     setIsLoading(false);
@@ -139,7 +137,7 @@ export const AgentLiveProbes = () => {
   }, [context.target]);
 
   const displayTemplates = React.useMemo(
-    () => templates.map((t: EventProbe) => ([ t.label , t.description , t.class , t.rethrow , t.stacktrace , t.methodname ])),
+    () => templates.map((t: EventProbe) => ([t.id, t.name , t.clazz , t.description , t.methodName + t.methodDescriptor ])),
     [templates]
   );
 
@@ -153,8 +151,8 @@ export const AgentLiveProbes = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TargetProbesGet)
-        .subscribe(v => setTemplates(old => old.concat(v.message.probes)))
+      context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied)
+        .subscribe(v => refreshTemplates())
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
@@ -166,7 +164,7 @@ export const AgentLiveProbes = () => {
 
   if (errorMessage != '') {
     return (<ErrorView
-      title={'Error retrieving event templates'}
+      title={'Error retrieving events'}
       message={errorMessage}
       retry={isAuthFail(errorMessage) ? authRetry : undefined}
     />)
