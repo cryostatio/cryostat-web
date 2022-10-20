@@ -150,9 +150,11 @@ const routes: IAppRoute[] = [
   {
     component: Agent,
     exact: true,
-    label: 'Agent',
-    path: '/agent',
-    title: 'Agent',
+    label: 'JMC Agent',
+    path: '/jmcagent',
+    title: 'JMC Agent',
+    description:
+      'View available JMC Agent probe templates for target JVMs, as well as upload custom templates and insert probes.',
     navGroup: CONSOLE,
   },
   {

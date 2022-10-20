@@ -203,7 +203,7 @@ export const messageKeys = new Map([
     {
       variant: AlertVariant.success,
       title: 'Probe Template Created',
-      body: (evt) => `${evt.message.template.name} was created`,
+      body: (evt) => `${evt.message.probeTemplate} was created`,
     } as NotificationMessageMapper,
   ],
   [

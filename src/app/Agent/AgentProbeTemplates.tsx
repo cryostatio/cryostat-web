@@ -124,7 +124,6 @@ export const AgentProbeTemplates = () => {
 
   const handleTemplates = React.useCallback(
     (templates) => {
-      console.log(templates);
       setTemplates(templates);
       setIsLoading(false);
       setErrorMessage('');
@@ -324,7 +323,7 @@ export const AgentProbeTemplates = () => {
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error retrieving event templates'}
+        title={'Error retrieving probe templates'}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
@@ -356,7 +355,7 @@ export const AgentProbeTemplates = () => {
               </ToolbarItem>
             </ToolbarGroup>
             <DeleteWarningModal
-              warningType={DeleteWarningType.DeleteEventTemplates}
+              warningType={DeleteWarningType.DeleteProbeTemplates}
               visible={warningModalOpen}
               onAccept={handleWarningModalAccept}
               onClose={handleWarningModalClose}
