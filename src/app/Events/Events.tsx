@@ -66,7 +66,7 @@ export const Events = () => {
           error: (_) => setEnabled(false),
         })
     );
-  }, [context.api, context.target, setEnabled]);
+  }, [addSubscription, context.api, context.target, setEnabled]);
 
   const handleTabSelect = React.useCallback(
     (evt, idx) => {
