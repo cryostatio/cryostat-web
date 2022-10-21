@@ -579,12 +579,12 @@ export class ApiService {
     );
   }
 
-  getActiveProbes(): Observable<EventProbe[]> {
+  getActiveProbes(suppressNotifications = false): Observable<EventProbe[]> {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
           method: 'GET',
-        }).pipe(
+        }, suppressNotifications).pipe(
           concatMap((resp) => resp.json()),
           map((response: EventProbesResponse) => response.data.result),
           first()

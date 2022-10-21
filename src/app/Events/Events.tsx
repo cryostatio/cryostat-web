@@ -36,30 +36,44 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { TargetView } from '@app/TargetView/TargetView';
-import {
-  Card,
-  CardBody,
-  CardHeaderMain,
-  CardHeader,
-  Stack,
-  StackItem,
-  Tab,
-  Tabs,
-  Text,
-  TextVariants,
-} from '@patternfly/react-core';
+import { Card, CardBody, Stack, StackItem, Tab, Tabs } from '@patternfly/react-core';
 import { EventTemplates } from './EventTemplates';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { EventTypes } from './EventTypes';
+import { concatMap, filter } from 'rxjs/operators';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 
 export const Events = () => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [activeTab, setActiveTab] = React.useState(0);
+  const [enabled, setEnabled] = React.useState(false);
 
-  const handleTabSelect = (evt, idx) => {
-    setActiveTab(idx);
-  };
+  React.useEffect(() => {
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          filter((t) => t !== NO_TARGET),
+          concatMap((_) => context.api.getActiveProbes(true))
+        )
+        .subscribe({
+          next: (_) => setEnabled(true),
+          error: (_) => setEnabled(false),
+        })
+    );
+  }, [context.api, context.target, setEnabled]);
+
+  const handleTabSelect = React.useCallback(
+    (evt, idx) => {
+      setActiveTab(idx);
+    },
+    [setActiveTab]
+  );
 
   return (
     <>
@@ -79,20 +93,22 @@ export const Events = () => {
               </CardBody>
             </Card>
           </StackItem>
-          <StackItem>
-            <Card>
-              <CardBody>
-                <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
-                  <Tab eventKey={2} title="Probe Templates">
-                    <AgentProbeTemplates />
-                  </Tab>
-                  <Tab eventKey={3} title="Live Configuration">
-                    <AgentLiveProbes />
-                  </Tab>
-                </Tabs>
-              </CardBody>
-            </Card>
-          </StackItem>
+          {enabled ? (
+            <StackItem>
+              <Card>
+                <CardBody>
+                  <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
+                    <Tab eventKey={2} title="Probe Templates">
+                      <AgentProbeTemplates />
+                    </Tab>
+                    <Tab eventKey={3} title="Live Configuration">
+                      <AgentLiveProbes />
+                    </Tab>
+                  </Tabs>
+                </CardBody>
+              </Card>
+            </StackItem>
+          ) : null}
         </Stack>
       </TargetView>
     </>
