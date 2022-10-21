@@ -582,9 +582,14 @@ export class ApiService {
   getActiveProbes(suppressNotifications = false): Observable<EventProbe[]> {
     return this.target.target().pipe(
       concatMap((target) =>
-        this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
-          method: 'GET',
-        }, suppressNotifications).pipe(
+        this.sendRequest(
+          'v2',
+          `targets/${encodeURIComponent(target.connectUrl)}/probes`,
+          {
+            method: 'GET',
+          },
+          suppressNotifications
+        ).pipe(
           concatMap((resp) => resp.json()),
           map((response: EventProbesResponse) => response.data.result),
           first()
@@ -857,7 +862,12 @@ export class ApiService {
     );
   }
 
-  private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit, suppressNotifications = false): Observable<Response> {
+  private sendRequest(
+    apiVersion: ApiVersion,
+    path: string,
+    config?: RequestInit,
+    suppressNotifications = false
+  ): Observable<Response> {
     const req = () =>
       this.login.getHeaders().pipe(
         concatMap((headers) => {
