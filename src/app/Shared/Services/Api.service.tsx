@@ -857,7 +857,7 @@ export class ApiService {
     );
   }
 
-  private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
+  private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit, suppressNotifications = false): Observable<Response> {
     const req = () =>
       this.login.getHeaders().pipe(
         concatMap((headers) => {
@@ -882,7 +882,7 @@ export class ApiService {
           if (resp.ok) return resp;
           throw new HttpError(resp);
         }),
-        catchError((err) => this.handleError<Response>(err, req))
+        catchError((err) => this.handleError<Response>(err, req, suppressNotifications))
       );
     return req();
   }
@@ -899,7 +899,7 @@ export class ApiService {
     anchor.remove();
   }
 
-  private handleError<T>(error: Error, retry: () => Observable<T>): ObservableInput<T> {
+  private handleError<T>(error: Error, retry: () => Observable<T>, suppressNotifications = false): ObservableInput<T> {
     if (isHttpError(error)) {
       if (error.httpResponse.status === 427) {
         const jmxAuthScheme = error.httpResponse.headers.get('X-JMX-Authenticate');
@@ -911,12 +911,16 @@ export class ApiService {
         this.target.setSslFailure();
       } else {
         error.httpResponse.text().then((detail) => {
-          this.notifications.danger(`Request failed (${error.httpResponse.status} ${error.message})`, detail);
+          if (!suppressNotifications) {
+            this.notifications.danger(`Request failed (${error.httpResponse.status} ${error.message})`, detail);
+          }
         });
       }
       throw error;
     }
-    this.notifications.danger(`Request failed`, error.message);
+    if (!suppressNotifications) {
+      this.notifications.danger(`Request failed`, error.message);
+    }
     throw error;
   }
 
