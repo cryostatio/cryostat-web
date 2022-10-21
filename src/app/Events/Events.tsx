@@ -44,36 +44,28 @@ import { EventTemplates } from './EventTemplates';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { EventTypes } from './EventTypes';
-import { concatMap, filter } from 'rxjs/operators';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 
-export const Events = () => {
+export interface EventsProps {}
+
+export const Events: React.FunctionComponent<EventsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [eventActiveTab, setEventActiveTab] = React.useState(0);
+  const [probeActiveTab, setProbeActiveTab] = React.useState(0);
   const [enabled, setEnabled] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((t) => t !== NO_TARGET),
-          concatMap((_) => context.api.getActiveProbes(true))
-        )
-        .subscribe({
-          next: (_) => setEnabled(true),
-          error: (_) => setEnabled(false),
-        })
+      context.api.getActiveProbes(true).subscribe({
+        next: (_) => setEnabled(true),
+        error: (_) => setEnabled(false),
+      })
     );
-  }, [addSubscription, context.api, context.target, setEnabled]);
+  }, [addSubscription, context.api, setEnabled]);
 
-  const handleTabSelect = React.useCallback(
-    (evt, idx) => {
-      setActiveTab(idx);
-    },
-    [setActiveTab]
-  );
+  const handleEventTabSelect = React.useCallback((evt, idx) => setEventActiveTab(idx), [setEventActiveTab]);
+
+  const handleProbeTabSelect = React.useCallback((evt, idx) => setProbeActiveTab(idx), [setProbeActiveTab]);
 
   return (
     <>
@@ -82,7 +74,7 @@ export const Events = () => {
           <StackItem>
             <Card>
               <CardBody>
-                <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
+                <Tabs activeKey={eventActiveTab} onSelect={handleEventTabSelect}>
                   <Tab eventKey={0} title="Event Templates">
                     <EventTemplates />
                   </Tab>
@@ -93,22 +85,22 @@ export const Events = () => {
               </CardBody>
             </Card>
           </StackItem>
-          {enabled ? (
+          {enabled && (
             <StackItem>
               <Card>
                 <CardBody>
-                  <Tabs activeKey={activeTab} onSelect={handleTabSelect}>
-                    <Tab eventKey={2} title="Probe Templates">
+                  <Tabs activeKey={probeActiveTab} onSelect={handleProbeTabSelect}>
+                    <Tab eventKey={0} title="Probe Templates">
                       <AgentProbeTemplates />
                     </Tab>
-                    <Tab eventKey={3} title="Live Configuration">
+                    <Tab eventKey={1} title="Live Configuration">
                       <AgentLiveProbes />
                     </Tab>
                   </Tabs>
                 </CardBody>
               </Card>
             </StackItem>
-          ) : null}
+          )}
         </Stack>
       </TargetView>
     </>
