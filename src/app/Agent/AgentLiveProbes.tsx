@@ -41,17 +41,11 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
-  ActionGroup,
   Button,
   Card,
   CardBody,
   CardHeaderMain,
   CardHeader,
-  FileUpload,
-  Form,
-  FormGroup,
-  Modal,
-  ModalVariant,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -60,15 +54,11 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
-import { PlusIcon } from '@patternfly/react-icons';
 import {
   Table,
   TableBody,
   TableHeader,
   TableVariant,
-  IAction,
-  IRowData,
-  IExtraData,
   ISortBy,
   SortByDirection,
   sortable,
@@ -76,7 +66,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { EventProbe } from '@app/Shared/Services/Api.service';
 
 export const AgentLiveProbes = () => {
@@ -126,7 +116,6 @@ export const AgentLiveProbes = () => {
 
   const handleTemplates = React.useCallback(
     (templates) => {
-      console.log(templates);
       setTemplates(templates);
       setErrorMessage('');
       setIsLoading(false);
