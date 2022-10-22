@@ -38,7 +38,6 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
@@ -59,8 +58,10 @@ import {
   TextInput,
   Text,
   TextVariants,
+  StackItem,
+  Stack,
 } from '@patternfly/react-core';
-import { PlusIcon } from '@patternfly/react-icons';
+import { UploadIcon } from '@patternfly/react-icons';
 import {
   Table,
   TableBody,
@@ -73,8 +74,7 @@ import {
   SortByDirection,
   sortable,
 } from '@patternfly/react-table';
-import { useHistory } from 'react-router-dom';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
@@ -83,7 +83,7 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
 export const AgentProbeTemplates = () => {
   const context = React.useContext(ServiceContext);
-  const history = useHistory();
+  const addSubscription = useSubscriptions();
 
   const [templates, setTemplates] = React.useState([] as ProbeTemplate[]);
   const [filteredTemplates, setFilteredTemplates] = React.useState([] as ProbeTemplate[]);
@@ -98,35 +98,8 @@ export const AgentProbeTemplates = () => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-  const addSubscription = useSubscriptions();
 
-  const tableColumns = React.useMemo(
-    () => [
-      { title: 'name', transforms: [sortable] },
-      { title: 'xml', transforms: [sortable] },
-    ],
-    [sortable]
-  );
-
-  React.useEffect(() => {
-    let filtered;
-    if (!filterText) {
-      filtered = templates;
-    } else {
-      const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter(
-        (t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft)
-      );
-    }
-    const { index, direction } = sortBy;
-    if (typeof index === 'number') {
-      const keys = ['name', 'xml'];
-      const key = keys[index];
-      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    }
-    setFilteredTemplates([...filtered]);
-  }, [filterText, templates, sortBy]);
+  const tableColumns = React.useMemo(() => [{ title: 'Name', transforms: [sortable] }, { title: 'XML' }], [sortable]);
 
   const handleTemplates = React.useCallback(
     (templates) => {
@@ -136,7 +109,6 @@ export const AgentProbeTemplates = () => {
     },
     [setTemplates, setIsLoading, setErrorMessage]
   );
-
   const handleError = React.useCallback(
     (error) => {
       setIsLoading(false);
@@ -148,70 +120,79 @@ export const AgentProbeTemplates = () => {
   const refreshTemplates = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.target
-        .target()
-        .pipe(
-          concatMap((target) => context.api.getProbeTemplates()),
-          first()
-        )
-        .subscribe(
-          (value) => handleTemplates(value),
-          (err) => handleError(err)
-        )
-    );
-  }, [addSubscription, context, context.target, context.api, setIsLoading, handleTemplates, handleError]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.target.target().subscribe(() => {
-        setFilterText('');
-        refreshTemplates();
+      context.api.getProbeTemplates().subscribe({
+        next: (value) => handleTemplates(value),
+        error: (err) => handleError(err),
       })
     );
-  }, [context, context.target, addSubscription, refreshTemplates]);
+  }, [addSubscription, context.api, setIsLoading, handleTemplates, handleError]);
 
-  React.useEffect(() => {
-    if (!context.settings.autoRefreshEnabled()) {
-      return;
-    }
-    const id = window.setInterval(
-      () => refreshTemplates(),
-      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
-    );
-    return () => window.clearInterval(id);
-  }, []);
-
-  React.useEffect(() => {
-    const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage('Auth failure');
-    });
-    return () => sub.unsubscribe();
-  }, [context.target]);
-
-  const displayTemplates = React.useMemo(
-    () => filteredTemplates.map((t: ProbeTemplate) => [t.name, t.xml]),
-    [filteredTemplates]
+  const handleDelete = React.useCallback(
+    (rowData) => {
+      addSubscription(
+        context.api
+          .deleteCustomProbeTemplate(rowData[0])
+          .pipe(first())
+          .subscribe(() => {
+            /** Do nothing. Notifications hook will handle */
+          })
+      );
+    },
+    [addSubscription, context.api, refreshTemplates]
   );
 
-  const handleDelete = (rowData) => {
-    addSubscription(
-      context.api
-        .deleteCustomProbeTemplate(rowData[0])
-        .pipe(first())
-        .subscribe(() => {
-          refreshTemplates();
-        })
-    );
-  };
+  const handleUploadCancel = React.useCallback(() => {
+    setUploadFile(undefined);
+    setUploadFilename('');
+    setModalOpen(false);
+  }, [setUploadFile, setUploadFilename, setModalOpen]);
 
-  const handleInsert = (rowData) => {
-    addSubscription(
-      context.api
-        .insertProbes(rowData[0])
-        .pipe(first())
-        .subscribe(() => {})
-    );
-  };
+  const handleDeleteButton = React.useCallback(
+    (rowData) => {
+      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+        setRowDeleteData(rowData);
+        setWarningModalOpen(true);
+      } else {
+        handleDelete(rowData);
+      }
+    },
+    [context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]
+  );
+
+  const handleWarningModalAccept = React.useCallback(() => {
+    handleDelete(rowDeleteData);
+  }, [handleDelete, rowDeleteData]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const handleFileRejected = React.useCallback(() => {
+    setFileRejected(true);
+  }, [setFileRejected]);
+
+  const handleSort = React.useCallback(
+    (event, index, direction) => {
+      setSortBy({ index, direction });
+    },
+    [setSortBy]
+  );
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
+  const handleInsert = React.useCallback(
+    (rowData) => {
+      addSubscription(
+        context.api
+          .insertProbes(rowData[0])
+          .pipe(first())
+          .subscribe(() => {})
+      );
+    },
+    [addSubscription, context.api]
+  );
 
   const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
     if (typeof extraData.rowIndex == 'undefined') {
@@ -235,24 +216,24 @@ export const AgentProbeTemplates = () => {
     return actions;
   };
 
-  const handleModalToggle = () => {
-    setModalOpen((v) => {
-      if (v) {
-        setUploadFile(undefined);
-        setUploadFilename('');
-        setUploading(false);
-      }
-      return !v;
-    });
-  };
+  const handleTemplateUpload = React.useCallback(() => {
+    setModalOpen(true);
+  }, [setModalOpen]);
 
-  const handleFileChange = (value, filename) => {
-    setFileRejected(false);
-    setUploadFile(value);
-    setUploadFilename(filename);
-  };
+  const handleUploadModalClose = React.useCallback(() => {
+    setModalOpen(false);
+  }, [setModalOpen]);
 
-  const handleUploadSubmit = () => {
+  const handleFileChange = React.useCallback(
+    (value, filename) => {
+      setFileRejected(false);
+      setUploadFile(value);
+      setUploadFilename(filename);
+    },
+    [setFileRejected, setUploadFile, setUploadFilename]
+  );
+
+  const handleUploadSubmit = React.useCallback(() => {
     if (!uploadFile) {
       window.console.error('Attempted to submit template upload without a file selected');
       return;
@@ -268,11 +249,38 @@ export const AgentProbeTemplates = () => {
             setUploadFile(undefined);
             setUploadFilename('');
             setModalOpen(false);
-            refreshTemplates();
           }
         })
     );
-  };
+  }, [setUploading, addSubscription, context.api, setUploadFile, setUploadFilename, setModalOpen]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(() => {
+        setFilterText('');
+        refreshTemplates();
+      })
+    );
+  }, [context.target, addSubscription, setFilterText, refreshTemplates]);
+
+  React.useEffect(() => {
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
+    }
+    const id = window.setInterval(
+      () => refreshTemplates(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+    );
+    return () => window.clearInterval(id);
+  }, [context.settings, refreshTemplates]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      })
+    );
+  }, [context.target, addSubscription, setErrorMessage]);
 
   React.useEffect(() => {
     addSubscription(
@@ -280,60 +288,44 @@ export const AgentProbeTemplates = () => {
         .messages(NotificationCategory.ProbeTemplateUploaded)
         .subscribe((v) => refreshTemplates())
     );
-  }, [addSubscription, context, context.notificationChannel, setTemplates]);
+  }, [addSubscription, context.notificationChannel, refreshTemplates]);
 
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.TemplateDeleted).subscribe((v) => refreshTemplates())
     );
-  }, [addSubscription, context, context.notificationChannel, setTemplates]);
+  }, [addSubscription, context.notificationChannel, refreshTemplates]);
 
-  const handleUploadCancel = () => {
-    setUploadFile(undefined);
-    setUploadFilename('');
-    setModalOpen(false);
-  };
+  React.useEffect(() => {
+    let filtered: ProbeTemplate[];
+    if (!filterText) {
+      filtered = templates;
+    } else {
+      const ft = filterText.trim().toLowerCase();
+      filtered = templates.filter(
+        (t: ProbeTemplate) => t.name.toLowerCase().includes(ft) || t.xml.toLowerCase().includes(ft)
+      );
+    }
+    const { index, direction } = sortBy;
+    if (typeof index === 'number') {
+      const keys = ['name', 'xml'];
+      const key = keys[index];
+      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
+    }
+    setFilteredTemplates([...filtered]);
+  }, [filterText, templates, sortBy, setFilteredTemplates]);
 
-  const handleDeleteButton = React.useCallback(
-    (rowData) => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
-        setRowDeleteData(rowData);
-        setWarningModalOpen(true);
-      } else {
-        handleDelete(rowData);
-      }
-    },
-    [context, context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]
+  const displayTemplates = React.useMemo(
+    () => filteredTemplates.map((t: ProbeTemplate) => [t.name, t.xml]),
+    [filteredTemplates]
   );
-
-  const handleWarningModalAccept = React.useCallback(() => {
-    handleDelete(rowDeleteData);
-  }, [handleDelete, rowDeleteData]);
-
-  const handleWarningModalClose = React.useCallback(() => {
-    setWarningModalOpen(false);
-  }, [setWarningModalOpen]);
-
-  const handleFileRejected = () => {
-    setFileRejected(true);
-  };
-
-  const handleSort = (event, index, direction) => {
-    setSortBy({ index, direction });
-  };
-
-  const authRetry = React.useCallback(() => {
-    context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
 
   if (errorMessage != '') {
     return (
       <ErrorView
         title={'Error retrieving probe templates'}
-        message={
-          'This is commonly caused by the agent not being loaded/active, check that the target was started with the agent (-javaagent:/path/to/agent.jar) ' +
-          errorMessage
-        }
+        message={`${errorMessage}. Note: This is commonly caused by the agent not being loaded/active. Check that the target was started with the agent (-javaagent:/path/to/agent.jar).`}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
     );
@@ -342,100 +334,105 @@ export const AgentProbeTemplates = () => {
   } else {
     return (
       <>
-        <Card>
-          <CardHeader>
-            <CardHeaderMain>
-              <Text component={TextVariants.h4}>About the JMC Agent</Text>
-            </CardHeaderMain>
-          </CardHeader>
-          <CardBody>
-            The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make use
-            of the JMC Agent, the agent jar must be present in the same container as the target, and the target must be
-            started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met the user can
-            upload probe templates to Cryostat and insert/remove them from targets, as well as view currently active
-            probes.
-          </CardBody>
-        </Card>
-        <Toolbar id="event-templates-toolbar">
-          <ToolbarContent>
-            <ToolbarGroup variant="filter-group">
-              <ToolbarItem>
-                <TextInput
-                  name="templateFilter"
-                  id="templateFilter"
-                  type="search"
-                  placeholder="Filter..."
-                  aria-label="Probe template filter"
-                  onChange={setFilterText}
+        <Stack hasGutter style={{ marginTop: '1em' }}>
+          <StackItem>
+            <Card>
+              <CardHeader>
+                <CardHeaderMain>
+                  <Text component={TextVariants.h4}>About the JMC Agent</Text>
+                </CardHeaderMain>
+              </CardHeader>
+              <CardBody>
+                The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make
+                use of the JMC Agent, the agent jar must be present in the same container as the target, and the target
+                must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met, the
+                user can upload probe templates to Cryostat and insert them to the target, as well as view or remove
+                currently active probes.
+              </CardBody>
+            </Card>
+          </StackItem>
+          <StackItem>
+            <Toolbar id="probe-templates-toolbar">
+              <ToolbarContent>
+                <ToolbarGroup variant="filter-group">
+                  <ToolbarItem>
+                    <TextInput
+                      name="templateFilter"
+                      id="templateFilter"
+                      type="search"
+                      placeholder="Filter..."
+                      aria-label="Probe template filter"
+                      onChange={setFilterText}
+                    />
+                  </ToolbarItem>
+                </ToolbarGroup>
+                <ToolbarGroup variant="icon-button-group">
+                  <ToolbarItem>
+                    <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleTemplateUpload}>
+                      <UploadIcon />
+                    </Button>
+                  </ToolbarItem>
+                </ToolbarGroup>
+                <DeleteWarningModal
+                  warningType={DeleteWarningType.DeleteProbeTemplates}
+                  visible={warningModalOpen}
+                  onAccept={handleWarningModalAccept}
+                  onClose={handleWarningModalClose}
                 />
-              </ToolbarItem>
-            </ToolbarGroup>
-            <ToolbarGroup variant="icon-button-group">
-              <ToolbarItem>
-                <Button key="create" variant="primary" onClick={handleModalToggle}>
-                  Upload
-                </Button>
-              </ToolbarItem>
-            </ToolbarGroup>
-            <DeleteWarningModal
-              warningType={DeleteWarningType.DeleteProbeTemplates}
-              visible={warningModalOpen}
-              onAccept={handleWarningModalAccept}
-              onClose={handleWarningModalClose}
-            />
-          </ToolbarContent>
-        </Toolbar>
-        <Table
-          aria-label="Probe Templates Table"
-          variant={TableVariant.compact}
-          cells={tableColumns}
-          rows={displayTemplates}
-          actionResolver={actionResolver}
-          sortBy={sortBy}
-          onSort={handleSort}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
-
-        <Modal
-          isOpen={modalOpen}
-          variant={ModalVariant.large}
-          showClose={true}
-          onClose={handleModalToggle}
-          title="Create Custom Probe Template"
-          description="Create a customized probe template. This is a specialized XML file typically created using JDK Mission Control, which defines a set of events to inject and their options to configure."
-        >
-          <Form>
-            <FormGroup
-              label="Template XML"
-              isRequired
-              fieldId="template"
-              validated={fileRejected ? 'error' : 'default'}
+              </ToolbarContent>
+            </Toolbar>
+            <Table
+              aria-label="Probe Templates Table"
+              variant={TableVariant.compact}
+              cells={tableColumns}
+              rows={displayTemplates}
+              actionResolver={actionResolver}
+              sortBy={sortBy}
+              onSort={handleSort}
             >
-              <FileUpload
-                id="probetemplateName"
-                value={uploadFile}
-                filename={uploadFilename}
-                onChange={handleFileChange}
-                isLoading={uploading}
-                validated={fileRejected ? 'error' : 'default'}
-                dropzoneProps={{
-                  accept: '.xml',
-                  onDropRejected: handleFileRejected,
-                }}
-              />
-            </FormGroup>
-            <ActionGroup>
-              <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>
-                Submit
-              </Button>
-              <Button variant="link" onClick={handleUploadCancel}>
-                Cancel
-              </Button>
-            </ActionGroup>
-          </Form>
-        </Modal>
+              <TableHeader />
+              <TableBody />
+            </Table>
+            <Modal
+              isOpen={modalOpen}
+              variant={ModalVariant.large}
+              showClose={true}
+              onClose={handleUploadModalClose}
+              title="Create Custom Probe Template"
+              description="Create a customized probe template. This is a specialized XML file typically created using JDK Mission Control, which defines a set of events to inject and their options to configure."
+            >
+              <Form>
+                <FormGroup
+                  label="Template XML"
+                  isRequired
+                  fieldId="template"
+                  validated={fileRejected ? 'error' : 'default'}
+                >
+                  <FileUpload
+                    id="probetemplateName"
+                    value={uploadFile}
+                    filename={uploadFilename}
+                    onChange={handleFileChange}
+                    isLoading={uploading}
+                    validated={fileRejected ? 'error' : 'default'}
+                    dropzoneProps={{
+                      accept: '.xml',
+                      onDropRejected: handleFileRejected,
+                    }}
+                  />
+                </FormGroup>
+                <ActionGroup>
+                  <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>
+                    Submit
+                  </Button>
+                  <Button variant="link" onClick={handleUploadCancel}>
+                    Cancel
+                  </Button>
+                </ActionGroup>
+              </Form>
+            </Modal>
+          </StackItem>
+        </Stack>
       </>
     );
   }

@@ -82,7 +82,7 @@ export const AgentLiveProbes = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-  
+
   const tableColumns = [
     { title: 'ID', transforms: [sortable] },
     { title: 'Name', transforms: [sortable] },
@@ -155,31 +155,6 @@ export const AgentLiveProbes = () => {
   }, [context.settings, setWarningModalOpen, handleDeleteAllProbes]);
 
   React.useEffect(() => {
-    let filtered;
-    if (!filterText) {
-      filtered = templates;
-    } else {
-      const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter(
-        (t: EventProbe) =>
-          t.name.toLowerCase().includes(ft) ||
-          t.description.toLowerCase().includes(ft) ||
-          t.clazz.toLowerCase().includes(ft) ||
-          t.methodDescriptor.toLowerCase().includes(ft) ||
-          t.methodName.toLowerCase().includes(ft)
-      );
-    }
-    const { index, direction } = sortBy;
-    if (typeof index === 'number') {
-      const keys = ['id', 'name', 'description', 'clazz', 'methodName'];
-      const key = keys[index];
-      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    }
-    setFilteredTemplates([...filtered]);
-  }, [filterText, templates, sortBy, setFilteredTemplates]);
-
-  React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe(() => {
         setFilterText('');
@@ -215,6 +190,31 @@ export const AgentLiveProbes = () => {
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
+  React.useEffect(() => {
+    let filtered: EventProbe[];
+    if (!filterText) {
+      filtered = templates;
+    } else {
+      const ft = filterText.trim().toLowerCase();
+      filtered = templates.filter(
+        (t: EventProbe) =>
+          t.name.toLowerCase().includes(ft) ||
+          t.description.toLowerCase().includes(ft) ||
+          t.clazz.toLowerCase().includes(ft) ||
+          t.methodDescriptor.toLowerCase().includes(ft) ||
+          t.methodName.toLowerCase().includes(ft)
+      );
+    }
+    const { index, direction } = sortBy;
+    if (typeof index === 'number') {
+      const keys = ['id', 'name', 'description', 'clazz', 'methodName'];
+      const key = keys[index];
+      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
+    }
+    setFilteredTemplates([...filtered]);
+  }, [filterText, templates, sortBy, setFilteredTemplates]);
+
   const displayTemplates = React.useMemo(
     () => filteredTemplates.map((t: EventProbe) => [t.id, t.name, t.clazz, t.description, t.methodName]),
     [filteredTemplates]
@@ -233,7 +233,7 @@ export const AgentLiveProbes = () => {
   } else {
     return (
       <>
-        <Stack hasGutter>
+        <Stack hasGutter style={{ marginTop: '1em' }}>
           <StackItem>
             <Card>
               <CardHeader>
@@ -251,7 +251,7 @@ export const AgentLiveProbes = () => {
             </Card>
           </StackItem>
           <StackItem>
-            <Toolbar id="probe-templates-toolbar">
+            <Toolbar id="active-probes-toolbar">
               <ToolbarContent>
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem>
@@ -274,11 +274,11 @@ export const AgentLiveProbes = () => {
                 </ToolbarGroup>
               </ToolbarContent>
               <DeleteWarningModal
-              warningType={DeleteWarningType.DeleteActiveProbes}
-              visible={warningModalOpen}
-              onAccept={handleWarningModalAccept}
-              onClose={handleWarningModalClose}
-            />
+                warningType={DeleteWarningType.DeleteActiveProbes}
+                visible={warningModalOpen}
+                onAccept={handleWarningModalAccept}
+                onClose={handleWarningModalClose}
+              />
             </Toolbar>
             <Table
               aria-label="Active Probes"
