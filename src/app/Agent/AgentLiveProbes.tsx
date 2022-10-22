@@ -68,9 +68,12 @@ import { first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { EventProbe } from '@app/Shared/Services/Api.service';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
 export const AgentLiveProbes = () => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
 
   const [templates, setTemplates] = React.useState([] as EventProbe[]);
   const [filteredTemplates, setFilteredTemplates] = React.useState([] as EventProbe[]);
@@ -78,8 +81,8 @@ export const AgentLiveProbes = () => {
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const addSubscription = useSubscriptions();
-
+  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  
   const tableColumns = [
     { title: 'ID', transforms: [sortable] },
     { title: 'Name', transforms: [sortable] },
@@ -115,6 +118,17 @@ export const AgentLiveProbes = () => {
     );
   }, [addSubscription, context.api, setIsLoading, handleTemplates, handleError]);
 
+  const handleSort = React.useCallback(
+    (evt, index, direction) => {
+      setSortBy({ index, direction });
+    },
+    [setSortBy]
+  );
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
   const handleDeleteAllProbes = React.useCallback(() => {
     addSubscription(
       context.api
@@ -126,16 +140,19 @@ export const AgentLiveProbes = () => {
     );
   }, [addSubscription, context.api, refreshTemplates]);
 
-  const handleSort = React.useCallback(
-    (evt, index, direction) => {
-      setSortBy({ index, direction });
-    },
-    [setSortBy]
-  );
+  const handleWarningModalAccept = React.useCallback(() => handleDeleteAllProbes(), [handleDeleteAllProbes]);
 
-  const authRetry = React.useCallback(() => {
-    context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+  }, [setWarningModalOpen]);
+
+  const handleDeleteButton = React.useCallback(() => {
+    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveProbes)) {
+      setWarningModalOpen(true);
+    } else {
+      handleDeleteAllProbes();
+    }
+  }, [context.settings, setWarningModalOpen, handleDeleteAllProbes]);
 
   React.useEffect(() => {
     let filtered;
@@ -250,12 +267,18 @@ export const AgentLiveProbes = () => {
                 </ToolbarGroup>
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
-                    <Button key="delete" variant="danger" onClick={handleDeleteAllProbes}>
-                      Delete All Probes
+                    <Button key="delete" variant="danger" onClick={handleDeleteButton}>
+                      Remove All Probes
                     </Button>
                   </ToolbarItem>
                 </ToolbarGroup>
               </ToolbarContent>
+              <DeleteWarningModal
+              warningType={DeleteWarningType.DeleteActiveProbes}
+              visible={warningModalOpen}
+              onAccept={handleWarningModalAccept}
+              onClose={handleWarningModalClose}
+            />
             </Toolbar>
             <Table
               aria-label="Active Probes"

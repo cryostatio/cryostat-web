@@ -507,7 +507,7 @@ export class ApiService {
           tap((resp) => {
             if (resp.status == 400) {
               this.notifications.warning(
-                'Failed to Insert Probes',
+                'Failed to insert Probes',
                 'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent'
               );
             }
