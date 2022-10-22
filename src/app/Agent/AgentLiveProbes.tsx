@@ -38,7 +38,6 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -53,6 +52,8 @@ import {
   TextInput,
   Text,
   TextVariants,
+  Stack,
+  StackItem,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -63,15 +64,13 @@ import {
   SortByDirection,
   sortable,
 } from '@patternfly/react-table';
-import { useHistory } from 'react-router-dom';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { EventProbe } from '@app/Shared/Services/Api.service';
 
 export const AgentLiveProbes = () => {
   const context = React.useContext(ServiceContext);
-  const history = useHistory();
 
   const [templates, setTemplates] = React.useState([] as EventProbe[]);
   const [filteredTemplates, setFilteredTemplates] = React.useState([] as EventProbe[]);
@@ -83,36 +82,11 @@ export const AgentLiveProbes = () => {
 
   const tableColumns = [
     { title: 'ID', transforms: [sortable] },
-    { title: 'Label', transforms: [sortable] },
+    { title: 'Name', transforms: [sortable] },
     { title: 'Class', transforms: [sortable] },
-    { title: 'Description', transforms: [sortable] },
+    { title: 'Description' },
     { title: 'Method', transforms: [sortable] },
   ];
-
-  React.useEffect(() => {
-    let filtered;
-    if (!filterText) {
-      filtered = templates;
-    } else {
-      const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter(
-        (t: EventProbe) =>
-          t.name.toLowerCase().includes(ft) ||
-          t.description.toLowerCase().includes(ft) ||
-          t.clazz.toLowerCase().includes(ft) ||
-          t.methodDescriptor.toLowerCase().includes(ft) ||
-          t.methodName.toLowerCase().includes(ft)
-      );
-    }
-    const { index, direction } = sortBy;
-    if (typeof index === 'number') {
-      const keys = ['ID', 'Label', 'Description', 'Class', 'Method'];
-      const key = keys[index];
-      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    }
-    setFilteredTemplates([...filtered]);
-  }, [filterText, templates, sortBy]);
 
   const handleTemplates = React.useCallback(
     (templates) => {
@@ -134,19 +108,59 @@ export const AgentLiveProbes = () => {
   const refreshTemplates = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => target !== NO_TARGET),
-          first(),
-          concatMap((target) => context.api.getActiveProbes())
-        )
-        .subscribe(
-          (value) => handleTemplates(value),
-          (err) => handleError(err)
-        )
+      context.api.getActiveProbes().subscribe({
+        next: (value) => handleTemplates(value),
+        error: (err) => handleError(err),
+      })
     );
-  }, [addSubscription, context, context.target, context.api, setIsLoading, handleTemplates, handleError]);
+  }, [addSubscription, context.api, setIsLoading, handleTemplates, handleError]);
+
+  const handleDeleteAllProbes = React.useCallback(() => {
+    addSubscription(
+      context.api
+        .removeProbes()
+        .pipe(first())
+        .subscribe(() => {
+          refreshTemplates();
+        })
+    );
+  }, [addSubscription, context.api, refreshTemplates]);
+
+  const handleSort = React.useCallback(
+    (evt, index, direction) => {
+      setSortBy({ index, direction });
+    },
+    [setSortBy]
+  );
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
+  React.useEffect(() => {
+    let filtered;
+    if (!filterText) {
+      filtered = templates;
+    } else {
+      const ft = filterText.trim().toLowerCase();
+      filtered = templates.filter(
+        (t: EventProbe) =>
+          t.name.toLowerCase().includes(ft) ||
+          t.description.toLowerCase().includes(ft) ||
+          t.clazz.toLowerCase().includes(ft) ||
+          t.methodDescriptor.toLowerCase().includes(ft) ||
+          t.methodName.toLowerCase().includes(ft)
+      );
+    }
+    const { index, direction } = sortBy;
+    if (typeof index === 'number') {
+      const keys = ['id', 'name', 'description', 'clazz', 'methodName'];
+      const key = keys[index];
+      const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+      filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
+    }
+    setFilteredTemplates([...filtered]);
+  }, [filterText, templates, sortBy, setFilteredTemplates]);
 
   React.useEffect(() => {
     addSubscription(
@@ -155,7 +169,7 @@ export const AgentLiveProbes = () => {
         refreshTemplates();
       })
     );
-  }, [context, context.target, addSubscription, refreshTemplates]);
+  }, [context, context.target, addSubscription, setFilterText, refreshTemplates]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -166,30 +180,15 @@ export const AgentLiveProbes = () => {
       context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
     );
     return () => window.clearInterval(id);
-  }, []);
+  }, [context.settings, refreshTemplates]);
 
   React.useEffect(() => {
-    const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage('Auth failure');
-    });
-    return () => sub.unsubscribe();
-  }, [context.target]);
-
-  const displayTemplates = React.useMemo(
-    () => templates.map((t: EventProbe) => [t.id, t.name, t.clazz, t.description, t.methodName + t.methodDescriptor]),
-    [templates]
-  );
-
-  const handleModalToggle = () => {
     addSubscription(
-      context.api
-        .removeProbes()
-        .pipe(first())
-        .subscribe(() => {
-          refreshTemplates();
-        })
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      })
     );
-  };
+  }, [addSubscription, context.target, setErrorMessage]);
 
   React.useEffect(() => {
     addSubscription(
@@ -199,18 +198,16 @@ export const AgentLiveProbes = () => {
     );
   }, [addSubscription, context, context.notificationChannel, setTemplates]);
 
-  const authRetry = React.useCallback(() => {
-    context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
+  const displayTemplates = React.useMemo(
+    () => filteredTemplates.map((t: EventProbe) => [t.id, t.name, t.clazz, t.description, t.methodName]),
+    [filteredTemplates]
+  );
 
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error retrieving events'}
-        message={
-          'This is commonly caused by the agent not being loaded/active, check that the target was started with the agent (-javaagent:/path/to/agent.jar) ' +
-          errorMessage
-        }
+        title={'Error retrieving active probes'}
+        message={`${errorMessage}. Note: This is commonly caused by the agent not being loaded/active, check that the target was started with the agent (-javaagent:/path/to/agent.jar).`}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
     );
@@ -219,47 +216,59 @@ export const AgentLiveProbes = () => {
   } else {
     return (
       <>
-        <Card>
-          <CardHeader>
-            <CardHeaderMain>
-              <Text component={TextVariants.h4}>About the JMC Agent</Text>
-            </CardHeaderMain>
-          </CardHeader>
-          <CardBody>
-            The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make use
-            of the JMC Agent, the agent jar must be present in the same container as the target, and the target must be
-            started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met the user can
-            upload probe templates to Cryostat and insert/remove them from targets, as well as view currently active
-            probes.
-          </CardBody>
-        </Card>
-        <Toolbar id="event-templates-toolbar">
-          <ToolbarContent>
-            <ToolbarGroup variant="filter-group">
-              <ToolbarItem>
-                <TextInput
-                  name="templateFilter"
-                  id="templateFilter"
-                  type="search"
-                  placeholder="Filter..."
-                  aria-label="Probe template filter"
-                  onChange={setFilterText}
-                />
-              </ToolbarItem>
-            </ToolbarGroup>
-            <ToolbarGroup variant="icon-button-group">
-              <ToolbarItem>
-                <Button key="create" variant="primary" onClick={handleModalToggle}>
-                  Remove Probes
-                </Button>
-              </ToolbarItem>
-            </ToolbarGroup>
-          </ToolbarContent>
-        </Toolbar>
-        <Table aria-label="Active Events" variant={TableVariant.compact} cells={tableColumns} rows={displayTemplates}>
-          <TableHeader />
-          <TableBody />
-        </Table>
+        <Stack hasGutter>
+          <StackItem>
+            <Card>
+              <CardHeader>
+                <CardHeaderMain>
+                  <Text component={TextVariants.h4}>About the JMC Agent</Text>
+                </CardHeaderMain>
+              </CardHeader>
+              <CardBody>
+                The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make
+                use of the JMC Agent, the agent jar must be present in the same container as the target, and the target
+                must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met, the
+                user can upload probe templates to Cryostat and insert them to the target, as well as view or remove
+                currently active probes.
+              </CardBody>
+            </Card>
+          </StackItem>
+          <StackItem>
+            <Toolbar id="probe-templates-toolbar">
+              <ToolbarContent>
+                <ToolbarGroup variant="filter-group">
+                  <ToolbarItem>
+                    <TextInput
+                      name="templateFilter"
+                      id="templateFilter"
+                      type="search"
+                      placeholder="Filter..."
+                      aria-label="Probe template filter"
+                      onChange={setFilterText}
+                    />
+                  </ToolbarItem>
+                </ToolbarGroup>
+                <ToolbarGroup variant="icon-button-group">
+                  <ToolbarItem>
+                    <Button key="delete" variant="danger" onClick={handleDeleteAllProbes}>
+                      Delete All Probes
+                    </Button>
+                  </ToolbarItem>
+                </ToolbarGroup>
+              </ToolbarContent>
+            </Toolbar>
+            <Table
+              aria-label="Active Probes"
+              variant={TableVariant.compact}
+              cells={tableColumns}
+              rows={displayTemplates}
+              onSort={handleSort}
+            >
+              <TableHeader />
+              <TableBody />
+            </Table>
+          </StackItem>
+        </Stack>
       </>
     );
   }
