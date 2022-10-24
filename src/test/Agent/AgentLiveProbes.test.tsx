@@ -109,6 +109,7 @@ jest
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockApplyTemplateNotification)) // should add a probe after receiving a notification
   .mockReturnValue(of()); // All other tests
 
