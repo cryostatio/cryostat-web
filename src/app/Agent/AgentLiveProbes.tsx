@@ -191,6 +191,12 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
   }, [addSubscription, context, context.notificationChannel, setProbes]);
 
   React.useEffect(() => {
+    addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ProbesRemoved).subscribe((v) => refreshProbes())
+    );
+  }, [addSubscription, context, context.notificationChannel, setProbes]);
+
+  React.useEffect(() => {
     let filtered: EventProbe[];
     if (!filterText) {
       filtered = probes;
