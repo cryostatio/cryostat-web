@@ -273,7 +273,12 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
                 </ToolbarGroup>
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
-                    <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!filteredProbes.length}>
+                    <Button
+                      key="delete"
+                      variant="danger"
+                      onClick={handleDeleteButton}
+                      isDisabled={!filteredProbes.length}
+                    >
                       Remove All Probes
                     </Button>
                   </ToolbarItem>
