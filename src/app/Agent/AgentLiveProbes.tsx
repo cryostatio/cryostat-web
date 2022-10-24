@@ -140,7 +140,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
           // do nothing - notification updates state
         })
     );
-  }, [addSubscription, context.api, refreshProbes]);
+  }, [addSubscription, context.api]);
 
   const handleWarningModalAccept = React.useCallback(() => handleDeleteAllProbes(), [handleDeleteAllProbes]);
 
