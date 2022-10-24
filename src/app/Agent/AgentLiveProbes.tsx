@@ -71,12 +71,14 @@ import { EventProbe } from '@app/Shared/Services/Api.service';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 
-export const AgentLiveProbes = () => {
+export interface AgentLiveProbesProps {}
+
+export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const [templates, setTemplates] = React.useState([] as EventProbe[]);
-  const [filteredTemplates, setFilteredTemplates] = React.useState([] as EventProbe[]);
+  const [probes, setProbes] = React.useState([] as EventProbe[]);
+  const [filteredProbes, setFilteredProbes] = React.useState([] as EventProbe[]);
   const [filterText, setFilterText] = React.useState('');
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -91,13 +93,13 @@ export const AgentLiveProbes = () => {
     { title: 'Method', transforms: [sortable] },
   ];
 
-  const handleTemplates = React.useCallback(
-    (templates) => {
-      setTemplates(templates);
+  const handleProbes = React.useCallback(
+    (probes) => {
+      setProbes(probes);
       setErrorMessage('');
       setIsLoading(false);
     },
-    [setTemplates, setIsLoading, setErrorMessage]
+    [setProbes, setIsLoading, setErrorMessage]
   );
 
   const handleError = React.useCallback(
@@ -108,15 +110,15 @@ export const AgentLiveProbes = () => {
     [setIsLoading, setErrorMessage]
   );
 
-  const refreshTemplates = React.useCallback(() => {
+  const refreshProbes = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
       context.api.getActiveProbes().subscribe({
-        next: (value) => handleTemplates(value),
+        next: (value) => handleProbes(value),
         error: (err) => handleError(err),
       })
     );
-  }, [addSubscription, context.api, setIsLoading, handleTemplates, handleError]);
+  }, [addSubscription, context.api, setIsLoading, handleProbes, handleError]);
 
   const handleSort = React.useCallback(
     (evt, index, direction) => {
@@ -135,10 +137,10 @@ export const AgentLiveProbes = () => {
         .removeProbes()
         .pipe(first())
         .subscribe(() => {
-          refreshTemplates();
+          refreshProbes();
         })
     );
-  }, [addSubscription, context.api, refreshTemplates]);
+  }, [addSubscription, context.api, refreshProbes]);
 
   const handleWarningModalAccept = React.useCallback(() => handleDeleteAllProbes(), [handleDeleteAllProbes]);
 
@@ -158,21 +160,21 @@ export const AgentLiveProbes = () => {
     addSubscription(
       context.target.target().subscribe(() => {
         setFilterText('');
-        refreshTemplates();
+        refreshProbes();
       })
     );
-  }, [context, context.target, addSubscription, setFilterText, refreshTemplates]);
+  }, [context, context.target, addSubscription, setFilterText, refreshProbes]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
     const id = window.setInterval(
-      () => refreshTemplates(),
+      () => refreshProbes(),
       context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
     );
     return () => window.clearInterval(id);
-  }, [context.settings, refreshTemplates]);
+  }, [context.settings, refreshProbes]);
 
   React.useEffect(() => {
     addSubscription(
@@ -184,19 +186,17 @@ export const AgentLiveProbes = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel
-        .messages(NotificationCategory.ProbeTemplateApplied)
-        .subscribe((v) => refreshTemplates())
+      context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied).subscribe((v) => refreshProbes())
     );
-  }, [addSubscription, context, context.notificationChannel, setTemplates]);
+  }, [addSubscription, context, context.notificationChannel, setProbes]);
 
   React.useEffect(() => {
     let filtered: EventProbe[];
     if (!filterText) {
-      filtered = templates;
+      filtered = probes;
     } else {
       const ft = filterText.trim().toLowerCase();
-      filtered = templates.filter(
+      filtered = probes.filter(
         (t: EventProbe) =>
           t.name.toLowerCase().includes(ft) ||
           t.description.toLowerCase().includes(ft) ||
@@ -212,12 +212,12 @@ export const AgentLiveProbes = () => {
       const sorted = filtered.sort((a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
       filtered = direction === SortByDirection.asc ? sorted : sorted.reverse();
     }
-    setFilteredTemplates([...filtered]);
-  }, [filterText, templates, sortBy, setFilteredTemplates]);
+    setFilteredProbes([...filtered]);
+  }, [filterText, probes, sortBy, setFilteredProbes]);
 
   const displayTemplates = React.useMemo(
-    () => filteredTemplates.map((t: EventProbe) => [t.id, t.name, t.clazz, t.description, t.methodName]),
-    [filteredTemplates]
+    () => filteredProbes.map((t: EventProbe) => [t.id, t.name, t.clazz, t.description, t.methodName]),
+    [filteredProbes]
   );
 
   if (errorMessage != '') {

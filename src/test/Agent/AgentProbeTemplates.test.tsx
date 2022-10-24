@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
+import { act as doAct, cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
@@ -49,11 +49,8 @@ import {
 } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import userEvent from '@testing-library/user-event';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteProbeTemplates } from '@app/Modal/DeleteWarningUtils';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
-
-const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -66,6 +63,8 @@ const mockAnotherProbeTemplate: ProbeTemplate = {
   name: 'anotherProbeTemplate',
   xml: '<some><other><xml></xml></dummy></some>',
 };
+
+const mockFileUpload = new File([mockProbeTemplate.xml], 'probe_template.xml', { type: 'xml' });
 
 const mockCreateTemplateNotification = {
   meta: {
@@ -87,25 +86,25 @@ const mockDeleteTemplateNotification = {
   },
 } as NotificationMessage;
 
-jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(false);
+jest
+  .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(false) // should delete a probe template when Delete is clicked
+  .mockReturnValue(true); // should show warning modal and delete a probe template when confirmed
 
-jest.spyOn(defaultServices.api, 'addCustomProbeTemplate').mockReturnValue(of(true));
-jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
+const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addCustomProbeTemplate').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'insertProbes').mockReturnValue(of(true));
-jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
 
 jest
   .spyOn(defaultServices.api, 'getProbeTemplates')
-  .mockReturnValueOnce(of([mockProbeTemplate])) // Renders Correctly
-  .mockReturnValueOnce(of([mockProbeTemplate]))
-  .mockReturnValueOnce(of([mockProbeTemplate, mockAnotherProbeTemplate])) // Adds a probe template
-  .mockReturnValueOnce(of([mockProbeTemplate, mockAnotherProbeTemplate]))
-  .mockReturnValueOnce(of([])) // Removes a probe template
-  .mockReturnValueOnce(of([]))
-  .mockReturnValue(of([mockProbeTemplate])); // All other tests
+  .mockReturnValueOnce(of([mockProbeTemplate])) // renders Correctly
 
-jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+  .mockReturnValueOnce(of([mockProbeTemplate])) // should add a probe template after receiving a notification
+  .mockReturnValueOnce(of([mockProbeTemplate, mockAnotherProbeTemplate]))
+
+  .mockReturnValueOnce(of([mockProbeTemplate])) // should remove a probe template after receiving a notification
+  .mockReturnValueOnce(of([]))
+
+  .mockReturnValue(of([mockProbeTemplate])); // All other tests
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -113,11 +112,16 @@ jest
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockCreateTemplateNotification)) // adds a template after receiving a notification
+  .mockReturnValueOnce(of())
+
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockDeleteTemplateNotification)) // removes a template after receiving a notification
 
-  .mockReturnValue(of()); // All Other tests
+  .mockReturnValue(of()); // All other tests
 
 describe('<AgentProbeTemplates />', () => {
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
@@ -130,70 +134,166 @@ describe('<AgentProbeTemplates />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  // it('adds a recording after receiving a notification', () => {
-  //   render(
-  //     <ServiceContext.Provider value={defaultServices}>
-  //       <AgentProbeTemplates />
-  //     </ServiceContext.Provider>
-  //   );
+  it('should add a probe template after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
 
-  //   expect(screen.getByText('someProbeTemplate')).toBeInTheDocument();
-  // });
+    const addTemplateName = screen.getByText('anotherProbeTemplate');
+    expect(addTemplateName).toBeInTheDocument();
+    expect(addTemplateName).toBeVisible();
+  });
 
-  // it('removes a recording after receiving a notification', () => {
-  //   render(
-  //     <ServiceContext.Provider value={defaultServices}>
-  //       <AgentProbeTemplates />
-  //     </ServiceContext.Provider>
-  //   );
-  //   expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
-  // });
+  it('should remove a probe template after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+    expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
+  });
 
-  // it('displays the column header fields', () => {
-  //   render(
-  //     <ServiceContext.Provider value={defaultServices}>
-  //       <AgentProbeTemplates />
-  //     </ServiceContext.Provider>
-  //   );
-  //   expect(screen.getByText('name')).toBeInTheDocument();
-  //   expect(screen.getByText('xml')).toBeInTheDocument();
-  // });
+  it('should display the column header fields', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+    const nameHeader = screen.getByText('Name');
+    expect(nameHeader).toBeInTheDocument();
+    expect(nameHeader).toBeVisible();
 
-  // it('shows a popup when uploading', () => {
-  //   render(
-  //     <ServiceContext.Provider value={defaultServices}>
-  //       <AgentProbeTemplates />
-  //     </ServiceContext.Provider>
-  //   );
-  //   expect(screen.queryByLabelText('Create Custom Probe Template')).not.toBeInTheDocument();
+    const xmlHeader = screen.getByText('XML');
+    expect(xmlHeader).toBeInTheDocument();
+    expect(xmlHeader).toBeVisible();
+  });
 
-  //   const buttons = screen.getAllByRole('button');
-  //   const uploadButton = buttons[0];
-  //   userEvent.click(uploadButton);
+  it('should show modal when uploading', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
 
-  //   expect(screen.getByLabelText('Create Custom Probe Template'));
-  // });
+    const uploadButton = screen.getByRole('button', { name: 'Upload' });
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
-  // it('Tests that delete works correctly', () => {
-  //   render(
-  //     <ServiceContext.Provider value={defaultServices}>
-  //       <AgentProbeTemplates />
-  //     </ServiceContext.Provider>
-  //   );
+    userEvent.click(uploadButton);
 
-  //   userEvent.click(screen.getByLabelText('Actions'));
+    const uploadModal = await screen.findByRole('dialog');
+    expect(uploadModal).toBeInTheDocument();
+    expect(uploadModal).toBeVisible();
 
-  //   expect(screen.getByText('Insert Probes...'));
-  //   expect(screen.getByText('Delete'));
+    const modalTitle = within(uploadModal).getByText('Create Custom Probe Template');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
+  });
 
-  //   const deleteAction = screen.getByText('Delete');
-  //   userEvent.click(deleteAction);
+  it('should upload a probe template when form is filled and Submit is clicked', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
 
-  //   //expect(screen.getByLabelText('Event template delete warning'));
+    const uploadButton = screen.getByRole('button', { name: 'Upload' });
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
-  //   const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate');
+    userEvent.click(uploadButton);
 
-  //   expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
-  //   expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
-  // });
+    const uploadModal = await screen.findByRole('dialog');
+    expect(uploadModal).toBeInTheDocument();
+    expect(uploadModal).toBeVisible();
+
+    const modalTitle = within(uploadModal).getByText('Create Custom Probe Template');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
+
+    const fileUploadDropZone = within(uploadModal).getByLabelText(
+      'Drag a file here or browse to upload'
+    ) as HTMLInputElement;
+    expect(fileUploadDropZone).toBeInTheDocument();
+    expect(fileUploadDropZone).toBeVisible();
+
+    const browseButton = within(uploadModal).getByRole('button', { name: 'Browse...' });
+    expect(browseButton).toBeInTheDocument();
+    expect(browseButton).toBeVisible();
+
+    const uploadInput = uploadModal.querySelector("input[accept='.xml'][type='file']") as HTMLInputElement;
+    expect(uploadInput).toBeInTheDocument();
+    expect(uploadInput).not.toBeVisible();
+
+    userEvent.click(browseButton);
+    userEvent.upload(uploadInput, mockFileUpload);
+
+    expect(uploadInput.files).not.toBe(null);
+    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
+
+    const submitButton = screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
+    await waitFor(() => expect(submitButton).not.toBeDisabled());
+    await doAct(async () => {
+      userEvent.click(submitButton);
+    });
+
+    expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
+    expect(uploadRequestSpy).toHaveBeenCalledWith(mockFileUpload);
+  });
+
+  it('should delete a probe template when Delete is clicked', async () => {
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByLabelText('Actions'));
+
+    const deleteButton = await screen.findByText('Delete');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeVisible();
+
+    userEvent.click(deleteButton);
+
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
+  });
+
+  it('should show warning modal and delete a probe template when confirmed', async () => {
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByLabelText('Actions'));
+
+    const deleteButton = await screen.findByText('Delete');
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).toBeVisible();
+
+    userEvent.click(deleteButton);
+
+    const warningModal = await screen.findByRole('dialog');
+    expect(warningModal).toBeInTheDocument();
+    expect(warningModal).toBeVisible();
+
+    const modalTitle = within(warningModal).getByText(DeleteProbeTemplates.title);
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
+
+    const confirmButton = within(warningModal).getByText('Delete');
+    expect(confirmButton).toBeInTheDocument();
+    expect(confirmButton).toBeVisible();
+
+    userEvent.click(confirmButton);
+
+    expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
+    expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
+  });
 });

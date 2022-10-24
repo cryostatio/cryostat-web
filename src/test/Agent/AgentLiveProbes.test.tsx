@@ -35,16 +35,170 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { EventTemplate, ProbeTemplate } from '@app/Shared/Services/Api.service';
-import { MessageMeta, MessageType, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { EventProbe } from '@app/Shared/Services/Api.service';
+import {
+  MessageMeta,
+  MessageType,
+  NotificationCategory,
+  NotificationMessage,
+} from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { EventTemplates } from '@app/Events/EventTemplates';
 import userEvent from '@testing-library/user-event';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
+import { DeleteActiveProbes } from '@app/Modal/DeleteWarningUtils';
+import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
+
+const mockConnectUrl = 'service:jmx:rmi://someUrl';
+const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+
+const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
+
+const mockProbe: EventProbe = {
+  id: 'some_id',
+  name: 'some_name',
+  clazz: 'some_clazz',
+  description: 'some_desc',
+  recordStackTrace: true,
+  useRethrow: true,
+  methodName: 'a_method',
+  methodDescriptor: 'method_desc',
+  location: 'some_loc',
+  returnValue: 'a_value',
+  parameters: 'some_params',
+  fields: 'some_fields',
+  path: 'some_path',
+};
+
+const mockAnotherProbe: EventProbe = {
+  ...mockProbe,
+  id: 'another_id',
+  name: 'another_name',
+};
+
+const mockApplyTemplateNotification = {
+  meta: {
+    category: NotificationCategory.ProbeTemplateApplied,
+    type: mockMessageType,
+  } as MessageMeta,
+  message: {
+    template: mockProbe,
+  },
+} as NotificationMessage;
+
+jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+
+jest
+  .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(false) // should remove all probes when Remove All Probe is clicked
+  .mockReturnValue(true); // should show warning modal and remove all probes when confirmed
+
+jest
+  .spyOn(defaultServices.api, 'getActiveProbes')
+  .mockReturnValueOnce(of([mockProbe])) // renders correctly
+
+  .mockReturnValueOnce(of([mockProbe])) // should add a probe after receiving a notification
+  .mockReturnValueOnce(of([mockProbe, mockAnotherProbe]))
+
+  .mockReturnValue(of([mockProbe])); // All other tests
+
+jest
+  .spyOn(defaultServices.notificationChannel, 'messages')
+  .mockReturnValueOnce(of()) // renders correctly
+  .mockReturnValueOnce(of(mockApplyTemplateNotification)) // should add a probe after receiving a notification
+  .mockReturnValue(of()); // All other tests
+
+describe('<AgentLiveProbes />', () => {
+  afterEach(cleanup);
+
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <AgentLiveProbes />
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+
+  it('should add a probe after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentLiveProbes />
+      </ServiceContext.Provider>
+    );
+
+    const addTemplateName = screen.getByText('another_name');
+    expect(addTemplateName).toBeInTheDocument();
+    expect(addTemplateName).toBeVisible();
+  });
+
+  it('should display the column header fields', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentLiveProbes />
+      </ServiceContext.Provider>
+    );
+
+    const headers = ['ID', 'Name', 'Class', 'Description', 'Method'];
+    headers.forEach((header) => {
+      const nameHeader = screen.getByText(header);
+      expect(nameHeader).toBeInTheDocument();
+      expect(nameHeader).toBeVisible();
+    });
+  });
+
+  it('should remove all probes when Remove All Probe is clicked', () => {
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentLiveProbes />
+      </ServiceContext.Provider>
+    );
+
+    const removeButton = screen.getByText('Remove All Probes');
+    expect(removeButton).toBeInTheDocument();
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(removeButton);
+
+    expect(deleteRequestSpy).toBeCalledTimes(1);
+  });
+
+  it.skip('should show warning modal and remove all probes when confirmed', async () => {
+    const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentLiveProbes />
+      </ServiceContext.Provider>
+    );
+
+    const removeButton = screen.getByText('Remove All Probes');
+    expect(removeButton).toBeInTheDocument();
+    expect(removeButton).toBeInTheDocument();
+
+    userEvent.click(removeButton);
+
+    const warningModal = await screen.findByRole('dialog');
+    expect(warningModal).toBeInTheDocument();
+    expect(warningModal).toBeVisible();
+
+    const modalTitle = within(warningModal).getByText(DeleteActiveProbes.title);
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
+
+    const confirmButton = within(warningModal).getByText('Delete');
+    expect(confirmButton).toBeInTheDocument();
+    expect(confirmButton).toBeVisible();
+
+    userEvent.click(confirmButton);
+
+    expect(deleteRequestSpy).toBeCalledTimes(1);
+  });
+});

@@ -81,7 +81,9 @@ import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
-export const AgentProbeTemplates = () => {
+export interface AgentProbeTemplatesProps {}
+
+export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
