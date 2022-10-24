@@ -127,7 +127,7 @@ describe('<AgentProbeTemplates />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <AgentProbeTemplates />
+          <AgentProbeTemplates agentDetected={true} />
         </ServiceContext.Provider>
       );
     });
@@ -137,7 +137,7 @@ describe('<AgentProbeTemplates />', () => {
   it('should add a probe template after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates />
+        <AgentProbeTemplates agentDetected={true} />
       </ServiceContext.Provider>
     );
 
@@ -149,7 +149,7 @@ describe('<AgentProbeTemplates />', () => {
   it('should remove a probe template after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates />
+        <AgentProbeTemplates agentDetected={true} />
       </ServiceContext.Provider>
     );
     expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
@@ -158,7 +158,7 @@ describe('<AgentProbeTemplates />', () => {
   it('should display the column header fields', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates />
+        <AgentProbeTemplates agentDetected={true} />
       </ServiceContext.Provider>
     );
     const nameHeader = screen.getByText('Name');
@@ -173,7 +173,7 @@ describe('<AgentProbeTemplates />', () => {
   it('should show modal when uploading', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates />
+        <AgentProbeTemplates agentDetected={true} />
       </ServiceContext.Provider>
     );
 
@@ -195,7 +195,7 @@ describe('<AgentProbeTemplates />', () => {
   it('should upload a probe template when form is filled and Submit is clicked', async () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates />
+        <AgentProbeTemplates agentDetected={true} />
       </ServiceContext.Provider>
     );
 
@@ -247,7 +247,7 @@ describe('<AgentProbeTemplates />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates />
+        <AgentProbeTemplates agentDetected={true} />
       </ServiceContext.Provider>
     );
 
@@ -267,7 +267,7 @@ describe('<AgentProbeTemplates />', () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
     render(
       <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates />
+        <AgentProbeTemplates agentDetected={true} />
       </ServiceContext.Provider>
     );
 

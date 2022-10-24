@@ -95,7 +95,7 @@ export const Events: React.FunctionComponent<EventsProps> = (props) => {
               <CardBody>
                 <Tabs activeKey={probeActiveTab} onSelect={handleProbeTabSelect}>
                   <Tab eventKey={0} title="Probe Templates">
-                    <AgentProbeTemplates />
+                    <AgentProbeTemplates agentDetected={agentDetected} />
                   </Tab>
                   <Tab
                     eventKey={1}

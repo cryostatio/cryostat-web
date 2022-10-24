@@ -81,7 +81,9 @@ import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
-export interface AgentProbeTemplatesProps {}
+export interface AgentProbeTemplatesProps {
+  agentDetected: boolean;
+}
 
 export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -201,6 +203,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
         {
           title: 'Insert Probes...',
           onClick: (event, rowId, rowData) => handleInsert(rowData),
+          isDisabled: !props.agentDetected,
         },
         {
           isSeparator: true,
@@ -211,7 +214,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
         },
       ] as IAction[];
     },
-    [handleInsert, handleDeleteButton]
+    [handleInsert, handleDeleteButton, props.agentDetected]
   );
 
   const handleTemplateUpload = React.useCallback(() => {
