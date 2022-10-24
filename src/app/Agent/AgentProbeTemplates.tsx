@@ -76,7 +76,7 @@ import {
 } from '@patternfly/react-table';
 import { first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { ErrorView } from '@app/ErrorView/ErrorView';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
@@ -138,7 +138,7 @@ export const AgentProbeTemplates = () => {
           })
       );
     },
-    [addSubscription, context.api, refreshTemplates]
+    [addSubscription, context.api]
   );
 
   const handleUploadCancel = React.useCallback(() => {
@@ -178,10 +178,6 @@ export const AgentProbeTemplates = () => {
     [setSortBy]
   );
 
-  const authRetry = React.useCallback(() => {
-    context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
-
   const handleInsert = React.useCallback(
     (rowData) => {
       addSubscription(
@@ -194,27 +190,27 @@ export const AgentProbeTemplates = () => {
     [addSubscription, context.api]
   );
 
-  const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
-    if (typeof extraData.rowIndex == 'undefined') {
-      return [];
-    }
-    let actions = [
-      {
-        title: 'Insert Probes...',
-        onClick: (event, rowId, rowData) => handleInsert(rowData),
-      },
-    ] as IAction[];
-    actions = actions.concat([
-      {
-        isSeparator: true,
-      },
-      {
-        title: 'Delete',
-        onClick: (event, rowId, rowData) => handleDeleteButton(rowData),
-      },
-    ]);
-    return actions;
-  };
+  const actionResolver = React.useCallback(
+    (rowData: IRowData, extraData: IExtraData) => {
+      if (typeof extraData.rowIndex == 'undefined') {
+        return [];
+      }
+      return [
+        {
+          title: 'Insert Probes...',
+          onClick: (event, rowId, rowData) => handleInsert(rowData),
+        },
+        {
+          isSeparator: true,
+        },
+        {
+          title: 'Delete',
+          onClick: (event, rowId, rowData) => handleDeleteButton(rowData),
+        },
+      ] as IAction[];
+    },
+    [handleInsert, handleDeleteButton]
+  );
 
   const handleTemplateUpload = React.useCallback(() => {
     setModalOpen(true);
@@ -235,7 +231,7 @@ export const AgentProbeTemplates = () => {
 
   const handleUploadSubmit = React.useCallback(() => {
     if (!uploadFile) {
-      window.console.error('Attempted to submit template upload without a file selected');
+      window.console.error('Attempted to submit probe template upload without a file selected');
       return;
     }
     setUploading(true);
@@ -252,16 +248,11 @@ export const AgentProbeTemplates = () => {
           }
         })
     );
-  }, [setUploading, addSubscription, context.api, setUploadFile, setUploadFilename, setModalOpen]);
+  }, [uploadFile, setUploading, addSubscription, context.api, setUploadFile, setUploadFilename, setModalOpen]);
 
   React.useEffect(() => {
-    addSubscription(
-      context.target.target().subscribe(() => {
-        setFilterText('');
-        refreshTemplates();
-      })
-    );
-  }, [context.target, addSubscription, setFilterText, refreshTemplates]);
+    refreshTemplates();
+  }, [refreshTemplates]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -276,14 +267,6 @@ export const AgentProbeTemplates = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.target.authFailure().subscribe(() => {
-        setErrorMessage(authFailMessage);
-      })
-    );
-  }, [context.target, addSubscription, setErrorMessage]);
-
-  React.useEffect(() => {
-    addSubscription(
       context.notificationChannel
         .messages(NotificationCategory.ProbeTemplateUploaded)
         .subscribe((v) => refreshTemplates())
@@ -292,7 +275,9 @@ export const AgentProbeTemplates = () => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TemplateDeleted).subscribe((v) => refreshTemplates())
+      context.notificationChannel
+        .messages(NotificationCategory.ProbeTemplateDeleted)
+        .subscribe((v) => refreshTemplates())
     );
   }, [addSubscription, context.notificationChannel, refreshTemplates]);
 
@@ -326,7 +311,6 @@ export const AgentProbeTemplates = () => {
       <ErrorView
         title={'Error retrieving probe templates'}
         message={`${errorMessage}. Note: This is commonly caused by the agent not being loaded/active. Check that the target was started with the agent (-javaagent:/path/to/agent.jar).`}
-        retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
     );
   } else if (isLoading) {

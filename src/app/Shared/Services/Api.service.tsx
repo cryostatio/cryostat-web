@@ -35,19 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {
-  from,
-  Observable,
-  ObservableInput,
-  of,
-  ReplaySubject,
-  forkJoin,
-  throwError,
-  EMPTY,
-  shareReplay,
-  Subject,
-  BehaviorSubject,
-} from 'rxjs';
+import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { NO_TARGET, Target, TargetService } from './Target.service';
@@ -441,6 +429,13 @@ export class ApiService {
     ).pipe(
       map((resp) => resp.ok),
       first()
+    );
+  }
+
+  isProbeEnabled(): Observable<boolean> {
+    return this.getActiveProbes(true).pipe(
+      concatMap((_) => of(true)),
+      catchError((_) => of(false))
     );
   }
 

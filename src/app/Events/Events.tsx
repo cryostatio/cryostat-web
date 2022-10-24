@@ -44,6 +44,8 @@ import { EventTemplates } from './EventTemplates';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { EventTypes } from './EventTypes';
+import { concatMap, filter } from 'rxjs';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 
 export interface EventsProps {}
 
@@ -56,12 +58,15 @@ export const Events: React.FunctionComponent<EventsProps> = (props) => {
 
   React.useEffect(() => {
     addSubscription(
-      context.api.getActiveProbes(true).subscribe({
-        next: (_) => setEnabled(true),
-        error: (_) => setEnabled(false),
-      })
+      context.target
+        .target()
+        .pipe(
+          filter((target) => target !== NO_TARGET),
+          concatMap((_) => context.api.isProbeEnabled())
+        )
+        .subscribe(setEnabled)
     );
-  }, [addSubscription, context.api, setEnabled]);
+  }, [addSubscription, context.target, context.api, setEnabled]);
 
   const handleEventTabSelect = React.useCallback((evt, idx) => setEventActiveTab(idx), [setEventActiveTab]);
 
