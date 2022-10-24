@@ -62,6 +62,7 @@ export enum NotificationCategory {
   ProbeTemplateUploaded = 'ProbeTemplateUploaded',
   ProbeTemplateDeleted = 'ProbeTemplateDeleted',
   ProbeTemplateApplied = 'ProbeTemplateApplied',
+  ProbesRemoved = 'ProbesRemoved',
   RuleCreated = 'RuleCreated',
   RuleUpdated = 'RuleUpdated',
   RuleDeleted = 'RuleDeleted',
@@ -228,6 +229,14 @@ export const messageKeys = new Map([
       variant: AlertVariant.success,
       title: 'Probe Template Deleted',
       body: (evt) => `${evt.message.probeTemplate} was deleted`,
+    } as NotificationMessageMapper,
+  ],
+  [
+    NotificationCategory.ProbesRemoved,
+    {
+      variant: AlertVariant.success,
+      title: 'Probes Removed from Target',
+      body: (evt) => `Probes successfully removed from ${evt.message.target}`,
     } as NotificationMessageMapper,
   ],
   [
