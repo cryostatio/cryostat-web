@@ -137,7 +137,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
         .removeProbes()
         .pipe(first())
         .subscribe(() => {
-          refreshProbes();
+          // do nothing - notification updates state
         })
     );
   }, [addSubscription, context.api, refreshProbes]);
