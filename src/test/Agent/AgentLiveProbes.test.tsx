@@ -120,9 +120,13 @@ jest
   .spyOn(defaultServices.notificationChannel, 'messages')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
+
   .mockReturnValueOnce(of(mockApplyTemplateNotification)) // should add a probe after receiving a notification
   .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of(mockRemoveProbesNotification))
+
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockRemoveProbesNotification)) // should remove a probe after receiving a notification
+
   .mockReturnValue(of()); // All other tests
 
 describe('<AgentLiveProbes />', () => {
@@ -152,12 +156,13 @@ describe('<AgentLiveProbes />', () => {
     expect(addTemplateName).toBeVisible();
   });
 
-  it('should remove a probe after receiving a notification', () => {
+  it('should remove all probes after receiving a notification', () => {
     render(
       <ServiceContext.Provider value={defaultServices}>
         <AgentLiveProbes />
       </ServiceContext.Provider>
     );
+    expect(screen.queryByText('some_name')).not.toBeInTheDocument();
     expect(screen.queryByText('another_name')).not.toBeInTheDocument();
   });
 

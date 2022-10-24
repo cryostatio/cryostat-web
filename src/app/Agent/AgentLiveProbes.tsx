@@ -188,7 +188,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied).subscribe((_) => refreshProbes())
     );
-  }, [addSubscription, context, context.notificationChannel, setProbes]);
+  }, [addSubscription, context, context.notificationChannel, refreshProbes]);
 
   React.useEffect(() => {
     addSubscription(
