@@ -39,7 +39,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody, Stack, StackItem, Tab, Tabs } from '@patternfly/react-core';
+import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import { EventTemplates } from './EventTemplates';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
@@ -54,7 +54,7 @@ export const Events: React.FunctionComponent<EventsProps> = (props) => {
   const addSubscription = useSubscriptions();
   const [eventActiveTab, setEventActiveTab] = React.useState(0);
   const [probeActiveTab, setProbeActiveTab] = React.useState(0);
-  const [enabled, setEnabled] = React.useState(false);
+  const [agentDetected, setAgentDetected] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(
@@ -64,9 +64,9 @@ export const Events: React.FunctionComponent<EventsProps> = (props) => {
           filter((target) => target !== NO_TARGET),
           concatMap((_) => context.api.isProbeEnabled())
         )
-        .subscribe(setEnabled)
+        .subscribe(setAgentDetected)
     );
-  }, [addSubscription, context.target, context.api, setEnabled]);
+  }, [addSubscription, context.target, context.api, setAgentDetected]);
 
   const handleEventTabSelect = React.useCallback((evt, idx) => setEventActiveTab(idx), [setEventActiveTab]);
 
@@ -90,22 +90,29 @@ export const Events: React.FunctionComponent<EventsProps> = (props) => {
               </CardBody>
             </Card>
           </StackItem>
-          {enabled && (
-            <StackItem>
-              <Card>
-                <CardBody>
-                  <Tabs activeKey={probeActiveTab} onSelect={handleProbeTabSelect}>
-                    <Tab eventKey={0} title="Probe Templates">
-                      <AgentProbeTemplates />
-                    </Tab>
-                    <Tab eventKey={1} title="Live Configuration">
-                      <AgentLiveProbes />
-                    </Tab>
-                  </Tabs>
-                </CardBody>
-              </Card>
-            </StackItem>
-          )}
+          <StackItem>
+            <Card>
+              <CardBody>
+                <Tabs activeKey={probeActiveTab} onSelect={handleProbeTabSelect}>
+                  <Tab eventKey={0} title="Probe Templates">
+                    <AgentProbeTemplates />
+                  </Tab>
+                  <Tab
+                    eventKey={1}
+                    title="Live Configuration"
+                    isAriaDisabled={!agentDetected}
+                    tooltip={
+                      agentDetected ? undefined : (
+                        <Tooltip content="JMC ByteCode Instrumentation Agent not detected for the selected Target JVM" />
+                      )
+                    }
+                  >
+                    <AgentLiveProbes />
+                  </Tab>
+                </Tabs>
+              </CardBody>
+            </Card>
+          </StackItem>
         </Stack>
       </TargetView>
     </>
