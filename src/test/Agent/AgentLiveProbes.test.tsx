@@ -89,6 +89,16 @@ const mockApplyTemplateNotification = {
   },
 } as NotificationMessage;
 
+const mockRemoveProbesNotification = {
+  meta: {
+    category: NotificationCategory.ProbesRemoved,
+    type: mockMessageType,
+  } as MessageMeta,
+  message: {
+    target: mockTarget,
+  },
+} as NotificationMessage;
+
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
@@ -111,6 +121,8 @@ jest
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockApplyTemplateNotification)) // should add a probe after receiving a notification
+  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of(mockRemoveProbesNotification))
   .mockReturnValue(of()); // All other tests
 
 describe('<AgentLiveProbes />', () => {
@@ -138,6 +150,15 @@ describe('<AgentLiveProbes />', () => {
     const addTemplateName = screen.getByText('another_name');
     expect(addTemplateName).toBeInTheDocument();
     expect(addTemplateName).toBeVisible();
+  });
+
+  it('should remove a probe after receiving a notification', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentLiveProbes />
+      </ServiceContext.Provider>
+    );
+    expect(screen.queryByText('another_name')).not.toBeInTheDocument();
   });
 
   it('should display the column header fields', () => {
