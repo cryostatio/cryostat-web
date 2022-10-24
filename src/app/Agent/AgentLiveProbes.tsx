@@ -113,7 +113,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
   const refreshProbes = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getActiveProbes().subscribe({
+      context.api.getActiveProbes(true).subscribe({
         next: (value) => handleProbes(value),
         error: (err) => handleError(err),
       })
