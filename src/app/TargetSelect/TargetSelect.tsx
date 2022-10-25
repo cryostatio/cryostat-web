@@ -53,7 +53,7 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
-import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
+import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
 import { CreateTargetModal } from './CreateTargetModal';
@@ -63,20 +63,20 @@ import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
+const TARGET_KEY = 'target';
 export interface TargetSelectProps {}
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
-  const TARGET_KEY = 'target';
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+
   const [selected, setSelected] = React.useState(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-
-  const addSubscription = useSubscriptions();
 
   const setCachedTargetSelection = React.useCallback(
     (target) => localStorage.setItem(TARGET_KEY, JSON.stringify(target)),
@@ -208,6 +208,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     },
     [addSubscription, context, context.api, notifications, setLoading, setModalOpen]
   );
+
   const deletionDialogsEnabled = React.useMemo(
     () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteCustomTargets),
     [context, context.settings, context.settings.deletionDialogsEnabledFor]
@@ -220,23 +221,25 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         .deleteTarget(selected)
         .pipe(first())
         .subscribe(
-          () => {
-            selectNone();
-            setLoading(false);
-          },
-          () => {
-            setLoading(false);
-            let id: string;
-            if (selected.alias === selected.connectUrl) {
-              id = selected.alias;
-            } else {
-              id = `${selected.alias} [${selected.connectUrl}]`;
+          {
+            next: () => {
+              selectNone();
+              setLoading(false);
+            },
+            error: () => {
+              setLoading(false);
+              let id: string;
+              if (selected.alias === selected.connectUrl) {
+                id = selected.alias;
+              } else {
+                id = `${selected.alias} [${selected.connectUrl}]`;
+              }
+              notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
             }
-            notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
           }
         )
     );
-  }, [addSubscription, context, context.api, notifications, selected, setLoading, selectNone]);
+  }, [addSubscription, context.api, notifications, selected, setLoading, selectNone]);
 
   const handleDeleteButton = React.useCallback(() => {
     if (deletionDialogsEnabled) {
