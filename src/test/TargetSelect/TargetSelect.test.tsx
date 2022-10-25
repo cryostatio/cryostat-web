@@ -52,8 +52,8 @@ const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
 const mockBazConnectUrl = 'service:jmx:rmi://someBazUrl';
 
 // Test fails if new Map([['REALM', 'Custom Targets']]) is used, most likely since 'cryostat' Map is not being utilized
-const cryostatAnnotation = new Map();
-cryostatAnnotation['REALM'] = CUSTOM_TARGETS_REALM;
+const cryostatAnnotation = new Map([['REALM', CUSTOM_TARGETS_REALM]]);
+// cryostatAnnotation['REALM'] = CUSTOM_TARGETS_REALM;
 const mockFooTarget: Target = {
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
@@ -107,9 +107,9 @@ jest
   .mockReturnValueOnce(false) // deletes target when delete button clicked
   .mockReturnValue(true); // other tests
 
-afterEach(cleanup);
-
 describe('<TargetSelect />', () => {
+  afterEach(cleanup);
+
   it('renders correctly', () => {
     const tree = renderer.create(
       <ServiceContext.Provider value={defaultServices}>

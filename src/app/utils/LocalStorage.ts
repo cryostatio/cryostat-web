@@ -40,6 +40,7 @@ export enum LocalStorageKey {
   TARGET_RECORDING_FILTERS,
   JMX_CREDENTIAL_LOCATION,
   JMX_CREDENTIALS,
+  TARGET,
 }
 
 /**
@@ -65,5 +66,13 @@ export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any) => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(key, JSON.stringify(value));
     }
-  } catch (error) {} // If error (i.e. users disable storage for the site), saving is aborted and skipped.
+  } catch (error) {}
+};
+
+export const removeFromLocalStorage = (key: LocalStorageKeyStrings): any => {
+  try {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(key);
+    }
+  } catch (error) {}
 };
