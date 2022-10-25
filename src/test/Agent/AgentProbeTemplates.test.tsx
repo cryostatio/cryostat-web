@@ -39,7 +39,7 @@ import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { act as doAct, cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { async, of } from 'rxjs';
+import { of } from 'rxjs';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import {
   MessageMeta,
