@@ -35,19 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {
-  from,
-  Observable,
-  ObservableInput,
-  of,
-  ReplaySubject,
-  forkJoin,
-  throwError,
-  EMPTY,
-  shareReplay,
-  Subject,
-  BehaviorSubject,
-} from 'rxjs';
+import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { NO_TARGET, Target, TargetService } from './Target.service';
@@ -444,6 +432,13 @@ export class ApiService {
     );
   }
 
+  isProbeEnabled(): Observable<boolean> {
+    return this.getActiveProbes(true).pipe(
+      concatMap((_) => of(true)),
+      catchError((_) => of(false))
+    );
+  }
+
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
     return this.sendRequest('v1', `templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
@@ -476,6 +471,81 @@ export class ApiService {
     );
   }
 
+  removeProbes(): Observable<boolean> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
+          method: 'DELETE',
+        }).pipe(
+          tap((resp) => {
+            if (resp.status == 400) {
+              this.notifications.warning('Failed to remove Probes', 'The probes failed to be removed from the target');
+            }
+          }),
+          map((resp) => resp.status == 200),
+          first()
+        )
+      )
+    );
+  }
+
+  insertProbes(templateName: string): Observable<boolean> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'v2',
+          `targets/${encodeURIComponent(target.connectUrl)}/probes/${encodeURIComponent(templateName)}`,
+          {
+            method: 'POST',
+          }
+        ).pipe(
+          tap((resp) => {
+            if (resp.status == 400) {
+              this.notifications.warning(
+                'Failed to insert Probes',
+                'The probes failed to be injected. Check that the agent is present in the same container as the target JVM and the target is running with -javaagent:/path/to/agent'
+              );
+            }
+          }),
+          map((resp) => resp.status == 200),
+          first()
+        )
+      )
+    );
+  }
+
+  addCustomProbeTemplate(file: File): Observable<boolean> {
+    const body = new window.FormData();
+    body.append('probeTemplate', file);
+    return this.sendRequest('v2', `probes/` + file.name, {
+      method: 'POST',
+      body,
+    }).pipe(
+      map((response) => {
+        if (!response.ok) {
+          throw response.statusText;
+        }
+        return true;
+      }),
+      catchError((): ObservableInput<boolean> => of(false))
+    );
+  }
+
+  deleteCustomProbeTemplate(templateName: string): Observable<boolean> {
+    return this.sendRequest('v2', `probes/${encodeURIComponent(templateName)}`, {
+      method: 'DELETE',
+      body: null,
+    }).pipe(
+      map((response) => {
+        if (!response.ok) {
+          throw response.statusText;
+        }
+        return true;
+      }),
+      catchError((): ObservableInput<boolean> => of(false))
+    );
+  }
+
   cryostatVersion(): Observable<string> {
     return this.cryostatVersionSubject.asObservable();
   }
@@ -493,6 +563,33 @@ export class ApiService {
       map((resp) => resp.json()),
       concatMap(from),
       first()
+    );
+  }
+
+  getProbeTemplates(): Observable<ProbeTemplate[]> {
+    return this.sendRequest('v2', 'probes', { method: 'GET' }).pipe(
+      concatMap((resp) => resp.json()),
+      map((response: ProbeTemplateResponse) => response.data.result),
+      first()
+    );
+  }
+
+  getActiveProbes(suppressNotifications = false): Observable<EventProbe[]> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'v2',
+          `targets/${encodeURIComponent(target.connectUrl)}/probes`,
+          {
+            method: 'GET',
+          },
+          suppressNotifications
+        ).pipe(
+          concatMap((resp) => resp.json()),
+          map((response: EventProbesResponse) => response.data.result),
+          first()
+        )
+      )
     );
   }
 
@@ -760,7 +857,12 @@ export class ApiService {
     );
   }
 
-  private sendRequest(apiVersion: ApiVersion, path: string, config?: RequestInit): Observable<Response> {
+  private sendRequest(
+    apiVersion: ApiVersion,
+    path: string,
+    config?: RequestInit,
+    suppressNotifications = false
+  ): Observable<Response> {
     const req = () =>
       this.login.getHeaders().pipe(
         concatMap((headers) => {
@@ -785,7 +887,7 @@ export class ApiService {
           if (resp.ok) return resp;
           throw new HttpError(resp);
         }),
-        catchError((err) => this.handleError<Response>(err, req))
+        catchError((err) => this.handleError<Response>(err, req, suppressNotifications))
       );
     return req();
   }
@@ -802,7 +904,7 @@ export class ApiService {
     anchor.remove();
   }
 
-  private handleError<T>(error: Error, retry: () => Observable<T>): ObservableInput<T> {
+  private handleError<T>(error: Error, retry: () => Observable<T>, suppressNotifications = false): ObservableInput<T> {
     if (isHttpError(error)) {
       if (error.httpResponse.status === 427) {
         const jmxAuthScheme = error.httpResponse.headers.get('X-JMX-Authenticate');
@@ -814,12 +916,16 @@ export class ApiService {
         this.target.setSslFailure();
       } else {
         error.httpResponse.text().then((detail) => {
-          this.notifications.danger(`Request failed (${error.httpResponse.status} ${error.message})`, detail);
+          if (!suppressNotifications) {
+            this.notifications.danger(`Request failed (${error.httpResponse.status} ${error.message})`, detail);
+          }
         });
       }
       throw error;
     }
-    this.notifications.danger(`Request failed`, error.message);
+    if (!suppressNotifications) {
+      this.notifications.danger(`Request failed`, error.message);
+    }
     throw error;
   }
 
@@ -849,6 +955,18 @@ interface AssetJwtResponse extends ApiV2Response {
 interface CredentialResponse extends ApiV2Response {
   data: {
     result: MatchedCredential;
+  };
+}
+
+interface ProbeTemplateResponse extends ApiV2Response {
+  data: {
+    result: ProbeTemplate[];
+  };
+}
+
+interface EventProbesResponse extends ApiV2Response {
+  data: {
+    result: EventProbe[];
   };
 }
 
@@ -925,6 +1043,27 @@ export interface StoredCredential {
   id: number;
   matchExpression: string;
   numMatchingTargets: number;
+}
+
+export interface ProbeTemplate {
+  name: string;
+  xml: string;
+}
+
+export interface EventProbe {
+  id: string;
+  name: string;
+  clazz: string;
+  description: string;
+  path: string;
+  recordStackTrace: boolean;
+  useRethrow: boolean;
+  methodName: string;
+  methodDescriptor: string;
+  location: string;
+  returnValue: string;
+  parameters: string;
+  fields: string;
 }
 
 export interface MatchedCredential {

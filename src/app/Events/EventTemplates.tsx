@@ -204,11 +204,12 @@ export const EventTemplates = () => {
   }, []);
 
   React.useEffect(() => {
-    const sub = context.target.authFailure().subscribe(() => {
-      setErrorMessage(authFailMessage);
-    });
-    return () => sub.unsubscribe();
-  }, [context.target]);
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+      })
+    );
+  }, [addSubscription, context.target, setErrorMessage]);
 
   const displayTemplates = React.useMemo(
     () =>

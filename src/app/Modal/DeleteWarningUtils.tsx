@@ -40,6 +40,8 @@ export enum DeleteWarningType {
   DeleteArchivedRecordings = 'DeleteArchivedRecordings',
   DeleteAutomatedRules = 'DeleteAutomatedRules',
   DeleteEventTemplates = 'DeleteEventTemplates',
+  DeleteProbeTemplates = 'DeleteProbeTemplates',
+  DeleteActiveProbes = 'DeleteActiveProbes',
   DeleteJMXCredentials = 'DeleteJMXCredentials',
   DeleteCustomTargets = 'DeleteCustomTargets',
 }
@@ -84,6 +86,22 @@ export const DeleteEventTemplates: DeleteWarning = {
   ariaLabel: 'Event template delete warning',
 };
 
+export const DeleteProbeTemplates: DeleteWarning = {
+  id: DeleteWarningType.DeleteProbeTemplates,
+  title: 'Permanently delete Probe Template?',
+  label: 'Delete Probe Template',
+  description: `Custom probe template data will be lost.`,
+  ariaLabel: 'Probe template delete warning',
+};
+
+export const DeleteActiveProbes: DeleteWarning = {
+  id: DeleteWarningType.DeleteActiveProbes,
+  title: 'Permanently remove Active Probes from the target?',
+  label: 'Remove Active Probes',
+  description: `Active probes will be removed from the target.`,
+  ariaLabel: 'Active Probes remove warning',
+};
+
 export const DeleteJMXCredentials: DeleteWarning = {
   id: DeleteWarningType.DeleteJMXCredentials,
   title: 'Permanently delete JMX Credentials?',
@@ -105,6 +123,8 @@ export const DeleteWarningKinds: DeleteWarning[] = [
   DeleteArchivedRecordings,
   DeleteAutomatedRules,
   DeleteEventTemplates,
+  DeleteProbeTemplates,
+  DeleteActiveProbes,
   DeleteJMXCredentials,
   DeleteCustomTargets,
 ];
