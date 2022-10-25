@@ -39,7 +39,7 @@ import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { act as doAct, cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { of } from 'rxjs';
+import { async, of } from 'rxjs';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import {
   MessageMeta,
@@ -92,7 +92,6 @@ jest
   .mockReturnValue(true); // should show warning modal and delete a probe template when confirmed
 
 const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addCustomProbeTemplate').mockReturnValue(of(true));
-jest.spyOn(defaultServices.api, 'insertProbes').mockReturnValue(of(true));
 
 jest
   .spyOn(defaultServices.api, 'getProbeTemplates')
@@ -295,5 +294,40 @@ describe('<AgentProbeTemplates />', () => {
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
+  });
+
+  it('should insert probes if agent is enabled', async () => {
+    const insertProbesSpy = jest.spyOn(defaultServices.api, 'insertProbes').mockReturnValue(of(true));
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates agentDetected={true} />
+      </ServiceContext.Provider>
+    );
+
+    userEvent.click(screen.getByLabelText('Actions'));
+
+    const insertButton = await screen.findByText('Insert Probes...');
+    expect(insertButton).toBeInTheDocument();
+    expect(insertButton).toBeVisible();
+    expect(insertButton.getAttribute('aria-disabled')).toBe('false');
+
+    userEvent.click(insertButton);
+
+    expect(insertProbesSpy).toHaveBeenCalledTimes(1);
+    expect(insertProbesSpy).toHaveBeenCalledWith(mockProbeTemplate.name);
+  });
+
+  it('should disable inserting probes if agent is not enabled', async () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates agentDetected={false} />
+      </ServiceContext.Provider>
+    );
+    userEvent.click(screen.getByLabelText('Actions'));
+
+    const insertButton = await screen.findByText('Insert Probes...');
+    expect(insertButton).toBeInTheDocument();
+    expect(insertButton).toBeVisible();
+    expect(insertButton.getAttribute('aria-disabled')).toBe('true');
   });
 });
