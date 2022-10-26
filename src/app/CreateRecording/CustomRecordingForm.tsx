@@ -393,8 +393,7 @@ export const CustomRecordingForm = (props) => {
           </FormGroup>
         </ExpandableSection>
         <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
-          <Form>
-            <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
+        <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
             <FormGroup
               fieldId="To Disk"
               helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
@@ -465,7 +464,6 @@ export const CustomRecordingForm = (props) => {
                 </SplitItem>
               </Split>
             </FormGroup>
-          </Form>
         </ExpandableSection>
         <ActionGroup>
           <Button variant="primary" onClick={handleSubmit} isDisabled={isFormInvalid}>
