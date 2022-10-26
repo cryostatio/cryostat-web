@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import renderer from 'react-test-renderer';
+import renderer, { act } from 'react-test-renderer';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { createMemoryHistory } from 'history';
@@ -51,15 +51,15 @@ const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
 const mockBazConnectUrl = 'service:jmx:rmi://someBazUrl';
 
-// Test fails if new Map([['REALM', 'Custom Targets']]) is used, most likely since 'cryostat' Map is not being utilized
-const cryostatAnnotation = new Map([['REALM', CUSTOM_TARGETS_REALM]]);
-// cryostatAnnotation['REALM'] = CUSTOM_TARGETS_REALM;
+const cryostatAnnotation = {
+  'REALM': CUSTOM_TARGETS_REALM
+};
 const mockFooTarget: Target = {
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
   annotations: {
     cryostat: cryostatAnnotation,
-    platform: new Map(),
+    platform: {},
   },
 };
 const mockBarTarget: Target = { ...mockFooTarget, connectUrl: mockBarConnectUrl, alias: 'barTarget' };
@@ -71,6 +71,10 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useRouteMatch: () => ({ url: history.location.pathname }),
   useHistory: () => history,
+}));
+
+jest.mock('@app/Shared/Services/Target.service', () => ({
+  ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
 }));
 
 jest
@@ -96,8 +100,6 @@ jest.spyOn(defaultServices.api, 'deleteTarget').mockReturnValue(of(true));
 
 jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
 
-jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of());
-
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true) // renders correctly
@@ -110,12 +112,15 @@ jest
 describe('<TargetSelect />', () => {
   afterEach(cleanup);
 
-  it('renders correctly', () => {
-    const tree = renderer.create(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <TargetSelect />
+        </ServiceContext.Provider>
+      );
+    })
 
     expect(tree.toJSON()).toMatchSnapshot();
   });
@@ -145,7 +150,7 @@ describe('<TargetSelect />', () => {
     expect(screen.getByText(`fooTarget`)).toBeInTheDocument();
 
     userEvent.click(screen.getByLabelText('Options menu'));
-    expect(screen.getByLabelText('Select Input')).toBeInTheDocument();
+    expect(screen.getByLabelText('Select Target')).toBeInTheDocument();
     expect(screen.getByText(`Select target...`)).toBeInTheDocument();
     expect(screen.getByText(`fooTarget (service:jmx:rmi://someFooUrl)`)).toBeInTheDocument();
     expect(screen.getByText(`barTarget (service:jmx:rmi://someBarUrl)`)).toBeInTheDocument();
@@ -232,5 +237,24 @@ describe('<TargetSelect />', () => {
 
     expect(deleteTargetRequestSpy).toBeCalledTimes(1);
     expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
+  });
+
+  it('does not create a target if user leaves connectUrl empty', () => {
+    const createTargetRequestSpy = jest.spyOn(defaultServices.api, 'createTarget');
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <TargetSelect />
+      </ServiceContext.Provider>
+    );
+    const createButton = screen.getByLabelText('Create target');
+    userEvent.click(createButton);
+    
+    const confirmButton = screen.getByText('Create');
+    expect(confirmButton).toBeInTheDocument();
+    expect(confirmButton).toBeVisible();
+    expect(confirmButton).toBeDisabled();
+
+    userEvent.keyboard("{Enter}");
+    expect(createTargetRequestSpy).toBeCalledTimes(0);
   });
 });
