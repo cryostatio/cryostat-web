@@ -62,6 +62,7 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
+
 export interface TargetSelectProps {}
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
@@ -77,7 +78,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
   const setCachedTargetSelection = React.useCallback(
-    (target) => saveToLocalStorage('TARGET', target),
+    (target, errorCallback?) => saveToLocalStorage('TARGET', target, errorCallback),
     [saveToLocalStorage]
   );
 
@@ -91,48 +92,47 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     [getFromLocalStorage]
   );
 
+  const resetTargetSelection = React.useCallback(() => {
+    context.target.setTarget(NO_TARGET);
+    removeCachedTargetSelection();
+  }, [context.target, removeCachedTargetSelection]);
+
   const onSelect = React.useCallback(
     (evt, selection, isPlaceholder) => {
       if (isPlaceholder) {
-        context.target.setTarget(NO_TARGET);
-        removeCachedTargetSelection();
+        resetTargetSelection();
       } else {
-        if (selection != selected) {
-          try {
+        setSelected((selected) => {
+          if (!isEqualTarget(selection, selected)) {
             context.target.setTarget(selection);
-            setCachedTargetSelection(selection);
-          } catch (error) {
-            notifications.danger('Cannot set target', (error as any).message);
-            context.target.setTarget(NO_TARGET);
+            setCachedTargetSelection(selection, () => {
+              notifications.danger('Cannot set target');
+              context.target.setTarget(NO_TARGET);
+            });
+            return selection;
           }
-        }
+          return selected;
+        })
       }
       setExpanded(false);
     },
-    [context.target, selected, notifications, setExpanded, removeCachedTargetSelection, setCachedTargetSelection]
+    [context.target, setSelected, notifications, setExpanded, setCachedTargetSelection, isEqualTarget]
   );
-
-  const selectNone = React.useCallback(() => {
-    onSelect(undefined, NO_TARGET, true);
-  }, [onSelect]);
 
   const selectTargetFromCache = React.useCallback(
     (targets) => {
-      if (targets.length) {
-        const cachedTarget = getCachedTargetSelection();
-        const cachedTargetExists = targets.some((target: Target) => isEqualTarget(cachedTarget, target));
-        if (cachedTargetExists) {
-          context.target.setTarget(cachedTarget);
-        } else {
-          selectNone();
-          removeCachedTargetSelection();
-        }
+      if (!targets.length) { // Ignore first emitted value
+        return;
+      }
+      const cachedTarget = getCachedTargetSelection();
+      const cachedTargetExists = targets.some((target: Target) => isEqualTarget(cachedTarget, target));
+      if (cachedTargetExists) {
+        context.target.setTarget(cachedTarget);
       } else {
-        selectNone();
-        removeCachedTargetSelection();
+        resetTargetSelection();
       }
     },
-    [context.target, isEqualTarget, getCachedTargetSelection, removeCachedTargetSelection, selectNone]
+    [context.target, isEqualTarget, getCachedTargetSelection, resetTargetSelection]
   );
 
   React.useEffect(() => {
@@ -291,8 +291,3 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     </>
   );
 };
-
-interface TargetDiscoveryEvent {
-  kind: 'LOST' | 'FOUND';
-  serviceRef: Target;
-}

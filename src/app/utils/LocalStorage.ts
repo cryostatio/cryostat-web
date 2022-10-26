@@ -61,18 +61,24 @@ export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: a
   }
 };
 
-export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any) => {
+export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, error?: () => void) => {
   try {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(key, JSON.stringify(value));
     }
-  } catch (error) {}
+  } catch (err) {
+    console.warn(err);
+    error && error();
+  }
 };
 
-export const removeFromLocalStorage = (key: LocalStorageKeyStrings): any => {
+export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): any => {
   try {
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(key);
     }
-  } catch (error) {}
+  } catch (err) {
+    console.warn(err);
+    error && error();
+  }
 };
