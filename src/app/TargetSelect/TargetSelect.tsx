@@ -79,17 +79,17 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   const setCachedTargetSelection = React.useCallback(
     (target, errorCallback?) => saveToLocalStorage('TARGET', target, errorCallback),
-    [saveToLocalStorage]
+    []
   );
 
   const removeCachedTargetSelection = React.useCallback(
     () => removeFromLocalStorage('TARGET'),
-    [removeFromLocalStorage]
+    []
   );
 
   const getCachedTargetSelection = React.useCallback(
     () => getFromLocalStorage('TARGET', NO_TARGET),
-    [getFromLocalStorage]
+    []
   );
 
   const resetTargetSelection = React.useCallback(() => {
@@ -116,7 +116,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       }
       setExpanded(false);
     },
-    [context.target, setSelected, notifications, setExpanded, setCachedTargetSelection, isEqualTarget]
+    [context.target, setSelected, notifications, setExpanded, setCachedTargetSelection, resetTargetSelection]
   );
 
   const selectTargetFromCache = React.useCallback(
@@ -133,7 +133,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
         resetTargetSelection();
       }
     },
-    [context.target, isEqualTarget, getCachedTargetSelection, resetTargetSelection]
+    [context.target, getCachedTargetSelection, resetTargetSelection]
   );
 
   React.useEffect(() => {
