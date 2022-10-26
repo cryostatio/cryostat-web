@@ -63,8 +63,9 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   }, [context.target, addSubscription, setConnected]);
 
   const compact = React.useMemo(
-    () => props.compactSelect == null ? true : props.compactSelect, 
-  [props.compactSelect]);
+    () => (props.compactSelect == null ? true : props.compactSelect),
+    [props.compactSelect]
+  );
 
   return (
     <>

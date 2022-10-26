@@ -112,7 +112,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             return selection;
           }
           return selected;
-        })
+        });
       }
       setExpanded(false);
     },
@@ -121,7 +121,8 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   const selectTargetFromCache = React.useCallback(
     (targets) => {
-      if (!targets.length) { // Ignore first emitted value
+      if (!targets.length) {
+        // Ignore first emitted value
         return;
       }
       const cachedTarget = getCachedTargetSelection();
