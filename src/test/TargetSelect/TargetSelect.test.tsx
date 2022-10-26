@@ -52,7 +52,7 @@ const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
 const mockBazConnectUrl = 'service:jmx:rmi://someBazUrl';
 
 const cryostatAnnotation = {
-  'REALM': CUSTOM_TARGETS_REALM
+  REALM: CUSTOM_TARGETS_REALM,
 };
 const mockFooTarget: Target = {
   connectUrl: mockFooConnectUrl,
@@ -120,7 +120,7 @@ describe('<TargetSelect />', () => {
           <TargetSelect />
         </ServiceContext.Provider>
       );
-    })
+    });
 
     expect(tree.toJSON()).toMatchSnapshot();
   });
@@ -248,13 +248,13 @@ describe('<TargetSelect />', () => {
     );
     const createButton = screen.getByLabelText('Create target');
     userEvent.click(createButton);
-    
+
     const confirmButton = screen.getByText('Create');
     expect(confirmButton).toBeInTheDocument();
     expect(confirmButton).toBeVisible();
     expect(confirmButton).toBeDisabled();
 
-    userEvent.keyboard("{Enter}");
+    userEvent.keyboard('{Enter}');
     expect(createTargetRequestSpy).toBeCalledTimes(0);
   });
 });

@@ -137,7 +137,8 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   React.useEffect(() => {
     addSubscription(
-      context.targets.targets().subscribe((targets) => { // Target Discovery notifications will trigger an event here.
+      context.targets.targets().subscribe((targets) => {
+        // Target Discovery notifications will trigger an event here.
         setTargets(targets);
         selectTargetFromCache(targets);
       })
@@ -184,7 +185,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           next: () => setLoading(false),
           error: () => {
             setLoading(false);
-            const id= (!selected.alias || selected.alias === selected.connectUrl)? selected.connectUrl: `${selected.alias} [${selected.connectUrl}]`;
+            const id =
+              !selected.alias || selected.alias === selected.connectUrl
+                ? selected.connectUrl
+                : `${selected.alias} [${selected.connectUrl}]`;
             notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
           },
         })
