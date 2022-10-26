@@ -91,25 +91,6 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     [getFromLocalStorage]
   );
 
-  const selectTargetFromCache = React.useCallback(
-    (targets) => {
-      if (targets.length) {
-        const cachedTarget = getCachedTargetSelection();
-        const cachedTargetExists = targets.some((target: Target) => isEqualTarget(cachedTarget, target));
-        if (cachedTargetExists) {
-          context.target.setTarget(cachedTarget);
-        } else {
-          selectNone();
-          removeCachedTargetSelection();
-        }
-      } else {
-        selectNone();
-        removeCachedTargetSelection();
-      }
-    },
-    [context.target, isEqualTarget, getCachedTargetSelection, removeCachedTargetSelection, selectNone]
-  );
-
   const onSelect = React.useCallback(
     (evt, selection, isPlaceholder) => {
       if (isPlaceholder) {
@@ -134,6 +115,25 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const selectNone = React.useCallback(() => {
     onSelect(undefined, NO_TARGET, true);
   }, [onSelect]);
+
+  const selectTargetFromCache = React.useCallback(
+    (targets) => {
+      if (targets.length) {
+        const cachedTarget = getCachedTargetSelection();
+        const cachedTargetExists = targets.some((target: Target) => isEqualTarget(cachedTarget, target));
+        if (cachedTargetExists) {
+          context.target.setTarget(cachedTarget);
+        } else {
+          selectNone();
+          removeCachedTargetSelection();
+        }
+      } else {
+        selectNone();
+        removeCachedTargetSelection();
+      }
+    },
+    [context.target, isEqualTarget, getCachedTargetSelection, removeCachedTargetSelection, selectNone]
+  );
 
   React.useEffect(() => {
     addSubscription(
