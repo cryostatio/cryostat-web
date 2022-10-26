@@ -393,77 +393,73 @@ export const CustomRecordingForm = (props) => {
           </FormGroup>
         </ExpandableSection>
         <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
-        <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
-            <FormGroup
-              fieldId="To Disk"
-              helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
-            >
-              <Checkbox label="To Disk" id="toDisk-checkbox" isChecked={toDisk} onChange={handleToDiskChange} />
-            </FormGroup>
-            <FormGroup
-              label="Maximum size"
-              fieldId="maxSize"
-              helperText="The maximum size of recording data saved to disk"
-            >
-              <Split hasGutter={true}>
-                <SplitItem isFilled>
-                  <TextInput
-                    value={maxSize}
-                    isRequired
-                    type="number"
-                    id="maxSize"
-                    aria-label="max size value"
-                    onChange={handleMaxSizeChange}
-                    min="0"
-                    isDisabled={!toDisk}
-                  />
-                </SplitItem>
-                <SplitItem>
-                  <FormSelect
-                    value={maxSizeUnits}
-                    onChange={handleMaxSizeUnitChange}
-                    aria-label="Max size units input"
-                    isDisabled={!toDisk}
-                  >
-                    <FormSelectOption key="1" value="1" label="B" />
-                    <FormSelectOption key="2" value={1024} label="KiB" />
-                    <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
-                  </FormSelect>
-                </SplitItem>
-              </Split>
-            </FormGroup>
-            <FormGroup
-              label="Maximum age"
-              fieldId="maxAge"
-              helperText="The maximum age of recording data stored to disk"
-            >
-              <Split hasGutter={true}>
-                <SplitItem isFilled>
-                  <TextInput
-                    value={maxAge}
-                    isRequired
-                    type="number"
-                    id="maxAgeDuration"
-                    aria-label="Max age duration"
-                    onChange={handleMaxAgeChange}
-                    min="0"
-                    isDisabled={!continuous || !toDisk}
-                  />
-                </SplitItem>
-                <SplitItem>
-                  <FormSelect
-                    value={maxAgeUnits}
-                    onChange={handleMaxAgeUnitChange}
-                    aria-label="Max Age units Input"
-                    isDisabled={!continuous || !toDisk}
-                  >
-                    <FormSelectOption key="1" value="1" label="Seconds" />
-                    <FormSelectOption key="2" value={60} label="Minutes" />
-                    <FormSelectOption key="3" value={60 * 60} label="Hours" />
-                  </FormSelect>
-                </SplitItem>
-              </Split>
-            </FormGroup>
+          <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
+          <FormGroup
+            fieldId="To Disk"
+            helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
+          >
+            <Checkbox label="To Disk" id="toDisk-checkbox" isChecked={toDisk} onChange={handleToDiskChange} />
+          </FormGroup>
+          <FormGroup
+            label="Maximum size"
+            fieldId="maxSize"
+            helperText="The maximum size of recording data saved to disk"
+          >
+            <Split hasGutter={true}>
+              <SplitItem isFilled>
+                <TextInput
+                  value={maxSize}
+                  isRequired
+                  type="number"
+                  id="maxSize"
+                  aria-label="max size value"
+                  onChange={handleMaxSizeChange}
+                  min="0"
+                  isDisabled={!toDisk}
+                />
+              </SplitItem>
+              <SplitItem>
+                <FormSelect
+                  value={maxSizeUnits}
+                  onChange={handleMaxSizeUnitChange}
+                  aria-label="Max size units input"
+                  isDisabled={!toDisk}
+                >
+                  <FormSelectOption key="1" value="1" label="B" />
+                  <FormSelectOption key="2" value={1024} label="KiB" />
+                  <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
+                </FormSelect>
+              </SplitItem>
+            </Split>
+          </FormGroup>
+          <FormGroup label="Maximum age" fieldId="maxAge" helperText="The maximum age of recording data stored to disk">
+            <Split hasGutter={true}>
+              <SplitItem isFilled>
+                <TextInput
+                  value={maxAge}
+                  isRequired
+                  type="number"
+                  id="maxAgeDuration"
+                  aria-label="Max age duration"
+                  onChange={handleMaxAgeChange}
+                  min="0"
+                  isDisabled={!continuous || !toDisk}
+                />
+              </SplitItem>
+              <SplitItem>
+                <FormSelect
+                  value={maxAgeUnits}
+                  onChange={handleMaxAgeUnitChange}
+                  aria-label="Max Age units Input"
+                  isDisabled={!continuous || !toDisk}
+                >
+                  <FormSelectOption key="1" value="1" label="Seconds" />
+                  <FormSelectOption key="2" value={60} label="Minutes" />
+                  <FormSelectOption key="3" value={60 * 60} label="Hours" />
+                </FormSelect>
+              </SplitItem>
+            </Split>
+          </FormGroup>
         </ExpandableSection>
         <ActionGroup>
           <Button variant="primary" onClick={handleSubmit} isDisabled={isFormInvalid}>
