@@ -98,8 +98,6 @@ jest.spyOn(defaultServices.api, 'createTarget').mockReturnValue(of(true));
 
 jest.spyOn(defaultServices.api, 'deleteTarget').mockReturnValue(of(true));
 
-jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
-
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true) // renders correctly
