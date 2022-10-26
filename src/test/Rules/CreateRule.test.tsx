@@ -105,8 +105,8 @@ const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(
 jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of(mockTargetFoundNotification));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+jest.spyOn(defaultServices.target, 'setTarget').mockReturnValue();
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
-jest.spyOn(defaultServices.targets, 'queryForTargets').mockReturnValue(of());
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
 describe('<CreateRule />', () => {
@@ -134,6 +134,7 @@ describe('<CreateRule />', () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
       target: () => of(mockTarget),
+      setTarget: (target) => {},
       authFailure: () => subj.asObservable(),
     } as TargetService;
     const services: Services = {

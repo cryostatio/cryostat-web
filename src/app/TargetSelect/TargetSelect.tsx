@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { isEqualTarget, NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -53,22 +53,23 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
-import { ContainerNodeIcon, PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
+import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
 import { CreateTargetModal } from './CreateTargetModal';
-import _ from 'lodash';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
+
 export interface TargetSelectProps {}
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
-  const TARGET_KEY = 'target';
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+
   const [selected, setSelected] = React.useState(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
   const [expanded, setExpanded] = React.useState(false);
@@ -76,112 +77,69 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
-  const addSubscription = useSubscriptions();
-
   const setCachedTargetSelection = React.useCallback(
-    (target) => localStorage.setItem(TARGET_KEY, JSON.stringify(target)),
-    [localStorage]
+    (target, errorCallback?) => saveToLocalStorage('TARGET', target, errorCallback),
+    []
   );
 
-  const removeCachedTargetSelection = React.useCallback(() => {
-    localStorage.removeItem(TARGET_KEY);
-  }, [localStorage]);
+  const removeCachedTargetSelection = React.useCallback(() => removeFromLocalStorage('TARGET'), []);
 
-  const getCachedTargetSelection = React.useCallback(() => {
-    const cachedTarget = localStorage.getItem(TARGET_KEY);
-    return cachedTarget ? JSON.parse(cachedTarget) : NO_TARGET;
-  }, [localStorage]);
+  const getCachedTargetSelection = React.useCallback(() => getFromLocalStorage('TARGET', NO_TARGET), []);
 
-  const selectTargetFromCache = React.useCallback(
-    (targets) => {
-      if (targets.length === 0) {
-        return;
-      }
-
-      try {
-        const cachedTarget = getCachedTargetSelection();
-        const cachedTargetExists = targets.some((target) => _.isEqual(cachedTarget, target));
-
-        if (cachedTargetExists) {
-          context.target.setTarget(cachedTarget);
-        } else {
-          removeCachedTargetSelection();
-        }
-      } catch (error) {
-        context.target.setTarget(NO_TARGET);
-        removeCachedTargetSelection();
-      }
-    },
-    [context, context.target, getCachedTargetSelection, removeCachedTargetSelection]
-  );
+  const resetTargetSelection = React.useCallback(() => {
+    context.target.setTarget(NO_TARGET);
+    removeCachedTargetSelection();
+  }, [context.target, removeCachedTargetSelection]);
 
   const onSelect = React.useCallback(
+    // ATTENTION: do not add onSelect as deps for effect hook as it updates with selected states
     (evt, selection, isPlaceholder) => {
       if (isPlaceholder) {
-        context.target.setTarget(NO_TARGET);
-        removeCachedTargetSelection();
+        resetTargetSelection();
       } else {
-        if (selection != selected) {
-          try {
-            context.target.setTarget(selection);
-            setCachedTargetSelection(selection);
-          } catch (error) {
-            notifications.danger('Cannot set target', (error as any).message);
+        if (!isEqualTarget(selection, selected)) {
+          context.target.setTarget(selection);
+          setCachedTargetSelection(selection, () => {
+            notifications.danger('Cannot set target');
             context.target.setTarget(NO_TARGET);
-          }
+          });
         }
       }
       setExpanded(false);
     },
-    [
-      context,
-      context.target,
-      selected,
-      notifications,
-      setExpanded,
-      removeCachedTargetSelection,
-      setCachedTargetSelection,
-    ]
+    [context.target, notifications, setExpanded, setCachedTargetSelection, resetTargetSelection, selected]
   );
 
-  const selectNone = React.useCallback(() => {
-    onSelect(undefined, undefined, true);
-  }, [onSelect]);
+  const selectTargetFromCache = React.useCallback(
+    (targets) => {
+      if (!targets.length) {
+        // Ignore first emitted value
+        return;
+      }
+      const cachedTarget = getCachedTargetSelection();
+      const cachedTargetExists = targets.some((target: Target) => isEqualTarget(cachedTarget, target));
+      if (cachedTargetExists) {
+        context.target.setTarget(cachedTarget);
+      } else {
+        resetTargetSelection();
+      }
+    },
+    [context.target, getCachedTargetSelection, resetTargetSelection]
+  );
 
   React.useEffect(() => {
     addSubscription(
       context.targets.targets().subscribe((targets) => {
+        // Target Discovery notifications will trigger an event here.
         setTargets(targets);
         selectTargetFromCache(targets);
       })
     );
-  }, [addSubscription, context, context.targets, setTargets, selectTargetFromCache]);
+  }, [addSubscription, context.targets, setTargets, selectTargetFromCache]);
 
   React.useEffect(() => {
-    addSubscription(
-      context.notificationChannel.messages(NotificationCategory.TargetJvmDiscovery).subscribe((v) => {
-        const evt: TargetDiscoveryEvent = v.message.event;
-        if (evt.kind === 'LOST') {
-          const target: Target = {
-            connectUrl: evt.serviceRef.connectUrl,
-            alias: evt.serviceRef.alias,
-          };
-          context.target
-            .target()
-            .pipe(first())
-            .subscribe((currentTarget) => {
-              if (currentTarget.connectUrl === target.connectUrl && currentTarget.alias === target.alias) {
-                selectNone();
-              }
-            });
-        }
-      })
-    );
-  }, [addSubscription, context, context.notificationChannel, context.target, selectNone]);
-
-  React.useLayoutEffect(() => {
     addSubscription(context.target.target().subscribe(setSelected));
-  }, [addSubscription, context, context.target, setSelected]);
+  }, [addSubscription, context.target, setSelected]);
 
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
@@ -206,11 +164,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           })
       );
     },
-    [addSubscription, context, context.api, notifications, setLoading, setModalOpen]
-  );
-  const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteCustomTargets),
-    [context, context.settings, context.settings.deletionDialogsEnabledFor]
+    [addSubscription, context.api, notifications, setLoading, setModalOpen]
   );
 
   const deleteTarget = React.useCallback(() => {
@@ -219,24 +173,24 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.api
         .deleteTarget(selected)
         .pipe(first())
-        .subscribe(
-          () => {
-            selectNone();
+        .subscribe({
+          next: () => setLoading(false),
+          error: () => {
             setLoading(false);
-          },
-          () => {
-            setLoading(false);
-            let id: string;
-            if (selected.alias === selected.connectUrl) {
-              id = selected.alias;
-            } else {
-              id = `${selected.alias} [${selected.connectUrl}]`;
-            }
+            const id =
+              !selected.alias || selected.alias === selected.connectUrl
+                ? selected.connectUrl
+                : `${selected.alias} [${selected.connectUrl}]`;
             notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
-          }
-        )
+          },
+        })
     );
-  }, [addSubscription, context, context.api, notifications, selected, setLoading, selectNone]);
+  }, [addSubscription, context.api, notifications, selected, setLoading]);
+
+  const deletionDialogsEnabled = React.useMemo(
+    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteCustomTargets),
+    [context.settings]
+  );
 
   const handleDeleteButton = React.useCallback(() => {
     if (deletionDialogsEnabled) {
@@ -270,17 +224,11 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       [
         <SelectOption key="placeholder" value="Select target..." isPlaceholder={true} itemCount={targets.length} />,
       ].concat(
-        targets.map((t: Target) =>
-          t.alias == t.connectUrl || !t.alias ? (
-            <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>{`${t.connectUrl}`}</SelectOption>
-          ) : (
-            <SelectOption
-              key={t.connectUrl}
-              value={t}
-              isPlaceholder={false}
-            >{`${t.alias} (${t.connectUrl})`}</SelectOption>
-          )
-        )
+        targets.map((t: Target) => (
+          <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>
+            {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}
+          </SelectOption>
+        ))
       ),
     [targets]
   );
@@ -315,12 +263,12 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           <Select
             toggleIcon={<ContainerNodeIcon />}
             variant={SelectVariant.single}
-            selections={selected.alias || selected.connectUrl}
             onSelect={onSelect}
             onToggle={setExpanded}
+            selections={selected.alias || selected.connectUrl}
             isDisabled={isLoading}
             isOpen={expanded}
-            aria-label="Select Input"
+            aria-label="Select Target"
           >
             {selectOptions}
           </Select>
@@ -335,8 +283,3 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     </>
   );
 };
-
-interface TargetDiscoveryEvent {
-  kind: 'LOST' | 'FOUND';
-  serviceRef: Target;
-}

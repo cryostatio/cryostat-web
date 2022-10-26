@@ -60,10 +60,10 @@ export const indexOfTarget = (arr: Target[], target: Target): number => {
 export interface Target {
   connectUrl: string;
   alias: string;
-  labels?: Map<string, string>;
+  labels?: {};
   annotations?: {
-    cryostat: Map<string, string>;
-    platform: Map<string, string>;
+    cryostat: {};
+    platform: {};
   };
 }
 
