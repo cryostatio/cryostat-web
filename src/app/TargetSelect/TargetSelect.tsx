@@ -155,7 +155,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
     );
     return () => window.clearInterval(id);
-  }, [context, context.target, context.settings, refreshTargetList]);
+  }, [context.settings, refreshTargetList]);
 
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
