@@ -38,7 +38,6 @@
 import { Target } from '@app/Shared/Services/Target.service';
 import {
   ActionGroup,
-  AlertVariant,
   Button,
   ButtonType,
   Form,
@@ -56,13 +55,13 @@ export interface CreateTargetModalProps {
   onDismiss: () => void;
 }
 
+const jmxServiceUrlFormat = /service:jmx:([a-zA-Z0-9-]+)/g;
+const hostPortPairFormat = /([a-zA-Z0-9-]+):([0-9]+)/g;
+
 export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> = (props) => {
   const [connectUrl, setConnectUrl] = React.useState('');
   const [validConnectUrl, setValidConnectUrl] = React.useState(ValidatedOptions.default);
   const [alias, setAlias] = React.useState('');
-
-  const jmxServiceUrlFormat = /service:jmx:([a-zA-Z0-9-]+)/g;
-  const hostPortPairFormat = /([a-zA-Z0-9-]+):([0-9]+)/g;
 
   const createTarget = React.useCallback(() => {
     props.onSubmit({ connectUrl, alias: alias.trim() || connectUrl });
@@ -72,11 +71,11 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
 
   const handleKeyDown = React.useCallback(
     (evt) => {
-      if (evt.key === 'Enter') {
+      if (connectUrl && evt.key === 'Enter') {
         createTarget();
       }
     },
-    [createTarget]
+    [createTarget, connectUrl]
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -87,7 +86,7 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
     } else {
       setValidConnectUrl(ValidatedOptions.error);
     }
-  }, [createTarget, setValidConnectUrl]);
+  }, [createTarget, setValidConnectUrl, connectUrl]);
 
   return (
     <>
