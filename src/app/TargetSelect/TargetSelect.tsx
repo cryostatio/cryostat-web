@@ -82,15 +82,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     []
   );
 
-  const removeCachedTargetSelection = React.useCallback(
-    () => removeFromLocalStorage('TARGET'),
-    []
-  );
+  const removeCachedTargetSelection = React.useCallback(() => removeFromLocalStorage('TARGET'), []);
 
-  const getCachedTargetSelection = React.useCallback(
-    () => getFromLocalStorage('TARGET', NO_TARGET),
-    []
-  );
+  const getCachedTargetSelection = React.useCallback(() => getFromLocalStorage('TARGET', NO_TARGET), []);
 
   const resetTargetSelection = React.useCallback(() => {
     context.target.setTarget(NO_TARGET);
@@ -98,25 +92,22 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   }, [context.target, removeCachedTargetSelection]);
 
   const onSelect = React.useCallback(
+    // ATTENTION: do not add onSelect as deps for effect hook as it updates with selected states
     (evt, selection, isPlaceholder) => {
       if (isPlaceholder) {
         resetTargetSelection();
       } else {
-        setSelected((selected) => {
-          if (!isEqualTarget(selection, selected)) {
-            context.target.setTarget(selection);
-            setCachedTargetSelection(selection, () => {
-              notifications.danger('Cannot set target');
-              context.target.setTarget(NO_TARGET);
-            });
-            return selection;
-          }
-          return selected;
-        });
+        if (!isEqualTarget(selection, selected)) {
+          context.target.setTarget(selection);
+          setCachedTargetSelection(selection, () => {
+            notifications.danger('Cannot set target');
+            context.target.setTarget(NO_TARGET);
+          });
+        }
       }
       setExpanded(false);
     },
-    [context.target, setSelected, notifications, setExpanded, setCachedTargetSelection, resetTargetSelection]
+    [context.target, notifications, setExpanded, setCachedTargetSelection, resetTargetSelection, selected]
   );
 
   const selectTargetFromCache = React.useCallback(
