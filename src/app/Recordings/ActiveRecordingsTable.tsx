@@ -718,7 +718,9 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
           filters={props.targetRecordingFilters}
           updateFilters={props.updateFilters}
         />
-        <ToolbarGroup variant="button-group">{buttons}</ToolbarGroup>
+        <ToolbarGroup style={{ alignSelf: 'start' }} variant="button-group">
+          {buttons}
+        </ToolbarGroup>
         {deleteActiveWarningModal}
       </ToolbarContent>
     </Toolbar>
