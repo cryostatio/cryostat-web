@@ -75,7 +75,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(setTarget));
-  }, [addSubscription, context, context.target]);
+  }, [addSubscription, context.target, setTarget]);
 
   React.useEffect(() => {
     if (!props.matchExpression || !target?.connectUrl) {
@@ -95,7 +95,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
       setValid(ValidatedOptions.error);
       return;
     }
-  }, [target, props.matchExpression]);
+  }, [target, props.matchExpression, setValid]);
 
   React.useEffect(() => {
     if (!!props.onChange) {
@@ -124,13 +124,20 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
           </Label>
         );
       default:
+        if (!target?.connectUrl) {
+          return (
+            <Label color="grey" icon={<InfoCircleIcon />}>
+              No Target Selected
+            </Label>
+          );
+        }
         return (
           <Label color="grey" icon={<InfoCircleIcon />}>
             No Match Expression
           </Label>
         );
     }
-  }, [valid]);
+  }, [valid, target?.connectUrl]);
 
   const exampleExpression = React.useMemo(() => {
     let body: string;
