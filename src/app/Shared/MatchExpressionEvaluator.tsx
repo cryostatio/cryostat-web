@@ -127,7 +127,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
         if (!target?.connectUrl) {
           return (
             <Label color="grey" icon={<InfoCircleIcon />}>
-            No Target Selected for Match Expression
+              No Target Selected for Match Expression
             </Label>
           );
         }
@@ -135,7 +135,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
           <Label color="grey" icon={<InfoCircleIcon />}>
             No Match Expression
           </Label>
-        )
+        );
     }
   }, [valid, target?.connectUrl]);
 
