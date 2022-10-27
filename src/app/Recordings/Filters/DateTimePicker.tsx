@@ -36,7 +36,16 @@
  * SOFTWARE.
  */
 
-import { Button, ButtonVariant, DatePicker, Flex, FlexItem, Text, TimePicker } from '@patternfly/react-core';
+import {
+  Button,
+  ButtonVariant,
+  DatePicker,
+  Flex,
+  FlexItem,
+  InputGroup,
+  Text,
+  TimePicker,
+} from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -74,22 +83,24 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
 
   const handleSubmit = React.useCallback(() => {
     selectedDate!.setUTCHours(selectedHour, selectedMinute);
-    props.onSubmit(`${selectedDate!.toISOString()}`);
+    props.onSubmit(selectedDate!.toISOString());
   }, [selectedDate, selectedHour, selectedMinute, props.onSubmit]);
 
   return (
     <Flex>
       <FlexItem>
-        <DatePicker appendTo="parent" onChange={onDateChange} aria-label="Date Picker" placeholder="YYYY-MM-DD" />
-        <TimePicker
-          isOpen={isTimeOpen}
-          setIsOpen={onTimeToggle}
-          is24Hour
-          aria-label="Time Picker"
-          className="time-picker"
-          menuAppendTo="parent"
-          onChange={onTimeChange}
-        />
+        <InputGroup>
+          <DatePicker appendTo="parent" onChange={onDateChange} aria-label="Date Picker" placeholder="YYYY-MM-DD" />
+          <TimePicker
+            isOpen={isTimeOpen}
+            setIsOpen={onTimeToggle}
+            is24Hour
+            aria-label="Time Picker"
+            className="time-picker"
+            menuAppendTo="parent"
+            onChange={onTimeChange}
+          />
+        </InputGroup>
       </FlexItem>
       <FlexItem>
         <Text>UTC</Text>

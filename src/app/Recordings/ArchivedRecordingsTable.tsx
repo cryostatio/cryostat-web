@@ -651,7 +651,7 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
           filters={props.targetRecordingFilters}
           updateFilters={props.updateFilters}
         />
-        <ToolbarGroup variant="button-group">
+        <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
           <ToolbarItem>
             <Button
               key="edit labels"

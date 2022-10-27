@@ -202,33 +202,18 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
 
   const filterDropdownItems = React.useMemo(
     () => [
-      <InputGroup>
-        <NameFilter recordings={props.recordings} onSubmit={onNameInput} filteredNames={props.filters.Name} />
-      </InputGroup>,
-      <InputGroup>
-        <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} filteredLabels={props.filters.Label} />
-      </InputGroup>,
+      <NameFilter recordings={props.recordings} onSubmit={onNameInput} filteredNames={props.filters.Name} />,
+      <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} filteredLabels={props.filters.Label} />,
       ...(!props.isArchived
         ? [
-            <InputGroup>
-              <RecordingStateFilter
-                filteredStates={props.filters.State}
-                onSelectToggle={onRecordingStateSelectToggle}
-              />
-            </InputGroup>,
-            <InputGroup>
-              <DateTimePicker onSubmit={onStartedBeforeInput} />
-            </InputGroup>,
-            <InputGroup>
-              <DateTimePicker onSubmit={onStartedAfterInput} />
-            </InputGroup>,
-            <InputGroup>
-              <DurationFilter
-                durations={props.filters.DurationSeconds}
-                onContinuousDurationSelect={onContinuousDurationSelect}
-                onDurationInput={onDurationInput}
-              ></DurationFilter>
-            </InputGroup>,
+            <RecordingStateFilter filteredStates={props.filters.State} onSelectToggle={onRecordingStateSelectToggle} />,
+            <DateTimePicker onSubmit={onStartedBeforeInput} />,
+            <DateTimePicker onSubmit={onStartedAfterInput} />,
+            <DurationFilter
+              durations={props.filters.DurationSeconds}
+              onContinuousDurationSelect={onContinuousDurationSelect}
+              onDurationInput={onDurationInput}
+            ></DurationFilter>,
           ]
         : []),
     ],
@@ -252,19 +237,23 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   return (
     <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
       <ToolbarGroup variant="filter-group">
-        <ToolbarItem>{categoryDropdown}</ToolbarItem>
-        {Object.keys(props.filters).map((filterKey, i) => (
-          <ToolbarFilter
-            key={filterKey}
-            chips={props.filters[filterKey]}
-            deleteChip={onDelete}
-            deleteChipGroup={onDeleteGroup}
-            categoryName={filterKey}
-            showToolbarItem={filterKey === currentCategory}
-          >
-            {filterDropdownItems[i]}
-          </ToolbarFilter>
-        ))}
+        <ToolbarItem>
+          <InputGroup>
+            {categoryDropdown}
+            {Object.keys(props.filters).map((filterKey, i) => (
+              <ToolbarFilter
+                key={filterKey}
+                chips={props.filters[filterKey]}
+                deleteChip={onDelete}
+                deleteChipGroup={onDeleteGroup}
+                categoryName={filterKey}
+                showToolbarItem={filterKey === currentCategory}
+              >
+                {filterDropdownItems[i]}
+              </ToolbarFilter>
+            ))}
+          </InputGroup>
+        </ToolbarItem>
       </ToolbarGroup>
     </ToolbarToggleGroup>
   );
