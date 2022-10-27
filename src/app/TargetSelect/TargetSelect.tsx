@@ -141,6 +141,22 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     addSubscription(context.target.target().subscribe(setSelected));
   }, [addSubscription, context.target, setSelected]);
 
+  const refreshTargetList = React.useCallback(() => {
+    setLoading(true);
+    addSubscription(context.targets.queryForTargets().subscribe(() => setLoading(false)));
+  }, [addSubscription, context.targets, setLoading]);
+
+  React.useEffect(() => {
+    if (!context.settings.autoRefreshEnabled()) {
+      return;
+    }
+    const id = window.setInterval(
+      () => refreshTargetList(),
+      context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
+    );
+    return () => window.clearInterval(id);
+  }, [context.settings, refreshTargetList]);
+
   const showCreateTargetModal = React.useCallback(() => {
     setModalOpen(true);
   }, [setModalOpen]);
