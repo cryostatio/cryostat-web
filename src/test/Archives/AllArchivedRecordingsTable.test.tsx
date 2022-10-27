@@ -141,23 +141,28 @@ jest
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
-  .mockReturnValueOnce(of()) // renders correctly
-  .mockReturnValueOnce(of())
-  .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of()) // renders correctly  // NotificationCategory.RecordingMetadataUpdated
+  .mockReturnValueOnce(of()) // NotificationCategory.ActiveRecordingSaved
+  .mockReturnValueOnce(of()) // NotificationCategory.ArchivedRecordingCreated
+  .mockReturnValueOnce(of()) // NotificationCategory.ArchivedRecordingDeleted
 
   .mockReturnValueOnce(of()) // shows no recordings when empty
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // has the correct table elements
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // correctly handles the search function
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // expands targets to show their <ArchivedRecordingsTable />
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 

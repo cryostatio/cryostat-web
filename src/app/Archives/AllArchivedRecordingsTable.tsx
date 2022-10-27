@@ -159,6 +159,14 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   React.useEffect(() => {
     addSubscription(
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe((v) => {
+        refreshDirectoriesAndCounts();
+      })
+    );
+  }, [addSubscription, context.notificationChannel, refreshDirectoriesAndCounts]);
+
+  React.useEffect(() => {
+    addSubscription(
       context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
         refreshDirectoriesAndCounts();
       })
