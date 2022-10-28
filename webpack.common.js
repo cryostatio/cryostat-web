@@ -21,7 +21,8 @@ module.exports = (env) => {
       }),
       new PreloadWebpackPlugin({
         rel: 'prefetch',
-        include: 'all'
+        include: 'all',
+        fileBlacklist: [/\.css$/, /\.map/]
       })
     ],
     // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
