@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import React, { lazy } from 'react';
+import React, { lazy, Suspense } from 'react';
 const CreateRecording = lazy(() => import('@app/CreateRecording/CreateRecording'));
 const Dashboard = lazy(() => import('@app/Dashboard/Dashboard'));
 const Events = lazy(() => import('@app/Events/Events'));
@@ -56,6 +56,7 @@ import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { SessionState } from './Shared/Services/Login.service';
 import { useSubscriptions } from './utils/useSubscriptions';
+import LoadingView from './LoadingView/LoadingView';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -225,23 +226,25 @@ const AppRoutes: React.FunctionComponent<AppRoutesProps> = (props) => {
 
   return (
     <LastLocationProvider>
-      <Switch>
-        {showDashboard ? (
-          flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
-            <RouteWithTitleUpdates
-              path={path}
-              exact={exact}
-              component={component}
-              key={idx}
-              title={title}
-              isAsync={isAsync}
-            />
-          ))
-        ) : (
-          <Login />
-        )}
-        <PageNotFound title="404 Page Not Found" />
-      </Switch>
+      <Suspense fallback={<LoadingView />}>
+        <Switch>
+          {showDashboard ? (
+            flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
+              <RouteWithTitleUpdates
+                path={path}
+                exact={exact}
+                component={component}
+                key={idx}
+                title={title}
+                isAsync={isAsync}
+              />
+            ))
+          ) : (
+            <Login />
+          )}
+          <PageNotFound title="404 Page Not Found" />
+        </Switch>
+      </Suspense>
     </LastLocationProvider>
   );
 };
