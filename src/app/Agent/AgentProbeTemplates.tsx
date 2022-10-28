@@ -323,7 +323,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   } else {
     return (
       <>
-        <Stack hasGutter style={{ marginTop: '1em' }}>
+        <Stack hasGutter style={{ marginTop: '1em', marginBottom: '1.5em' }}>
           <StackItem>
             <Card>
               <CardHeader>
