@@ -35,11 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { act as doAct, cleanup, screen, waitFor, within } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { of } from 'rxjs';
+import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
+import { DeleteProbeTemplates } from '@app/Modal/DeleteWarningUtils';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import {
   MessageMeta,
@@ -47,11 +44,12 @@ import {
   NotificationCategory,
   NotificationMessage,
 } from '@app/Shared/Services/NotificationChannel.service';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { DeleteProbeTemplates } from '@app/Modal/DeleteWarningUtils';
-import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
+import { defaultServices } from '@app/Shared/Services/Services';
+import '@testing-library/jest-dom';
+import { act as doAct, cleanup, screen, waitFor, within } from '@testing-library/react';
+import * as React from 'react';
+import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -98,8 +96,6 @@ const uploadRequestSpy = jest.spyOn(defaultServices.api, 'addCustomProbeTemplate
 
 jest
   .spyOn(defaultServices.api, 'getProbeTemplates')
-  .mockReturnValueOnce(of([mockProbeTemplate])) // renders Correctly
-
   .mockReturnValueOnce(of([mockProbeTemplate])) // should add a probe template after receiving a notification
   .mockReturnValueOnce(of([mockProbeTemplate, mockAnotherProbeTemplate]))
 
@@ -110,9 +106,6 @@ jest
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
-  .mockReturnValueOnce(of()) // renders correctly
-  .mockReturnValueOnce(of())
-
   .mockReturnValueOnce(of(mockCreateTemplateNotification)) // adds a template after receiving a notification
   .mockReturnValueOnce(of())
 
@@ -123,20 +116,6 @@ jest
 
 describe('<AgentProbeTemplates />', () => {
   afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <AgentProbeTemplates agentDetected={true} />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
 
   it('should add a probe template after receiving a notification', async () => {
     renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
