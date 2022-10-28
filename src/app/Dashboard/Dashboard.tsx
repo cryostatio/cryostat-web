@@ -38,6 +38,10 @@
 import * as React from 'react';
 import { TargetView } from '@app/TargetView/TargetView';
 
-export const Dashboard = () => {
+export interface DashboardProps {}
+
+export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
   return <TargetView pageTitle="Dashboard" compactSelect={true} />;
 };
+
+export default Dashboard;

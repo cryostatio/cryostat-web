@@ -93,7 +93,9 @@ export interface Rule {
   maxSizeBytes: number;
 }
 
-export const Rules = () => {
+export interface RulesProps {}
+
+export const Rules: React.FunctionComponent<RulesProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
   const addSubscription = useSubscriptions();
@@ -436,3 +438,5 @@ export const Rules = () => {
     </>
   );
 };
+
+export default Rules;

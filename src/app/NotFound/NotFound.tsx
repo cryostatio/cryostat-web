@@ -50,7 +50,9 @@ import '@app/app.css';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
 import { IAppRoute, routes, flatten } from '@app/routes';
 
-const NotFound: React.FunctionComponent = () => {
+export interface NotFoundProps {}
+
+export const NotFound: React.FunctionComponent<NotFoundProps> = (props) => {
   const cards = flatten(routes)
     .filter((route: IAppRoute): boolean => !!route.description)
     .sort((a: IAppRoute, b: IAppRoute): number => a.title.localeCompare(b.title))
@@ -80,4 +82,4 @@ const NotFound: React.FunctionComponent = () => {
   );
 };
 
-export { NotFound };
+export default NotFound;

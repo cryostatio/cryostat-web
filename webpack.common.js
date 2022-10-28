@@ -147,7 +147,7 @@ module.exports = (env) => {
     },
     output: {
       filename: '[name].[contenthash].bundle.js',
-      chunkFilename: '[name].[contenthash].bundle.js', // lazy-load modules
+      chunkFilename: '[id].[contenthash].bundle.js', // lazy-load modules
       hashFunction: "xxhash64",
       path: path.resolve(__dirname, 'dist'),
       publicPath: ASSET_PATH,

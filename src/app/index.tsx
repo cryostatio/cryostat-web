@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import React, { Suspense } from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AppLayout } from '@app/AppLayout/AppLayout';
@@ -44,14 +44,17 @@ import '@app/app.css';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { Provider } from 'react-redux';
 import { store } from '@app/Shared/Redux/ReduxStore';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 
 const App: React.FunctionComponent = () => (
   <ServiceContext.Provider value={defaultServices}>
     <Provider store={store}>
       <Router>
-        <AppLayout>
-          <AppRoutes />
-        </AppLayout>
+        <Suspense fallback={<LoadingView />}>
+          <AppLayout>
+            <AppRoutes />
+          </AppLayout>
+        </Suspense>
       </Router>
     </Provider>
   </ServiceContext.Provider>
