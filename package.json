@@ -43,6 +43,7 @@
     "@types/victory": "^33.1.5",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
+    "@vue/preload-webpack-plugin": "^2.0.0",
     "css-loader": "^5.2.6",
     "css-minimizer-webpack-plugin": "^4.0.0",
     "dotenv-webpack": "^7.1.0",
