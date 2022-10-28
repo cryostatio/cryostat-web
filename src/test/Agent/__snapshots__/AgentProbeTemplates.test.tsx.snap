@@ -5,6 +5,7 @@ exports[`<AgentProbeTemplates /> renders correctly 1`] = `
   className="pf-l-stack pf-m-gutter"
   style={
     Object {
+      "marginBottom": "1.5em",
       "marginTop": "1em",
     }
   }
