@@ -22,7 +22,8 @@ module.exports = (env) => {
       new PreloadWebpackPlugin({
         rel: 'prefetch',
         include: 'all',
-        fileBlacklist: [/\.css$/, /\.map/]
+        // exlude initial chunk, npm chunks, css sheets and sourcemaps.
+        fileBlacklist: [/\.css$/, /\.map/, /^(app|npm)(\.[\w-]+)+\.bundle\.js$/]
       })
     ],
     // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
