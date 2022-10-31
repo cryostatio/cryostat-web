@@ -45,7 +45,9 @@ import { NoopAuthForm } from './NoopAuthForm';
 import { ConnectionError } from './ConnectionError';
 import { AuthMethod } from '@app/Shared/Services/Login.service';
 
-export const Login = () => {
+export interface LoginProps {}
+
+export const Login: React.FunctionComponent<LoginProps> = (props) => {
   const serviceContext = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [authMethod, setAuthMethod] = React.useState('');
@@ -109,3 +111,5 @@ export const Login = () => {
     </PageSection>
   );
 };
+
+export default Login;

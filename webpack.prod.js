@@ -21,18 +21,13 @@ module.exports = merge(common('production'), {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[name].bundle.css'
+      filename: '[name].[contenthash].bundle.css',
+      chunkFilename: '[name].[contenthash].bundle.css' // lazy-load css
     }),
     new DotenvPlugin({
       path: './.env.prod',
     }),
   ],
-  output: {
-    // filename: '[name].[contenthash].bundle.js',
-    // path: path.resolve(__dirname, 'dist'),
-    hashFunction: "xxhash64",
-  },
   module: {
     rules: [
       {

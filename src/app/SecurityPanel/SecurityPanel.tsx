@@ -41,7 +41,9 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { StoreJmxCredentialsCard } from './Credentials/StoreJmxCredentials';
 import { ImportCertificate } from './ImportCertificate';
 
-export const SecurityPanel = () => {
+export interface SecurityPanelProps {}
+
+export const SecurityPanel: React.FunctionComponent<SecurityPanelProps> = (props) => {
   const securityCards = [ImportCertificate, StoreJmxCredentialsCard].map((c) => ({
     title: c.title,
     description: c.description,
@@ -62,6 +64,8 @@ export const SecurityPanel = () => {
     </BreadcrumbPage>
   );
 };
+
+export default SecurityPanel;
 
 export interface SecurityCard {
   title: string;

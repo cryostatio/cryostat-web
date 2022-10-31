@@ -553,3 +553,5 @@ const Comp = () => {
 };
 
 export const CreateRule = withRouter(Comp);
+
+export default CreateRule;
