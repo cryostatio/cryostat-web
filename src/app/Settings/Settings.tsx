@@ -46,7 +46,9 @@ import { DeletionDialogControl } from './DeletionDialogControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
 import { AutoRefresh } from './AutoRefresh';
 
-export const Settings: React.FunctionComponent<{}> = () => {
+export interface SettingsProps {}
+
+export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
   const settings = [NotificationControl, CredentialsStorage, DeletionDialogControl, WebSocketDebounce, AutoRefresh].map(
     (c) => ({
       title: c.title,
@@ -70,6 +72,8 @@ export const Settings: React.FunctionComponent<{}> = () => {
     </>
   );
 };
+
+export default Settings;
 
 export interface UserSetting {
   title: string;

@@ -62,7 +62,7 @@ export const uploadAsTarget: Target = {
 
 export interface ArchivesProps {}
 
-export const Archives: React.FunctionComponent<ArchivesProps> = () => {
+export const Archives: React.FunctionComponent<ArchivesProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeTab, setActiveTab] = React.useState(0);
@@ -103,3 +103,5 @@ export const Archives: React.FunctionComponent<ArchivesProps> = () => {
     </BreadcrumbPage>
   );
 };
+
+export default Archives;

@@ -118,3 +118,5 @@ export const Events: React.FunctionComponent<EventsProps> = (props) => {
     </>
   );
 };
+
+export default Events;

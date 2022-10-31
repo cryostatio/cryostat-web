@@ -121,3 +121,4 @@ const Comp: React.FunctionComponent<RouteComponentProps<{}, StaticContext, Creat
 };
 
 export const CreateRecording = withRouter(Comp);
+export default CreateRecording;
