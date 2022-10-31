@@ -38,7 +38,9 @@
 import * as React from 'react';
 import { Bullseye, Spinner } from '@patternfly/react-core';
 
-export const LoadingView: React.FunctionComponent = () => {
+export interface LoadingViewProps {}
+
+export const LoadingView: React.FunctionComponent<LoadingViewProps> = (props) => {
   return (
     <>
       <br />
@@ -48,3 +50,5 @@ export const LoadingView: React.FunctionComponent = () => {
     </>
   );
 };
+
+export default LoadingView;

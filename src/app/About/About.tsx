@@ -43,7 +43,9 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
 import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
 
-export const About = () => {
+export interface AboutProps {}
+
+export const About: React.FunctionComponent<AboutProps> = (props) => {
   return (
     <BreadcrumbPage pageTitle="About">
       <Card>
@@ -58,3 +60,5 @@ export const About = () => {
     </BreadcrumbPage>
   );
 };
+
+export default About;

@@ -2,11 +2,12 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
+const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 
 const BG_IMAGES_DIRNAME = 'bgimages';
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
-module.exports = env => {
+module.exports = (env) => {
   return {
     context: __dirname,
     entry: {
@@ -18,12 +19,19 @@ module.exports = env => {
         template: path.resolve(__dirname, 'src', 'index.html'),
         favicon: './src/app/assets/favicon.ico',
       }),
+      new PreloadWebpackPlugin({
+        rel: 'prefetch',
+        include: [/\.js$/], // lazy-load chunks to prefetch
+        // exlude initial chunk, npm chunks
+        fileBlacklist: [/^(app|npm)(\.[\w-]+)+\.bundle\.js$/]
+      })
     ],
     // https://medium.com/hackernoon/the-100-correct-way-to-split-your-chunks-with-webpack-f8a9df5b7758
     optimization: {
-      runtimeChunk: 'single',
+      runtimeChunk: 'single', //  create a runtime file to be shared for all generated chunks
+      moduleIds: 'deterministic', // avoid changing module.id of vendor bundles: https://webpack.js.org/guides/caching/#module-identifiers
       splitChunks: {
-        chunks: 'all',
+        chunks: 'all', // https://webpack.js.org/plugins/split-chunks-plugin/#splitchunkschunks
         maxInitialRequests: Infinity,
         minSize: 0,
         cacheGroups: {
@@ -145,9 +153,12 @@ module.exports = env => {
       ]
     },
     output: {
-      filename: '[name].bundle.js',
+      filename: '[name].[contenthash].bundle.js',
+      chunkFilename: '[id].[contenthash].bundle.js', // lazy-load modules
+      hashFunction: "xxhash64",
       path: path.resolve(__dirname, 'dist'),
       publicPath: ASSET_PATH,
+      clean: true
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],

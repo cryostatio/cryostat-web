@@ -43,7 +43,9 @@ import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 
-export const Recordings = () => {
+export interface RecordingsProps {}
+
+export const Recordings: React.FunctionComponent<RecordingsProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
@@ -81,3 +83,5 @@ export const Recordings = () => {
     </TargetView>
   );
 };
+
+export default Recordings;

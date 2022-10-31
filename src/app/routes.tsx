@@ -35,25 +35,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { CreateRecording } from '@app/CreateRecording/CreateRecording';
-import { Dashboard } from '@app/Dashboard/Dashboard';
-import { Events } from '@app/Events/Events';
-import { Login } from '@app/Login/Login';
-import { NotFound } from '@app/NotFound/NotFound';
-import { Recordings } from '@app/Recordings/Recordings';
-import { Archives } from '@app/Archives/Archives';
-import { Rules } from '@app/Rules/Rules';
-import { CreateRule } from '@app/Rules/CreateRule';
-import { Settings } from '@app/Settings/Settings';
-import { SecurityPanel } from '@app/SecurityPanel/SecurityPanel';
+
+import React, { lazy, Suspense } from 'react';
+const CreateRecording = lazy(() => import('@app/CreateRecording/CreateRecording'));
+const Dashboard = lazy(() => import('@app/Dashboard/Dashboard'));
+const Events = lazy(() => import('@app/Events/Events'));
+const Login = lazy(() => import('@app/Login/Login'));
+const NotFound = lazy(() => import('@app/NotFound/NotFound'));
+const Recordings = lazy(() => import('@app/Recordings/Recordings'));
+const Archives = lazy(() => import('@app/Archives/Archives'));
+const Rules = lazy(() => import('@app/Rules/Rules'));
+const CreateRule = lazy(() => import('@app/Rules/CreateRule'));
+const Settings = lazy(() => import('@app/Settings/Settings'));
+const SecurityPanel = lazy(() => import('@app/SecurityPanel/SecurityPanel'));
+const About = lazy(() => import('@app/About/About'));
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { About } from './About/About';
 import { SessionState } from './Shared/Services/Login.service';
+import { useSubscriptions } from './utils/useSubscriptions';
+import LoadingView from './LoadingView/LoadingView';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -68,7 +71,7 @@ export interface IAppRoute {
   exact?: boolean;
   path: string;
   title: string;
-  description?: string; //non-empty description is used to filter routes for the NotFound page
+  description?: string; // non-empty description is used to filter routes for the NotFound page
   isAsync?: boolean;
   navGroup?: string;
   children?: IAppRoute[];
@@ -206,36 +209,42 @@ const PageNotFound = ({ title }: { title: string }) => {
   return <Route component={NotFound} />;
 };
 
-const AppRoutes = () => {
+export interface AppRoutesProps {}
+
+const AppRoutes: React.FunctionComponent<AppRoutesProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [showDashboard, setShowDashboard] = React.useState(false);
 
   React.useEffect(() => {
-    const sub = context.login
-      .getSessionState()
-      .subscribe((sessionState) => setShowDashboard(sessionState === SessionState.USER_SESSION));
-    return () => sub.unsubscribe();
-  }, [context, context.login, setShowDashboard]);
+    addSubscription(
+      context.login
+        .getSessionState()
+        .subscribe((sessionState) => setShowDashboard(sessionState === SessionState.USER_SESSION))
+    );
+  }, [addSubscription, context.login, setShowDashboard]);
 
   return (
     <LastLocationProvider>
-      <Switch>
-        {showDashboard ? (
-          flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
-            <RouteWithTitleUpdates
-              path={path}
-              exact={exact}
-              component={component}
-              key={idx}
-              title={title}
-              isAsync={isAsync}
-            />
-          ))
-        ) : (
-          <Login />
-        )}
-        <PageNotFound title="404 Page Not Found" />
-      </Switch>
+      <Suspense fallback={<LoadingView />}>
+        <Switch>
+          {showDashboard ? (
+            flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
+              <RouteWithTitleUpdates
+                path={path}
+                exact={exact}
+                component={component}
+                key={idx}
+                title={title}
+                isAsync={isAsync}
+              />
+            ))
+          ) : (
+            <Login />
+          )}
+          <PageNotFound title="404 Page Not Found" />
+        </Switch>
+      </Suspense>
     </LastLocationProvider>
   );
 };
