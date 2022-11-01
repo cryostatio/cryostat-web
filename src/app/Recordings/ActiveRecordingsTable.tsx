@@ -160,8 +160,9 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     (error) => {
       setIsLoading(false);
       setErrorMessage(error.message);
+      setRecordings([]);
     },
-    [setIsLoading, setErrorMessage]
+    [setIsLoading, setErrorMessage, setRecordings]
   );
 
   const refreshRecordingList = React.useCallback(() => {
@@ -258,8 +259,13 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
-    addSubscription(context.target.authFailure().subscribe(() => setErrorMessage(authFailMessage)));
-  }, [context, context.target, setErrorMessage, addSubscription]);
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+        setRecordings([]);
+      })
+    );
+  }, [context, context.target, setErrorMessage, addSubscription, setRecordings]);
 
   React.useEffect(() => {
     addSubscription(
