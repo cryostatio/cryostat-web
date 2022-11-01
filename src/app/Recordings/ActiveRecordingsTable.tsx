@@ -54,8 +54,8 @@ import {
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useDayjs } from '@app/utils/useDayjs';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -92,6 +92,7 @@ export enum PanelContent {
 const tableColumns: string[] = ['Name', 'Start Time', 'Duration', 'State', 'Labels'];
 
 export interface ActiveRecordingsTableProps {
+  target: Observable<Target>;
   archiveEnabled: boolean;
 }
 
@@ -801,6 +802,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <RecordingActions
           index={index}
           recording={recording}
+          sourceTarget={currentSelectedTargetURL}
           uploadFn={() => context.api.uploadActiveRecordingToGrafana(recording.name)}
         />
       </Tr>

@@ -465,20 +465,16 @@ export class ApiService {
     );
   }
 
-  uploadArchivedRecordingToGrafana(sourceTarget: Observable<Target>, recordingName: string): Observable<boolean> {
-    return sourceTarget.pipe(
-      concatMap((target) =>
-        this.sendRequest(
-          'beta',
-          `recordings/${encodeURIComponent(target.connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
-          {
-            method: 'POST',
-          }
-        ).pipe(
-          map((resp) => resp.ok),
-          first()
-        )
-      )
+  uploadArchivedRecordingToGrafana(connectUrl: string, recordingName: string): Observable<boolean> {
+    return this.sendRequest(
+      'beta',
+      `recordings/${encodeURIComponent(connectUrl)}/${encodeURIComponent(recordingName)}/upload`,
+      {
+        method: 'POST',
+      }
+    ).pipe(
+    map((resp) => resp.ok),
+      first()
     );
   }
 
@@ -717,8 +713,10 @@ export class ApiService {
     );
   }
 
-  downloadReport(recording: Recording): void {
+  downloadReport(connectUrl: string, recording: Recording): void {
     const body = new window.FormData();
+    body.append('recordingName', recording.name);
+    body.append('targetId', connectUrl);
     if (isActiveRecording(recording)) {
       body.append('resource', recording.reportUrl.replace('/api/v1', '/api/v2.1'));
     } else {
@@ -737,8 +735,10 @@ export class ApiService {
       });
   }
 
-  downloadRecording(recording: Recording): void {
+  downloadRecording(connectUrl: string, recording: Recording): void {
     const body = new window.FormData();
+    body.append('recordingName', recording.name);
+    body.append('targetId', connectUrl);
     if (isActiveRecording(recording)) {
       body.append('resource', recording.downloadUrl.replace('/api/v1', '/api/v2.1'));
     } else {
@@ -767,15 +767,16 @@ export class ApiService {
       .pipe(
         first(),
         map(
-          (target) =>
+          (target) => [target.connectUrl,
             `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(
               target.connectUrl
             )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
-        )
+          ])
       )
-      .subscribe((resource) => {
+      .subscribe((parts) => {
         const body = new window.FormData();
-        body.append('resource', resource);
+        body.append('targetId', parts[0]);
+        body.append('resource', parts[1]);
         this.sendRequest('v2.1', 'auth/token', {
           method: 'POST',
           body,

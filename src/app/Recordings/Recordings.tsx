@@ -63,7 +63,7 @@ export const Recordings: React.FunctionComponent<RecordingsProps> = (_) => {
     return archiveEnabled ? (
       <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect}>
         <Tab id="active-recordings" eventKey={0} title={<TabTitleText>Active Recordings</TabTitleText>}>
-          <ActiveRecordingsTable archiveEnabled={true} />
+          <ActiveRecordingsTable target={context.target.target()} archiveEnabled={true} />
         </Tab>
         <Tab id="archived-recordings" eventKey={1} title={<TabTitleText>Archived Recordings</TabTitleText>}>
           <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
@@ -72,7 +72,7 @@ export const Recordings: React.FunctionComponent<RecordingsProps> = (_) => {
     ) : (
       <>
         <CardTitle>Active Recordings</CardTitle>
-        <ActiveRecordingsTable archiveEnabled={false} />
+        <ActiveRecordingsTable archiveEnabled={false} target={context.target.target()} />
       </>
     );
   }, [archiveEnabled, activeTab, onTabSelect, targetAsObs]);

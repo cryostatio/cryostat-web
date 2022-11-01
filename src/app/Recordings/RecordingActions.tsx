@@ -38,7 +38,6 @@
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import { Td } from '@patternfly/react-table';
@@ -54,8 +53,8 @@ export interface RowAction {
 
 export interface RecordingActionsProps {
   index: number;
+  sourceTarget: string;
   recording: Recording;
-  sourceTarget?: Observable<Target>;
   uploadFn: () => Observable<boolean>;
 }
 
@@ -95,11 +94,11 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   }, [addSubscription, notifications, props, context.api]);
 
   const handleDownloadRecording = React.useCallback(() => {
-    context.api.downloadRecording(props.recording);
+    context.api.downloadRecording(props.sourceTarget, props.recording)
   }, [context.api, props.recording]);
 
   const handleViewReport = React.useCallback(() => {
-    context.api.downloadReport(props.recording);
+    context.api.downloadReport(props.sourceTarget, props.recording)
   }, [context.api, props.recording]);
 
   const actionItems = React.useMemo(() => {

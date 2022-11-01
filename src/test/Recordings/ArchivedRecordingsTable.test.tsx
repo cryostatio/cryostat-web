@@ -387,7 +387,7 @@ describe('<ArchivedRecordingsTable />', () => {
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
 
     expect(downloadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(downloadRequestSpy).toBeCalledWith(mockRecording);
+    expect(downloadRequestSpy).toBeCalledWith(mockTarget, mockRecording);
   });
 
   it('displays the automated analysis report when View Report is clicked', async () => {
