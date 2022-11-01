@@ -46,11 +46,15 @@ import {
   ToolbarItemVariant,
   Pagination,
   TextInput,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
 } from '@patternfly/react-core';
 import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { SearchIcon } from '@patternfly/react-icons';
 
 export interface EventType {
   name: string;
@@ -77,7 +81,9 @@ const getCategoryString = (eventType: EventType): string => {
   return eventType.category.join(', ').trim();
 };
 
-export const EventTypes = () => {
+export interface EventTypesProps {}
+
+export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -256,6 +262,7 @@ export const EventTypes = () => {
                 placeholder="Filter..."
                 aria-label="Event filter"
                 onChange={setFilterText}
+                isDisabled={errorMessage != ''}
               />
             </ToolbarItem>
             <ToolbarItem variant={ToolbarItemVariant.pagination}>
@@ -271,16 +278,25 @@ export const EventTypes = () => {
             </ToolbarItem>
           </ToolbarContent>
         </Toolbar>
-        <Table
-          aria-label="Event Types table"
-          cells={tableColumns}
-          rows={displayedTypes}
-          onCollapse={onCollapse}
-          variant={TableVariant.compact}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
+        {displayedTypes.length ? (
+          <Table
+            aria-label="Event Types table"
+            cells={tableColumns}
+            rows={displayedTypes}
+            onCollapse={onCollapse}
+            variant={TableVariant.compact}
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        ) : (
+          <EmptyState>
+            <EmptyStateIcon icon={SearchIcon} />
+            <Title headingLevel="h4" size="lg">
+              No Event Types
+            </Title>
+          </EmptyState>
+        )}
       </>
     );
   }

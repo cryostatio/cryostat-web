@@ -330,4 +330,24 @@ describe('<AgentProbeTemplates />', () => {
     expect(insertButton).toBeVisible();
     expect(insertButton.getAttribute('aria-disabled')).toBe('true');
   });
+
+  it('should shown empty state when table is empty', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentProbeTemplates agentDetected={false} />
+      </ServiceContext.Provider>
+    );
+
+    const filterInput = screen.getByLabelText('Probe template filter');
+    expect(filterInput).toBeInTheDocument();
+    expect(filterInput).toBeVisible();
+
+    userEvent.type(filterInput, 'someveryoddname');
+
+    expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
+
+    const hintText = screen.getByText('No Probe Templates');
+    expect(hintText).toBeInTheDocument();
+    expect(hintText).toBeVisible();
+  });
 });

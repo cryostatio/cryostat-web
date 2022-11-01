@@ -60,8 +60,11 @@ import {
   TextVariants,
   StackItem,
   Stack,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
 } from '@patternfly/react-core';
-import { UploadIcon } from '@patternfly/react-icons';
+import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   Table,
   TableBody,
@@ -370,18 +373,27 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
                 />
               </ToolbarContent>
             </Toolbar>
-            <Table
-              aria-label="Probe Templates Table"
-              variant={TableVariant.compact}
-              cells={tableColumns}
-              rows={displayTemplates}
-              actionResolver={actionResolver}
-              sortBy={sortBy}
-              onSort={handleSort}
-            >
-              <TableHeader />
-              <TableBody />
-            </Table>
+            {displayTemplates.length ? (
+              <Table
+                aria-label="Probe Templates Table"
+                variant={TableVariant.compact}
+                cells={tableColumns}
+                rows={displayTemplates}
+                actionResolver={actionResolver}
+                sortBy={sortBy}
+                onSort={handleSort}
+              >
+                <TableHeader />
+                <TableBody />
+              </Table>
+            ) : (
+              <EmptyState>
+                <EmptyStateIcon icon={SearchIcon} />
+                <Title headingLevel="h4" size="lg">
+                  No Probe Templates
+                </Title>
+              </EmptyState>
+            )}
             <Modal
               isOpen={modalOpen}
               variant={ModalVariant.large}

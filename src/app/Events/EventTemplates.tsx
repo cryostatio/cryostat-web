@@ -54,8 +54,11 @@ import {
   ToolbarGroup,
   ToolbarItem,
   TextInput,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
 } from '@patternfly/react-core';
-import { UploadIcon } from '@patternfly/react-icons';
+import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   Table,
   TableBody,
@@ -75,7 +78,9 @@ import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 
-export const EventTemplates = () => {
+export interface EventTemplatesProps {}
+
+export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
 
@@ -361,40 +366,6 @@ export const EventTemplates = () => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
 
-  const toolbar: JSX.Element = (
-    <>
-      <Toolbar id="event-templates-toolbar">
-        <ToolbarContent>
-          <ToolbarGroup variant="filter-group">
-            <ToolbarItem>
-              <TextInput
-                name="templateFilter"
-                id="templateFilter"
-                type="search"
-                placeholder="Filter..."
-                aria-label="Event template filter"
-                onChange={setFilterText}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
-          <ToolbarGroup variant="icon-button-group">
-            <ToolbarItem>
-              <Button key="upload" variant="secondary" onClick={handleModalToggle}>
-                <UploadIcon />
-              </Button>
-            </ToolbarItem>
-          </ToolbarGroup>
-          <DeleteWarningModal
-            warningType={DeleteWarningType.DeleteEventTemplates}
-            visible={warningModalOpen}
-            onAccept={handleWarningModalAccept}
-            onClose={handleWarningModalClose}
-          />
-        </ToolbarContent>
-      </Toolbar>
-    </>
-  );
-
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
@@ -408,29 +379,61 @@ export const EventTemplates = () => {
       />
     );
   } else if (isLoading) {
-    return (
-      <>
-        {toolbar}
-        <LoadingView />
-      </>
-    );
+    return <LoadingView />;
   } else {
     return (
       <>
-        {toolbar}
-        <Table
-          aria-label="Event Templates table"
-          variant={TableVariant.compact}
-          cells={tableColumns}
-          rows={displayTemplates}
-          actionResolver={actionResolver}
-          sortBy={sortBy}
-          onSort={handleSort}
-        >
-          <TableHeader />
-          <TableBody />
-        </Table>
-
+        <Toolbar id="event-templates-toolbar">
+          <ToolbarContent>
+            <ToolbarGroup variant="filter-group">
+              <ToolbarItem>
+                <TextInput
+                  name="templateFilter"
+                  id="templateFilter"
+                  type="search"
+                  placeholder="Filter..."
+                  aria-label="Event template filter"
+                  onChange={setFilterText}
+                  isDisabled={errorMessage != ''}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarGroup variant="icon-button-group">
+              <ToolbarItem>
+                <Button key="upload" variant="secondary" onClick={handleModalToggle} isDisabled={errorMessage != ''}>
+                  <UploadIcon />
+                </Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+            <DeleteWarningModal
+              warningType={DeleteWarningType.DeleteEventTemplates}
+              visible={warningModalOpen}
+              onAccept={handleWarningModalAccept}
+              onClose={handleWarningModalClose}
+            />
+          </ToolbarContent>
+        </Toolbar>
+        {displayTemplates.length ? (
+          <Table
+            aria-label="Event Templates table"
+            variant={TableVariant.compact}
+            cells={tableColumns}
+            rows={displayTemplates}
+            actionResolver={actionResolver}
+            sortBy={sortBy}
+            onSort={handleSort}
+          >
+            <TableHeader />
+            <TableBody />
+          </Table>
+        ) : (
+          <EmptyState>
+            <EmptyStateIcon icon={SearchIcon} />
+            <Title headingLevel="h4" size="lg">
+              No Event Templates
+            </Title>
+          </EmptyState>
+        )}
         <Modal
           isOpen={modalOpen}
           variant={ModalVariant.large}

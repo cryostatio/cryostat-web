@@ -43,6 +43,7 @@ import { of, Subject } from 'rxjs';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { EventType, EventTypes } from '@app/Events/EventTypes';
+import userEvent from '@testing-library/user-event';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -102,5 +103,25 @@ describe('<EventTypes />', () => {
     const retryButton = screen.getByText('Retry');
     expect(retryButton).toBeInTheDocument();
     expect(retryButton).toBeVisible();
+  });
+
+  it('should shown empty state when table is empty', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <EventTypes />
+      </ServiceContext.Provider>
+    );
+
+    const filterInput = screen.getByLabelText('Event filter');
+    expect(filterInput).toBeInTheDocument();
+    expect(filterInput).toBeVisible();
+
+    userEvent.type(filterInput, 'someveryoddname');
+
+    expect(screen.queryByText('Some Event')).not.toBeInTheDocument();
+
+    const hintText = screen.getByText('No Event Types');
+    expect(hintText).toBeInTheDocument();
+    expect(hintText).toBeVisible();
   });
 });

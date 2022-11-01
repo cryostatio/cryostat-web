@@ -54,6 +54,9 @@ import {
   TextVariants,
   Stack,
   StackItem,
+  EmptyState,
+  EmptyStateIcon,
+  Title,
 } from '@patternfly/react-core';
 import {
   Table,
@@ -70,6 +73,7 @@ import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView
 import { EventProbe } from '@app/Shared/Services/Api.service';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { SearchIcon } from '@patternfly/react-icons';
 
 export interface AgentLiveProbesProps {}
 
@@ -221,7 +225,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
     setFilteredProbes([...filtered]);
   }, [filterText, probes, sortBy, setFilteredProbes]);
 
-  const displayTemplates = React.useMemo(
+  const displayProbes = React.useMemo(
     () => filteredProbes.map((t: EventProbe) => [t.id, t.name, t.clazz, t.description, t.methodName]),
     [filteredProbes]
   );
@@ -262,11 +266,11 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
                 <ToolbarGroup variant="filter-group">
                   <ToolbarItem>
                     <TextInput
-                      name="templateFilter"
-                      id="templateFilter"
+                      name="activeProbeFilter"
+                      id="activeProbeFilter"
                       type="search"
                       placeholder="Filter..."
-                      aria-label="Probe template filter"
+                      aria-label="Active probe filter"
                       onChange={setFilterText}
                     />
                   </ToolbarItem>
@@ -291,16 +295,25 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
                 onClose={handleWarningModalClose}
               />
             </Toolbar>
-            <Table
-              aria-label="Active Probes"
-              variant={TableVariant.compact}
-              cells={tableColumns}
-              rows={displayTemplates}
-              onSort={handleSort}
-            >
-              <TableHeader />
-              <TableBody />
-            </Table>
+            {displayProbes.length ? (
+              <Table
+                aria-label="Active Probes"
+                variant={TableVariant.compact}
+                cells={tableColumns}
+                rows={displayProbes}
+                onSort={handleSort}
+              >
+                <TableHeader />
+                <TableBody />
+              </Table>
+            ) : (
+              <EmptyState>
+                <EmptyStateIcon icon={SearchIcon} />
+                <Title headingLevel="h4" size="lg">
+                  No Active Probes
+                </Title>
+              </EmptyState>
+            )}
           </StackItem>
         </Stack>
       </>
