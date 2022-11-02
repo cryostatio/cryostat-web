@@ -157,7 +157,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     (e) => {
       const files = e.target.files;
       if (files && files.length) {
-        const tasks: Observable<any>[] = [];
+        const tasks: Observable<RecordingLabel[]>[] = [];
         setLoading(true);
         for (const labelFile of e.target.files) {
           tasks.push(parseLabels(labelFile));
