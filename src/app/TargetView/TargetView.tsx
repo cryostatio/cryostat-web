@@ -71,7 +71,7 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
     <>
       <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
         <Grid hasGutter>
-          <GridItem span={compact ? 4 : 12}>
+          <GridItem span={compact ? 6 : 12}>
             <TargetSelect />
           </GridItem>
           <GridItem>{connected ? props.children : <NoTargetSelected />}</GridItem>

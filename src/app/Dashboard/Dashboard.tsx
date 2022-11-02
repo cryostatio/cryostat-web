@@ -36,37 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { TargetView } from '@app/TargetView/TargetView';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
-import { SerializedTarget } from '../Shared/SerializedTarget';
 
 export interface DashboardProps {}
 
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-
-  const [selectedTarget, setSelectedTarget] = React.useState(NO_TARGET);
-
-  React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(setSelectedTarget));
-  }, [addSubscription, context.target, setSelectedTarget]);
-
-  return (
-    <TargetView pageTitle="Dashboard" compactSelect={true}>
-      <Card>
-        <CardTitle>
-          <Text component={TextVariants.h1}>Target Details</Text>
-        </CardTitle>
-        <CardBody>
-          <SerializedTarget target={selectedTarget} />
-        </CardBody>
-      </Card>
-    </TargetView>
-  );
+  return <TargetView pageTitle="Dashboard" compactSelect={false} />;
 };
 
 export default Dashboard;
