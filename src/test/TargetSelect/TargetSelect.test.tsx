@@ -55,6 +55,7 @@ const cryostatAnnotation = {
   REALM: CUSTOM_TARGETS_REALM,
 };
 const mockFooTarget: Target = {
+  jvmId: 'abcd',
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
   annotations: {
@@ -62,7 +63,7 @@ const mockFooTarget: Target = {
     platform: {},
   },
 };
-const mockBarTarget: Target = { ...mockFooTarget, connectUrl: mockBarConnectUrl, alias: 'barTarget' };
+const mockBarTarget: Target = { ...mockFooTarget, jvmId: 'efgh', connectUrl: mockBarConnectUrl, alias: 'barTarget' };
 const mockBazTarget: Target = { connectUrl: mockBazConnectUrl, alias: 'bazTarget' };
 
 const history = createMemoryHistory();
@@ -150,8 +151,8 @@ describe('<TargetSelect />', () => {
     userEvent.click(screen.getByLabelText('Options menu'));
     expect(screen.getByLabelText('Select Target')).toBeInTheDocument();
     expect(screen.getByText(`Select target...`)).toBeInTheDocument();
-    expect(screen.getByText(`fooTarget (service:jmx:rmi://someFooUrl)`)).toBeInTheDocument();
-    expect(screen.getByText(`barTarget (service:jmx:rmi://someBarUrl)`)).toBeInTheDocument();
+    expect(screen.getByText(`fooTarget (service:jmx:rmi://someFooUrl): abcd`)).toBeInTheDocument();
+    expect(screen.getByText(`barTarget (service:jmx:rmi://someBarUrl): efgh`)).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument(); // Number of discoverable targets
   });
 
