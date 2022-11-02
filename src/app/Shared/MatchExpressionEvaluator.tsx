@@ -156,7 +156,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     <>
       <Stack hasGutter>
         <StackItem>
-          <TargetSelect />
+          <TargetSelect simple />
         </StackItem>
         <StackItem>
           <Split hasGutter isWrappable>

@@ -66,7 +66,11 @@ import { SerializedTarget } from '@app/Shared/SerializedTarget';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 
-export interface TargetSelectProps {}
+export interface TargetSelectProps {
+  // display a simple, non-expandable component. set this if the view elsewhere
+  // contains a <SerializedTarget /> or other repeated components
+  simple?: boolean;
+}
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
@@ -259,16 +263,20 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   return (
     <>
-      <Card isExpanded={isExpanded && selected !== NO_TARGET}>
+      <Card isExpanded={props.simple ? undefined : isExpanded && selected !== NO_TARGET}>
         <CardHeader
-          onExpand={onExpand}
-          isToggleRightAligned={true}
-          toggleButtonProps={{
-            id: 'toggle-button1',
-            'aria-label': 'Details',
-            'aria-labelledby': 'expandable-card-title toggle-button1',
-            'aria-expanded': isExpanded,
-          }}
+          onExpand={props.simple ? undefined : onExpand}
+          isToggleRightAligned={props.simple ? undefined : true}
+          toggleButtonProps={
+            props.simple
+              ? undefined
+              : {
+                  id: 'toggle-button1',
+                  'aria-label': 'Details',
+                  'aria-labelledby': 'expandable-card-title toggle-button1',
+                  'aria-expanded': isExpanded,
+                }
+          }
         >
           <CardTitle>
             <Text component={TextVariants.h4}>Target JVM</Text>
@@ -306,11 +314,15 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             {selectOptions}
           </Select>
         </CardBody>
-        <CardExpandableContent>
-          <CardBody>
-            <SerializedTarget target={selected} />
-          </CardBody>
-        </CardExpandableContent>
+        {props.simple ? (
+          <></>
+        ) : (
+          <CardExpandableContent>
+            <CardBody>
+              <SerializedTarget target={selected} />
+            </CardBody>
+          </CardExpandableContent>
+        )}
       </Card>
       <CreateTargetModal
         visible={isModalOpen}
