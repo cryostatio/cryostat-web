@@ -246,4 +246,24 @@ describe('<AgentLiveProbes />', () => {
 
     expect(deleteRequestSpy).toBeCalledTimes(1);
   });
+
+  it('should shown empty state when table is empty', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <AgentLiveProbes />
+      </ServiceContext.Provider>
+    );
+
+    const filterInput = screen.getByLabelText('Active probe filter');
+    expect(filterInput).toBeInTheDocument();
+    expect(filterInput).toBeVisible();
+
+    userEvent.type(filterInput, 'someveryoddname');
+
+    expect(screen.queryByText('some_name')).not.toBeInTheDocument();
+
+    const hintText = screen.getByText('No Active Probes');
+    expect(hintText).toBeInTheDocument();
+    expect(hintText).toBeVisible();
+  });
 });

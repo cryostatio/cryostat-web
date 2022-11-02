@@ -67,14 +67,14 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
             >
               <input
                 aria-invalid={false}
-                aria-label="Probe template filter"
+                aria-label="Active probe filter"
                 className="pf-c-form-control"
                 data-ouia-component-id="OUIA-Generated-TextInputBase-1"
                 data-ouia-component-type="PF4/TextInput"
                 data-ouia-safe={true}
                 disabled={false}
-                id="templateFilter"
-                name="templateFilter"
+                id="activeProbeFilter"
+                name="activeProbeFilter"
                 onBlur={[Function]}
                 onChange={[Function]}
                 onFocus={[Function]}

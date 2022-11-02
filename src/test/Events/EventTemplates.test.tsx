@@ -272,4 +272,24 @@ describe('<EventTemplates />', () => {
     expect(retryButton).toBeInTheDocument();
     expect(retryButton).toBeVisible();
   });
+
+  it('should shown empty state when table is empty', () => {
+    render(
+      <ServiceContext.Provider value={defaultServices}>
+        <EventTemplates />
+      </ServiceContext.Provider>
+    );
+
+    const filterInput = screen.getByLabelText('Event template filter');
+    expect(filterInput).toBeInTheDocument();
+    expect(filterInput).toBeVisible();
+
+    userEvent.type(filterInput, 'someveryoddname');
+
+    expect(screen.queryByText('someEventTemplate')).not.toBeInTheDocument();
+
+    const hintText = screen.getByText('No Event Templates');
+    expect(hintText).toBeInTheDocument();
+    expect(hintText).toBeVisible();
+  });
 });
