@@ -263,12 +263,12 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   return (
     <>
-      <Card isExpanded={(props.simple || selected === NO_TARGET) ? undefined : isExpanded}>
+      <Card isExpanded={props.simple || selected === NO_TARGET ? undefined : isExpanded}>
         <CardHeader
-          onExpand={(props.simple || selected === NO_TARGET) ? undefined : onExpand}
-          isToggleRightAligned={(props.simple || selected === NO_TARGET) ? undefined : true}
+          onExpand={props.simple || selected === NO_TARGET ? undefined : onExpand}
+          isToggleRightAligned={props.simple || selected === NO_TARGET ? undefined : true}
           toggleButtonProps={
-            (props.simple || selected === NO_TARGET)
+            props.simple || selected === NO_TARGET
               ? undefined
               : {
                   id: 'toggle-button1',
@@ -314,7 +314,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             {selectOptions}
           </Select>
         </CardBody>
-        {(props.simple || selected === NO_TARGET) ? (
+        {props.simple || selected === NO_TARGET ? (
           <></>
         ) : (
           <CardExpandableContent>
