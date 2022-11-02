@@ -35,7 +35,7 @@ exports[`<Dashboard /> renders correctly 1`] = `
         className="pf-l-grid pf-m-gutter"
       >
         <div
-          className="pf-l-grid__item pf-m-4-col"
+          className="pf-l-grid__item pf-m-12-col"
         >
           <div>
             Target Select

@@ -935,7 +935,7 @@ exports[`<CreateRule /> renders correctly 1`] = `
                       className="pf-c-card__header"
                     >
                       <div
-                        className=""
+                        className="pf-c-card__title"
                       >
                         <h4
                           className=""
