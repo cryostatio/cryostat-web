@@ -250,9 +250,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       ].concat(
         targets.map((t: Target) => (
           <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>
-            {!t.alias || t.alias === t.connectUrl
-              ? `${t.connectUrl}`
-              : `${t.alias} (${t.connectUrl})`}
+            {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}
           </SelectOption>
         ))
       ),
