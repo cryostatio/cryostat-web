@@ -52,6 +52,7 @@ import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { parseLabels } from '@app/Archives/ArchiveUploadModal';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { LoadingView } from '@app/LoadingView/LoadingView';
+import { Observable, zip } from 'rxjs';
 
 export interface RecordingLabelFieldsProps {
   labels: RecordingLabel[];
@@ -156,17 +157,21 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     (e) => {
       const files = e.target.files;
       if (files && files.length) {
-        const labelFile = e.target.files[0] as File;
+        const tasks: Observable<RecordingLabel[]>[] = [];
         setLoading(true);
+        for (const labelFile of e.target.files) {
+          tasks.push(parseLabels(labelFile));
+        }
         addSubscription(
-          parseLabels(labelFile).subscribe((labels) => {
+          zip(tasks).subscribe((labelArrays: RecordingLabel[][]) => {
             setLoading(false);
+            const labels = labelArrays.reduce((acc, next) => acc.concat(next), []);
             props.setLabels([...props.labels, ...labels]);
           })
         );
       }
     },
-    [props.setLabels, props.labels, addSubscription]
+    [props.setLabels, props.labels, addSubscription, setLoading]
   );
 
   const openLabelFileBrowse = React.useCallback(() => {
@@ -185,7 +190,14 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
           <Button aria-label="Upload Labels" onClick={openLabelFileBrowse} variant="link" icon={<UploadIcon />}>
             Upload Labels
           </Button>
-          <input ref={inputRef} accept={'.json'} type="file" style={{ display: 'none' }} onChange={handleUploadLabel} />
+          <input
+            ref={inputRef}
+            accept={'.json'}
+            type="file"
+            style={{ display: 'none' }}
+            onChange={handleUploadLabel}
+            multiple
+          />
         </>
       )}
       {props.labels.map((label, idx) => (
