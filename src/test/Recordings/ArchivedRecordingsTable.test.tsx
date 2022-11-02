@@ -647,4 +647,26 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadSpy).toHaveBeenCalled();
     expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, mockUploadedRecordingLabels, expect.anything());
   });
+
+  it('should show error view if failing to retrieve recordings', async () => {
+    jest.spyOn(defaultServices.api, 'graphql').mockImplementationOnce((query) => {
+      throw new Error('Something wrong');
+    });
+
+    renderWithServiceContextAndReduxStoreWithRouter(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
+
+    const failTitle = screen.getByText('Error retrieving recordings');
+    expect(failTitle).toBeInTheDocument();
+    expect(failTitle).toBeVisible();
+
+    const authFailText = screen.getByText('Something wrong');
+    expect(authFailText).toBeInTheDocument();
+    expect(authFailText).toBeVisible();
+  });
 });

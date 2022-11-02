@@ -36,12 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import {
-  ArchivedRecording,
-  Recording,
-  RecordingDirectory,
-  UPLOADS_SUBDIRECTORY,
-} from '@app/Shared/Services/Api.service';
+import { ArchivedRecording, RecordingDirectory, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -106,6 +101,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
@@ -146,6 +142,15 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       setIsLoading(false);
     },
     [setRecordings, setIsLoading]
+  );
+
+  const handleError = React.useCallback(
+    (error) => {
+      setIsLoading(false);
+      setErrorMessage(error.message);
+      setRecordings([]);
+    },
+    [setIsLoading, setErrorMessage, setRecordings]
   );
 
   const queryTargetRecordings = React.useCallback(
@@ -193,7 +198,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       addSubscription(
         queryUploadedRecordings()
           .pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]))
-          .subscribe(handleRecordings)
+          .subscribe({
+            next: handleRecordings,
+            error: handleError,
+          })
       );
     } else {
       addSubscription(
@@ -204,7 +212,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             concatMap((target) => queryTargetRecordings(target.connectUrl)),
             map((v) => v.data.archivedRecordings.data as ArchivedRecording[])
           )
-          .subscribe(handleRecordings)
+          .subscribe({
+            next: handleRecordings,
+            error: handleError,
+          })
       );
     }
   }, [
@@ -212,6 +223,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     context.api,
     setIsLoading,
     handleRecordings,
+    handleError,
     queryTargetRecordings,
     queryUploadedRecordings,
     props.directoryRecordings,
@@ -520,10 +532,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     ));
   }, [filteredRecordings, expandedRows, checkedIndices]);
 
-  const handleModalClose = React.useCallback(() => {
-    setShowUploadModal(false);
-    refreshRecordingList();
-  }, [setShowUploadModal, refreshRecordingList]);
+  const handleUploadModalClose = React.useCallback(() => {
+    setShowUploadModal(false); // Do nothing else as notifications will handle update
+  }, [setShowUploadModal]);
 
   const LabelsPanel = React.useMemo(
     () => (
@@ -574,12 +585,14 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             isEmptyFilterResult={!filteredRecordings.length}
             clearFilters={handleClearFilters}
             isNestedTable={props.isNestedTable}
-            errorMessage={''}
+            errorMessage={errorMessage}
           >
             {recordingRows}
           </RecordingsTable>
 
-          {props.isUploadsTable ? <ArchiveUploadModal visible={showUploadModal} onClose={handleModalClose} /> : null}
+          {props.isUploadsTable ? (
+            <ArchiveUploadModal visible={showUploadModal} onClose={handleUploadModalClose} />
+          ) : null}
         </DrawerContentBody>
       </DrawerContent>
     </Drawer>
