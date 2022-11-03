@@ -41,7 +41,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 export interface DashboardProps {}
 
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
-  return <TargetView pageTitle="Dashboard" compactSelect={true} />;
+  return <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState />;
 };
 
 export default Dashboard;

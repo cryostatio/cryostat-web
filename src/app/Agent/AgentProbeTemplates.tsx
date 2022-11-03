@@ -42,10 +42,6 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
   Button,
-  Card,
-  CardBody,
-  CardHeaderMain,
-  CardHeader,
   FileUpload,
   Form,
   FormGroup,
@@ -56,8 +52,6 @@ import {
   ToolbarGroup,
   ToolbarItem,
   TextInput,
-  Text,
-  TextVariants,
   StackItem,
   Stack,
   EmptyState,
@@ -83,6 +77,7 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { AboutAgentCard } from './AboutAgentCard';
 
 export interface AgentProbeTemplatesProps {
   agentDetected: boolean;
@@ -328,20 +323,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
       <>
         <Stack hasGutter style={{ marginTop: '1em', marginBottom: '1.5em' }}>
           <StackItem>
-            <Card>
-              <CardHeader>
-                <CardHeaderMain>
-                  <Text component={TextVariants.h4}>About the JMC Agent</Text>
-                </CardHeaderMain>
-              </CardHeader>
-              <CardBody>
-                The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make
-                use of the JMC Agent, the agent jar must be present in the same container as the target, and the target
-                must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met, the
-                user can upload probe templates to Cryostat and insert them to the target, as well as view or remove
-                currently active probes.
-              </CardBody>
-            </Card>
+            <AboutAgentCard />
           </StackItem>
           <StackItem>
             <Toolbar id="probe-templates-toolbar">

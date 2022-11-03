@@ -35,48 +35,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { CodeBlock, CodeBlockCode } from '@patternfly/react-core';
+import { Target } from '@app/Shared/Services/Target.service';
+import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 
-import { NotificationControl } from './NotificationControl';
-import { CredentialsStorage } from './CredentialsStorage';
-import { DeletionDialogControl } from './DeletionDialogControl';
-import { WebSocketDebounce } from './WebSocketDebounce';
-import { AutoRefresh } from './AutoRefresh';
+export interface SerializedTargetProps {
+  target?: Target;
+  indentLevel?: number;
+}
 
-export interface SettingsProps {}
-
-export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
-  const settings = [NotificationControl, CredentialsStorage, DeletionDialogControl, WebSocketDebounce, AutoRefresh].map(
-    (c) => ({
-      title: c.title,
-      description: c.description,
-      element: React.createElement(c.content, null),
-    })
-  );
+export const SerializedTarget: React.FunctionComponent<SerializedTargetProps> = (props) => {
   return (
     <>
-      <BreadcrumbPage pageTitle="Settings">
-        {settings.map((s) => (
-          <Card key={s.title}>
-            <CardTitle>
-              <Text>{s.title}</Text>
-              <Text component={TextVariants.small}>{s.description}</Text>
-            </CardTitle>
-            <CardBody>{s.element}</CardBody>
-          </Card>
-        ))}
-      </BreadcrumbPage>
+      {!props.target ? (
+        <NoTargetSelected />
+      ) : (
+        <CodeBlock>
+          <CodeBlockCode>{JSON.stringify(props.target, null, props.indentLevel || 2)}</CodeBlockCode>
+        </CodeBlock>
+      )}
     </>
   );
 };
-
-export default Settings;
-
-export interface UserSetting {
-  title: string;
-  description: JSX.Element | string;
-  content: React.FunctionComponent;
-}

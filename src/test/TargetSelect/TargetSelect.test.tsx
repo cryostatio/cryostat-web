@@ -55,6 +55,7 @@ const cryostatAnnotation = {
   REALM: CUSTOM_TARGETS_REALM,
 };
 const mockFooTarget: Target = {
+  jvmId: 'abcd',
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
   annotations: {
@@ -62,7 +63,7 @@ const mockFooTarget: Target = {
     platform: {},
   },
 };
-const mockBarTarget: Target = { ...mockFooTarget, connectUrl: mockBarConnectUrl, alias: 'barTarget' };
+const mockBarTarget: Target = { ...mockFooTarget, jvmId: 'efgh', connectUrl: mockBarConnectUrl, alias: 'barTarget' };
 const mockBazTarget: Target = { connectUrl: mockBazConnectUrl, alias: 'bazTarget' };
 
 const history = createMemoryHistory();
@@ -81,6 +82,8 @@ jest
   .spyOn(defaultServices.target, 'target')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of()) // contains the correct information
+  .mockReturnValueOnce(of()) // renders empty state when expanded
+  .mockReturnValueOnce(of(mockFooTarget)) // renders serialized target when expanded
   .mockReturnValueOnce(of(mockFooTarget)) // renders dropdown of multiple discovered targets
   .mockReturnValueOnce(of(mockFooTarget)) // creates a target if user completes modal
   .mockReturnValueOnce(of(mockFooTarget)) // deletes target when delete button clicked
@@ -91,6 +94,8 @@ jest
   .spyOn(defaultServices.targets, 'targets')
   .mockReturnValueOnce(of([mockFooTarget])) // renders correctly
   .mockReturnValueOnce(of([mockFooTarget])) // contains the correct information
+  .mockReturnValueOnce(of([mockFooTarget])) // renders empty state when expanded
+  .mockReturnValueOnce(of([mockFooTarget])) // renders serialized target when expanded
   .mockReturnValueOnce(of([mockFooTarget, mockBarTarget])) // renders dropdown of multiple discovered targets
   .mockReturnValue(of([mockFooTarget, mockBarTarget])); // other tests
 
@@ -101,6 +106,8 @@ jest.spyOn(defaultServices.api, 'deleteTarget').mockReturnValue(of(true));
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true) // renders correctly
+  .mockReturnValueOnce(true) // renders empty state when expanded
+  .mockReturnValueOnce(true) // renders serialized target when expanded
   .mockReturnValueOnce(true) // contains the correct information
   .mockReturnValueOnce(true) // renders dropdown of multiple discovered targets
   .mockReturnValueOnce(true) // creates a target if user completes modal
@@ -136,6 +143,46 @@ describe('<TargetSelect />', () => {
     expect(screen.getByLabelText('Create target')).toBeInTheDocument();
     expect(screen.getByLabelText('Delete target')).toBeInTheDocument();
     expect(screen.getByLabelText('Options menu')).toBeInTheDocument();
+  });
+
+  it('renders empty state when expanded', () => {
+    const { container } = render(
+      <ServiceContext.Provider value={defaultServices}>
+        <TargetSelect />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('Select target...')).toBeInTheDocument();
+
+    const expandButton = screen.getByLabelText('Details');
+    userEvent.click(expandButton);
+
+    const articleElement = container.querySelector('article');
+    expect(articleElement).toBeInTheDocument();
+    expect(articleElement).toBeVisible();
+    expect(screen.getByText(`No target selected`)).toBeInTheDocument();
+    expect(screen.getByText(`No target selected`)).toBeVisible();
+    expect(screen.getByText(`To view this content, select a JVM target.`)).toBeInTheDocument();
+    expect(screen.getByText(`To view this content, select a JVM target.`)).toBeVisible();
+  });
+
+  it('renders serialized target when expanded', () => {
+    const { container } = render(
+      <ServiceContext.Provider value={defaultServices}>
+        <TargetSelect />
+      </ServiceContext.Provider>
+    );
+
+    const expandButton = screen.getByLabelText('Details');
+    userEvent.click(expandButton);
+
+    const codeElement = container.querySelector('code');
+    expect(codeElement).toBeTruthy();
+    expect(codeElement).toBeInTheDocument();
+    expect(codeElement).toBeVisible();
+    expect(codeElement!.textContent).toBeTruthy();
+    const codeContent = codeElement!.textContent!.replace(/[\s]/g, '');
+    expect(codeContent).toEqual(JSON.stringify(mockFooTarget, null, 0).replace(/[\s]/g, ''));
   });
 
   it('renders dropdown of multiple discovered targets', () => {

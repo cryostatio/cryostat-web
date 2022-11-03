@@ -42,7 +42,6 @@ import React from 'react';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { of } from 'rxjs';
-import { render, screen } from '@testing-library/react';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 // Test fails if new Map([['REALM', 'Custom Targets']]) is used, most likely since 'cryostat' Map is not being utilized
@@ -76,21 +75,5 @@ describe('<Dashboard />', () => {
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
-  });
-
-  it('shows helper texts if no target is selected', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Dashboard></Dashboard>
-      </ServiceContext.Provider>
-    );
-
-    const helperTextTitle = screen.getByText('No target selected');
-    expect(helperTextTitle).toBeInTheDocument();
-    expect(helperTextTitle).toBeVisible();
-
-    const helperText = screen.getByText('To view this content, select a JVM target.');
-    expect(helperText).toBeInTheDocument();
-    expect(helperText).toBeVisible();
   });
 });

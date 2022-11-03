@@ -35,48 +35,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
+import { Card, CardBody, CardTitle } from '@patternfly/react-core';
 import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
-import { NotificationControl } from './NotificationControl';
-import { CredentialsStorage } from './CredentialsStorage';
-import { DeletionDialogControl } from './DeletionDialogControl';
-import { WebSocketDebounce } from './WebSocketDebounce';
-import { AutoRefresh } from './AutoRefresh';
+export interface AboutAgentCardProps {}
 
-export interface SettingsProps {}
-
-export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
-  const settings = [NotificationControl, CredentialsStorage, DeletionDialogControl, WebSocketDebounce, AutoRefresh].map(
-    (c) => ({
-      title: c.title,
-      description: c.description,
-      element: React.createElement(c.content, null),
-    })
-  );
+export const AboutAgentCard: React.FunctionComponent<AboutAgentCardProps> = (props) => {
   return (
-    <>
-      <BreadcrumbPage pageTitle="Settings">
-        {settings.map((s) => (
-          <Card key={s.title}>
-            <CardTitle>
-              <Text>{s.title}</Text>
-              <Text component={TextVariants.small}>{s.description}</Text>
-            </CardTitle>
-            <CardBody>{s.element}</CardBody>
-          </Card>
-        ))}
-      </BreadcrumbPage>
-    </>
+    <Card>
+      <CardTitle>About the JMC Agent</CardTitle>
+      <CardBody>
+        The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make use of
+        the JMC Agent, the agent jar must be present in the same container as the target, and the target must be started
+        with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met, the user can upload probe
+        templates to Cryostat and insert them to the target, as well as view or remove currently active probes.
+      </CardBody>
+    </Card>
   );
 };
-
-export default Settings;
-
-export interface UserSetting {
-  title: string;
-  description: JSX.Element | string;
-  content: React.FunctionComponent;
-}

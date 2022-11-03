@@ -41,17 +41,11 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
-  Card,
-  CardBody,
-  CardHeaderMain,
-  CardHeader,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
   TextInput,
-  Text,
-  TextVariants,
   Stack,
   StackItem,
   EmptyState,
@@ -74,6 +68,7 @@ import { EventProbe } from '@app/Shared/Services/Api.service';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { SearchIcon } from '@patternfly/react-icons';
+import { AboutAgentCard } from './AboutAgentCard';
 
 export interface AgentLiveProbesProps {}
 
@@ -245,20 +240,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
       <>
         <Stack hasGutter style={{ marginTop: '1em' }}>
           <StackItem>
-            <Card>
-              <CardHeader>
-                <CardHeaderMain>
-                  <Text component={TextVariants.h4}>About the JMC Agent</Text>
-                </CardHeaderMain>
-              </CardHeader>
-              <CardBody>
-                The JMC Agent allows users to dynamically inject custom JFR events into running JVMs. In order to make
-                use of the JMC Agent, the agent jar must be present in the same container as the target, and the target
-                must be started with the agent (-javaagent:/path/to/agent.jar). Once these pre-requisites are met, the
-                user can upload probe templates to Cryostat and insert them to the target, as well as view or remove
-                currently active probes.
-              </CardBody>
-            </Card>
+            <AboutAgentCard />
           </StackItem>
           <StackItem>
             <Toolbar id="active-probes-toolbar">

@@ -45,13 +45,12 @@ import {
   Card,
   CardActions,
   CardBody,
+  CardExpandableContent,
   CardHeader,
-  CardHeaderMain,
+  CardTitle,
   Select,
   SelectOption,
   SelectVariant,
-  Text,
-  TextVariants,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
@@ -60,19 +59,26 @@ import { CreateTargetModal } from './CreateTargetModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { SerializedTarget } from '@app/Shared/SerializedTarget';
+import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 
-export interface TargetSelectProps {}
+export interface TargetSelectProps {
+  // display a simple, non-expandable component. set this if the view elsewhere
+  // contains a <SerializedTarget /> or other repeated components
+  simple?: boolean;
+}
 
 export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
   const notifications = React.useContext(NotificationsContext);
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
+  const [isExpanded, setExpanded] = React.useState(false);
   const [selected, setSelected] = React.useState(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
-  const [expanded, setExpanded] = React.useState(false);
+  const [isDropdownOpen, setDropdownOpen] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
@@ -91,6 +97,10 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     removeCachedTargetSelection();
   }, [context.target, removeCachedTargetSelection]);
 
+  const onExpand = React.useCallback(() => {
+    setExpanded((v) => !v);
+  }, [setExpanded]);
+
   const onSelect = React.useCallback(
     // ATTENTION: do not add onSelect as deps for effect hook as it updates with selected states
     (evt, selection, isPlaceholder) => {
@@ -105,9 +115,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
           });
         }
       }
-      setExpanded(false);
+      setDropdownOpen(false);
     },
-    [context.target, notifications, setExpanded, setCachedTargetSelection, resetTargetSelection, selected]
+    [context.target, notifications, setDropdownOpen, setCachedTargetSelection, resetTargetSelection, selected]
   );
 
   const selectTargetFromCache = React.useCallback(
@@ -249,13 +259,28 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     [targets]
   );
 
+  const cardHeaderProps = React.useMemo(
+    () =>
+      props.simple
+        ? {}
+        : {
+            onExpand: onExpand,
+            isToggleRightAligned: true,
+            toggleButtonProps: {
+              id: 'target-select-expand-button',
+              'aria-label': 'Details',
+              'aria-labelledby': 'expandable-card-title target-select-expand-button',
+              'aria-expanded': isExpanded,
+            },
+          },
+    [props.simple, onExpand, isExpanded]
+  );
+
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardHeaderMain>
-            <Text component={TextVariants.h4}>Target JVM</Text>
-          </CardHeaderMain>
+      <Card isExpanded={isExpanded}>
+        <CardHeader {...cardHeaderProps}>
+          <CardTitle>Target JVM</CardTitle>
           <CardActions>
             <Button
               aria-label="Create target"
@@ -280,15 +305,18 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             toggleIcon={<ContainerNodeIcon />}
             variant={SelectVariant.single}
             onSelect={onSelect}
-            onToggle={setExpanded}
+            onToggle={setDropdownOpen}
             selections={selected.alias || selected.connectUrl}
             isDisabled={isLoading}
-            isOpen={expanded}
+            isOpen={isDropdownOpen}
             aria-label="Select Target"
           >
             {selectOptions}
           </Select>
         </CardBody>
+        <CardExpandableContent>
+          <CardBody>{selected === NO_TARGET ? <NoTargetSelected /> : <SerializedTarget target={selected} />}</CardBody>
+        </CardExpandableContent>
       </Card>
       <CreateTargetModal
         visible={isModalOpen}

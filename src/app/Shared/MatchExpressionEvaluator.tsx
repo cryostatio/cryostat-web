@@ -60,6 +60,7 @@ import {
   InfoCircleIcon,
   WarningTriangleIcon,
 } from '@patternfly/react-icons';
+import { SerializedTarget } from '@app/Shared/SerializedTarget';
 
 export interface MatchExpressionEvaluatorProps {
   inlineHint?: boolean;
@@ -155,7 +156,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     <>
       <Stack hasGutter>
         <StackItem>
-          <TargetSelect />
+          <TargetSelect simple />
         </StackItem>
         <StackItem>
           <Split hasGutter isWrappable>
@@ -189,13 +190,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
           <></>
         )}
         <StackItem>
-          {!!target?.alias && !!target?.connectUrl ? (
-            <CodeBlock>
-              <CodeBlockCode>{JSON.stringify(target, null, 2)}</CodeBlockCode>
-            </CodeBlock>
-          ) : (
-            <NoTargetSelected />
-          )}
+          <SerializedTarget target={target} />
         </StackItem>
       </Stack>
     </>

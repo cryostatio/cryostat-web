@@ -41,18 +41,15 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
-  CardHeaderMain,
   EmptyState,
   EmptyStateIcon,
   Switch,
-  Text,
-  TextVariants,
   Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
   ToolbarGroup,
+  CardTitle,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
@@ -419,11 +416,7 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
           </CardBody>
         </Card>
         <Card>
-          <CardHeader>
-            <CardHeaderMain>
-              <Text component={TextVariants.h4}>About Automated Rules</Text>
-            </CardHeaderMain>
-          </CardHeader>
+          <CardTitle>About Automated Rules</CardTitle>
           <CardBody>
             Automated Rules define a dynamic set of Target JVMs to connect to and start{' '}
             <Link to="/recordings">Active Recordings</Link> using a specific <Link to="/events">Event Template</Link>{' '}
