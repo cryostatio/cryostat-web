@@ -21,21 +21,9 @@ exports[`<AgentProbeTemplates /> renders correctly 1`] = `
       id=""
     >
       <div
-        className="pf-c-card__header"
+        className="pf-c-card__title"
       >
-        <div
-          className=""
-        >
-          <h4
-            className=""
-            data-ouia-component-id="OUIA-Generated-Text-1"
-            data-ouia-component-type="PF4/Text"
-            data-ouia-safe={true}
-            data-pf-content={true}
-          >
-            About the JMC Agent
-          </h4>
-        </div>
+        About the JMC Agent
       </div>
       <div
         className="pf-c-card__body"

@@ -899,23 +899,6 @@ exports[`<CreateRule /> renders correctly 1`] = `
             id=""
           >
             <div
-              className="pf-c-card__header"
-            >
-              <div
-                className=""
-              >
-                <h4
-                  className=""
-                  data-ouia-component-id="OUIA-Generated-Text-3"
-                  data-ouia-component-type="PF4/Text"
-                  data-ouia-safe={true}
-                  data-pf-content={true}
-                >
-                  Match Expression Evaluator
-                </h4>
-              </div>
-            </div>
-            <div
               className="pf-c-card__body"
             >
               <div
@@ -937,15 +920,7 @@ exports[`<CreateRule /> renders correctly 1`] = `
                       <div
                         className="pf-c-card__title"
                       >
-                        <h4
-                          className=""
-                          data-ouia-component-id="OUIA-Generated-Text-4"
-                          data-ouia-component-type="PF4/Text"
-                          data-ouia-safe={true}
-                          data-pf-content={true}
-                        >
-                          Target JVM
-                        </h4>
+                        Target JVM
                       </div>
                       <div
                         className="pf-c-card__actions"
@@ -1153,7 +1128,7 @@ exports[`<CreateRule /> renders correctly 1`] = `
                 >
                   <p
                     className=""
-                    data-ouia-component-id="OUIA-Generated-Text-5"
+                    data-ouia-component-id="OUIA-Generated-Text-3"
                     data-ouia-component-type="PF4/Text"
                     data-ouia-safe={true}
                     data-pf-content={true}

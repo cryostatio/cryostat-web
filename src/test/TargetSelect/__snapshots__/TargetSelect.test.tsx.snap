@@ -9,20 +9,12 @@ exports[`<TargetSelect /> renders correctly 1`] = `
   id=""
 >
   <div
-    className="pf-c-card__header"
+    className="pf-c-card__header pf-m-toggle-right"
   >
     <div
       className="pf-c-card__title"
     >
-      <h4
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-1"
-        data-ouia-component-type="PF4/Text"
-        data-ouia-safe={true}
-        data-pf-content={true}
-      >
-        Target JVM
-      </h4>
+      Target JVM
     </div>
     <div
       className="pf-c-card__actions"
@@ -94,6 +86,48 @@ exports[`<TargetSelect /> renders correctly 1`] = `
           >
             <path
               d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+            />
+          </svg>
+        </span>
+      </button>
+    </div>
+    <div
+      className="pf-c-card__header-toggle"
+    >
+      <button
+        aria-disabled={false}
+        aria-expanded={false}
+        aria-label="Details"
+        aria-labelledby="expandable-card-title toggle-button1"
+        className="pf-c-button pf-m-plain"
+        data-ouia-component-id="OUIA-Generated-Button-plain-1"
+        data-ouia-component-type="PF4/Button"
+        data-ouia-safe={true}
+        disabled={false}
+        id="toggle-button1"
+        onClick={[Function]}
+        role={null}
+        type="button"
+      >
+        <span
+          className="pf-c-card__header-toggle-icon"
+        >
+          <svg
+            aria-hidden="true"
+            aria-labelledby={null}
+            fill="currentColor"
+            height="1em"
+            role="img"
+            style={
+              Object {
+                "verticalAlign": "-0.125em",
+              }
+            }
+            viewBox="0 0 256 512"
+            width="1em"
+          >
+            <path
+              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
             />
           </svg>
         </span>

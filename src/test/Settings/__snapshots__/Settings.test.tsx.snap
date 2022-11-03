@@ -41,7 +41,7 @@ exports[`<Settings/> renders correctly 1`] = `
         <div
           className="pf-c-card__title"
         >
-          <h1
+          <p
             className=""
             data-ouia-component-id="OUIA-Generated-Text-1"
             data-ouia-component-type="PF4/Text"
@@ -49,7 +49,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-pf-content={true}
           >
             Notification Control Title
-          </h1>
+          </p>
           <small
             className=""
             data-ouia-component-id="OUIA-Generated-Text-2"
@@ -88,7 +88,7 @@ exports[`<Settings/> renders correctly 1`] = `
         <div
           className="pf-c-card__title"
         >
-          <h1
+          <p
             className=""
             data-ouia-component-id="OUIA-Generated-Text-4"
             data-ouia-component-type="PF4/Text"
@@ -96,7 +96,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-pf-content={true}
           >
             Credentials Storage Title
-          </h1>
+          </p>
           <small
             className=""
             data-ouia-component-id="OUIA-Generated-Text-5"
@@ -135,7 +135,7 @@ exports[`<Settings/> renders correctly 1`] = `
         <div
           className="pf-c-card__title"
         >
-          <h1
+          <p
             className=""
             data-ouia-component-id="OUIA-Generated-Text-7"
             data-ouia-component-type="PF4/Text"
@@ -143,7 +143,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-pf-content={true}
           >
             Deletion Dialog Control Title
-          </h1>
+          </p>
           <small
             className=""
             data-ouia-component-id="OUIA-Generated-Text-8"
@@ -182,7 +182,7 @@ exports[`<Settings/> renders correctly 1`] = `
         <div
           className="pf-c-card__title"
         >
-          <h1
+          <p
             className=""
             data-ouia-component-id="OUIA-Generated-Text-10"
             data-ouia-component-type="PF4/Text"
@@ -190,7 +190,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-pf-content={true}
           >
             WebSocket Debounce Title
-          </h1>
+          </p>
           <small
             className=""
             data-ouia-component-id="OUIA-Generated-Text-11"
@@ -229,7 +229,7 @@ exports[`<Settings/> renders correctly 1`] = `
         <div
           className="pf-c-card__title"
         >
-          <h1
+          <p
             className=""
             data-ouia-component-id="OUIA-Generated-Text-13"
             data-ouia-component-type="PF4/Text"
@@ -237,7 +237,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-pf-content={true}
           >
             AutoRefresh Title
-          </h1>
+          </p>
           <small
             className=""
             data-ouia-component-id="OUIA-Generated-Text-14"
