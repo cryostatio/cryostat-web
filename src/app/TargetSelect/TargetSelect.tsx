@@ -50,9 +50,7 @@ import {
   CardTitle,
   Select,
   SelectOption,
-  SelectVariant,
-  Text,
-  TextVariants,
+  SelectVariant
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import { of } from 'rxjs';
