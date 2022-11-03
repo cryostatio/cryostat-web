@@ -261,23 +261,27 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     [targets]
   );
 
+  const cardHeaderProps = React.useMemo(
+    () =>
+      props.simple
+        ? {}
+        : {
+            onExpand: onExpand,
+            isToggleRightAligned: true,
+            toggleButtonProps: {
+              id: 'target-select-expand-button',
+              'aria-label': 'Details',
+              'aria-labelledby': 'expandable-card-title target-select-expand-button',
+              'aria-expanded': isExpanded,
+            },
+          },
+    [props.simple, onExpand, isExpanded]
+  );
+
   return (
     <>
-      <Card isExpanded={props.simple ? undefined : isExpanded}>
-        <CardHeader
-          onExpand={props.simple ? undefined : onExpand}
-          isToggleRightAligned={props.simple ? undefined : true}
-          toggleButtonProps={
-            props.simple
-              ? undefined
-              : {
-                  id: 'target-select-expand-button',
-                  'aria-label': 'Details',
-                  'aria-labelledby': 'expandable-card-title target-select-expand-button',
-                  'aria-expanded': isExpanded,
-                }
-          }
-        >
+      <Card isExpanded={isExpanded}>
+        <CardHeader {...cardHeaderProps}>
           <CardTitle>Target JVM</CardTitle>
           <CardActions>
             <Button
