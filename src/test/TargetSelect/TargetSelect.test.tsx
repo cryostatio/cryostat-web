@@ -157,9 +157,11 @@ describe('<TargetSelect />', () => {
     const expandButton = screen.getByLabelText('Details');
     userEvent.click(expandButton);
 
-    expect(container.querySelector('article')).toBeInTheDocument();
-
-    expect(container.querySelector('article')).toBeVisible();
+    const articleElement = container.querySelector('article');
+    expect(articleElement).toBeInTheDocument();
+    expect(articleElement).toBeVisible();
+    expect(screen.getByText(`No target selected`)).toBeInTheDocument();
+    expect(screen.getByText(`To view this content, select a JVM target.`)).toBeInTheDocument();
   });
 
   it('renders serialized target when expanded', () => {
@@ -172,9 +174,13 @@ describe('<TargetSelect />', () => {
     const expandButton = screen.getByLabelText('Details');
     userEvent.click(expandButton);
 
-    expect(container.querySelector('code')).toBeInTheDocument();
-
-    expect(container.querySelector('code')).toBeVisible();
+    const codeElement = container.querySelector('code');
+    expect(codeElement).toBeTruthy();
+    expect(codeElement).toBeInTheDocument();
+    expect(codeElement).toBeVisible();
+    expect(codeElement!.textContent).toBeTruthy();
+    const codeContent = codeElement!.textContent!.replace(/[\s]/g, '');
+    expect(codeContent).toEqual(JSON.stringify(mockFooTarget, null, 0).replace(/[\s]/g, ''));
   });
 
   it('renders dropdown of multiple discovered targets', () => {
