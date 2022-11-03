@@ -41,8 +41,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
-  CardHeaderMain,
   Form,
   FormGroup,
   FormSelect,
@@ -533,11 +531,6 @@ const Comp = () => {
         </GridItem>
         <GridItem xl={5}>
           <Card>
-            <CardHeader>
-              <CardHeaderMain>
-                <Text component={TextVariants.h4}>Match Expression Evaluator</Text>
-              </CardHeaderMain>
-            </CardHeader>
             <CardBody>
               <MatchExpressionEvaluator
                 inlineHint

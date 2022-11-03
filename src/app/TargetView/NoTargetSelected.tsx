@@ -36,19 +36,17 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Card, CardBody, CardHeader, Text, TextVariants } from '@patternfly/react-core';
+import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { DisconnectedIcon } from '@patternfly/react-icons';
 
 export const NoTargetSelected: React.FunctionComponent = () => {
   return (
     <>
       <Card>
-        <CardHeader>
-          <Text component={TextVariants.h4}>
-            <DisconnectedIcon />
-            &nbsp; No target selected
-          </Text>
-        </CardHeader>
+        <CardTitle>
+          <DisconnectedIcon />
+          &nbsp; No target selected
+        </CardTitle>
         <CardBody>
           <Text component={TextVariants.p}>To view this content, select a JVM target.</Text>
         </CardBody>

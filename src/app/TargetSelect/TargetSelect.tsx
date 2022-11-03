@@ -278,9 +278,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 }
           }
         >
-          <CardTitle>
-            <Text component={TextVariants.h4}>Target JVM</Text>
-          </CardTitle>
+          <CardTitle>Target JVM</CardTitle>
           <CardActions>
             <Button
               aria-label="Create target"

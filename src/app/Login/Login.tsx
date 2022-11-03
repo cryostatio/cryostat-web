@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '../Notifications/Notifications';
-import { Card, CardBody, CardFooter, CardHeader, PageSection, Text, Title } from '@patternfly/react-core';
+import { Card, CardBody, CardFooter, CardTitle, PageSection, Text } from '@patternfly/react-core';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { OpenShiftAuthDescriptionText, OpenShiftPlaceholderAuthForm } from './OpenShiftPlaceholderAuthForm';
 import { NoopAuthForm } from './NoopAuthForm';
@@ -100,11 +100,7 @@ export const Login: React.FunctionComponent<LoginProps> = (props) => {
   return (
     <PageSection>
       <Card>
-        <CardHeader>
-          <Title headingLevel="h1" size="lg">
-            Login
-          </Title>
-        </CardHeader>
+        <CardTitle>Login</CardTitle>
         <CardBody>{loginForm}</CardBody>
         <CardFooter>{descriptionText}</CardFooter>
       </Card>

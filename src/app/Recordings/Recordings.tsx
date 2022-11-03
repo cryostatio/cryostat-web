@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody, CardHeader, Tab, Tabs, Text, TextVariants } from '@patternfly/react-core';
+import { Card, CardBody, CardTitle, Tab, Tabs } from '@patternfly/react-core';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -67,9 +67,7 @@ export const Recordings: React.FunctionComponent<RecordingsProps> = (props) => {
       </Tabs>
     ) : (
       <>
-        <CardHeader>
-          <Text component={TextVariants.h4}>Active Recordings</Text>
-        </CardHeader>
+        <CardTitle>Active Recordings</CardTitle>
         <ActiveRecordingsTable archiveEnabled={false} />
       </>
     );
