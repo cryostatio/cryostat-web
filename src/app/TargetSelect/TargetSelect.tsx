@@ -273,7 +273,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               : {
                   id: 'target-select-expand-button',
                   'aria-label': 'Details',
-                  'aria-labelledby': 'expandable-card-title toggle-button1',
+                  'aria-labelledby': 'expandable-card-title target-select-expand-button',
                   'aria-expanded': isExpanded,
                 }
           }
