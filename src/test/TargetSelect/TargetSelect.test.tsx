@@ -161,7 +161,9 @@ describe('<TargetSelect />', () => {
     expect(articleElement).toBeInTheDocument();
     expect(articleElement).toBeVisible();
     expect(screen.getByText(`No target selected`)).toBeInTheDocument();
+    expect(screen.getByText(`No target selected`)).toBeVisible();
     expect(screen.getByText(`To view this content, select a JVM target.`)).toBeInTheDocument();
+    expect(screen.getByText(`To view this content, select a JVM target.`)).toBeVisible();
   });
 
   it('renders serialized target when expanded', () => {
