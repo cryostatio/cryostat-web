@@ -42,25 +42,27 @@ import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { NoTargetSelected } from './NoTargetSelected';
 import { Grid, GridItem } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 
 interface TargetViewProps {
   pageTitle: string;
   compactSelect?: boolean;
+  hideEmptyState?: boolean;
   breadcrumbs?: BreadcrumbTrail[];
 }
 
 export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const [connected, setConnected] = React.useState(false);
+  const [hasSelection, setHasSelection] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
     addSubscription(
       context.target.target().subscribe((target) => {
-        setConnected(!!target && !!target.connectUrl);
+        setHasSelection(target !== NO_TARGET);
       })
     );
-  }, [context.target, addSubscription, setConnected]);
+  }, [context.target, addSubscription, setHasSelection]);
 
   const compact = React.useMemo(
     () => (props.compactSelect == null ? true : props.compactSelect),
@@ -74,7 +76,7 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
           <GridItem span={compact ? 6 : 12}>
             <TargetSelect />
           </GridItem>
-          <GridItem>{connected ? props.children : <NoTargetSelected />}</GridItem>
+          <GridItem>{hasSelection ? props.children : props.hideEmptyState ? <></> : <NoTargetSelected />}</GridItem>
         </Grid>
       </BreadcrumbPage>
     </>

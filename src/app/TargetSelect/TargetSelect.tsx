@@ -47,7 +47,6 @@ import {
   CardBody,
   CardExpandableContent,
   CardHeader,
-  CardHeaderMain,
   CardTitle,
   Select,
   SelectOption,
@@ -63,6 +62,7 @@ import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { SerializedTarget } from '@app/Shared/SerializedTarget';
+import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 
@@ -263,12 +263,12 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   return (
     <>
-      <Card isExpanded={props.simple || selected === NO_TARGET ? undefined : isExpanded}>
+      <Card isExpanded={props.simple ? undefined : isExpanded}>
         <CardHeader
-          onExpand={props.simple || selected === NO_TARGET ? undefined : onExpand}
-          isToggleRightAligned={props.simple || selected === NO_TARGET ? undefined : true}
+          onExpand={props.simple ? undefined : onExpand}
+          isToggleRightAligned={props.simple ? undefined : true}
           toggleButtonProps={
-            props.simple || selected === NO_TARGET
+            props.simple
               ? undefined
               : {
                   id: 'toggle-button1',
@@ -314,15 +314,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             {selectOptions}
           </Select>
         </CardBody>
-        {props.simple || selected === NO_TARGET ? (
-          <></>
-        ) : (
-          <CardExpandableContent>
-            <CardBody>
-              <SerializedTarget target={selected} />
-            </CardBody>
-          </CardExpandableContent>
-        )}
+        <CardExpandableContent>
+          <CardBody>{selected === NO_TARGET ? <NoTargetSelected /> : <SerializedTarget target={selected} />}</CardBody>
+        </CardExpandableContent>
       </Card>
       <CreateTargetModal
         visible={isModalOpen}
