@@ -271,7 +271,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             props.simple
               ? undefined
               : {
-                  id: 'toggle-button1',
+                  id: 'target-select-expand-button',
                   'aria-label': 'Details',
                   'aria-labelledby': 'expandable-card-title toggle-button1',
                   'aria-expanded': isExpanded,
