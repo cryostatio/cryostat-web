@@ -82,6 +82,8 @@ jest
   .spyOn(defaultServices.target, 'target')
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of()) // contains the correct information
+  .mockReturnValueOnce(of()) // renders empty state when expanded
+  .mockReturnValueOnce(of(mockFooTarget)) // renders serialized target when expanded
   .mockReturnValueOnce(of(mockFooTarget)) // renders dropdown of multiple discovered targets
   .mockReturnValueOnce(of(mockFooTarget)) // creates a target if user completes modal
   .mockReturnValueOnce(of(mockFooTarget)) // deletes target when delete button clicked
@@ -92,6 +94,8 @@ jest
   .spyOn(defaultServices.targets, 'targets')
   .mockReturnValueOnce(of([mockFooTarget])) // renders correctly
   .mockReturnValueOnce(of([mockFooTarget])) // contains the correct information
+  .mockReturnValueOnce(of([mockFooTarget])) // renders empty state when expanded
+  .mockReturnValueOnce(of([mockFooTarget])) // renders serialized target when expanded
   .mockReturnValueOnce(of([mockFooTarget, mockBarTarget])) // renders dropdown of multiple discovered targets
   .mockReturnValue(of([mockFooTarget, mockBarTarget])); // other tests
 
@@ -102,6 +106,8 @@ jest.spyOn(defaultServices.api, 'deleteTarget').mockReturnValue(of(true));
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true) // renders correctly
+  .mockReturnValueOnce(true) // renders empty state when expanded
+  .mockReturnValueOnce(true) // renders serialized target when expanded
   .mockReturnValueOnce(true) // contains the correct information
   .mockReturnValueOnce(true) // renders dropdown of multiple discovered targets
   .mockReturnValueOnce(true) // creates a target if user completes modal
@@ -137,6 +143,38 @@ describe('<TargetSelect />', () => {
     expect(screen.getByLabelText('Create target')).toBeInTheDocument();
     expect(screen.getByLabelText('Delete target')).toBeInTheDocument();
     expect(screen.getByLabelText('Options menu')).toBeInTheDocument();
+  });
+
+  it('renders empty state when expanded', () => {
+    const { container } = render(
+      <ServiceContext.Provider value={defaultServices}>
+        <TargetSelect />
+      </ServiceContext.Provider>
+    );
+
+    expect(screen.getByText('Select target...')).toBeInTheDocument();
+
+    const expandButton = screen.getByLabelText('Details');
+    userEvent.click(expandButton);
+
+    expect(container.querySelector('article')).toBeInTheDocument();
+
+    expect(container.querySelector('article')).toBeVisible();
+  });
+
+  it('renders serialized target when expanded', () => {
+    const { container } = render(
+      <ServiceContext.Provider value={defaultServices}>
+        <TargetSelect />
+      </ServiceContext.Provider>
+    );
+
+    const expandButton = screen.getByLabelText('Details');
+    userEvent.click(expandButton);
+
+    expect(container.querySelector('code')).toBeInTheDocument();
+
+    expect(container.querySelector('code')).toBeVisible();
   });
 
   it('renders dropdown of multiple discovered targets', () => {
