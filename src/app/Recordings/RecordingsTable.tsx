@@ -74,7 +74,9 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
 
-  if (props.errorMessage != '') {
+  const isError = React.useMemo(() => props.errorMessage != '', [props.errorMessage]);
+
+  if (isError) {
     view = (
       <>
         <ErrorView
@@ -151,7 +153,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
   return (
     <>
       <OuterScrollContainer className="recording-table-container">
-        {props.toolbar}
+        {isError ? null : props.toolbar}
         <InnerScrollContainer>{view}</InnerScrollContainer>
         {props.tableFooter}
       </OuterScrollContainer>

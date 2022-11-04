@@ -715,7 +715,11 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
   }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
 
   return (
-    <Toolbar id="active-recordings-toolbar" clearAllFilters={props.handleClearFilters}>
+    <Toolbar
+      id="active-recordings-toolbar"
+      aria-label="active-recording-toolbar"
+      clearAllFilters={props.handleClearFilters}
+    >
       <ToolbarContent>
         <RecordingFilters
           target={props.target}
