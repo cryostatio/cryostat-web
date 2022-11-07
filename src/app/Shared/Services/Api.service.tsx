@@ -179,7 +179,9 @@ export class ApiService {
       body: form,
     }).pipe(
       map((resp) => resp.ok),
-      first()
+      catchError(() => of(false)),
+      first(),
+      tap((ok) => !ok && this.notifications.danger('Target Creation Failed'))
     );
   }
 

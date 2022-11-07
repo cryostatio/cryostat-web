@@ -35,7 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
   Button,
@@ -51,7 +54,7 @@ import * as React from 'react';
 
 export interface CreateTargetModalProps {
   visible: boolean;
-  onSubmit: (target: Target) => void;
+  onSuccess: () => void;
   onDismiss: () => void;
 }
 
@@ -59,34 +62,63 @@ const jmxServiceUrlFormat = /service:jmx:([a-zA-Z0-9-]+)/g;
 const hostPortPairFormat = /([a-zA-Z0-9-]+):([0-9]+)/g;
 
 export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> = (props) => {
+  const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
+
   const [connectUrl, setConnectUrl] = React.useState('');
   const [validConnectUrl, setValidConnectUrl] = React.useState(ValidatedOptions.default);
   const [alias, setAlias] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
-  const createTarget = React.useCallback(() => {
-    props.onSubmit({ connectUrl, alias: alias.trim() || connectUrl });
+  const resetForm = React.useCallback(() => {
     setConnectUrl('');
     setAlias('');
-  }, [props.onSubmit, connectUrl, alias, setConnectUrl, setAlias]);
+  }, [setConnectUrl, setAlias]);
+
+  const createTarget = React.useCallback(
+    (target: Target) => {
+      setLoading(true);
+      addSubscription(
+        context.api.createTarget(target).subscribe((success) => {
+          setLoading(false);
+          if (success) {
+            resetForm();
+            props.onSuccess();
+          }
+        })
+      );
+    },
+    [addSubscription, context.api, props.onSuccess, setLoading, resetForm]
+  );
 
   const handleKeyDown = React.useCallback(
     (evt) => {
       if (connectUrl && evt.key === 'Enter') {
-        createTarget();
+        createTarget({ connectUrl, alias: alias.trim() || connectUrl });
       }
     },
-    [createTarget, connectUrl]
+    [createTarget, connectUrl, alias]
   );
 
   const handleSubmit = React.useCallback(() => {
     const isValid = connectUrl && (connectUrl.match(jmxServiceUrlFormat) || connectUrl.match(hostPortPairFormat));
 
     if (isValid) {
-      createTarget();
+      createTarget({ connectUrl, alias: alias.trim() || connectUrl });
     } else {
       setValidConnectUrl(ValidatedOptions.error);
     }
-  }, [createTarget, setValidConnectUrl, connectUrl]);
+  }, [createTarget, setValidConnectUrl, connectUrl, alias]);
+
+  const createButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Creating',
+        spinnerAriaLabel: 'creating-custom-target',
+        isLoading: loading,
+      } as LoadingPropsType),
+    [loading]
+  );
 
   return (
     <>
@@ -117,15 +149,29 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
               id="connect-url"
               onChange={setConnectUrl}
               onKeyDown={handleKeyDown}
+              isDisabled={loading}
             />
           </FormGroup>
           <FormGroup label="Alias" fieldId="alias" helperText="Connection Nickname">
-            <TextInput value={alias} type="text" id="alias" onChange={setAlias} onKeyDown={handleKeyDown} />
+            <TextInput
+              value={alias}
+              type="text"
+              id="alias"
+              onChange={setAlias}
+              onKeyDown={handleKeyDown}
+              isDisabled={loading}
+            />
           </FormGroup>
         </Form>
         <ActionGroup>
-          <Button variant="primary" type={ButtonType.submit} isDisabled={!connectUrl} onClick={handleSubmit}>
-            Create
+          <Button
+            variant="primary"
+            type={ButtonType.submit}
+            isDisabled={!connectUrl || loading}
+            onClick={handleSubmit}
+            {...createButtonLoadingProps}
+          >
+            {loading ? 'Creating' : 'Create'}
           </Button>
         </ActionGroup>
       </Modal>

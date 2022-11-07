@@ -53,14 +53,13 @@ import {
   SelectVariant,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
-import { of } from 'rxjs';
-import { catchError, first } from 'rxjs/operators';
 import { CreateTargetModal } from './CreateTargetModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { SerializedTarget } from '@app/Shared/SerializedTarget';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
+import { first } from 'rxjs';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 
@@ -171,27 +170,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     setModalOpen(true);
   }, [setModalOpen]);
 
-  const createTarget = React.useCallback(
-    (target: Target) => {
-      setLoading(true);
-      addSubscription(
-        context.api
-          .createTarget(target)
-          .pipe(
-            first(),
-            catchError(() => of(false))
-          )
-          .subscribe((success) => {
-            setLoading(false);
-            setModalOpen(false);
-            if (!success) {
-              notifications.danger('Target Creation Failed');
-            }
-          })
-      );
-    },
-    [addSubscription, context.api, notifications, setLoading, setModalOpen]
-  );
+  const closeCreateTargetModal = React.useCallback(() => {
+    setModalOpen(false);
+  }, [setModalOpen]);
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
@@ -320,7 +301,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       </Card>
       <CreateTargetModal
         visible={isModalOpen}
-        onSubmit={createTarget}
+        onSuccess={closeCreateTargetModal}
         onDismiss={handleCreateModalClose}
       ></CreateTargetModal>
       {deleteArchivedWarningModal}
