@@ -191,7 +191,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
             filter((target) => target !== NO_TARGET),
             concatMap((target) =>
               context.api.graphql<any>(
-                `query GetActiveRecordingsForTarget($connectUrl: String) {
+                `query ActiveRecordingsForTarget($connectUrl: String) {
                 targetNodes(filter: { name: $connectUrl }) {
                   recordings {
                     archived {

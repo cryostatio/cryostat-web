@@ -140,7 +140,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           context.api
             .graphql<any>(
               `
-        query GetArchiveCountForTarget($connectUrl: String) {
+        query ArchiveCountForTarget($connectUrl: String) {
           targetNodes(filter: { name: $connectUrl }) {
             recordings {
               archived {
