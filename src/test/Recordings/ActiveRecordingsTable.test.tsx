@@ -484,5 +484,8 @@ describe('<ActiveRecordingsTable />', () => {
     const retryButton = screen.getByText('Retry');
     expect(retryButton).toBeInTheDocument();
     expect(retryButton).toBeVisible();
+
+    const toolbar = screen.queryByLabelText('active-recording-toolbar');
+    expect(toolbar).not.toBeInTheDocument();
   });
 });

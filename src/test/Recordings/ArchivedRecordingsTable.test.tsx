@@ -427,7 +427,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(screen.getByText('someRecording')).toBeInTheDocument();
 
-    const uploadButton = screen.getByLabelText('add');
+    const uploadButton = screen.getByLabelText('upload-recording');
     expect(uploadButton).toHaveAttribute('type', 'button');
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -450,7 +450,7 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('add'));
+    userEvent.click(screen.getByLabelText('upload-recording'));
 
     const modal = await screen.findByRole('dialog');
 
@@ -506,7 +506,7 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('add'));
+    userEvent.click(screen.getByLabelText('upload-recording'));
 
     const modal = await screen.findByRole('dialog');
 
@@ -583,7 +583,7 @@ describe('<ArchivedRecordingsTable />', () => {
       }
     );
 
-    userEvent.click(screen.getByLabelText('add'));
+    userEvent.click(screen.getByLabelText('upload-recording'));
 
     const modal = await screen.findByRole('dialog');
 
@@ -668,5 +668,8 @@ describe('<ArchivedRecordingsTable />', () => {
     const authFailText = screen.getByText('Something wrong');
     expect(authFailText).toBeInTheDocument();
     expect(authFailText).toBeVisible();
+
+    const toolbar = screen.queryByLabelText('archived-recording-toolbar');
+    expect(toolbar).not.toBeInTheDocument();
   });
 });

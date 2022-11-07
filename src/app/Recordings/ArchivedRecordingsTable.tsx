@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 import * as React from 'react';
 import { ArchivedRecording, RecordingDirectory, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -52,7 +53,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent, TableComposable } from '@patternfly/react-table';
-import { PlusIcon } from '@patternfly/react-icons';
+import { UploadIcon } from '@patternfly/react-icons';
 import { RecordingActions } from './RecordingActions';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
@@ -655,7 +656,11 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
   }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
 
   return (
-    <Toolbar id="archived-recordings-toolbar" clearAllFilters={props.handleClearFilters}>
+    <Toolbar
+      id="archived-recordings-toolbar"
+      aria-label="archived-recording-toolbar"
+      clearAllFilters={props.handleClearFilters}
+    >
       <ToolbarContent>
         <RecordingFilters
           target={props.target}
@@ -685,8 +690,8 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
         {props.isUploadsTable ? (
           <ToolbarGroup variant="icon-button-group">
             <ToolbarItem>
-              <Button variant="plain" aria-label="add" onClick={props.handleShowUploadModal}>
-                <PlusIcon />
+              <Button variant="secondary" aria-label="upload-recording" onClick={props.handleShowUploadModal}>
+                <UploadIcon />
               </Button>
             </ToolbarItem>
           </ToolbarGroup>
