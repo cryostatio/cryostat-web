@@ -593,10 +593,17 @@ export class ApiService {
     );
   }
 
-  graphql<T>(query: string): Observable<T> {
+  graphql<T>(query: string, variables?: Object): Observable<T> {
     const headers = new Headers();
-    headers.set('Content-Type', 'application/graphql');
-    return this.sendRequest('v2.2', 'graphql', { method: 'POST', body: query, headers }).pipe(
+    headers.set('Content-Type', 'application/json');
+    return this.sendRequest('v2.2', 'graphql', {
+      method: 'POST',
+      body: JSON.stringify({
+        query: query.replace(/[\s]+/g, ' '),
+        variables,
+      }),
+      headers,
+    }).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first()
@@ -749,13 +756,14 @@ export class ApiService {
       filter((target) => target !== NO_TARGET),
       first(),
       concatMap((target) =>
-        this.graphql<any>(`
-        query {
-          targetNodes(filter: { name: "${target.connectUrl}" }) {
+        this.graphql<any>(
+          `
+        query PostRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
+          targetNodes(filter: { name: $connectUrl }) {
             recordings {
-              archived(filter: { name: "${recordingName}" }) {
+              archived(filter: { name: $recordingName }) {
                 data {
-                  doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+                  doPutMetadata(metadata: { labels: $labels }) {
                     metadata {
                       labels
                     }
@@ -764,7 +772,9 @@ export class ApiService {
               }
             }
           }
-        }`)
+        }`,
+          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) }
+        )
       ),
       map((v) => v.data.targetNodes[0].recordings.archived as ArchivedRecording[])
     );
@@ -773,17 +783,18 @@ export class ApiService {
   postUploadedRecordingMetadata(recordingName: string, labels: RecordingLabel[]): Observable<ArchivedRecording[]> {
     return this.graphql<any>(
       `
-      query {
-        archivedRecordings(filter: {sourceTarget: "${UPLOADS_SUBDIRECTORY}", name: "${recordingName}" }) {
+      query PostUploadedRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String){
+        archivedRecordings(filter: {sourceTarget: $connectUrl, name: $recordingName }) {
           data {
-            doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+            doPutMetadata(metadata: { labels: $labels }) {
               metadata {
                 labels
               }
             }
           }
         }
-      }`
+      }`,
+      { connectUrl: UPLOADS_SUBDIRECTORY, recordingName, labels: this.stringifyRecordingLabels(labels) }
     ).pipe(map((v) => v.data.archivedRecordings.data as ArchivedRecording[]));
   }
 
@@ -792,13 +803,14 @@ export class ApiService {
       filter((target) => target !== NO_TARGET),
       first(),
       concatMap((target) =>
-        this.graphql<any>(`
-        query {
-          targetNodes(filter: { name: "${target.connectUrl}" }) {
+        this.graphql<any>(
+          `
+        query PostActiveRecordingMetadataA($connectUrl: String, $recordingName: String, $labels: String) {
+          targetNodes(filter: { name: $connectUrl }) {
             recordings {
-              active(filter: { name: "${recordingName}" }) {
+              active(filter: { name: $recordingName }) {
                 data {
-                  doPutMetadata(metadata: { labels: ${this.stringifyRecordingLabels(labels)}}) {
+                  doPutMetadata(metadata: { labels: $labels }) {
                     metadata {
                       labels
                     }
@@ -807,7 +819,9 @@ export class ApiService {
               }
             }
           }
-        }`)
+        }`,
+          { connectUrl: target.connectUrl, recordingName, labels: this.stringifyRecordingLabels(labels) }
+        )
       ),
       map((v) => v.data.targetNodes[0].recordings.active as ActiveRecording[])
     );

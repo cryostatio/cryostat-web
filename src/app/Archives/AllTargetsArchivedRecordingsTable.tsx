@@ -113,22 +113,21 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
       addSubscription(
         context.api
           .graphql<any>(
-            `
-        query {
-          targetNodes {
-            target {
-              serviceUri
-              alias
-            }
-            recordings {
-              archived {
-                aggregate {
-                  count
-                }
-              }
-            }
-          }
-        }`
+            `query AllTargetsArchives {
+               targetNodes {
+                 target {
+                   serviceUri
+                   alias
+                 }
+                 recordings {
+                   archived {
+                     aggregate {
+                       count
+                     }
+                   }
+                 }
+               }
+             }`
           )
           .pipe(map((v) => v.data.targetNodes))
           .subscribe(handleTargetsAndCounts)
@@ -141,8 +140,8 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
           context.api
             .graphql<any>(
               `
-        query {
-          targetNodes(filter: { name: "${target.connectUrl}" }) {
+        query GetArchiveCountForTarget($connectUrl: String) {
+          targetNodes(filter: { name: $connectUrl }) {
             recordings {
               archived {
                 aggregate {
@@ -151,7 +150,8 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<AllTarge
               }
             }
           }
-        }`
+        }`,
+              { connectUrl: target.connectUrl }
             )
             .subscribe((v) =>
               setCounts((old) => {
