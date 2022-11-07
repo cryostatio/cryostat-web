@@ -179,8 +179,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const queryUploadedRecordings = React.useCallback(() => {
     return context.api.graphql<any>(
-      `query UploadedRecordings($input: ArchivedRecordingFilterInput){
-        archivedRecordings(filter: $input) {
+      `query UploadedRecordings($filter: ArchivedRecordingFilterInput){
+        archivedRecordings(filter: $filter) {
           data {
             name
             downloadUrl
@@ -192,7 +192,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
           }
         }
       }`,
-      { input: { sourceTarget: UPLOADS_SUBDIRECTORY } }
+      { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } }
     );
   }, [context.api, context.api.graphql]);
 
