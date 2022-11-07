@@ -169,9 +169,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
       observable = props.isUploadsTable
         ? context.api
             .graphql<any>(
-              `
-              query {
-                archivedRecordings(filter: { sourceTarget: "${UPLOADS_SUBDIRECTORY}" }) {
+              `query GetUploadedRecordings($filter: ArchivedRecordingFilterInput) {
+                archivedRecordings(filter: $filter) {
                   data {
                     name
                     downloadUrl
@@ -181,7 +180,8 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
                     }
                   }
                 }
-              }`
+              }`,
+              { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } }
             )
             .pipe(
               map((v) => v.data.archivedRecordings.data as ArchivedRecording[]),
@@ -190,9 +190,9 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         : context.target.target().pipe(
             filter((target) => target !== NO_TARGET),
             concatMap((target) =>
-              context.api.graphql<any>(`
-              query {
-                targetNodes(filter: { name: "${target.connectUrl}" }) {
+              context.api.graphql<any>(
+                `query ActiveRecordingsForTarget($connectUrl: String) {
+                targetNodes(filter: { name: $connectUrl }) {
                   recordings {
                     archived {
                       data {
@@ -206,7 +206,9 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
                     }
                   }
                 }
-              }`)
+              }`,
+                { connectUrl: target.connectUrl }
+              )
             ),
             map((v) => v.data.targetNodes[0].recordings.archived.data as ArchivedRecording[]),
             first()

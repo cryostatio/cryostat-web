@@ -156,9 +156,10 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
 
   const queryTargetRecordings = React.useCallback(
     (connectUrl: string) => {
-      return context.api.graphql<any>(`
-      query {
-        archivedRecordings(filter: { sourceTarget: "${connectUrl}" }) {
+      return context.api.graphql<any>(
+        `
+      query ArchivedRecordingsForTarget($connectUrl: String) {
+        archivedRecordings(filter: { sourceTarget: $connectUrl }) {
           data {
             name
             downloadUrl
@@ -169,15 +170,17 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             size
           }
         }
-      }`);
+      }`,
+        { connectUrl }
+      );
     },
     [context.api, context.api.graphql]
   );
 
   const queryUploadedRecordings = React.useCallback(() => {
-    return context.api.graphql<any>(`
-      query {
-        archivedRecordings(filter: { sourceTarget: "${UPLOADS_SUBDIRECTORY}" }) {
+    return context.api.graphql<any>(
+      `query UploadedRecordings($filter: ArchivedRecordingFilterInput){
+        archivedRecordings(filter: $filter) {
           data {
             name
             downloadUrl
@@ -188,7 +191,9 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
             size
           }
         }
-      }`);
+      }`,
+      { filter: { sourceTarget: UPLOADS_SUBDIRECTORY } }
+    );
   }, [context.api, context.api.graphql]);
 
   const refreshRecordingList = React.useCallback(() => {
