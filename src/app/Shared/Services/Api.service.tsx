@@ -805,7 +805,7 @@ export class ApiService {
       concatMap((target) =>
         this.graphql<any>(
           `
-        query PostActiveRecordingMetadataA($connectUrl: String, $recordingName: String, $labels: String) {
+        query PostActiveRecordingMetadata($connectUrl: String, $recordingName: String, $labels: String) {
           targetNodes(filter: { name: $connectUrl }) {
             recordings {
               active(filter: { name: $recordingName }) {
