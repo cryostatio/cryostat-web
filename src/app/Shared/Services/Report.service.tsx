@@ -101,6 +101,36 @@ export class ReportService {
     );
   }
 
+  reportJson(recording: Recording): Observable<string> {
+    if (!recording?.reportUrl) {
+      return throwError(() => new Error('No recording report URL'));
+    }
+    return this.login.getHeaders().pipe(
+      concatMap((headers) => {
+        headers.append('Accept', 'application/json');
+        return fromFetch(recording.reportUrl, {
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'include',
+          headers,
+        })
+      }),       
+      concatMap((resp) => {
+        if (resp.ok) {
+          return from(resp.text());
+        } else {
+          const ge: GenerationError = {
+            name: `Report Failure (${recording.name})`,
+            message: resp.statusText,
+            messageDetail: from(resp.text()),
+            status: resp.status,
+          };
+          throw ge;
+        }
+      }),
+    );
+  }
+
   delete(recording: Recording): void {
     sessionStorage.removeItem(this.key(recording));
   }

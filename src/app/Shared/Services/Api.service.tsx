@@ -338,6 +338,28 @@ export class ApiService {
     );
   }
 
+  createSnapshotv2(): Observable<Recording> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
+          method: 'POST',
+        }).pipe(
+          tap((resp) => {
+            if (resp.status == 202) {
+              this.notifications.warning(
+                'Snapshot Failed to Create',
+                'The resultant recording was unreadable for some reason, likely due to a lack of Active, non-Snapshot source recordings to take event data from'
+              );
+            }
+          }),
+          concatMap((resp) => resp.json()),
+          map((response) => response.data.result),
+          first()
+        )
+      )
+    );
+  }
+
   isArchiveEnabled(): Observable<boolean> {
     return this.archiveEnabled.asObservable();
   }
@@ -673,6 +695,24 @@ export class ApiService {
       map((resp) => resp.json()),
       concatMap(from),
       first()
+    );
+  }
+
+  getSnapshotReportJson(): Observable<String> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest(
+          'v2',
+          `targets/${encodeURIComponent(target.connectUrl)}/reports/snapshot`,
+          {
+            method: 'GET',
+          }
+        ).pipe(
+          map((resp) => resp.json()),
+          concatMap(from),
+          first()
+        )
+      )
     );
   }
 
