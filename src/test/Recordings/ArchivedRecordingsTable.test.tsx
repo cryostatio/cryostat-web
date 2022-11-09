@@ -709,7 +709,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(labelUploadInput.files).not.toBe(null);
     expect(labelUploadInput.files![0]).toStrictEqual(invalidMetadataFile);
 
-    const warningTitle = screen.getByText('Invalid metadata content');
+    const warningTitle = screen.getByText('Invalid Selection');
     expect(warningTitle).toBeInTheDocument();
     expect(warningTitle).toBeVisible();
 

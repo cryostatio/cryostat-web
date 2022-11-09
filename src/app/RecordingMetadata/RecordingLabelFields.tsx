@@ -198,13 +198,13 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
             isVisible={!!invalidUploads.length}
             aria-label="uploading warning"
             alertSeverityVariant="danger"
-            headerContent="Invalid metadata content"
+            headerContent="Invalid Selection"
             headerComponent="h1"
             shouldClose={closeWarningPopover}
             headerIcon={<ExclamationCircleIcon />}
             bodyContent={
               <>
-                <Text component="h4">Invalid metadata files:</Text>
+                <Text component="h4">The following files did not contain valid recording metadata:</Text>
                 <List>
                   {invalidUploads.map((uploadName) => (
                     <ListItem key={uploadName} icon={<FileIcon />}>
