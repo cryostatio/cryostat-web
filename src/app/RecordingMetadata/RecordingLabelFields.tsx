@@ -48,8 +48,7 @@ import {
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { parseLabels } from '@app/Archives/ArchiveUploadModal';
+import { parseLabelsFromFile, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { Observable, zip } from 'rxjs';
@@ -108,11 +107,6 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     [props.labels, props.setLabels]
   );
 
-  const handleLabelUpload = React.useCallback(
-    (labels: RecordingLabel[]) => props.setLabels([...props.labels, ...labels]),
-    [props.setLabels, props.labels]
-  );
-
   const isLabelValid = React.useCallback(matchesLabelSyntax, [matchesLabelSyntax]);
 
   const isDuplicateKey = React.useCallback((key: string, labels: RecordingLabel[]) => {
@@ -160,7 +154,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
         const tasks: Observable<RecordingLabel[]>[] = [];
         setLoading(true);
         for (const labelFile of e.target.files) {
-          tasks.push(parseLabels(labelFile));
+          tasks.push(parseLabelsFromFile(labelFile));
         }
         addSubscription(
           zip(tasks).subscribe((labelArrays: RecordingLabel[][]) => {
