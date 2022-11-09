@@ -35,26 +35,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 import * as React from 'react';
-import { Bullseye, EmptyState, EmptyStateIcon, Spinner, Title } from '@patternfly/react-core';
+import renderer, { act } from 'react-test-renderer';
+import { render, screen } from '@testing-library/react';
+import LoadingView from '@app/LoadingView/LoadingView';
 
-export interface LoadingViewProps {
-  title?: string;
-}
+describe('<LoadingView />', () => {
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(<LoadingView></LoadingView>);
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
 
-export const LoadingView: React.FunctionComponent<LoadingViewProps> = (props) => {
-  return (
-    <>
-      <Bullseye>
-        <EmptyState>
-          <EmptyStateIcon variant="container" component={Spinner} />
-          <Title size="lg" headingLevel="h2">
-            {props.title || 'Loading'}
-          </Title>
-        </EmptyState>
-      </Bullseye>
-    </>
-  );
-};
+  it('should show spinner and title', () => {
+    render(<LoadingView title="Progressing"></LoadingView>);
 
-export default LoadingView;
+    const title = screen.getByText('Progressing');
+    expect(title).toBeInTheDocument();
+    expect(title).toBeVisible();
+
+    const spinner = screen.getByRole('progressbar');
+    expect(spinner).toBeInTheDocument();
+    expect(spinner).toBeVisible();
+  });
+});
