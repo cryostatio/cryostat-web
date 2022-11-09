@@ -204,10 +204,12 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
             headerIcon={<ExclamationCircleIcon />}
             bodyContent={
               <>
-              <Text component='h4'>Invalid metadata files:</Text>
+                <Text component="h4">Invalid metadata files:</Text>
                 <List>
                   {invalidUploads.map((uploadName) => (
-                    <ListItem key={uploadName} icon={<FileIcon/>}>{uploadName}</ListItem>
+                    <ListItem key={uploadName} icon={<FileIcon />}>
+                      {uploadName}
+                    </ListItem>
                   ))}
                 </List>
               </>

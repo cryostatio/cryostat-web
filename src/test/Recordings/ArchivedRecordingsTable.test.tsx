@@ -690,14 +690,8 @@ describe('<ArchivedRecordingsTable />', () => {
     userEvent.click(metadataEditorToggle);
 
     const invalidMetadataFileName = 'invalid.metadata.json';
-    const invalidMetadataFile = new File(
-      ["asdfg"],
-      invalidMetadataFileName,
-      { type: 'json' }
-    );
-    invalidMetadataFile.text = jest.fn(
-      () => new Promise((resolve, _) => resolve("asdfg"))
-    );
+    const invalidMetadataFile = new File(['asdfg'], invalidMetadataFileName, { type: 'json' });
+    invalidMetadataFile.text = jest.fn(() => new Promise((resolve, _) => resolve('asdfg')));
 
     const uploadeLabelButton = await within(modal).findByRole('button', { name: 'Upload Labels' });
     expect(uploadeLabelButton).toBeInTheDocument();
