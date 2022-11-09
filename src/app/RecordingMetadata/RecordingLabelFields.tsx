@@ -204,9 +204,9 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
             headerIcon={<ExclamationCircleIcon />}
             bodyContent={
               <>
-                <Text component="h4">{
-                  `The following file${invalidUploads.length > 1? 's': ''} did not contain valid recording metadata:`
-                }</Text>
+                <Text component="h4">{`The following file${
+                  invalidUploads.length > 1 ? 's' : ''
+                } did not contain valid recording metadata:`}</Text>
                 <List>
                   {invalidUploads.map((uploadName) => (
                     <ListItem key={uploadName} icon={<FileIcon />}>
