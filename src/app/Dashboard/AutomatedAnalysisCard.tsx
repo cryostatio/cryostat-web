@@ -36,20 +36,19 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { Card, CardActions, CardBody, CardHeader, CardTitle, Checkbox, Dropdown, Grid, GridItem, KebabToggle, Label, LabelGroup, LabelProps, Stack, StackItem, Tooltip } from '@patternfly/react-core';
+import { Button, Card, CardActions, CardBody, CardExpandableContent, CardHeader, CardTitle, Checkbox, Dropdown, Grid, GridItem, KebabToggle, Label, LabelGroup, LabelProps, Spinner, Stack, StackItem, Text, TextContent, Tooltip } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { InfoCircleIcon, RulerVerticalIcon } from '@patternfly/react-icons';
-import { number } from 'prop-types';
+import { InfoCircleIcon, Spinner2Icon, SpinnerIcon } from '@patternfly/react-icons';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import LoadingView from '@app/LoadingView/LoadingView';
+import { finalize, first } from 'rxjs';
+import { ORANGE_SCORE_THRESHOLD, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 
 interface AutomatedAnalysisCardProps {
   pageTitle: string;
-  compactSelect?: boolean;
-  hideEmptyState?: boolean;
-  breadcrumbs?: BreadcrumbTrail[];
 }
 
 export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
@@ -58,13 +57,17 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   const [categorizedEvaluation, setCategorizedEvaluation] = React.useState<[string , RuleEvaluation[]][]>([] as [string, RuleEvaluation[]][]);
   const [criticalCategorizedEvaluation, setCriticalCategorizedEvaluation] = React.useState<[string , RuleEvaluation[]][]>([] as [string, RuleEvaluation[]][]);
-  const [ruleLabels, setRuleLabels] = React.useState<RuleEvaluation[]>([]);
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = React.useState<boolean>(true);
+  const [isKebabOpen, setIsKebabOpen] = React.useState<boolean>(false);
   const [isChecked, setIsChecked] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isTooltipOpen, setIsTooltipOpen] = React.useState<boolean>(false);
+
 
   const categorizeEvaluation = React.useCallback((arr: [string, RuleEvaluation][]) => {
     const map = new Map<string, RuleEvaluation[]>();
-    arr.forEach(([name, evaluation]) => {
+    arr.forEach(([_, evaluation]) => {
       const obj = map.get(evaluation.topic);
       if (obj === undefined) {
           map.set(evaluation.topic, [evaluation]);
@@ -74,26 +77,47 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       }
     });
     setCategorizedEvaluation(Array.from(map) as [string, RuleEvaluation[]][]);
-  }, [setCategorizedEvaluation]);
+    setIsLoading(false);
+  }, [setCategorizedEvaluation, setIsLoading]);
 
   const takeSnapshot = React.useCallback(() => {
+    setIsLoading(true);
     addSubscription(
-        context.api.createSnapshotv2().subscribe((snapshot) => {
-            addSubscription(
+      context.api.createSnapshotv2()
+        .pipe(
+          finalize(() => {
+            setIsLoading(false);
+          })  
+        ).subscribe(
+          {
+            next: ((snapshot) => {              
               context.reports.reportJson(snapshot)
-                .subscribe((report) => {
-                  const reportJson = JSON.parse(report);
-                  const arr: [string, RuleEvaluation][] = Object.entries(reportJson);
-                  categorizeEvaluation(arr);
-                })
-            )
+                .pipe(
+                  finalize(() => setIsLoading(false)),
+                  first()
+                )  
+                .subscribe({
+                  next: (report) => {
+                    const reportJson = JSON.parse(report);
+                    const arr: [string, RuleEvaluation][] = Object.entries(reportJson);
+                    categorizeEvaluation(arr);
+                  },
+                  error: () => {
+                    setError(true);
+                  },
+                });
+            }),
+            error: () => {
+                setError(true);
+            },
         })
     );
-  }, [addSubscription, context.api, categorizeEvaluation]);
+  }, [addSubscription, context.api, context.reports, categorizeEvaluation, setIsLoading, setError]);
 
   const showCriticalScores = React.useCallback(() => {
-    console.log(categorizedEvaluation);
-    const criticalScores = categorizedEvaluation.filter(d => d[1].some(e => e.score >= 50));
+    const criticalScores = categorizedEvaluation.map(([topic, evaluations]) => {
+      return [topic, evaluations.filter(evaluation => evaluation.score >= ORANGE_SCORE_THRESHOLD)] as [string, RuleEvaluation[]];
+    });
     setCriticalCategorizedEvaluation(criticalScores);
   }, [categorizedEvaluation, setCriticalCategorizedEvaluation]);
 
@@ -110,80 +134,109 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     }
   }, [isChecked, showCriticalScores, setCriticalCategorizedEvaluation]);
 
-
   const onSelect = () => {
-    setIsOpen(!isOpen);
+    setIsKebabOpen(!isKebabOpen);
   };
   const onClick = (checked: boolean) => {
     setIsChecked(checked);
   };
 
+  const onExpand = (event: React.MouseEvent, id: string) => {
+    setIsExpanded(!isExpanded);
+  };
+
   const filteredCategorizedLabels = React.useMemo(() => {
-    return criticalCategorizedEvaluation.map(([topic, evaluations]) => {
-        return (
-            <LabelGroup 
-              categoryName={topic}
-              isVertical
-              numLabels={4}
-              isCompact
-              key={topic}
-            >
-              {
-                evaluations
-                  .filter((evaluation) => evaluation.score >= 0)
-                  .map((evaluation) => {
-                  return (
-                    <Tooltip content={`${evaluation.name} Score:  ${evaluation.score}`} key={evaluation.name}>
-                      <Label icon={<InfoCircleIcon />} color={evaluation.score < 10 ? 'green' : (evaluation.score < 50) ? 'orange' : 'red'} isCompact >
-                        {evaluation.name}
-                      </Label>
-                    </Tooltip>
-                  )
-                })
-              }
-            </LabelGroup>
-        )
-      });
+    return (
+      <Grid>
+        {
+          criticalCategorizedEvaluation
+            .filter(([_, evaluations]) => evaluations.length > 0)
+            .map(([topic, evaluations]) => {
+              return (
+                <GridItem span={3} key={topic} > 
+                  <LabelGroup 
+                    categoryName={topic}
+                    isVertical
+                    numLabels={3}
+                    isCompact
+                    key={topic}
+                  >
+                    {
+                      evaluations
+                        .map((evaluation) => {
+                          return (
+                              <ClickableAutomatedAnalysisLabel 
+                                label={evaluation} 
+                                isSelected={false} 
+                              />
+                          )
+                      })
+                    }
+                  </LabelGroup>
+                </GridItem>
+              )
+            })
+        }
+      </Grid>);
   }, [criticalCategorizedEvaluation]);
 
-  interface IRule {
-    name: string;
-    evaluation: RuleEvaluation;
-  }
-
-  interface RuleEvaluation {
-    name: string;
-    description: string;
-    score: number;
-    topic: string;
-  }
-
+  const view = React.useMemo(() => {
+    if (error) {
+      return <ErrorView
+        title={'Error'}
+        message={"Could not perform automated analysis"}
+      />
+    } else if (isLoading) {
+      return <LoadingView />
+    } else {
+      return filteredCategorizedLabels;
+    }
+  }, [filteredCategorizedLabels, error, isLoading]);
 
   return (
-        <Card isRounded isCompact>
-          <CardHeader>
-            <CardTitle component='h4'>Automated Analysis</CardTitle>
-            <CardActions>
-              <Dropdown
-                onSelect={onSelect}
-                toggle={<KebabToggle onToggle={setIsOpen} />}
-                isOpen={isOpen}
-                isPlain
-                dropdownItems={[]}
-                position={'right'}
-              />
-              <Checkbox
-                isChecked={isChecked}
-                onChange={onClick}
-                aria-label="card checkbox example"
-                id="check-2"
-                name="check2"
-              />
-            </CardActions>
-        </CardHeader>
-            <CardBody isFilled={true}>
-              {filteredCategorizedLabels}
-            </CardBody>
-        </Card>
+    <Card id='automated-analysis-card' isRounded isCompact isExpanded={isExpanded}>
+      <CardHeader           
+        onExpand={onExpand}
+        toggleButtonProps={{
+          id: 'toggle-button1',
+          'aria-label': 'Details',
+          'aria-labelledby': 'automated-analysis-card-title toggle-button1',
+          'aria-expanded': isExpanded
+      }}>
+        <CardTitle component='h4'>Automated Analysis</CardTitle>
+        <CardActions>
+          <Checkbox
+              id="automated-analysis-check"
+              label={'Show critical scores'}
+              aria-label="automated-analysis show-critical-scores"
+              name="automated-analysis-critical-scores"
+              isChecked={isChecked}
+              onChange={onClick}
+          />
+          <Button
+            isSmall
+            isAriaDisabled={isLoading}
+            aria-label="Refresh automated analysis"
+            onClick={takeSnapshot}
+            variant="control"
+            icon={<Spinner2Icon />}
+          />
+          {/* <Dropdown
+            isPlain
+            onSelect={onSelect}
+            toggle={<KebabToggle onToggle={setIsKebabOpen} />}
+            isOpen={isKebabOpen}
+            dropdownItems={[]}
+            position={'right'}
+          /> */}
+        </CardActions>
+      </CardHeader>
+      <CardExpandableContent>
+        <CardBody isFilled={true}>
+          { view }
+        </CardBody>
+      </CardExpandableContent>
+    </Card>
   );
 };
+

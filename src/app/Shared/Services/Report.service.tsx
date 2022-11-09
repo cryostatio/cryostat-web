@@ -102,6 +102,7 @@ export class ReportService {
   }
 
   reportJson(recording: Recording): Observable<string> {
+    console.log(recording)
     if (!recording?.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
@@ -160,3 +161,13 @@ export const isGenerationError = (toCheck: any): toCheck is GenerationError => {
   }
   return true;
 };
+
+export interface RuleEvaluation {
+  name: string;
+  description: string;
+  score: number;
+  topic: string;
+}
+
+export const RED_SCORE_THRESHOLD = 75;
+export const ORANGE_SCORE_THRESHOLD = 50;

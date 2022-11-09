@@ -344,20 +344,19 @@ export class ApiService {
         this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
           method: 'POST',
         }).pipe(
-          tap((resp) => {
+          concatMap((resp) => {
             if (resp.status == 202) {
-              this.notifications.warning(
-                'Snapshot Failed to Create',
-                'The resultant recording was unreadable for some reason, likely due to a lack of Active, non-Snapshot source recordings to take event data from'
-              );
+              return throwError(() => new Error('Unable to create snapshot'));
+            }
+            else {
+              return resp.json();
             }
           }),
-          concatMap((resp) => resp.json()),
           map((response) => response.data.result),
-          first()
+          first(),
         )
       )
-    );
+    )
   }
 
   isArchiveEnabled(): Observable<boolean> {

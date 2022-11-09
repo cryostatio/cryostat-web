@@ -54,6 +54,15 @@ html, body, #root {
   padding-right: 10rem;
 }
 
+.pf-c-label-group.pf-m-vertical.pf-c-label-group {
+  height: 100%;
+  width: 100%;
+}
+
+.pf-c-label-group__label {
+  font-weight: bold;
+}
+
 .cryostat-logo {
   height: 2em !important;
 }
