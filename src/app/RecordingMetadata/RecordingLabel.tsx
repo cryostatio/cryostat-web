@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { from, Observable } from "rxjs";
+import { from, Observable } from 'rxjs';
 
 export interface RecordingLabel {
   key: string;
@@ -69,10 +69,8 @@ export const parseLabelsFromFile = (file: File): Observable<RecordingLabel[]> =>
         }
         return labels;
       })
-      .catch((_) => [])
   );
 };
-
 
 export const includesLabel = (arr: RecordingLabel[], searchLabel: RecordingLabel) => {
   return arr.some((l) => isEqualLabel(searchLabel, l));

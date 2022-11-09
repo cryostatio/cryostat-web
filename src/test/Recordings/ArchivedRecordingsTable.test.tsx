@@ -648,6 +648,82 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, mockUploadedRecordingLabels, expect.anything());
   });
 
+  it('should show warning popover if any metadata file upload has invalid contents', async () => {
+    renderWithServiceContextAndReduxStoreWithRouter(
+      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
+
+    userEvent.click(screen.getByLabelText('upload-recording'));
+
+    const modal = await screen.findByRole('dialog');
+
+    const modalTitle = await within(modal).findByText('Re-Upload Archived Recording');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
+
+    const fileLabel = await within(modal).findByText('JFR File');
+    expect(fileLabel).toBeInTheDocument();
+    expect(fileLabel).toBeInTheDocument();
+
+    const fileUploadDropZone = (await within(modal).findByLabelText(
+      'Drag a file here or browse to upload'
+    )) as HTMLInputElement;
+    expect(fileUploadDropZone).toBeInTheDocument();
+    expect(fileUploadDropZone).toBeVisible();
+
+    const browseButton = await within(modal).findByRole('button', { name: 'Browse...' });
+    expect(browseButton).toBeInTheDocument();
+    expect(browseButton).toBeVisible();
+
+    const uploadInput = modal.querySelector("input[accept='.jfr'][type='file']") as HTMLInputElement;
+    expect(uploadInput).toBeInTheDocument();
+    expect(uploadInput).not.toBeVisible();
+
+    const metadataEditorToggle = within(modal).getByText('Show metadata options');
+    expect(metadataEditorToggle).toBeInTheDocument();
+    expect(metadataEditorToggle).toBeVisible();
+
+    userEvent.click(metadataEditorToggle);
+
+    const invalidMetadataFileName = 'invalid.metadata.json';
+    const invalidMetadataFile = new File(
+      ["asdfg"],
+      invalidMetadataFileName,
+      { type: 'json' }
+    );
+    invalidMetadataFile.text = jest.fn(
+      () => new Promise((resolve, _) => resolve("asdfg"))
+    );
+
+    const uploadeLabelButton = await within(modal).findByRole('button', { name: 'Upload Labels' });
+    expect(uploadeLabelButton).toBeInTheDocument();
+    expect(uploadeLabelButton).toBeVisible();
+
+    userEvent.click(uploadeLabelButton);
+
+    const labelUploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
+    expect(labelUploadInput).toBeInTheDocument();
+
+    await tlr.act(async () => {
+      userEvent.upload(labelUploadInput, invalidMetadataFile);
+    });
+
+    expect(labelUploadInput.files).not.toBe(null);
+    expect(labelUploadInput.files![0]).toStrictEqual(invalidMetadataFile);
+
+    const warningTitle = screen.getByText('Invalid metadata content');
+    expect(warningTitle).toBeInTheDocument();
+    expect(warningTitle).toBeVisible();
+
+    const invalidFileText = screen.getByText(invalidMetadataFileName);
+    expect(invalidFileText).toBeInTheDocument();
+    expect(invalidFileText).toBeVisible();
+  });
+
   it('should show error view if failing to retrieve recordings', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockImplementationOnce((query) => {
       throw new Error('Something wrong');

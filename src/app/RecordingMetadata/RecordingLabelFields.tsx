@@ -36,12 +36,15 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { CloseIcon, PlusCircleIcon, UploadIcon } from '@patternfly/react-icons';
+import { CloseIcon, ExclamationCircleIcon, FileIcon, PlusCircleIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   Button,
   FormHelperText,
   HelperText,
   HelperTextItem,
+  List,
+  ListItem,
+  Popover,
   Split,
   SplitItem,
   Text,
@@ -51,7 +54,7 @@ import {
 import { parseLabelsFromFile, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { Observable, zip } from 'rxjs';
+import { catchError, Observable, of, zip } from 'rxjs';
 
 export interface RecordingLabelFieldsProps {
   labels: RecordingLabel[];
@@ -75,6 +78,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
   const addSubscription = useSubscriptions();
 
   const [loading, setLoading] = React.useState(false);
+  const [invalidUploads, setInvalidUploads] = React.useState<string[]>([]);
 
   const handleKeyChange = React.useCallback(
     (idx, key) => {
@@ -154,7 +158,14 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
         const tasks: Observable<RecordingLabel[]>[] = [];
         setLoading(true);
         for (const labelFile of e.target.files) {
-          tasks.push(parseLabelsFromFile(labelFile));
+          tasks.push(
+            parseLabelsFromFile(labelFile).pipe(
+              catchError((_) => {
+                setInvalidUploads((old) => old.concat([labelFile.name]));
+                return of([]);
+              })
+            )
+          );
         }
         addSubscription(
           zip(tasks).subscribe((labelArrays: RecordingLabel[][]) => {
@@ -167,6 +178,8 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     },
     [props.setLabels, props.labels, addSubscription, setLoading]
   );
+
+  const closeWarningPopover = React.useCallback(() => setInvalidUploads([]), [setInvalidUploads]);
 
   const openLabelFileBrowse = React.useCallback(() => {
     inputRef.current && inputRef.current.click();
@@ -181,9 +194,29 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       </Button>
       {props.isUploadable && (
         <>
-          <Button aria-label="Upload Labels" onClick={openLabelFileBrowse} variant="link" icon={<UploadIcon />}>
-            Upload Labels
-          </Button>
+          <Popover
+            isVisible={!!invalidUploads.length}
+            aria-label="uploading warning"
+            alertSeverityVariant="danger"
+            headerContent="Invalid metadata content"
+            headerComponent="h1"
+            shouldClose={closeWarningPopover}
+            headerIcon={<ExclamationCircleIcon />}
+            bodyContent={
+              <>
+              <Text component='h4'>Invalid metadata files:</Text>
+                <List>
+                  {invalidUploads.map((uploadName) => (
+                    <ListItem key={uploadName} icon={<FileIcon/>}>{uploadName}</ListItem>
+                  ))}
+                </List>
+              </>
+            }
+          >
+            <Button aria-label="Upload Labels" onClick={openLabelFileBrowse} variant="link" icon={<UploadIcon />}>
+              Upload Labels
+            </Button>
+          </Popover>
           <input
             ref={inputRef}
             accept={'.json'}
