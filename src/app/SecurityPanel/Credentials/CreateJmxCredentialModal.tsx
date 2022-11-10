@@ -47,7 +47,7 @@ import {
 } from '@patternfly/react-core';
 import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { first } from 'rxjs';
+import { catchError, first, of } from 'rxjs';
 import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 
@@ -61,22 +61,32 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
   const addSubscription = useSubscriptions();
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
+  const [loading, setLoading] = React.useState(false);
 
   const onSave = React.useCallback(
     (username: string, password: string): Promise<void> => {
-      return new Promise((resolve) => {
+      setLoading(true);
+      return new Promise((resolve, reject) => {
         addSubscription(
           context.api
             .postCredentials(matchExpression, username, password)
-            .pipe(first())
-            .subscribe(() => {
-              props.onClose();
-              resolve();
+            .pipe(
+              first(),
+              catchError((_) => of(false))
+            )
+            .subscribe((ok) => {
+              setLoading(false);
+              if (ok) {
+                props.onClose();
+                resolve();
+              } else {
+                reject();
+              }
             })
         );
       });
     },
-    [props.onClose, context, context.target, context.api, matchExpression]
+    [props.onClose, context.target, context.api, matchExpression, setLoading]
   );
 
   return (
@@ -107,6 +117,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
         >
           <TextInput
             value={matchExpression}
+            isDisabled={loading}
             isRequired
             type="text"
             id="rule-matchexpr"
