@@ -36,17 +36,40 @@
  * SOFTWARE.
  */
 
+import { from, Observable } from 'rxjs';
+
 export interface RecordingLabel {
   key: string;
   value: string;
 }
 
-export const parseLabels = (jsonLabels) => {
+export const parseLabels = (jsonLabels: Object) => {
   if (!jsonLabels) return [];
 
   return Object.entries(jsonLabels).map(([k, v]) => {
     return { key: k, value: v } as RecordingLabel;
   });
+};
+
+export const parseLabelsFromFile = (file: File): Observable<RecordingLabel[]> => {
+  return from(
+    file
+      .text()
+      .then(JSON.parse)
+      .then((obj) => {
+        const labels: RecordingLabel[] = [];
+        const labelObj = obj['labels'];
+        if (labelObj) {
+          Object.keys(labelObj).forEach((key) => {
+            labels.push({
+              key: key,
+              value: labelObj[key],
+            });
+          });
+        }
+        return labels;
+      })
+  );
 };
 
 export const includesLabel = (arr: RecordingLabel[], searchLabel: RecordingLabel) => {
