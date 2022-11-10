@@ -94,6 +94,7 @@ const mockArchivedRecording: ArchivedRecording = {
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
   size: 2048,
+  archivedTime: 2048,
 };
 const mockArchivedRecordingList = [
   mockArchivedRecording,

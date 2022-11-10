@@ -101,8 +101,7 @@ export class ReportService {
     );
   }
 
-  reportJson(recording: Recording): Observable<string> {
-    console.log(recording)
+  reportJson(recording: Recording): Observable<any> {
     if (!recording?.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
@@ -114,11 +113,11 @@ export class ReportService {
           mode: 'cors',
           credentials: 'include',
           headers,
-        })
-      }),       
-      concatMap((resp) => {
+        });
+      }),
+      concatMap(async (resp) => {
         if (resp.ok) {
-          return from(resp.text());
+          return JSON.parse(await resp.text());
         } else {
           const ge: GenerationError = {
             name: `Report Failure (${recording.name})`,
@@ -128,7 +127,7 @@ export class ReportService {
           };
           throw ge;
         }
-      }),
+      })
     );
   }
 

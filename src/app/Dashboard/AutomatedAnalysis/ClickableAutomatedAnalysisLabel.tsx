@@ -40,14 +40,19 @@ import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
 import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD, RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
+import { css } from '@patternfly/react-styles';
+import styles from '@patternfly/react-styles/css/components/Label/label';
 import React from 'react';
 
 export interface ClickableAutomatedAnalysisLabelProps {
-    label: RuleEvaluation;
+  label: RuleEvaluation;
   isSelected: boolean;
 }
 
-export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableAutomatedAnalysisLabelProps> = ({label, isSelected}) => {
+export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableAutomatedAnalysisLabelProps> = ({
+  label,
+  isSelected,
+}) => {
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const [isDescriptionVisible, setIsDescriptionVisible] = React.useState(false);
 
@@ -65,39 +70,55 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
     return {};
   }, [isSelected, isHoveredOrFocused]);
 
+  const colorScheme = React.useCallback((): LabelProps['color'] => {
+    // TODO: use label color schemes based on settings for accessibility
+    // context.settings.etc.
+    return label.score == -1
+      ? 'grey'
+      : label.score < ORANGE_SCORE_THRESHOLD
+      ? 'green'
+      : label.score < RED_SCORE_THRESHOLD
+      ? 'orange'
+      : 'red';
+  }, [label.score]);
+
   return (
-    <Popover 
-        aria-label='automated-analysis-description-popover'        
-        isVisible={isDescriptionVisible}
-        shouldOpen={() => setIsDescriptionVisible(true)}
-        shouldClose={() => setIsDescriptionVisible(false)}
-        zIndex={10000}
-        bodyContent={
-            <div style={{
-                textAlign: 'center',
-                marginLeft: '17%',
-            }}>
-                <p style={{fontWeight: 'bold', fontStyle: 'italic'}}>{label.name}</p>
-                <p style={{fontWeight: 'bold'}}>{label.score == -1 ? 'N/A' : label.score.toFixed(1)}</p>
-                <br />
-                <p style={{}}>{label.description}</p>
-            </div>
-    }>
+    <Popover
+      aria-label="automated-analysis-description-popover"
+      isVisible={isDescriptionVisible}
+      shouldOpen={() => setIsDescriptionVisible(true)}
+      shouldClose={() => setIsDescriptionVisible(false)}
+      bodyContent={
+        <div
+          style={{
+            textAlign: 'center',
+            marginLeft: '17%',
+          }}
+        >
+          <p style={{ fontWeight: 'bold', fontStyle: 'italic' }}>{label.name}</p>
+          <p style={{ fontWeight: 'bold' }}>{label.score == -1 ? 'N/A' : label.score.toFixed(1)}</p>
+          <br />
+          <p style={{}}>{label.description}</p>
+        </div>
+      }
+      key={`popover-${label.name}`}
+    >
       <Label
         aria-label={`${label.name}`}
-        icon={<InfoCircleIcon />} 
-        color={label.score == -1 ? 'grey' : label.score < ORANGE_SCORE_THRESHOLD ? 'green' : (label.score < RED_SCORE_THRESHOLD) ? 'orange' : 'red'} 
+        icon={<InfoCircleIcon />}
+        color={colorScheme()}
         style={style}
         onMouseEnter={handleHoveredOrFocused}
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
         key={label.name}
-        isCompact 
-        isTruncated
+        isCompact
       >
-        {`${label.name}`}
-        </Label>
-    </Popover >
-
+        <span className={css(styles.labelText)}>{`${label.name}`}</span>
+        {
+          // this is a hack to get rid of the tooltip (taken from patternfly Label.tsx)
+        }
+      </Label>
+    </Popover>
   );
 };
