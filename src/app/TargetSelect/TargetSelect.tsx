@@ -60,6 +60,7 @@ import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from 
 import { SerializedTarget } from '@app/Shared/SerializedTarget';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import { first } from 'rxjs';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 
@@ -257,6 +258,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     [props.simple, onExpand, isExpanded]
   );
 
+  const deleteButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Deleting',
+        spinnerAriaLabel: 'deleting-custom-target',
+        isLoading: isLoading,
+      } as LoadingPropsType),
+    [isLoading]
+  );
+
   return (
     <>
       <Card isExpanded={isExpanded}>
@@ -278,6 +289,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               onClick={handleDeleteButton}
               variant="control"
               icon={<TrashIcon />}
+              {...deleteButtonLoadingProps}
             />
           </CardActions>
         </CardHeader>
