@@ -56,7 +56,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { filter, first, mergeMap, toArray } from 'rxjs/operators';
+import { catchError, filter, first, mergeMap, toArray } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
@@ -66,8 +66,9 @@ import { Rule } from './Rules';
 import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
 import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { iif } from 'rxjs';
+import { iif, of } from 'rxjs';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -97,6 +98,7 @@ const Comp = () => {
   const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   const handleNameChange = React.useCallback(
     (evt) => {
@@ -156,6 +158,7 @@ const Comp = () => {
   const handleError = React.useCallback((error) => setErrorMessage(error.message), [setErrorMessage]);
 
   const handleSubmit = React.useCallback((): void => {
+    setLoading(true);
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Rule name ${name} is invalid`);
@@ -180,14 +183,19 @@ const Comp = () => {
     addSubscription(
       context.api
         .createRule(rule)
-        .pipe(first())
+        .pipe(
+          first(),
+          catchError((err) => of(false))
+        )
         .subscribe((success) => {
+          setLoading(false);
           if (success) {
             history.push('/rules');
           }
         })
     );
   }, [
+    setLoading,
     addSubscription,
     context,
     context.api,
@@ -261,6 +269,16 @@ const Comp = () => {
     },
   ];
 
+  const createButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Creating',
+        spinnerAriaLabel: 'deleting-automatic-rule',
+        isLoading: loading,
+      } as LoadingPropsType),
+    [loading]
+  );
+
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
@@ -294,6 +312,7 @@ const Comp = () => {
                   >
                     <TextInput
                       value={name}
+                      isDisabled={loading}
                       isRequired
                       type="text"
                       id="rule-name"
@@ -309,6 +328,7 @@ const Comp = () => {
                   >
                     <TextInput
                       value={description}
+                      isDisabled={loading}
                       type="text"
                       id="rule-description"
                       aria-describedby="rule-description-helper"
@@ -331,6 +351,7 @@ const Comp = () => {
                   >
                     <TextInput
                       value={matchExpression}
+                      isDisabled={loading}
                       isRequired
                       type="text"
                       id="rule-matchexpr"
@@ -350,6 +371,7 @@ const Comp = () => {
                   >
                     <Switch
                       id="rule-enabled"
+                      isDisabled={loading}
                       aria-label="Apply this rule to matching targets"
                       isChecked={enabled}
                       onChange={setEnabled}
@@ -370,6 +392,7 @@ const Comp = () => {
                     helperTextInvalid="A Template must be selected"
                   >
                     <FormSelectTemplateSelector
+                      disabled={loading}
                       selected={`${template},${templateType}`}
                       templates={templates}
                       onChange={handleTemplateChange}
@@ -384,6 +407,7 @@ const Comp = () => {
                       <SplitItem isFilled>
                         <TextInput
                           value={maxSize}
+                          isDisabled={loading}
                           isRequired
                           type="number"
                           id="maxSize"
@@ -395,6 +419,7 @@ const Comp = () => {
                       <SplitItem>
                         <FormSelect
                           value={maxSizeUnits}
+                          isDisabled={loading}
                           onChange={handleMaxSizeUnitChange}
                           aria-label="Max size units input"
                         >
@@ -414,6 +439,7 @@ const Comp = () => {
                       <SplitItem isFilled>
                         <TextInput
                           value={maxAge}
+                          isDisabled={loading}
                           isRequired
                           type="number"
                           id="maxAge"
@@ -425,6 +451,7 @@ const Comp = () => {
                       <SplitItem>
                         <FormSelect
                           value={maxAgeUnits}
+                          isDisabled={loading}
                           onChange={handleMaxAgeUnitChange}
                           aria-label="Max Age units Input"
                         >
@@ -444,6 +471,7 @@ const Comp = () => {
                       <SplitItem isFilled>
                         <TextInput
                           value={archivalPeriod}
+                          isDisabled={loading}
                           isRequired
                           type="number"
                           id="archivalPeriod"
@@ -455,6 +483,7 @@ const Comp = () => {
                       <SplitItem>
                         <FormSelect
                           value={archivalPeriodUnits}
+                          isDisabled={loading}
                           onChange={handleArchivalPeriodUnitsChange}
                           aria-label="archival period units input"
                         >
@@ -474,6 +503,7 @@ const Comp = () => {
                       <SplitItem isFilled>
                         <TextInput
                           value={initialDelay}
+                          isDisabled={loading}
                           isRequired
                           type="number"
                           id="initialDelay"
@@ -485,6 +515,7 @@ const Comp = () => {
                       <SplitItem>
                         <FormSelect
                           value={initialDelayUnits}
+                          isDisabled={loading}
                           onChange={handleInitialDelayUnitsChanged}
                           aria-label="initial delay units input"
                         >
@@ -502,6 +533,7 @@ const Comp = () => {
                   >
                     <TextInput
                       value={preservedArchives}
+                      isDisabled={loading}
                       isRequired
                       type="number"
                       id="preservedArchives"
@@ -515,12 +547,17 @@ const Comp = () => {
                       variant="primary"
                       onClick={handleSubmit}
                       isDisabled={
-                        nameValid !== ValidatedOptions.success || !template || !templateType || !matchExpression
+                        loading ||
+                        nameValid !== ValidatedOptions.success ||
+                        !template ||
+                        !templateType ||
+                        !matchExpression
                       }
+                      {...createButtonLoadingProps}
                     >
-                      Create
+                      {loading ? 'Creating' : 'Create'}
                     </Button>
-                    <Button variant="secondary" onClick={history.goBack}>
+                    <Button variant="secondary" onClick={history.goBack} isAriaDisabled={loading}>
                       Cancel
                     </Button>
                   </ActionGroup>

@@ -42,6 +42,7 @@ import { TemplateSelector } from './TemplateSelector';
 
 export interface FormSelectTemplateSelectorProps {
   selected: string;
+  disabled?: boolean;
   templates: EventTemplate[];
   onChange: (specifier: string) => void;
 }
@@ -70,6 +71,7 @@ export const FormSelectTemplateSelector: React.FunctionComponent<FormSelectTempl
   return (
     <>
       <FormSelect
+        isDisabled={props.disabled}
         value={specifier}
         onChange={handleTemplateChange}
         aria-label="Event Template Input"
