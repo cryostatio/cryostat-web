@@ -56,6 +56,7 @@ export const DurationPicker: React.FunctionComponent<DurationPickerProps> = (pro
             isRequired
             type="number"
             id="duration-picker-period"
+            aria-describedby="recording-duration-helper"
             onChange={(v) => props.onPeriodChange(Number(v))}
             isDisabled={!props.enabled}
             min="0"

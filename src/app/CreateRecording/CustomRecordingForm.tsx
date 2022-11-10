@@ -47,6 +47,9 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
+  HelperText,
+  HelperTextItem,
+  Label,
   Split,
   SplitItem,
   Text,
@@ -265,7 +268,7 @@ export const CustomRecordingForm = (props) => {
         )
         .subscribe(setTemplates)
     );
-  }, [addSubscription, context, context.target, setTemplates]);
+  }, [addSubscription, context.target, context.api, setTemplates]);
 
   React.useEffect(() => {
     addSubscription(
@@ -278,7 +281,7 @@ export const CustomRecordingForm = (props) => {
         )
         .subscribe(setRecordingOptions)
     );
-  }, [addSubscription, context, context.target, setRecordingOptions]);
+  }, [addSubscription, context.api, context.target, setRecordingOptions]);
 
   const isFormInvalid: boolean = React.useMemo(() => {
     return (
@@ -289,6 +292,11 @@ export const CustomRecordingForm = (props) => {
       labelsValid !== ValidatedOptions.success
     );
   }, [nameValid, durationValid, template, templateType, labelsValid]);
+
+  const hasReservedLabels = React.useMemo(
+    () => labels.some((label) => label.key === 'template.name' || label.key === 'template.type'),
+    [labels]
+  );
 
   return (
     <>
@@ -384,9 +392,22 @@ export const CustomRecordingForm = (props) => {
             label="Labels"
             fieldId="labels"
             labelIcon={
-              <Tooltip content={<div>Unique key-value pairs containing information about the recording.</div>}>
+              <Tooltip content={<Text>Unique key-value pairs containing information about the recording.</Text>}>
                 <HelpIcon noVerticalAlign />
               </Tooltip>
+            }
+            isHelperTextBeforeField
+            helperText={
+              <HelperText>
+                <HelperTextItem
+                  isDynamic
+                  variant={hasReservedLabels ? 'warning' : undefined}
+                  hasIcon={hasReservedLabels}
+                >
+                  Labels with key <Label isCompact>template.name</Label> and <Label isCompact>template.type</Label> are
+                  set by Cryostat and will be overwritten if specifed.
+                </HelperTextItem>
+              </HelperText>
             }
           >
             <RecordingLabelFields labels={labels} setLabels={setLabels} setValid={setLabelsValid} />
