@@ -65,19 +65,17 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { IconsIcon, InfoCircleIcon, PlusCircleIcon, PooIcon, Spinner2Icon, SpinnerIcon } from '@patternfly/react-icons';
+import { PlusCircleIcon, Spinner2Icon,  } from '@patternfly/react-icons';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import LoadingView from '@app/LoadingView/LoadingView';
-import { concatMap, filter, finalize, first, map } from 'rxjs';
-import { ORANGE_SCORE_THRESHOLD, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { concatMap, filter, finalize, first, map, tap } from 'rxjs';
+import { FAILED_REPORT_MESSAGE, INTERNAL_ERROR_MESSAGE, NO_RECORDINGS_MESSAGE, ORANGE_SCORE_THRESHOLD, RECORDING_FAILURE_MESSAGE, RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import {
   ArchivedRecording,
   defaultAutomatedAnalysis,
-  RecordingAttributes,
-  RecordingOptions,
 } from '@app/Shared/Services/Api.service';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 
 interface AutomatedAnalysisCardProps {
   pageTitle: string;
@@ -99,11 +97,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const [isError, setIsError] = React.useState<boolean>(false);
   const [errorMessage, setErrorMessage] = React.useState<string>('');
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [isTooltipOpen, setIsTooltipOpen] = React.useState<boolean>(false);
   const [reportStalenessTimer, setReportStalenessTimer] = React.useState<number>(0);
   const [reportStalenessTimerUnits, setReportStalenessTimerUnits] = React.useState<string>('seconds');
   const [reportTime, setReportTime] = React.useState<number>(0);
   const [usingArchivedReport, setUsingArchivedReport] = React.useState<boolean>(false);
+  const [usingCachedReport, setUsingCachedReport] = React.useState<boolean>(false);
+  const [target, setTarget] = React.useState<Target>(NO_TARGET);
 
   const SECOND_MILLIS = 1000;
   const MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -123,8 +122,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       });
       setCategorizedEvaluation(Array.from(map) as [string, RuleEvaluation[]][]);
       setIsLoading(false);
+      setIsError(false);
     },
-    [setCategorizedEvaluation, setIsLoading]
+    [setCategorizedEvaluation, setIsLoading, setIsError]
   );
 
   const queryTargetRecordings = React.useCallback(
@@ -157,15 +157,17 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       setIsError(true);
       setIsLoading(false);
       setUsingArchivedReport(false);
+      setUsingCachedReport(false);
     },
-    [setErrorMessage, setIsError, setIsLoading, setUsingArchivedReport]
+    [setErrorMessage, setIsError, setIsLoading, setUsingArchivedReport, setUsingCachedReport]
   );
 
   const handleLoading = React.useCallback(() => {
     setIsLoading(true);
     setIsError(false);
     setUsingArchivedReport(false);
-  }, [setIsLoading, setIsError, setUsingArchivedReport]);
+    setUsingCachedReport(false);
+  }, [setIsLoading, setIsError, setUsingArchivedReport, setUsingCachedReport]);
 
   const handleAnyArchivedRecordings = React.useCallback(
     (recordings: ArchivedRecording[]) => {
@@ -173,22 +175,55 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         prev?.archivedTime > current?.archivedTime ? prev : current
       );
       context.reports
-        .reportJson(freshestRecording)
+        .reportJson(freshestRecording, target.connectUrl)
         .pipe(first())
         .subscribe({
           next: (report) => {
             setUsingArchivedReport(true);
             setReportTime(freshestRecording.archivedTime);
-            const arr = Object.entries(report) as [string, RuleEvaluation][];
-            categorizeEvaluation(arr);
+            categorizeEvaluation(report);
           },
           error: () => {
-            handleStateErrors('Failed to load report from available archived recordings.');
+            handleStateErrors(INTERNAL_ERROR_MESSAGE);
           },
         });
     },
-    [context.reports, categorizeEvaluation, handleStateErrors, setUsingArchivedReport, setReportTime]
+    [context.reports, target.connectUrl, categorizeEvaluation, handleStateErrors, setUsingArchivedReport, setReportTime]
   );
+
+  const handleEmptyRecordings = React.useCallback(() => {
+    const cachedReportAnalysis = context.reports.getCachedAnalysisReport(target.connectUrl);
+    if (cachedReportAnalysis.report.length > 0) {
+      setUsingCachedReport(true);
+      setReportTime(cachedReportAnalysis.timestamp);
+      categorizeEvaluation(cachedReportAnalysis.report);
+    }
+    else {
+      addSubscription(
+          queryTargetRecordings(target.connectUrl)
+          .pipe(
+            map((v) => v.data.archivedRecordings.data as ArchivedRecording[])
+          )
+          .subscribe({
+            next: (recordings) => {
+              if (recordings.length > 0) {
+                handleAnyArchivedRecordings(recordings);
+              } else {
+                handleStateErrors(NO_RECORDINGS_MESSAGE);
+              }
+            },
+            error: () => {
+              handleStateErrors(NO_RECORDINGS_MESSAGE);
+            },
+          })
+      );
+    }
+  }, [addSubscription, context.reports, target.connectUrl, categorizeEvaluation, queryTargetRecordings, handleAnyArchivedRecordings, handleStateErrors, setUsingCachedReport, setReportTime]);
+
+  const handleBrokenSnapshot = React.useCallback(() => {
+    context.api.deleteRecording('Snapshot').subscribe();
+    handleStateErrors(RECORDING_FAILURE_MESSAGE);
+  }, [handleStateErrors]);
 
   const takeSnapshot = React.useCallback(() => {
     handleLoading();
@@ -196,42 +231,26 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       context.api.createSnapshotV2().subscribe({
         next: (snapshot) => {
           context.reports
-            .reportJson(snapshot)
-            .pipe(first())
+            .reportJson(snapshot, target.connectUrl)
+            .pipe(
+              first(),
+              finalize(() => {
+                context.api.deleteRecording(snapshot.name)
+                  .pipe(first())
+                  .subscribe(() => {});
+              }),
+            )
             .subscribe({
               next: (report) => {
-                const arr = Object.entries(report) as [string, RuleEvaluation][];
-                categorizeEvaluation(arr);
+                categorizeEvaluation(report);
               },
               error: (err) => {
-                handleStateErrors(err.message);
+                handleStateErrors(FAILED_REPORT_MESSAGE);
               },
             });
         },
-        error: (error) => {
-          // check if any archived recordings to fallback to
-          addSubscription(
-            context.target
-              .target()
-              .pipe(
-                filter((target) => target !== NO_TARGET),
-                first(),
-                concatMap((target) => queryTargetRecordings(target.connectUrl)),
-                map((v) => v.data.archivedRecordings.data as ArchivedRecording[])
-              )
-              .subscribe({
-                next: (recordings) => {
-                  if (recordings.length > 0) {
-                    handleAnyArchivedRecordings(recordings);
-                  } else {
-                    handleStateErrors(`Failed to take snapshot`);
-                  }
-                },
-                error: () => {
-                  handleStateErrors(error.message);
-                },
-              })
-          );
+        error: (err) => {
+            handleEmptyRecordings();
         },
       })
     );
@@ -239,9 +258,10 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     addSubscription,
     context.api,
     context.reports,
+    target.connectUrl,
     categorizeEvaluation,
-    queryTargetRecordings,
-    handleAnyArchivedRecordings,
+    handleEmptyRecordings,
+    handleBrokenSnapshot,
     handleLoading,
     handleStateErrors,
   ]);
@@ -250,16 +270,31 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     addSubscription(
       context.api
         .createRecording(defaultAutomatedAnalysis)
-        .pipe(first())
-        .subscribe((success) => {
-          if (success) {
+        .pipe(
+          first(),
+        )
+        .subscribe((resp) => {
+          if (resp.ok || resp.status === 400) { // in-case the recording already exists
             takeSnapshot();
           } else {
-            handleStateErrors(`Failed to start recording`);
+            handleStateErrors(RECORDING_FAILURE_MESSAGE);
           }
         })
     );
   }, [addSubscription, context.api, takeSnapshot, handleStateErrors]);
+
+  const handleErrorView = React.useCallback((): [string, () => void] => {
+    if (errorMessage === NO_RECORDINGS_MESSAGE) {
+      return ['Start a recording for analysis', startProfilingRecording];
+    } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
+      return ['Retry starting recording', startProfilingRecording];
+    } else if (errorMessage === FAILED_REPORT_MESSAGE) {
+      return ['Retry loading report', takeSnapshot];
+    }
+    else { // errorMessage === INTERNAL_ERROR_MESSAGE
+      return ['Retry', takeSnapshot];
+    }
+  }, [errorMessage, startProfilingRecording, takeSnapshot]);
 
   const showCriticalScores = React.useCallback(() => {
     const criticalScores = categorizedEvaluation.map(([topic, evaluations]) => {
@@ -271,20 +306,37 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     setCriticalCategorizedEvaluation(criticalScores);
   }, [categorizedEvaluation, setCriticalCategorizedEvaluation]);
 
-  React.useEffect(() => {
-    takeSnapshot();
-  }, [takeSnapshot]);
+  // React.useEffect(() => {
+  //   handleLoading();
+  //   addSubscription(
+  //     context.target.authFailure().subscribe(() => {
+  //       handleStateErrors("Authentication failure");
+  //     })
+  //   );
+  // }, [addSubscription, context.target, handleLoading, handleStateErrors]);
+
+  // React.useEffect(() => {
+  //   addSubscription(
+  //     context.target.target().subscribe((target) => {
+  //       setTarget(target);
+  //     })
+  //   );
+  // }, [addSubscription, context.target, takeSnapshot, setTarget]);
+
+  // React.useEffect(() => {
+  //   takeSnapshot();
+  // }, [takeSnapshot]);
+
+  // React.useEffect(() => {
+  //   if (isChecked) {
+  //     showCriticalScores();
+  //   } else {
+  //     setCriticalCategorizedEvaluation(categorizedEvaluation);
+  //   }
+  // }, [isChecked, categorizedEvaluation, showCriticalScores, setCriticalCategorizedEvaluation]);
 
   React.useEffect(() => {
-    if (isChecked) {
-      showCriticalScores();
-    } else {
-      setCriticalCategorizedEvaluation(categorizedEvaluation);
-    }
-  }, [isChecked, showCriticalScores, setCriticalCategorizedEvaluation]);
-
-  React.useEffect(() => {
-    if (!usingArchivedReport || reportTime == 0) {
+    if (reportTime == 0 || !(usingArchivedReport || usingCachedReport)) {
       return;
     }
     let now = Date.now();
@@ -313,11 +365,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       setReportStalenessTimer((reportStalenessTimer) => reportStalenessTimer + 1);
     }, interval);
     return () => clearInterval(timer);
-  }, [setReportStalenessTimer, setReportStalenessTimerUnits, reportTime, reportStalenessTimer, usingArchivedReport]);
+  }, [setReportStalenessTimer, setReportStalenessTimerUnits, reportTime, reportStalenessTimer, usingArchivedReport, usingCachedReport]);
 
-  const onSelect = () => {
-    setIsKebabOpen(!isKebabOpen);
-  };
   const onClick = (checked: boolean) => {
     setIsChecked(checked);
   };
@@ -346,31 +395,40 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
   }, [criticalCategorizedEvaluation]);
 
+  const clearCachedReports = React.useCallback(() => {
+    context.reports.deleteCachedAnalysisReport(target.connectUrl);
+    startProfilingRecording();
+  }, [context.reports, startProfilingRecording]);
+
   const reportStalenessText = React.useMemo(() => {
-    if (!usingArchivedReport || isLoading) {
+    if (isLoading || !(usingArchivedReport || usingCachedReport)) {
       return '';
     }
     return (
-      <>
-        <TextContent>
-          <Text component={TextVariants.p}>
-            Archived recording report analysis from {reportStalenessTimer} {reportStalenessTimerUnits} ago.
-            <Tooltip content={'Automatically create active recording for updated analysis:'}>
-              <Button variant="plain" isInline isSmall icon={<PlusCircleIcon />} onClick={startProfilingRecording} />
-            </Tooltip>
-          </Text>
-        </TextContent>
-      </>
+      <TextContent>
+        <Text component={TextVariants.p}>
+          {usingArchivedReport ? 'Showing archived report from ' : 'Showing cached report from '} from {reportStalenessTimer} {reportStalenessTimerUnits} ago.
+          <Tooltip content={(usingArchivedReport ? 'Automatically' : 'Clear cached report and automatically') + ' create active recording for updated analysis.'}>
+            <Button variant="plain" isInline isSmall icon={<PlusCircleIcon />} onClick={usingArchivedReport ? startProfilingRecording : clearCachedReports} />
+          </Tooltip>
+        </Text>
+      </TextContent>
     );
-  }, [isLoading, usingArchivedReport, reportStalenessTimer, reportStalenessTimerUnits]);
+  }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits, clearCachedReports, startProfilingRecording]);
 
   const view = React.useMemo(() => {
     if (isError) {
       return (
         <ErrorView
           title={'Automated Analysis Error'}
-          message={`Cryostat was unable to generate an automated analysis report. ${errorMessage}`}
-          retry={startProfilingRecording}
+          message={
+            <TextContent>
+              <Text component={TextVariants.p}>Cryostat was unable to generate an automated analysis report.</Text>
+              <Text component={TextVariants.small}>{errorMessage}</Text>
+            </TextContent>
+          }
+          retryButtonMessage={handleErrorView()[0]}
+          retry={handleErrorView()[1]}
         />
       );
     } else if (isLoading) {
@@ -378,7 +436,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     } else {
       return filteredCategorizedLabels;
     }
-  }, [filteredCategorizedLabels, isError, isLoading]);
+  }, [filteredCategorizedLabels, isError, isLoading, errorMessage, handleErrorView]);
 
   return (
     <Card id="automated-analysis-card" isRounded isCompact isExpanded={isExpanded}>
@@ -410,14 +468,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
             variant="control"
             icon={<Spinner2Icon />}
           />
-          {/* <Dropdown
-            isPlain
-            onSelect={onSelect}
-            toggle={<KebabToggle onToggle={setIsKebabOpen} />}
-            isOpen={isKebabOpen}
-            dropdownItems={[]}
-            position={'right'}
-          /> */}
         </CardActions>
       </CardHeader>
       <CardExpandableContent>

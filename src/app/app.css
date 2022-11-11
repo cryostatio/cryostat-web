@@ -86,3 +86,37 @@ html, body, #root {
 .recording-table-container {
   height: 32rem;
 }
+
+.clickable-automated-analysis-label-popover-header {
+  text-align: center;
+  margin-left: 16.6%;
+}
+
+.clickable-automated-analysis-label-popover-body {
+  text-align: center;
+}
+
+.clickable-automated-analysis-label-popover-body-score {
+  font-weight: bold;
+  margin-bottom: 0.5rem; 
+}
+
+.clickable-automated-analysis-label-popover-body-score.pf-m-danger {
+  color: var(--pf-c-popover--m-danger__title-text--Color);
+}
+
+.clickable-automated-analysis-label-popover-body-score.pf-m-warning {
+  color: var(--pf-c-popover--m-warning__title-text--Color);
+}
+
+.clickable-automated-analysis-label-popover-body-score.pf-m-success {
+  color: var(--pf-c-popover--m-success__title-text--Color);
+}
+
+.clickable-automated-analysis-label-popover-body-score.pf-m-default {
+  color: black;
+}
+
+.clickable-automated-analysis-label-popover-body-score.pf-m-info {
+  color: var(--pf-c-popover--m-info__title-text--Color);
+}

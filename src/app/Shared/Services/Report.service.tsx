@@ -79,8 +79,8 @@ export class ReportService {
       tap({
         next: (report) => {
           const isArchived = !isActiveRecording(recording);
-          const isActivedStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
-          if (isArchived || isActivedStopped) {
+          const isActiveStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
+          if (isArchived || isActiveStopped) {
             try {
               sessionStorage.setItem(this.key(recording), report);
             } catch (error) {
@@ -101,7 +101,7 @@ export class ReportService {
     );
   }
 
-  reportJson(recording: Recording): Observable<any> {
+  reportJson(recording: Recording, connectUrl: string): Observable<[string, RuleEvaluation][]> {
     if (!recording?.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
@@ -117,7 +117,8 @@ export class ReportService {
       }),
       concatMap(async (resp) => {
         if (resp.ok) {
-          return JSON.parse(await resp.text());
+          const obj = JSON.parse(await resp.text());
+          return Object.entries(obj) as [string, RuleEvaluation][];
         } else {
           const ge: GenerationError = {
             name: `Report Failure (${recording.name})`,
@@ -127,17 +128,75 @@ export class ReportService {
           };
           throw ge;
         }
+      }),
+      tap({
+        next: (report) => {
+          const isArchived = !isActiveRecording(recording);
+          const isActiveStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
+          if (isArchived || isActiveStopped) {
+            try {
+              sessionStorage.setItem(this.analysisKeyTimestamp(connectUrl), Date.now().toString());
+              sessionStorage.setItem(this.analysisKey(connectUrl), JSON.stringify(report));
+            } catch (error) {
+              this.notifications.warning('Report Caching Failed', (error as any).message);
+              sessionStorage.clear();
+            }
+          }
+        },
+        error: (err) => {
+          this.notifications.danger(err.name, err.message);
+          if (isGenerationError(err) && err.status >= 500) {
+            err.messageDetail.pipe(first()).subscribe((detail) => {
+              console.log(detail);
+              this.notifications.warning(`Report generation failure: ${detail}`);
+              this.deleteCachedAnalysisReport(connectUrl);
+            });
+          }
+        },
       })
     );
+  }
+
+  getCachedAnalysisReport(connectUrl: string): CachedReportValue {
+    let stored = sessionStorage.getItem(this.analysisKey(connectUrl));
+    let storedTimestamp = Number(sessionStorage.getItem(this.analysisKeyTimestamp(connectUrl)));
+    if (!!stored) {
+      return {
+        report: JSON.parse(stored),
+        timestamp: storedTimestamp || 0,
+      }
+    }
+    return {
+      report: [],
+      timestamp: 0,
+    }
   }
 
   delete(recording: Recording): void {
     sessionStorage.removeItem(this.key(recording));
   }
 
+  deleteCachedAnalysisReport(connectUrl: string): void {
+    sessionStorage.removeItem(this.analysisKey(connectUrl));
+    sessionStorage.removeItem(this.analysisKeyTimestamp(connectUrl));
+  }
+
   private key(recording: Recording): string {
     return Base64.encode(`report.${recording.reportUrl}`);
   }
+
+  private analysisKey(connectUrl: string): string {
+    return Base64.encode(`${connectUrl}.latestReport`);
+  }
+
+  private analysisKeyTimestamp(connectUrl: string): string {
+    return Base64.encode(`${connectUrl}.latestReportTimestamp`);
+  }
+}
+
+export interface CachedReportValue {
+  report: [string, RuleEvaluation][];
+  timestamp: number;
 }
 
 export type GenerationError = Error & {
@@ -170,3 +229,8 @@ export interface RuleEvaluation {
 
 export const RED_SCORE_THRESHOLD = 75;
 export const ORANGE_SCORE_THRESHOLD = 50;
+
+export const FAILED_REPORT_MESSAGE = 'Failed to load report from snapshot. Request entity too large.';
+export const NO_RECORDINGS_MESSAGE = 'No active or archived recordings available.';
+export const RECORDING_FAILURE_MESSAGE = 'Failed to start recording for analysis.';
+export const INTERNAL_ERROR_MESSAGE = 'An internal error occurred while performing automated analysis.';

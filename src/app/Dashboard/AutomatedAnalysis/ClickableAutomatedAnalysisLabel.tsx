@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 
-import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
 import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD, RuleEvaluation } from '@app/Shared/Services/Report.service';
-import { Label, LabelProps, Popover } from '@patternfly/react-core';
+import { Label, LabelProps, Popover, PopoverProps } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
-import styles from '@patternfly/react-styles/css/components/Label/label';
+import labelStyles from '@patternfly/react-styles/css/components/Label/label';
+import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import React from 'react';
 
 export interface ClickableAutomatedAnalysisLabelProps {
@@ -59,6 +59,16 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
 
+  const keyPrefix = 'clickable-automated-analysis-label';
+
+  const alertStyle = {
+    default: popoverStyles.modifiers.default,
+    info: popoverStyles.modifiers.info,
+    success: popoverStyles.modifiers.success,
+    warning: popoverStyles.modifiers.warning,
+    danger: popoverStyles.modifiers.danger
+  };
+
   const style = React.useMemo(() => {
     if (isHoveredOrFocused) {
       const defaultStyle = { cursor: 'pointer', '--pf-c-label__content--before--BorderWidth': '2.5px' };
@@ -70,7 +80,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
     return {};
   }, [isSelected, isHoveredOrFocused]);
 
-  const colorScheme = React.useCallback((): LabelProps['color'] => {
+  const colorScheme = React.useMemo((): LabelProps['color'] => {
     // TODO: use label color schemes based on settings for accessibility
     // context.settings.etc.
     return label.score == -1
@@ -82,41 +92,47 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
       : 'red';
   }, [label.score]);
 
+  const alertPopoverVariant = React.useMemo(() => {
+    return label.score == -1 
+      ? 'default'
+      : label.score < ORANGE_SCORE_THRESHOLD
+      ? 'success'
+      : label.score < RED_SCORE_THRESHOLD
+      ? 'warning'
+      : 'danger'
+  }, [label.score]);
+
   return (
     <Popover
       aria-label="automated-analysis-description-popover"
       isVisible={isDescriptionVisible}
+      headerContent={<div className={`${keyPrefix}-popover-header`}>{label.name}</div>}
+      alertSeverityVariant={alertPopoverVariant}
+      alertSeverityScreenReaderText={alertPopoverVariant}
       shouldOpen={() => setIsDescriptionVisible(true)}
       shouldClose={() => setIsDescriptionVisible(false)}
+      key={`${keyPrefix}-popover-${label.name}`}
       bodyContent={
-        <div
-          style={{
-            textAlign: 'center',
-            marginLeft: '17%',
-          }}
-        >
-          <p style={{ fontWeight: 'bold', fontStyle: 'italic' }}>{label.name}</p>
-          <p style={{ fontWeight: 'bold' }}>{label.score == -1 ? 'N/A' : label.score.toFixed(1)}</p>
-          <br />
-          <p style={{}}>{label.description}</p>
+        <div className={`${keyPrefix}-popover-body`} key={`${keyPrefix}-popover-body-${label.name}`}>
+          <p className={css(alertStyle[alertPopoverVariant], `${keyPrefix}-popover-body-score`)}>{label.score == -1 ? 'N/A' : label.score.toFixed(1)}</p>
+          <p>{label.description}</p>
         </div>
       }
-      key={`popover-${label.name}`}
     >
       <Label
         aria-label={`${label.name}`}
         icon={<InfoCircleIcon />}
-        color={colorScheme()}
+        color={colorScheme}
         style={style}
         onMouseEnter={handleHoveredOrFocused}
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
-        key={label.name}
+        key={`${keyPrefix}-${label.name}`}
         isCompact
       >
-        <span className={css(styles.labelText)}>{`${label.name}`}</span>
+        <span className={css(labelStyles.labelText)}>{`${label.name}`}</span>
         {
-          // this is a hack to get rid of the tooltip (taken from patternfly Label.tsx)
+          // this is a hack to get rid of the tooltip (taken from @patternfly/react-core/.../Label/Label.tsx)
         }
       </Label>
     </Popover>

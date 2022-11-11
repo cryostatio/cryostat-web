@@ -279,7 +279,7 @@ export class ApiService {
     );
   }
 
-  createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {
+  createRecording(recordingAttributes: RecordingAttributes): Observable<Response> {
     const form = new window.FormData();
     form.append('recordingName', recordingAttributes.name);
     form.append('events', recordingAttributes.events);
@@ -308,8 +308,8 @@ export class ApiService {
           method: 'POST',
           body: form,
         }).pipe(
-          map((resp) => resp.ok),
-          catchError((_) => of(false)),
+          map((resp) => resp),
+          catchError((_) => of()),
           first()
         )
       )
@@ -347,6 +347,11 @@ export class ApiService {
           concatMap((resp) => {
             if (resp.status == 202) {
               return throwError(() => new Error('Unable to create snapshot'));
+            }
+            else if (resp.status == 427) {
+              console.log("JMX");
+              
+              return throwError(() => new Error('JMX Authentication Required'));
             } else {
               return resp.json();
             }
