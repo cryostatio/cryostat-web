@@ -58,7 +58,6 @@ Array [
         onBlur={[Function]}
         onChange={[Function]}
         onFocus={[Function]}
-        readOnly={false}
         required={true}
         type="text"
         value="someLabel"
@@ -108,7 +107,6 @@ Array [
         onBlur={[Function]}
         onChange={[Function]}
         onFocus={[Function]}
-        readOnly={false}
         required={true}
         type="text"
         value="someValue"
@@ -183,7 +181,6 @@ Array [
         onBlur={[Function]}
         onChange={[Function]}
         onFocus={[Function]}
-        readOnly={false}
         required={true}
         type="text"
         value="anotherLabel"
@@ -233,7 +230,6 @@ Array [
         onBlur={[Function]}
         onChange={[Function]}
         onFocus={[Function]}
-        readOnly={false}
         required={true}
         type="text"
         value="anotherValue"

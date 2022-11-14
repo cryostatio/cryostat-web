@@ -21,7 +21,6 @@ exports[`<DurationFilter /> renders correctly 1`] = `
       onChange={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
-      readOnly={false}
       required={false}
       type="number"
       value={30}
@@ -43,6 +42,7 @@ exports[`<DurationFilter /> renders correctly 1`] = `
         disabled={false}
         id="continuous-checkbox"
         onChange={[Function]}
+        required={false}
         type="checkbox"
       />
       <label

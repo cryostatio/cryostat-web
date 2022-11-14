@@ -56,7 +56,6 @@ Array [
           onBlur={[Function]}
           onChange={[Function]}
           onFocus={[Function]}
-          readOnly={false}
           required={true}
           type="text"
           value=""
@@ -119,6 +118,7 @@ Array [
                 id="recording-continuous"
                 name="recording-continuous"
                 onChange={[Function]}
+                required={false}
                 type="checkbox"
               />
               <label
@@ -147,6 +147,7 @@ Array [
                 id="recording-archive-on-stop"
                 name="recording-archive-on-stop"
                 onChange={[Function]}
+                required={false}
                 type="checkbox"
               />
               <label
@@ -178,7 +179,6 @@ Array [
               onBlur={[Function]}
               onChange={[Function]}
               onFocus={[Function]}
-              readOnly={false}
               required={true}
               type="number"
               value={30}
@@ -531,6 +531,7 @@ Array [
                 disabled={false}
                 id="toDisk-checkbox"
                 onChange={[Function]}
+                required={false}
                 type="checkbox"
               />
               <label
@@ -589,7 +590,6 @@ Array [
                   onBlur={[Function]}
                   onChange={[Function]}
                   onFocus={[Function]}
-                  readOnly={false}
                   required={true}
                   type="number"
                   value={0}
@@ -685,7 +685,6 @@ Array [
                   onBlur={[Function]}
                   onChange={[Function]}
                   onFocus={[Function]}
-                  readOnly={false}
                   required={true}
                   type="number"
                   value={0}
