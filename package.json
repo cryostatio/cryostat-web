@@ -31,7 +31,7 @@
     "yarn:frzinstall": "yarn install --frozen-lockfile"
   },
   "devDependencies": {
-    "@testing-library/dom": "^8.11.3",
+    "@testing-library/dom": "^8.19.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
