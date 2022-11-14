@@ -56,6 +56,8 @@ import {
   Label,
   LabelGroup,
   LabelProps,
+  Select,
+  SelectOption,
   Spinner,
   Stack,
   StackItem,
@@ -65,7 +67,7 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { PlusCircleIcon, Spinner2Icon,  } from '@patternfly/react-icons';
+import { PlusCircleIcon, Spinner2Icon, TrashIcon,  } from '@patternfly/react-icons';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import LoadingView from '@app/LoadingView/LoadingView';
 import { concatMap, filter, finalize, first, map, tap } from 'rxjs';
@@ -75,7 +77,6 @@ import {
   ArchivedRecording,
   defaultAutomatedAnalysis,
 } from '@app/Shared/Services/Api.service';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 
 interface AutomatedAnalysisCardProps {
   pageTitle: string;
@@ -102,7 +103,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const [reportTime, setReportTime] = React.useState<number>(0);
   const [usingArchivedReport, setUsingArchivedReport] = React.useState<boolean>(false);
   const [usingCachedReport, setUsingCachedReport] = React.useState<boolean>(false);
-  const [target, setTarget] = React.useState<Target>(NO_TARGET);
 
   const SECOND_MILLIS = 1000;
   const MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -127,7 +127,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     [setCategorizedEvaluation, setIsLoading, setIsError]
   );
 
-  const queryTargetRecordings = React.useCallback(
+  const queryArchivedRecordings = React.useCallback(
     (connectUrl: string) => {
       return context.api.graphql<any>(
         `
@@ -174,38 +174,43 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       const freshestRecording = recordings.reduce((prev, current) =>
         prev?.archivedTime > current?.archivedTime ? prev : current
       );
-      context.reports
-        .reportJson(freshestRecording, target.connectUrl)
-        .pipe(first())
-        .subscribe({
-          next: (report) => {
-            setUsingArchivedReport(true);
-            setReportTime(freshestRecording.archivedTime);
-            categorizeEvaluation(report);
-          },
-          error: () => {
-            handleStateErrors(INTERNAL_ERROR_MESSAGE);
-          },
-        });
+      addSubscription(
+        context.target.target().subscribe((target) => {
+          context.reports
+          .reportJson(freshestRecording, target.connectUrl)
+          .pipe(first())
+          .subscribe({
+            next: (report) => {
+              setUsingArchivedReport(true);
+              setReportTime(freshestRecording.archivedTime);
+              categorizeEvaluation(report);
+            },
+            error: () => {
+              handleStateErrors(INTERNAL_ERROR_MESSAGE);
+            },
+          });
+        })
+      );
     },
-    [context.reports, target.connectUrl, categorizeEvaluation, handleStateErrors, setUsingArchivedReport, setReportTime]
+    [addSubscription, context.target, context.reports, categorizeEvaluation, handleStateErrors, setUsingArchivedReport, setReportTime]
   );
 
-  const handleEmptyRecordings = React.useCallback(() => {
-    const cachedReportAnalysis = context.reports.getCachedAnalysisReport(target.connectUrl);
-    if (cachedReportAnalysis.report.length > 0) {
+  const handleEmptyRecordings = React.useCallback((connectUrl: string) => {
+    const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);
+    if (cachedReportAnalysis.report.length > 0) {      
       setUsingCachedReport(true);
       setReportTime(cachedReportAnalysis.timestamp);
       categorizeEvaluation(cachedReportAnalysis.report);
     }
     else {
       addSubscription(
-          queryTargetRecordings(target.connectUrl)
+          queryArchivedRecordings(connectUrl)
           .pipe(
+            first(),
             map((v) => v.data.archivedRecordings.data as ArchivedRecording[])
           )
           .subscribe({
-            next: (recordings) => {
+            next: (recordings) => {              
               if (recordings.length > 0) {
                 handleAnyArchivedRecordings(recordings);
               } else {
@@ -218,50 +223,48 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           })
       );
     }
-  }, [addSubscription, context.reports, target.connectUrl, categorizeEvaluation, queryTargetRecordings, handleAnyArchivedRecordings, handleStateErrors, setUsingCachedReport, setReportTime]);
 
-  const handleBrokenSnapshot = React.useCallback(() => {
-    context.api.deleteRecording('Snapshot').subscribe();
-    handleStateErrors(RECORDING_FAILURE_MESSAGE);
-  }, [handleStateErrors]);
+    
+  }, [addSubscription, context.reports, categorizeEvaluation, queryArchivedRecordings, handleAnyArchivedRecordings, handleStateErrors, setUsingCachedReport, setReportTime]);
 
   const takeSnapshot = React.useCallback(() => {
-    handleLoading();
     addSubscription(
-      context.api.createSnapshotV2().subscribe({
-        next: (snapshot) => {
-          context.reports
-            .reportJson(snapshot, target.connectUrl)
-            .pipe(
-              first(),
-              finalize(() => {
-                context.api.deleteRecording(snapshot.name)
-                  .pipe(first())
-                  .subscribe(() => {});
-              }),
-            )
-            .subscribe({
-              next: (report) => {
-                categorizeEvaluation(report);
-              },
-              error: (err) => {
-                handleStateErrors(FAILED_REPORT_MESSAGE);
-              },
-            });
-        },
-        error: (err) => {
-            handleEmptyRecordings();
-        },
+      context.target.target().subscribe((target) => {
+        handleLoading();
+        context.api.createSnapshotV2().pipe(first()).subscribe({
+          next: (snapshot) => {
+              context.reports
+                .reportJson(snapshot, target.connectUrl)
+                .pipe(
+                  first(),
+                  finalize(() => {
+                    context.api.deleteRecording(snapshot.name)
+                      .pipe(first())
+                      .subscribe(() => {});
+                  }),
+                )
+                .subscribe({
+                  next: (report) => {
+                    categorizeEvaluation(report);
+                  },
+                  error: (err) => {
+                    handleStateErrors(FAILED_REPORT_MESSAGE);
+                  },
+                });
+          },
+          error: (err) => {          
+              handleEmptyRecordings(target.connectUrl);
+          },
+        })
       })
     );
   }, [
     addSubscription,
     context.api,
+    context.target,
     context.reports,
-    target.connectUrl,
     categorizeEvaluation,
     handleEmptyRecordings,
-    handleBrokenSnapshot,
     handleLoading,
     handleStateErrors,
   ]);
@@ -306,42 +309,24 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     setCriticalCategorizedEvaluation(criticalScores);
   }, [categorizedEvaluation, setCriticalCategorizedEvaluation]);
 
-  // React.useEffect(() => {
-  //   handleLoading();
-  //   addSubscription(
-  //     context.target.authFailure().subscribe(() => {
-  //       handleStateErrors("Authentication failure");
-  //     })
-  //   );
-  // }, [addSubscription, context.target, handleLoading, handleStateErrors]);
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        handleStateErrors("Authentication failure");        
+      })
+    );
+  }, [addSubscription, context.target.authFailure, handleStateErrors]);
 
-  // React.useEffect(() => {
-  //   addSubscription(
-  //     context.target.target().subscribe((target) => {
-  //       setTarget(target);
-  //     })
-  //   );
-  // }, [addSubscription, context.target, takeSnapshot, setTarget]);
-
-  // React.useEffect(() => {
-  //   takeSnapshot();
-  // }, [takeSnapshot]);
-
-  // React.useEffect(() => {
-  //   if (isChecked) {
-  //     showCriticalScores();
-  //   } else {
-  //     setCriticalCategorizedEvaluation(categorizedEvaluation);
-  //   }
-  // }, [isChecked, categorizedEvaluation, showCriticalScores, setCriticalCategorizedEvaluation]);
+  React.useEffect(() => {
+    takeSnapshot();
+  }, [takeSnapshot]);
 
   React.useEffect(() => {
     if (reportTime == 0 || !(usingArchivedReport || usingCachedReport)) {
       return;
     }
-    let now = Date.now();
     let interval, timerQuantity;
-
+    let now = Date.now();
     const reportMillis = now - reportTime;
     if (reportMillis < MINUTE_MILLIS) {
       timerQuantity = Math.round(reportMillis / SECOND_MILLIS);
@@ -366,6 +351,14 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     }, interval);
     return () => clearInterval(timer);
   }, [setReportStalenessTimer, setReportStalenessTimerUnits, reportTime, reportStalenessTimer, usingArchivedReport, usingCachedReport]);
+
+  React.useEffect(() => {
+    if (isChecked) {
+      showCriticalScores();
+    } else {
+      setCriticalCategorizedEvaluation(categorizedEvaluation);
+    }
+  }, [isChecked, categorizedEvaluation, showCriticalScores, setCriticalCategorizedEvaluation]);
 
   const onClick = (checked: boolean) => {
     setIsChecked(checked);
@@ -396,9 +389,22 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [criticalCategorizedEvaluation]);
 
   const clearCachedReports = React.useCallback(() => {
-    context.reports.deleteCachedAnalysisReport(target.connectUrl);
-    startProfilingRecording();
-  }, [context.reports, startProfilingRecording]);
+    addSubscription(
+      context.target.target().subscribe((target) => {
+        context.reports.deleteCachedAnalysisReport(target.connectUrl);
+        startProfilingRecording();
+      })
+    );
+  }, [addSubscription, context.target, context.reports, startProfilingRecording]);
+
+  const clearAnalysis = React.useCallback(() => {
+    addSubscription(
+      context.target.target().subscribe((target) => {
+        context.reports.deleteCachedAnalysisReport(target.connectUrl);
+      })
+    );
+    handleStateErrors(NO_RECORDINGS_MESSAGE);
+  }, [addSubscription, context.target, context.reports]);
 
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
@@ -407,14 +413,20 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     return (
       <TextContent>
         <Text component={TextVariants.p}>
-          {usingArchivedReport ? 'Showing archived report from ' : 'Showing cached report from '} from {reportStalenessTimer} {reportStalenessTimerUnits} ago.
+          {(usingArchivedReport ? 'Showing archived report from ' : 'Showing cached report from ') + `from ${reportStalenessTimer} ${reportStalenessTimerUnits} ago. `} 
           <Tooltip content={(usingArchivedReport ? 'Automatically' : 'Clear cached report and automatically') + ' create active recording for updated analysis.'}>
-            <Button variant="plain" isInline isSmall icon={<PlusCircleIcon />} onClick={usingArchivedReport ? startProfilingRecording : clearCachedReports} />
+            <Button variant="control" isInline isSmall icon={<PlusCircleIcon />} onClick={usingArchivedReport ? startProfilingRecording : clearCachedReports} />
           </Tooltip>
+
+          {!usingArchivedReport && 
+            <Tooltip content={"Clear report cache."}>
+              <Button variant="control" isInline isSmall icon={<TrashIcon />} onClick={clearAnalysis} />  
+            </Tooltip>
+          }
         </Text>
       </TextContent>
     );
-  }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits, clearCachedReports, startProfilingRecording]);
+  }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits, clearCachedReports, clearAnalysis, startProfilingRecording]);
 
   const view = React.useMemo(() => {
     if (isError) {
