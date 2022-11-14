@@ -67,7 +67,6 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
                 onChange={[Function]}
                 onFocus={[Function]}
                 placeholder="Filter..."
-                readOnly={false}
                 required={false}
                 type="search"
               />

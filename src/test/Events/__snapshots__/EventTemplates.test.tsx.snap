@@ -35,7 +35,6 @@ Array [
               onChange={[Function]}
               onFocus={[Function]}
               placeholder="Filter..."
-              readOnly={false}
               required={false}
               type="search"
             />

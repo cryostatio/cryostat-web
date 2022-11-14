@@ -32,7 +32,6 @@ Array [
             onChange={[Function]}
             onFocus={[Function]}
             placeholder="Filter..."
-            readOnly={false}
             required={false}
             type="search"
           />
@@ -45,7 +44,7 @@ Array [
             data-ouia-component-id="OUIA-Generated-Pagination-top-1"
             data-ouia-component-type="PF4/Pagination"
             data-ouia-safe={true}
-            id="event-types-pagination-2"
+            id="event-types-pagination-top-pagination"
           >
             <div
               className="pf-c-pagination__total-items"
@@ -98,7 +97,7 @@ Array [
                   data-ouia-component-type="PF4/DropdownToggle"
                   data-ouia-safe={true}
                   disabled={false}
-                  id="event-types-pagination-toggle-2"
+                  id="event-types-pagination-top-toggle"
                   onClick={[Function]}
                   onKeyDown={[Function]}
                   type="button"
