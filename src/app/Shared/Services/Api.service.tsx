@@ -180,8 +180,7 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
-      first(),
-      tap((ok) => !ok && this.notifications.danger('Target Creation Failed'))
+      first()
     );
   }
 
@@ -464,14 +463,7 @@ export class ApiService {
       body,
     }).pipe(
       map((resp) => resp.ok),
-      catchError((_) => of(false)),
-      tap((ok) => {
-        if (ok) {
-          this.notifications.success('Successfully uploaded event template');
-        } else {
-          this.notifications.danger('Upload event template failed');
-        }
-      })
+      catchError((_) => of(false))
     );
   }
 
@@ -746,14 +738,7 @@ export class ApiService {
       body,
     }).pipe(
       map((resp) => resp.ok),
-      catchError((_) => of(false)),
-      tap((ok) => {
-        if (ok) {
-          this.notifications.success('Successfully uploaded certificate');
-        } else {
-          this.notifications.danger('Upload certificate failed');
-        }
-      })
+      catchError((_) => of(false))
     );
   }
 
