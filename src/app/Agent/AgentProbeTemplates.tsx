@@ -78,6 +78,8 @@ import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { AboutAgentCard } from './AboutAgentCard';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export interface AgentProbeTemplatesProps {
   agentDetected: boolean;
@@ -90,11 +92,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   const [templates, setTemplates] = React.useState([] as ProbeTemplate[]);
   const [filteredTemplates, setFilteredTemplates] = React.useState([] as ProbeTemplate[]);
   const [filterText, setFilterText] = React.useState('');
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
-  const [uploadFilename, setUploadFilename] = React.useState('');
-  const [uploading, setUploading] = React.useState(false);
-  const [fileRejected, setFileRejected] = React.useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -143,12 +141,6 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
     [addSubscription, context.api]
   );
 
-  const handleUploadCancel = React.useCallback(() => {
-    setUploadFile(undefined);
-    setUploadFilename('');
-    setModalOpen(false);
-  }, [setUploadFile, setUploadFilename, setModalOpen]);
-
   const handleDeleteButton = React.useCallback(
     (rowData) => {
       if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
@@ -168,10 +160,6 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
-
-  const handleFileRejected = React.useCallback(() => {
-    setFileRejected(true);
-  }, [setFileRejected]);
 
   const handleSort = React.useCallback(
     (event, index, direction) => {
@@ -216,42 +204,12 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   );
 
   const handleTemplateUpload = React.useCallback(() => {
-    setModalOpen(true);
-  }, [setModalOpen]);
+    setUploadModalOpen(true);
+  }, [setUploadModalOpen]);
 
   const handleUploadModalClose = React.useCallback(() => {
-    setModalOpen(false);
-  }, [setModalOpen]);
-
-  const handleFileChange = React.useCallback(
-    (value, filename) => {
-      setFileRejected(false);
-      setUploadFile(value);
-      setUploadFilename(filename);
-    },
-    [setFileRejected, setUploadFile, setUploadFilename]
-  );
-
-  const handleUploadSubmit = React.useCallback(() => {
-    if (!uploadFile) {
-      window.console.error('Attempted to submit probe template upload without a file selected');
-      return;
-    }
-    setUploading(true);
-    addSubscription(
-      context.api
-        .addCustomProbeTemplate(uploadFile)
-        .pipe(first())
-        .subscribe((success) => {
-          setUploading(false);
-          if (success) {
-            setUploadFile(undefined);
-            setUploadFilename('');
-            setModalOpen(false);
-          }
-        })
-    );
-  }, [uploadFile, setUploading, addSubscription, context.api, setUploadFile, setUploadFilename, setModalOpen]);
+    setUploadModalOpen(false);
+  }, [setUploadModalOpen]);
 
   React.useEffect(() => {
     refreshTemplates();
@@ -376,47 +334,127 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
                 </Title>
               </EmptyState>
             )}
-            <Modal
-              isOpen={modalOpen}
-              variant={ModalVariant.large}
-              showClose={true}
-              onClose={handleUploadModalClose}
-              title="Create Custom Probe Template"
-              description="Create a customized probe template. This is a specialized XML file typically created using JDK Mission Control, which defines a set of events to inject and their options to configure."
-            >
-              <Form>
-                <FormGroup
-                  label="Template XML"
-                  isRequired
-                  fieldId="template"
-                  validated={fileRejected ? 'error' : 'default'}
-                >
-                  <FileUpload
-                    id="probetemplateName"
-                    value={uploadFile}
-                    filename={uploadFilename}
-                    onChange={handleFileChange}
-                    isLoading={uploading}
-                    validated={fileRejected ? 'error' : 'default'}
-                    dropzoneProps={{
-                      accept: '.xml',
-                      onDropRejected: handleFileRejected,
-                    }}
-                  />
-                </FormGroup>
-                <ActionGroup>
-                  <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>
-                    Submit
-                  </Button>
-                  <Button variant="link" onClick={handleUploadCancel}>
-                    Cancel
-                  </Button>
-                </ActionGroup>
-              </Form>
-            </Modal>
+            <AgentProbeTemplateUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
           </StackItem>
         </Stack>
       </>
     );
   }
+};
+
+export interface AgentProbeTemplateUploadModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const AgentProbeTemplateUploadModal: React.FunctionComponent<AgentProbeTemplateUploadModalProps> = (props) => {
+  const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
+  const [uploadFilename, setUploadFilename] = React.useState('');
+  const [uploading, setUploading] = React.useState(false);
+  const [fileRejected, setFileRejected] = React.useState(false);
+  const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
+
+  const reset = React.useCallback(() => {
+    setUploadFile(undefined);
+    setUploadFilename('');
+    setUploading(false);
+    setFileRejected(false);
+  }, [setUploadFile, setUploadFilename, setUploading, setFileRejected]);
+
+  const handleFileChange = React.useCallback(
+    (file, filename) => {
+      setFileRejected(false);
+      setUploadFile(file);
+      setUploadFilename(filename);
+    },
+    [setFileRejected, setUploadFile, setUploadFilename]
+  );
+
+  const handleFileRejected = React.useCallback(() => {
+    setFileRejected(true);
+  }, [setFileRejected]);
+
+  const handleClose = React.useCallback(() => {
+    reset();
+    props.onClose();
+  }, [reset, props.onClose]);
+
+  const handleUploadSubmit = React.useCallback(() => {
+    if (fileRejected) {
+      notifications.warning('File format is not compatible');
+      return;
+    }
+    if (!uploadFile) {
+      notifications.warning('Attempted to submit probe template upload without a file selected');
+      return;
+    }
+    setUploading(true);
+    addSubscription(
+      context.api
+        .addCustomProbeTemplate(uploadFile)
+        .pipe(first())
+        .subscribe((success) => {
+          setUploading(false);
+          if (success) {
+            handleClose();
+          } else {
+            reset();
+          }
+        })
+    );
+  }, [fileRejected, uploadFile, setUploading, addSubscription, context.api, reset, handleClose]);
+
+  const submitButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Submitting',
+        spinnerAriaLabel: 'submitting-custom-event-template',
+        isLoading: uploading,
+      } as LoadingPropsType),
+    [uploading]
+  );
+
+  return (
+    <Modal
+      isOpen={props.isOpen}
+      variant={ModalVariant.large}
+      showClose={!uploading}
+      onClose={handleClose}
+      title="Create Custom Probe Template"
+      description="Create a customized probe template. This is a specialized XML file typically created using JDK Mission Control, which defines a set of events to inject and their options to configure."
+    >
+      <Form>
+        <FormGroup label="Template XML" isRequired fieldId="template" validated={fileRejected ? 'error' : 'default'}>
+          <FileUpload
+            id="probetemplateName"
+            value={uploadFile}
+            filename={uploadFilename}
+            onChange={handleFileChange}
+            isDisabled={uploading}
+            isLoading={uploading}
+            validated={fileRejected ? 'error' : 'default'}
+            dropzoneProps={{
+              accept: '.xml',
+              onDropRejected: handleFileRejected,
+            }}
+          />
+        </FormGroup>
+        <ActionGroup>
+          <Button
+            variant="primary"
+            onClick={handleUploadSubmit}
+            isDisabled={!uploadFilename || uploading}
+            {...submitButtonLoadingProps}
+          >
+            Submit
+          </Button>
+          <Button variant="link" onClick={handleClose} isDisabled={uploading}>
+            Cancel
+          </Button>
+        </ActionGroup>
+      </Form>
+    </Modal>
+  );
 };

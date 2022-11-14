@@ -517,12 +517,7 @@ export class ApiService {
       method: 'POST',
       body,
     }).pipe(
-      map((response) => {
-        if (!response.ok) {
-          throw response.statusText;
-        }
-        return true;
-      }),
+      map((resp) => resp.ok),
       catchError((): ObservableInput<boolean> => of(false))
     );
   }
