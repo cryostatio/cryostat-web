@@ -40,6 +40,7 @@ import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant }
 import { first, tap } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export interface CertificateUploadModalProps {
   visible: boolean;
@@ -54,29 +55,32 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
   const [uploading, setUploading] = React.useState(false);
   const [rejected, setRejected] = React.useState(false);
 
-  const reset = () => {
+  const reset = React.useCallback(() => {
     setUploadFile(undefined);
     setFilename('');
     setUploading(false);
     setRejected(true);
-  };
+  }, [setUploadFile, setFilename, setUploading, setRejected]);
 
-  const handleFileChange = (file, filename) => {
-    setRejected(false);
-    setUploadFile(file);
-    setFilename(filename);
-  };
+  const handleFileChange = React.useCallback(
+    (file, filename) => {
+      setRejected(false);
+      setUploadFile(file);
+      setFilename(filename);
+    },
+    [setRejected, setUploadFile, setFilename]
+  );
 
-  const handleReject = () => {
+  const handleReject = React.useCallback(() => {
     setRejected(true);
-  };
+  }, [setRejected]);
 
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     reset();
     props.onClose();
-  };
+  }, [reset, props.onClose]);
 
-  const handleSubmit = () => {
+  const handleSubmit = React.useCallback(() => {
     if (rejected) {
       notifications.warning('File format is not compatible');
       return;
@@ -97,14 +101,27 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
         first(),
         tap(() => setUploading(false))
       )
-      .subscribe(handleClose, reset);
-  };
+      .subscribe({
+        next: handleClose,
+        error: reset,
+      });
+  }, [rejected, uploadFile, notifications, setUploading, context.api, handleClose, reset]);
+
+  const submitButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Submitting',
+        spinnerAriaLabel: 'submitting-ssl-certitficates',
+        isLoading: uploading,
+      } as LoadingPropsType),
+    [uploading]
+  );
 
   return (
     <Modal
       isOpen={props.visible}
       variant={ModalVariant.large}
-      showClose={true}
+      showClose={!uploading}
       onClose={handleClose}
       title="Upload SSL certificate"
       description="Select a certificate file to upload. Certificates must be DER-encoded (can be binary or base64) and can have .der or .cer extensions."
@@ -117,6 +134,7 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
             filename={filename}
             onChange={handleFileChange}
             isLoading={uploading}
+            isDisabled={uploading}
             validated={rejected ? 'error' : 'default'}
             dropzoneProps={{
               accept: 'application/x-x509-ca-cert, application/pkix-cert',
@@ -125,10 +143,15 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
           />
         </FormGroup>
         <ActionGroup>
-          <Button variant="primary" onClick={handleSubmit} isDisabled={!filename}>
-            Submit
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            isDisabled={!filename || uploading}
+            {...submitButtonLoadingProps}
+          >
+            {uploading ? 'Submitting' : 'Submit'}
           </Button>
-          <Button variant="link" onClick={handleClose}>
+          <Button variant="link" onClick={handleClose} isDisabled={uploading}>
             Cancel
           </Button>
         </ActionGroup>
