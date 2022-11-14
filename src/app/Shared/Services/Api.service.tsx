@@ -463,13 +463,15 @@ export class ApiService {
       method: 'POST',
       body,
     }).pipe(
-      map((response) => {
-        if (!response.ok) {
-          throw response.statusText;
+      map((resp) => resp.ok),
+      catchError((_) => of(false)),
+      tap((ok) => {
+        if (ok) {
+          this.notifications.success('Successfully uploaded event template');
+        } else {
+          this.notifications.danger('Upload event template failed');
         }
-        return true;
-      }),
-      catchError((): ObservableInput<boolean> => of(false))
+      })
     );
   }
 
@@ -736,19 +738,21 @@ export class ApiService {
     );
   }
 
-  uploadSSLCertificate(file: File): Observable<string> {
+  uploadSSLCertificate(file: File): Observable<boolean> {
     const body = new window.FormData();
     body.append('cert', file);
     return this.sendRequest('v2', 'certificates', {
       method: 'POST',
       body,
     }).pipe(
-      concatMap((resp) => {
-        if (resp.ok) {
+      map((resp) => resp.ok),
+      catchError((_) => of(false)),
+      tap((ok) => {
+        if (ok) {
           this.notifications.success('Successfully uploaded certificate');
-          return from(resp.text());
+        } else {
+          this.notifications.danger('Upload certificate failed');
         }
-        throw resp.statusText;
       })
     );
   }

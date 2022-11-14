@@ -72,11 +72,13 @@ import {
   sortable,
 } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { concatMap, filter, first } from 'rxjs/operators';
+import { concatMap, filter, first, tap } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export interface EventTemplatesProps {}
 
@@ -88,11 +90,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
   const [filteredTemplates, setFilteredTemplates] = React.useState([] as EventTemplate[]);
   const [filterText, setFilterText] = React.useState('');
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
-  const [uploadFilename, setUploadFilename] = React.useState('');
-  const [uploading, setUploading] = React.useState(false);
-  const [fileRejected, setFileRejected] = React.useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -279,65 +277,13 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
     return actions;
   };
 
-  const handleModalToggle = React.useCallback(() => {
-    setModalOpen((v) => {
-      if (v) {
-        setUploadFile(undefined);
-        setUploadFilename('');
-        setUploading(false);
-      }
-      return !v;
-    });
-  }, [setModalOpen, setUploadFile, setUploadFilename, setUploading]);
+  const handleUploadModalClose = React.useCallback(() => {
+    setUploadModalOpen(false);
+  }, [setUploadModalOpen]);
 
-  const handleFileChange = React.useCallback(
-    (value, filename) => {
-      setFileRejected(false);
-      setUploadFile(value);
-      setUploadFilename(filename);
-    },
-    [setFileRejected, setUploadFile, setUploadFilename]
-  );
-
-  const handleUploadSubmit = React.useCallback(() => {
-    if (!uploadFile) {
-      window.console.error('Attempted to submit template upload without a file selected');
-      return;
-    }
-    setUploading(true);
-    addSubscription(
-      context.api
-        .addCustomEventTemplate(uploadFile)
-        .pipe(first())
-        .subscribe((success) => {
-          setUploading(false);
-          if (success) {
-            setUploadFile(undefined);
-            setUploadFilename('');
-            setModalOpen(false);
-          }
-        })
-    );
-  }, [
-    uploadFile,
-    window.console,
-    setUploading,
-    addSubscription,
-    context.api,
-    setUploadFile,
-    setUploadFilename,
-    setModalOpen,
-  ]);
-
-  const handleUploadCancel = React.useCallback(() => {
-    setUploadFile(undefined);
-    setUploadFilename('');
-    setModalOpen(false);
-  }, [setUploadFile, setUploadFilename, setModalOpen]);
-
-  const handleFileRejected = React.useCallback(() => {
-    setFileRejected(true);
-  }, [setFileRejected]);
+  const handleUploadModalOpen = React.useCallback(() => {
+    setUploadModalOpen(true);
+  }, [setUploadModalOpen]);
 
   const handleSort = React.useCallback(
     (event, index, direction) => {
@@ -400,7 +346,12 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
             </ToolbarGroup>
             <ToolbarGroup variant="icon-button-group">
               <ToolbarItem>
-                <Button key="upload" variant="secondary" onClick={handleModalToggle} isDisabled={errorMessage != ''}>
+                <Button
+                  key="upload"
+                  variant="secondary"
+                  onClick={handleUploadModalOpen}
+                  isDisabled={errorMessage != ''}
+                >
                   <UploadIcon />
                 </Button>
               </ToolbarItem>
@@ -434,45 +385,136 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
             </Title>
           </EmptyState>
         )}
-        <Modal
-          isOpen={modalOpen}
-          variant={ModalVariant.large}
-          showClose={true}
-          onClose={handleModalToggle}
-          title="Create Custom Event Template"
-          description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
-        >
-          <Form>
-            <FormGroup
-              label="Template XML"
-              isRequired
-              fieldId="template"
-              validated={fileRejected ? 'error' : 'default'}
-            >
-              <FileUpload
-                id="template-file-upload"
-                value={uploadFile}
-                filename={uploadFilename}
-                onChange={handleFileChange}
-                isLoading={uploading}
-                validated={fileRejected ? 'error' : 'default'}
-                dropzoneProps={{
-                  accept: '.xml,.jfc',
-                  onDropRejected: handleFileRejected,
-                }}
-              />
-            </FormGroup>
-            <ActionGroup>
-              <Button variant="primary" onClick={handleUploadSubmit} isDisabled={!uploadFilename}>
-                Submit
-              </Button>
-              <Button variant="link" onClick={handleUploadCancel}>
-                Cancel
-              </Button>
-            </ActionGroup>
-          </Form>
-        </Modal>
+        <EventTemplatesUploadModal isOpen={uploadModalOpen} onClose={handleUploadModalClose} />
       </>
     );
   }
+};
+
+export interface EventTemplatesUploadModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUploadModalProps> = (props) => {
+  const [uploadFile, setUploadFile] = React.useState<File | undefined>(undefined);
+  const [uploadFilename, setUploadFilename] = React.useState('');
+  const [uploading, setUploading] = React.useState(false);
+  const [fileRejected, setFileRejected] = React.useState(false);
+  const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
+  const notifications = React.useContext(NotificationsContext);
+
+  const reset = React.useCallback(() => {
+    setUploadFile(undefined);
+    setUploadFilename('');
+    setUploading(false);
+    setFileRejected(false);
+  }, [setUploadFile, setUploadFilename, setUploading, setFileRejected]);
+
+  const handleClose = React.useCallback(() => {
+    reset();
+    props.onClose();
+  }, [reset, props.onClose]);
+
+  const handleFileRejected = React.useCallback(() => {
+    setFileRejected(true);
+  }, [setFileRejected]);
+
+  const handleFileChange = React.useCallback(
+    (file, filename) => {
+      setFileRejected(false);
+      setUploadFile(file);
+      setUploadFilename(filename);
+    },
+    [setFileRejected, setUploadFile, setUploadFilename]
+  );
+
+  const handleUploadSubmit = React.useCallback(() => {
+    if (fileRejected) {
+      notifications.warning('File format is not compatible');
+      return;
+    }
+    if (!uploadFile) {
+      notifications.warning('Attempted to submit template upload without a file selected');
+      return;
+    }
+    setUploading(true);
+    addSubscription(
+      context.api
+        .addCustomEventTemplate(uploadFile)
+        .pipe(first())
+        .subscribe((success) => {
+          setUploading(false);
+          if (success) {
+            handleClose();
+          } else {
+            reset();
+          }
+        })
+    );
+  }, [
+    fileRejected,
+    uploadFile,
+    window.console,
+    setUploading,
+    addSubscription,
+    context.api,
+    setUploadFile,
+    setUploadFilename,
+    handleClose,
+    reset,
+  ]);
+
+  const submitButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Submitting',
+        spinnerAriaLabel: 'submitting-custom-event-template',
+        isLoading: uploading,
+      } as LoadingPropsType),
+    [uploading]
+  );
+
+  return (
+    <Modal
+      isOpen={props.isOpen}
+      variant={ModalVariant.large}
+      showClose={!uploading}
+      onClose={handleClose}
+      title="Create Custom Event Template"
+      description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
+    >
+      <Form>
+        <FormGroup label="Template XML" isRequired fieldId="template" validated={fileRejected ? 'error' : 'default'}>
+          <FileUpload
+            id="template-file-upload"
+            value={uploadFile}
+            filename={uploadFilename}
+            onChange={handleFileChange}
+            isDisabled={uploading}
+            isLoading={uploading}
+            validated={fileRejected ? 'error' : 'default'}
+            dropzoneProps={{
+              accept: '.xml,.jfc',
+              onDropRejected: handleFileRejected,
+            }}
+          />
+        </FormGroup>
+        <ActionGroup>
+          <Button
+            variant="primary"
+            onClick={handleUploadSubmit}
+            isDisabled={!uploadFilename || uploading}
+            {...submitButtonLoadingProps}
+          >
+            {uploading ? 'Submitting' : 'Submit'}
+          </Button>
+          <Button variant="link" onClick={handleClose} isDisabled={uploading}>
+            Cancel
+          </Button>
+        </ActionGroup>
+      </Form>
+    </Modal>
+  );
 };

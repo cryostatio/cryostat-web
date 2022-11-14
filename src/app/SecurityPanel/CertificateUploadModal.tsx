@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
-import { first, tap } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
@@ -97,13 +97,14 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
     setUploading(true);
     context.api
       .uploadSSLCertificate(uploadFile)
-      .pipe(
-        first(),
-        tap(() => setUploading(false))
-      )
-      .subscribe({
-        next: handleClose,
-        error: reset,
+      .pipe(first())
+      .subscribe((success) => {
+        setUploading(false);
+        if (success) {
+          handleClose();
+        } else {
+          reset();
+        }
       });
   }, [rejected, uploadFile, notifications, setUploading, context.api, handleClose, reset]);
 
