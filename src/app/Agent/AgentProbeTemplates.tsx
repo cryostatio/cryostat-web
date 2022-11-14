@@ -399,18 +399,16 @@ export const AgentProbeTemplateUploadModal: React.FunctionComponent<AgentProbeTe
           setUploading(false);
           if (success) {
             handleClose();
-          } else {
-            reset();
           }
         })
     );
-  }, [fileRejected, uploadFile, setUploading, addSubscription, context.api, reset, handleClose]);
+  }, [fileRejected, uploadFile, setUploading, addSubscription, context.api, handleClose]);
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
       ({
         spinnerAriaValueText: 'Submitting',
-        spinnerAriaLabel: 'submitting-custom-event-template',
+        spinnerAriaLabel: 'submitting-probe-template',
         isLoading: uploading,
       } as LoadingPropsType),
     [uploading]

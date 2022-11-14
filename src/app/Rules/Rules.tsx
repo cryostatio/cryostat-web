@@ -90,6 +90,28 @@ export interface Rule {
   maxSizeBytes: number;
 }
 
+export const ruleObjKeys = [
+  'name',
+  'description',
+  'matchExpression',
+  'enabled',
+  'eventSpecifier',
+  'archivalPeriodSeconds',
+  'initialDelaySeconds',
+  'preservedArchives',
+  'maxAgeSeconds',
+  'maxSizeBytes',
+];
+
+export const isRule = (obj: Object): boolean => {
+  for (const key of ruleObjKeys) {
+    if (!obj.hasOwnProperty(key)) {
+      return false;
+    }
+  } // Ignore unknown fields
+  return true;
+};
+
 export interface RulesProps {}
 
 export const Rules: React.FunctionComponent<RulesProps> = (props) => {

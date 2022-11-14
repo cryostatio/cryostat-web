@@ -43,9 +43,10 @@ import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { HelpIcon } from '@patternfly/react-icons';
-import { Rule } from './Rules';
-import { from, mergeMap, Observable, of } from 'rxjs';
-import { catchError, first } from 'rxjs/operators';
+import { isRule, Rule } from './Rules';
+import { from, Observable, of } from 'rxjs';
+import { catchError, concatMap, first } from 'rxjs/operators';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export interface RuleUploadModalProps {
   visible: boolean;
@@ -53,7 +54,16 @@ export interface RuleUploadModalProps {
 }
 
 export const parseRule = (file: File): Observable<Rule> => {
-  return from(file.text().then(JSON.parse));
+  return from(
+    file.text().then((content) => {
+      const obj = JSON.parse(content);
+      if (isRule(obj)) {
+        return obj;
+      } else {
+        throw new Error('Automatic rule content is invalid.');
+      }
+    })
+  );
 };
 
 export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (props) => {
@@ -101,6 +111,10 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
   }, [uploading, setShowCancelPrompt, reset]);
 
   const handleSubmit = React.useCallback(() => {
+    if (rejected) {
+      notifications.warning('File format is not compatible');
+      return;
+    }
     if (!uploadFile) {
       notifications.warning('Attempted to submit automated rule without a file selected');
       return;
@@ -110,11 +124,9 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
       parseRule(uploadFile)
         .pipe(
           first(),
-          mergeMap((rule) => context.api.createRule(rule)),
-          catchError((err, _) => {
-            if (err instanceof SyntaxError) {
-              notifications.danger('Automated rule upload failed', err.message);
-            }
+          concatMap((rule) => context.api.createRule(rule)), // FIXME: Add abort signal to request
+          catchError((err) => {
+            notifications.danger('Automated rule upload failed', err.message);
             return of(false);
           })
         )
@@ -125,13 +137,25 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
           }
         })
     );
-  }, [context.api, notifications, setUploading, uploadFile, handleClose]);
+  }, [context.api, notifications, setUploading, uploadFile, rejected, handleClose]);
 
   const handleAbort = React.useCallback(() => {
     abort.abort();
     reset();
     props.onClose();
-  }, [abort, reset]);
+  }, [abort, reset, props.onClose]);
+
+  const handleCloseCancelModal = React.useCallback(() => setShowCancelPrompt(false), [setShowCancelPrompt]);
+
+  const submitButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Submitting',
+        spinnerAriaLabel: 'submitting-automatic-rule',
+        isLoading: uploading,
+      } as LoadingPropsType),
+    [uploading]
+  );
 
   return (
     <>
@@ -139,7 +163,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
       <Modal
         isOpen={props.visible}
         variant={ModalVariant.large}
-        showClose={true}
+        showClose={!uploading}
         onClose={handleClose}
         title="Upload Automatic Rules"
         description="Select an Automatic Rules definition file to upload. File must be in valid JSON format."
@@ -166,7 +190,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
           title="Upload in Progress"
           message="Are you sure you wish to cancel the file upload?"
           onYes={handleAbort}
-          onNo={() => setShowCancelPrompt(false)}
+          onNo={handleCloseCancelModal}
         />
         <Form>
           <FormGroup label="JSON File" isRequired fieldId="file" validated={rejected ? 'error' : 'default'}>
@@ -175,6 +199,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
               value={uploadFile}
               filename={filename}
               onChange={handleFileChange}
+              isDisabled={uploading}
               isLoading={uploading}
               validated={rejected ? 'error' : 'default'}
               dropzoneProps={{
@@ -184,10 +209,15 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
             />
           </FormGroup>
           <ActionGroup>
-            <Button variant="primary" onClick={handleSubmit} isDisabled={!filename}>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              isDisabled={!filename || uploading}
+              {...submitButtonLoadingProps}
+            >
               Submit
             </Button>
-            <Button variant="link" onClick={handleClose}>
+            <Button variant="link" onClick={handleClose} isDisabled={uploading}>
               Cancel
             </Button>
           </ActionGroup>

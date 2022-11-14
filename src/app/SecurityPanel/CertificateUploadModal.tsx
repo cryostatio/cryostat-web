@@ -102,11 +102,9 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
         setUploading(false);
         if (success) {
           handleClose();
-        } else {
-          reset();
         }
       });
-  }, [rejected, uploadFile, notifications, setUploading, context.api, handleClose, reset]);
+  }, [rejected, uploadFile, notifications, setUploading, context.api, handleClose]);
 
   const submitButtonLoadingProps = React.useMemo(
     () =>

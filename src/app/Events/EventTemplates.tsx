@@ -448,12 +448,10 @@ export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUp
           setUploading(false);
           if (success) {
             handleClose();
-          } else {
-            reset();
           }
         })
     );
-  }, [fileRejected, uploadFile, window.console, setUploading, addSubscription, context.api, handleClose, reset]);
+  }, [fileRejected, uploadFile, window.console, setUploading, addSubscription, context.api, handleClose]);
 
   const submitButtonLoadingProps = React.useMemo(
     () =>

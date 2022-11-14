@@ -202,6 +202,7 @@ export class ApiService {
       headers,
     }).pipe(
       map((resp) => resp.ok),
+      catchError((_) => of(false)),
       first()
     );
   }
