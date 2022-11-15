@@ -46,6 +46,7 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  EmptyState,
   Grid,
   GridItem,
   LabelGroup,
@@ -54,6 +55,8 @@ import {
   TextVariants,
   Toolbar,
   ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
   Tooltip,
 } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -116,14 +119,15 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     (arr: [string, RuleEvaluation][]) => {
       const map = new Map<string, RuleEvaluation[]>();
       arr.forEach(([_, evaluation]) => {
-        const obj = map.get(evaluation.topic);
-        if (obj === undefined) {
+        const topicValue = map.get(evaluation.topic);
+        if (topicValue === undefined) {
           map.set(evaluation.topic, [evaluation]);
         } else {
-          obj.push(evaluation);
+          topicValue.push(evaluation);     
+          topicValue.sort((a, b) => (b.score - a.score));
         }
       });
-      setCategorizedEvaluation(Array.from(map) as [string, RuleEvaluation[]][]);
+      setCategorizedEvaluation((Array.from(map) as [string, RuleEvaluation[]][]).sort());
       setIsLoading(false);
       setIsError(false);
     },
@@ -364,7 +368,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           .filter(([_, evaluations]) => evaluations.length > 0)
           .map(([topic, evaluations]) => {
             return (
-              <GridItem span={3} key={`gridItem-${topic}`}>
+              <GridItem className='automated-analysis-grid-item' span={3} key={`gridItem-${topic}`}>
                 <LabelGroup categoryName={topic} isVertical numLabels={3} isCompact key={`topic-${topic}`}>
                   {evaluations.map((evaluation) => {
                     return <ClickableAutomatedAnalysisLabel label={evaluation} isSelected={false} />;
@@ -436,6 +440,42 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
   }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits, clearCachedReports, clearAnalysis, startProfilingRecording]);
 
+  const toolbar = React.useMemo(() => {
+    if (isError) {
+      return null;
+    }
+    return (
+      <Toolbar
+      id="automated-analysis-toolbar"
+      aria-label="automated-analysis-toolbar"
+      clearAllFilters={handleClearFilters}
+      clearFiltersButtonText="Clear"
+      isFullHeight
+    >          
+      <ToolbarContent>
+        <AutomatedAnalysisFilters 
+            target={targetConnectURL}
+            evaluations={categorizedEvaluation} 
+            filters={targetAutomatedAnalysisFilters} 
+            updateFilters={updateFilters}
+        />
+        <ToolbarGroup>
+          <ToolbarItem>
+            <Button
+              isSmall
+              isAriaDisabled={isLoading}
+              aria-label="Refresh automated analysis"
+              onClick={takeSnapshot}
+              variant="control"
+              icon={<Spinner2Icon />}
+            />
+          </ToolbarItem>
+        </ToolbarGroup>
+      </ToolbarContent>
+    </Toolbar>
+    );
+  }, [isLoading, isError, targetConnectURL, categorizedEvaluation, targetAutomatedAnalysisFilters, takeSnapshot, handleClearFilters, updateFilters]);
+
   const view = React.useMemo(() => {
     if (isError) {
       return (
@@ -461,6 +501,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   return (
     <Card id="automated-analysis-card" isRounded isCompact isExpanded={isExpanded}>
       <CardHeader
+        isToggleRightAligned
         onExpand={onExpand}
         toggleButtonProps={{
           id: 'toggle-button1',
@@ -471,29 +512,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       >
         <CardTitle component="h4">Automated Analysis</CardTitle>
         <CardActions>
-          <Toolbar
-            id="automated-analysis-toolbar"
-            aria-label="automated-analysis-toolbar"
-            clearAllFilters={handleClearFilters}
-          >
-            <ToolbarContent>
-              <AutomatedAnalysisFilters 
-                  target={targetConnectURL}
-                  evaluations={categorizedEvaluation} 
-                  filters={targetAutomatedAnalysisFilters} 
-                  updateFilters={updateFilters}
-              />
-              <Button
-                isSmall
-                isAriaDisabled={isLoading}
-                aria-label="Refresh automated analysis"
-                onClick={takeSnapshot}
-                variant="control"
-                icon={<Spinner2Icon />}
-              />
-            </ToolbarContent>
-          </Toolbar>
-
+          {toolbar}
         </CardActions>
       </CardHeader>
       <CardExpandableContent>

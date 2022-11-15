@@ -54,9 +54,18 @@ html, body, #root {
   padding-right: 10rem;
 }
 
+.automated-analysis-grid-item {
+  padding: 0.25em;
+}
+
 .pf-c-label-group.pf-m-vertical.pf-c-label-group {
   height: 100%;
   width: 100%;
+  background-color: #f0f0f0;
+  border-color: #d3dbe3;
+  border-style: solid;
+  border-width: 0.2em;
+  border-radius: 0.5em;
 }
 
 .pf-c-label-group__label {

@@ -66,7 +66,7 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
       aria-label="Filter by score"
       placeholderText="Filter by score"
     >
-      {Object.values(AutomatedAnalysisScoreState).map((rs) => (
+      {Object.keys(AutomatedAnalysisScoreState).map((rs) => (
         <SelectOption aria-label={`${rs} State`} key={rs} value={rs} />
       ))}
     </Select>

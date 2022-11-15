@@ -1252,10 +1252,10 @@ export interface ActiveRecording extends Omit<ArchivedRecording, 'size' | 'archi
 }
 
 export enum AutomatedAnalysisScoreState {
-  NA = -1,
-  OK = ORANGE_SCORE_THRESHOLD,
-  WARNING = RED_SCORE_THRESHOLD,
-  CRITICAL = 100,
+  NA = 'NA',
+  OK = 'OK',
+  WARNING = 'WARNING',
+  CRITICAL = 'CRITICAL',
 }
 
 export enum RecordingState {

@@ -54,14 +54,15 @@ import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilt
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { automatedAnalysisUpdateCategoryIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
-import { RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD, RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { AutomatedAnalysisTopicFilter } from './Filters/AutomatedAnalysisTopicFilter';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
+import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
   
   export interface AutomatedAnalysisFiltersCategories {
     Name: string[];
     Topic: string[];
-    Score: number[];
+    Score: AutomatedAnalysisScoreState[];
   }
   
   export const emptyAutomatedAnalysisFilters = {
@@ -181,7 +182,6 @@ import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFi
       <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
         <ToolbarGroup variant="filter-group">
           <ToolbarItem>
-            <InputGroup>
               {categoryDropdown}
               {Object.keys(props.filters).map((filterKey, i) => (
                 <ToolbarFilter
@@ -195,12 +195,21 @@ import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFi
                   {filterDropdownItems[i]}
                 </ToolbarFilter>
               ))}
-            </InputGroup>
           </ToolbarItem>
         </ToolbarGroup>
       </ToolbarToggleGroup>
     );
   };
+
+  const categorizeScores = (evaluation: RuleEvaluation): AutomatedAnalysisScoreState => {
+    return evaluation.score == -1
+      ? AutomatedAnalysisScoreState.NA
+      : evaluation.score < ORANGE_SCORE_THRESHOLD
+      ? AutomatedAnalysisScoreState.OK
+      : evaluation.score < RED_SCORE_THRESHOLD
+      ? AutomatedAnalysisScoreState.WARNING
+      : AutomatedAnalysisScoreState.CRITICAL;
+  }
   
   export const filterAutomatedAnalysis = (topicEvalTuple: [string, RuleEvaluation[]][], filters: AutomatedAnalysisFiltersCategories) => {
     if (!topicEvalTuple || !topicEvalTuple.length) {
@@ -208,7 +217,6 @@ import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFi
     }
     
     let filtered = topicEvalTuple;
-    console.log(filters);
   
     if (!!filters.Name.length) {
       filtered = filtered.map(([topic, evaluations]) => {
@@ -220,7 +228,16 @@ import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFi
     }
     if (filters.Score != null && !!filters.Score.length) {
       filtered = filtered.map(([topic, evaluations]) => {
-        return [topic, evaluations.filter((evaluation) => Math.max(...filters.Score) > evaluation.score)] as [
+        return [topic, 
+          evaluations.filter((evaluation) => {
+            let score = categorizeScores(evaluation);
+            console.log(score);
+            
+            console.log(filters.Score);
+            
+            return filters.Score.includes(score);
+          })
+        ] as [
           string,
           RuleEvaluation[]
         ];
