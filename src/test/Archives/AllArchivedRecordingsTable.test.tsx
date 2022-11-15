@@ -37,14 +37,14 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { AllArchivedRecordingsTable } from '@app/Archives/AllArchivedRecordingsTable';
 import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/Api.service';
+import { renderWithServiceContext } from '../Common';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockJvmId1 = 'fooJvmId1';
@@ -177,6 +177,8 @@ jest
   .mockReturnValueOnce(of());
 
 describe('<AllArchivedRecordingsTable />', () => {
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
@@ -189,22 +191,14 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('shows no recordings when empty', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AllArchivedRecordingsTable />
-      </ServiceContext.Provider>
-    );
+  it('shows no recordings when empty', async () => {
+    renderWithServiceContext(<AllArchivedRecordingsTable />);
 
     expect(screen.getByText('No Archived Recordings')).toBeInTheDocument();
   });
 
-  it('has the correct table elements', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AllArchivedRecordingsTable />
-      </ServiceContext.Provider>
-    );
+  it('has the correct table elements', async () => {
+    renderWithServiceContext(<AllArchivedRecordingsTable />);
 
     expect(screen.getByLabelText('all-archives-table')).toBeInTheDocument();
     expect(screen.getByText('Directory')).toBeInTheDocument();
@@ -213,12 +207,8 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
-  it('correctly handles the search function', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AllArchivedRecordingsTable />
-      </ServiceContext.Provider>
-    );
+  it('correctly handles the search function', async () => {
+    const { user } = renderWithServiceContext(<AllArchivedRecordingsTable />);
 
     const search = screen.getByLabelText('Search input');
 
@@ -226,7 +216,7 @@ describe('<AllArchivedRecordingsTable />', () => {
     let rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(3);
 
-    userEvent.type(search, '1');
+    await user.type(search, '1');
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(1);
@@ -234,22 +224,18 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(within(firstTarget).getByText(`${mockConnectUrl1}`)).toBeTruthy();
     expect(within(firstTarget).getByText(`${mockCount1}`)).toBeTruthy();
 
-    userEvent.type(search, 'asdasdjhj');
+    await user.type(search, 'asdasdjhj');
     expect(screen.getByText('No Archived Recordings')).toBeInTheDocument();
     expect(screen.queryByLabelText('all-archives-table')).not.toBeInTheDocument();
 
-    userEvent.clear(search);
+    await user.clear(search);
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(3);
   });
 
-  it('expands targets to show their <ArchivedRecordingsTable />', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AllArchivedRecordingsTable />
-      </ServiceContext.Provider>
-    );
+  it('expands targets to show their <ArchivedRecordingsTable />', async () => {
+    const { user } = renderWithServiceContext(<AllArchivedRecordingsTable />);
 
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
 
@@ -259,7 +245,7 @@ describe('<AllArchivedRecordingsTable />', () => {
 
     let firstTarget = rows[0];
     const expand = within(firstTarget).getByLabelText('Details');
-    userEvent.click(expand);
+    await user.click(expand);
 
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
@@ -268,19 +254,15 @@ describe('<AllArchivedRecordingsTable />', () => {
     let expandedTable = rows[1];
     expect(within(expandedTable).getByText('Archived Recordings Table')).toBeTruthy();
 
-    userEvent.click(expand);
+    await user.click(expand);
     tableBody = screen.getAllByRole('rowgroup')[1];
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(3);
     expect(screen.queryByText('Archived Recordings Table')).not.toBeInTheDocument();
   });
 
-  it('increments the count when an archived recording is saved', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AllArchivedRecordingsTable />
-      </ServiceContext.Provider>
-    );
+  it('increments the count when an archived recording is saved', async () => {
+    renderWithServiceContext(<AllArchivedRecordingsTable />);
 
     let tableBody = screen.getAllByRole('rowgroup')[1];
     let rows = within(tableBody).getAllByRole('row');
@@ -291,12 +273,8 @@ describe('<AllArchivedRecordingsTable />', () => {
     expect(within(thirdTarget).getByText(4)).toBeTruthy();
   });
 
-  it('decrements the count when an archived recording is deleted', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AllArchivedRecordingsTable />
-      </ServiceContext.Provider>
-    );
+  it('decrements the count when an archived recording is deleted', async () => {
+    renderWithServiceContext(<AllArchivedRecordingsTable />);
 
     let tableBody = screen.getAllByRole('rowgroup')[1];
     let rows = within(tableBody).getAllByRole('row');

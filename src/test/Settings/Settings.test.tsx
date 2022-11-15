@@ -39,7 +39,6 @@ import * as React from 'react';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
 import { cleanup } from '@testing-library/react';
-
 import { Text } from '@patternfly/react-core';
 import { Settings } from '@app/Settings/Settings';
 

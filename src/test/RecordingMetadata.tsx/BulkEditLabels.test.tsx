@@ -36,15 +36,15 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import userEvent from '@testing-library/user-event';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { of } from 'rxjs';
 import '@testing-library/jest-dom';
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { renderWithServiceContext } from '../Common';
 
 jest.mock('@patternfly/react-core', () => ({
   ...jest.requireActual('@patternfly/react-core'),
@@ -151,12 +151,8 @@ describe('<BulkEditLabels />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('should display read-only labels from selected recordings', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
-      </ServiceContext.Provider>
-    );
+  it('should display read-only labels from selected recordings', async () => {
+    renderWithServiceContext(<BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />);
 
     const label = screen.getByLabelText('someLabel: someValue');
     expect(label).toBeInTheDocument();
@@ -172,12 +168,8 @@ describe('<BulkEditLabels />', () => {
     expect(editButton).not.toBeDisabled();
   });
 
-  it('should not display labels for unchecked recordings', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels checkedIndices={emptycheckIndices} isTargetRecording={true} />
-      </ServiceContext.Provider>
-    );
+  it('should not display labels for unchecked recordings', async () => {
+    renderWithServiceContext(<BulkEditLabels checkedIndices={emptycheckIndices} isTargetRecording={true} />);
 
     expect(screen.queryByText('someLabel')).not.toBeInTheDocument();
     expect(screen.queryByText('someValue')).not.toBeInTheDocument();
@@ -187,18 +179,16 @@ describe('<BulkEditLabels />', () => {
     expect(placeHolder).toBeVisible();
   });
 
-  it('should display editable labels form when in edit mode', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
-      </ServiceContext.Provider>
+  it('should display editable labels form when in edit mode', async () => {
+    const { user } = renderWithServiceContext(
+      <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
     );
 
     const editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
-    userEvent.click(editButton);
+    await user.click(editButton);
 
     const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
@@ -225,12 +215,8 @@ describe('<BulkEditLabels />', () => {
     expect(cancelButton).toBeVisible();
   });
 
-  it('should update the target recording labels after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
-      </ServiceContext.Provider>
-    );
+  it('should update the target recording labels after receiving a notification', async () => {
+    renderWithServiceContext(<BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />);
 
     const newLabel = screen.getByLabelText('someNewLabel: someNewValue');
     expect(newLabel).toBeInTheDocument();
@@ -241,12 +227,8 @@ describe('<BulkEditLabels />', () => {
     expect(oldLabel).toBeVisible();
   });
 
-  it('should update the archived recording labels after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
-      </ServiceContext.Provider>
-    );
+  it('should update the archived recording labels after receiving a notification', async () => {
+    renderWithServiceContext(<BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />);
 
     const newLabel = screen.getByLabelText('someNewLabel: someNewValue');
     expect(newLabel).toBeInTheDocument();
@@ -258,17 +240,15 @@ describe('<BulkEditLabels />', () => {
   });
 
   it('should return to read-only view when edited labels are cancelled', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
-      </ServiceContext.Provider>
+    const { user } = renderWithServiceContext(
+      <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
     );
 
     let editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
-    userEvent.click(editButton);
+    await user.click(editButton);
 
     let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
@@ -294,7 +274,7 @@ describe('<BulkEditLabels />', () => {
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
-    userEvent.click(cancelButton);
+    await user.click(cancelButton);
 
     editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
@@ -303,18 +283,18 @@ describe('<BulkEditLabels />', () => {
   });
 
   it('should save target recording labels when Save is clicked', async () => {
-    const saveRequestSpy = jest.spyOn(defaultServices.api, 'postTargetRecordingMetadata').mockReturnValue(of());
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
-      </ServiceContext.Provider>
+    const saveRequestSpy = jest
+      .spyOn(defaultServices.api, 'postTargetRecordingMetadata')
+      .mockReturnValue(of([mockActiveRecording]));
+    const { user } = renderWithServiceContext(
+      <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
     );
 
     let editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
-    userEvent.click(editButton);
+    await user.click(editButton);
 
     let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
@@ -340,24 +320,24 @@ describe('<BulkEditLabels />', () => {
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
-    userEvent.click(saveButton);
+    await user.click(saveButton);
 
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should save archived recording labels when Save is clicked', async () => {
-    const saveRequestSpy = jest.spyOn(defaultServices.api, 'postRecordingMetadata').mockReturnValue(of());
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
-      </ServiceContext.Provider>
+    const saveRequestSpy = jest
+      .spyOn(defaultServices.api, 'postRecordingMetadata')
+      .mockReturnValue(of([mockArchivedRecording]));
+    const { user } = renderWithServiceContext(
+      <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
     );
 
     let editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
-    userEvent.click(editButton);
+    await user.click(editButton);
 
     let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
@@ -383,7 +363,7 @@ describe('<BulkEditLabels />', () => {
     expect(cancelButton).toBeInTheDocument();
     expect(cancelButton).toBeVisible();
 
-    userEvent.click(saveButton);
+    await user.click(saveButton);
 
     expect(saveRequestSpy).toHaveBeenCalledTimes(1);
   });

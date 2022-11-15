@@ -37,15 +37,14 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { createMemoryHistory } from 'history';
 import { of } from 'rxjs';
-
 import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import userEvent from '@testing-library/user-event';
 import { Target } from '@app/Shared/Services/Target.service';
+import { renderWithServiceContext } from '../Common';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
@@ -130,12 +129,8 @@ describe('<TargetSelect />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('contains the correct information', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+  it('contains the correct information', async () => {
+    renderWithServiceContext(<TargetSelect />);
 
     expect(screen.getByText('Target JVM')).toBeInTheDocument();
     expect(screen.getByText(`Select target...`)).toBeInTheDocument();
@@ -145,17 +140,13 @@ describe('<TargetSelect />', () => {
     expect(screen.getByLabelText('Options menu')).toBeInTheDocument();
   });
 
-  it('renders empty state when expanded', () => {
-    const { container } = render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+  it('renders empty state when expanded', async () => {
+    const { container, user } = renderWithServiceContext(<TargetSelect />);
 
     expect(screen.getByText('Select target...')).toBeInTheDocument();
 
     const expandButton = screen.getByLabelText('Details');
-    userEvent.click(expandButton);
+    await user.click(expandButton);
 
     const articleElement = container.querySelector('article');
     expect(articleElement).toBeInTheDocument();
@@ -166,15 +157,11 @@ describe('<TargetSelect />', () => {
     expect(screen.getByText(`To view this content, select a JVM target.`)).toBeVisible();
   });
 
-  it('renders serialized target when expanded', () => {
-    const { container } = render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+  it('renders serialized target when expanded', async () => {
+    const { container, user } = renderWithServiceContext(<TargetSelect />);
 
     const expandButton = screen.getByLabelText('Details');
-    userEvent.click(expandButton);
+    await user.click(expandButton);
 
     const codeElement = container.querySelector('code');
     expect(codeElement).toBeTruthy();
@@ -185,16 +172,12 @@ describe('<TargetSelect />', () => {
     expect(codeContent).toEqual(JSON.stringify(mockFooTarget, null, 0).replace(/[\s]/g, ''));
   });
 
-  it('renders dropdown of multiple discovered targets', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+  it('renders dropdown of multiple discovered targets', async () => {
+    const { user } = renderWithServiceContext(<TargetSelect />);
 
     expect(screen.getByText(`fooTarget`)).toBeInTheDocument();
 
-    userEvent.click(screen.getByLabelText('Options menu'));
+    await user.click(screen.getByLabelText('Options menu'));
     expect(screen.getByLabelText('Select Target')).toBeInTheDocument();
     expect(screen.getByText(`Select target...`)).toBeInTheDocument();
     expect(screen.getByText(`fooTarget (service:jmx:rmi://someFooUrl)`)).toBeInTheDocument();
@@ -202,53 +185,43 @@ describe('<TargetSelect />', () => {
     expect(screen.getByText('2')).toBeInTheDocument(); // Number of discoverable targets
   });
 
-  it('creates a target if user completes modal', () => {
+  it('creates a target if user completes modal', async () => {
     const createTargetRequestSpy = jest.spyOn(defaultServices.api, 'createTarget');
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<TargetSelect />);
+
     const createButton = screen.getByLabelText('Create target');
-    userEvent.click(createButton);
+    await user.click(createButton);
 
     const textBoxes = screen.getAllByRole('textbox');
 
-    userEvent.type(textBoxes[0], 'service:jmx:rmi://someBazUrl');
-    userEvent.type(textBoxes[1], 'bazTarget');
+    await user.type(textBoxes[0], 'service:jmx:rmi://someBazUrl');
+    await user.type(textBoxes[1], 'bazTarget');
 
-    userEvent.click(screen.getByText('Create'));
+    await user.click(screen.getByText('Create'));
 
     expect(createTargetRequestSpy).toBeCalledTimes(1);
     expect(createTargetRequestSpy).toBeCalledWith(mockBazTarget);
   });
 
   it('deletes target when delete button clicked', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<TargetSelect />);
 
     const deleteButton = screen.getByLabelText('Delete target');
     await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-    userEvent.click(deleteButton);
+    await user.click(deleteButton);
 
     const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
     expect(deleteTargetRequestSpy).toBeCalledTimes(1);
     expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
   });
 
-  it('does nothing when trying to delete non-custom targets', () => {
+  it('does nothing when trying to delete non-custom targets', async () => {
     const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<TargetSelect />);
+
     const deleteButton = screen.getByLabelText('Delete target');
-    userEvent.click(deleteButton);
+    await user.click(deleteButton);
 
     expect(deleteTargetRequestSpy).toBeCalledTimes(0);
     expect(deleteButton).toBeDisabled();
@@ -256,11 +229,7 @@ describe('<TargetSelect />', () => {
 
   it('deletes target when warning modal is accepted', async () => {
     const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<TargetSelect />);
 
     const deleteButton = screen.getByLabelText('Delete target');
     expect(deleteButton).toBeInTheDocument();
@@ -268,7 +237,7 @@ describe('<TargetSelect />', () => {
 
     await waitFor(() => expect(deleteButton).not.toBeDisabled());
 
-    userEvent.click(deleteButton);
+    await user.click(deleteButton);
 
     const warningDialog = await screen.findByRole('dialog');
     expect(warningDialog).toBeInTheDocument();
@@ -278,28 +247,25 @@ describe('<TargetSelect />', () => {
     expect(acceptDeleteButton).toBeInTheDocument();
     expect(acceptDeleteButton).toBeVisible();
 
-    userEvent.click(acceptDeleteButton);
+    await user.click(acceptDeleteButton);
 
     expect(deleteTargetRequestSpy).toBeCalledTimes(1);
     expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
   });
 
-  it('does not create a target if user leaves connectUrl empty', () => {
+  it('does not create a target if user leaves connectUrl empty', async () => {
     const createTargetRequestSpy = jest.spyOn(defaultServices.api, 'createTarget');
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <TargetSelect />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<TargetSelect />);
+
     const createButton = screen.getByLabelText('Create target');
-    userEvent.click(createButton);
+    await user.click(createButton);
 
     const confirmButton = screen.getByText('Create');
     expect(confirmButton).toBeInTheDocument();
     expect(confirmButton).toBeVisible();
     expect(confirmButton).toBeDisabled();
 
-    userEvent.keyboard('{Enter}');
+    await user.keyboard('{Enter}');
     expect(createTargetRequestSpy).toBeCalledTimes(0);
   });
 });

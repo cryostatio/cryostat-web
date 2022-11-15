@@ -36,11 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import renderer from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
+import renderer, { act } from 'react-test-renderer';
+import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { CRYOSTAT_TRADEMARK } from '@app/About/AboutDescription';
 import { About } from '@app/About/About';
+import { renderDefault } from '../Common';
 
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   return {
@@ -65,13 +66,18 @@ jest.mock('@app/About/AboutDescription', () => {
 });
 
 describe('<About />', () => {
-  it('renders correctly', () => {
-    const tree = renderer.create(<About />);
+  afterEach(cleanup);
+
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(<About />);
+    });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('contains the correct information', () => {
-    render(<About />);
+  it('contains the correct information', async () => {
+    renderDefault(<About />);
 
     expect(screen.getByText('About')).toBeInTheDocument();
     const logo = screen.getByRole('img');

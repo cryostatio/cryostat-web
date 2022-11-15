@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
@@ -45,6 +45,7 @@ import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Target } from '@app/Shared/Services/Target.service';
 import userEvent from '@testing-library/user-event';
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
+import { renderDefault } from '../Common';
 
 const mockFooTarget: Target = {
   connectUrl: 'service:jmx:rmi://someFooUrl',
@@ -89,10 +90,10 @@ describe('<LabelCell />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('should display read-only labels', () => {
-    render(<LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} />);
+  it('should display read-only labels', async () => {
+    renderDefault(<LabelCell target={mockFooTarget.connectUrl} labels={mockLabelList} />);
 
-    mockLabelStringDisplayList.forEach((labelAsString) => {
+    for (const labelAsString of mockLabelStringDisplayList) {
       const displayedLabel = screen.getByLabelText(labelAsString);
 
       expect(displayedLabel).toBeInTheDocument();
@@ -100,13 +101,13 @@ describe('<LabelCell />', () => {
 
       expect(displayedLabel.onclick).toBeNull();
 
-      userEvent.click(displayedLabel);
+      await userEvent.click(displayedLabel);
       expect(onUpdateLabels).not.toHaveBeenCalled();
-    });
+    }
   });
 
-  it('should display clickable labels', () => {
-    render(
+  it('should display clickable labels', async () => {
+    renderDefault(
       <LabelCell
         target={mockFooTarget.connectUrl}
         labels={mockLabelList}
@@ -115,13 +116,14 @@ describe('<LabelCell />', () => {
     );
 
     let count = 0;
-    mockLabelStringDisplayList.forEach((labelAsString, index) => {
+    let index = 0;
+    for (const labelAsString of mockLabelStringDisplayList) {
       const displayedLabel = screen.getByLabelText(labelAsString);
 
       expect(displayedLabel).toBeInTheDocument();
       expect(displayedLabel).toBeVisible();
 
-      userEvent.click(displayedLabel);
+      await userEvent.click(displayedLabel);
 
       expect(onUpdateLabels).toHaveBeenCalledTimes(++count);
       expect(onUpdateLabels).toHaveBeenCalledWith(mockFooTarget.connectUrl, {
@@ -129,11 +131,12 @@ describe('<LabelCell />', () => {
         filterValue: mockLabelStringList[index],
         deleted: false,
       });
-    });
+      index++;
+    }
   });
 
-  it('should display placeholder when there is no label', () => {
-    render(<LabelCell target={mockFooTarget.connectUrl} labels={[]} />);
+  it('should display placeholder when there is no label', async () => {
+    renderDefault(<LabelCell target={mockFooTarget.connectUrl} labels={[]} />);
 
     const placeHolder = screen.getByText('-');
     expect(placeHolder).toBeInTheDocument();

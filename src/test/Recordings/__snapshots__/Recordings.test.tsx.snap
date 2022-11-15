@@ -5,7 +5,7 @@ exports[`<Recordings /> renders correctly 1`] = `
   Recordings
   <article
     className="pf-c-card"
-    data-ouia-component-id="OUIA-Generated-Card-1"
+    data-ouia-component-id="OUIA-Generated-Card-5"
     data-ouia-component-type="PF4/Card"
     data-ouia-safe={true}
     id=""
@@ -15,7 +15,7 @@ exports[`<Recordings /> renders correctly 1`] = `
     >
       <div
         className="pf-c-tabs"
-        data-ouia-component-id="OUIA-Generated-Tabs-1"
+        data-ouia-component-id="OUIA-Generated-Tabs-4"
         data-ouia-component-type="PF4/Tabs"
         data-ouia-safe={true}
         id="recordings"
@@ -41,7 +41,11 @@ exports[`<Recordings /> renders correctly 1`] = `
               role="tab"
               type="button"
             >
-              Active Recordings
+              <span
+                className="pf-c-tabs__item-text"
+              >
+                Active Recordings
+              </span>
             </button>
           </li>
           <li
@@ -59,7 +63,11 @@ exports[`<Recordings /> renders correctly 1`] = `
               role="tab"
               type="button"
             >
-              Archived Recordings
+              <span
+                className="pf-c-tabs__item-text"
+              >
+                Archived Recordings
+              </span>
             </button>
           </li>
         </ul>

@@ -38,20 +38,22 @@
 
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import LoadingView from '@app/LoadingView/LoadingView';
 
 describe('<LoadingView />', () => {
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
-      tree = renderer.create(<LoadingView></LoadingView>);
+      tree = renderer.create(<LoadingView />);
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('should show spinner and title', () => {
-    render(<LoadingView title="Progressing"></LoadingView>);
+  it('should show spinner and title', async () => {
+    render(<LoadingView title="Progressing" />);
 
     const title = screen.getByText('Progressing');
     expect(title).toBeInTheDocument();

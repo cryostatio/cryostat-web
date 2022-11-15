@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { act as doAct, cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { act as doAct, cleanup, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
@@ -48,9 +48,9 @@ import {
   NotificationMessage,
 } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import userEvent from '@testing-library/user-event';
 import { DeleteProbeTemplates } from '@app/Modal/DeleteWarningUtils';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
+import { renderWithServiceContext } from '../Common';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -133,33 +133,23 @@ describe('<AgentProbeTemplates />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('should add a probe template after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={true} />
-      </ServiceContext.Provider>
-    );
+  it('should add a probe template after receiving a notification', async () => {
+    renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
 
     const addTemplateName = screen.getByText('anotherProbeTemplate');
     expect(addTemplateName).toBeInTheDocument();
     expect(addTemplateName).toBeVisible();
   });
 
-  it('should remove a probe template after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={true} />
-      </ServiceContext.Provider>
-    );
+  it('should remove a probe template after receiving a notification', async () => {
+    renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+
     expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
   });
 
-  it('should display the column header fields', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={true} />
-      </ServiceContext.Provider>
-    );
+  it('should display the column header fields', async () => {
+    renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+
     const nameHeader = screen.getByText('Name');
     expect(nameHeader).toBeInTheDocument();
     expect(nameHeader).toBeVisible();
@@ -170,17 +160,13 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should show modal when uploading', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={true} />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
 
     const uploadButton = screen.getByRole('button', { name: 'Upload' });
     expect(uploadButton).toBeInTheDocument();
     expect(uploadButton).toBeVisible();
 
-    userEvent.click(uploadButton);
+    await user.click(uploadButton);
 
     const uploadModal = await screen.findByRole('dialog');
     expect(uploadModal).toBeInTheDocument();
@@ -192,17 +178,13 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should upload a probe template when form is filled and Submit is clicked', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={true} />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
 
     const uploadButton = screen.getByRole('button', { name: 'Upload' });
     expect(uploadButton).toBeInTheDocument();
     expect(uploadButton).toBeVisible();
 
-    userEvent.click(uploadButton);
+    await user.click(uploadButton);
 
     const uploadModal = await screen.findByRole('dialog');
     expect(uploadModal).toBeInTheDocument();
@@ -226,8 +208,8 @@ describe('<AgentProbeTemplates />', () => {
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    userEvent.click(browseButton);
-    userEvent.upload(uploadInput, mockFileUpload);
+    await user.click(browseButton);
+    await user.upload(uploadInput, mockFileUpload);
 
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
@@ -235,7 +217,7 @@ describe('<AgentProbeTemplates />', () => {
     const submitButton = screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await doAct(async () => {
-      userEvent.click(submitButton);
+      await user.click(submitButton);
     });
 
     expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
@@ -244,19 +226,15 @@ describe('<AgentProbeTemplates />', () => {
 
   it('should delete a probe template when Delete is clicked', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={true} />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await user.click(screen.getByLabelText('Actions'));
 
     const deleteButton = await screen.findByText('Delete');
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).toBeVisible();
 
-    userEvent.click(deleteButton);
+    await user.click(deleteButton);
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
@@ -264,19 +242,15 @@ describe('<AgentProbeTemplates />', () => {
 
   it('should show warning modal and delete a probe template when confirmed', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={true} />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await user.click(screen.getByLabelText('Actions'));
 
     const deleteButton = await screen.findByText('Delete');
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).toBeVisible();
 
-    userEvent.click(deleteButton);
+    await user.click(deleteButton);
 
     const warningModal = await screen.findByRole('dialog');
     expect(warningModal).toBeInTheDocument();
@@ -290,7 +264,7 @@ describe('<AgentProbeTemplates />', () => {
     expect(confirmButton).toBeInTheDocument();
     expect(confirmButton).toBeVisible();
 
-    userEvent.click(confirmButton);
+    await user.click(confirmButton);
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someProbeTemplate');
@@ -298,32 +272,25 @@ describe('<AgentProbeTemplates />', () => {
 
   it('should insert probes if agent is enabled', async () => {
     const insertProbesSpy = jest.spyOn(defaultServices.api, 'insertProbes').mockReturnValue(of(true));
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={true} />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
 
-    userEvent.click(screen.getByLabelText('Actions'));
+    await user.click(screen.getByLabelText('Actions'));
 
     const insertButton = await screen.findByText('Insert Probes...');
     expect(insertButton).toBeInTheDocument();
     expect(insertButton).toBeVisible();
     expect(insertButton.getAttribute('aria-disabled')).toBe('false');
 
-    userEvent.click(insertButton);
+    await user.click(insertButton);
 
     expect(insertProbesSpy).toHaveBeenCalledTimes(1);
     expect(insertProbesSpy).toHaveBeenCalledWith(mockProbeTemplate.name);
   });
 
   it('should disable inserting probes if agent is not enabled', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={false} />
-      </ServiceContext.Provider>
-    );
-    userEvent.click(screen.getByLabelText('Actions'));
+    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={false} />);
+
+    await user.click(screen.getByLabelText('Actions'));
 
     const insertButton = await screen.findByText('Insert Probes...');
     expect(insertButton).toBeInTheDocument();
@@ -331,18 +298,14 @@ describe('<AgentProbeTemplates />', () => {
     expect(insertButton.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('should shown empty state when table is empty', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentProbeTemplates agentDetected={false} />
-      </ServiceContext.Provider>
-    );
+  it('should shown empty state when table is empty', async () => {
+    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
 
     const filterInput = screen.getByLabelText('Probe template filter');
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 
-    userEvent.type(filterInput, 'someveryoddname');
+    await user.type(filterInput, 'someveryoddname');
 
     expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
 

@@ -42,19 +42,66 @@ import { Provider } from 'react-redux';
 import { setupStore } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
+// userEvent functions are recommended to be called in tests (i.e it()).
+// See https://testing-library.com/docs/user-event/intro#writing-tests-with-userevent
+import userEvent from '@testing-library/user-event';
+
+export const renderDefault = (
+  ui: React.ReactElement,
+  {
+    user = userEvent.setup(), // Create a default user session
+    ...renderOptions
+  } = {}
+) => {
+  return { user, ...render(ui, { ...renderOptions }) };
+};
 
 export const renderWithReduxStore = (
   ui: React.ReactElement,
   {
     preloadState = {},
     store = setupStore(preloadState), // Create a new store instance if no store was passed in
+    user = userEvent.setup(), // Create a default user session
     ...renderOptions
   } = {}
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return <Provider store={store}>{children}</Provider>;
   };
-  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+  return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};
+
+export const renderWithServiceContext = (
+  ui: React.ReactElement,
+  {
+    services = defaultServices,
+    user = userEvent.setup(), // Create a default user session
+    ...renderOptions
+  } = {}
+) => {
+  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+    return <ServiceContext.Provider value={services}>{children}</ServiceContext.Provider>;
+  };
+  return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};
+
+export const renderWithRouter = (
+  ui: React.ReactElement,
+  {
+    history = createMemoryHistory({ initialEntries: ['/'] }),
+    user = userEvent.setup(), // Create a default user session
+    ...renderOptions
+  } = {}
+) => {
+  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+    return (
+      <Router location={history.location} history={history}>
+        {children}
+      </Router>
+    );
+  };
+  return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
 
 export const renderWithServiceContextAndReduxStore = (
@@ -63,6 +110,7 @@ export const renderWithServiceContextAndReduxStore = (
     preloadState = {},
     store = setupStore(preloadState), // Create a new store instance if no store was passed in
     services = defaultServices,
+    user = userEvent.setup(), // Create a default user session
     ...renderOptions
   } = {}
 ) => {
@@ -73,7 +121,28 @@ export const renderWithServiceContextAndReduxStore = (
       </ServiceContext.Provider>
     );
   };
-  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+  return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};
+
+export const renderWithServiceContextAndRouter = (
+  ui: React.ReactElement,
+  {
+    services = defaultServices,
+    user = userEvent.setup(), // Create a default user session
+    history = createMemoryHistory({ initialEntries: ['/'] }),
+    ...renderOptions
+  } = {}
+) => {
+  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+    return (
+      <ServiceContext.Provider value={services}>
+        <Router location={history.location} history={history}>
+          {children}
+        </Router>
+      </ServiceContext.Provider>
+    );
+  };
+  return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
 
 export const renderWithServiceContextAndReduxStoreWithRouter = (
@@ -82,9 +151,10 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
     preloadState = {},
     store = setupStore(preloadState), // Create a new store instance if no store was passed in
     services = defaultServices,
-    history,
+    user = userEvent.setup(), // Create a default user session
+    history = createMemoryHistory({ initialEntries: ['/'] }),
     ...renderOptions
-  }
+  } = {}
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
@@ -97,16 +167,5 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
       </ServiceContext.Provider>
     );
   };
-  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
-};
-
-export const renderWithRouter = (ui: React.ReactElement, { history, ...renderOptions }) => {
-  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
-    return (
-      <Router location={history.location} history={history}>
-        {children}
-      </Router>
-    );
-  };
-  return { ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+  return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };

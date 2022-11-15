@@ -36,18 +36,14 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import userEvent from '@testing-library/user-event';
 import * as tlr from '@testing-library/react';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import '@testing-library/jest-dom';
 import { RecordingLabelFields, RecordingLabelFieldsProps } from '@app/RecordingMetadata/RecordingLabelFields';
 import { ValidatedOptions } from '@patternfly/react-core';
-import { renderWithRouter } from '../Common';
-import { createMemoryHistory } from 'history';
-
-const history = createMemoryHistory();
+import { renderDefault } from '../Common';
 
 const mockUploadedRecordingLabels = {
   someUploaded: 'someUploadedValue',
@@ -104,8 +100,8 @@ describe('<RecordingLabelFields />', () => {
     expect(tree).toMatchSnapshot();
   });
 
-  it('displays all labels in form fields', () => {
-    render(<RecordingLabelFields {...mockProps} />);
+  it('displays all labels in form fields', async () => {
+    renderDefault(<RecordingLabelFields {...mockProps} />);
 
     const inputs = [
       screen.getByDisplayValue('someLabel'),
@@ -128,65 +124,67 @@ describe('<RecordingLabelFields />', () => {
   });
 
   it('updates the label key when entering text into the Key input', async () => {
-    render(<RecordingLabelFields {...mockProps} />);
+    const { user } = renderDefault(<RecordingLabelFields {...mockProps} />);
 
     const labelKeyInput = screen.getAllByLabelText('Label Key')[0] as HTMLInputElement;
     expect(labelKeyInput).toBeInTheDocument();
     expect(labelKeyInput).toBeVisible();
 
     labelKeyInput.setSelectionRange(0, mockProps.labels[0].key.length);
-    userEvent.paste(labelKeyInput, 'someEditedKey');
+    labelKeyInput.focus();
+    await user.paste('someEditedKey');
 
     expect(mockProps.labels[0].key).toBe('someEditedKey');
   });
 
-  it('updates the label value when entering text into the Value input', () => {
-    render(<RecordingLabelFields {...mockProps} />);
+  it('updates the label value when entering text into the Value input', async () => {
+    const { user } = renderDefault(<RecordingLabelFields {...mockProps} />);
 
     const labelValueInput = screen.getAllByLabelText('Label Value')[0] as HTMLInputElement;
     expect(labelValueInput).toBeInTheDocument();
     expect(labelValueInput).toBeVisible();
 
     labelValueInput.setSelectionRange(0, mockProps.labels[0].value.length);
-    userEvent.paste(labelValueInput, 'someEditedValue');
+    labelValueInput.focus();
+    await user.paste('someEditedValue');
 
     expect(mockProps.labels[0].value).toBe('someEditedValue');
   });
 
-  it('validates labels on initial render', () => {
-    render(<RecordingLabelFields {...mockProps} />);
+  it('validates labels on initial render', async () => {
+    renderDefault(<RecordingLabelFields {...mockProps} />);
 
     expect(mockProps.setValid).toHaveBeenCalledTimes(1);
     expect(mockProps.setValid).toHaveBeenCalledWith(ValidatedOptions.success);
     expect(mockValid).toBe(ValidatedOptions.success);
   });
 
-  it('adds a label when Add Label is clicked', () => {
-    render(<RecordingLabelFields {...mockProps} />);
+  it('adds a label when Add Label is clicked', async () => {
+    const { user } = renderDefault(<RecordingLabelFields {...mockProps} />);
 
     expect(screen.getAllByLabelText('Label Key').length).toBe(2);
     expect(screen.getAllByLabelText('Label Value').length).toBe(2);
 
-    userEvent.click(screen.getByText('Add Label'));
+    await user.click(screen.getByText('Add Label'));
 
     expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
     expect(mockProps.setLabels).toHaveBeenCalledWith([mockLabel1, mockLabel2, mockEmptyLabel]);
   });
 
-  it('removes the correct label when Delete button is clicked', () => {
-    render(<RecordingLabelFields {...mockProps} />);
+  it('removes the correct label when Delete button is clicked', async () => {
+    const { user } = renderDefault(<RecordingLabelFields {...mockProps} />);
 
     expect(screen.getAllByLabelText('Label Key').length).toBe(2);
     expect(screen.getAllByLabelText('Label Value').length).toBe(2);
 
-    userEvent.click(screen.getAllByLabelText('Remove Label')[0]);
+    await user.click(screen.getAllByLabelText('Remove Label')[0]);
 
     expect(mockProps.setLabels).toHaveBeenCalledTimes(1);
     expect(mockProps.setLabels).toHaveBeenCalledWith([mockLabel2]);
   });
 
-  it('validates the label key when valid', () => {
-    render(<RecordingLabelFields {...mockProps} />);
+  it('validates the label key when valid', async () => {
+    renderDefault(<RecordingLabelFields {...mockProps} />);
 
     expect(mockValid).toBe(ValidatedOptions.success);
 
@@ -197,8 +195,8 @@ describe('<RecordingLabelFields />', () => {
     });
   });
 
-  it('validates the label value when valid', () => {
-    render(<RecordingLabelFields {...mockProps} />);
+  it('validates the label value when valid', async () => {
+    renderDefault(<RecordingLabelFields {...mockProps} />);
 
     expect(mockValid).toBe(ValidatedOptions.success);
 
@@ -209,18 +207,18 @@ describe('<RecordingLabelFields />', () => {
     });
   });
 
-  it('invalidates form when the label key is invalid', () => {
+  it('invalidates form when the label key is invalid', async () => {
     const invalidLabels = [{ key: 'label with whitespace', value: 'someValue' }];
 
-    render(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
+    renderDefault(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
 
     expect(mockValid).toBe(ValidatedOptions.error);
   });
 
-  it('invalidates form when the label value is invalid', () => {
+  it('invalidates form when the label value is invalid', async () => {
     const invalidLabels = [{ key: 'someLabel', value: 'value with whitespace' }];
 
-    render(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
+    renderDefault(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
 
     expect(mockValid).toBe(ValidatedOptions.error);
   });
@@ -228,7 +226,7 @@ describe('<RecordingLabelFields />', () => {
   it('shows error text when the label key is invalid', async () => {
     const invalidLabels = [{ key: 'label with whitespace', value: 'someValue' }];
 
-    render(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
+    renderDefault(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
 
     expect(mockValid).toBe(ValidatedOptions.error);
 
@@ -240,7 +238,7 @@ describe('<RecordingLabelFields />', () => {
   it('shows error text when the label value is invalid', async () => {
     const invalidLabels = [{ key: 'someLabel', value: 'value with whitespace' }];
 
-    render(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
+    renderDefault(<RecordingLabelFields {...mockProps} labels={invalidLabels} />);
 
     expect(mockValid).toBe(ValidatedOptions.error);
 
@@ -249,10 +247,10 @@ describe('<RecordingLabelFields />', () => {
     expect(errorText).toBeVisible();
   });
 
-  it('shows upload button when upload is enabled ', () => {
+  it('shows upload button when upload is enabled ', async () => {
     mockProps.isUploadable = true;
 
-    renderWithRouter(<RecordingLabelFields {...mockProps} />, { history });
+    renderDefault(<RecordingLabelFields {...mockProps} />);
 
     const uploadButton = screen.getByRole('button', { name: 'Upload Labels' });
     expect(uploadButton).toBeInTheDocument();
@@ -262,19 +260,19 @@ describe('<RecordingLabelFields />', () => {
   it('updates label list when upload is enabled and upload is submitted', async () => {
     mockProps.isUploadable = true;
 
-    renderWithRouter(<RecordingLabelFields {...mockProps} />, { history });
+    const { user } = renderDefault(<RecordingLabelFields {...mockProps} />);
 
     const uploadButton = screen.getByRole('button', { name: 'Upload Labels' });
     expect(uploadButton).toBeInTheDocument();
     expect(uploadButton).toBeVisible();
 
-    userEvent.click(uploadButton);
+    await user.click(uploadButton);
 
     const labelUploadInput = document.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(labelUploadInput).toBeInTheDocument();
 
     await tlr.act(async () => {
-      userEvent.upload(labelUploadInput, mockMetadataFile);
+      await user.upload(labelUploadInput, mockMetadataFile);
     });
 
     expect(labelUploadInput.files).not.toBe(null);

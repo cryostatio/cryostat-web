@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Button, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td } from '@patternfly/react-table';
 import { RecordingsTable } from '@app/Recordings/RecordingsTable';
+import { renderDefault } from '../Common';
 
 const FakeToolbar = () => {
   return (
@@ -81,8 +81,10 @@ const mockHeaderCheckCallback = jest.fn((event, checked) => {
 });
 
 describe('<RecordingsTable />', () => {
-  it('correctly displays the toolbar prop', () => {
-    render(
+  afterEach(cleanup);
+
+  it('correctly displays the toolbar prop', async () => {
+    renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
@@ -101,8 +103,8 @@ describe('<RecordingsTable />', () => {
     expect(screen.getByText('Fake Button')).toBeInTheDocument();
   });
 
-  it('handles a non-nested table', () => {
-    render(
+  it('handles a non-nested table', async () => {
+    renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
@@ -127,8 +129,8 @@ describe('<RecordingsTable />', () => {
     expect(screen.getByText('Row 2: Fake Column 2 Data')).toBeInTheDocument();
   });
 
-  it('handles a nested table with sticky header', () => {
-    const { container } = render(
+  it('handles a nested table with sticky header', async () => {
+    const { container } = renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
@@ -150,8 +152,8 @@ describe('<RecordingsTable />', () => {
     expect(container.getElementsByClassName('pf-c-scroll-inner-wrapper').length).toBe(1);
   });
 
-  it('handles the case where an error occurs', () => {
-    render(
+  it('handles the case where an error occurs', async () => {
+    renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
@@ -170,8 +172,8 @@ describe('<RecordingsTable />', () => {
     expect(screen.getByText('some error')).toBeInTheDocument();
   });
 
-  it('renders correctly when table data is still loading', () => {
-    render(
+  it('renders correctly when table data is still loading', async () => {
+    renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
@@ -191,8 +193,8 @@ describe('<RecordingsTable />', () => {
     expect(spinner).toHaveAttribute('aria-valuetext', 'Loading...');
   });
 
-  it('handles an empty table', () => {
-    render(
+  it('handles an empty table', async () => {
+    renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
@@ -211,8 +213,8 @@ describe('<RecordingsTable />', () => {
     expect(screen.getByText(`No ${fakeTableTitle}`)).toBeInTheDocument();
   });
 
-  it('handles the header checkbox callback correctly', () => {
-    render(
+  it('handles the header checkbox callback correctly', async () => {
+    const { user } = renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}
@@ -230,12 +232,12 @@ describe('<RecordingsTable />', () => {
 
     let headerCheckAll = screen.getByLabelText('Select all rows');
     expect(headerCheckAll).not.toHaveAttribute('checked');
-    userEvent.click(headerCheckAll);
+    await user.click(headerCheckAll);
     expect(mockHeaderCheckCallback).toHaveBeenCalledTimes(1);
   });
 
-  it('renders the header checkbox as checked if props.isHeaderChecked == true', () => {
-    render(
+  it('renders the header checkbox as checked if props.isHeaderChecked == true', async () => {
+    renderDefault(
       <RecordingsTable
         toolbar={<FakeToolbar />}
         tableColumns={fakeTableColumns}

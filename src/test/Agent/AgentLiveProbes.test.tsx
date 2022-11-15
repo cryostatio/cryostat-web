@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { EventProbe } from '@app/Shared/Services/Api.service';
@@ -48,9 +48,9 @@ import {
   NotificationMessage,
 } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import userEvent from '@testing-library/user-event';
 import { DeleteActiveProbes } from '@app/Modal/DeleteWarningUtils';
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
+import { renderWithServiceContext } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -150,11 +150,7 @@ describe('<AgentLiveProbes />', () => {
   });
 
   it('should disable remove button if there is no probe', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentLiveProbes />
-      </ServiceContext.Provider>
-    );
+    renderWithServiceContext(<AgentLiveProbes />);
 
     const removeButton = screen.getByText('Remove All Probes');
     expect(removeButton).toBeInTheDocument();
@@ -162,34 +158,23 @@ describe('<AgentLiveProbes />', () => {
     expect(removeButton).toBeDisabled();
   });
 
-  it('should add a probe after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentLiveProbes />
-      </ServiceContext.Provider>
-    );
+  it('should add a probe after receiving a notification', async () => {
+    renderWithServiceContext(<AgentLiveProbes />);
 
     const addTemplateName = screen.getByText('another_name');
     expect(addTemplateName).toBeInTheDocument();
     expect(addTemplateName).toBeVisible();
   });
 
-  it('should remove all probes after receiving a notification', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentLiveProbes />
-      </ServiceContext.Provider>
-    );
+  it('should remove all probes after receiving a notification', async () => {
+    renderWithServiceContext(<AgentLiveProbes />);
+
     expect(screen.queryByText('some_name')).not.toBeInTheDocument();
     expect(screen.queryByText('another_name')).not.toBeInTheDocument();
   });
 
-  it('should display the column header fields', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentLiveProbes />
-      </ServiceContext.Provider>
-    );
+  it('should display the column header fields', async () => {
+    renderWithServiceContext(<AgentLiveProbes />);
 
     const headers = ['ID', 'Name', 'Class', 'Description', 'Method'];
     headers.forEach((header) => {
@@ -201,34 +186,26 @@ describe('<AgentLiveProbes />', () => {
 
   it('should remove all probes when Remove All Probe is clicked', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentLiveProbes />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<AgentLiveProbes />);
 
     const removeButton = screen.getByText('Remove All Probes');
     expect(removeButton).toBeInTheDocument();
     expect(removeButton).toBeVisible();
 
-    userEvent.click(removeButton);
+    await user.click(removeButton);
 
     expect(deleteRequestSpy).toBeCalledTimes(1);
   });
 
   it('should show warning modal and remove all probes when confirmed', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'removeProbes').mockReturnValue(of(true));
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentLiveProbes />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<AgentLiveProbes />);
 
     const removeButton = screen.getByText('Remove All Probes');
     expect(removeButton).toBeInTheDocument();
     expect(removeButton).toBeVisible();
 
-    userEvent.click(removeButton);
+    await user.click(removeButton);
 
     const warningModal = await screen.findByRole('dialog');
     expect(warningModal).toBeInTheDocument();
@@ -242,23 +219,19 @@ describe('<AgentLiveProbes />', () => {
     expect(confirmButton).toBeInTheDocument();
     expect(confirmButton).toBeVisible();
 
-    userEvent.click(confirmButton);
+    await user.click(confirmButton);
 
     expect(deleteRequestSpy).toBeCalledTimes(1);
   });
 
-  it('should shown empty state when table is empty', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <AgentLiveProbes />
-      </ServiceContext.Provider>
-    );
+  it('should shown empty state when table is empty', async () => {
+    const { user } = renderWithServiceContext(<AgentLiveProbes />);
 
     const filterInput = screen.getByLabelText('Active probe filter');
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 
-    userEvent.type(filterInput, 'someveryoddname');
+    await user.type(filterInput, 'someveryoddname');
 
     expect(screen.queryByText('some_name')).not.toBeInTheDocument();
 

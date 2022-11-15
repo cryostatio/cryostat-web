@@ -38,10 +38,10 @@
 
 import { RecordingStateFilter } from '@app/Recordings/Filters/RecordingStateFilter';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
-import { cleanup, render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';
+import { renderDefault } from '../../Common';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -92,13 +92,15 @@ describe('<RecordingStateFilter />', () => {
   });
 
   it('should display state selections when dropdown is clicked', async () => {
-    render(<RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />);
+    const { user } = renderDefault(
+      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />
+    );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await user.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -112,13 +114,15 @@ describe('<RecordingStateFilter />', () => {
   });
 
   it('should close state selections when dropdown is toggled', async () => {
-    render(<RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />);
+    const { user } = renderDefault(
+      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onStateSelectToggle} />
+    );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await user.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -130,19 +134,21 @@ describe('<RecordingStateFilter />', () => {
       expect(selectOption).toBeVisible();
     });
 
-    userEvent.click(stateDropDown);
+    await user.click(stateDropDown);
     expect(selectMenu).not.toBeInTheDocument();
     expect(selectMenu).not.toBeVisible();
   });
 
   it('should display filtered states as checked', async () => {
-    render(<RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onStateSelectToggle} />);
+    const { user } = renderDefault(
+      <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onStateSelectToggle} />
+    );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await user.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -169,13 +175,15 @@ describe('<RecordingStateFilter />', () => {
       emptyFilteredStates.push(state);
     });
 
-    render(<RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onRecordingStateToggle} />);
+    const { user } = renderDefault(
+      <RecordingStateFilter filteredStates={emptyFilteredStates} onSelectToggle={onRecordingStateToggle} />
+    );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await user.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -196,7 +204,7 @@ describe('<RecordingStateFilter />', () => {
     expect(uncheckedBox).toBeVisible();
     expect(uncheckedBox).not.toHaveAttribute('checked');
 
-    userEvent.click(uncheckedBox);
+    await user.click(uncheckedBox);
 
     expect(onRecordingStateToggle).toHaveBeenCalledTimes(1);
     expect(onRecordingStateToggle).toHaveBeenCalledWith(mockAnotherRecording.state);
@@ -208,13 +216,15 @@ describe('<RecordingStateFilter />', () => {
       filteredStates = filteredStates.filter((rs) => state !== rs);
     });
 
-    render(<RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onRecordingStateToggle} />);
+    const { user } = renderDefault(
+      <RecordingStateFilter filteredStates={filteredStates} onSelectToggle={onRecordingStateToggle} />
+    );
 
     const stateDropDown = screen.getByRole('button', { name: 'Options menu' });
     expect(stateDropDown).toBeInTheDocument();
     expect(stateDropDown).toBeVisible();
 
-    userEvent.click(stateDropDown);
+    await user.click(stateDropDown);
 
     const selectMenu = await screen.findByRole('listbox', { name: 'Filter by state' });
     expect(selectMenu).toBeInTheDocument();
@@ -235,7 +245,7 @@ describe('<RecordingStateFilter />', () => {
     expect(uncheckedBox).toBeVisible();
     expect(uncheckedBox).toHaveAttribute('checked');
 
-    userEvent.click(uncheckedBox);
+    await user.click(uncheckedBox);
 
     expect(onRecordingStateToggle).toHaveBeenCalledTimes(1);
     expect(onRecordingStateToggle).toHaveBeenCalledWith(mockRecording.state);

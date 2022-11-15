@@ -56,6 +56,7 @@ jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
 import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
 import { ArchivedRecording } from '@app/Shared/Services/Api.service';
 import { Drawer, DrawerContent } from '@patternfly/react-core';
+import { renderDefault } from '../Common';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -93,8 +94,8 @@ describe('<RecordingLabelsPanel />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('displays the bulk labels editor within the resizeable drawer panel', () => {
-    render(
+  it('displays the bulk labels editor within the resizeable drawer panel', async () => {
+    renderDefault(
       <Drawer isExpanded={true} isInline>
         <DrawerContent panelContent={<RecordingLabelsPanel {...props} />} />
       </Drawer>

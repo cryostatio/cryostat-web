@@ -36,6 +36,10 @@
  * SOFTWARE.
  */
 
+// Mock system time for DatetimePicker
+const mockCurrentDate = new Date('14 Sep 2022 00:00:00 UTC');
+jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
+
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -142,11 +146,9 @@ describe('<RecordingFilters />', () => {
 
   afterEach(cleanup);
 
-  it('renders correctly', async () => {
-    /** Skip snapshot test as child component depends on DOM */
-  });
+  afterAll(jest.useRealTimers);
 
-  it('should display currently selected category for active recordings', () => {
+  it('should display currently selected category for active recordings', async () => {
     renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
@@ -173,7 +175,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeVisible();
   });
 
-  it('should display currently selected category for archived recordings', () => {
+  it('should display currently selected category for archived recordings', async () => {
     renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
@@ -188,6 +190,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       }
     );
 
@@ -201,7 +204,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display category menu for active recordings when clicked', async () => {
-    renderWithReduxStore(
+    const { user } = renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -215,6 +218,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       }
     );
 
@@ -226,7 +230,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    userEvent.click(selectedItem);
+    await user.click(selectedItem);
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
@@ -240,7 +244,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should display category menu for archived recordings when clicked', async () => {
-    renderWithReduxStore(
+    const { user } = renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -254,6 +258,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       }
     );
 
@@ -265,7 +270,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    userEvent.click(selectedItem);
+    await user.click(selectedItem);
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
@@ -287,7 +292,7 @@ describe('<RecordingFilters />', () => {
   });
 
   it('should close category menu when toggled', async () => {
-    renderWithReduxStore(
+    const { user } = renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -301,6 +306,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       }
     );
 
@@ -312,19 +318,19 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    userEvent.click(selectedItem);
+    await user.click(selectedItem);
 
     let categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
     expect(categoryMenu).toBeVisible();
 
-    userEvent.click(selectedItem); // Click again
+    await user.click(selectedItem); // Click again
 
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
   it('should switch filter input if a category is selected ', async () => {
-    renderWithReduxStore(
+    const { user } = renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
           <RecordingFilters
@@ -338,6 +344,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       }
     );
 
@@ -349,7 +356,7 @@ describe('<RecordingFilters />', () => {
     expect(selectedItem).toBeInTheDocument();
     expect(selectedItem).toBeVisible();
 
-    userEvent.click(selectedItem);
+    await user.click(selectedItem);
 
     const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
@@ -361,7 +368,7 @@ describe('<RecordingFilters />', () => {
       expect(option).toBeVisible();
     });
 
-    userEvent.click(within(categoryMenu).getByRole('menuitem', { name: 'Name' }));
+    await user.click(within(categoryMenu).getByRole('menuitem', { name: 'Name' }));
 
     selectedItem = screen.getByRole('button', { name: 'Name' });
     expect(selectedItem).toBeInTheDocument();
@@ -375,7 +382,7 @@ describe('<RecordingFilters />', () => {
     expect(prevSelectedItem).not.toBeInTheDocument();
   });
 
-  it('should approriate chips for filtered categories', () => {
+  it('should approriate chips for filtered categories', async () => {
     renderWithReduxStore(
       <Toolbar>
         <ToolbarContent>
@@ -390,6 +397,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       }
     );
 
@@ -420,7 +428,7 @@ describe('<RecordingFilters />', () => {
     expect(chip).toBeVisible();
   });
 
-  it('should not display chips when no filters are selected', () => {
+  it('should not display chips when no filters are selected', async () => {
     const emptyPreloadedState = {
       recordingFilters: {
         list: [
@@ -452,6 +460,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: emptyPreloadedState,
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
       }
     );
 
