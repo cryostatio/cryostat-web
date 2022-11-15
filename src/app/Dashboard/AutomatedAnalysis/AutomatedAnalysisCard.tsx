@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Button,
@@ -47,23 +46,14 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
-  Dropdown,
   Grid,
   GridItem,
-  HelperText,
-  HelperTextItem,
-  KebabToggle,
-  Label,
   LabelGroup,
-  LabelProps,
-  Select,
-  SelectOption,
-  Spinner,
-  Stack,
-  StackItem,
   Text,
   TextContent,
   TextVariants,
+  Toolbar,
+  ToolbarContent,
   Tooltip,
 } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -77,6 +67,11 @@ import {
   ArchivedRecording,
   defaultAutomatedAnalysis,
 } from '@app/Shared/Services/Api.service';
+import { AutomatedAnalysisFilters, AutomatedAnalysisFiltersCategories, emptyAutomatedAnalysisFilters, filterAutomatedAnalysis } from './AutomatedAnalysisFilters';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
+import { automatedAnalysisAddFilterIntent, automatedAnalysisAddTargetIntent, automatedAnalysisDeleteAllFiltersIntent, automatedAnalysisDeleteCategoryFiltersIntent, automatedAnalysisDeleteFilterIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 
 interface AutomatedAnalysisCardProps {
   pageTitle: string;
@@ -85,16 +80,16 @@ interface AutomatedAnalysisCardProps {
 export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const dispatch = useDispatch<StateDispatch>();
 
+  const [targetConnectURL, setTargetConnectURL] = React.useState('');
   const [categorizedEvaluation, setCategorizedEvaluation] = React.useState<[string, RuleEvaluation[]][]>(
     [] as [string, RuleEvaluation[]][]
   );
-  const [criticalCategorizedEvaluation, setCriticalCategorizedEvaluation] = React.useState<
+  const [filteredCategorizedEvaluation, setFilteredCategorizedEvaluation] = React.useState<
     [string, RuleEvaluation[]][]
   >([] as [string, RuleEvaluation[]][]);
   const [isExpanded, setIsExpanded] = React.useState<boolean>(true);
-  const [isKebabOpen, setIsKebabOpen] = React.useState<boolean>(false);
-  const [isChecked, setIsChecked] = React.useState<boolean>(false);
   const [isError, setIsError] = React.useState<boolean>(false);
   const [errorMessage, setErrorMessage] = React.useState<string>('');
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -108,6 +103,14 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const MINUTE_MILLIS = 60 * SECOND_MILLIS;
   const HOUR_MILLIS = 60 * MINUTE_MILLIS;
   const DAY_MILLIS = 24 * HOUR_MILLIS;
+
+  const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
+    const filters = state.automatedAnalysisFilters.list.filter(
+      (targetFilter: TargetAutomatedAnalysisFilters) => targetFilter.target === targetConnectURL
+    );
+    return filters.length > 0 ? filters[0].filters : emptyAutomatedAnalysisFilters;
+
+  }) as AutomatedAnalysisFiltersCategories;
 
   const categorizeEvaluation = React.useCallback(
     (arr: [string, RuleEvaluation][]) => {
@@ -231,6 +234,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     addSubscription(
       context.target.target().subscribe((target) => {
         handleLoading();
+        setTargetConnectURL(target.connectUrl);
+        dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
         context.api.createSnapshotV2().pipe(first()).subscribe({
           next: (snapshot) => {
               context.reports
@@ -260,9 +265,11 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
   }, [
     addSubscription,
+    dispatch,
     context.api,
     context.target,
     context.reports,
+    automatedAnalysisAddTargetIntent,
     categorizeEvaluation,
     handleEmptyRecordings,
     handleLoading,
@@ -299,23 +306,13 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     }
   }, [errorMessage, startProfilingRecording, takeSnapshot]);
 
-  const showCriticalScores = React.useCallback(() => {
-    const criticalScores = categorizedEvaluation.map(([topic, evaluations]) => {
-      return [topic, evaluations.filter((evaluation) => evaluation.score >= ORANGE_SCORE_THRESHOLD)] as [
-        string,
-        RuleEvaluation[]
-      ];
-    });
-    setCriticalCategorizedEvaluation(criticalScores);
-  }, [categorizedEvaluation, setCriticalCategorizedEvaluation]);
-
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
         handleStateErrors("Authentication failure");        
       })
     );
-  }, [addSubscription, context.target.authFailure, handleStateErrors]);
+  }, [addSubscription, context.target, handleStateErrors]);
 
   React.useEffect(() => {
     takeSnapshot();
@@ -353,16 +350,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [setReportStalenessTimer, setReportStalenessTimerUnits, reportTime, reportStalenessTimer, usingArchivedReport, usingCachedReport]);
 
   React.useEffect(() => {
-    if (isChecked) {
-      showCriticalScores();
-    } else {
-      setCriticalCategorizedEvaluation(categorizedEvaluation);
-    }
-  }, [isChecked, categorizedEvaluation, showCriticalScores, setCriticalCategorizedEvaluation]);
-
-  const onClick = (checked: boolean) => {
-    setIsChecked(checked);
-  };
+    setFilteredCategorizedEvaluation(filterAutomatedAnalysis(categorizedEvaluation, targetAutomatedAnalysisFilters));
+  }, [categorizedEvaluation, targetAutomatedAnalysisFilters, filterAutomatedAnalysis, setFilteredCategorizedEvaluation]);
 
   const onExpand = (event: React.MouseEvent, id: string) => {
     setIsExpanded(!isExpanded);
@@ -371,7 +360,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const filteredCategorizedLabels = React.useMemo(() => {
     return (
       <Grid>
-        {criticalCategorizedEvaluation
+        {filteredCategorizedEvaluation
           .filter(([_, evaluations]) => evaluations.length > 0)
           .map(([topic, evaluations]) => {
             return (
@@ -386,7 +375,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           })}
       </Grid>
     );
-  }, [criticalCategorizedEvaluation]);
+  }, [filteredCategorizedEvaluation]);
 
   const clearCachedReports = React.useCallback(() => {
     addSubscription(
@@ -405,6 +394,25 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
     handleStateErrors(NO_RECORDINGS_MESSAGE);
   }, [addSubscription, context.target, context.reports]);
+
+  const updateFilters = React.useCallback(
+    (target, { filterValue, filterKey, deleted = false, deleteOptions }) => {
+      if (deleted) {
+        if (deleteOptions && deleteOptions.all) {
+          dispatch(automatedAnalysisDeleteCategoryFiltersIntent(target, filterKey));
+        } else {
+          dispatch(automatedAnalysisDeleteFilterIntent(target, filterKey, filterValue));
+        }
+      } else {
+        dispatch(automatedAnalysisAddFilterIntent(target, filterKey, filterValue));
+      }
+    },
+    [dispatch, automatedAnalysisDeleteCategoryFiltersIntent, automatedAnalysisDeleteFilterIntent, automatedAnalysisAddFilterIntent]
+  );
+
+  const handleClearFilters = React.useCallback(() => {
+    dispatch(automatedAnalysisDeleteAllFiltersIntent(targetConnectURL));
+  }, [dispatch, automatedAnalysisDeleteAllFiltersIntent, targetConnectURL]);
 
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
@@ -463,23 +471,29 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       >
         <CardTitle component="h4">Automated Analysis</CardTitle>
         <CardActions>
-          <Checkbox
-            id="automated-analysis-check"
-            label={'Show critical scores'}
-            isDisabled={isError}
-            aria-label="automated-analysis show-critical-scores"
-            name="automated-analysis-critical-scores"
-            isChecked={isChecked}
-            onChange={onClick}
-          />
-          <Button
-            isSmall
-            isAriaDisabled={isLoading}
-            aria-label="Refresh automated analysis"
-            onClick={takeSnapshot}
-            variant="control"
-            icon={<Spinner2Icon />}
-          />
+          <Toolbar
+            id="automated-analysis-toolbar"
+            aria-label="automated-analysis-toolbar"
+            clearAllFilters={handleClearFilters}
+          >
+            <ToolbarContent>
+              <AutomatedAnalysisFilters 
+                  target={targetConnectURL}
+                  evaluations={categorizedEvaluation} 
+                  filters={targetAutomatedAnalysisFilters} 
+                  updateFilters={updateFilters}
+              />
+              <Button
+                isSmall
+                isAriaDisabled={isLoading}
+                aria-label="Refresh automated analysis"
+                onClick={takeSnapshot}
+                variant="control"
+                icon={<Spinner2Icon />}
+              />
+            </ToolbarContent>
+          </Toolbar>
+
         </CardActions>
       </CardHeader>
       <CardExpandableContent>

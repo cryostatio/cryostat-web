@@ -36,30 +36,54 @@
  * SOFTWARE.
  */
 
-import { saveToLocalStorage } from '@app/utils/LocalStorage';
-import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import { recordingFilterReducer as recordingFiltersReducer } from './RecordingFilterReducer';
-import { automatedAnalysisFilterReducer as automatedAnalysisFiltersReducer } from './AutomatedAnalysisFilterReducer';
+import React from 'react';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { RuleEvaluation } from '@app/Shared/Services/Report.service';
 
-export const rootReducer = combineReducers({
-  recordingFilters: recordingFiltersReducer,
-  automatedAnalysisFilters: automatedAnalysisFiltersReducer,
-});
+export interface AutomatedAnalysisNameFilterProps {
+  evaluations: [string, RuleEvaluation[]][];
+  filteredNames: string[];
+  onSubmit: (inputName: string) => void;
+}
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
-  configureStore({
-    reducer: rootReducer,
-    preloadedState,
-  });
+export const AutomatedAnalysisNameFilter: React.FunctionComponent<AutomatedAnalysisNameFilterProps> = (props) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-export const store = setupStore();
+  const onSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        setIsExpanded(false);
+        props.onSubmit(selection);
+      }
+    },
+    [props.onSubmit, setIsExpanded]
+  );
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof rootReducer>;
-export type StateDispatch = typeof store.dispatch;
-export type Store = ReturnType<typeof setupStore>;
+  const nameOptions = React.useMemo(() => {
+    const flatEvalMap: string[] = [] as string[];
+    for (let topic of props.evaluations.map((r) => r[1])) {
+      for (let rule of topic) {
+        flatEvalMap.push(rule.name);
+      }
+    }
+    return flatEvalMap
+      .filter((n) => !props.filteredNames.includes(n))
+      .sort()
+      .map((option, index) => <SelectOption key={index} value={option} />);
+  }, [props.evaluations, props.filteredNames]);
 
-// Add a subscription to save filter states to local storage
-// if states change.
-store.subscribe(() => saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list));
-store.subscribe(() => saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.list));
+  return (
+    <Select
+      variant={SelectVariant.typeahead}
+      onToggle={setIsExpanded}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      typeAheadAriaLabel="Filter by name..."
+      placeholderText="Filter by name..."
+      aria-label="Filter by name"
+      maxHeight="16em"
+    >
+      {nameOptions}
+    </Select>
+  );
+};

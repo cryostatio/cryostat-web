@@ -142,6 +142,9 @@ describe('<RecordingFilters />', () => {
           } as TargetRecordingFilters,
         ],
       },
+      automatedAnalysisFilters: {
+        list: []
+      }
     };
   });
 

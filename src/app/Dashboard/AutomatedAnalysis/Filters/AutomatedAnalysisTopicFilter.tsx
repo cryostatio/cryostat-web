@@ -36,30 +36,48 @@
  * SOFTWARE.
  */
 
-import { saveToLocalStorage } from '@app/utils/LocalStorage';
-import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import { recordingFilterReducer as recordingFiltersReducer } from './RecordingFilterReducer';
-import { automatedAnalysisFilterReducer as automatedAnalysisFiltersReducer } from './AutomatedAnalysisFilterReducer';
+import React from 'react';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { RuleEvaluation } from '@app/Shared/Services/Report.service';
 
-export const rootReducer = combineReducers({
-  recordingFilters: recordingFiltersReducer,
-  automatedAnalysisFilters: automatedAnalysisFiltersReducer,
-});
+export interface AutomatedAnalysisTopicFilterProps {
+  evaluations: [string, RuleEvaluation[]][];
+  filteredTopics: string[];
+  onSubmit: (inputName: string) => void;
+}
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
-  configureStore({
-    reducer: rootReducer,
-    preloadedState,
-  });
+export const AutomatedAnalysisTopicFilter: React.FunctionComponent<AutomatedAnalysisTopicFilterProps> = (props) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-export const store = setupStore();
+  const onSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        setIsExpanded(false);
+        props.onSubmit(selection);
+      }
+    },
+    [props.onSubmit, setIsExpanded]
+  );
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof rootReducer>;
-export type StateDispatch = typeof store.dispatch;
-export type Store = ReturnType<typeof setupStore>;
+  const topicOptions = React.useMemo(() => {
+    return props.evaluations
+      .map((r) => r[0])
+      .filter((n) => !props.filteredTopics.includes(n))
+      .map((option, index) => <SelectOption key={index} value={option} />);
+  }, [props.evaluations, props.filteredTopics]);
 
-// Add a subscription to save filter states to local storage
-// if states change.
-store.subscribe(() => saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list));
-store.subscribe(() => saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.list));
+  return (
+    <Select
+      variant={SelectVariant.typeahead}
+      onToggle={setIsExpanded}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      typeAheadAriaLabel="Filter by topic..."
+      placeholderText="Filter by topic..."
+      aria-label="Filter by topic"
+      maxHeight="16em"
+    >
+      {topicOptions}
+    </Select>
+  );
+};

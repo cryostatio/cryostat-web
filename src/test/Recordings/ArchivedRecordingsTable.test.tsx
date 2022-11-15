@@ -184,6 +184,9 @@ describe('<ArchivedRecordingsTable />', () => {
           } as TargetRecordingFilters,
         ],
       },
+      automatedAnalysisFilters: {
+        list: []
+      }
     };
   });
 

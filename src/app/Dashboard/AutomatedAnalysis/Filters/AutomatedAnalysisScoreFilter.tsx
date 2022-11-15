@@ -36,30 +36,39 @@
  * SOFTWARE.
  */
 
-import { saveToLocalStorage } from '@app/utils/LocalStorage';
-import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import { recordingFilterReducer as recordingFiltersReducer } from './RecordingFilterReducer';
-import { automatedAnalysisFilterReducer as automatedAnalysisFiltersReducer } from './AutomatedAnalysisFilterReducer';
+import React from 'react';
+import { Button, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
 
-export const rootReducer = combineReducers({
-  recordingFilters: recordingFiltersReducer,
-  automatedAnalysisFilters: automatedAnalysisFiltersReducer,
-});
+export interface AutomatedAnalysisScoreFilterProps {
+  filteredScores: AutomatedAnalysisScoreState[] | undefined;
+  onSelectToggle: (state: any) => void;
+}
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
-  configureStore({
-    reducer: rootReducer,
-    preloadedState,
-  });
+export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnalysisScoreFilterProps> = (props) => {
+  const [isOpen, setIsOpen] = React.useState(false);
 
-export const store = setupStore();
+  const onSelect = React.useCallback(
+    (_, selection) => {
+      setIsOpen(false);
+      props.onSelectToggle(selection);
+    },
+    [setIsOpen, props.onSelectToggle]
+  );
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof rootReducer>;
-export type StateDispatch = typeof store.dispatch;
-export type Store = ReturnType<typeof setupStore>;
-
-// Add a subscription to save filter states to local storage
-// if states change.
-store.subscribe(() => saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list));
-store.subscribe(() => saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.list));
+  return (
+    <Select
+      variant={SelectVariant.checkbox}
+      onToggle={setIsOpen}
+      onSelect={onSelect}
+      selections={props.filteredScores}
+      isOpen={isOpen}
+      aria-label="Filter by score"
+      placeholderText="Filter by score"
+    >
+      {Object.values(AutomatedAnalysisScoreState).map((rs) => (
+        <SelectOption aria-label={`${rs} State`} key={rs} value={rs} />
+      ))}
+    </Select>
+  );
+};

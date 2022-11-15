@@ -46,6 +46,7 @@ import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/o
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { NO_TARGET, Target, TargetService } from './Target.service';
+import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD } from './Report.service';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
@@ -1248,6 +1249,13 @@ export interface ActiveRecording extends Omit<ArchivedRecording, 'size' | 'archi
   toDisk: boolean;
   maxSize: number;
   maxAge: number;
+}
+
+export enum AutomatedAnalysisScoreState {
+  NA = -1,
+  OK = ORANGE_SCORE_THRESHOLD,
+  WARNING = RED_SCORE_THRESHOLD,
+  CRITICAL = 100,
 }
 
 export enum RecordingState {

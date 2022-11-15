@@ -193,6 +193,9 @@ describe('<ActiveRecordingsTable />', () => {
           } as TargetRecordingFilters,
         ],
       },
+      automatedAnalysisFilters: {
+        list: []
+      }
     };
   });
 
