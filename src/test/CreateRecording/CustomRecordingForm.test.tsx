@@ -130,7 +130,7 @@ describe('<CustomRecordingForm />', () => {
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
 
-    await waitFor(() => expect(createButton).not.toBeDisabled());
+    expect(createButton).not.toBeDisabled();
     await user.click(createButton);
 
     expect(onSubmit).toHaveBeenCalledTimes(1);

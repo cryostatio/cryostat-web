@@ -198,10 +198,6 @@ describe('<CreateRule />', () => {
     expect(initialDelayInput).toBeInTheDocument();
     expect(initialDelayInput).toBeVisible();
 
-    const createButton = screen.getByRole('button', { name: /^create$/i });
-    expect(createButton).toBeInTheDocument();
-    expect(createButton).toBeVisible();
-
     await user.type(nameInput, mockRule.name);
     await user.type(descriptionInput, mockRule.description);
     await user.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
@@ -212,8 +208,11 @@ describe('<CreateRule />', () => {
     await user.type(preservedArchivesInput, `${mockRule.preservedArchives}`);
     await user.type(initialDelayInput, `${mockRule.initialDelaySeconds}`);
 
-    await waitFor(() => expect(createButton).not.toBeDisabled());
+    const createButton = screen.getByRole('button', { name: /^create$/i });
+    expect(createButton).toBeInTheDocument();
+    expect(createButton).toBeVisible();
 
+    expect(createButton).not.toBeDisabled();
     await user.click(createButton);
 
     expect(createSpy).toHaveBeenCalledTimes(1);
