@@ -61,6 +61,7 @@ export interface RecordingLabelFieldsProps {
   setLabels: (labels: RecordingLabel[]) => void;
   setValid: (isValid: ValidatedOptions) => void;
   isUploadable?: boolean;
+  isDisabled?: boolean;
 }
 
 export const LabelPattern = /^\S+$/;
@@ -189,7 +190,13 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     <LoadingView />
   ) : (
     <>
-      <Button aria-label="Add Label" onClick={handleAddLabelButtonClick} variant="link" icon={<PlusCircleIcon />}>
+      <Button
+        aria-label="Add Label"
+        onClick={handleAddLabelButtonClick}
+        variant="link"
+        icon={<PlusCircleIcon />}
+        isDisabled={props.isDisabled}
+      >
         Add Label
       </Button>
       {props.isUploadable && (
@@ -217,7 +224,13 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               </>
             }
           >
-            <Button aria-label="Upload Labels" onClick={openLabelFileBrowse} variant="link" icon={<UploadIcon />}>
+            <Button
+              aria-label="Upload Labels"
+              onClick={openLabelFileBrowse}
+              variant="link"
+              icon={<UploadIcon />}
+              isDisabled={props.isDisabled}
+            >
               Upload Labels
             </Button>
           </Popover>
@@ -244,6 +257,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               value={label.key ?? ''}
               onChange={(key) => handleKeyChange(idx, key)}
               validated={validKeys[idx]}
+              isDisabled={props.isDisabled}
             />
             <Text>Key</Text>
             <FormHelperText
@@ -276,6 +290,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               onClick={() => handleDeleteLabelButtonClick(idx)}
               variant="link"
               aria-label="Remove Label"
+              isDisabled={props.isDisabled}
               icon={<CloseIcon color="gray" size="sm" />}
             />
           </SplitItem>

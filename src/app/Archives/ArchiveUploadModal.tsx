@@ -122,6 +122,10 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
   }, [uploading, setShowCancelPrompt, reset, props.onClose]);
 
   const handleSubmit = React.useCallback(() => {
+    if (rejected) {
+      notifications.warning('File format is not compatible');
+      return;
+    }
     if (!uploadFile) {
       notifications.warning('Attempted to submit JFR upload without a file selected');
       return;
@@ -130,8 +134,11 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
     context.api
       .uploadRecording(uploadFile, getFormattedLabels(), abort.signal)
       .pipe(first())
-      .subscribe(handleClose, reset);
-  }, [context.api, notifications, setUploading, uploadFile, abort.signal, handleClose, reset, getFormattedLabels]);
+      .subscribe({
+        next: () => handleClose(), 
+        error: (_) => reset()
+      });
+  }, [context.api, notifications, setUploading, abort.signal, handleClose, reset, getFormattedLabels, uploadFile, rejected]);
 
   const handleAbort = React.useCallback(() => {
     abort.abort();
@@ -210,7 +217,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
             <Button
               variant="primary"
               onClick={handleSubmit}
-              isDisabled={!filename || valid !== ValidatedOptions.success}
+              isDisabled={!filename || valid !== ValidatedOptions.success || uploading}
             >
               Submit
             </Button>

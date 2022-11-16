@@ -265,7 +265,7 @@ Array [
         <select
           aria-invalid={false}
           aria-label="Event Template Input"
-          className="pf-c-form-control"
+          className="pf-c-form-control pf-m-placeholder"
           data-ouia-component-id="OUIA-Generated-FormSelect-default-2"
           data-ouia-component-type="PF4/FormSelect"
           data-ouia-safe={true}
@@ -275,7 +275,7 @@ Array [
           onChange={[Function]}
           onFocus={[Function]}
           required={false}
-          value="null,null"
+          value=""
         >
           <option
             className=""
@@ -284,6 +284,11 @@ Array [
           >
             Select a Template
           </option>
+          <optgroup
+            className=""
+            disabled={false}
+            label="Target Templates"
+          />
           <optgroup
             className=""
             disabled={false}
@@ -297,13 +302,14 @@ Array [
               someEventTemplate
             </option>
           </optgroup>
-          <optgroup
-            className=""
-            disabled={false}
-            label="Target Templates"
-          />
         </select>
-        
+        <div
+          aria-live="polite"
+          className="pf-c-form__helper-text"
+          id="recording-template-helper"
+        >
+          The Event Template to be applied in this recording
+        </div>
       </div>
     </div>
     <div
@@ -754,7 +760,7 @@ Array [
           <button
             aria-disabled={true}
             aria-label={null}
-            className="pf-c-button pf-m-primary pf-m-disabled"
+            className="pf-c-button pf-m-primary pf-m-disabled pf-m-progress"
             data-ouia-component-id="OUIA-Generated-Button-primary-1"
             data-ouia-component-type="PF4/Button"
             data-ouia-safe={true}

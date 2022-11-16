@@ -361,7 +361,7 @@ exports[`<CreateRule /> renders correctly 1`] = `
                     <select
                       aria-invalid={false}
                       aria-label="Event Template Input"
-                      className="pf-c-form-control"
+                      className="pf-c-form-control pf-m-placeholder"
                       data-ouia-component-id="OUIA-Generated-FormSelect-default-1"
                       data-ouia-component-type="PF4/FormSelect"
                       data-ouia-safe={true}
@@ -371,7 +371,7 @@ exports[`<CreateRule /> renders correctly 1`] = `
                       onChange={[Function]}
                       onFocus={[Function]}
                       required={false}
-                      value="null,null"
+                      value=""
                     >
                       <option
                         className=""
@@ -380,11 +380,6 @@ exports[`<CreateRule /> renders correctly 1`] = `
                       >
                         Select a Template
                       </option>
-                      <optgroup
-                        className=""
-                        disabled={false}
-                        label="Custom Templates"
-                      />
                       <optgroup
                         className=""
                         disabled={false}
@@ -398,6 +393,11 @@ exports[`<CreateRule /> renders correctly 1`] = `
                           Profiling
                         </option>
                       </optgroup>
+                      <optgroup
+                        className=""
+                        disabled={false}
+                        label="Custom Templates"
+                      />
                     </select>
                     <div
                       aria-live="polite"

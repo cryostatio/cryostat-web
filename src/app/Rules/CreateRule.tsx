@@ -56,24 +56,24 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
+import { iif, of } from 'rxjs';
 import { catchError, filter, first, mergeMap, toArray } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { EventTemplate } from '../CreateRecording/CreateRecording';
-import { Rule } from './Rules';
-import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
-import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
+import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
+import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
+import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { iif, of } from 'rxjs';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { Rule } from './Rules';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
 
-const Comp = () => {
+const Comp: React.FunctionComponent<{}> = () => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
@@ -86,8 +86,8 @@ const Comp = () => {
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [template, setTemplate] = React.useState(null as string | null);
-  const [templateType, setTemplateType] = React.useState(null as string | null);
+  const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
+  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(undefined);
   const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
@@ -110,22 +110,21 @@ const Comp = () => {
 
   const eventSpecifierString = React.useMemo(() => {
     var str = '';
-    if (template) {
-      str += `template=${template}`;
+    if (templateName) {
+      str += `template=${templateName}`;
     }
     if (templateType) {
       str += `,type=${templateType}`;
     }
     return str;
-  }, [template]);
+  }, [templateName]);
 
   const handleTemplateChange = React.useCallback(
-    (template) => {
-      const parts: string[] = template.split(',');
-      setTemplate(parts[0]);
-      setTemplateType(parts[1]);
+    (templateName?: string, templateType?: TemplateType) => {
+      setTemplateName(templateName);
+      setTemplateType(templateType);
     },
-    [setTemplate, setTemplateType]
+    [setTemplateName, setTemplateType]
   );
 
   const handleMaxAgeChange = React.useCallback((evt) => setMaxAge(Number(evt)), [setMaxAge]);
@@ -222,7 +221,7 @@ const Comp = () => {
       setTemplates(templates);
       setErrorMessage('');
     },
-    [setTemplate, setErrorMessage]
+    [setTemplateName, setErrorMessage]
   );
 
   const refreshTemplateList = React.useCallback(() => {
@@ -273,7 +272,7 @@ const Comp = () => {
     () =>
       ({
         spinnerAriaValueText: 'Creating',
-        spinnerAriaLabel: 'deleting-automatic-rule',
+        spinnerAriaLabel: 'creating-automatic-rule',
         isLoading: loading,
       } as LoadingPropsType),
     [loading]
@@ -381,21 +380,15 @@ const Comp = () => {
                     label="Template"
                     isRequired
                     fieldId="recording-template"
-                    validated={
-                      template === null
-                        ? ValidatedOptions.default
-                        : !!template
-                        ? ValidatedOptions.success
-                        : ValidatedOptions.error
-                    }
+                    validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
                     helperText="The Event Template to be applied by this Rule against matching target applications."
                     helperTextInvalid="A Template must be selected"
                   >
-                    <FormSelectTemplateSelector
+                    <SelectTemplateSelectorForm
                       disabled={loading}
-                      selected={`${template},${templateType}`}
+                      validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
                       templates={templates}
-                      onChange={handleTemplateChange}
+                      onSelect={handleTemplateChange}
                     />
                   </FormGroup>
                   <FormGroup
@@ -549,7 +542,7 @@ const Comp = () => {
                       isDisabled={
                         loading ||
                         nameValid !== ValidatedOptions.success ||
-                        !template ||
+                        !templateName ||
                         !templateType ||
                         !matchExpression
                       }
