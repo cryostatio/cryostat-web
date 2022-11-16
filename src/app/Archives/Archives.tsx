@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, Title } from '@patternfly/react-core';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, TabTitleText, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
@@ -75,13 +75,13 @@ export const Archives: React.FunctionComponent<ArchivesProps> = (props) => {
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
       <Tabs id="archives" activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-        <Tab id="all-targets" eventKey={0} title="All Targets">
+        <Tab id="all-targets" eventKey={0} title={<TabTitleText>All Targets</TabTitleText>}>
           <AllTargetsArchivedRecordingsTable />
         </Tab>
-        <Tab id="all-archives" eventKey={1} title="All Archives">
+        <Tab id="all-archives" eventKey={1} title={<TabTitleText>All Archives</TabTitleText>}>
           <AllArchivedRecordingsTable />
         </Tab>
-        <Tab id="uploads" eventKey={2} title="Uploads">
+        <Tab id="uploads" eventKey={2} title={<TabTitleText>Uploads</TabTitleText>}>
           <ArchivedRecordingsTable target={of(uploadAsTarget)} isUploadsTable={true} isNestedTable={false} />
         </Tab>
       </Tabs>

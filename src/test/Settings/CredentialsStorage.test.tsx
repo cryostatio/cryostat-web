@@ -37,11 +37,9 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, cleanup, screen, waitFor, getByText, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-
+import { render, cleanup, screen, waitFor, within } from '@testing-library/react';
+import { renderDefault } from '../Common';
 import { CredentialsStorage } from '@app/Settings/CredentialsStorage';
-
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 
 jest.mock('@app/utils/LocalStorage', () => {
@@ -76,7 +74,7 @@ describe('<CredentialsStorage/>', () => {
   });
 
   it('defaults to Session storage', async () => {
-    render(React.createElement(CredentialsStorage.content, null));
+    renderDefault(React.createElement(CredentialsStorage.content, null));
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(1);
@@ -87,18 +85,18 @@ describe('<CredentialsStorage/>', () => {
   });
 
   it('sets value to local storage when dropdown is clicked', async () => {
-    render(React.createElement(CredentialsStorage.content, null));
+    const { user } = renderDefault(React.createElement(CredentialsStorage.content, null));
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).lastCalledWith(storageKey, sessionStorageValue);
 
-    userEvent.click(screen.getByRole('button'));
+    await user.click(screen.getByRole('button'));
 
     // as in the other test, the default is Session storage. click the dropdown and select Backend to change selection
     const ul = await screen.findByRole('listbox');
     const backend = within(ul).getByText(backendStorageValue);
-    userEvent.click(backend);
+    await user.click(backend);
 
     await waitFor(() => expect(ul).not.toBeVisible()); // expect selection menu to close after user clicks an option
 

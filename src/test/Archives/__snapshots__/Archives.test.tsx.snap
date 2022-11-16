@@ -7,7 +7,7 @@ exports[`<Archives /> renders correctly 1`] = `
   <nav
     aria-label="Breadcrumb"
     className="pf-c-breadcrumb"
-    data-ouia-component-id="OUIA-Generated-Breadcrumb-1"
+    data-ouia-component-id="OUIA-Generated-Breadcrumb-5"
     data-ouia-component-type="PF4/Breadcrumb"
     data-ouia-safe={true}
   >
@@ -33,7 +33,7 @@ exports[`<Archives /> renders correctly 1`] = `
     >
       <article
         className="pf-c-card"
-        data-ouia-component-id="OUIA-Generated-Card-1"
+        data-ouia-component-id="OUIA-Generated-Card-5"
         data-ouia-component-type="PF4/Card"
         data-ouia-safe={true}
         id=""
@@ -43,7 +43,7 @@ exports[`<Archives /> renders correctly 1`] = `
         >
           <div
             className="pf-c-tabs"
-            data-ouia-component-id="OUIA-Generated-Tabs-1"
+            data-ouia-component-id="OUIA-Generated-Tabs-4"
             data-ouia-component-type="PF4/Tabs"
             data-ouia-safe={true}
             id="archives"
@@ -69,7 +69,11 @@ exports[`<Archives /> renders correctly 1`] = `
                   role="tab"
                   type="button"
                 >
-                  All Targets
+                  <span
+                    className="pf-c-tabs__item-text"
+                  >
+                    All Targets
+                  </span>
                 </button>
               </li>
               <li
@@ -87,7 +91,11 @@ exports[`<Archives /> renders correctly 1`] = `
                   role="tab"
                   type="button"
                 >
-                  All Archives
+                  <span
+                    className="pf-c-tabs__item-text"
+                  >
+                    All Archives
+                  </span>
                 </button>
               </li>
               <li
@@ -105,7 +113,11 @@ exports[`<Archives /> renders correctly 1`] = `
                   role="tab"
                   type="button"
                 >
-                  Uploads
+                  <span
+                    className="pf-c-tabs__item-text"
+                  >
+                    Uploads
+                  </span>
                 </button>
               </li>
             </ul>

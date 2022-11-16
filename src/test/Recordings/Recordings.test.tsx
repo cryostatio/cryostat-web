@@ -37,12 +37,13 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { Recordings } from '@app/Recordings/Recordings';
+import { Target } from '@app/Shared/Services/Target.service';
+import { renderWithServiceContext } from '../Common';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
@@ -54,7 +55,7 @@ jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
-    ArchivedRecordingsTable: jest.fn(() => {
+    ArchivedRecordingsTable: jest.fn((props) => {
       return <div>Archived Recordings Table</div>;
     }),
   };
@@ -73,73 +74,49 @@ jest.mock('@app/TargetView/TargetView', () => {
   };
 });
 
-jest.mock('@app/Shared/Services/Api.service', () => {
-  return {
-    ApiService: jest.fn(() => {
-      return {
-        isArchiveEnabled: jest
-          .fn()
-          .mockReturnValueOnce(of(true))
-          .mockReturnValueOnce(of(true))
-          .mockReturnValueOnce(of(true))
-          .mockReturnValueOnce(of(false))
-          .mockReturnValue(of(true)),
-      };
-    }),
-  };
-});
+const mockFooTarget: Target = {
+  connectUrl: 'service:jmx:rmi://someFooUrl',
+  alias: 'fooTarget',
+  annotations: {
+    cryostat: {},
+    platform: {},
+  },
+};
+
+jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockFooTarget));
+
+jest
+  .spyOn(defaultServices.api, 'isArchiveEnabled')
+  .mockReturnValueOnce(of(true)) // has the correct title in the TargetView
+  .mockReturnValueOnce(of(true)) // handles the case where archiving is enabled
+  .mockReturnValueOnce(of(false)) // handles the case where archiving is disabled
+  .mockReturnValue(of(true)); // others
 
 describe('<Recordings />', () => {
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <Recordings />
-        </ServiceContext.Provider>
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
+  afterEach(cleanup);
 
-  it('has the correct title in the TargetView', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Recordings />
-      </ServiceContext.Provider>
-    );
+  it('has the correct title in the TargetView', async () => {
+    renderWithServiceContext(<Recordings />);
 
     expect(screen.getByText('Recordings')).toBeInTheDocument();
   });
 
-  it('handles the case where archiving is enabled', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Recordings />
-      </ServiceContext.Provider>
-    );
+  it('handles the case where archiving is enabled', async () => {
+    renderWithServiceContext(<Recordings />);
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.getByText('Archived Recordings')).toBeInTheDocument();
   });
 
-  it('handles the case where archiving is disabled', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Recordings />
-      </ServiceContext.Provider>
-    );
+  it('handles the case where archiving is disabled', async () => {
+    renderWithServiceContext(<Recordings />);
 
     expect(screen.getByText('Active Recordings')).toBeInTheDocument();
     expect(screen.queryByText('Archived Recordings')).not.toBeInTheDocument();
   });
 
-  it('handles updating the activeTab state', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Recordings />
-      </ServiceContext.Provider>
-    );
+  it('handles updating the activeTab state', async () => {
+    const { user } = renderWithServiceContext(<Recordings />);
 
     // Assert that the active recordings tab is currently selected (default behaviour)
     let tabsList = screen.getAllByRole('tab');
@@ -153,7 +130,7 @@ describe('<Recordings />', () => {
     expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
 
     // Click the archived recordings tab
-    userEvent.click(screen.getByText('Archived Recordings'));
+    await user.click(screen.getByText('Archived Recordings'));
 
     // Assert that the archived recordings tab is now selected
     tabsList = screen.getAllByRole('tab');
@@ -165,5 +142,17 @@ describe('<Recordings />', () => {
     secondTab = tabsList[1];
     expect(secondTab).toHaveAttribute('aria-selected', 'true');
     expect(within(secondTab).getByText('Archived Recordings')).toBeTruthy();
+  });
+
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <Recordings />
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 });

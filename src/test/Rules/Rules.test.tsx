@@ -41,9 +41,8 @@ import { createMemoryHistory } from 'history';
 import { of, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { act as doAct, render, cleanup, screen, within, waitFor } from '@testing-library/react';
+import { act as doAct, cleanup, screen, within, waitFor } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Rules, Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import {
@@ -52,6 +51,7 @@ import {
   NotificationMessage,
 } from '@app/Shared/Services/NotificationChannel.service';
 import { DeleteAutomatedRules, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { renderWithServiceContextAndRouter } from '../Common';
 
 const mockRule: Rule = {
   name: 'mockRule',
@@ -147,29 +147,17 @@ describe('<Rules />', () => {
   });
 
   it('opens create rule view when Create is clicked', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
-    userEvent.click(screen.getByRole('button', { name: /Create/ }));
+    await user.click(screen.getByRole('button', { name: /Create/ }));
 
     expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/rules', '/rules/create']);
   });
 
   it('opens upload modal when upload icon is clicked', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
-    userEvent.click(screen.getByRole('button', { name: 'Upload' }));
+    await user.click(screen.getByRole('button', { name: 'Upload' }));
 
     const modal = await screen.findByRole('dialog');
     expect(modal).toBeInTheDocument();
@@ -185,24 +173,18 @@ describe('<Rules />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the Rule after clicking confirmation Delete', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(await screen.findByText('Delete'));
+    await user.click(screen.getByLabelText('Actions'));
+    await user.click(await screen.findByText('Delete'));
 
     expect(screen.getByLabelText(DeleteAutomatedRules.ariaLabel));
 
-    userEvent.click(screen.getByLabelText("Don't ask me again"));
-    userEvent.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
+    await user.click(screen.getByLabelText("Don't ask me again"));
+    await user.click(within(screen.getByLabelText(DeleteAutomatedRules.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
@@ -211,18 +193,12 @@ describe('<Rules />', () => {
   });
 
   it('deletes a rule when Delete is clicked w/o popup warning', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteRule').mockReturnValue(of(true));
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(await screen.findByText('Delete'));
+    await user.click(screen.getByLabelText('Actions'));
+    await user.click(await screen.findByText('Delete'));
 
     expect(screen.queryByLabelText(DeleteAutomatedRules.ariaLabel)).not.toBeInTheDocument();
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
@@ -230,13 +206,7 @@ describe('<Rules />', () => {
   });
 
   it('remove a rule when receiving a notification', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    renderWithServiceContextAndRouter(<Rules />, { history: history });
 
     expect(screen.queryByText(mockRule.name)).not.toBeInTheDocument();
   });
@@ -250,13 +220,7 @@ describe('<Rules />', () => {
       ...defaultServices,
       notificationChannel: mockNotifications,
     };
-    const { container } = render(
-      <ServiceContext.Provider value={services}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { container } = renderWithServiceContextAndRouter(<Rules />, { history: history, services: services });
 
     expect(await screen.findByText(mockRule.name)).toBeInTheDocument();
 
@@ -276,46 +240,28 @@ describe('<Rules />', () => {
   });
 
   it('downloads a rule when Download is clicked', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
-    userEvent.click(screen.getByLabelText('Actions'));
-    userEvent.click(await screen.findByText('Download'));
+    await user.click(screen.getByLabelText('Actions'));
+    await user.click(await screen.findByText('Download'));
 
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     expect(downloadSpy).toBeCalledWith(mockRule.name);
   });
 
   it('updates a rule when the switch is clicked', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
-    userEvent.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox'));
 
     expect(updateSpy).toHaveBeenCalledTimes(1);
     expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: !mockRule.enabled });
   });
 
   it('upload a rule file when Submit is clicked', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <Rules />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
-    userEvent.click(screen.getByRole('button', { name: 'Upload' }));
+    await user.click(screen.getByRole('button', { name: 'Upload' }));
 
     const modal = await screen.findByRole('dialog');
     expect(modal).toBeInTheDocument();
@@ -336,21 +282,21 @@ describe('<Rules />', () => {
     expect(browseButton).toBeVisible();
 
     const submitButton = screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
-    userEvent.click(submitButton);
+    await user.click(submitButton);
 
     const uploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    userEvent.click(browseButton);
-    userEvent.upload(uploadInput, mockFileUpload);
+    await user.click(browseButton);
+    await user.upload(uploadInput, mockFileUpload);
 
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => {
-      userEvent.click(submitButton);
+      await user.click(submitButton);
     });
 
     expect(createSpy).toHaveBeenCalled();

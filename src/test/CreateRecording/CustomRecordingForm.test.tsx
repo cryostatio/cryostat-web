@@ -38,13 +38,13 @@
 
 import * as React from 'react';
 import { createMemoryHistory } from 'history';
-import { screen, cleanup, render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen, cleanup, waitFor } from '@testing-library/react';
 import renderer, { act } from 'react-test-renderer';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { EventTemplate, RecordingAttributes, RecordingOptions } from '@app/Shared/Services/Api.service';
 import { of } from 'rxjs';
+import { renderWithServiceContext } from '../Common';
 
 jest.mock('@patternfly/react-core', () => ({
   // Mock out tooltip for snapshot testing
@@ -113,11 +113,7 @@ describe('<CustomRecordingForm />', () => {
 
   it('should create recording when form is filled and create is clicked', async () => {
     const onSubmit = jest.fn((recordingAttributes: RecordingAttributes) => {});
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <CustomRecordingForm onSubmit={onSubmit} />
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContext(<CustomRecordingForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();
@@ -127,15 +123,15 @@ describe('<CustomRecordingForm />', () => {
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
 
-    userEvent.type(nameInput, 'a_recording');
-    userEvent.selectOptions(templateSelect, [screen.getByText('someEventTemplate')]);
+    await user.type(nameInput, 'a_recording');
+    await user.selectOptions(templateSelect, ['someEventTemplate']);
 
     const createButton = screen.getByRole('button', { name: /^create$/i });
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
 
-    await waitFor(() => expect(createButton).not.toBeDisabled());
-    userEvent.click(createButton);
+    expect(createButton).not.toBeDisabled();
+    await user.click(createButton);
 
     expect(onSubmit).toHaveBeenCalledTimes(1);
     expect(onSubmit).toHaveBeenCalledWith({
@@ -152,18 +148,14 @@ describe('<CustomRecordingForm />', () => {
     } as RecordingAttributes);
   });
 
-  it('should show correct helper texts in metadata label editor', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <CustomRecordingForm onSubmit={onSubmit} />
-      </ServiceContext.Provider>
-    );
+  it('should show correct helper texts in metadata label editor', async () => {
+    const { user } = renderWithServiceContext(<CustomRecordingForm onSubmit={onSubmit} />);
 
     const metadataEditorToggle = screen.getByText('Show metadata options');
     expect(metadataEditorToggle).toBeInTheDocument();
     expect(metadataEditorToggle).toBeVisible();
 
-    userEvent.click(metadataEditorToggle);
+    await user.click(metadataEditorToggle);
 
     const helperText = screen.getByText(/are set by Cryostat and will be overwritten if specifed\.$/);
     expect(helperText).toBeInTheDocument();

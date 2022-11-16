@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody, CardTitle, Tab, Tabs } from '@patternfly/react-core';
+import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -53,15 +53,17 @@ export const Recordings: React.FunctionComponent<RecordingsProps> = (props) => {
 
   React.useEffect(() => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
-  }, [context.api, context.api.isArchiveEnabled, addSubscription]);
+  }, [context.api, addSubscription, setArchiveEnabled]);
+
+  const onTabSelect = React.useCallback((_, idx) => setActiveTab(Number(idx)), [setActiveTab]);
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
-      <Tabs id="recordings" activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-        <Tab id="active-recordings" eventKey={0} title="Active Recordings">
+      <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect}>
+        <Tab id="active-recordings" eventKey={0} title={<TabTitleText>Active Recordings</TabTitleText>}>
           <ActiveRecordingsTable archiveEnabled={true} />
         </Tab>
-        <Tab id="archived-recordings" eventKey={1} title="Archived Recordings">
+        <Tab id="archived-recordings" eventKey={1} title={<TabTitleText>Archived Recordings</TabTitleText>}>
           <ArchivedRecordingsTable target={context.target.target()} isUploadsTable={false} isNestedTable={false} />
         </Tab>
       </Tabs>
@@ -71,7 +73,7 @@ export const Recordings: React.FunctionComponent<RecordingsProps> = (props) => {
         <ActiveRecordingsTable archiveEnabled={false} />
       </>
     );
-  }, [archiveEnabled, activeTab]);
+  }, [archiveEnabled, activeTab, onTabSelect, context.target]);
 
   return (
     <TargetView pageTitle="Recordings">

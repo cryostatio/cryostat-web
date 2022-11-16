@@ -110,6 +110,7 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
             validated={validConnectUrl}
           >
             <TextInput
+              aria-label={'Connection URL'}
               value={connectUrl}
               isRequired
               type="text"

@@ -38,10 +38,10 @@
 
 import { DurationFilter } from '@app/Recordings/Filters/DurationFilter';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
-import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, screen } from '@testing-library/react';
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';
+import { renderDefault } from '../../Common';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -61,12 +61,8 @@ const mockRecording: ActiveRecording = {
   maxAge: 0,
 };
 
-const onDurationInput = jest.fn((durationInput) => {
-  /**Do nothing. Used for checking renders */
-});
-const onContinuousSelect = jest.fn((continuous) => {
-  /**Do nothing. Used for checking renders */
-});
+const onDurationInput = jest.fn((durationInput) => {});
+const onContinuousSelect = jest.fn((continuous) => {});
 
 describe('<DurationFilter />', () => {
   let emptyFilteredDuration: string[];
@@ -95,8 +91,8 @@ describe('<DurationFilter />', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('should check continous box if continous is in filter', () => {
-    render(
+  it('should check continous box if continous is in filter', async () => {
+    renderDefault(
       <DurationFilter
         durations={filteredDurationsWithCont}
         onContinuousDurationSelect={onContinuousSelect}
@@ -110,8 +106,8 @@ describe('<DurationFilter />', () => {
     expect(checkBox).toHaveAttribute('checked');
   });
 
-  it('should not check continous box if continous is in filter', () => {
-    render(
+  it('should not check continous box if continous is in filter', async () => {
+    renderDefault(
       <DurationFilter
         durations={filteredDurationsWithoutCont}
         onContinuousDurationSelect={onContinuousSelect}
@@ -125,12 +121,12 @@ describe('<DurationFilter />', () => {
     expect(checkBox).not.toHaveAttribute('checked');
   });
 
-  it('should select continous when clicking unchecked continuous box', () => {
+  it('should select continous when clicking unchecked continuous box', async () => {
     const submitContinous = jest.fn((continous) => {
       filteredDurationsWithoutCont.push('continuous');
     });
 
-    render(
+    const { user } = renderDefault(
       <DurationFilter
         durations={filteredDurationsWithoutCont}
         onContinuousDurationSelect={submitContinous}
@@ -143,7 +139,7 @@ describe('<DurationFilter />', () => {
     expect(checkBox).toBeVisible();
     expect(checkBox).not.toHaveAttribute('checked');
 
-    userEvent.click(checkBox);
+    await user.click(checkBox);
 
     expect(submitContinous).toHaveBeenCalledTimes(1);
     expect(submitContinous).toHaveBeenCalledWith(true);
@@ -151,12 +147,12 @@ describe('<DurationFilter />', () => {
     expect(filteredDurationsWithoutCont).toStrictEqual([`${mockRecording.duration}`, 'continuous']);
   });
 
-  it('should unselect continous when clicking checked continuous box', () => {
+  it('should unselect continous when clicking checked continuous box', async () => {
     const submitContinous = jest.fn((continous) => {
       filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => v !== 'continuous');
     });
 
-    render(
+    const { user } = renderDefault(
       <DurationFilter
         durations={filteredDurationsWithCont}
         onContinuousDurationSelect={submitContinous}
@@ -169,7 +165,7 @@ describe('<DurationFilter />', () => {
     expect(checkBox).toBeVisible();
     expect(checkBox).toHaveAttribute('checked');
 
-    userEvent.click(checkBox);
+    await user.click(checkBox);
 
     expect(submitContinous).toHaveBeenCalledTimes(1);
     expect(submitContinous).toHaveBeenCalledWith(false);
@@ -181,7 +177,7 @@ describe('<DurationFilter />', () => {
       emptyFilteredDuration.push(duration);
     });
 
-    render(
+    const { user } = renderDefault(
       <DurationFilter
         durations={emptyFilteredDuration}
         onContinuousDurationSelect={onContinuousSelect}
@@ -193,11 +189,11 @@ describe('<DurationFilter />', () => {
     expect(durationInput).toBeInTheDocument();
     expect(durationInput).toBeVisible();
 
-    userEvent.clear(durationInput);
-    userEvent.type(durationInput, '50');
+    await user.clear(durationInput);
+    await user.type(durationInput, '50');
 
     // Press enter
-    userEvent.type(durationInput, '{enter}');
+    await user.type(durationInput, '{enter}');
 
     expect(submitDuration).toHaveBeenCalledTimes(1);
     expect(submitDuration).toHaveBeenCalledWith(Number('50'));
@@ -209,7 +205,7 @@ describe('<DurationFilter />', () => {
       emptyFilteredDuration.push(duration);
     });
 
-    render(
+    const { user } = renderDefault(
       <DurationFilter
         durations={emptyFilteredDuration}
         onContinuousDurationSelect={onContinuousSelect}
@@ -221,11 +217,11 @@ describe('<DurationFilter />', () => {
     expect(durationInput).toBeInTheDocument();
     expect(durationInput).toBeVisible();
 
-    userEvent.clear(durationInput);
-    userEvent.type(durationInput, '50');
+    await user.clear(durationInput);
+    await user.type(durationInput, '50');
 
     // Press shift
-    userEvent.type(durationInput, '{shift}');
+    await user.type(durationInput, '{shift}');
 
     expect(submitDuration).toHaveBeenCalledTimes(0);
     expect(emptyFilteredDuration).toStrictEqual([]);

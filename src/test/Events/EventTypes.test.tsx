@@ -37,13 +37,13 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { act as doAct, render, screen } from '@testing-library/react';
+import { act as doAct, cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { of, Subject } from 'rxjs';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { EventType, EventTypes } from '@app/Events/EventTypes';
-import userEvent from '@testing-library/user-event';
+import { renderWithServiceContext } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -61,6 +61,8 @@ jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
 describe('<EventTypes />', () => {
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
@@ -84,11 +86,7 @@ describe('<EventTypes />', () => {
       target: mockTargetSvc,
     };
 
-    render(
-      <ServiceContext.Provider value={services}>
-        <EventTypes />
-      </ServiceContext.Provider>
-    );
+    renderWithServiceContext(<EventTypes />, { services: services });
 
     await doAct(async () => subj.next());
 
@@ -105,18 +103,14 @@ describe('<EventTypes />', () => {
     expect(retryButton).toBeVisible();
   });
 
-  it('should shown empty state when table is empty', () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <EventTypes />
-      </ServiceContext.Provider>
-    );
+  it('should shown empty state when table is empty', async () => {
+    const { user } = renderWithServiceContext(<EventTypes />);
 
     const filterInput = screen.getByLabelText('Event filter');
     expect(filterInput).toBeInTheDocument();
     expect(filterInput).toBeVisible();
 
-    userEvent.type(filterInput, 'someveryoddname');
+    await user.type(filterInput, 'someveryoddname');
 
     expect(screen.queryByText('Some Event')).not.toBeInTheDocument();
 

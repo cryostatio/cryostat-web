@@ -42,7 +42,6 @@ import { Text } from '@patternfly/react-core';
 import { screen, within, waitFor, cleanup } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
@@ -129,8 +128,6 @@ jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/graf
 jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockArchivedRecordingsResponse));
 jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnValue(of(true));
 
-jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
   .mockReturnValueOnce(true)
@@ -193,7 +190,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
   afterEach(cleanup);
 
-  it('renders the recording table correctly', () => {
+  it('renders the recording table correctly', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -244,7 +241,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(totalSize).toBeVisible();
   });
 
-  it('adds a recording after receiving a notification', () => {
+  it('adds a recording after receiving a notification', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -256,7 +253,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.getByText('anotherRecording')).toBeInTheDocument();
   });
 
-  it('updates the recording labels after receiving a notification', () => {
+  it('updates the recording labels after receiving a notification', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -268,7 +265,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.queryByText('someLabel: someValue')).not.toBeInTheDocument();
   });
 
-  it('removes a recording after receiving a notification', () => {
+  it('removes a recording after receiving a notification', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -279,7 +276,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.queryByText('someRecording')).not.toBeInTheDocument();
   });
 
-  it('displays the toolbar buttons', () => {
+  it('displays the toolbar buttons', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
@@ -292,8 +289,8 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(screen.getByText('Edit Labels')).toBeInTheDocument();
   });
 
-  it('opens the labels drawer when Edit Labels is clicked', () => {
-    renderWithServiceContextAndReduxStoreWithRouter(
+  it('opens the labels drawer when Edit Labels is clicked', async () => {
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -303,13 +300,13 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Edit Labels'));
+    await user.click(selectAllCheck);
+    await user.click(screen.getByText('Edit Labels'));
     expect(screen.getByText('Edit Recording Labels')).toBeInTheDocument();
   });
 
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
-    renderWithServiceContextAndReduxStoreWithRouter(
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -319,8 +316,8 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Delete'));
+    await user.click(selectAllCheck);
+    await user.click(screen.getByText('Delete'));
 
     const deleteModal = await screen.findByLabelText(DeleteArchivedRecordings.ariaLabel);
     expect(deleteModal).toBeInTheDocument();
@@ -328,8 +325,8 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
-    userEvent.click(screen.getByLabelText("Don't ask me again"));
-    userEvent.click(within(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel)).getByText('Delete'));
+    await user.click(screen.getByLabelText("Don't ask me again"));
+    await user.click(within(screen.getByLabelText(DeleteArchivedRecordings.ariaLabel)).getByText('Delete'));
 
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
@@ -337,8 +334,8 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteArchivedRecordings, false);
   });
 
-  it('deletes the recording when Delete is clicked w/o popup warning', () => {
-    renderWithServiceContextAndReduxStoreWithRouter(
+  it('deletes the recording when Delete is clicked w/o popup warning', async () => {
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -348,8 +345,8 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
-    userEvent.click(selectAllCheck);
-    userEvent.click(screen.getByText('Delete'));
+    await user.click(selectAllCheck);
+    await user.click(screen.getByText('Delete'));
 
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteArchivedRecording');
 
@@ -359,7 +356,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('downloads a recording when Download Recording is clicked', async () => {
-    renderWithServiceContextAndReduxStoreWithRouter(
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -368,9 +365,9 @@ describe('<ArchivedRecordingsTable />', () => {
     );
 
     await tlr.act(async () => {
-      userEvent.click(screen.getByLabelText('Actions'));
+      await user.click(screen.getByLabelText('Actions'));
     });
-    userEvent.click(screen.getByText('Download Recording'));
+    await user.click(screen.getByText('Download Recording'));
 
     const downloadRequestSpy = jest.spyOn(defaultServices.api, 'downloadRecording');
 
@@ -379,7 +376,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('displays the automated analysis report when View Report is clicked', async () => {
-    renderWithServiceContextAndReduxStoreWithRouter(
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -388,9 +385,9 @@ describe('<ArchivedRecordingsTable />', () => {
     );
 
     await tlr.act(async () => {
-      userEvent.click(screen.getByLabelText('Actions'));
+      await user.click(screen.getByLabelText('Actions'));
     });
-    userEvent.click(screen.getByText('View Report ...'));
+    await user.click(screen.getByText('View Report ...'));
 
     const reportRequestSpy = jest.spyOn(defaultServices.api, 'downloadReport');
 
@@ -398,7 +395,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('uploads a recording to Grafana when View in Grafana is clicked', async () => {
-    renderWithServiceContextAndReduxStoreWithRouter(
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
       <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
       {
         preloadState: preloadedState,
@@ -407,9 +404,9 @@ describe('<ArchivedRecordingsTable />', () => {
     );
 
     await tlr.act(async () => {
-      userEvent.click(screen.getByLabelText('Actions'));
+      await user.click(screen.getByLabelText('Actions'));
     });
-    userEvent.click(screen.getByText('View in Grafana ...'));
+    await user.click(screen.getByText('View in Grafana ...'));
 
     const grafanaUploadSpy = jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana');
 
@@ -417,8 +414,8 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('renders correctly the Uploads table', async () => {
-    renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,
         history: history,
@@ -432,7 +429,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-    userEvent.click(uploadButton);
+    await user.click(uploadButton);
 
     const uploadModal = await screen.findByRole('dialog');
     expect(uploadModal).toBeInTheDocument();
@@ -442,15 +439,15 @@ describe('<ArchivedRecordingsTable />', () => {
   it('uploads an archived recording without labels when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
-    renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,
         history: history,
       }
     );
 
-    userEvent.click(screen.getByLabelText('upload-recording'));
+    await user.click(screen.getByLabelText('upload-recording'));
 
     const modal = await screen.findByRole('dialog');
 
@@ -476,8 +473,8 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    userEvent.click(browseButton);
-    userEvent.upload(uploadInput, mockFileUpload);
+    await user.click(browseButton);
+    await user.upload(uploadInput, mockFileUpload);
 
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
@@ -488,7 +485,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
     await tlr.act(async () => {
-      userEvent.click(submitButton);
+      await user.click(submitButton);
     });
 
     expect(uploadSpy).toHaveBeenCalled();
@@ -498,15 +495,15 @@ describe('<ArchivedRecordingsTable />', () => {
   it('uploads an archived recording with labels from editors when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
-    renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,
         history: history,
       }
     );
 
-    userEvent.click(screen.getByLabelText('upload-recording'));
+    await user.click(screen.getByLabelText('upload-recording'));
 
     const modal = await screen.findByRole('dialog');
 
@@ -532,8 +529,8 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    userEvent.click(browseButton);
-    userEvent.upload(uploadInput, mockFileUpload);
+    await user.click(browseButton);
+    await user.upload(uploadInput, mockFileUpload);
 
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
@@ -542,13 +539,13 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(metadataEditorToggle).toBeInTheDocument();
     expect(metadataEditorToggle).toBeVisible();
 
-    userEvent.click(metadataEditorToggle);
+    await user.click(metadataEditorToggle);
 
     const addLabelButton = await within(modal).findByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
-    userEvent.click(addLabelButton);
+    await user.click(addLabelButton);
 
     const keyInput = await within(modal).findByLabelText('Label Key');
     expect(keyInput).toBeInTheDocument();
@@ -558,15 +555,15 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(valueInput).toBeInTheDocument();
     expect(valueInput).toBeVisible();
 
-    userEvent.type(keyInput, 'someLabel');
-    userEvent.type(valueInput, 'someValue');
+    await user.type(keyInput, 'someLabel');
+    await user.type(valueInput, 'someValue');
 
     const submitButton = within(modal).getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await tlr.act(async () => userEvent.click(submitButton));
+    await tlr.act(async () => await user.click(submitButton));
 
     expect(uploadSpy).toHaveBeenCalled();
     expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, { someLabel: 'someValue' }, expect.anything());
@@ -575,15 +572,15 @@ describe('<ArchivedRecordingsTable />', () => {
   it('uploads an archived recording with labels from uploads when Submit is clicked', async () => {
     const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRecording').mockReturnValue(of(mockFileName));
 
-    renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,
         history: history,
       }
     );
 
-    userEvent.click(screen.getByLabelText('upload-recording'));
+    await user.click(screen.getByLabelText('upload-recording'));
 
     const modal = await screen.findByRole('dialog');
 
@@ -609,8 +606,8 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    userEvent.click(browseButton);
-    userEvent.upload(uploadInput, mockFileUpload);
+    await user.click(browseButton);
+    await user.upload(uploadInput, mockFileUpload);
 
     expect(uploadInput.files).not.toBe(null);
     expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
@@ -619,19 +616,19 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(metadataEditorToggle).toBeInTheDocument();
     expect(metadataEditorToggle).toBeVisible();
 
-    userEvent.click(metadataEditorToggle);
+    await user.click(metadataEditorToggle);
 
     const uploadeLabelButton = await within(modal).findByRole('button', { name: 'Upload Labels' });
     expect(uploadeLabelButton).toBeInTheDocument();
     expect(uploadeLabelButton).toBeVisible();
 
-    userEvent.click(uploadeLabelButton);
+    await user.click(uploadeLabelButton);
 
     const labelUploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(labelUploadInput).toBeInTheDocument();
 
     await tlr.act(async () => {
-      userEvent.upload(labelUploadInput, mockMetadataFile);
+      await user.upload(labelUploadInput, mockMetadataFile);
     });
 
     expect(labelUploadInput.files).not.toBe(null);
@@ -642,22 +639,22 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(submitButton).toBeVisible();
 
     await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await tlr.act(async () => userEvent.click(submitButton));
+    await tlr.act(async () => await user.click(submitButton));
 
     expect(uploadSpy).toHaveBeenCalled();
     expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, mockUploadedRecordingLabels, expect.anything());
   });
 
   it('should show warning popover if any metadata file upload has invalid contents', async () => {
-    renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={true} isNestedTable={false} />,
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false} />,
       {
         preloadState: preloadedState,
         history: history,
       }
     );
 
-    userEvent.click(screen.getByLabelText('upload-recording'));
+    await user.click(screen.getByLabelText('upload-recording'));
 
     const modal = await screen.findByRole('dialog');
 
@@ -687,7 +684,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(metadataEditorToggle).toBeInTheDocument();
     expect(metadataEditorToggle).toBeVisible();
 
-    userEvent.click(metadataEditorToggle);
+    await user.click(metadataEditorToggle);
 
     const invalidMetadataFileName = 'invalid.metadata.json';
     const invalidMetadataFile = new File(['asdfg'], invalidMetadataFileName, { type: 'json' });
@@ -697,13 +694,13 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(uploadeLabelButton).toBeInTheDocument();
     expect(uploadeLabelButton).toBeVisible();
 
-    userEvent.click(uploadeLabelButton);
+    await user.click(uploadeLabelButton);
 
     const labelUploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(labelUploadInput).toBeInTheDocument();
 
     await tlr.act(async () => {
-      userEvent.upload(labelUploadInput, invalidMetadataFile);
+      await user.upload(labelUploadInput, invalidMetadataFile);
     });
 
     expect(labelUploadInput.files).not.toBe(null);

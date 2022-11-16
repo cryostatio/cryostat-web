@@ -38,17 +38,17 @@
 import * as React from 'react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { of, retry, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { act as doAct, render, cleanup, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { act as doAct, cleanup, screen, waitFor } from '@testing-library/react';
 import { Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { CreateRule } from '@app/Rules/CreateRule';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { renderWithServiceContextAndReduxStoreWithRouter, renderWithServiceContextAndRouter } from '../Common';
 
 const escapeKeyboardInput = (value: string) => {
   return value.replace(/[{[]/g, '$&$&');
@@ -142,13 +142,7 @@ describe('<CreateRule />', () => {
       target: mockTargetSvc,
     };
 
-    render(
-      <ServiceContext.Provider value={services}>
-        <Router location={history.location} history={history}>
-          <CreateRule />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    renderWithServiceContextAndRouter(<CreateRule />, { history: history, services: services });
 
     await doAct(async () => subj.next());
 
@@ -166,13 +160,7 @@ describe('<CreateRule />', () => {
   });
 
   it('should submit form if form input is valid', async () => {
-    render(
-      <ServiceContext.Provider value={defaultServices}>
-        <Router location={history.location} history={history}>
-          <CreateRule />
-        </Router>
-      </ServiceContext.Provider>
-    );
+    const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
 
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();
@@ -210,23 +198,22 @@ describe('<CreateRule />', () => {
     expect(initialDelayInput).toBeInTheDocument();
     expect(initialDelayInput).toBeVisible();
 
+    await user.type(nameInput, mockRule.name);
+    await user.type(descriptionInput, mockRule.description);
+    await user.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
+    await user.selectOptions(templateSelect, ['Profiling']);
+    await user.type(maxSizeInput, `${mockRule.maxSizeBytes}`);
+    await user.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
+    await user.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);
+    await user.type(preservedArchivesInput, `${mockRule.preservedArchives}`);
+    await user.type(initialDelayInput, `${mockRule.initialDelaySeconds}`);
+
     const createButton = screen.getByRole('button', { name: /^create$/i });
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
 
-    userEvent.type(nameInput, mockRule.name);
-    userEvent.type(descriptionInput, mockRule.description);
-    userEvent.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
-    userEvent.selectOptions(templateSelect, [screen.getByText('Profiling')]);
-    userEvent.type(maxSizeInput, `${mockRule.maxSizeBytes}`);
-    userEvent.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
-    userEvent.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);
-    userEvent.type(preservedArchivesInput, `${mockRule.preservedArchives}`);
-    userEvent.type(initialDelayInput, `${mockRule.initialDelaySeconds}`);
-
-    await waitFor(() => expect(createButton).not.toBeDisabled());
-
-    userEvent.click(createButton);
+    expect(createButton).not.toBeDisabled();
+    await user.click(createButton);
 
     expect(createSpy).toHaveBeenCalledTimes(1);
     expect(createSpy).toHaveBeenCalledWith(mockRule);
