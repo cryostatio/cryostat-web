@@ -190,7 +190,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
       }
     );
 
@@ -218,7 +218,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
       }
     );
 
@@ -258,7 +258,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
       }
     );
 
@@ -306,7 +306,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
       }
     );
 
@@ -344,7 +344,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
       }
     );
 
@@ -397,7 +397,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: preloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
       }
     );
 
@@ -460,7 +460,7 @@ describe('<RecordingFilters />', () => {
       </Toolbar>,
       {
         preloadState: emptyPreloadedState,
-        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+        user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
       }
     );
 
