@@ -69,7 +69,11 @@ exports[`<Archives /> renders correctly 1`] = `
                   role="tab"
                   type="button"
                 >
-                  All Targets
+                  <span
+                    className="pf-c-tabs__item-text"
+                  >
+                    All Targets
+                  </span>
                 </button>
               </li>
               <li
@@ -87,7 +91,11 @@ exports[`<Archives /> renders correctly 1`] = `
                   role="tab"
                   type="button"
                 >
-                  All Archives
+                  <span
+                    className="pf-c-tabs__item-text"
+                  >
+                    All Archives
+                  </span>
                 </button>
               </li>
               <li
@@ -105,7 +113,11 @@ exports[`<Archives /> renders correctly 1`] = `
                   role="tab"
                   type="button"
                 >
-                  Uploads
+                  <span
+                    className="pf-c-tabs__item-text"
+                  >
+                    Uploads
+                  </span>
                 </button>
               </li>
             </ul>
