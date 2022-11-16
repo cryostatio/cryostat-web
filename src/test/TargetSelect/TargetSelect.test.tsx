@@ -265,6 +265,12 @@ describe('<TargetSelect />', () => {
     expect(confirmButton).toBeVisible();
     expect(confirmButton).toBeDisabled();
 
+    const connectUrlInput = screen.getByLabelText('Connection URL') as HTMLInputElement;
+    expect(connectUrlInput).toBeInTheDocument();
+    expect(connectUrlInput).toBeVisible();
+
+    connectUrlInput.focus();
+
     await user.keyboard('{Enter}');
     expect(createTargetRequestSpy).toBeCalledTimes(0);
   });
