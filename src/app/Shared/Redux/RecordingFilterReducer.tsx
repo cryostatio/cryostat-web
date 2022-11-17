@@ -83,7 +83,7 @@ export const createOrUpdateRecordingFilter = (
 ): RecordingFiltersCategories => {
   let newfilterValues: any[];
   if (!old[filterKey]) {
-    newfilterValues = [];
+    newfilterValues = [filterValue];
   } else {
     const oldFilterValues = old[filterKey] as any[];
     if (deleted) {
