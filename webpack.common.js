@@ -40,7 +40,14 @@ module.exports = (env) => {
             name(module) {
               // get the name. E.g. node_modules/packageName/not/this/part.js
               // or node_modules/packageName
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+              const matches = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/);
+              if (!Array.isArray(matches)) {
+                return null;
+              }
+              if (matches.length < 2) {
+                return null;
+              }
+              const packageName = matches[1];
 
               // npm package names are URL-safe, but some servers don't like @ symbols
               return `npm.${packageName.replace('@', '')}`;
