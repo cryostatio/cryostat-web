@@ -83,6 +83,7 @@ import {
 import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { authFailMessage } from '@app/ErrorView/ErrorView';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export enum PanelContent {
   LABELS,
@@ -108,6 +109,11 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   const [panelContent, setPanelContent] = React.useState(PanelContent.LABELS);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [actionLoadings, setActionLoadings] = React.useState<Record<ActiveActions, boolean>>({
+    ARCHIVE: false,
+    DELETE: false,
+    STOP: false,
+  });
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
@@ -313,7 +319,19 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return () => window.clearInterval(id);
   }, [refreshRecordingList, context, context.settings]);
 
+  const handlePostActions = React.useCallback(
+    (action: ActiveActions) => {
+      setActionLoadings((old) => {
+        const newActionLoadings = { ...old };
+        newActionLoadings[action] = false;
+        return newActionLoadings;
+      });
+    },
+    [setActionLoadings]
+  );
+
   const handleArchiveRecordings = React.useCallback(() => {
+    setActionLoadings((old) => ({ ...old, ARCHIVE: true }));
     const tasks: Observable<boolean>[] = [];
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
@@ -321,10 +339,24 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         tasks.push(context.api.archiveRecording(r.name).pipe(first()));
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error));
-  }, [filteredRecordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
+    addSubscription(
+      forkJoin(tasks).subscribe({
+        next: () => handlePostActions('ARCHIVE'),
+        error: () => handlePostActions('ARCHIVE'),
+      })
+    );
+  }, [
+    filteredRecordings,
+    checkedIndices,
+    handleRowCheck,
+    context.api,
+    addSubscription,
+    setActionLoadings,
+    handlePostActions,
+  ]);
 
   const handleStopRecordings = React.useCallback(() => {
+    setActionLoadings((old) => ({ ...old, STOP: true }));
     const tasks: Observable<boolean>[] = [];
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
@@ -334,10 +366,24 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         }
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error));
-  }, [filteredRecordings, checkedIndices, handleRowCheck, context.api, addSubscription]);
+    addSubscription(
+      forkJoin(tasks).subscribe({
+        next: () => handlePostActions('STOP'),
+        error: () => handlePostActions('STOP'),
+      })
+    );
+  }, [
+    filteredRecordings,
+    checkedIndices,
+    handleRowCheck,
+    context.api,
+    addSubscription,
+    setActionLoadings,
+    handlePostActions,
+  ]);
 
   const handleDeleteRecordings = React.useCallback(() => {
+    setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<{}>[] = [];
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
@@ -345,8 +391,21 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         tasks.push(context.api.deleteRecording(r.name).pipe(first()));
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(() => {} /* do nothing */, window.console.error));
-  }, [filteredRecordings, checkedIndices, context.reports, context.api, addSubscription]);
+    addSubscription(
+      forkJoin(tasks).subscribe({
+        next: () => handlePostActions('DELETE'),
+        error: () => handlePostActions('DELETE'),
+      })
+    );
+  }, [
+    filteredRecordings,
+    checkedIndices,
+    context.reports,
+    context.api,
+    addSubscription,
+    setActionLoadings,
+    handlePostActions,
+  ]);
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(deleteAllFiltersIntent(targetConnectURL, false));
@@ -542,6 +601,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         handleEditLabels={handleEditLabels}
         handleStopRecordings={handleStopRecordings}
         handleDeleteRecordings={handleDeleteRecordings}
+        actionLoadings={actionLoadings}
       />
     ),
     [
@@ -558,6 +618,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleEditLabels,
       handleStopRecordings,
       handleDeleteRecordings,
+      actionLoadings,
     ]
   );
 
@@ -606,6 +667,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   );
 };
 
+export type ActiveActions = 'ARCHIVE' | 'STOP' | 'DELETE';
+
 export interface ActiveRecordingsToolbarProps {
   target: string;
   checkedIndices: number[];
@@ -620,6 +683,7 @@ export interface ActiveRecordingsToolbarProps {
   handleEditLabels: () => void;
   handleStopRecordings: () => void;
   handleDeleteRecordings: () => void;
+  actionLoadings: Record<ActiveActions, boolean>;
 }
 
 const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarProps> = (props) => {
@@ -652,6 +716,27 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
     return !anyRunning;
   }, [props.checkedIndices, props.filteredRecordings]);
 
+  const actionLoadingProps = React.useMemo<Record<ActiveActions, LoadingPropsType>>(
+    () => ({
+      ARCHIVE: {
+        spinnerAriaValueText: 'Archiving',
+        spinnerAriaLabel: 'archive-active-recording',
+        isLoading: props.actionLoadings['ARCHIVE'],
+      },
+      STOP: {
+        spinnerAriaValueText: 'Stopping',
+        spinnerAriaLabel: 'stop-active-recording',
+        isLoading: props.actionLoadings['STOP'],
+      },
+      DELETE: {
+        spinnerAriaValueText: 'Deleting',
+        spinnerAriaLabel: 'deleting-active-recording',
+        isLoading: props.actionLoadings['DELETE'],
+      },
+    }),
+    [props.actionLoadings]
+  );
+
   const buttons = React.useMemo(() => {
     let arr = [
       <Button key="create" variant="primary" onClick={props.handleCreateRecording}>
@@ -665,8 +750,9 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
           variant="secondary"
           onClick={props.handleArchiveRecordings}
           isDisabled={!props.checkedIndices.length}
+          {...actionLoadingProps['ARCHIVE']}
         >
-          Archive
+          {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
         </Button>
       );
     }
@@ -680,11 +766,23 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
       >
         Edit Labels
       </Button>,
-      <Button key="stop" variant="tertiary" onClick={props.handleStopRecordings} isDisabled={isStopDisabled}>
-        Stop
+      <Button
+        key="stop"
+        variant="tertiary"
+        onClick={props.handleStopRecordings}
+        isDisabled={isStopDisabled}
+        {...actionLoadingProps['STOP']}
+      >
+        {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
       </Button>,
-      <Button key="delete" variant="danger" onClick={handleDeleteButton} isDisabled={!props.checkedIndices.length}>
-        Delete
+      <Button
+        key="delete"
+        variant="danger"
+        onClick={handleDeleteButton}
+        isDisabled={!props.checkedIndices.length}
+        {...actionLoadingProps['DELETE']}
+      >
+        {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
       </Button>,
     ];
     return (
@@ -700,7 +798,9 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
     props.handleArchiveRecordings,
     props.handleEditLabels,
     props.handleStopRecordings,
+    props.actionLoadings,
     handleDeleteButton,
+    actionLoadingProps,
   ]);
 
   const deleteActiveWarningModal = React.useMemo(() => {
