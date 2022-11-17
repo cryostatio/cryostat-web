@@ -38,13 +38,43 @@
 import * as React from 'react';
 import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
 import { useHistory } from 'react-router-dom';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { first } from 'rxjs';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
-export interface SnapshotRecordingFormProps {
-  onSubmit: Function;
-}
+export interface SnapshotRecordingFormProps {}
 
-export const SnapshotRecordingForm = (props) => {
+export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFormProps> = (props) => {
   const history = useHistory();
+  const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
+  const [loading, setLoading] = React.useState(false);
+
+  const handleCreateSnapshot = React.useCallback(() => {
+    setLoading(true);
+    addSubscription(
+      context.api
+        .createSnapshot()
+        .pipe(first())
+        .subscribe((success) => {
+          setLoading(false);
+          if (success) {
+            history.push('/recordings');
+          }
+        })
+    );
+  }, [addSubscription, context.api, history, setLoading]);
+
+  const createButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Creating',
+        spinnerAriaLabel: 'create-snapshot-recording',
+        isLoading: loading,
+      } as LoadingPropsType),
+    [loading]
+  );
 
   return (
     <>
@@ -56,10 +86,10 @@ export const SnapshotRecordingForm = (props) => {
           the moment it is created.
         </Text>
         <ActionGroup>
-          <Button variant="primary" onClick={props.onSubmit}>
-            Create
+          <Button variant="primary" onClick={handleCreateSnapshot} isDisabled={loading} {...createButtonLoadingProps}>
+            {loading ? 'Creating' : 'Create'}
           </Button>
-          <Button variant="secondary" onClick={history.goBack}>
+          <Button variant="secondary" onClick={history.goBack} isDisabled={loading}>
             Cancel
           </Button>
         </ActionGroup>

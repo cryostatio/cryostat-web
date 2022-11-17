@@ -57,6 +57,7 @@ import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export interface ArchiveUploadModalProps {
   visible: boolean;
@@ -122,6 +123,10 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
   }, [uploading, setShowCancelPrompt, reset, props.onClose]);
 
   const handleSubmit = React.useCallback(() => {
+    if (rejected) {
+      notifications.warning('File format is not compatible');
+      return;
+    }
     if (!uploadFile) {
       notifications.warning('Attempted to submit JFR upload without a file selected');
       return;
@@ -130,14 +135,37 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
     context.api
       .uploadRecording(uploadFile, getFormattedLabels(), abort.signal)
       .pipe(first())
-      .subscribe(handleClose, reset);
-  }, [context.api, notifications, setUploading, uploadFile, abort.signal, handleClose, reset, getFormattedLabels]);
+      .subscribe({
+        next: () => handleClose(),
+        error: (_) => reset(),
+      });
+  }, [
+    context.api,
+    notifications,
+    setUploading,
+    abort.signal,
+    handleClose,
+    reset,
+    getFormattedLabels,
+    uploadFile,
+    rejected,
+  ]);
 
   const handleAbort = React.useCallback(() => {
     abort.abort();
     reset();
     props.onClose();
   }, [abort.abort, reset, props.onClose]);
+
+  const submitButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Submitting',
+        spinnerAriaLabel: 'submitting-uploaded-recording',
+        isLoading: uploading,
+      } as LoadingPropsType),
+    [uploading]
+  );
 
   return (
     <>
@@ -186,6 +214,7 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
               filename={filename}
               onChange={handleFileChange}
               isLoading={uploading}
+              isDisabled={uploading}
               validated={rejected ? 'error' : 'default'}
               dropzoneProps={{
                 accept: '.jfr',
@@ -203,16 +232,23 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
                 </Tooltip>
               }
             >
-              <RecordingLabelFields isUploadable labels={labels} setLabels={setLabels} setValid={setValid} />
+              <RecordingLabelFields
+                isUploadable
+                labels={labels}
+                setLabels={setLabels}
+                setValid={setValid}
+                isDisabled={uploading}
+              />
             </FormGroup>
           </ExpandableSection>
           <ActionGroup>
             <Button
               variant="primary"
               onClick={handleSubmit}
-              isDisabled={!filename || valid !== ValidatedOptions.success}
+              isDisabled={!filename || valid !== ValidatedOptions.success || uploading}
+              {...submitButtonLoadingProps}
             >
-              Submit
+              {uploading ? 'Submitting' : 'Submit'}
             </Button>
             <Button variant="link" onClick={handleClose}>
               Cancel

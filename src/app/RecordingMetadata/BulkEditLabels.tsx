@@ -55,6 +55,7 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { hashCode } from '@app/utils/utils';
 import { uploadAsTarget } from '@app/Archives/Archives';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -71,6 +72,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
   const [commonLabels, setCommonLabels] = React.useState([] as RecordingLabel[]);
   const [savedCommonLabels, setSavedCommonLabels] = React.useState([] as RecordingLabel[]);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
+  const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const getIdxFromRecording = React.useCallback(
@@ -78,7 +80,13 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     [hashCode, props.isTargetRecording]
   );
 
+  const handlePostUpdate = React.useCallback(() => {
+    setEditing(false);
+    setLoading(false);
+  }, [setLoading, setEditing]);
+
   const handleUpdateLabels = React.useCallback(() => {
+    setLoading(true);
     const tasks: Observable<any>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
@@ -103,7 +111,12 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         }
       }
     });
-    addSubscription(forkJoin(tasks).subscribe(() => setEditing((editing) => !editing)));
+    addSubscription(
+      forkJoin(tasks).subscribe({
+        next: handlePostUpdate,
+        error: handlePostUpdate,
+      })
+    );
   }, [
     addSubscription,
     recordings,
@@ -113,11 +126,11 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     props.directory,
     props.directoryRecordings,
     editing,
-    setEditing,
     commonLabels,
     savedCommonLabels,
     parseLabels,
     context.api,
+    handlePostUpdate,
   ]);
 
   const handleEditLabels = React.useCallback(() => {
@@ -227,6 +240,16 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     setRecordings,
   ]);
 
+  const saveButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Saving',
+        spinnerAriaLabel: 'saving-recording-labels',
+        isLoading: loading,
+      } as LoadingPropsType),
+    [loading]
+  );
+
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshRecordingList));
   }, [addSubscription, context, context.target, refreshRecordingList]);
@@ -296,15 +319,25 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         <StackItem>
           {editing ? (
             <>
-              <RecordingLabelFields labels={commonLabels} setLabels={setCommonLabels} setValid={setValid} />
+              <RecordingLabelFields
+                labels={commonLabels}
+                setLabels={setCommonLabels}
+                setValid={setValid}
+                isDisabled={loading}
+              />
               <Split hasGutter>
                 <SplitItem>
-                  <Button variant="primary" onClick={handleUpdateLabels} isDisabled={valid != ValidatedOptions.success}>
-                    Save
+                  <Button
+                    variant="primary"
+                    onClick={handleUpdateLabels}
+                    isDisabled={valid != ValidatedOptions.success || loading}
+                    {...saveButtonLoadingProps}
+                  >
+                    {loading ? 'Saving' : 'Save'}
                   </Button>
                 </SplitItem>
                 <SplitItem>
-                  <Button variant="secondary" onClick={handleCancel}>
+                  <Button variant="secondary" onClick={handleCancel} isDisabled={loading}>
                     Cancel
                   </Button>
                 </SplitItem>

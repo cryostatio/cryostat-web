@@ -91,10 +91,8 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('<CustomRecordingForm />', () => {
-  let onSubmit: (recordingAttributes: RecordingAttributes) => void;
   beforeEach(() => {
     history.go(-history.length);
-    onSubmit = jest.fn((recordingAttributes) => {});
   });
 
   afterEach(cleanup);
@@ -104,7 +102,7 @@ describe('<CustomRecordingForm />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <CustomRecordingForm onSubmit={onSubmit} />
+          <CustomRecordingForm />
         </ServiceContext.Provider>
       );
     });
@@ -112,8 +110,8 @@ describe('<CustomRecordingForm />', () => {
   });
 
   it('should create recording when form is filled and create is clicked', async () => {
-    const onSubmit = jest.fn((recordingAttributes: RecordingAttributes) => {});
-    const { user } = renderWithServiceContext(<CustomRecordingForm onSubmit={onSubmit} />);
+    const onSubmitSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of(true));
+    const { user } = renderWithServiceContext(<CustomRecordingForm />);
 
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();
@@ -133,8 +131,8 @@ describe('<CustomRecordingForm />', () => {
     expect(createButton).not.toBeDisabled();
     await user.click(createButton);
 
-    expect(onSubmit).toHaveBeenCalledTimes(1);
-    expect(onSubmit).toHaveBeenCalledWith({
+    expect(onSubmitSpy).toHaveBeenCalledTimes(1);
+    expect(onSubmitSpy).toHaveBeenCalledWith({
       name: 'a_recording',
       events: 'template=someEventTemplate,type=CUSTOM',
       duration: 30,
@@ -149,7 +147,7 @@ describe('<CustomRecordingForm />', () => {
   });
 
   it('should show correct helper texts in metadata label editor', async () => {
-    const { user } = renderWithServiceContext(<CustomRecordingForm onSubmit={onSubmit} />);
+    const { user } = renderWithServiceContext(<CustomRecordingForm />);
 
     const metadataEditorToggle = screen.getByText('Show metadata options');
     expect(metadataEditorToggle).toBeInTheDocument();

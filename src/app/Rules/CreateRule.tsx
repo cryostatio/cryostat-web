@@ -56,23 +56,24 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { filter, first, mergeMap, toArray } from 'rxjs/operators';
+import { iif, of } from 'rxjs';
+import { catchError, filter, first, mergeMap, toArray } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { EventTemplate } from '../CreateRecording/CreateRecording';
-import { Rule } from './Rules';
-import { MatchExpressionEvaluator } from '../Shared/MatchExpressionEvaluator';
-import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
+import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
+import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
+import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { iif } from 'rxjs';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { Rule } from './Rules';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
 
-const Comp = () => {
+const Comp: React.FunctionComponent<{}> = () => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
@@ -85,8 +86,8 @@ const Comp = () => {
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [template, setTemplate] = React.useState(null as string | null);
-  const [templateType, setTemplateType] = React.useState(null as string | null);
+  const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
+  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(undefined);
   const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
@@ -97,6 +98,7 @@ const Comp = () => {
   const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   const handleNameChange = React.useCallback(
     (evt) => {
@@ -108,22 +110,21 @@ const Comp = () => {
 
   const eventSpecifierString = React.useMemo(() => {
     var str = '';
-    if (template) {
-      str += `template=${template}`;
+    if (templateName) {
+      str += `template=${templateName}`;
     }
     if (templateType) {
       str += `,type=${templateType}`;
     }
     return str;
-  }, [template]);
+  }, [templateName]);
 
   const handleTemplateChange = React.useCallback(
-    (template) => {
-      const parts: string[] = template.split(',');
-      setTemplate(parts[0]);
-      setTemplateType(parts[1]);
+    (templateName?: string, templateType?: TemplateType) => {
+      setTemplateName(templateName);
+      setTemplateType(templateType);
     },
-    [setTemplate, setTemplateType]
+    [setTemplateName, setTemplateType]
   );
 
   const handleMaxAgeChange = React.useCallback((evt) => setMaxAge(Number(evt)), [setMaxAge]);
@@ -156,6 +157,7 @@ const Comp = () => {
   const handleError = React.useCallback((error) => setErrorMessage(error.message), [setErrorMessage]);
 
   const handleSubmit = React.useCallback((): void => {
+    setLoading(true);
     const notificationMessages: string[] = [];
     if (nameValid !== ValidatedOptions.success) {
       notificationMessages.push(`Rule name ${name} is invalid`);
@@ -178,16 +180,15 @@ const Comp = () => {
       maxSizeBytes: maxSize * maxSizeUnits,
     };
     addSubscription(
-      context.api
-        .createRule(rule)
-        .pipe(first())
-        .subscribe((success) => {
-          if (success) {
-            history.push('/rules');
-          }
-        })
+      context.api.createRule(rule).subscribe((success) => {
+        setLoading(false);
+        if (success) {
+          history.push('/rules');
+        }
+      })
     );
   }, [
+    setLoading,
     addSubscription,
     context,
     context.api,
@@ -214,7 +215,7 @@ const Comp = () => {
       setTemplates(templates);
       setErrorMessage('');
     },
-    [setTemplate, setErrorMessage]
+    [setTemplateName, setErrorMessage]
   );
 
   const refreshTemplateList = React.useCallback(() => {
@@ -261,6 +262,16 @@ const Comp = () => {
     },
   ];
 
+  const createButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Creating',
+        spinnerAriaLabel: 'creating-automatic-rule',
+        isLoading: loading,
+      } as LoadingPropsType),
+    [loading]
+  );
+
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
@@ -294,6 +305,7 @@ const Comp = () => {
                   >
                     <TextInput
                       value={name}
+                      isDisabled={loading}
                       isRequired
                       type="text"
                       id="rule-name"
@@ -309,6 +321,7 @@ const Comp = () => {
                   >
                     <TextInput
                       value={description}
+                      isDisabled={loading}
                       type="text"
                       id="rule-description"
                       aria-describedby="rule-description-helper"
@@ -331,6 +344,7 @@ const Comp = () => {
                   >
                     <TextInput
                       value={matchExpression}
+                      isDisabled={loading}
                       isRequired
                       type="text"
                       id="rule-matchexpr"
@@ -350,6 +364,7 @@ const Comp = () => {
                   >
                     <Switch
                       id="rule-enabled"
+                      isDisabled={loading}
                       aria-label="Apply this rule to matching targets"
                       isChecked={enabled}
                       onChange={setEnabled}
@@ -359,20 +374,15 @@ const Comp = () => {
                     label="Template"
                     isRequired
                     fieldId="recording-template"
-                    validated={
-                      template === null
-                        ? ValidatedOptions.default
-                        : !!template
-                        ? ValidatedOptions.success
-                        : ValidatedOptions.error
-                    }
+                    validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
                     helperText="The Event Template to be applied by this Rule against matching target applications."
                     helperTextInvalid="A Template must be selected"
                   >
-                    <FormSelectTemplateSelector
-                      selected={`${template},${templateType}`}
+                    <SelectTemplateSelectorForm
+                      disabled={loading}
+                      validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
                       templates={templates}
-                      onChange={handleTemplateChange}
+                      onSelect={handleTemplateChange}
                     />
                   </FormGroup>
                   <FormGroup
@@ -384,6 +394,7 @@ const Comp = () => {
                       <SplitItem isFilled>
                         <TextInput
                           value={maxSize}
+                          isDisabled={loading}
                           isRequired
                           type="number"
                           id="maxSize"
@@ -395,6 +406,7 @@ const Comp = () => {
                       <SplitItem>
                         <FormSelect
                           value={maxSizeUnits}
+                          isDisabled={loading}
                           onChange={handleMaxSizeUnitChange}
                           aria-label="Max size units input"
                         >
@@ -414,6 +426,7 @@ const Comp = () => {
                       <SplitItem isFilled>
                         <TextInput
                           value={maxAge}
+                          isDisabled={loading}
                           isRequired
                           type="number"
                           id="maxAge"
@@ -425,6 +438,7 @@ const Comp = () => {
                       <SplitItem>
                         <FormSelect
                           value={maxAgeUnits}
+                          isDisabled={loading}
                           onChange={handleMaxAgeUnitChange}
                           aria-label="Max Age units Input"
                         >
@@ -444,6 +458,7 @@ const Comp = () => {
                       <SplitItem isFilled>
                         <TextInput
                           value={archivalPeriod}
+                          isDisabled={loading}
                           isRequired
                           type="number"
                           id="archivalPeriod"
@@ -455,6 +470,7 @@ const Comp = () => {
                       <SplitItem>
                         <FormSelect
                           value={archivalPeriodUnits}
+                          isDisabled={loading}
                           onChange={handleArchivalPeriodUnitsChange}
                           aria-label="archival period units input"
                         >
@@ -474,6 +490,7 @@ const Comp = () => {
                       <SplitItem isFilled>
                         <TextInput
                           value={initialDelay}
+                          isDisabled={loading}
                           isRequired
                           type="number"
                           id="initialDelay"
@@ -485,6 +502,7 @@ const Comp = () => {
                       <SplitItem>
                         <FormSelect
                           value={initialDelayUnits}
+                          isDisabled={loading}
                           onChange={handleInitialDelayUnitsChanged}
                           aria-label="initial delay units input"
                         >
@@ -502,6 +520,7 @@ const Comp = () => {
                   >
                     <TextInput
                       value={preservedArchives}
+                      isDisabled={loading}
                       isRequired
                       type="number"
                       id="preservedArchives"
@@ -515,12 +534,17 @@ const Comp = () => {
                       variant="primary"
                       onClick={handleSubmit}
                       isDisabled={
-                        nameValid !== ValidatedOptions.success || !template || !templateType || !matchExpression
+                        loading ||
+                        nameValid !== ValidatedOptions.success ||
+                        !templateName ||
+                        !templateType ||
+                        !matchExpression
                       }
+                      {...createButtonLoadingProps}
                     >
-                      Create
+                      {loading ? 'Creating' : 'Create'}
                     </Button>
-                    <Button variant="secondary" onClick={history.goBack}>
+                    <Button variant="secondary" onClick={history.goBack} isAriaDisabled={loading}>
                       Cancel
                     </Button>
                   </ActionGroup>

@@ -35,33 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { EventTemplate } from '../CreateRecording/CreateRecording';
 
-export interface TemplateSelectorProps {
-  templates: EventTemplate[];
-  templateMapper: (template: EventTemplate, idx: number, offset: number) => JSX.Element;
-  placeholder: JSX.Element;
-  customGroup: (el: JSX.Element[]) => JSX.Element;
-  targetGroup: (el: JSX.Element[]) => JSX.Element;
+export interface LoadingPropsType {
+  spinnerAriaValueText?: string; // Text describing that current loading status or progress
+  spinnerAriaLabelledBy?: string; // Id of element which describes what is being loaded
+  spinnerAriaLabel?: string; // Accessible label for the spinner to describe what is loading
+  isLoading: boolean;
 }
-
-export const TemplateSelector: React.FunctionComponent<TemplateSelectorProps> = (props) => {
-  const offset = props.templates.filter((t) => t.type === 'CUSTOM').length;
-
-  const customs = props.templates
-    .filter((t) => t.type === 'CUSTOM')
-    .map((t: EventTemplate, idx: number) => props.templateMapper(t, idx, offset));
-  const targets = props.templates
-    .filter((t) => t.type === 'TARGET')
-    .map((t: EventTemplate, idx: number) => props.templateMapper(t, idx, offset));
-
-  return (
-    <>
-      {props.children}
-      {props.placeholder}
-      {props.customGroup(customs)}
-      {props.targetGroup(targets)}
-    </>
-  );
-};

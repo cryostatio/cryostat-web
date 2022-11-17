@@ -79,6 +79,7 @@ import {
 } from '@app/Shared/Redux/RecordingFilterActions';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { formatBytes, hashCode } from '@app/utils/utils';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
@@ -103,6 +104,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   const [showDetailsPanel, setShowDetailsPanel] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [actionLoadings, setActionLoadings] = React.useState<Record<ArchiveActions, boolean>>({ DELETE: false });
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
@@ -346,7 +348,19 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
     setHeaderChecked(checkedIndices.length === filteredRecordings.length);
   }, [setHeaderChecked, checkedIndices]);
 
+  const handlePostActions = React.useCallback(
+    (action: ArchiveActions) => {
+      setActionLoadings((old) => {
+        const newActionLoadings = { ...old };
+        newActionLoadings[action] = false;
+        return newActionLoadings;
+      });
+    },
+    [setActionLoadings]
+  );
+
   const handleDeleteRecordings = React.useCallback(() => {
+    setActionLoadings((old) => ({ ...old, DELETE: true }));
     const tasks: Observable<any>[] = [];
     if (props.directory) {
       const directory = props.directory;
@@ -366,11 +380,25 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
               tasks.push(context.api.deleteArchivedRecording(t.connectUrl, r.name).pipe(first()));
             }
           });
-          addSubscription(forkJoin(tasks).subscribe());
+          addSubscription(
+            forkJoin(tasks).subscribe({
+              next: () => handlePostActions('DELETE'),
+              error: () => handlePostActions('DELETE'),
+            })
+          );
         })
       );
     }
-  }, [addSubscription, filteredRecordings, checkedIndices, context.reports, context.api, props.directory]);
+  }, [
+    addSubscription,
+    filteredRecordings,
+    checkedIndices,
+    context.reports,
+    context.api,
+    props.directory,
+    setActionLoadings,
+    handlePostActions,
+  ]);
 
   const toggleExpanded = React.useCallback(
     (id: string) => {
@@ -508,6 +536,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
         handleDeleteRecordings={handleDeleteRecordings}
         handleShowUploadModal={() => setShowUploadModal(true)}
         isUploadsTable={props.isUploadsTable}
+        actionLoadings={actionLoadings}
       />
     ),
     [
@@ -522,6 +551,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
       handleDeleteRecordings,
       setShowUploadModal,
       props.isUploadsTable,
+      actionLoadings,
     ]
   );
 
@@ -605,6 +635,8 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   );
 };
 
+export type ArchiveActions = 'DELETE';
+
 interface RecordingRowProps {
   key: string;
   recording: ArchivedRecording;
@@ -626,6 +658,7 @@ export interface ArchivedRecordingsToolbarProps {
   handleDeleteRecordings: () => void;
   handleShowUploadModal: () => void;
   isUploadsTable: boolean;
+  actionLoadings: Record<ArchiveActions, boolean>;
 }
 
 const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolbarProps> = (props) => {
@@ -660,6 +693,17 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
     );
   }, [warningModalOpen, props.handleDeleteRecordings, handleWarningModalClose]);
 
+  const actionLoadingProps = React.useMemo<Record<ArchiveActions, LoadingPropsType>>(
+    () => ({
+      DELETE: {
+        spinnerAriaValueText: 'Deleting',
+        spinnerAriaLabel: 'deleting-archived-recording',
+        isLoading: props.actionLoadings['DELETE'],
+      } as LoadingPropsType,
+    }),
+    [props.actionLoadings]
+  );
+
   return (
     <Toolbar
       id="archived-recordings-toolbar"
@@ -686,8 +730,13 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
             </Button>
           </ToolbarItem>
           <ToolbarItem>
-            <Button variant="danger" onClick={handleDeleteButton} isDisabled={!props.checkedIndices.length}>
-              Delete
+            <Button
+              variant="danger"
+              onClick={handleDeleteButton}
+              isDisabled={!props.checkedIndices.length}
+              {...actionLoadingProps['DELETE']}
+            >
+              {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
             </Button>
           </ToolbarItem>
         </ToolbarGroup>

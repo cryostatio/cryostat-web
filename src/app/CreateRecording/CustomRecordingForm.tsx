@@ -60,31 +60,28 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
-import { concatMap } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 import { EventTemplate, TemplateType } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
-import { FormSelectTemplateSelector } from '../TemplateSelector/FormSelectTemplateSelector';
+import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
-export interface CustomRecordingFormProps {
-  onSubmit: (recordingAttributes: RecordingAttributes) => void;
-}
+export interface CustomRecordingFormProps {}
 
 export const RecordingNamePattern = /^[\w_]+$/;
 export const DurationPattern = /^[1-9][0-9]*$/;
 
-export const CustomRecordingForm = (props) => {
+export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
 
-  const [recordingName, setRecordingName] = React.useState(
-    props.recordingName || props?.location?.state?.recordingName || ''
-  );
+  const [recordingName, setRecordingName] = React.useState('');
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [continuous, setContinuous] = React.useState(false);
   const [archiveOnStop, setArchiveOnStop] = React.useState(true);
@@ -92,10 +89,8 @@ export const CustomRecordingForm = (props) => {
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [template, setTemplate] = React.useState(props.template || props?.location?.state?.template || null);
-  const [templateType, setTemplateType] = React.useState(
-    props.templateType || props?.location?.state?.templateType || (null as TemplateType | null)
-  );
+  const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
+  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(undefined);
   const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
@@ -103,6 +98,25 @@ export const CustomRecordingForm = (props) => {
   const [toDisk, setToDisk] = React.useState(true);
   const [labels, setLabels] = React.useState([] as RecordingLabel[]);
   const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
+  const [loading, setLoading] = React.useState(false);
+
+  const handleCreateRecording = React.useCallback(
+    (recordingAttributes: RecordingAttributes) => {
+      setLoading(true);
+      addSubscription(
+        context.api
+          .createRecording(recordingAttributes)
+          .pipe(first())
+          .subscribe((success) => {
+            setLoading(false);
+            if (success) {
+              history.push('/recordings');
+            }
+          })
+      );
+    },
+    [addSubscription, context.api, history, setLoading]
+  );
 
   const handleContinuousChange = React.useCallback(
     (checked) => {
@@ -129,24 +143,23 @@ export const CustomRecordingForm = (props) => {
   );
 
   const handleTemplateChange = React.useCallback(
-    (template) => {
-      const parts: string[] = template.split(',');
-      setTemplate(parts[0]);
-      setTemplateType(parts[1]);
+    (templateName?: string, templateType?: TemplateType) => {
+      setTemplateName(templateName);
+      setTemplateType(templateType);
     },
-    [setTemplate, setTemplateType]
+    [setTemplateName, setTemplateType]
   );
 
   const getEventString = React.useCallback(() => {
     var str = '';
-    if (!!template) {
-      str += `template=${template}`;
+    if (!!templateName) {
+      str += `template=${templateName}`;
     }
     if (!!templateType) {
       str += `,type=${templateType}`;
     }
     return str;
-  }, [template, templateType]);
+  }, [templateName, templateType]);
 
   const getFormattedLabels = React.useCallback(() => {
     let obj = {};
@@ -239,7 +252,7 @@ export const CustomRecordingForm = (props) => {
       options: options,
       metadata: { labels: getFormattedLabels() },
     };
-    props.onSubmit(recordingAttributes);
+    handleCreateRecording(recordingAttributes);
   }, [
     getEventString,
     getFormattedLabels,
@@ -255,6 +268,7 @@ export const CustomRecordingForm = (props) => {
     notifications.warning,
     recordingName,
     toDisk,
+    handleCreateRecording,
   ]);
 
   React.useEffect(() => {
@@ -287,15 +301,25 @@ export const CustomRecordingForm = (props) => {
     return (
       nameValid !== ValidatedOptions.success ||
       durationValid !== ValidatedOptions.success ||
-      !template ||
+      !templateName ||
       !templateType ||
       labelsValid !== ValidatedOptions.success
     );
-  }, [nameValid, durationValid, template, templateType, labelsValid]);
+  }, [nameValid, durationValid, templateName, templateType, labelsValid]);
 
   const hasReservedLabels = React.useMemo(
     () => labels.some((label) => label.key === 'template.name' || label.key === 'template.type'),
     [labels]
+  );
+
+  const createButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Creating',
+        spinnerAriaLabel: 'create-active-recording',
+        isLoading: loading,
+      } as LoadingPropsType),
+    [loading]
   );
 
   return (
@@ -316,6 +340,7 @@ export const CustomRecordingForm = (props) => {
           <TextInput
             value={recordingName}
             isRequired
+            isDisabled={loading}
             type="text"
             id="recording-name"
             aria-describedby="recording-name-helper"
@@ -326,6 +351,7 @@ export const CustomRecordingForm = (props) => {
         <FormGroup
           label="Duration"
           isRequired
+          fieldId="recording-duration"
           validated={durationValid}
           helperText={
             continuous
@@ -335,13 +361,13 @@ export const CustomRecordingForm = (props) => {
               : 'Time before the recording is automatically stopped'
           }
           helperTextInvalid="A recording may only have a positive integer duration"
-          fieldId="recording-duration"
         >
           <Split hasGutter>
             <SplitItem>
               <Checkbox
                 label="Continuous"
                 isChecked={continuous}
+                isDisabled={loading}
                 onChange={handleContinuousChange}
                 aria-label="Continuous checkbox"
                 id="recording-continuous"
@@ -351,7 +377,7 @@ export const CustomRecordingForm = (props) => {
             <SplitItem>
               <Checkbox
                 label="Archive on Stop"
-                isDisabled={continuous}
+                isDisabled={continuous || loading}
                 isChecked={archiveOnStop && !continuous}
                 onChange={setArchiveOnStop}
                 aria-label="ArchiveOnStop checkbox"
@@ -361,7 +387,7 @@ export const CustomRecordingForm = (props) => {
             </SplitItem>
           </Split>
           <DurationPicker
-            enabled={!continuous}
+            enabled={!continuous && !loading}
             period={duration}
             onPeriodChange={handleDurationChange}
             unitScalar={durationUnit}
@@ -372,19 +398,15 @@ export const CustomRecordingForm = (props) => {
           label="Template"
           isRequired
           fieldId="recording-template"
-          validated={
-            template === null
-              ? ValidatedOptions.default
-              : !!template
-              ? ValidatedOptions.success
-              : ValidatedOptions.error
-          }
+          validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+          helperText={'The Event Template to be applied in this recording'}
           helperTextInvalid="A Template must be selected"
         >
-          <FormSelectTemplateSelector
-            selected={`${template},${templateType}`}
+          <SelectTemplateSelectorForm
             templates={templates}
-            onChange={handleTemplateChange}
+            validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+            disabled={loading}
+            onSelect={handleTemplateChange}
           />
         </FormGroup>
         <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
@@ -410,7 +432,12 @@ export const CustomRecordingForm = (props) => {
               </HelperText>
             }
           >
-            <RecordingLabelFields labels={labels} setLabels={setLabels} setValid={setLabelsValid} />
+            <RecordingLabelFields
+              labels={labels}
+              setLabels={setLabels}
+              setValid={setLabelsValid}
+              isDisabled={loading}
+            />
           </FormGroup>
         </ExpandableSection>
         <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
@@ -419,7 +446,13 @@ export const CustomRecordingForm = (props) => {
             fieldId="To Disk"
             helperText="Write contents of buffer onto disk. If disabled, the buffer acts as circular buffer only keeping the most recent recording information"
           >
-            <Checkbox label="To Disk" id="toDisk-checkbox" isChecked={toDisk} onChange={handleToDiskChange} />
+            <Checkbox
+              label="To Disk"
+              id="toDisk-checkbox"
+              isChecked={toDisk}
+              onChange={handleToDiskChange}
+              isDisabled={loading}
+            />
           </FormGroup>
           <FormGroup
             label="Maximum size"
@@ -436,7 +469,7 @@ export const CustomRecordingForm = (props) => {
                   aria-label="max size value"
                   onChange={handleMaxSizeChange}
                   min="0"
-                  isDisabled={!toDisk}
+                  isDisabled={!toDisk || loading}
                 />
               </SplitItem>
               <SplitItem>
@@ -444,7 +477,7 @@ export const CustomRecordingForm = (props) => {
                   value={maxSizeUnits}
                   onChange={handleMaxSizeUnitChange}
                   aria-label="Max size units input"
-                  isDisabled={!toDisk}
+                  isDisabled={!toDisk || loading}
                 >
                   <FormSelectOption key="1" value="1" label="B" />
                   <FormSelectOption key="2" value={1024} label="KiB" />
@@ -464,7 +497,7 @@ export const CustomRecordingForm = (props) => {
                   aria-label="Max age duration"
                   onChange={handleMaxAgeChange}
                   min="0"
-                  isDisabled={!continuous || !toDisk}
+                  isDisabled={!continuous || !toDisk || loading}
                 />
               </SplitItem>
               <SplitItem>
@@ -472,7 +505,7 @@ export const CustomRecordingForm = (props) => {
                   value={maxAgeUnits}
                   onChange={handleMaxAgeUnitChange}
                   aria-label="Max Age units Input"
-                  isDisabled={!continuous || !toDisk}
+                  isDisabled={!continuous || !toDisk || loading}
                 >
                   <FormSelectOption key="1" value="1" label="Seconds" />
                   <FormSelectOption key="2" value={60} label="Minutes" />
@@ -483,10 +516,15 @@ export const CustomRecordingForm = (props) => {
           </FormGroup>
         </ExpandableSection>
         <ActionGroup>
-          <Button variant="primary" onClick={handleSubmit} isDisabled={isFormInvalid}>
-            Create
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            isDisabled={isFormInvalid || loading}
+            {...createButtonLoadingProps}
+          >
+            {loading ? 'Creating' : 'Create'}
           </Button>
-          <Button variant="secondary" onClick={history.goBack}>
+          <Button variant="secondary" onClick={history.goBack} isDisabled={loading}>
             Cancel
           </Button>
         </ActionGroup>

@@ -36,23 +36,14 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { RecordingAttributes } from '@app/Shared/Services/Api.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
 import { StaticContext } from 'react-router';
-import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
-import { first } from 'rxjs/operators';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
-export interface CreateRecordingProps {
-  recordingName?: string;
-  template?: string;
-  templateType?: string;
-  eventSpecifiers?: string[];
-}
+export type TemplateType = 'TARGET' | 'CUSTOM';
 
 export interface EventTemplate {
   name: string;
@@ -61,57 +52,21 @@ export interface EventTemplate {
   type: TemplateType;
 }
 
-export type TemplateType = 'TARGET' | 'CUSTOM';
-
-const Comp: React.FunctionComponent<RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const history = useHistory();
-  const addSubscription = useSubscriptions();
-
+const Comp: React.FunctionComponent<{}> = () => {
   const [activeTab, setActiveTab] = React.useState(0);
 
-  const handleCreateRecording = (recordingAttributes: RecordingAttributes): void => {
-    addSubscription(
-      context.api
-        .createRecording(recordingAttributes)
-        .pipe(first())
-        .subscribe((success) => {
-          if (success) {
-            history.push('/recordings');
-          }
-        })
-    );
-  };
-
-  const handleCreateSnapshot = (): void => {
-    addSubscription(
-      context.api
-        .createSnapshot()
-        .pipe(first())
-        .subscribe((success) => {
-          if (success) {
-            history.push('/recordings');
-          }
-        })
-    );
-  };
+  const onTabSelect = React.useCallback((evt, idx) => setActiveTab(Number(idx)), [setActiveTab]);
 
   return (
     <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: '/recordings' }]}>
       <Card>
         <CardBody>
-          <Tabs activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
+          <Tabs activeKey={activeTab} onSelect={onTabSelect}>
             <Tab eventKey={0} title="Custom Flight Recording">
-              <CustomRecordingForm
-                onSubmit={handleCreateRecording}
-                recordingName={props?.location?.state?.recordingName}
-                template={props?.location?.state?.template}
-                templateType={props?.location?.state?.templateType}
-                eventSpecifiers={props?.location?.state?.eventSpecifiers}
-              />
+              <CustomRecordingForm />
             </Tab>
             <Tab eventKey={1} title="Snapshot Recording">
-              <SnapshotRecordingForm onSubmit={handleCreateSnapshot} />
+              <SnapshotRecordingForm />
             </Tab>
           </Tabs>
         </CardBody>

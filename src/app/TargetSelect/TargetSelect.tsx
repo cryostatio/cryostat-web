@@ -53,14 +53,14 @@ import {
   SelectVariant,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
-import { of } from 'rxjs';
-import { catchError, first } from 'rxjs/operators';
 import { CreateTargetModal } from './CreateTargetModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { SerializedTarget } from '@app/Shared/SerializedTarget';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
+import { first } from 'rxjs';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 
@@ -171,45 +171,23 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     setModalOpen(true);
   }, [setModalOpen]);
 
-  const createTarget = React.useCallback(
-    (target: Target) => {
-      setLoading(true);
-      addSubscription(
-        context.api
-          .createTarget(target)
-          .pipe(
-            first(),
-            catchError(() => of(false))
-          )
-          .subscribe((success) => {
-            setLoading(false);
-            setModalOpen(false);
-            if (!success) {
-              notifications.danger('Target Creation Failed');
-            }
-          })
-      );
-    },
-    [addSubscription, context.api, notifications, setLoading, setModalOpen]
-  );
+  const closeCreateTargetModal = React.useCallback(() => {
+    setModalOpen(false);
+  }, [setModalOpen]);
 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
     addSubscription(
-      context.api
-        .deleteTarget(selected)
-        .pipe(first())
-        .subscribe({
-          next: () => setLoading(false),
-          error: () => {
-            setLoading(false);
-            const id =
-              !selected.alias || selected.alias === selected.connectUrl
-                ? selected.connectUrl
-                : `${selected.alias} [${selected.connectUrl}]`;
-            notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
-          },
-        })
+      context.api.deleteTarget(selected).subscribe((ok) => {
+        setLoading(false);
+        if (!ok) {
+          const id =
+            !selected.alias || selected.alias === selected.connectUrl
+              ? selected.connectUrl
+              : `${selected.alias} [${selected.connectUrl}]`;
+          notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
+        }
+      })
     );
   }, [addSubscription, context.api, notifications, selected, setLoading]);
 
@@ -276,6 +254,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
     [props.simple, onExpand, isExpanded]
   );
 
+  const deleteButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Deleting',
+        spinnerAriaLabel: 'deleting-custom-target',
+        isLoading: isLoading,
+      } as LoadingPropsType),
+    [isLoading]
+  );
+
   return (
     <>
       <Card isExpanded={isExpanded}>
@@ -297,6 +285,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               onClick={handleDeleteButton}
               variant="control"
               icon={<TrashIcon />}
+              {...deleteButtonLoadingProps}
             />
           </CardActions>
         </CardHeader>
@@ -320,7 +309,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
       </Card>
       <CreateTargetModal
         visible={isModalOpen}
-        onSubmit={createTarget}
+        onSuccess={closeCreateTargetModal}
         onDismiss={handleCreateModalClose}
       ></CreateTargetModal>
       {deleteArchivedWarningModal}

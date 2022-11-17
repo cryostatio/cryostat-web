@@ -179,6 +179,7 @@ export class ApiService {
       body: form,
     }).pipe(
       map((resp) => resp.ok),
+      catchError(() => of(false)),
       first()
     );
   }
@@ -188,6 +189,7 @@ export class ApiService {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
+      catchError(() => of(false)),
       first()
     );
   }
@@ -201,6 +203,7 @@ export class ApiService {
       headers,
     }).pipe(
       map((resp) => resp.ok),
+      catchError((_) => of(false)),
       first()
     );
   }
@@ -461,13 +464,8 @@ export class ApiService {
       method: 'POST',
       body,
     }).pipe(
-      map((response) => {
-        if (!response.ok) {
-          throw response.statusText;
-        }
-        return true;
-      }),
-      catchError((): ObservableInput<boolean> => of(false))
+      map((resp) => resp.ok),
+      catchError((_) => of(false))
     );
   }
 
@@ -521,12 +519,7 @@ export class ApiService {
       method: 'POST',
       body,
     }).pipe(
-      map((response) => {
-        if (!response.ok) {
-          throw response.statusText;
-        }
-        return true;
-      }),
+      map((resp) => resp.ok),
       catchError((): ObservableInput<boolean> => of(false))
     );
   }
@@ -734,20 +727,15 @@ export class ApiService {
     );
   }
 
-  uploadSSLCertificate(file: File): Observable<string> {
+  uploadSSLCertificate(file: File): Observable<boolean> {
     const body = new window.FormData();
     body.append('cert', file);
     return this.sendRequest('v2', 'certificates', {
       method: 'POST',
       body,
     }).pipe(
-      concatMap((resp) => {
-        if (resp.ok) {
-          this.notifications.success('Successfully uploaded certificate');
-          return from(resp.text());
-        }
-        throw resp.statusText;
-      })
+      map((resp) => resp.ok),
+      catchError((_) => of(false))
     );
   }
 
