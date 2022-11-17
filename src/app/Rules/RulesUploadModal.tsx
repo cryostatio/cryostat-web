@@ -126,6 +126,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
           first(),
           concatMap((rule) => context.api.createRule(rule)), // FIXME: Add abort signal to request
           catchError((err) => {
+            // parseRule might throw
             notifications.danger('Automated rule upload failed', err.message);
             return of(false);
           })

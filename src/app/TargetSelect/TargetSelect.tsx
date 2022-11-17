@@ -178,20 +178,16 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const deleteTarget = React.useCallback(() => {
     setLoading(true);
     addSubscription(
-      context.api
-        .deleteTarget(selected)
-        .pipe(first())
-        .subscribe({
-          next: () => setLoading(false),
-          error: () => {
-            setLoading(false);
-            const id =
-              !selected.alias || selected.alias === selected.connectUrl
-                ? selected.connectUrl
-                : `${selected.alias} [${selected.connectUrl}]`;
-            notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
-          },
-        })
+      context.api.deleteTarget(selected).subscribe((ok) => {
+        setLoading(false);
+        if (!ok) {
+          const id =
+            !selected.alias || selected.alias === selected.connectUrl
+              ? selected.connectUrl
+              : `${selected.alias} [${selected.connectUrl}]`;
+          notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
+        }
+      })
     );
   }, [addSubscription, context.api, notifications, selected, setLoading]);
 

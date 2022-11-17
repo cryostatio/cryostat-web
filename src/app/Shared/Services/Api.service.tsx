@@ -189,6 +189,7 @@ export class ApiService {
       method: 'DELETE',
     }).pipe(
       map((resp) => resp.ok),
+      catchError(() => of(false)),
       first()
     );
   }

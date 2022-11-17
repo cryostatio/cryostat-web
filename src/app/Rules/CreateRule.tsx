@@ -180,18 +180,12 @@ const Comp: React.FunctionComponent<{}> = () => {
       maxSizeBytes: maxSize * maxSizeUnits,
     };
     addSubscription(
-      context.api
-        .createRule(rule)
-        .pipe(
-          first(),
-          catchError((err) => of(false))
-        )
-        .subscribe((success) => {
-          setLoading(false);
-          if (success) {
-            history.push('/rules');
-          }
-        })
+      context.api.createRule(rule).subscribe((success) => {
+        setLoading(false);
+        if (success) {
+          history.push('/rules');
+        }
+      })
     );
   }, [
     setLoading,
