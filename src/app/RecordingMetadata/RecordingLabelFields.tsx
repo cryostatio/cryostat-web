@@ -282,6 +282,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
               value={label.value ?? ''}
               onChange={(value) => handleValueChange(idx, value)}
               validated={validValues[idx]}
+              isDisabled={props.isDisabled}
             />
             <Text>Value</Text>
           </SplitItem>
