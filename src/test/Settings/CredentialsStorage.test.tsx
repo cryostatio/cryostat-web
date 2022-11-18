@@ -37,14 +37,8 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-<<<<<<< HEAD
-import { render, cleanup, screen, waitFor, getByText, within } from '@testing-library/react';
+import { render, cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-=======
-import { cleanup, screen, waitFor, within } from '@testing-library/react';
-import { renderDefault } from '../Common';
->>>>>>> 7ba910e (fix(credentials): set backend storage as default (#672))
 import { CredentialsStorage } from '@app/Settings/CredentialsStorage';
 
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
@@ -80,13 +74,8 @@ describe('<CredentialsStorage/>', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-<<<<<<< HEAD
-  it('defaults to Session storage', async () => {
-    render(React.createElement(CredentialsStorage.content, null));
-=======
   it('defaults to Backend storage', async () => {
-    renderDefault(React.createElement(CredentialsStorage.content, null));
->>>>>>> 7ba910e (fix(credentials): set backend storage as default (#672))
+    render(React.createElement(CredentialsStorage.content, null));
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(1);
@@ -107,13 +96,8 @@ describe('<CredentialsStorage/>', () => {
 
     // the default is Backend storage. Click the dropdown and select Session (Browser Memory) to change selection
     const ul = await screen.findByRole('listbox');
-<<<<<<< HEAD
-    const backend = within(ul).getByText(backendStorageValue);
-    userEvent.click(backend);
-=======
-    const backend = within(ul).getByText(sessionStorageValue);
-    await user.click(backend);
->>>>>>> 7ba910e (fix(credentials): set backend storage as default (#672))
+    const browserSession = within(ul).getByText(sessionStorageValue);
+    userEvent.click(browserSession);
 
     await waitFor(() => expect(ul).not.toBeVisible()); // expect selection menu to close after user clicks an option
 
