@@ -49,6 +49,7 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 import { renderWithServiceContext } from '../../Common';
+import { CreateJmxCredentialModalProps } from '@app/SecurityPanel/Credentials/CreateJmxCredentialModal';
 
 const mockCredential: StoredCredential = {
   id: 0,
@@ -95,13 +96,13 @@ const mockFoundTargetNotification = {
 
 jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
   return {
-    CreateJmxCredentialModal: jest.fn((props) => {
+    CreateJmxCredentialModal: jest.fn((props: CreateJmxCredentialModalProps) => {
       return (
         <Modal
           isOpen={props.visible}
           variant={ModalVariant.large}
           showClose={true}
-          onClose={props.onClose}
+          onClose={props.onDismiss}
           title="CreateJmxCredentialModal"
         >
           Jmx Auth Form

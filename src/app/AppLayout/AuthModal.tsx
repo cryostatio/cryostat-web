@@ -52,39 +52,37 @@ export interface AuthModalProps {
 
 export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
   const onSave = React.useCallback(
-    (username: string, password: string): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        addSubscription(
-          context.target
-            .target()
-            .pipe(
-              first(),
-              filter((target) => target !== NO_TARGET),
-              map((target) => target.connectUrl),
-              mergeMap((connectUrl) => context.jmxCredentials.setCredential(connectUrl, username, password))
-            )
-            .subscribe((result) => {
-              if (result) {
-                props.onSave();
-                resolve();
-              } else {
-                reject();
-              }
-            })
-        );
-      });
+    (username: string, password: string) => {
+      setLoading(true);
+      addSubscription(
+        context.target
+          .target()
+          .pipe(
+            filter((target) => target !== NO_TARGET),
+            first(),
+            map((target) => target.connectUrl),
+            mergeMap((connectUrl) => context.jmxCredentials.setCredential(connectUrl, username, password))
+          )
+          .subscribe((ok) => {
+            setLoading(false);
+            if (ok) {
+              props.onSave();
+            }
+          })
+      );
     },
-    [context, context.target, context.api, props.onSave]
+    [context.target, context.api, props.onSave, setLoading]
   );
 
   return (
     <Modal
       isOpen={props.visible}
       variant={ModalVariant.large}
-      showClose={true}
+      showClose={!loading}
       onClose={props.onDismiss}
       title="Authentication Required"
       description={
@@ -103,7 +101,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
         </Text>
       }
     >
-      <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} focus={true} />
+      <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} focus={true} loading={loading} />
     </Modal>
   );
 };

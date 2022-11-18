@@ -260,6 +260,7 @@ export class ApiService {
           body: form,
         }).pipe(
           map((resp) => resp.ok),
+          catchError((_) => of(false)),
           first()
         )
       )
@@ -281,6 +282,7 @@ export class ApiService {
             }
           }),
           map((resp) => resp.status == 200),
+          catchError((_) => of(false)),
           first()
         )
       )
@@ -826,6 +828,7 @@ export class ApiService {
       body,
     }).pipe(
       map((resp) => resp.ok),
+      catchError((_) => of(false)),
       first()
     );
   }

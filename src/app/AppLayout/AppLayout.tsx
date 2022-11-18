@@ -147,6 +147,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     setShowAuthModal(false);
   }, [setShowAuthModal]);
 
+  const authModalOnSave = React.useCallback(() => {
+    serviceContext.target.setAuthRetry();
+    dismissAuthModal();
+  }, [serviceContext.target, dismissAuthModal]);
+
   const handleMarkNotificationRead = React.useCallback(
     (key) => notificationsContext.setRead(key, true),
     [notificationsContext.setRead]
@@ -357,7 +362,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       >
         {children}
       </Page>
-      <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={dismissAuthModal} />
+      <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
       <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
     </>
   );
