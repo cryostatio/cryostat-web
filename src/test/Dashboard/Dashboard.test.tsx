@@ -45,13 +45,13 @@ import { of } from 'rxjs';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
-// Test fails if new Map([['REALM', 'Custom Targets']]) is used, most likely since 'cryostat' Map is not being utilized
+
 const mockFooTarget: Target = {
   connectUrl: mockFooConnectUrl,
   alias: 'fooTarget',
   annotations: {
-    cryostat: new Map(),
-    platform: new Map(),
+    cryostat: {},
+    platform: {},
   },
 };
 
