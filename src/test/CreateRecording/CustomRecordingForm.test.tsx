@@ -53,6 +53,7 @@ jest.mock('@patternfly/react-core', () => ({
 }));
 
 import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -102,7 +103,9 @@ describe('<CustomRecordingForm />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <CustomRecordingForm />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <CustomRecordingForm />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

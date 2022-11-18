@@ -52,6 +52,7 @@ import {
 } from '@app/Shared/Services/NotificationChannel.service';
 import { DeleteAutomatedRules, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { renderWithServiceContextAndRouter } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockRule: Rule = {
   name: 'mockRule',
@@ -137,9 +138,11 @@ describe('<Rules />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <Rules />
-          </Router>
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <Router location={history.location} history={history}>
+              <Rules />
+            </Router>
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

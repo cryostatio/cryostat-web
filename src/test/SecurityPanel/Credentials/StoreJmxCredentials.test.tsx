@@ -50,6 +50,7 @@ import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 import { renderWithServiceContext } from '../../Common';
 import { CreateJmxCredentialModalProps } from '@app/SecurityPanel/Credentials/CreateJmxCredentialModal';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockCredential: StoredCredential = {
   id: 0,
@@ -198,7 +199,9 @@ describe('<StoreJmxCredentials />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <StoreJmxCredentials />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <StoreJmxCredentials />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

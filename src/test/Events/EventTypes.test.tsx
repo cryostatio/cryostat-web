@@ -44,6 +44,7 @@ import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { EventType, EventTypes } from '@app/Events/EventTypes';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -68,7 +69,9 @@ describe('<EventTypes />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <EventTypes />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <EventTypes />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

@@ -95,8 +95,8 @@ describe('<CredentialsStorage/>', () => {
 
     // the default is Backend storage. Click the dropdown and select Session (Browser Memory) to change selection
     const ul = await screen.findByRole('listbox');
-    const backend = within(ul).getByText(sessionStorageValue);
-    await user.click(backend);
+    const browserSession = within(ul).getByText(sessionStorageValue);
+    await user.click(browserSession);
 
     await waitFor(() => expect(ul).not.toBeVisible()); // expect selection menu to close after user clicks an option
 

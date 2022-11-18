@@ -44,6 +44,7 @@ import { of } from 'rxjs';
 import { Archives } from '@app/Archives/Archives';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
@@ -142,7 +143,9 @@ describe('<Archives />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <Archives />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <Archives />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

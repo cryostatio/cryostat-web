@@ -51,6 +51,7 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteActiveProbes } from '@app/Modal/DeleteWarningUtils';
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -142,7 +143,9 @@ describe('<AgentLiveProbes />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <AgentLiveProbes />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <AgentLiveProbes />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });
