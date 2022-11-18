@@ -39,7 +39,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Select, SelectOption, SelectVariant, Text } from '@patternfly/react-core';
-
 import { UserSetting } from './Settings';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 
@@ -69,12 +68,12 @@ const getLocation = (key: string): Location => {
       return l;
     }
   }
-  return Locations.BROWSER_SESSION;
+  return Locations.BACKEND;
 };
 
 const Component = () => {
   const [isExpanded, setExpanded] = React.useState(false);
-  const [selection, setSelection] = React.useState(Locations.BROWSER_SESSION.key);
+  const [selection, setSelection] = React.useState(Locations.BACKEND.key);
 
   const handleSelect = React.useCallback(
     (_, selection) => {
@@ -87,7 +86,7 @@ const Component = () => {
   );
 
   React.useEffect(() => {
-    handleSelect(undefined, getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BROWSER_SESSION.key));
+    handleSelect(undefined, getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key));
   }, [handleSelect, getFromLocalStorage]);
 
   return (
