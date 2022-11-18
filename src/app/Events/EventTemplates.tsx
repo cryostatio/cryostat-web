@@ -60,19 +60,21 @@ import {
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
-  Table,
-  TableBody,
-  TableHeader,
   TableVariant,
   IAction,
-  IRowData,
-  IExtraData,
   ISortBy,
   SortByDirection,
-  sortable,
+  TableComposable,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  ThProps,
+  Td,
+  ActionsColumn,
 } from '@patternfly/react-table';
 import { useHistory } from 'react-router-dom';
-import { concatMap, filter, first, tap } from 'rxjs/operators';
+import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
@@ -94,17 +96,23 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
+  const [templateToDelete, setTemplateToDelete] = React.useState<EventTemplate | undefined>(undefined);
   const addSubscription = useSubscriptions();
 
-  const tableColumns = React.useMemo(
-    () => [
-      { title: 'Name', transforms: [sortable] },
-      'Description',
-      { title: 'Provider', transforms: [sortable] },
-      { title: 'Type', transforms: [sortable] },
-    ],
-    [sortable]
+  const tableColumns = ['Name', 'Description', 'Provider', 'Type'];
+
+  const getSortParams = React.useCallback(
+    (columnIndex: number): ThProps['sort'] => ({
+      sortBy: sortBy,
+      onSort: (_event, index, direction) => {
+        setSortBy({
+          index: index,
+          direction: direction,
+        });
+      },
+      columnIndex,
+    }),
+    [sortBy, setSortBy]
   );
 
   React.useEffect(() => {
@@ -214,22 +222,11 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
     );
   }, [addSubscription, context.target, setErrorMessage]);
 
-  const displayTemplates = React.useMemo(
-    () =>
-      filteredTemplates.map((t: EventTemplate) => [
-        t.name,
-        t.description,
-        t.provider,
-        t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase(),
-      ]),
-    [filteredTemplates]
-  );
-
   const handleDelete = React.useCallback(
-    (rowData) => {
+    (t: EventTemplate) => {
       addSubscription(
         context.api
-          .deleteCustomEventTemplate(rowData[0])
+          .deleteCustomEventTemplate(t.name)
           .pipe(first())
           .subscribe(() => {} /* do nothing - notification will handle updating state */)
       );
@@ -237,45 +234,54 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
     [addSubscription, context.api]
   );
 
-  const actionResolver = (rowData: IRowData, extraData: IExtraData) => {
-    if (typeof extraData.rowIndex == 'undefined') {
-      return [];
-    }
-    let actions = [
-      {
-        title: 'Create Recording...',
-        onClick: (event, rowId, rowData) =>
-          history.push({
-            pathname: '/recordings/create',
-            state: { template: rowData[0], templateType: String(rowData[3]).toUpperCase() },
-          }),
-      },
-    ] as IAction[];
+  const handleDeleteButton = React.useCallback(
+    (t: EventTemplate) => {
+      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+        setTemplateToDelete(t);
+        setWarningModalOpen(true);
+      } else {
+        handleDelete(t);
+      }
+    },
+    [context, context.settings, setWarningModalOpen, setTemplateToDelete, handleDelete]
+  );
 
-    const template: EventTemplate = filteredTemplates[extraData.rowIndex];
-    if (template.name !== 'ALL' || template.type !== 'TARGET') {
-      actions = actions.concat([
+  const actionsResolver = React.useCallback(
+    (t: EventTemplate) => {
+      let actions = [
         {
-          title: 'Download',
-          onClick: (event, rowId) => context.api.downloadTemplate(filteredTemplates[rowId]),
+          title: 'Create Recording...',
+          onClick: () =>
+            history.push({
+              pathname: '/recordings/create',
+              state: { template: t.name, templateType: t.type },
+            }),
         },
-      ]);
-    }
-    if (template.type === 'CUSTOM') {
-      actions = actions.concat([
-        {
-          isSeparator: true,
-        },
-        {
-          title: 'Delete',
-          onClick: (event, rowId, rowData) => {
-            handleDeleteButton(rowData);
+      ] as IAction[];
+
+      if (t.name !== 'ALL' || t.type !== 'TARGET') {
+        actions = actions.concat([
+          {
+            title: 'Download',
+            onClick: () => context.api.downloadTemplate(t),
           },
-        },
-      ]);
-    }
-    return actions;
-  };
+        ]);
+      }
+      if (t.type === 'CUSTOM') {
+        actions = actions.concat([
+          {
+            isSeparator: true,
+          },
+          {
+            title: 'Delete',
+            onClick: () => handleDeleteButton(t),
+          },
+        ]);
+      }
+      return actions;
+    },
+    [context.api, history]
+  );
 
   const handleUploadModalClose = React.useCallback(() => {
     setUploadModalOpen(false);
@@ -285,28 +291,33 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
     setUploadModalOpen(true);
   }, [setUploadModalOpen]);
 
-  const handleSort = React.useCallback(
-    (event, index, direction) => {
-      setSortBy({ index, direction });
-    },
-    [setSortBy]
-  );
-
-  const handleDeleteButton = React.useCallback(
-    (rowData) => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
-        setRowDeleteData(rowData);
-        setWarningModalOpen(true);
-      } else {
-        handleDelete(rowData);
-      }
-    },
-    [context, context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]
+  const templateRows = React.useMemo(
+    () =>
+      filteredTemplates.map((t: EventTemplate, index) => (
+        <Tr key={`event-template-${index}`}>
+          <Td key={`event-template-name-${index}`} dataLabel={tableColumns[0]}>
+            {t.name}
+          </Td>
+          <Td key={`event-template-description-${index}`} dataLabel={tableColumns[1]}>
+            {t.description}
+          </Td>
+          <Td key={`event-template-provider-${index}`} dataLabel={tableColumns[2]}>
+            {t.provider}
+          </Td>
+          <Td key={`event-template-type-${index}`} dataLabel={tableColumns[3]}>
+            {t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()}
+          </Td>
+          <Td key={`event-template-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
+            <ActionsColumn items={actionsResolver(t)} />
+          </Td>
+        </Tr>
+      )),
+    [filteredTemplates]
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
-    handleDelete(rowDeleteData);
-  }, [handleDelete, rowDeleteData]);
+    handleDelete(templateToDelete!);
+  }, [handleDelete, templateToDelete]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
@@ -340,6 +351,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
                   placeholder="Filter..."
                   aria-label="Event template filter"
                   onChange={setFilterText}
+                  value={filterText}
                   isDisabled={errorMessage != ''}
                 />
               </ToolbarItem>
@@ -364,19 +376,19 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
             />
           </ToolbarContent>
         </Toolbar>
-        {displayTemplates.length ? (
-          <Table
-            aria-label="Event Templates table"
-            variant={TableVariant.compact}
-            cells={tableColumns}
-            rows={displayTemplates}
-            actionResolver={actionResolver}
-            sortBy={sortBy}
-            onSort={handleSort}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+        {templateRows.length ? (
+          <TableComposable aria-label="Event Templates Table" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                {tableColumns.map((column, index) => (
+                  <Th key={`event-template-header-${column}`} sort={getSortParams(index)}>
+                    {column}
+                  </Th>
+                ))}
+              </Tr>
+            </Thead>
+            <Tbody>{templateRows}</Tbody>
+          </TableComposable>
         ) : (
           <EmptyState>
             <EmptyStateIcon icon={SearchIcon} />
