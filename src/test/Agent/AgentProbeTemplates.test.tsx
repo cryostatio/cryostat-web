@@ -51,6 +51,7 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { DeleteProbeTemplates } from '@app/Modal/DeleteWarningUtils';
 import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -126,7 +127,9 @@ describe('<AgentProbeTemplates />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <AgentProbeTemplates agentDetected={true} />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <AgentProbeTemplates agentDetected={true} />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

@@ -44,6 +44,7 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { Recordings } from '@app/Recordings/Recordings';
 import { Target } from '@app/Shared/Services/Target.service';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
@@ -149,7 +150,9 @@ describe('<Recordings />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <Recordings />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <Recordings />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

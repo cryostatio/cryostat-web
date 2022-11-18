@@ -47,6 +47,7 @@ import { EventTemplates } from '@app/Events/EventTemplates';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -123,7 +124,9 @@ describe('<EventTemplates />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <EventTemplates />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <EventTemplates />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

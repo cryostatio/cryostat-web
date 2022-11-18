@@ -42,6 +42,7 @@ import React from 'react';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { of } from 'rxjs';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 // Test fails if new Map([['REALM', 'Custom Targets']]) is used, most likely since 'cryostat' Map is not being utilized
@@ -70,7 +71,9 @@ describe('<Dashboard />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <Dashboard></Dashboard>
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <Dashboard />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

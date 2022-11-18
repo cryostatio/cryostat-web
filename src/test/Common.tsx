@@ -41,6 +41,7 @@ import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { setupStore } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 // userEvent functions are recommended to be called in tests (i.e it()).
@@ -51,10 +52,14 @@ export const renderDefault = (
   ui: React.ReactElement,
   {
     user = userEvent.setup(), // Create a default user session
+    notifications = NotificationsInstance,
     ...renderOptions
   } = {}
 ) => {
-  return { user, ...render(ui, { ...renderOptions }) };
+  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+    return <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>;
+  };
+  return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
 
 export const renderWithReduxStore = (
@@ -63,11 +68,16 @@ export const renderWithReduxStore = (
     preloadState = {},
     store = setupStore(preloadState), // Create a new store instance if no store was passed in
     user = userEvent.setup(), // Create a default user session
+    notifications = NotificationsInstance,
     ...renderOptions
   } = {}
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
-    return <Provider store={store}>{children}</Provider>;
+    return (
+      <NotificationsContext.Provider value={notifications}>
+        <Provider store={store}>{children}</Provider>
+      </NotificationsContext.Provider>
+    );
   };
   return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
@@ -76,12 +86,17 @@ export const renderWithServiceContext = (
   ui: React.ReactElement,
   {
     services = defaultServices,
+    notifications = NotificationsInstance,
     user = userEvent.setup(), // Create a default user session
     ...renderOptions
   } = {}
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
-    return <ServiceContext.Provider value={services}>{children}</ServiceContext.Provider>;
+    return (
+      <ServiceContext.Provider value={services}>
+        <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>
+      </ServiceContext.Provider>
+    );
   };
   return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
@@ -91,14 +106,17 @@ export const renderWithRouter = (
   {
     history = createMemoryHistory({ initialEntries: ['/'] }),
     user = userEvent.setup(), // Create a default user session
+    notifications = NotificationsInstance,
     ...renderOptions
   } = {}
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
-      <Router location={history.location} history={history}>
-        {children}
-      </Router>
+      <NotificationsContext.Provider value={notifications}>
+        <Router location={history.location} history={history}>
+          {children}
+        </Router>
+      </NotificationsContext.Provider>
     );
   };
   return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
@@ -110,6 +128,7 @@ export const renderWithServiceContextAndReduxStore = (
     preloadState = {},
     store = setupStore(preloadState), // Create a new store instance if no store was passed in
     services = defaultServices,
+    notifications = NotificationsInstance,
     user = userEvent.setup(), // Create a default user session
     ...renderOptions
   } = {}
@@ -117,7 +136,9 @@ export const renderWithServiceContextAndReduxStore = (
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
       <ServiceContext.Provider value={services}>
-        <Provider store={store}>{children}</Provider>
+        <NotificationsContext.Provider value={notifications}>
+          <Provider store={store}>{children}</Provider>
+        </NotificationsContext.Provider>
       </ServiceContext.Provider>
     );
   };
@@ -128,6 +149,7 @@ export const renderWithServiceContextAndRouter = (
   ui: React.ReactElement,
   {
     services = defaultServices,
+    notifications = NotificationsInstance,
     user = userEvent.setup(), // Create a default user session
     history = createMemoryHistory({ initialEntries: ['/'] }),
     ...renderOptions
@@ -136,9 +158,11 @@ export const renderWithServiceContextAndRouter = (
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
       <ServiceContext.Provider value={services}>
-        <Router location={history.location} history={history}>
-          {children}
-        </Router>
+        <NotificationsContext.Provider value={notifications}>
+          <Router location={history.location} history={history}>
+            {children}
+          </Router>
+        </NotificationsContext.Provider>
       </ServiceContext.Provider>
     );
   };
@@ -151,6 +175,7 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
     preloadState = {},
     store = setupStore(preloadState), // Create a new store instance if no store was passed in
     services = defaultServices,
+    notifications = NotificationsInstance,
     user = userEvent.setup(), // Create a default user session
     history = createMemoryHistory({ initialEntries: ['/'] }),
     ...renderOptions
@@ -159,11 +184,13 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
       <ServiceContext.Provider value={services}>
-        <Provider store={store}>
-          <Router location={history.location} history={history}>
-            {children}
-          </Router>
-        </Provider>
+        <NotificationsContext.Provider value={notifications}>
+          <Provider store={store}>
+            <Router location={history.location} history={history}>
+              {children}
+            </Router>
+          </Provider>
+        </NotificationsContext.Provider>
       </ServiceContext.Provider>
     );
   };

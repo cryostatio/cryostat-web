@@ -45,6 +45,7 @@ import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSele
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
@@ -121,7 +122,9 @@ describe('<TargetSelect />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <TargetSelect />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <TargetSelect />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

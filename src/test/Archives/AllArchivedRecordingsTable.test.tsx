@@ -45,6 +45,7 @@ import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.se
 import { AllArchivedRecordingsTable } from '@app/Archives/AllArchivedRecordingsTable';
 import { ArchivedRecording, RecordingDirectory } from '@app/Shared/Services/Api.service';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockJvmId1 = 'fooJvmId1';
@@ -184,7 +185,9 @@ describe('<AllArchivedRecordingsTable />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <AllArchivedRecordingsTable />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <AllArchivedRecordingsTable />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

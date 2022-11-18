@@ -44,16 +44,19 @@ import '@app/app.css';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { Provider } from 'react-redux';
 import { store } from '@app/Shared/Redux/ReduxStore';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const App: React.FunctionComponent = () => (
   <ServiceContext.Provider value={defaultServices}>
-    <Provider store={store}>
-      <Router>
-        <AppLayout>
-          <AppRoutes />
-        </AppLayout>
-      </Router>
-    </Provider>
+    <NotificationsContext.Provider value={NotificationsInstance}>
+      <Provider store={store}>
+        <Router>
+          <AppLayout>
+            <AppRoutes />
+          </AppLayout>
+        </Router>
+      </Provider>
+    </NotificationsContext.Provider>
   </ServiceContext.Provider>
 );
 

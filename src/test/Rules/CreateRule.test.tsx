@@ -49,6 +49,7 @@ import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { renderWithServiceContextAndReduxStoreWithRouter, renderWithServiceContextAndRouter } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const escapeKeyboardInput = (value: string) => {
   return value.replace(/[{[]/g, '$&$&');
@@ -121,9 +122,11 @@ describe('<CreateRule />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
-            <CreateRule />
-          </Router>
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <Router location={history.location} history={history}>
+              <CreateRule />
+            </Router>
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });

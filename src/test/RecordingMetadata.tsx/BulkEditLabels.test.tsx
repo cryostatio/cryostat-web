@@ -45,6 +45,7 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { renderWithServiceContext } from '../Common';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 jest.mock('@patternfly/react-core', () => ({
   ...jest.requireActual('@patternfly/react-core'),
@@ -144,7 +145,9 @@ describe('<BulkEditLabels />', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
+          </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
     });
