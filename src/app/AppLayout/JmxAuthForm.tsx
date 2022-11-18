@@ -37,33 +37,22 @@
  */
 import * as React from 'react';
 import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export interface JmxAuthFormProps {
   onDismiss: () => void;
-  onSave: (username: string, password: string) => Promise<void>;
+  onSave: (username: string, password: string) => void;
   focus?: boolean;
+  loading?: boolean;
 }
 
 export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) => {
-  const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
 
   const handleSave = React.useCallback(() => {
-    setLoading(true);
-    props
-      .onSave(username, password)
-      .then(() => {
-        // Do not set state as form is unmounted after successful submission
-        context.target.setAuthRetry();
-      })
-      .catch((_) => {
-        setLoading(false);
-      });
-  }, [context.target, setLoading, props.onSave, username, password]);
+    props.onSave(username, password);
+  }, [props.onSave, username, password]);
 
   const handleDismiss = React.useCallback(() => {
     // Do not set state as form is unmounted after cancel
@@ -84,9 +73,9 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
       ({
         spinnerAriaValueText: 'Saving',
         spinnerAriaLabel: 'saving-jmx-credentials',
-        isLoading: loading,
+        isLoading: props.loading,
       } as LoadingPropsType),
-    [loading]
+    [props.loading]
   );
 
   return (
@@ -95,7 +84,7 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
       <FormGroup isRequired label="Username" fieldId="username">
         <TextInput
           value={username}
-          isDisabled={loading}
+          isDisabled={props.loading}
           isRequired
           type="text"
           id="username"
@@ -107,7 +96,7 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
       <FormGroup isRequired label="Password" fieldId="password">
         <TextInput
           value={password}
-          isDisabled={loading}
+          isDisabled={props.loading}
           isRequired
           type="password"
           id="password"
@@ -120,11 +109,11 @@ export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) =>
           variant="primary"
           onClick={handleSave}
           {...saveButtonLoadingProps}
-          isDisabled={loading || username === '' || password === ''}
+          isDisabled={props.loading || username === '' || password === ''}
         >
-          {loading ? 'Saving' : 'Save'}
+          {props.loading ? 'Saving' : 'Save'}
         </Button>
-        <Button variant="secondary" onClick={handleDismiss} isDisabled={loading}>
+        <Button variant="secondary" onClick={handleDismiss} isDisabled={props.loading}>
           Cancel
         </Button>
       </ActionGroup>

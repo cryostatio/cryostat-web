@@ -452,7 +452,11 @@ export const StoreJmxCredentials = () => {
     <>
       <TargetCredentialsToolbar />
       {content}
-      <CreateJmxCredentialModal visible={showAuthModal} onClose={handleAuthModalClose} />
+      <CreateJmxCredentialModal
+        visible={showAuthModal}
+        onDismiss={handleAuthModalClose}
+        onSave={handleAuthModalClose}
+      />
     </>
   );
 };
