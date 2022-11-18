@@ -49,6 +49,8 @@ export interface ClickableAutomatedAnalysisLabelProps {
   isSelected: boolean;
 }
 
+export const clickableAutomatedAnalysisKey = 'clickable-automated-analysis-label';
+
 export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableAutomatedAnalysisLabelProps> = ({
   label,
   isSelected,
@@ -59,7 +61,6 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
 
-  const keyPrefix = 'clickable-automated-analysis-label';
 
   const alertStyle = {
     default: popoverStyles.modifiers.default,
@@ -106,15 +107,15 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
     <Popover
       aria-label="automated-analysis-description-popover"
       isVisible={isDescriptionVisible}
-      headerContent={<div className={`${keyPrefix}-popover-header`}>{label.name}</div>}
+      headerContent={<div className={`${clickableAutomatedAnalysisKey}-popover-header`}>{label.name}</div>}
       alertSeverityVariant={alertPopoverVariant}
       alertSeverityScreenReaderText={alertPopoverVariant}
       shouldOpen={() => setIsDescriptionVisible(true)}
       shouldClose={() => setIsDescriptionVisible(false)}
-      key={`${keyPrefix}-popover-${label.name}`}
+      key={`${clickableAutomatedAnalysisKey}-popover-${label.name}`}
       bodyContent={
-        <div className={`${keyPrefix}-popover-body`} key={`${keyPrefix}-popover-body-${label.name}`}>
-          <p className={css(alertStyle[alertPopoverVariant], `${keyPrefix}-popover-body-score`)}>{label.score == -1 ? 'N/A' : label.score.toFixed(1)}</p>
+        <div className={`${clickableAutomatedAnalysisKey}-popover-body`} key={`${clickableAutomatedAnalysisKey}-popover-body-${label.name}`}>
+          <p className={css(alertStyle[alertPopoverVariant], `${clickableAutomatedAnalysisKey}-popover-body-score`)}>{label.score == -1 ? 'N/A' : label.score.toFixed(1)}</p>
           <p>{label.description}</p>
         </div>
       }
@@ -127,7 +128,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
         onMouseEnter={handleHoveredOrFocused}
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
-        key={`${keyPrefix}-${label.name}`}
+        key={`${clickableAutomatedAnalysisKey}-${label.name}`}
         isCompact
       >
         <span className={css(labelStyles.labelText)}>{`${label.name}`}</span>

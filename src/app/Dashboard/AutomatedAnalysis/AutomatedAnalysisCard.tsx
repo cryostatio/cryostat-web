@@ -65,7 +65,7 @@ import { ErrorView } from '@app/ErrorView/ErrorView';
 import LoadingView from '@app/LoadingView/LoadingView';
 import { concatMap, filter, finalize, first, map, tap, throwError } from 'rxjs';
 import { FAILED_REPORT_MESSAGE, INTERNAL_ERROR_MESSAGE, NO_RECORDINGS_MESSAGE, ORANGE_SCORE_THRESHOLD, RECORDING_FAILURE_MESSAGE, RuleEvaluation } from '@app/Shared/Services/Report.service';
-import { ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
+import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import {
   ArchivedRecording,
   automatedAnalysisTag,
@@ -146,7 +146,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         targetNodes(filter: { name: $connectUrl }) {
           recordings {
             active (filter: {
-              name: ${automatedAnalysisTag},
+              name: "${automatedAnalysisTag}",
               labels: ["origin=${automatedAnalysisTag}"],
             }) {
               data {
@@ -413,7 +413,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
               <GridItem className='automated-analysis-grid-item' span={3} key={`gridItem-${topic}`}>
                 <LabelGroup categoryName={topic} isVertical numLabels={3} isCompact key={`topic-${topic}`}>
                   {evaluations.map((evaluation) => {
-                    return <ClickableAutomatedAnalysisLabel label={evaluation} isSelected={false} />;
+                    return <ClickableAutomatedAnalysisLabel label={evaluation} isSelected={false} key={clickableAutomatedAnalysisKey} />;
                   })}
                 </LabelGroup>
               </GridItem>

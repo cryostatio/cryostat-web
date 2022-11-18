@@ -55,7 +55,7 @@ import { UpdateFilterOptions } from './RecordingFilterReducer';
   ): AutomatedAnalysisFiltersCategories => {
     let newFilterValues: any[];
     if (!old[filterKey]) {
-      newFilterValues = [];
+      newFilterValues = [filterValue];
     } else {
       const oldFilterValues = old[filterKey] as any[];
       if (deleted) {
