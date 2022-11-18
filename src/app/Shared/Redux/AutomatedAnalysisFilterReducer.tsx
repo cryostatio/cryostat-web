@@ -173,4 +173,3 @@ export const deleteAllAutomatedAnalysisFilters = (automatedAnalysisFilter: Targe
         state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
       });
   });
-  

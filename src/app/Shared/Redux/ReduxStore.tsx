@@ -61,5 +61,7 @@ export type Store = ReturnType<typeof setupStore>;
 
 // Add a subscription to save filter states to local storage
 // if states change.
-store.subscribe(() => saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list));
-store.subscribe(() => saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.list));
+store.subscribe(() => {
+  saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list);
+  saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.list);
+});

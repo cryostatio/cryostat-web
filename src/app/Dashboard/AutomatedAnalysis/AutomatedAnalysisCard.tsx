@@ -63,12 +63,14 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { PlusCircleIcon, Spinner2Icon, TrashIcon,  } from '@patternfly/react-icons';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import LoadingView from '@app/LoadingView/LoadingView';
-import { concatMap, filter, finalize, first, map, tap } from 'rxjs';
+import { concatMap, filter, finalize, first, map, tap, throwError } from 'rxjs';
 import { FAILED_REPORT_MESSAGE, INTERNAL_ERROR_MESSAGE, NO_RECORDINGS_MESSAGE, ORANGE_SCORE_THRESHOLD, RECORDING_FAILURE_MESSAGE, RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import {
   ArchivedRecording,
-  defaultAutomatedAnalysis,
+  automatedAnalysisTag,
+  defaultAutomatedAnalysisRecording,
+  Recording,
 } from '@app/Shared/Services/Api.service';
 import { AutomatedAnalysisFilters, AutomatedAnalysisFiltersCategories, emptyAutomatedAnalysisFilters, filterAutomatedAnalysis } from './AutomatedAnalysisFilters';
 import { useDispatch, useSelector } from 'react-redux';
@@ -134,6 +136,37 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     [setCategorizedEvaluation, setIsLoading, setIsError]
   );
 
+  // will do analysis on  the first ActiveRecording which has
+  // name: 'automated-analysis' ; label: 'origin=automated-analysis'
+  const queryActiveRecordings = React.useCallback(
+    (connectUrl: string) => {
+      return context.api.graphql<any>(
+        `
+      query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
+        targetNodes(filter: { name: $connectUrl }) {
+          recordings {
+            active (filter: {
+              name: ${automatedAnalysisTag},
+              labels: ["origin=${automatedAnalysisTag}"],
+            }) {
+              data {
+                name
+                downloadUrl
+                reportUrl
+                metadata {
+                  labels
+                }
+              }
+            }
+          }
+        }
+      }`,
+        { connectUrl }
+      );
+    },
+    [context.api, context.api.graphql]
+  );
+
   const queryArchivedRecordings = React.useCallback(
     (connectUrl: string) => {
       return context.api.graphql<any>(
@@ -176,7 +209,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     setUsingCachedReport(false);
   }, [setIsLoading, setIsError, setUsingArchivedReport, setUsingCachedReport]);
 
-  const handleAnyArchivedRecordings = React.useCallback(
+  const handleArchivedRecordings = React.useCallback(
     (recordings: ArchivedRecording[]) => {
       const freshestRecording = recordings.reduce((prev, current) =>
         prev?.archivedTime > current?.archivedTime ? prev : current
@@ -219,7 +252,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           .subscribe({
             next: (recordings) => {              
               if (recordings.length > 0) {
-                handleAnyArchivedRecordings(recordings);
+                handleArchivedRecordings(recordings);
               } else {
                 handleStateErrors(NO_RECORDINGS_MESSAGE);
               }
@@ -232,39 +265,47 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     }
 
     
-  }, [addSubscription, context.reports, categorizeEvaluation, queryArchivedRecordings, handleAnyArchivedRecordings, handleStateErrors, setUsingCachedReport, setReportTime]);
+  }, [addSubscription, context.reports, categorizeEvaluation, queryArchivedRecordings, handleArchivedRecordings, handleStateErrors, setUsingCachedReport, setReportTime]);
 
-  const takeSnapshot = React.useCallback(() => {
+  const generateReport = React.useCallback(() => {
     addSubscription(
       context.target.target().subscribe((target) => {
         handleLoading();
         setTargetConnectURL(target.connectUrl);
         dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
-        context.api.createSnapshotV2().pipe(first()).subscribe({
-          next: (snapshot) => {
+        // query for designated automated-analysis profiling recording
+        addSubscription(
+          queryActiveRecordings(target.connectUrl)
+          .pipe(
+            first(),
+            tap((v) => console.log(v)),
+            map((v) => v.data.targetNodes[0].recordings.active.data[0] as Recording),
+            tap((recording) => {
+              if (recording == null) {
+                throw new Error(NO_RECORDINGS_MESSAGE);
+              }
+            })
+          )
+          .subscribe({
+            next: (recording) => {      
               context.reports
-                .reportJson(snapshot, target.connectUrl)
-                .pipe(
-                  first(),
-                  finalize(() => {
-                    context.api.deleteRecording(snapshot.name)
-                      .pipe(first())
-                      .subscribe(() => {});
-                  }),
-                )
+                .reportJson(recording, target.connectUrl)
+                .pipe(first())
                 .subscribe({
                   next: (report) => {
                     categorizeEvaluation(report);
                   },
-                  error: (err) => {
+                  error: (_) => {
                     handleStateErrors(FAILED_REPORT_MESSAGE);
                   },
                 });
-          },
-          error: (err) => {          
+            },
+            error: (_) => {
+              // try generating report on cached or archived recordings
               handleEmptyRecordings(target.connectUrl);
-          },
-        })
+            },
+          })
+        );
       })
     );
   }, [
@@ -275,6 +316,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     context.reports,
     automatedAnalysisAddTargetIntent,
     categorizeEvaluation,
+    queryActiveRecordings,
     handleEmptyRecordings,
     handleLoading,
     handleStateErrors,
@@ -283,19 +325,19 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const startProfilingRecording = React.useCallback(() => {
     addSubscription(
       context.api
-        .createRecording(defaultAutomatedAnalysis)
+        .createRecording(defaultAutomatedAnalysisRecording)
         .pipe(
           first(),
         )
         .subscribe((resp) => {
           if (resp.ok || resp.status === 400) { // in-case the recording already exists
-            takeSnapshot();
+            generateReport();
           } else {
             handleStateErrors(RECORDING_FAILURE_MESSAGE);
           }
         })
     );
-  }, [addSubscription, context.api, takeSnapshot, handleStateErrors]);
+  }, [addSubscription, context.api, generateReport, handleStateErrors]);
 
   const handleErrorView = React.useCallback((): [string, () => void] => {
     if (errorMessage === NO_RECORDINGS_MESSAGE) {
@@ -303,12 +345,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
       return ['Retry starting recording', startProfilingRecording];
     } else if (errorMessage === FAILED_REPORT_MESSAGE) {
-      return ['Retry loading report', takeSnapshot];
+      return ['Retry loading report', generateReport];
     }
     else { // errorMessage === INTERNAL_ERROR_MESSAGE
-      return ['Retry', takeSnapshot];
+      return ['Retry', generateReport];
     }
-  }, [errorMessage, startProfilingRecording, takeSnapshot]);
+  }, [errorMessage, startProfilingRecording, generateReport]);
 
   React.useEffect(() => {
     addSubscription(
@@ -319,8 +361,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [addSubscription, context.target, handleStateErrors]);
 
   React.useEffect(() => {
-    takeSnapshot();
-  }, [takeSnapshot]);
+    generateReport();
+  }, [generateReport]);
 
   React.useEffect(() => {
     if (reportTime == 0 || !(usingArchivedReport || usingCachedReport)) {
@@ -463,9 +505,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           <ToolbarItem>
             <Button
               isSmall
-              isAriaDisabled={isLoading}
+              isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
               aria-label="Refresh automated analysis"
-              onClick={takeSnapshot}
+              onClick={generateReport}
               variant="control"
               icon={<Spinner2Icon />}
             />
@@ -474,7 +516,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       </ToolbarContent>
     </Toolbar>
     );
-  }, [isLoading, isError, targetConnectURL, categorizedEvaluation, targetAutomatedAnalysisFilters, takeSnapshot, handleClearFilters, updateFilters]);
+  }, [isLoading, isError, targetConnectURL, categorizedEvaluation, targetAutomatedAnalysisFilters, generateReport, handleClearFilters, updateFilters]);
 
   const view = React.useMemo(() => {
     if (isError) {
