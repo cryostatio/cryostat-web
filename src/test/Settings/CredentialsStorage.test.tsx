@@ -37,9 +37,14 @@
  */
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
+<<<<<<< HEAD
 import { render, cleanup, screen, waitFor, getByText, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+=======
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import { renderDefault } from '../Common';
+>>>>>>> 7ba910e (fix(credentials): set backend storage as default (#672))
 import { CredentialsStorage } from '@app/Settings/CredentialsStorage';
 
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
@@ -75,15 +80,20 @@ describe('<CredentialsStorage/>', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
+<<<<<<< HEAD
   it('defaults to Session storage', async () => {
     render(React.createElement(CredentialsStorage.content, null));
+=======
+  it('defaults to Backend storage', async () => {
+    renderDefault(React.createElement(CredentialsStorage.content, null));
+>>>>>>> 7ba910e (fix(credentials): set backend storage as default (#672))
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(1);
-    expect(saveToLocalStorage).lastCalledWith(storageKey, sessionStorageValue);
+    expect(saveToLocalStorage).lastCalledWith(storageKey, backendStorageValue);
 
-    expect(screen.getByText(sessionStorageValue)).toBeVisible();
-    expect(screen.queryByText(backendStorageValue)).toBeFalsy();
+    expect(screen.getByText(backendStorageValue)).toBeVisible();
+    expect(screen.queryByText(sessionStorageValue)).toBeFalsy();
   });
 
   it('sets value to local storage when dropdown is clicked', async () => {
@@ -91,23 +101,28 @@ describe('<CredentialsStorage/>', () => {
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(1);
-    expect(saveToLocalStorage).lastCalledWith(storageKey, sessionStorageValue);
+    expect(saveToLocalStorage).lastCalledWith(storageKey, backendStorageValue);
 
     userEvent.click(screen.getByRole('button'));
 
-    // as in the other test, the default is Session storage. click the dropdown and select Backend to change selection
+    // the default is Backend storage. Click the dropdown and select Session (Browser Memory) to change selection
     const ul = await screen.findByRole('listbox');
+<<<<<<< HEAD
     const backend = within(ul).getByText(backendStorageValue);
     userEvent.click(backend);
+=======
+    const backend = within(ul).getByText(sessionStorageValue);
+    await user.click(backend);
+>>>>>>> 7ba910e (fix(credentials): set backend storage as default (#672))
 
     await waitFor(() => expect(ul).not.toBeVisible()); // expect selection menu to close after user clicks an option
 
     // expect the selection to be visible, the other not
-    expect(screen.getByText(backendStorageValue)).toBeVisible();
-    expect(screen.queryByText(sessionStorageValue)).toBeFalsy();
+    expect(screen.getByText(sessionStorageValue)).toBeVisible();
+    expect(screen.queryByText(backendStorageValue)).toBeFalsy();
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(2);
-    expect(saveToLocalStorage).lastCalledWith(storageKey, backendStorageValue);
+    expect(saveToLocalStorage).lastCalledWith(storageKey, sessionStorageValue);
   });
 });
