@@ -49,8 +49,9 @@ import {
   EmptyState,
   EmptyStateIcon,
   Title,
+  Text,
 } from '@patternfly/react-core';
-import { expandable, Table, TableBody, TableHeader, TableVariant } from '@patternfly/react-table';
+import { ExpandableRowContent, TableComposable, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
@@ -70,45 +71,34 @@ export interface OptionDescriptor {
   defaultValue: string;
 }
 
-type Row = {
-  cells: string[];
-  parent?: number;
-  isOpen?: boolean;
-  fullWidth?: boolean;
-};
+interface RowData {
+  isExpanded: boolean;
+  cellContents: React.ReactNode[];
+  children?: React.ReactNode;
+}
 
 const getCategoryString = (eventType: EventType): string => {
   return eventType.category.join(', ').trim();
 };
+
+const includesSubstr = (a: string, b: string) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
 
 export interface EventTypesProps {}
 
 export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const prevPerPage = React.useRef(10);
 
   const [types, setTypes] = React.useState([] as EventType[]);
-  const [displayedTypes, setDisplayedTypes] = React.useState([] as Row[]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
-  const prevPerPage = React.useRef(10);
   const [openRow, setOpenRow] = React.useState(-1);
   const [filterText, setFilterText] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const tableColumns = React.useMemo(
-    () => [
-      {
-        title: 'Name',
-        cellFormatters: [expandable],
-      },
-      'Type ID',
-      'Description',
-      'Categories',
-    ],
-    [expandable]
-  );
+  const tableColumns = ['', 'Name', 'Type ID', 'Description', 'Categories'];
 
   const handleTypes = React.useCallback(
     (types) => {
@@ -159,49 +149,41 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
     addSubscription(context.target.authFailure().subscribe(() => setErrorMessage(authFailMessage)));
   }, [context.target]);
 
-  const filterTypesByText = React.useCallback(() => {
+  const filterTypesByText = React.useMemo(() => {
     if (!filterText) {
       return types;
     }
-    const includesSubstr = (a, b) => !!a && !!b && a.toLowerCase().includes(b.trim().toLowerCase());
-    return types.filter((t) => {
-      if (includesSubstr(t.name, filterText)) {
-        return true;
-      }
-      if (includesSubstr(t.typeId, filterText)) {
-        return true;
-      }
-      if (includesSubstr(t.description, filterText)) {
-        return true;
-      }
-      if (includesSubstr(getCategoryString(t), filterText)) {
-        return true;
-      }
-      return false;
-    });
+    return types.filter(
+      (t) =>
+        includesSubstr(t.name, filterText) ||
+        includesSubstr(t.typeId, filterText) ||
+        includesSubstr(t.description, filterText) ||
+        includesSubstr(getCategoryString(t), filterText)
+    );
   }, [types, filterText]);
 
-  React.useEffect(() => {
+  const displayedTypeRowData = React.useMemo(() => {
     const offset = (currentPage - 1) * perPage;
-    const page = filterTypesByText().slice(offset, offset + perPage);
+    const visibleTypes = filterTypesByText.slice(offset, offset + perPage);
 
-    const rows: Row[] = [];
-    page.forEach((t: EventType, idx: number) => {
-      rows.push({ cells: [t.name, t.typeId, t.description, getCategoryString(t)], isOpen: idx === openRow });
-      if (idx === openRow) {
-        let child = '';
-        for (const opt in t.options) {
-          child += `${opt}=[${t.options[opt].defaultValue}]\t`;
-        }
-        rows.push({ parent: idx, fullWidth: true, cells: [child] });
+    const rows: RowData[] = [];
+    visibleTypes.forEach((t: EventType, idx: number) => {
+      let child = '';
+      for (const opt in t.options) {
+        child += `${opt}=[${t.options[opt].defaultValue}]\t`;
       }
+      rows.push({
+        cellContents: [t.name, t.typeId, t.description, getCategoryString(t)],
+        isExpanded: idx === openRow,
+        children: <>{child}</>,
+      });
     });
 
-    setDisplayedTypes(rows);
+    return rows;
   }, [currentPage, perPage, filterTypesByText, openRow]);
 
   const onCurrentPage = React.useCallback(
-    (evt, currentPage) => {
+    (_, currentPage: number) => {
       setOpenRow(-1);
       setCurrentPage(currentPage);
     },
@@ -209,7 +191,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
   );
 
   const onPerPage = React.useCallback(
-    (evt, perPage) => {
+    (_, perPage: number) => {
       const offset = (currentPage - 1) * prevPerPage.current;
       prevPerPage.current = perPage;
       setOpenRow(-1);
@@ -219,16 +201,20 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
     [currentPage, prevPerPage, setOpenRow, setPerPage, setCurrentPage]
   );
 
-  const onCollapse = React.useCallback(
-    (event, rowKey, isOpen) => {
-      if (isOpen) {
-        if (openRow === -1) {
-          setOpenRow(rowKey);
-        } else {
-          setOpenRow(rowKey > openRow ? rowKey - 1 : rowKey);
-        }
-      } else {
+  const onFilterChange = React.useCallback(
+    (filterText: string) => {
+      setFilterText(filterText);
+      setOpenRow(-1);
+    },
+    [setFilterText, setOpenRow]
+  );
+
+  const onToggle = React.useCallback(
+    (rowData: RowData, index: number) => {
+      if (index === openRow) {
         setOpenRow(-1);
+      } else {
+        setOpenRow(index);
       }
     },
     [setOpenRow, openRow]
@@ -238,7 +224,36 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
 
-  // TODO replace table with data list so collapsed event options can be custom formatted
+  const typeRowPairs = React.useMemo(() => {
+    return displayedTypeRowData.map((rowData: RowData, index) => (
+      <>
+        <Tbody key={`event-type-row-pair-${index}`} isExpanded={rowData.isExpanded}>
+          <Tr key={`event-type-${index}`}>
+            <Td
+              key={`event-type-expandable-${index}`}
+              expand={{
+                rowIndex: index,
+                isExpanded: rowData.isExpanded,
+                expandId: `expandable-event-type-row-${index}`,
+                onToggle: () => onToggle(rowData, index),
+              }}
+            />
+            {rowData.cellContents.map((content, idx) => (
+              <Td key={`event-type-${tableColumns[idx + 1].toLowerCase()}-${idx}`} dataLabel={tableColumns[idx + 1]}>
+                {content}
+              </Td>
+            ))}
+          </Tr>
+          <Tr key={`event-type-${index}-expandable-child`} isExpanded={rowData.isExpanded}>
+            <Td dataLabel="event-details" colSpan={tableColumns.length}>
+              <ExpandableRowContent>{rowData.children}</ExpandableRowContent>
+            </Td>
+          </Tr>
+        </Tbody>
+      </>
+    ));
+  }, [displayedTypeRowData, onToggle, tableColumns]);
+
   if (errorMessage != '') {
     return (
       <ErrorView
@@ -261,34 +276,34 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
                 type="search"
                 placeholder="Filter..."
                 aria-label="Event filter"
-                onChange={setFilterText}
+                onChange={onFilterChange}
                 isDisabled={errorMessage != ''}
               />
             </ToolbarItem>
             <ToolbarItem variant={ToolbarItemVariant.pagination}>
               <Pagination
-                itemCount={filterText ? filterTypesByText().length : types.length}
+                itemCount={filterTypesByText.length}
                 page={currentPage}
                 perPage={perPage}
                 onSetPage={onCurrentPage}
                 widgetId="event-types-pagination"
                 onPerPageSelect={onPerPage}
-                isCompact
               />
             </ToolbarItem>
           </ToolbarContent>
         </Toolbar>
-        {displayedTypes.length ? (
-          <Table
-            aria-label="Event Types table"
-            cells={tableColumns}
-            rows={displayedTypes}
-            onCollapse={onCollapse}
-            variant={TableVariant.compact}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+        {typeRowPairs.length ? (
+          // TODO replace table with data list so collapsed event options can be custom formatted
+          <TableComposable aria-label="Event Types Table" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                {tableColumns.map((column) => (
+                  <Th key={`event-type-header-${column}`}>{column}</Th>
+                ))}
+              </Tr>
+            </Thead>
+            {typeRowPairs}
+          </TableComposable>
         ) : (
           <EmptyState>
             <EmptyStateIcon icon={SearchIcon} />
