@@ -81,6 +81,7 @@ import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 
 export interface EventTemplatesProps {}
 
@@ -254,7 +255,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
           onClick: () =>
             history.push({
               pathname: '/recordings/create',
-              state: { template: t.name, templateType: t.type },
+              state: { templateName: t.name, templateType: t.type } as CreateRecordingProps,
             }),
         },
       ] as IAction[];

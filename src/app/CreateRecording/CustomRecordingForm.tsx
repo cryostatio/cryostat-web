@@ -61,7 +61,7 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import { concatMap, first } from 'rxjs/operators';
-import { EventTemplate, TemplateType } from './CreateRecording';
+import { EventTemplate } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
@@ -69,13 +69,19 @@ import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { TemplateType } from '@app/Shared/Services/Api.service';
 
-export interface CustomRecordingFormProps {}
+export interface CustomRecordingFormProps {
+  prefilled?: {
+    templateName?: string;
+    templateType?: TemplateType;
+  };
+}
 
 export const RecordingNamePattern = /^[\w_]+$/;
 export const DurationPattern = /^[1-9][0-9]*$/;
 
-export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormProps> = (props) => {
+export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormProps> = ({ prefilled }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
@@ -89,8 +95,8 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
-  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(undefined);
+  const [templateName, setTemplateName] = React.useState<string | undefined>(prefilled?.templateName);
+  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(prefilled?.templateType);
   const [maxAge, setMaxAge] = React.useState(0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(0);
@@ -322,6 +328,13 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
     [loading]
   );
 
+  const selectedSpecifier = React.useMemo(() => {
+    if (templateName && templateType) {
+      return `${templateName},${templateType}`;
+    }
+    return '';
+  }, [templateName, templateType]);
+
   return (
     <>
       <Text component={TextVariants.small}>
@@ -403,6 +416,7 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
           helperTextInvalid="A Template must be selected"
         >
           <SelectTemplateSelectorForm
+            selected={selectedSpecifier}
             templates={templates}
             validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
             disabled={loading}

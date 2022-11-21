@@ -42,8 +42,12 @@ import { StaticContext } from 'react-router';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
+import { TemplateType } from '@app/Shared/Services/Api.service';
 
-export type TemplateType = 'TARGET' | 'CUSTOM';
+export interface CreateRecordingProps {
+  templateName?: string;
+  templateType?: TemplateType;
+}
 
 export interface EventTemplate {
   name: string;
@@ -52,10 +56,18 @@ export interface EventTemplate {
   type: TemplateType;
 }
 
-const Comp: React.FunctionComponent<{}> = () => {
+const Comp: React.FunctionComponent<RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const onTabSelect = React.useCallback((evt, idx) => setActiveTab(Number(idx)), [setActiveTab]);
+
+  const prefilled = React.useMemo(
+    () => ({
+      templateName: props.location?.state?.templateName,
+      templateType: props.location?.state?.templateType,
+    }),
+    [props.location]
+  );
 
   return (
     <TargetView pageTitle="Create Recording" breadcrumbs={[{ title: 'Recordings', path: '/recordings' }]}>
@@ -63,7 +75,7 @@ const Comp: React.FunctionComponent<{}> = () => {
         <CardBody>
           <Tabs activeKey={activeTab} onSelect={onTabSelect}>
             <Tab eventKey={0} title="Custom Flight Recording">
-              <CustomRecordingForm />
+              <CustomRecordingForm prefilled={prefilled} />
             </Tab>
             <Tab eventKey={1} title="Snapshot Recording">
               <SnapshotRecordingForm />
