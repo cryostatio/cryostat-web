@@ -38,6 +38,7 @@
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import {
+  Bullseye,
   Button,
   Card,
   CardActions,
@@ -47,9 +48,17 @@ import {
   CardTitle,
   Checkbox,
   EmptyState,
+  Flex,
+  FlexItem,
+  Gallery,
+  GalleryItem,
   Grid,
   GridItem,
   LabelGroup,
+  Level,
+  LevelItem,
+  Stack,
+  StackItem,
   Text,
   TextContent,
   TextVariants,
@@ -77,6 +86,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
 import { automatedAnalysisAddFilterIntent, automatedAnalysisAddTargetIntent, automatedAnalysisDeleteAllFiltersIntent, automatedAnalysisDeleteCategoryFiltersIntent, automatedAnalysisDeleteFilterIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
+import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 
 interface AutomatedAnalysisCardProps {
   pageTitle: string;
@@ -103,6 +113,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const [reportTime, setReportTime] = React.useState<number>(0);
   const [usingArchivedReport, setUsingArchivedReport] = React.useState<boolean>(false);
   const [usingCachedReport, setUsingCachedReport] = React.useState<boolean>(false);
+  const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
 
   const SECOND_MILLIS = 1000;
   const MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -126,7 +137,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           map.set(evaluation.topic, [evaluation]);
         } else {
           topicValue.push(evaluation);     
-          topicValue.sort((a, b) => (b.score - a.score));
+          topicValue.sort((a, b) => (b.score - a.score) || (a.name.localeCompare(b.name)));
         }
       });
       setCategorizedEvaluation((Array.from(map) as [string, RuleEvaluation[]][]).sort());
@@ -278,7 +289,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           queryActiveRecordings(target.connectUrl)
           .pipe(
             first(),
-            tap((v) => console.log(v)),
             map((v) => v.data.targetNodes[0].recordings.active.data[0] as Recording),
             tap((recording) => {
               if (recording == null) {
@@ -396,12 +406,17 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [setReportStalenessTimer, setReportStalenessTimerUnits, reportTime, reportStalenessTimer, usingArchivedReport, usingCachedReport]);
 
   React.useEffect(() => {
-    setFilteredCategorizedEvaluation(filterAutomatedAnalysis(categorizedEvaluation, targetAutomatedAnalysisFilters));
-  }, [categorizedEvaluation, targetAutomatedAnalysisFilters, filterAutomatedAnalysis, setFilteredCategorizedEvaluation]);
+    setFilteredCategorizedEvaluation(filterAutomatedAnalysis(categorizedEvaluation, targetAutomatedAnalysisFilters, showNAScores));
+  }, [categorizedEvaluation, targetAutomatedAnalysisFilters, showNAScores, filterAutomatedAnalysis, setFilteredCategorizedEvaluation]);
 
   const onExpand = (event: React.MouseEvent, id: string) => {
     setIsExpanded(!isExpanded);
   };
+
+  const handleNAScoreChange = React.useCallback((checked: boolean) => {
+    setShowNAScores(checked);
+  }, [setShowNAScores]);
+
 
   const filteredCategorizedLabels = React.useMemo(() => {
     return (
@@ -460,6 +475,13 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     dispatch(automatedAnalysisDeleteAllFiltersIntent(targetConnectURL));
   }, [dispatch, automatedAnalysisDeleteAllFiltersIntent, targetConnectURL]);
 
+  const onScoreInput = React.useCallback(
+    (score) => {
+      updateFilters(targetConnectURL, { filterKey: 'Score', filterValue: score });
+    },
+    [updateFilters, targetConnectURL]
+  );
+
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
       return '';
@@ -512,11 +534,20 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
               icon={<Spinner2Icon />}
             />
           </ToolbarItem>
+          <ToolbarItem>
+            <Checkbox 
+              label="Show N/A scores"
+              isChecked={showNAScores}
+              onChange={handleNAScoreChange}
+              id="show-na-scores"
+              name="show-na-scores"
+            />
+          </ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>
     </Toolbar>
     );
-  }, [isLoading, isError, targetConnectURL, categorizedEvaluation, targetAutomatedAnalysisFilters, generateReport, handleClearFilters, updateFilters]);
+  }, [isLoading, isError, showNAScores, targetConnectURL, categorizedEvaluation, targetAutomatedAnalysisFilters, generateReport, handleClearFilters, handleNAScoreChange, updateFilters]);
 
   const view = React.useMemo(() => {
     if (isError) {
@@ -553,15 +584,22 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         }}
       >
         <CardTitle component="h4">Automated Analysis</CardTitle>
-        <CardActions>
-          {toolbar}
-        </CardActions>
       </CardHeader>
       <CardExpandableContent>
-        <CardBody isFilled={true}>
-          {reportStalenessText}
-          {view}
-        </CardBody>
+        <Stack hasGutter>
+          <StackItem> 
+            {toolbar}
+          </StackItem>
+          <StackItem className='automated-analysis-score-filter-stack-item'> 
+              <AutomatedAnalysisScoreFilter onChange={onScoreInput}></AutomatedAnalysisScoreFilter>
+          </StackItem>
+          <StackItem>
+            <CardBody isFilled={true}>
+              {reportStalenessText}
+              {view}
+            </CardBody>
+          </StackItem>
+        </Stack>
       </CardExpandableContent>
     </Card>
   );

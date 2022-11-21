@@ -58,6 +58,11 @@ html, body, #root {
   padding: 0.25em;
 }
 
+.automated-analysis-score-filter-stack-item {
+  padding-left: 1.3em;
+  padding-right: 1.3em;
+}
+
 .pf-c-label-group.pf-m-vertical.pf-c-label-group {
   height: 100%;
   width: 100%;
@@ -70,6 +75,38 @@ html, body, #root {
 
 .pf-c-label-group__label {
   font-weight: bold;
+}
+
+.automated-analysis-score-filter-slider .pf-c-slider__main {
+  margin-left: 1em;
+}
+
+.automated-analysis-score-filter-slider-ok .pf-c-slider__main {
+  --pf-c-slider__rail-track--before--base--BackgroundColor: var(--pf-global--success-color--100);
+  --pf-c-slider__rail-track--before--fill--BackgroundColor: var(--pf-global--BorderColor--100);
+
+  --pf-c-slider__step--m-active__slider-tick--BackgroundColor: #8a8d98; /* var(--pf-global--BorderColor--200); */
+  --pf-c-slider__step-tick--BackgroundColor: var(--pf-global--success-color--200);
+}
+
+.automated-analysis-score-filter-slider-warning .pf-c-slider__main {
+  --pf-c-slider__rail-track--before--base--BackgroundColor: var(--pf-global--warning-color--100);
+  --pf-c-slider__rail-track--before--fill--BackgroundColor: var(--pf-global--BorderColor--100);
+
+  --pf-c-slider__step--m-active__slider-tick--BackgroundColor: #8a8d98; 
+  --pf-c-slider__step-tick--BackgroundColor: var(--pf-global--warning-color--200);
+}
+
+.automated-analysis-score-filter-slider-critical .pf-c-slider__main {
+  --pf-c-slider__rail-track--before--base--BackgroundColor: var(--pf-global--danger-color--100);
+  --pf-c-slider__rail-track--before--fill--BackgroundColor: var(--pf-global--BorderColor--100);
+
+  --pf-c-slider__step--m-active__slider-tick--BackgroundColor: #8a8d98; 
+  --pf-c-slider__step-tick--BackgroundColor: var(--pf-global--danger-color--300);
+}
+
+.pf-c-slider__value .pf-c-form-control {
+  width: 4em;
 }
 
 .cryostat-logo {

@@ -54,6 +54,12 @@ import { UpdateFilterOptions } from './RecordingFilterReducer';
     { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
   ): AutomatedAnalysisFiltersCategories => {
     let newFilterValues: any[];
+    
+    if (filterKey == 'Score') {
+      const newFilters = { ...old };
+      newFilters['Score'] = filterValue;
+      return newFilters;
+    }
     if (!old[filterKey]) {
       newFilterValues = [filterValue];
     } else {
@@ -106,10 +112,10 @@ export const deleteAllAutomatedAnalysisFilters = (automatedAnalysisFilter: Targe
     builder
       .addCase(automatedAnalysisAddFilterIntent, (state, { payload }) => {
         const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state, payload.target);
-  
         let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
             ...oldAutomatedAnalysisFilter,
-              selectedCategory: payload.category,
+              // do not change selectedCategory if score filter (since this changes the toolbar category)
+              selectedCategory: payload.category == 'Score' ? oldAutomatedAnalysisFilter.selectedCategory : payload.category,
               filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
                 filterKey: payload.category!,
                 filterValue: payload.filter,

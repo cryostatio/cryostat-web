@@ -62,16 +62,16 @@ import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
   export interface AutomatedAnalysisFiltersCategories {
     Name: string[];
     Topic: string[];
-    Score: AutomatedAnalysisScoreState[];
+    Score: number;
   }
   
   export const emptyAutomatedAnalysisFilters = {
     Name: [],
     Topic: [],
-    Score: [],
+    Score: 100,
   } as AutomatedAnalysisFiltersCategories;
   
-  export const allowedAutomatedAnalysisFilters = Object.keys(emptyAutomatedAnalysisFilters);
+  export const allowedAutomatedAnalysisFilters = Object.keys(emptyAutomatedAnalysisFilters).filter((f) => f !== 'Score');
   
   export interface AutomatedAnalysisFiltersProps {
     target: string;
@@ -125,14 +125,6 @@ import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
       props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: inputTopic })
     },[props.updateFilters, currentCategory, props.target]);
 
-    const onScoreSelectToggle = React.useCallback(
-      (searchState) => {
-        const deleted = props.filters.Score && props.filters.Score.includes(searchState);
-        props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: searchState, deleted: deleted });
-      },
-      [props.updateFilters, currentCategory, props.target]
-    );
-
     const categoryDropdown = React.useMemo(() => {
       return (
         <Dropdown
@@ -165,16 +157,13 @@ import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
       () => [
         <AutomatedAnalysisNameFilter evaluations={props.evaluations} filteredNames={props.filters.Name} onSubmit={onNameInput}/>,
         <AutomatedAnalysisTopicFilter evaluations={props.evaluations} filteredTopics={props.filters.Topic} onSubmit={onTopicInput}></AutomatedAnalysisTopicFilter>,
-        <AutomatedAnalysisScoreFilter filteredScores={props.filters.Score} onSelectToggle={onScoreSelectToggle}></AutomatedAnalysisScoreFilter>
       ],
       [
         props.evaluations,
         props.filters.Name,
         props.filters.Topic,
-        props.filters.Score,
         onNameInput,
         onTopicInput,
-        onScoreSelectToggle,
       ]
     );
   
@@ -183,7 +172,7 @@ import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
         <ToolbarGroup variant="filter-group">
           <ToolbarItem>
               {categoryDropdown}
-              {Object.keys(props.filters).map((filterKey, i) => (
+              {Object.keys(props.filters).filter((f) => f !== 'Score').map((filterKey, i) => (
                 <ToolbarFilter
                   key={filterKey}
                   chips={props.filters[filterKey]}
@@ -200,18 +189,8 @@ import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
       </ToolbarToggleGroup>
     );
   };
-
-  const categorizeScores = (evaluation: RuleEvaluation): AutomatedAnalysisScoreState => {
-    return evaluation.score == -1
-      ? AutomatedAnalysisScoreState.NA
-      : evaluation.score < ORANGE_SCORE_THRESHOLD
-      ? AutomatedAnalysisScoreState.OK
-      : evaluation.score < RED_SCORE_THRESHOLD
-      ? AutomatedAnalysisScoreState.WARNING
-      : AutomatedAnalysisScoreState.CRITICAL;
-  }
   
-  export const filterAutomatedAnalysis = (topicEvalTuple: [string, RuleEvaluation[]][], filters: AutomatedAnalysisFiltersCategories) => {
+  export const filterAutomatedAnalysis = (topicEvalTuple: [string, RuleEvaluation[]][], filters: AutomatedAnalysisFiltersCategories, showNAScores: boolean) => {
     if (!topicEvalTuple || !topicEvalTuple.length) {
       return topicEvalTuple;
     }
@@ -226,16 +205,14 @@ import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
         ];
       })
     }
-    if (filters.Score != null && !!filters.Score.length) {
+    if (filters.Score != null) {
       filtered = filtered.map(([topic, evaluations]) => {
         return [topic, 
           evaluations.filter((evaluation) => {
-            let score = categorizeScores(evaluation);
-            console.log(score);
-            
-            console.log(filters.Score);
-            
-            return filters.Score.includes(score);
+            if (showNAScores) {
+              return (filters.Score <= evaluation.score) || (evaluation.score == -1);
+            }
+            return filters.Score <= evaluation.score;
           })
         ] as [
           string,
@@ -245,7 +222,7 @@ import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
     }
     if (filters.Topic != null && !!filters.Topic.length) {
       filtered = filtered.map(([topic, evaluations]) => {
-        return [topic, evaluations.filter((evaluation) => filters.Topic.includes(topic))] as [
+        return [topic, evaluations.filter((_) => filters.Topic.includes(topic))] as [
           string,
           RuleEvaluation[]
         ];

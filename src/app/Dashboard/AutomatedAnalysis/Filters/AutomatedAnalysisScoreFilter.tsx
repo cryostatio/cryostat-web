@@ -36,39 +36,99 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { Button, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import React, { CSSProperties } from 'react';
+import { Button, Checkbox, Dropdown, DropdownItem, DropdownToggle, Gallery, GalleryItem, Level, LevelItem, Select, SelectOption, SelectVariant, Slider, Stack, StackItem, Text, TextContent, TextVariants } from '@patternfly/react-core';
 import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
+import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD } from '@app/Shared/Services/Report.service';
+import { MinusIcon } from '@patternfly/react-icons';
 
 export interface AutomatedAnalysisScoreFilterProps {
-  filteredScores: AutomatedAnalysisScoreState[] | undefined;
-  onSelectToggle: (state: any) => void;
+  onChange: (value: number) => void;
 }
 
 export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnalysisScoreFilterProps> = (props) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [value, setValue] = React.useState<number>(100);
+  const [inputValue, setInputValue] = React.useState<number>(100);
 
-  const onSelect = React.useCallback(
-    (_, selection) => {
-      setIsOpen(false);
-      props.onSelectToggle(selection);
-    },
-    [setIsOpen, props.onSelectToggle]
-  );
+  const steps = [
+    { value: 0, label: '0' },
+    { value: ORANGE_SCORE_THRESHOLD, label: String(ORANGE_SCORE_THRESHOLD) },
+    { value: RED_SCORE_THRESHOLD, label: String(RED_SCORE_THRESHOLD) },
+    { value: 100, label: '100' },
+];
+
+  const on100Reset = React.useCallback(() => {
+    setValue(100);
+    setInputValue(100);
+    props.onChange(100);
+  }, [setValue, setInputValue, props.onChange]);
+
+  const on0Reset = React.useCallback(() => {
+    setValue(0);
+    setInputValue(0);
+    props.onChange(0);
+  }, [setValue, setInputValue, props.onChange]);
+
+  const onChange = React.useCallback((value, inputValue) => {
+    value = Math.floor(value);
+    let newValue;
+      if (inputValue === undefined) { 
+        newValue = value;
+      } else {
+        if (inputValue > 100) {
+          newValue = 100;
+        } else if (inputValue < 0) {
+          newValue = 0;
+        } else {
+          newValue = Math.floor(inputValue);
+        }
+      }
+    setValue(newValue);
+    setInputValue(newValue);
+    props.onChange(newValue);
+  }, [setValue, setInputValue, props.onChange]);
+
+  const className = React.useMemo(() => {
+    if (value >= 75) {
+      return "automated-analysis-score-filter-slider automated-analysis-score-filter-slider-critical";
+    }
+    else if (value >= 50) {
+      return "automated-analysis-score-filter-slider automated-analysis-score-filter-slider-warning";
+    }
+    else {
+      return "automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok";
+    }
+  }, [value]);
 
   return (
-    <Select
-      variant={SelectVariant.checkbox}
-      onToggle={setIsOpen}
-      onSelect={onSelect}
-      selections={props.filteredScores}
-      isOpen={isOpen}
-      aria-label="Filter by score"
-      placeholderText="Filter by score"
-    >
-      {Object.keys(AutomatedAnalysisScoreState).map((rs) => (
-        <SelectOption aria-label={`${rs} State`} key={rs} value={rs} />
-      ))}
-    </Select>
+    <>
+      <Text component={TextVariants.small}>Only showing analysis with scores ≥ {value}</Text>
+      <Slider 
+        leftActions={(
+          <Level hasGutter>
+            <LevelItem>
+              <Text component={TextVariants.small}>Reset:</Text>
+            </LevelItem>
+            <LevelItem>
+              <Button isSmall isInline variant="link" aria-label="Reset score to 0" onClick={on0Reset}>0</Button>
+            </LevelItem>
+            <LevelItem>
+              <Button isSmall isInline variant="link" aria-label="Reset score to 100" onClick={on100Reset}>100</Button>
+            </LevelItem>
+          </Level>
+        )}
+        className={className}
+        areCustomStepsContinuous
+        customSteps={steps} 
+        isInputVisible
+        inputLabel="Score"
+        inputValue={inputValue}
+        value={value}  
+        onChange={onChange} 
+        min={0} 
+        max={100} 
+      />
+    </>
+
   );
 };
