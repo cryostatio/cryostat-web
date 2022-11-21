@@ -477,7 +477,15 @@ Array [
           <div
             className="pf-c-table__expandable-row-content"
           >
-            0=[undefined]	
+            <p
+              className=""
+              data-ouia-component-id="OUIA-Generated-Text-1"
+              data-ouia-component-type="PF4/Text"
+              data-ouia-safe={true}
+              data-pf-content={true}
+            >
+              0=[undefined]	
+            </p>
           </div>
         </td>
       </tr>

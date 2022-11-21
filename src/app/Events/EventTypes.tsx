@@ -56,6 +56,7 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { SearchIcon } from '@patternfly/react-icons';
+import { hashCode } from '@app/utils/utils';
 
 export interface EventType {
   name: string;
@@ -72,6 +73,7 @@ export interface OptionDescriptor {
 }
 
 interface RowData {
+  eventType: EventType;
   isExpanded: boolean;
   cellContents: React.ReactNode[];
   children?: React.ReactNode;
@@ -93,7 +95,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
   const [types, setTypes] = React.useState([] as EventType[]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
-  const [openRow, setOpenRow] = React.useState(-1);
+  const [openRow, setOpenRow] = React.useState<number | undefined>(undefined);
   const [filterText, setFilterText] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -173,9 +175,10 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
         child += `${opt}=[${t.options[opt].defaultValue}]\t`;
       }
       rows.push({
+        eventType: t,
         cellContents: [t.name, t.typeId, t.description, getCategoryString(t)],
-        isExpanded: idx === openRow,
-        children: <>{child}</>,
+        isExpanded: hashCode(t.typeId) === openRow,
+        children: <Text>{child}</Text>,
       });
     });
 
@@ -184,7 +187,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
 
   const onCurrentPage = React.useCallback(
     (_, currentPage: number) => {
-      setOpenRow(-1);
+      setOpenRow(undefined);
       setCurrentPage(currentPage);
     },
     [setOpenRow, setCurrentPage]
@@ -194,30 +197,31 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
     (_, perPage: number) => {
       const offset = (currentPage - 1) * prevPerPage.current;
       prevPerPage.current = perPage;
-      setOpenRow(-1);
+      setOpenRow(undefined);
       setPerPage(perPage);
       setCurrentPage(1 + Math.floor(offset / perPage));
     },
     [currentPage, prevPerPage, setOpenRow, setPerPage, setCurrentPage]
   );
 
-  const onFilterChange = React.useCallback(
-    (filterText: string) => {
-      setFilterText(filterText);
-      setOpenRow(-1);
+  const onToggle = React.useCallback(
+    (t: EventType, index: number) => {
+      setOpenRow((old) => {
+        if (hashCode(t.typeId) === old) {
+          return undefined;
+        }
+        return hashCode(t.typeId);
+      });
     },
-    [setFilterText, setOpenRow]
+    [setOpenRow]
   );
 
-  const onToggle = React.useCallback(
-    (rowData: RowData, index: number) => {
-      if (index === openRow) {
-        setOpenRow(-1);
-      } else {
-        setOpenRow(index);
-      }
+  const onFilterTextChange = React.useCallback(
+    (filterText: string) => {
+      setFilterText(filterText);
+      setCurrentPage(1);
     },
-    [setOpenRow, openRow]
+    [setFilterText, setCurrentPage]
   );
 
   const authRetry = React.useCallback(() => {
@@ -226,31 +230,29 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
 
   const typeRowPairs = React.useMemo(() => {
     return displayedTypeRowData.map((rowData: RowData, index) => (
-      <>
-        <Tbody key={`event-type-row-pair-${index}`} isExpanded={rowData.isExpanded}>
-          <Tr key={`event-type-${index}`}>
-            <Td
-              key={`event-type-expandable-${index}`}
-              expand={{
-                rowIndex: index,
-                isExpanded: rowData.isExpanded,
-                expandId: `expandable-event-type-row-${index}`,
-                onToggle: () => onToggle(rowData, index),
-              }}
-            />
-            {rowData.cellContents.map((content, idx) => (
-              <Td key={`event-type-${tableColumns[idx + 1].toLowerCase()}-${idx}`} dataLabel={tableColumns[idx + 1]}>
-                {content}
-              </Td>
-            ))}
-          </Tr>
-          <Tr key={`event-type-${index}-expandable-child`} isExpanded={rowData.isExpanded}>
-            <Td dataLabel="event-details" colSpan={tableColumns.length}>
-              <ExpandableRowContent>{rowData.children}</ExpandableRowContent>
+      <Tbody key={`event-type-row-pair-${index}`} isExpanded={rowData.isExpanded}>
+        <Tr key={`event-type-${index}`}>
+          <Td
+            key={`event-type-expandable-${index}`}
+            expand={{
+              rowIndex: index,
+              isExpanded: rowData.isExpanded,
+              expandId: `expandable-event-type-row-${index}`,
+              onToggle: () => onToggle(rowData.eventType, index),
+            }}
+          />
+          {rowData.cellContents.map((content, idx) => (
+            <Td key={`event-type-${tableColumns[idx + 1].toLowerCase()}-${idx}`} dataLabel={tableColumns[idx + 1]}>
+              {content}
             </Td>
-          </Tr>
-        </Tbody>
-      </>
+          ))}
+        </Tr>
+        <Tr key={`event-type-${index}-expandable-child`} isExpanded={rowData.isExpanded}>
+          <Td dataLabel="event-details" colSpan={tableColumns.length}>
+            <ExpandableRowContent>{rowData.children}</ExpandableRowContent>
+          </Td>
+        </Tr>
+      </Tbody>
     ));
   }, [displayedTypeRowData, onToggle, tableColumns]);
 
@@ -276,7 +278,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
                 type="search"
                 placeholder="Filter..."
                 aria-label="Event filter"
-                onChange={onFilterChange}
+                onChange={onFilterTextChange}
                 isDisabled={errorMessage != ''}
               />
             </ToolbarItem>
