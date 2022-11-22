@@ -50,7 +50,7 @@ import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
 export const authFailMessage = 'Auth failure';
 
-export const missingSSLMessage = 'Missing SSL Certificates';
+export const missingSSLMessage = 'Bad Gateway';
 
 export const isAuthFail = (message: string) => message === authFailMessage;
 export interface ErrorViewProps {
