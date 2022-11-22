@@ -60,7 +60,7 @@ import {
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
-import { concatMap, first } from 'rxjs/operators';
+import { concatMap, first, filter } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
@@ -70,6 +70,8 @@ import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelField
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { TemplateType } from '@app/Shared/Services/Api.service';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 
 export interface CustomRecordingFormProps {
   prefilled?: {
@@ -105,6 +107,7 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
   const [labels, setLabels] = React.useState([] as RecordingLabel[]);
   const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
@@ -277,31 +280,72 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
     handleCreateRecording,
   ]);
 
-  React.useEffect(() => {
+  const refreshTemplates = React.useCallback(() => {
     addSubscription(
       context.target
         .target()
         .pipe(
+          filter((target) => target !== NO_TARGET),
+          first(),
           concatMap((target) =>
             context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
           )
         )
-        .subscribe(setTemplates)
+        .subscribe({
+          next: (templates) => {
+            setTemplates(templates);
+            setErrorMessage('');
+          },
+          error: (error) => {
+            setErrorMessage(error.message);
+            setTemplates([]);
+          },
+        })
     );
-  }, [addSubscription, context.target, context.api, setTemplates]);
+  }, [addSubscription, context.target, context.api, setTemplates, setErrorMessage]);
 
-  React.useEffect(() => {
+  const refreshRecordingOptions = React.useCallback(() => {
     addSubscription(
       context.target
         .target()
         .pipe(
+          filter((target) => target !== NO_TARGET),
+          first(),
           concatMap((target) =>
             context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`)
           )
         )
-        .subscribe(setRecordingOptions)
+        .subscribe({
+          next: (options) => {
+            setRecordingOptions(options);
+            setErrorMessage('');
+          },
+          error: (error) => {
+            setErrorMessage(error.message);
+            setRecordingOptions({});
+          },
+        })
     );
-  }, [addSubscription, context.api, context.target, setRecordingOptions]);
+  }, [addSubscription, context.target, context.api, setRecordingOptions, setErrorMessage]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
+        setTemplates([]);
+        setRecordingOptions({});
+      })
+    );
+  }, [context.target, setErrorMessage, addSubscription, setTemplates, setRecordingOptions]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(() => {
+        refreshTemplates();
+        refreshRecordingOptions();
+      })
+    );
+  }, [addSubscription, context.target, refreshTemplates, refreshRecordingOptions]);
 
   const isFormInvalid: boolean = React.useMemo(() => {
     return (
@@ -335,6 +379,19 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
     return '';
   }, [templateName, templateType]);
 
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target]);
+
+  if (errorMessage != '') {
+    return (
+      <ErrorView
+        title={'Error displaying recording creation form'}
+        message={errorMessage}
+        retry={isAuthFail(errorMessage) ? authRetry : undefined}
+      />
+    );
+  }
   return (
     <>
       <Text component={TextVariants.small}>

@@ -38,12 +38,12 @@
 
 import * as React from 'react';
 import { createMemoryHistory } from 'history';
-import { screen, cleanup, waitFor } from '@testing-library/react';
+import { screen, cleanup, act as doAct } from '@testing-library/react';
 import renderer, { act } from 'react-test-renderer';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ServiceContext, Services } from '@app/Shared/Services/Services';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { EventTemplate, RecordingAttributes, RecordingOptions } from '@app/Shared/Services/Api.service';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
 
 jest.mock('@patternfly/react-core', () => ({
@@ -54,6 +54,7 @@ jest.mock('@patternfly/react-core', () => ({
 
 import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { TargetService } from '@app/Shared/Services/Target.service';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -82,6 +83,8 @@ jest
 
   .mockReturnValueOnce(of([mockCustomEventTemplate])) // should show correct helper texts in metadata label editor
   .mockReturnValueOnce(of(mockRecordingOptions));
+
+jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
 const history = createMemoryHistory({ initialEntries: ['/recordings/create'] });
 
@@ -161,5 +164,32 @@ describe('<CustomRecordingForm />', () => {
     const helperText = screen.getByText(/are set by Cryostat and will be overwritten if specifed\.$/);
     expect(helperText).toBeInTheDocument();
     expect(helperText).toBeVisible();
+  });
+
+  it('should show error view if failing to retrieve templates or recording options', async () => {
+    const subj = new Subject<void>();
+    const mockTargetSvc = {
+      target: () => of(mockTarget),
+      authFailure: () => subj.asObservable(),
+    } as TargetService;
+    const services: Services = {
+      ...defaultServices,
+      target: mockTargetSvc,
+    };
+    renderWithServiceContext(<CustomRecordingForm />, { services: services });
+
+    await doAct(async () => subj.next());
+
+    const failTitle = screen.getByText('Error displaying recording creation form');
+    expect(failTitle).toBeInTheDocument();
+    expect(failTitle).toBeVisible();
+
+    const authFailText = screen.getByText('Auth failure');
+    expect(authFailText).toBeInTheDocument();
+    expect(authFailText).toBeVisible();
+
+    const retryButton = screen.getByText('Retry');
+    expect(retryButton).toBeInTheDocument();
+    expect(retryButton).toBeVisible();
   });
 });
