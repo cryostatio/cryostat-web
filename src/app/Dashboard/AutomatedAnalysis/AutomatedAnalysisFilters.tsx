@@ -54,10 +54,8 @@ import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilt
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { automatedAnalysisUpdateCategoryIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
-import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { AutomatedAnalysisTopicFilter } from './Filters/AutomatedAnalysisTopicFilter';
-import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
-import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
   
   export interface AutomatedAnalysisFiltersCategories {
     Name: string[];

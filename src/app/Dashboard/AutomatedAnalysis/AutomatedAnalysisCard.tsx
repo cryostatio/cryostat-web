@@ -141,13 +141,11 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         }
       });
       setCategorizedEvaluation((Array.from(map) as [string, RuleEvaluation[]][]).sort());
-      setIsLoading(false);
-      setIsError(false);
     },
     [setCategorizedEvaluation, setIsLoading, setIsError]
   );
 
-  // will do analysis on  the first ActiveRecording which has
+  // Will perform analysis on  the first ActiveRecording which has
   // name: 'automated-analysis' ; label: 'origin=automated-analysis'
   const queryActiveRecordings = React.useCallback(
     (connectUrl: string) => {
@@ -279,9 +277,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [addSubscription, context.reports, categorizeEvaluation, queryArchivedRecordings, handleArchivedRecordings, handleStateErrors, setUsingCachedReport, setReportTime]);
 
   const generateReport = React.useCallback(() => {
+    handleLoading();
     addSubscription(
       context.target.target().subscribe((target) => {
-        handleLoading();
         setTargetConnectURL(target.connectUrl);
         dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
         // query for designated automated-analysis profiling recording
@@ -407,16 +405,16 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   React.useEffect(() => {
     setFilteredCategorizedEvaluation(filterAutomatedAnalysis(categorizedEvaluation, targetAutomatedAnalysisFilters, showNAScores));
-  }, [categorizedEvaluation, targetAutomatedAnalysisFilters, showNAScores, filterAutomatedAnalysis, setFilteredCategorizedEvaluation]);
+    setIsLoading(false);
+  }, [categorizedEvaluation, targetAutomatedAnalysisFilters, showNAScores, filterAutomatedAnalysis, setIsLoading, setFilteredCategorizedEvaluation]);
 
-  const onExpand = (event: React.MouseEvent, id: string) => {
+  const onExpand = React.useCallback((event: React.MouseEvent, id: string) => {
     setIsExpanded(!isExpanded);
-  };
+  }, [setIsExpanded]);
 
   const handleNAScoreChange = React.useCallback((checked: boolean) => {
     setShowNAScores(checked);
   }, [setShowNAScores]);
-
 
   const filteredCategorizedLabels = React.useMemo(() => {
     return (
@@ -438,7 +436,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
   }, [filteredCategorizedEvaluation]);
 
-  const clearCachedReports = React.useCallback(() => {
+  const clearCacheStartRecording = React.useCallback(() => {
     addSubscription(
       context.target.target().subscribe((target) => {
         context.reports.deleteCachedAnalysisReport(target.connectUrl);
@@ -448,13 +446,22 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [addSubscription, context.target, context.reports, startProfilingRecording]);
 
   const clearAnalysis = React.useCallback(() => {
-    addSubscription(
-      context.target.target().subscribe((target) => {
-        context.reports.deleteCachedAnalysisReport(target.connectUrl);
-      })
-    );
+    setIsLoading(true);
+    if (usingCachedReport) {
+      context.reports.deleteCachedAnalysisReport(targetConnectURL);
+    } else if (usingArchivedReport) {
+      // do nothing, we don't want to delete unrelated archived reports
+      setIsLoading(false);
+      return;
+    }
+    else {
+      addSubscription(
+        context.api.deleteRecording('automated-analysis').subscribe(/* do nothing */)
+      );
+    }
     handleStateErrors(NO_RECORDINGS_MESSAGE);
-  }, [addSubscription, context.target, context.reports]);
+  }, [addSubscription, context.api, context.reports, targetConnectURL, usingCachedReport, usingArchivedReport, setIsLoading, handleStateErrors]);
+
 
   const updateFilters = React.useCallback(
     (target, { filterValue, filterKey, deleted = false, deleteOptions }) => {
@@ -475,12 +482,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     dispatch(automatedAnalysisDeleteAllFiltersIntent(targetConnectURL));
   }, [dispatch, automatedAnalysisDeleteAllFiltersIntent, targetConnectURL]);
 
-  const onScoreInput = React.useCallback(
-    (score) => {
+  const onScoreInput = React.useCallback((score) => {
       updateFilters(targetConnectURL, { filterKey: 'Score', filterValue: score });
-    },
-    [updateFilters, targetConnectURL]
-  );
+  }, [updateFilters, targetConnectURL]);
 
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
@@ -488,21 +492,15 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     }
     return (
       <TextContent>
-        <Text component={TextVariants.p}>
-          {(usingArchivedReport ? 'Showing archived report from ' : 'Showing cached report from ') + `from ${reportStalenessTimer} ${reportStalenessTimerUnits} ago. `} 
+        <Text className="stale-report-text" component={TextVariants.p}>
+          {(usingArchivedReport ? 'Showing archived report from ' : 'Showing cached report from ') + `from ${reportStalenessTimer} ${reportStalenessTimerUnits} ago.`}
           <Tooltip content={(usingArchivedReport ? 'Automatically' : 'Clear cached report and automatically') + ' create active recording for updated analysis.'}>
-            <Button variant="control" isInline isSmall icon={<PlusCircleIcon />} onClick={usingArchivedReport ? startProfilingRecording : clearCachedReports} />
+            <Button variant="plain" isInline isSmall icon={<PlusCircleIcon />} onClick={usingArchivedReport ? startProfilingRecording : clearCacheStartRecording} />
           </Tooltip>
-
-          {!usingArchivedReport && 
-            <Tooltip content={"Clear report cache."}>
-              <Button variant="control" isInline isSmall icon={<TrashIcon />} onClick={clearAnalysis} />  
-            </Tooltip>
-          }
         </Text>
       </TextContent>
     );
-  }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits, clearCachedReports, clearAnalysis, startProfilingRecording]);
+  }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits, clearCacheStartRecording, startProfilingRecording]);
 
   const toolbar = React.useMemo(() => {
     if (isError) {
@@ -510,42 +508,50 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     }
     return (
       <Toolbar
-      id="automated-analysis-toolbar"
-      aria-label="automated-analysis-toolbar"
-      clearAllFilters={handleClearFilters}
-      clearFiltersButtonText="Clear"
-      isFullHeight
-    >          
-      <ToolbarContent>
-        <AutomatedAnalysisFilters 
-            target={targetConnectURL}
-            evaluations={categorizedEvaluation} 
-            filters={targetAutomatedAnalysisFilters} 
-            updateFilters={updateFilters}
-        />
-        <ToolbarGroup>
-          <ToolbarItem>
-            <Button
-              isSmall
-              isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
-              aria-label="Refresh automated analysis"
-              onClick={generateReport}
-              variant="control"
-              icon={<Spinner2Icon />}
-            />
-          </ToolbarItem>
-          <ToolbarItem>
-            <Checkbox 
-              label="Show N/A scores"
-              isChecked={showNAScores}
-              onChange={handleNAScoreChange}
-              id="show-na-scores"
-              name="show-na-scores"
-            />
-          </ToolbarItem>
-        </ToolbarGroup>
-      </ToolbarContent>
-    </Toolbar>
+        id="automated-analysis-toolbar"
+        aria-label="automated-analysis-toolbar"
+        clearAllFilters={handleClearFilters}
+        clearFiltersButtonText="Clear"
+        isFullHeight
+      >          
+        <ToolbarContent>
+          <AutomatedAnalysisFilters 
+              target={targetConnectURL}
+              evaluations={categorizedEvaluation} 
+              filters={targetAutomatedAnalysisFilters} 
+              updateFilters={updateFilters}
+          />
+          <ToolbarGroup>
+            <ToolbarItem>
+              <Button
+                isSmall
+                isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
+                aria-label="Refresh automated analysis"
+                onClick={generateReport}
+                variant="control"
+                icon={<Spinner2Icon />}
+              />
+              <Button
+                isSmall
+                isAriaDisabled={isLoading || usingArchivedReport}
+                aria-label="Delete automated analysis"
+                onClick={clearAnalysis}
+                variant="control"
+                icon={<TrashIcon />}
+              />
+            </ToolbarItem>
+            <ToolbarItem>
+              <Checkbox 
+                label="Show N/A scores"
+                isChecked={showNAScores}
+                onChange={handleNAScoreChange}
+                id="show-na-scores"
+                name="show-na-scores"
+              />
+            </ToolbarItem>
+          </ToolbarGroup>
+        </ToolbarContent>
+      </Toolbar>
     );
   }, [isLoading, isError, showNAScores, targetConnectURL, categorizedEvaluation, targetAutomatedAnalysisFilters, generateReport, handleClearFilters, handleNAScoreChange, updateFilters]);
 
@@ -591,7 +597,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
             {toolbar}
           </StackItem>
           <StackItem className='automated-analysis-score-filter-stack-item'> 
-              <AutomatedAnalysisScoreFilter onChange={onScoreInput}></AutomatedAnalysisScoreFilter>
+            { isError ? null : <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL} onChange={onScoreInput}> </AutomatedAnalysisScoreFilter> }
           </StackItem>
           <StackItem>
             <CardBody isFilled={true}>

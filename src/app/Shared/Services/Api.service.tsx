@@ -1249,13 +1249,6 @@ export interface ActiveRecording extends Omit<ArchivedRecording, 'size' | 'archi
   maxAge: number;
 }
 
-export enum AutomatedAnalysisScoreState {
-  NA = 'NA',
-  OK = 'OK',
-  WARNING = 'WARNING',
-  CRITICAL = 'CRITICAL',
-}
-
 export enum RecordingState {
   STOPPED = 'STOPPED',
   STARTING = 'STARTING',

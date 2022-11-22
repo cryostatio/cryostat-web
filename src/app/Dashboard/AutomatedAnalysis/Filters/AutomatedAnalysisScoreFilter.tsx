@@ -38,11 +38,12 @@
 
 import React, { CSSProperties } from 'react';
 import { Button, Checkbox, Dropdown, DropdownItem, DropdownToggle, Gallery, GalleryItem, Level, LevelItem, Select, SelectOption, SelectVariant, Slider, Stack, StackItem, Text, TextContent, TextVariants } from '@patternfly/react-core';
-import { AutomatedAnalysisScoreState } from '@app/Shared/Services/Api.service';
 import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD } from '@app/Shared/Services/Report.service';
-import { MinusIcon } from '@patternfly/react-icons';
+import { useSelector } from 'react-redux';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 
 export interface AutomatedAnalysisScoreFilterProps {
+  targetConnectUrl: string;
   onChange: (value: number) => void;
 }
 
@@ -50,24 +51,31 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
   const [value, setValue] = React.useState<number>(100);
   const [inputValue, setInputValue] = React.useState<number>(100);
 
+  const currentScore = useSelector((state: RootState) => {
+    const filters = state.automatedAnalysisFilters.list;
+    if (!filters.length) return 100; // Target is not yet loaded
+    return filters[0].filters.Score
+  });
+
   const steps = [
     { value: 0, label: '0' },
     { value: ORANGE_SCORE_THRESHOLD, label: String(ORANGE_SCORE_THRESHOLD) },
     { value: RED_SCORE_THRESHOLD, label: String(RED_SCORE_THRESHOLD) },
     { value: 100, label: '100' },
-];
+  ];
+
+  React.useEffect(() => {
+    setValue(currentScore);
+    setInputValue(currentScore);
+  }, [currentScore]);
 
   const on100Reset = React.useCallback(() => {
-    setValue(100);
-    setInputValue(100);
     props.onChange(100);
-  }, [setValue, setInputValue, props.onChange]);
+  }, [props.onChange]);
 
   const on0Reset = React.useCallback(() => {
-    setValue(0);
-    setInputValue(0);
     props.onChange(0);
-  }, [setValue, setInputValue, props.onChange]);
+  }, [props.onChange]);
 
   const onChange = React.useCallback((value, inputValue) => {
     value = Math.floor(value);
@@ -83,10 +91,8 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
           newValue = Math.floor(inputValue);
         }
       }
-    setValue(newValue);
-    setInputValue(newValue);
     props.onChange(newValue);
-  }, [setValue, setInputValue, props.onChange]);
+  }, [props.onChange]);
 
   const className = React.useMemo(() => {
     if (value >= 75) {
@@ -129,6 +135,5 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
         max={100} 
       />
     </>
-
   );
 };
