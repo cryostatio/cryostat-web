@@ -95,7 +95,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
   const [types, setTypes] = React.useState([] as EventType[]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [perPage, setPerPage] = React.useState(10);
-  const [openRow, setOpenRow] = React.useState<number | undefined>(undefined);
+  const [openRows, setOpenRows] = React.useState<number[]>([]);
   const [filterText, setFilterText] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -177,43 +177,42 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
       rows.push({
         eventType: t,
         cellContents: [t.name, t.typeId, t.description, getCategoryString(t)],
-        isExpanded: hashCode(t.typeId) === openRow,
+        isExpanded: openRows.some((id) => id === hashCode(t.typeId)),
         children: <Text>{child}</Text>,
       });
     });
 
     return rows;
-  }, [currentPage, perPage, filterTypesByText, openRow]);
+  }, [currentPage, perPage, filterTypesByText, openRows]);
 
   const onCurrentPage = React.useCallback(
     (_, currentPage: number) => {
-      setOpenRow(undefined);
       setCurrentPage(currentPage);
     },
-    [setOpenRow, setCurrentPage]
+    [setCurrentPage]
   );
 
   const onPerPage = React.useCallback(
     (_, perPage: number) => {
       const offset = (currentPage - 1) * prevPerPage.current;
       prevPerPage.current = perPage;
-      setOpenRow(undefined);
       setPerPage(perPage);
       setCurrentPage(1 + Math.floor(offset / perPage));
     },
-    [currentPage, prevPerPage, setOpenRow, setPerPage, setCurrentPage]
+    [currentPage, prevPerPage, setPerPage, setCurrentPage]
   );
 
   const onToggle = React.useCallback(
     (t: EventType, index: number) => {
-      setOpenRow((old) => {
-        if (hashCode(t.typeId) === old) {
-          return undefined;
+      setOpenRows((old) => {
+        const typeId = hashCode(t.typeId);
+        if (old.some((id) => id === typeId)) {
+          return old.filter((id) => id !== typeId);
         }
-        return hashCode(t.typeId);
+        return [...old, typeId];
       });
     },
-    [setOpenRow]
+    [setOpenRows]
   );
 
   const onFilterTextChange = React.useCallback(
