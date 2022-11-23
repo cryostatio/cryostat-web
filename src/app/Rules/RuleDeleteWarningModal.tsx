@@ -43,7 +43,7 @@ import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface RuleDeleteWarningProps extends DeleteWarningProps {
-  rule: string;
+  rule?: string;
   clean: boolean;
   setClean: React.Dispatch<React.SetStateAction<boolean>>;
 }
