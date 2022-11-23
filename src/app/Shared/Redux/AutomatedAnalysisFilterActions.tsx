@@ -40,6 +40,7 @@ import { createAction } from '@reduxjs/toolkit';
 
 // Common action string format: "resource(s)/action"
 export enum AutomatedAnalysisFilterAction {
+  GLOBAL_FILTER_ADD = 'automated-analysis-global-filter/add',
   FILTER_ADD = 'automated-analysis-filter/add',
   FILTER_DELETE = 'automated-analysis-filter/delete',
   FILTER_DELETE_ALL = 'automated-analysis-filter/delete_all', // Delete all filters in all categories
@@ -54,6 +55,16 @@ export interface AutomatedAnalysisFilterActionPayload {
   category?: string;
   filter?: any;
 }
+
+export const automatedAnalysisAddGlobalFilterIntent = createAction(
+  AutomatedAnalysisFilterAction.GLOBAL_FILTER_ADD,
+  (category: string, filter: any) => ({
+    payload: {
+      category: category,
+      filter: filter,
+    },
+  })
+);
 
 export const automatedAnalysisAddFilterIntent = createAction(
   AutomatedAnalysisFilterAction.FILTER_ADD,
@@ -106,14 +117,20 @@ export const automatedAnalysisUpdateCategoryIntent = createAction(
   })
 );
 
-export const automatedAnalysisAddTargetIntent = createAction(AutomatedAnalysisFilterAction.TARGET_ADD, (target: string) => ({
-  payload: {
-    target: target,
-  } as AutomatedAnalysisFilterActionPayload,
-}));
+export const automatedAnalysisAddTargetIntent = createAction(
+  AutomatedAnalysisFilterAction.TARGET_ADD,
+  (target: string) => ({
+    payload: {
+      target: target,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);
 
-export const automatedAnalysisDeleteTargetIntent = createAction(AutomatedAnalysisFilterAction.TARGET_DELETE, (target: string) => ({
-  payload: {
-    target: target,
-  } as AutomatedAnalysisFilterActionPayload,
-}));
+export const automatedAnalysisDeleteTargetIntent = createAction(
+  AutomatedAnalysisFilterAction.TARGET_DELETE,
+  (target: string) => ({
+    payload: {
+      target: target,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);

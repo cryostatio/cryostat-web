@@ -61,13 +61,12 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
   const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
   const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
 
-
   const alertStyle = {
     default: popoverStyles.modifiers.default,
     info: popoverStyles.modifiers.info,
     success: popoverStyles.modifiers.success,
     warning: popoverStyles.modifiers.warning,
-    danger: popoverStyles.modifiers.danger
+    danger: popoverStyles.modifiers.danger,
   };
 
   const style = React.useMemo(() => {
@@ -94,13 +93,13 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
   }, [label.score]);
 
   const alertPopoverVariant = React.useMemo(() => {
-    return label.score == -1 
+    return label.score == -1
       ? 'default'
       : label.score < ORANGE_SCORE_THRESHOLD
       ? 'success'
       : label.score < RED_SCORE_THRESHOLD
       ? 'warning'
-      : 'danger'
+      : 'danger';
   }, [label.score]);
 
   return (
@@ -114,8 +113,13 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
       shouldClose={() => setIsDescriptionVisible(false)}
       key={`${clickableAutomatedAnalysisKey}-popover-${label.name}`}
       bodyContent={
-        <div className={`${clickableAutomatedAnalysisKey}-popover-body`} key={`${clickableAutomatedAnalysisKey}-popover-body-${label.name}`}>
-          <p className={css(alertStyle[alertPopoverVariant], `${clickableAutomatedAnalysisKey}-popover-body-score`)}>{label.score == -1 ? 'N/A' : label.score.toFixed(1)}</p>
+        <div
+          className={`${clickableAutomatedAnalysisKey}-popover-body`}
+          key={`${clickableAutomatedAnalysisKey}-popover-body-${label.name}`}
+        >
+          <p className={css(alertStyle[alertPopoverVariant], `${clickableAutomatedAnalysisKey}-popover-body-score`)}>
+            {label.score == -1 ? 'N/A' : label.score.toFixed(1)}
+          </p>
           <p>{label.description}</p>
         </div>
       }

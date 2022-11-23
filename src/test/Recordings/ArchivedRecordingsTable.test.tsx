@@ -185,8 +185,15 @@ describe('<ArchivedRecordingsTable />', () => {
         ],
       },
       automatedAnalysisFilters: {
-        list: []
-      }
+        state: {
+          targetFilters: [],
+          globalFilters: {
+            filters: {
+              Score: 100,
+            },
+          },
+        },
+      },
     };
   });
 

@@ -164,12 +164,12 @@ export class ReportService {
       return {
         report: JSON.parse(stored),
         timestamp: storedTimestamp || 0,
-      }
+      };
     }
     return {
       report: [],
       timestamp: 0,
-    }
+    };
   }
 
   delete(recording: Recording): void {

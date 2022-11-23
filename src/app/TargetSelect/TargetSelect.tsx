@@ -140,7 +140,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   React.useEffect(() => {
     addSubscription(
       context.targets.targets().subscribe((targets) => {
-        // Target Discovery notifications will trigger an event here.        
+        // Target Discovery notifications will trigger an event here.
         setTargets(targets);
         selectTargetFromCache(targets);
       })

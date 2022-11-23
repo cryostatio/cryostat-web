@@ -194,8 +194,15 @@ describe('<ActiveRecordingsTable />', () => {
         ],
       },
       automatedAnalysisFilters: {
-        list: []
-      }
+        state: {
+          targetFilters: [],
+          globalFilters: {
+            filters: {
+              Score: 100,
+            },
+          },
+        },
+      },
     };
   });
 

@@ -37,25 +37,44 @@
  */
 
 import React, { CSSProperties } from 'react';
-import { Button, Checkbox, Dropdown, DropdownItem, DropdownToggle, Gallery, GalleryItem, Level, LevelItem, Select, SelectOption, SelectVariant, Slider, Stack, StackItem, Text, TextContent, TextVariants } from '@patternfly/react-core';
+import {
+  Button,
+  Checkbox,
+  Dropdown,
+  DropdownItem,
+  DropdownToggle,
+  Gallery,
+  GalleryItem,
+  Level,
+  LevelItem,
+  Select,
+  SelectOption,
+  SelectVariant,
+  Slider,
+  Stack,
+  StackItem,
+  Text,
+  TextContent,
+  TextVariants,
+} from '@patternfly/react-core';
 import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD } from '@app/Shared/Services/Report.service';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { automatedAnalysisAddGlobalFilterIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 
 export interface AutomatedAnalysisScoreFilterProps {
   targetConnectUrl: string;
-  onChange: (value: number) => void;
 }
 
 export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnalysisScoreFilterProps> = (props) => {
-  const [value, setValue] = React.useState<number>(100);
-  const [inputValue, setInputValue] = React.useState<number>(100);
-
+  const dispatch = useDispatch();
   const currentScore = useSelector((state: RootState) => {
-    const filters = state.automatedAnalysisFilters.list;
-    if (!filters.length) return 100; // Target is not yet loaded
-    return filters[0].filters.Score
+    const filters = state.automatedAnalysisFilters.state.globalFilters.filters;
+    if (!filters) return 0; // Target is not yet loaded
+    return filters.Score;
   });
+
+  const [value, setValue] = React.useState<number>(currentScore);
 
   const steps = [
     { value: 0, label: '0' },
@@ -64,23 +83,21 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
     { value: 100, label: '100' },
   ];
 
-  React.useEffect(() => {
-    setValue(currentScore);
-    setInputValue(currentScore);
-  }, [currentScore]);
-
   const on100Reset = React.useCallback(() => {
-    props.onChange(100);
-  }, [props.onChange]);
+    setValue(100);
+    dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 100));
+  }, [dispatch, setValue]);
 
   const on0Reset = React.useCallback(() => {
-    props.onChange(0);
-  }, [props.onChange]);
+    setValue(0);
+    dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 0));
+  }, [dispatch, setValue]);
 
-  const onChange = React.useCallback((value, inputValue) => {
-    value = Math.floor(value);
-    let newValue;
-      if (inputValue === undefined) { 
+  const onChange = React.useCallback(
+    (value, inputValue) => {
+      value = Math.floor(value);
+      let newValue;
+      if (inputValue === undefined) {
         newValue = value;
       } else {
         if (inputValue > 100) {
@@ -91,48 +108,53 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
           newValue = Math.floor(inputValue);
         }
       }
-    props.onChange(newValue);
-  }, [props.onChange]);
+      setValue(newValue);
+      dispatch(automatedAnalysisAddGlobalFilterIntent('Score', newValue));
+    },
+    [setValue, dispatch]
+  );
 
   const className = React.useMemo(() => {
     if (value >= 75) {
-      return "automated-analysis-score-filter-slider automated-analysis-score-filter-slider-critical";
-    }
-    else if (value >= 50) {
-      return "automated-analysis-score-filter-slider automated-analysis-score-filter-slider-warning";
-    }
-    else {
-      return "automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok";
+      return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-critical';
+    } else if (value >= 50) {
+      return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-warning';
+    } else {
+      return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok';
     }
   }, [value]);
 
   return (
     <>
       <Text component={TextVariants.small}>Only showing analysis with scores ≥ {value}</Text>
-      <Slider 
-        leftActions={(
+      <Slider
+        leftActions={
           <Level hasGutter>
             <LevelItem>
               <Text component={TextVariants.small}>Reset:</Text>
             </LevelItem>
             <LevelItem>
-              <Button isSmall isInline variant="link" aria-label="Reset score to 0" onClick={on0Reset}>0</Button>
+              <Button isSmall isInline variant="link" aria-label="Reset score to 0" onClick={on0Reset}>
+                0
+              </Button>
             </LevelItem>
             <LevelItem>
-              <Button isSmall isInline variant="link" aria-label="Reset score to 100" onClick={on100Reset}>100</Button>
+              <Button isSmall isInline variant="link" aria-label="Reset score to 100" onClick={on100Reset}>
+                100
+              </Button>
             </LevelItem>
           </Level>
-        )}
+        }
         className={className}
         areCustomStepsContinuous
-        customSteps={steps} 
+        customSteps={steps}
         isInputVisible
         inputLabel="Score"
-        inputValue={inputValue}
-        value={value}  
-        onChange={onChange} 
-        min={0} 
-        max={100} 
+        inputValue={value}
+        value={value}
+        onChange={onChange}
+        min={0}
+        max={100}
       />
     </>
   );

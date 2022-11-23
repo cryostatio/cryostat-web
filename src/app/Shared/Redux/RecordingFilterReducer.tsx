@@ -81,24 +81,24 @@ export const createOrUpdateRecordingFilter = (
   old: RecordingFiltersCategories,
   { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
 ): RecordingFiltersCategories => {
-  let newfilterValues: any[];
+  let newFilterValues: any[];
   if (!old[filterKey]) {
-    newfilterValues = [filterValue];
+    newFilterValues = [filterValue];
   } else {
     const oldFilterValues = old[filterKey] as any[];
     if (deleted) {
       if (deleteOptions && deleteOptions.all) {
-        newfilterValues = [];
+        newFilterValues = [];
       } else {
-        newfilterValues = oldFilterValues.filter((val) => val !== filterValue);
+        newFilterValues = oldFilterValues.filter((val) => val !== filterValue);
       }
     } else {
-      newfilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+      newFilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
     }
   }
 
   const newFilters = { ...old };
-  newFilters[filterKey] = newfilterValues;
+  newFilters[filterKey] = newFilterValues;
   return newFilters;
 };
 

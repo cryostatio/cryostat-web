@@ -143,8 +143,15 @@ describe('<RecordingFilters />', () => {
         ],
       },
       automatedAnalysisFilters: {
-        list: []
-      }
+        state: {
+          targetFilters: [],
+          globalFilters: {
+            filters: {
+              Score: 100,
+            },
+          },
+        },
+      },
     };
   });
 

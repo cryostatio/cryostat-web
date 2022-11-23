@@ -36,59 +36,89 @@
  * SOFTWARE.
  */
 
-import { AutomatedAnalysisFiltersCategories, emptyAutomatedAnalysisFilters } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
-  import { getFromLocalStorage } from '@app/utils/LocalStorage';
-  import { createReducer } from '@reduxjs/toolkit';
-  import { WritableDraft } from 'immer/dist/internal';
-import { automatedAnalysisAddFilterIntent, automatedAnalysisAddTargetIntent, automatedAnalysisDeleteAllFiltersIntent, automatedAnalysisDeleteCategoryFiltersIntent, automatedAnalysisDeleteFilterIntent, automatedAnalysisDeleteTargetIntent, automatedAnalysisUpdateCategoryIntent } from './AutomatedAnalysisFilterActions';
+import {
+  AutomatedAnalysisFiltersCategories,
+  AutomatedAnalysisGlobalFiltersCategories,
+  emptyAutomatedAnalysisFilters,
+} from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { createReducer } from '@reduxjs/toolkit';
+import { WritableDraft } from 'immer/dist/internal';
+import {
+  automatedAnalysisAddFilterIntent,
+  automatedAnalysisAddGlobalFilterIntent,
+  automatedAnalysisAddTargetIntent,
+  automatedAnalysisDeleteAllFiltersIntent,
+  automatedAnalysisDeleteCategoryFiltersIntent,
+  automatedAnalysisDeleteFilterIntent,
+  automatedAnalysisDeleteTargetIntent,
+  automatedAnalysisUpdateCategoryIntent,
+} from './AutomatedAnalysisFilterActions';
 import { UpdateFilterOptions } from './RecordingFilterReducer';
 
-  export interface TargetAutomatedAnalysisFilters {
-    target: string; // connectURL
-    selectedCategory?: string;
-    filters: AutomatedAnalysisFiltersCategories;
+export interface AutomatedAnalysisFilterState {
+  targetFilters: TargetAutomatedAnalysisFilters[];
+  globalFilters: TargetAutomatedAnalysisGlobalFilters;
+}
+export interface TargetAutomatedAnalysisGlobalFilters {
+  filters: AutomatedAnalysisGlobalFiltersCategories;
+}
+export interface TargetAutomatedAnalysisFilters {
+  target: string; // connectURL
+  selectedCategory?: string;
+  filters: AutomatedAnalysisFiltersCategories;
+}
+
+export const createOrUpdateAutomatedAnalysisGlobalFilter = (
+  old: AutomatedAnalysisGlobalFiltersCategories,
+  { filterValue, filterKey }
+): AutomatedAnalysisGlobalFiltersCategories => {
+  const newFilters = { ...old };
+  newFilters[filterKey] = filterValue;
+  return newFilters;
 };
-  
-  export const createOrUpdateAutomatedAnalysisFilter = (
-    old: AutomatedAnalysisFiltersCategories,
-    { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
-  ): AutomatedAnalysisFiltersCategories => {
-    let newFilterValues: any[];
-    
-    if (filterKey == 'Score') {
-      const newFilters = { ...old };
-      newFilters['Score'] = filterValue;
-      return newFilters;
-    }
-    if (!old[filterKey]) {
-      newFilterValues = [filterValue];
-    } else {
-      const oldFilterValues = old[filterKey] as any[];
-      if (deleted) {
-        if (deleteOptions && deleteOptions.all) {
-          newFilterValues = [];
-        } else {
-          newFilterValues = oldFilterValues.filter((val) => val !== filterValue);
-        }
+
+export const createOrUpdateAutomatedAnalysisFilter = (
+  old: AutomatedAnalysisFiltersCategories,
+  { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
+): AutomatedAnalysisFiltersCategories => {
+  let newFilterValues: any[];
+
+  if (!old[filterKey]) {
+    newFilterValues = [filterValue];
+  } else {
+    const oldFilterValues = old[filterKey] as any[];
+    if (deleted) {
+      if (deleteOptions && deleteOptions.all) {
+        newFilterValues = [];
       } else {
-        newFilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
+        newFilterValues = oldFilterValues.filter((val) => val !== filterValue);
       }
+    } else {
+      newFilterValues = Array.from(new Set([...oldFilterValues, filterValue]));
     }
-  
-    const newFilters = { ...old };
-    newFilters[filterKey] = newFilterValues;
-    return newFilters;
-  };
-  
-  export const getAutomatedAnalysisFilter = (
-    state: WritableDraft<{ list: TargetAutomatedAnalysisFilters[] }>,
-    target: string
-  ): TargetAutomatedAnalysisFilters => {
-    const targetFilter = state.list.filter((targetFilters) => targetFilters.target === target);
-    return targetFilter.length > 0 ? targetFilter[0] : createEmptyAutomatedAnalysisFilters(target);
-  };
-  
-  export const createEmptyAutomatedAnalysisFilters = (target: string) =>
+  }
+
+  const newFilters = { ...old };
+  newFilters[filterKey] = newFilterValues;
+  return newFilters;
+};
+
+export const getAutomatedAnalysisGlobalFilter = (
+  state: WritableDraft<{ globalFilters: TargetAutomatedAnalysisGlobalFilters }>
+) => {
+  return state.globalFilters;
+};
+
+export const getAutomatedAnalysisFilter = (
+  state: WritableDraft<{ targetFilters: TargetAutomatedAnalysisFilters[] }>,
+  target: string
+): TargetAutomatedAnalysisFilters => {
+  const targetFilter = state.targetFilters.filter((targetFilters) => targetFilters.target === target);
+  return targetFilter.length > 0 ? targetFilter[0] : createEmptyAutomatedAnalysisFilters(target);
+};
+
+export const createEmptyAutomatedAnalysisFilters = (target: string) =>
   ({
     target: target,
     selectedCategory: 'Name',
@@ -98,84 +128,110 @@ import { UpdateFilterOptions } from './RecordingFilterReducer';
 export const deleteAllAutomatedAnalysisFilters = (automatedAnalysisFilter: TargetAutomatedAnalysisFilters) => {
   return {
     ...automatedAnalysisFilter,
-      selectedCategory: automatedAnalysisFilter.selectedCategory,
-      filters: emptyAutomatedAnalysisFilters,
+    selectedCategory: automatedAnalysisFilter.selectedCategory,
+    filters: emptyAutomatedAnalysisFilters,
   };
 };
-  
-  // Initial states are loaded from local storage if there are any
-  const initialState = {
-    list: getFromLocalStorage('AUTOMATED_ANALYSIS_FILTERS', []) as TargetAutomatedAnalysisFilters[],
-  };
-  
-  export const automatedAnalysisFilterReducer = createReducer(initialState, (builder) => {
-    builder
-      .addCase(automatedAnalysisAddFilterIntent, (state, { payload }) => {
-        const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state, payload.target);
-        let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
-            ...oldAutomatedAnalysisFilter,
-              // do not change selectedCategory if score filter (since this changes the toolbar category)
-              selectedCategory: payload.category == 'Score' ? oldAutomatedAnalysisFilter.selectedCategory : payload.category,
-              filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
-                filterKey: payload.category!,
-                filterValue: payload.filter,
-              }),
-          };
-        state.list = state.list.filter((targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target);
-        state.list.push(newAutomatedAnalysisFilter);
-      })
-      .addCase(automatedAnalysisDeleteFilterIntent, (state, { payload }) => {
-        const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state, payload.target);
-  
-        let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
-            ...oldAutomatedAnalysisFilter,
-              selectedCategory: payload.category,
-              filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
-                filterKey: payload.category!,
-                filterValue: payload.filter,
-                deleted: true,
-              }),
-          };
 
-        state.list = state.list.filter((targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target);
-        state.list.push(newAutomatedAnalysisFilter);
-      })
-      .addCase(automatedAnalysisDeleteCategoryFiltersIntent, (state, { payload }) => {
-        const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state, payload.target);
-  
-        let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
-            ...oldAutomatedAnalysisFilter,
-              selectedCategory: payload.category,
-              filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
-                filterKey: payload.category!,
-                deleted: true,
-                deleteOptions: { all: true },
-              }),
-          };
-        state.list = state.list.filter((targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target);
-        state.list.push(newAutomatedAnalysisFilter);
-      })
-      .addCase(automatedAnalysisDeleteAllFiltersIntent, (state, { payload }) => {
-        const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state, payload.target);
-        const newAutomatedAnalysisFilter = deleteAllAutomatedAnalysisFilters(oldAutomatedAnalysisFilter);
-        state.list = state.list.filter((targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target);
-        state.list.push(newAutomatedAnalysisFilter);
-      })
-      .addCase(automatedAnalysisUpdateCategoryIntent, (state, { payload }) => {
-        const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state, payload.target);
-        const newAutomatedAnalysisFilter = { ...oldAutomatedAnalysisFilter };
+// Initial states are loaded from local storage if there are any
+const initialState = {
+  state: getFromLocalStorage('AUTOMATED_ANALYSIS_FILTERS', {
+    targetFilters: [],
+    globalFilters: { filters: { Score: 0 } },
+  }) as AutomatedAnalysisFilterState,
+};
 
-        newAutomatedAnalysisFilter.selectedCategory = payload.category;
-        
-        state.list = state.list.filter((targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target);
-        state.list.push(newAutomatedAnalysisFilter);
-      })
-      .addCase(automatedAnalysisAddTargetIntent, (state, { payload }) => {
-        const AutomatedAnalysisFilter = getAutomatedAnalysisFilter(state, payload.target);
-        state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
-        state.list.push(AutomatedAnalysisFilter);
-      })
-      .addCase(automatedAnalysisDeleteTargetIntent, (state, { payload }) => {
-        state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
-      });
-  });
+export const automatedAnalysisFilterReducer = createReducer(initialState, (builder) => {
+  builder
+    .addCase(automatedAnalysisAddGlobalFilterIntent, (state, { payload }) => {
+      const oldAutomatedAnalysisGlobalFilter = getAutomatedAnalysisGlobalFilter(state.state);
+      state.state.globalFilters = {
+        filters: createOrUpdateAutomatedAnalysisGlobalFilter(oldAutomatedAnalysisGlobalFilter.filters, {
+          filterKey: payload.category,
+          filterValue: payload.filter,
+        }),
+      };
+    })
+    .addCase(automatedAnalysisAddFilterIntent, (state, { payload }) => {
+      const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
+      let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
+        ...oldAutomatedAnalysisFilter,
+        // do not change selectedCategory if score filter (since this changes the toolbar category)
+        selectedCategory: payload.category,
+        filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
+          filterKey: payload.category!,
+          filterValue: payload.filter,
+        }),
+      };
+      state.state.targetFilters = state.state.targetFilters.filter(
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+      );
+      state.state.targetFilters.push(newAutomatedAnalysisFilter);
+    })
+    .addCase(automatedAnalysisDeleteFilterIntent, (state, { payload }) => {
+      const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
+
+      let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
+        ...oldAutomatedAnalysisFilter,
+        selectedCategory: payload.category,
+        filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
+          filterKey: payload.category!,
+          filterValue: payload.filter,
+          deleted: true,
+        }),
+      };
+
+      state.state.targetFilters = state.state.targetFilters.filter(
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+      );
+      state.state.targetFilters.push(newAutomatedAnalysisFilter);
+    })
+    .addCase(automatedAnalysisDeleteCategoryFiltersIntent, (state, { payload }) => {
+      const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
+
+      let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
+        ...oldAutomatedAnalysisFilter,
+        selectedCategory: payload.category,
+        filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
+          filterKey: payload.category!,
+          deleted: true,
+          deleteOptions: { all: true },
+        }),
+      };
+      state.state.targetFilters = state.state.targetFilters.filter(
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+      );
+      state.state.targetFilters.push(newAutomatedAnalysisFilter);
+    })
+    .addCase(automatedAnalysisDeleteAllFiltersIntent, (state, { payload }) => {
+      const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
+      const newAutomatedAnalysisFilter = deleteAllAutomatedAnalysisFilters(oldAutomatedAnalysisFilter);
+      state.state.targetFilters = state.state.targetFilters.filter(
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+      );
+      state.state.targetFilters.push(newAutomatedAnalysisFilter);
+    })
+    .addCase(automatedAnalysisUpdateCategoryIntent, (state, { payload }) => {
+      const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
+      const newAutomatedAnalysisFilter = { ...oldAutomatedAnalysisFilter };
+
+      newAutomatedAnalysisFilter.selectedCategory = payload.category;
+
+      state.state.targetFilters = state.state.targetFilters.filter(
+        (targetFilters) => targetFilters.target !== newAutomatedAnalysisFilter.target
+      );
+      state.state.targetFilters.push(newAutomatedAnalysisFilter);
+    })
+    .addCase(automatedAnalysisAddTargetIntent, (state, { payload }) => {
+      const AutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
+      state.state.targetFilters = state.state.targetFilters.filter(
+        (targetFilters) => targetFilters.target !== payload.target
+      );
+      state.state.targetFilters.push(AutomatedAnalysisFilter);
+    })
+    .addCase(automatedAnalysisDeleteTargetIntent, (state, { payload }) => {
+      state.state.targetFilters = state.state.targetFilters.filter(
+        (targetFilters) => targetFilters.target !== payload.target
+      );
+    });
+});
