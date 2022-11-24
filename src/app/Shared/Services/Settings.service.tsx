@@ -37,7 +37,7 @@
  */
 
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { defaultAutomatedAnalysisRecordingConfig } from '@app/Settings/AutomatedAnalysisConfig';
+import { AutomatedAnalysisRecordingConfig, defaultAutomatedAnalysisRecordingConfig } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
 
 enum StorageKeys {
@@ -48,12 +48,6 @@ enum StorageKeys {
   DeletionDialogsEnabled = 'deletion-dialogs-enabled',
   NotificationsEnabled = 'notifications-enabled',
   WebSocketDebounceMs = 'web-socket-debounce-ms',
-}
-
-export interface AutomatedAnalysisRecordingConfig {
-  templates: string;
-  maxSize: number;
-  maxAge: number;
 }
 
 export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
@@ -114,7 +108,7 @@ export class SettingsService {
   }
 
   setAutomatedAnalysisRecordingConfig(config: AutomatedAnalysisRecordingConfig): void {
-    window.localStorage.setItem('automated-analysis-recording-config', JSON.stringify(config));
+    window.localStorage.setItem(StorageKeys.AutomatedAnalysisRecordingConfig, JSON.stringify(config));
   }
 
   deletionDialogsEnabled(): Map<DeleteWarningType, boolean> {

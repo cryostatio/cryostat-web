@@ -37,8 +37,8 @@
  */
 
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
+import { AutomatedAnalysisRecordingConfig, defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import {
   DescriptionList,
@@ -52,12 +52,6 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { UserSetting } from './Settings';
-
-export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
-  templates: 'template=Continuous,type=TARGET',
-  maxSize: 2048,
-  maxAge: 0,
-};
 
 const Component = () => {
   const context = React.useContext(ServiceContext);

@@ -49,6 +49,7 @@ import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import {
   ArchivedRecording,
   automatedAnalysisConfigToRecordingAttributes,
+  automatedAnalysisRecordingName,
   Recording,
 } from '@app/Shared/Services/Api.service';
 import {
@@ -100,8 +101,6 @@ import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFi
 interface AutomatedAnalysisCardProps {
   pageTitle: string;
 }
-
-export const automatedAnalysisRecordingName = 'automated-analysis';
 
 export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);

@@ -72,6 +72,10 @@ const mockRecordingOptions: RecordingOptions = {
   maxSize: 0,
 };
 
+const mockResponse: Response = {
+  ok: true,
+} as Response;
+
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest
   .spyOn(defaultServices.api, 'doGet')
@@ -116,7 +120,7 @@ describe('<CustomRecordingForm />', () => {
   });
 
   it('should create recording when form is filled and create is clicked', async () => {
-    const onSubmitSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of());
+    const onSubmitSpy = jest.spyOn(defaultServices.api, 'createRecording').mockReturnValue(of(mockResponse));
     const { user } = renderWithServiceContext(<CustomRecordingForm />);
 
     const nameInput = screen.getByLabelText('Name *');

@@ -42,6 +42,8 @@ import { cleanup } from '@testing-library/react';
 import { Text } from '@patternfly/react-core';
 import { Settings } from '@app/Settings/Settings';
 
+// jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {
     title: 'Notification Control Title',

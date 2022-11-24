@@ -37,9 +37,8 @@
  */
 import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { RecordingAttributes, RecordingOptions } from '@app/Shared/Services/Api.service';
+import { AutomatedAnalysisRecordingConfig, automatedAnalysisRecordingName, RecordingAttributes, RecordingOptions } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Settings.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -62,8 +61,6 @@ import {
 import { CogIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { concatMap, filter, first, mergeMap, toArray } from 'rxjs';
-import { automatedAnalysisRecordingName } from './AutomatedAnalysisCard';
-
 interface AutomatedAnalysisConfigFormProps {
   onCreate?: () => void;
   onSave?: () => void;

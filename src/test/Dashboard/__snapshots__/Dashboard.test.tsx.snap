@@ -43,7 +43,19 @@ exports[`<Dashboard /> renders correctly 1`] = `
         </div>
         <div
           className="pf-l-grid__item"
-        />
+        >
+          <div
+            className="pf-l-grid pf-m-gutter"
+          >
+            <div
+              className="pf-l-grid__item pf-m-6-col"
+            >
+              <div>
+                Automated Analysis Card
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
