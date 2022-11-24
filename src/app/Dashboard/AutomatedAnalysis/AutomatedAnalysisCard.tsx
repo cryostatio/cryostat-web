@@ -42,29 +42,36 @@ import {
   automatedAnalysisAddTargetIntent,
   automatedAnalysisDeleteAllFiltersIntent,
   automatedAnalysisDeleteCategoryFiltersIntent,
-  automatedAnalysisDeleteFilterIntent
+  automatedAnalysisDeleteFilterIntent,
 } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { ArchivedRecording, automatedAnalysisConfigToRecordingAttributes, Recording, RecordingAttributes } from '@app/Shared/Services/Api.service';
+import {
+  ArchivedRecording,
+  automatedAnalysisConfigToRecordingAttributes,
+  Recording,
+} from '@app/Shared/Services/Api.service';
 import {
   FAILED_REPORT_MESSAGE,
   INTERNAL_ERROR_MESSAGE,
-  NO_RECORDINGS_MESSAGE, RECORDING_FAILURE_MESSAGE,
-  RuleEvaluation
+  NO_RECORDINGS_MESSAGE,
+  RECORDING_FAILURE_MESSAGE,
+  RuleEvaluation,
 } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
-  Card, CardBody,
+  Card,
+  CardBody,
   CardExpandableContent,
   CardHeader,
   CardTitle,
-  Checkbox, Grid,
+  Checkbox,
+  Grid,
   GridItem,
-  LabelGroup, Stack,
+  LabelGroup,
+  Stack,
   StackItem,
   Text,
   TextContent,
@@ -73,20 +80,20 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Tooltip
+  Tooltip,
 } from '@patternfly/react-core';
 import { PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { first, map, tap } from 'rxjs';
+import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import {
   AutomatedAnalysisFilters,
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
   emptyAutomatedAnalysisFilters,
-  filterAutomatedAnalysis
+  filterAutomatedAnalysis,
 } from './AutomatedAnalysisFilters';
-import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 
@@ -370,7 +377,14 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         }
       })
     );
-  }, [addSubscription, context.api, context.settings, context.settings.automatedAnalysisRecordingConfig, generateReport, handleStateErrors]);
+  }, [
+    addSubscription,
+    context.api,
+    context.settings,
+    context.settings.automatedAnalysisRecordingConfig,
+    generateReport,
+    handleStateErrors,
+  ]);
 
   const handleErrorView = React.useCallback((): [string, () => void] => {
     if (errorMessage === NO_RECORDINGS_MESSAGE) {

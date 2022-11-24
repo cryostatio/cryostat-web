@@ -39,10 +39,7 @@
 import { automatedAnalysisAddGlobalFilterIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD } from '@app/Shared/Services/Report.service';
-import {
-  Button, Level,
-  LevelItem, Slider, Text, TextVariants
-} from '@patternfly/react-core';
+import { Button, Level, LevelItem, Slider, Text, TextVariants } from '@patternfly/react-core';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

@@ -36,73 +36,83 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
-import { Checkbox } from '@patternfly/react-core';
+import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { DurationPicker } from '@app/DurationPicker/DurationPicker';
-import { UserSetting } from './Settings';
 import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Settings.service';
+import { TargetView } from '@app/TargetView/TargetView';
+import {
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  ExpandableSection,
+  Stack,
+  StackItem,
+  Title,
+} from '@patternfly/react-core';
+import * as React from 'react';
+import { UserSetting } from './Settings';
 
 export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
-    templates: 'template=Continuous,type=TARGET',
-    maxSize: 2048,
-    maxAge: 0,
-}
+  templates: 'template=Continuous,type=TARGET',
+  maxSize: 2048,
+  maxAge: 0,
+};
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
-  const [state, setState] = React.useState(defaultAutomatedAnalysisRecordingConfig);
+  const [config, setConfig] = React.useState<AutomatedAnalysisRecordingConfig>(defaultAutomatedAnalysisRecordingConfig);
+  const [expanded, setExpanded] = React.useState(false);
 
-  React.useLayoutEffect(() => {
-    setState(context.settings.automatedAnalysisRecordingConfig().);
-  }, [setState, context.settings]);
+  React.useEffect(() => {
+    const c = context.settings.automatedAnalysisRecordingConfig();
+    setConfig(c);
+  }, []);
 
-  const handleAutoRefreshEnabledChange = React.useCallback(
-    (autoRefreshEnabled) => {
-      setState((state) => ({ ...state, autoRefreshEnabled }));
-      context.settings.setAutoRefreshEnabled(autoRefreshEnabled);
-    },
-    [setState, context.settings]
-  );
-
-  const handleAutoRefreshPeriodChange = React.useCallback(
-    (autoRefreshPeriod) => {
-      setState((state) => ({ ...state, autoRefreshPeriod }));
-      context.settings.setAutoRefreshPeriod(autoRefreshPeriod);
-    },
-    [setState, context.settings]
-  );
-
-  const handleAutoRefreshUnitScalarChange = React.useCallback(
-    (autoRefreshUnits) => {
-      setState((state) => ({ ...state, autoRefreshUnits }));
-      context.settings.setAutoRefreshUnits(autoRefreshUnits);
-    },
-    [setState, context.settings]
-  );
+  const onSave = React.useCallback(() => {
+    const newConfig = context.settings.automatedAnalysisRecordingConfig();
+    setConfig(newConfig);
+  }, [context.settings, context.settings.automatedAnalysisRecordingConfig, setConfig]);
 
   return (
-    <>
-      <DurationPicker
-        enabled={state.autoRefreshEnabled}
-        period={state.autoRefreshPeriod}
-        onPeriodChange={handleAutoRefreshPeriodChange}
-        unitScalar={state.autoRefreshUnits}
-        onUnitScalarChange={handleAutoRefreshUnitScalarChange}
-      />
-      <Checkbox
-        id="auto-refresh-enabled"
-        label="Enabled"
-        isChecked={state.autoRefreshEnabled}
-        onChange={handleAutoRefreshEnabledChange}
-      />
-    </>
+    <TargetView pageTitle={''} compactSelect>
+      <Stack hasGutter>
+        <StackItem>
+          <Title headingLevel="h2" size="lg">
+            Current configuration
+          </Title>
+        </StackItem>
+        <StackItem>
+          <DescriptionList columnModifier={{ lg: '3Col' }}>
+            <DescriptionListGroup>
+              <DescriptionListTerm>Template</DescriptionListTerm>
+              <DescriptionListDescription>{config.templates}</DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>Max Size (B)</DescriptionListTerm>
+              <DescriptionListDescription>{config.maxSize}</DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>Max Age (s)</DescriptionListTerm>
+              <DescriptionListDescription>{config.maxAge}</DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
+        </StackItem>
+        <ExpandableSection
+          toggleText={expanded ? 'Show less' : 'Edit configuration'}
+          onToggle={setExpanded}
+          isExpanded={expanded}
+        >
+          <AutomatedAnalysisConfigForm onSave={onSave} isSettingsForm={true} />
+        </ExpandableSection>
+      </Stack>
+    </TargetView>
   );
 };
 
 export const AutomatedAnalysisConfig: UserSetting = {
-  title: 'Auto-Refresh',
+  title: 'Automated Analysis Recording Configuration',
   description:
-    'Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.',
+    'Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.',
   content: Component,
 };

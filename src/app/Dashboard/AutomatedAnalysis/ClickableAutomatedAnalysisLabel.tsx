@@ -37,7 +37,7 @@
  */
 
 import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD, RuleEvaluation } from '@app/Shared/Services/Report.service';
-import { Label, LabelProps, Popover, PopoverProps } from '@patternfly/react-core';
+import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import labelStyles from '@patternfly/react-styles/css/components/Label/label';

@@ -36,10 +36,8 @@
  * SOFTWARE.
  */
 
-import { automatedAnalysisRecordingName } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { defaultAutomatedAnalysisRecordingConfig } from '@app/Settings/AutomatedAnalysisConfig';
-import { RecordingAttributes } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
 
 enum StorageKeys {
@@ -97,12 +95,13 @@ export class SettingsService {
     window.localStorage.setItem(StorageKeys.AutoRefreshUnits, String(units));
   }
 
-  automatedAnalysisRecordingConfig(defaultConfig = defaultAutomatedAnalysisRecordingConfig): AutomatedAnalysisRecordingConfig {
+  automatedAnalysisRecordingConfig(
+    defaultConfig = defaultAutomatedAnalysisRecordingConfig
+  ): AutomatedAnalysisRecordingConfig {
     const raw = window.localStorage.getItem(StorageKeys.AutomatedAnalysisRecordingConfig);
     if (!!raw) {
       try {
         const config = JSON.parse(raw);
-        console.log(config);
         if (typeof config === 'object') {
           return config;
         }

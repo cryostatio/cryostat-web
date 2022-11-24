@@ -40,7 +40,6 @@ import {
   DropdownItem,
   DropdownPosition,
   DropdownToggle,
-  InputGroup,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
@@ -50,11 +49,11 @@ import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilter';
+import { automatedAnalysisUpdateCategoryIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { automatedAnalysisUpdateCategoryIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilter';
 import { AutomatedAnalysisTopicFilter } from './Filters/AutomatedAnalysisTopicFilter';
 
 export interface AutomatedAnalysisFiltersCategories {

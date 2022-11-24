@@ -50,13 +50,18 @@ import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 export interface SettingsProps {}
 
 export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
-  const settings = [NotificationControl, AutomatedAnalysisConfig, CredentialsStorage, DeletionDialogControl, WebSocketDebounce, AutoRefresh].map(
-    (c) => ({
-      title: c.title,
-      description: c.description,
-      element: React.createElement(c.content, null),
-    })
-  );
+  const settings = [
+    NotificationControl,
+    AutomatedAnalysisConfig,
+    CredentialsStorage,
+    DeletionDialogControl,
+    WebSocketDebounce,
+    AutoRefresh,
+  ].map((c) => ({
+    title: c.title,
+    description: c.description,
+    element: React.createElement(c.content, null),
+  }));
   return (
     <>
       <BreadcrumbPage pageTitle="Settings">

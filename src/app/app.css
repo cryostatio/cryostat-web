@@ -164,3 +164,7 @@ html, body, #root {
   color: var(--pf-global--warning-color--200);
   padding-right: 2em;
 }
+
+.automated-analysis-config-save-helper p {
+  margin-top: 0.5em;
+}
