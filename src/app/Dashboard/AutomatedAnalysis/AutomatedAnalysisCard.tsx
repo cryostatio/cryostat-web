@@ -35,36 +35,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { ErrorView } from '@app/ErrorView/ErrorView';
+import LoadingView from '@app/LoadingView/LoadingView';
 import {
-  Bullseye,
+  automatedAnalysisAddFilterIntent,
+  automatedAnalysisAddTargetIntent,
+  automatedAnalysisDeleteAllFiltersIntent,
+  automatedAnalysisDeleteCategoryFiltersIntent,
+  automatedAnalysisDeleteFilterIntent
+} from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
+import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
+import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { ArchivedRecording, automatedAnalysisConfigToRecordingAttributes, Recording, RecordingAttributes } from '@app/Shared/Services/Api.service';
+import {
+  FAILED_REPORT_MESSAGE,
+  INTERNAL_ERROR_MESSAGE,
+  NO_RECORDINGS_MESSAGE, RECORDING_FAILURE_MESSAGE,
+  RuleEvaluation
+} from '@app/Shared/Services/Report.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Settings.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import {
   Button,
-  Card,
-  CardActions,
-  CardBody,
+  Card, CardBody,
   CardExpandableContent,
   CardHeader,
   CardTitle,
-  Checkbox,
-  Drawer,
-  DrawerActions,
-  DrawerCloseButton,
-  DrawerContent,
-  DrawerContentBody,
-  DrawerHead,
-  DrawerPanelContent,
-  EmptyState,
-  Flex,
-  FlexItem,
-  Gallery,
-  GalleryItem,
-  Grid,
+  Checkbox, Grid,
   GridItem,
-  LabelGroup,
-  Level,
-  LevelItem,
-  Stack,
+  LabelGroup, Stack,
   StackItem,
   Text,
   TextContent,
@@ -73,42 +73,22 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Tooltip,
+  Tooltip
 } from '@patternfly/react-core';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
-import { ErrorView } from '@app/ErrorView/ErrorView';
-import LoadingView from '@app/LoadingView/LoadingView';
-import { concatMap, filter, finalize, first, map, tap, throwError } from 'rxjs';
-import {
-  FAILED_REPORT_MESSAGE,
-  INTERNAL_ERROR_MESSAGE,
-  NO_RECORDINGS_MESSAGE,
-  ORANGE_SCORE_THRESHOLD,
-  RECORDING_FAILURE_MESSAGE,
-  RuleEvaluation,
-} from '@app/Shared/Services/Report.service';
-import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
-import { ArchivedRecording, defaultAutomatedAnalysisRecording, Recording } from '@app/Shared/Services/Api.service';
+import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { first, map, tap } from 'rxjs';
 import {
   AutomatedAnalysisFilters,
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
   emptyAutomatedAnalysisFilters,
-  filterAutomatedAnalysis,
+  filterAutomatedAnalysis
 } from './AutomatedAnalysisFilters';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
-import {
-  automatedAnalysisAddFilterIntent,
-  automatedAnalysisAddTargetIntent,
-  automatedAnalysisDeleteAllFiltersIntent,
-  automatedAnalysisDeleteCategoryFiltersIntent,
-  automatedAnalysisDeleteFilterIntent,
-} from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
+import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
+import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
-import { AutomatedAnalysisRecordingConfigDrawer } from './AutomatedAnalysisRecordingConfigDrawer';
 
 interface AutomatedAnalysisCardProps {
   pageTitle: string;
@@ -378,8 +358,10 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   ]);
 
   const startProfilingRecording = React.useCallback(() => {
+    const config = context.settings.automatedAnalysisRecordingConfig();
+    const attributes = automatedAnalysisConfigToRecordingAttributes(config);
     addSubscription(
-      context.api.createRecording(defaultAutomatedAnalysisRecording).subscribe((resp) => {
+      context.api.createRecording(attributes).subscribe((resp) => {
         if (resp.ok || resp.status === 400) {
           // in-case the recording already exists
           generateReport();
@@ -388,7 +370,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         }
       })
     );
-  }, [addSubscription, context.api, generateReport, handleStateErrors]);
+  }, [addSubscription, context.api, context.settings, context.settings.automatedAnalysisRecordingConfig, generateReport, handleStateErrors]);
 
   const handleErrorView = React.useCallback((): [string, () => void] => {
     if (errorMessage === NO_RECORDINGS_MESSAGE) {
@@ -690,7 +672,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       if (errorMessage == 'Authentication failure') {
         return errorView;
       }
-      return <AutomatedAnalysisRecordingConfigDrawer onCreate={generateReport} drawerContent={errorView} />;
+      return <AutomatedAnalysisConfigDrawer onCreate={generateReport} drawerContent={errorView} />;
     } else if (isLoading) {
       return <LoadingView />;
     } else {

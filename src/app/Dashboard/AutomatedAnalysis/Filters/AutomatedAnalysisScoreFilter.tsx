@@ -36,31 +36,15 @@
  * SOFTWARE.
  */
 
-import React, { CSSProperties } from 'react';
-import {
-  Button,
-  Checkbox,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
-  Gallery,
-  GalleryItem,
-  Level,
-  LevelItem,
-  Select,
-  SelectOption,
-  SelectVariant,
-  Slider,
-  Stack,
-  StackItem,
-  Text,
-  TextContent,
-  TextVariants,
-} from '@patternfly/react-core';
-import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD } from '@app/Shared/Services/Report.service';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { automatedAnalysisAddGlobalFilterIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD } from '@app/Shared/Services/Report.service';
+import {
+  Button, Level,
+  LevelItem, Slider, Text, TextVariants
+} from '@patternfly/react-core';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 export interface AutomatedAnalysisScoreFilterProps {
   targetConnectUrl: string;

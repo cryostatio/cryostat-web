@@ -45,11 +45,12 @@ import { CredentialsStorage } from './CredentialsStorage';
 import { DeletionDialogControl } from './DeletionDialogControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
 import { AutoRefresh } from './AutoRefresh';
+import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 
 export interface SettingsProps {}
 
 export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
-  const settings = [NotificationControl, CredentialsStorage, DeletionDialogControl, WebSocketDebounce, AutoRefresh].map(
+  const settings = [NotificationControl, AutomatedAnalysisConfig, CredentialsStorage, DeletionDialogControl, WebSocketDebounce, AutoRefresh].map(
     (c) => ({
       title: c.title,
       description: c.description,

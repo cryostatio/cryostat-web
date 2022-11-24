@@ -149,10 +149,10 @@ html, body, #root {
 .pf-c-label-group.pf-m-vertical.pf-c-label-group {
   height: 100%;
   width: 100%;
-  background-color: #f0f0f0;
-  border-color: #d3dbe3;
+  background-color: var(--pf-global--Color--light-200);
+  border-color: var(--pf-global--BorderColor--100);
   border-style: solid;
-  border-width: 0.2em;
+  border-width: 0.1em;
   border-radius: 0.5em;
 }
 

@@ -36,16 +36,26 @@
  * SOFTWARE.
  */
 
+import { automatedAnalysisRecordingName } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { defaultAutomatedAnalysisRecordingConfig } from '@app/Settings/AutomatedAnalysisConfig';
+import { RecordingAttributes } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
 
 enum StorageKeys {
   AutoRefreshEnabled = 'auto-refresh-enabled',
   AutoRefreshPeriod = 'auto-refresh-period',
   AutoRefreshUnits = 'auto-refresh-units',
+  AutomatedAnalysisRecordingConfig = 'automated-analysis-recording-config',
   DeletionDialogsEnabled = 'deletion-dialogs-enabled',
   NotificationsEnabled = 'notifications-enabled',
   WebSocketDebounceMs = 'web-socket-debounce-ms',
+}
+
+export interface AutomatedAnalysisRecordingConfig {
+  templates: string;
+  maxSize: number;
+  maxAge: number;
 }
 
 export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
@@ -85,6 +95,27 @@ export class SettingsService {
 
   setAutoRefreshUnits(units: number): void {
     window.localStorage.setItem(StorageKeys.AutoRefreshUnits, String(units));
+  }
+
+  automatedAnalysisRecordingConfig(defaultConfig = defaultAutomatedAnalysisRecordingConfig): AutomatedAnalysisRecordingConfig {
+    const raw = window.localStorage.getItem(StorageKeys.AutomatedAnalysisRecordingConfig);
+    if (!!raw) {
+      try {
+        const config = JSON.parse(raw);
+        console.log(config);
+        if (typeof config === 'object') {
+          return config;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    this.setAutomatedAnalysisRecordingConfig(defaultConfig);
+    return defaultConfig;
+  }
+
+  setAutomatedAnalysisRecordingConfig(config: AutomatedAnalysisRecordingConfig): void {
+    window.localStorage.setItem('automated-analysis-recording-config', JSON.stringify(config));
   }
 
   deletionDialogsEnabled(): Map<DeleteWarningType, boolean> {

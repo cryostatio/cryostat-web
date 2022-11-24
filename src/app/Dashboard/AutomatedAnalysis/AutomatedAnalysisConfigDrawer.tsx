@@ -35,69 +35,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import {
+  automatedAnalysisConfigToRecordingAttributes,
+  RecordingAttributes,
+  RecordingOptions
+} from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Settings.service';
+import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
-  Button,
-  Card,
-  CardBody,
-  CardExpandableContent,
-  CardHeader,
-  CardTitle,
-  Drawer,
+  Button, Drawer,
   DrawerActions,
   DrawerCloseButton,
   DrawerContent,
   DrawerContentBody,
   DrawerHead,
   DrawerPanelContent,
-  Dropdown,
-  DropdownDirection,
-  DropdownItem,
-  DropdownSeparator,
-  DropdownToggle,
+  Dropdown, DropdownItem, DropdownToggle,
   DropdownToggleAction,
   Form,
   FormGroup,
   FormSection,
   FormSelect,
   FormSelectOption,
+  HelperText,
+  HelperTextItem,
   Level,
-  LevelItem,
-  Select,
-  SelectOption,
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
-  TextContent,
-  TextInput,
-  Title,
-  ValidatedOptions,
+  LevelItem, Split,
+  SplitItem, Text, TextInput, TextVariants, ValidatedOptions
 } from '@patternfly/react-core';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
-import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
+import { CogIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 import { concatMap, first } from 'rxjs';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import {
-  defaultAutomatedAnalysisRecording,
-  RecordingAttributes,
-  RecordingOptions,
-} from '@app/Shared/Services/Api.service';
 import { automatedAnalysisRecordingName } from './AutomatedAnalysisCard';
-import { CogIcon, EllipsisVIcon, PlusCircleIcon } from '@patternfly/react-icons';
 
-interface AutomatedAnalysisRecordingConfigDrawerProps {
+interface AutomatedAnalysisConfigDrawerProps {
   drawerContent: React.ReactNode;
   onCreate: () => void;
 }
 
-export const AutomatedAnalysisRecordingConfigDrawer: React.FunctionComponent<AutomatedAnalysisRecordingConfigDrawerProps> =
+export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAnalysisConfigDrawerProps> =
   (props) => {
     const context = React.useContext(ServiceContext);
     const addSubscription = useSubscriptions();
+
     const [templates, setTemplates] = React.useState([] as EventTemplate[]);
     const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
     const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(undefined);
@@ -108,6 +93,7 @@ export const AutomatedAnalysisRecordingConfigDrawer: React.FunctionComponent<Aut
     const [isLoading, setIsLoading] = React.useState(false);
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+    const [showHelperMessage, setShowHelperMessage] = React.useState(false);
     const drawerRef = React.useRef<HTMLDivElement>(null);
 
     const onToggle = React.useCallback(
@@ -144,10 +130,10 @@ export const AutomatedAnalysisRecordingConfigDrawer: React.FunctionComponent<Aut
     );
 
     const onDefaultRecordingStart = React.useCallback(() => {
-      // TODO: add default in settings
-      const defaultRecordingAttributes = defaultAutomatedAnalysisRecording;
-      handleCreateRecording(defaultRecordingAttributes);
-    }, [handleCreateRecording]);
+      const config = context.settings.automatedAnalysisRecordingConfig();
+      const attributes = automatedAnalysisConfigToRecordingAttributes(config);
+      handleCreateRecording(attributes);
+    }, [context.settings, context.settings.automatedAnalysisRecordingConfig, handleCreateRecording]);
 
     const createButtonLoadingProps = React.useMemo(
       () =>
@@ -262,6 +248,16 @@ export const AutomatedAnalysisRecordingConfigDrawer: React.FunctionComponent<Aut
       handleCreateRecording(recordingAttributes);
     }, [getEventString, maxAge, maxAgeUnits, maxSize, maxSizeUnits, handleCreateRecording]);
 
+    const handleSaveConfig = React.useCallback(() => {
+      const options: AutomatedAnalysisRecordingConfig = {
+        templates: getEventString(),
+        maxAge: maxAge * maxAgeUnits,
+        maxSize: maxSize * maxSizeUnits,
+      };
+      context.settings.setAutomatedAnalysisRecordingConfig(options);
+      setShowHelperMessage(true);
+    }, [getEventString, setShowHelperMessage, maxAge, maxAgeUnits, maxSize, maxSizeUnits, context.settings, context.settings.setAutomatedAnalysisRecordingConfig]);
+
     const panelContent = React.useMemo(() => {
       return (
         <DrawerPanelContent>
@@ -353,6 +349,27 @@ export const AutomatedAnalysisRecordingConfigDrawer: React.FunctionComponent<Aut
                     >
                       {isLoading ? 'Creating' : 'Create'}
                     </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={handleSaveConfig}
+                      isDisabled={isFormInvalid || isLoading}
+                    >
+                      Save configuration
+                    </Button>
+                    {
+                      showHelperMessage && (
+                        <HelperText>
+                          <HelperTextItem variant="success">
+                            <Text component={TextVariants.p}>Automated analysis recording configuration saved. You can also change this in the&nbsp;
+                              <Button isInline component="a" href="settings" variant='link' icon={<CogIcon />}>
+                                Settings&nbsp;
+                              </Button>
+                              view.
+                            </Text> 
+                          </HelperTextItem>
+                        </HelperText>
+                      )
+                    }
                   </ActionGroup>
                 </FormSection>
               </Form>
@@ -365,20 +382,21 @@ export const AutomatedAnalysisRecordingConfigDrawer: React.FunctionComponent<Aut
       );
     }, [
       onCloseClick,
-      isExpanded,
-      isFormInvalid,
-      maxSize,
-      maxSizeUnits,
-      maxAge,
-      maxAgeUnits,
       handleSubmit,
       handleMaxSizeChange,
       handleMaxSizeUnitChange,
       handleMaxAgeChange,
       handleMaxAgeUnitChange,
       handleTemplateChange,
+      isExpanded,
+      isFormInvalid,
+      maxSize,
+      maxSizeUnits,
+      maxAge,
+      maxAgeUnits,
       templates,
       templateName,
+      showHelperMessage,
       isLoading,
     ]);
 
@@ -423,15 +441,13 @@ export const AutomatedAnalysisRecordingConfigDrawer: React.FunctionComponent<Aut
     }, [isDropdownOpen, onToggle, onClick, onDropdownSelect]);
 
     return (
-      <>
-        <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>
-          <DrawerContent panelContent={panelContent}>
-            <DrawerContentBody>
-              {props.drawerContent}
-              {dropdown}
-            </DrawerContentBody>
-          </DrawerContent>
-        </Drawer>
-      </>
+      <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>
+        <DrawerContent panelContent={panelContent}>
+          <DrawerContentBody>
+            {props.drawerContent}
+            {dropdown}
+          </DrawerContentBody>
+        </DrawerContent>
+      </Drawer>
     );
   };
