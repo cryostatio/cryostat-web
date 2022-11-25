@@ -1,3 +1,10 @@
+---
+title: '[Bug] <title>'
+labels: bug, needs triage
+assignees: ''
+
+---
+
 Welcome to Cryostat! Before contributing, make sure to:
 - Read the contributing guidelines https://github.com/cryostatio/cryostat/blob/main/CONTRIBUTING.md
 - Rebase your branch on the latest upstream main
