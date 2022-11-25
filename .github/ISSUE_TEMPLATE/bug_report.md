@@ -1,6 +1,6 @@
 ---
-name: 🐞 Bug
-about: File a bug/issue
+name: 🐞 Bug report
+about: Create a report to help us improve Cryostat
 title: '[Bug] <title>'
 labels: bug, needs triage
 assignees: ''
@@ -16,6 +16,9 @@ A concise description of what you're experiencing.
 
 #### Expected Behavior:
 A concise description of what you expected to happen.
+
+#### Screenshots
+If applicable, add screenshots to help explain your problem.
 
 #### Steps To Reproduce:
 1. In this environment...
