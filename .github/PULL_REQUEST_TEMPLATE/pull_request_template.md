@@ -7,8 +7,8 @@ Welcome to Cryostat! Before contributing, make sure to:
 -->
 Fixes: #<issue number>
 
-#### Description of the change:
+### Description of the change:
 
-#### Motivation for the change:
+### Motivation for the change:
 
-#### How to manually test:
+### How to manually test:
