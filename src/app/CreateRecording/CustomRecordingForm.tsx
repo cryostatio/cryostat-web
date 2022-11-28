@@ -72,6 +72,7 @@ import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { TemplateType } from '@app/Shared/Services/Api.service';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { forkJoin } from 'rxjs';
 
 export interface CustomRecordingFormProps {
   prefilled?: {
@@ -280,7 +281,7 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
     handleCreateRecording,
   ]);
 
-  const refreshTemplates = React.useCallback(() => {
+  const refeshFormOptions = React.useCallback(() => {
     addSubscription(
       context.target
         .target()
@@ -288,45 +289,30 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
           filter((target) => target !== NO_TARGET),
           first(),
           concatMap((target) =>
-            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
+            forkJoin({
+              templates: context.api.doGet<EventTemplate[]>(
+                `targets/${encodeURIComponent(target.connectUrl)}/templates`
+              ),
+              recordingOptions: context.api.doGet<RecordingOptions>(
+                `targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`
+              ),
+            })
           )
         )
         .subscribe({
-          next: (templates) => {
-            setTemplates(templates);
+          next: (formOptions) => {
             setErrorMessage('');
+            setTemplates(formOptions.templates);
+            setRecordingOptions(formOptions.recordingOptions);
           },
           error: (error) => {
-            setErrorMessage(error.message);
+            setErrorMessage(error.message); // If both throw, first error will be shown
             setTemplates([]);
-          },
-        })
-    );
-  }, [addSubscription, context.target, context.api, setTemplates, setErrorMessage]);
-
-  const refreshRecordingOptions = React.useCallback(() => {
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          filter((target) => target !== NO_TARGET),
-          first(),
-          concatMap((target) =>
-            context.api.doGet<RecordingOptions>(`targets/${encodeURIComponent(target.connectUrl)}/recordingOptions`)
-          )
-        )
-        .subscribe({
-          next: (options) => {
-            setRecordingOptions(options);
-            setErrorMessage('');
-          },
-          error: (error) => {
-            setErrorMessage(error.message);
             setRecordingOptions({});
           },
         })
     );
-  }, [addSubscription, context.target, context.api, setRecordingOptions, setErrorMessage]);
+  }, [addSubscription, context.target, context.api, setTemplates, setRecordingOptions, setErrorMessage]);
 
   React.useEffect(() => {
     addSubscription(
@@ -339,13 +325,8 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
   }, [context.target, setErrorMessage, addSubscription, setTemplates, setRecordingOptions]);
 
   React.useEffect(() => {
-    addSubscription(
-      context.target.target().subscribe(() => {
-        refreshTemplates();
-        refreshRecordingOptions();
-      })
-    );
-  }, [addSubscription, context.target, refreshTemplates, refreshRecordingOptions]);
+    addSubscription(context.target.target().subscribe(refeshFormOptions));
+  }, [addSubscription, context.target, refeshFormOptions]);
 
   const isFormInvalid: boolean = React.useMemo(() => {
     return (
