@@ -281,7 +281,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
       }
       return actions;
     },
-    [context.api, history]
+    [context.api, history, handleDeleteButton]
   );
 
   const handleUploadModalClose = React.useCallback(() => {
