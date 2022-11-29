@@ -131,7 +131,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
     abort.abort();
     reset();
     props.onClose();
-  }, [abort, reset]);
+  }, [abort, reset, props.onClose]);
 
   return (
     <>
@@ -141,8 +141,8 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
         variant={ModalVariant.large}
         showClose={true}
         onClose={handleClose}
-        title="Upload Automatic Rules"
-        description="Select an Automatic Rules definition file to upload. File must be in valid JSON format."
+        title="Upload Automated Rules"
+        description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
         help={
           <Popover
             headerContent={<div>What's this?</div>}
