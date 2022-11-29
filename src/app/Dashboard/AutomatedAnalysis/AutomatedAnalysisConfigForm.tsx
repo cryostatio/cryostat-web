@@ -287,7 +287,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error displaying recording creation form'}
+        title={'Error displaying recording configuration settings'}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
