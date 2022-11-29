@@ -266,7 +266,7 @@ const Comp: React.FunctionComponent<{}> = () => {
     () =>
       ({
         spinnerAriaValueText: 'Creating',
-        spinnerAriaLabel: 'creating-automatic-rule',
+        spinnerAriaLabel: 'creating-automated-rule',
         isLoading: loading,
       } as LoadingPropsType),
     [loading]
