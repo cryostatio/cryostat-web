@@ -60,7 +60,7 @@ export const parseRule = (file: File): Observable<Rule> => {
       if (isRule(obj)) {
         return obj;
       } else {
-        throw new Error('Automatic rule content is invalid.');
+        throw new Error('Automated rule content is invalid.');
       }
     })
   );
@@ -152,7 +152,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
     () =>
       ({
         spinnerAriaValueText: 'Submitting',
-        spinnerAriaLabel: 'submitting-automatic-rule',
+        spinnerAriaLabel: 'submitting-automated-rule',
         isLoading: uploading,
       } as LoadingPropsType),
     [uploading]
@@ -166,8 +166,8 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
         variant={ModalVariant.large}
         showClose={!uploading}
         onClose={handleClose}
-        title="Upload Automatic Rules"
-        description="Select an Automatic Rules definition file to upload. File must be in valid JSON format."
+        title="Upload Automated Rules"
+        description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
         help={
           <Popover
             headerContent={<div>What's this?</div>}
