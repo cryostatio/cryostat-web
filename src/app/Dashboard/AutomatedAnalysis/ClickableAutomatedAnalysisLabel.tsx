@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { AutomatedAnalysisScore, RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -85,9 +85,9 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
     // context.settings.etc.
     return label.score == -1
       ? 'grey'
-      : label.score < ORANGE_SCORE_THRESHOLD
+      : label.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
       ? 'green'
-      : label.score < RED_SCORE_THRESHOLD
+      : label.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
       ? 'orange'
       : 'red';
   }, [label.score]);
@@ -95,9 +95,9 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
   const alertPopoverVariant = React.useMemo(() => {
     return label.score == -1
       ? 'default'
-      : label.score < ORANGE_SCORE_THRESHOLD
+      : label.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
       ? 'success'
-      : label.score < RED_SCORE_THRESHOLD
+      : label.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD
       ? 'warning'
       : 'danger';
   }, [label.score]);

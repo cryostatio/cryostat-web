@@ -233,8 +233,10 @@ export interface RuleEvaluation {
   topic: string;
 }
 
-export const RED_SCORE_THRESHOLD = 75;
-export const ORANGE_SCORE_THRESHOLD = 50;
+export enum AutomatedAnalysisScore {
+  ORANGE_SCORE_THRESHOLD = 50,
+  RED_SCORE_THRESHOLD = 75,
+}
 
 export const FAILED_REPORT_MESSAGE = 'Failed to load report from snapshot. Request entity too large.';
 export const NO_RECORDINGS_MESSAGE = 'No active or archived recordings available.';

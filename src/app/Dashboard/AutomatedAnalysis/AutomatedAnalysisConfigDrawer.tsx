@@ -80,11 +80,6 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     [setIsDropdownOpen]
   );
 
-  const onDropdownFocus = React.useCallback(() => {
-    const element = document.getElementById('automated-analysis-recording-config-toggle');
-    element?.focus();
-  }, []);
-
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
       addSubscription(
@@ -116,7 +111,6 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
 
   const onOptionSelect = React.useCallback(() => {
     setIsDropdownOpen(false);
-    onDropdownFocus();
     setIsExpanded(!isExpanded);
   }, [setIsExpanded, setIsDropdownOpen, isExpanded]);
 
@@ -128,15 +122,13 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     return (
       <DrawerPanelContent>
         <DrawerHead>
-          <span tabIndex={isExpanded ? 0 : -1} ref={drawerRef}>
-            <AutomatedAnalysisConfigForm onCreate={props.onCreate} isSettingsForm={false} />
-          </span>
+          <span tabIndex={isExpanded ? 0 : -1} ref={drawerRef}></span>
           <DrawerActions>
             <DrawerCloseButton onClick={onDrawerClose} />
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-
+          <AutomatedAnalysisConfigForm onCreate={props.onCreate} isSettingsForm={false} />
         </DrawerPanelBody>
       </DrawerPanelContent>
     );
