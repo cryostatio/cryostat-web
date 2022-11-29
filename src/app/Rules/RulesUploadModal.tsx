@@ -53,7 +53,20 @@ export interface RuleUploadModalProps {
 }
 
 export const parseRule = (file: File): Observable<Rule> => {
+<<<<<<< HEAD
   return from(file.text().then(JSON.parse));
+=======
+  return from(
+    file.text().then((content) => {
+      const obj = JSON.parse(content);
+      if (isRule(obj)) {
+        return obj;
+      } else {
+        throw new Error('Automated rule content is invalid.');
+      }
+    })
+  );
+>>>>>>> 54c6853 (fix(rules): rename Automatic to Automated (#693))
 };
 
 export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (props) => {
@@ -131,7 +144,23 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
     abort.abort();
     reset();
     props.onClose();
+<<<<<<< HEAD
   }, [abort, reset]);
+=======
+  }, [abort, reset, props.onClose]);
+
+  const handleCloseCancelModal = React.useCallback(() => setShowCancelPrompt(false), [setShowCancelPrompt]);
+
+  const submitButtonLoadingProps = React.useMemo(
+    () =>
+      ({
+        spinnerAriaValueText: 'Submitting',
+        spinnerAriaLabel: 'submitting-automated-rule',
+        isLoading: uploading,
+      } as LoadingPropsType),
+    [uploading]
+  );
+>>>>>>> 54c6853 (fix(rules): rename Automatic to Automated (#693))
 
   return (
     <>
@@ -141,8 +170,8 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
         variant={ModalVariant.large}
         showClose={true}
         onClose={handleClose}
-        title="Upload Automatic Rules"
-        description="Select an Automatic Rules definition file to upload. File must be in valid JSON format."
+        title="Upload Automated Rules"
+        description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
         help={
           <Popover
             headerContent={<div>What's this?</div>}
