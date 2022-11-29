@@ -113,7 +113,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     return !templateName || !templateType;
   }, [templateName, templateType]);
 
-  React.useEffect(() => {
+  const refreshTemplates = React.useCallback(() => {
     addSubscription(
       context.target
         .target()
@@ -131,14 +131,30 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
         )
         .subscribe({
           next: (templates) => {
+            console.log('SDF');
+
             setTemplates(templates);
           },
           error: (err) => {
+            console.log('Error retrieving templates: ', err);
+
             setTemplates([]);
           },
         })
     );
   }, [addSubscription, context.target, context.api, setTemplates]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        setTemplates([]);
+      })
+    );
+  }, [addSubscription, context.target, setTemplates]);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe(refreshTemplates));
+  }, [addSubscription, context.target, refreshTemplates]);
 
   const handleMaxAgeChange = React.useCallback(
     (evt) => {

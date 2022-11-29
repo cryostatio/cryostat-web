@@ -61,7 +61,6 @@ import { UserSetting } from './Settings';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
 
   const [config, setConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
     context.settings.automatedAnalysisRecordingConfig()
@@ -100,7 +99,7 @@ const Component = () => {
         </DescriptionList>
       </StackItem>
       <ExpandableSection
-        toggleText={expanded ? 'Show configuration edit' : 'Hide configuration edit'}
+        toggleText={expanded ? 'Hide configuration edit' : 'Show configuration edit'}
         onToggle={setExpanded}
         isExpanded={expanded}
       >
