@@ -92,6 +92,7 @@ export class ReportService {
         error: (err) => {
           if (isGenerationError(err) && err.status >= 500) {
             err.messageDetail.pipe(first()).subscribe((detail) => {
+              this.notifications.warning(`Report generation failure: ${detail}`);
               sessionStorage.setItem(this.key(recording), `<p>${detail}</p>`);
             });
           } else {
@@ -151,7 +152,6 @@ export class ReportService {
         error: (err) => {
           if (isGenerationError(err) && err.status >= 500) {
             err.messageDetail.pipe(first()).subscribe((detail) => {
-              console.log(detail);
               this.notifications.warning(`Report generation failure: ${detail}`);
               this.deleteCachedAnalysisReport(connectUrl);
             });

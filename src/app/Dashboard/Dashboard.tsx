@@ -46,7 +46,7 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
       <Grid hasGutter>
-        <GridItem span={6}>
+        <GridItem xl2={8} xl={10} lg={10} md={12} sm={12}>
           <AutomatedAnalysisCard pageTitle="Automated Analysis" />
         </GridItem>
       </Grid>
