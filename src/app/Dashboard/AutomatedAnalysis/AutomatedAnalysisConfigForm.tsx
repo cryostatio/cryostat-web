@@ -80,19 +80,13 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
   const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(undefined);
-  const [maxAge, setMaxAge] = React.useState(0);
+  const [maxAge, setMaxAge] = React.useState(context.settings.automatedAnalysisRecordingConfig().maxAge);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
-  const [maxSize, setMaxSize] = React.useState(0);
+  const [maxSize, setMaxSize] = React.useState(context.settings.automatedAnalysisRecordingConfig().maxSize);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSaveLoading, setIsSaveLoading] = React.useState(false);
   const [showHelperMessage, setShowHelperMessage] = React.useState(false);
-
-  React.useEffect(() => {
-    const config = context.settings.automatedAnalysisRecordingConfig();
-    setMaxAge(config.maxAge);
-    setMaxSize(config.maxSize);
-  }, []);
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -348,7 +342,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
                   <Text>
                     You can also change this in the&nbsp;
                     <Button isInline component="a" variant="link" icon={<CogIcon />}>
-                      <Link to="/settings">Settings</Link> 
+                      <Link to="/settings">Settings</Link>
                     </Button>
                     &nbsp;view.
                   </Text>
