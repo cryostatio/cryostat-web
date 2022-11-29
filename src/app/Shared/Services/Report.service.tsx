@@ -47,7 +47,7 @@ export class ReportService {
   constructor(private login: LoginService, private notifications: Notifications) {}
 
   report(recording: Recording): Observable<string> {
-    if (!recording?.reportUrl) {
+    if (!recording.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
     let stored = sessionStorage.getItem(this.key(recording));
@@ -79,22 +79,23 @@ export class ReportService {
       tap({
         next: (report) => {
           const isArchived = !isActiveRecording(recording);
-          const isActiveStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
+          const isActiveStopped = !isArchived && recording.state === RecordingState.STOPPED;
           if (isArchived || isActiveStopped) {
             try {
               sessionStorage.setItem(this.key(recording), report);
             } catch (error) {
               this.notifications.warning('Report Caching Failed', (error as any).message);
-              sessionStorage.clear();
+              this.delete(recording);
             }
           }
         },
         error: (err) => {
-          this.notifications.danger(err.name, err.message);
           if (isGenerationError(err) && err.status >= 500) {
             err.messageDetail.pipe(first()).subscribe((detail) => {
               sessionStorage.setItem(this.key(recording), `<p>${detail}</p>`);
             });
+          } else {
+            this.notifications.danger(err.name, err.message);
           }
         },
       })
@@ -102,7 +103,7 @@ export class ReportService {
   }
 
   reportJson(recording: Recording, connectUrl: string): Observable<[string, RuleEvaluation][]> {
-    if (!recording?.reportUrl) {
+    if (!recording.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
     return this.login.getHeaders().pipe(
@@ -115,10 +116,14 @@ export class ReportService {
           headers,
         });
       }),
-      concatMap(async (resp) => {
+      concatMap((resp) => {
         if (resp.ok) {
-          const obj = JSON.parse(await resp.text());
-          return Object.entries(obj) as [string, RuleEvaluation][];
+          return from(
+            resp
+              .text()
+              .then(JSON.parse)
+              .then((obj) => Object.entries(obj) as [string, RuleEvaluation][])
+          );
         } else {
           const ge: GenerationError = {
             name: `Report Failure (${recording.name})`,
@@ -132,25 +137,26 @@ export class ReportService {
       tap({
         next: (report) => {
           const isArchived = !isActiveRecording(recording);
-          const isActiveStopped = isActiveRecording(recording) && recording.state === RecordingState.STOPPED;
+          const isActiveStopped = !isArchived && recording.state === RecordingState.STOPPED;
           if (isArchived || isActiveStopped) {
             try {
-              sessionStorage.setItem(this.analysisKeyTimestamp(connectUrl), Date.now().toString());
               sessionStorage.setItem(this.analysisKey(connectUrl), JSON.stringify(report));
+              sessionStorage.setItem(this.analysisKeyTimestamp(connectUrl), Date.now().toString());
             } catch (error) {
               this.notifications.warning('Report Caching Failed', (error as any).message);
-              sessionStorage.clear();
+              this.deleteCachedAnalysisReport(connectUrl);
             }
           }
         },
         error: (err) => {
-          this.notifications.danger(err.name, err.message);
           if (isGenerationError(err) && err.status >= 500) {
             err.messageDetail.pipe(first()).subscribe((detail) => {
               console.log(detail);
               this.notifications.warning(`Report generation failure: ${detail}`);
               this.deleteCachedAnalysisReport(connectUrl);
             });
+          } else {
+            this.notifications.danger(err.name, err.message);
           }
         },
       })

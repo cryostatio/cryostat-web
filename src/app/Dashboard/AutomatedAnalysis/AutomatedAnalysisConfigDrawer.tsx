@@ -35,8 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { automatedAnalysisConfigToRecordingAttributes, RecordingAttributes } from '@app/Shared/Services/Api.service';
+import { RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Drawer,
@@ -79,7 +80,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
   );
 
   const onDropdownFocus = () => {
-    const element = document.getElementById('automated-analysis-recording-config-dropdown');
+    const element = document.getElementById('automated-analysis-recording-config-toggle');
     element?.focus();
   };
 
@@ -91,7 +92,9 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
           .pipe(first())
           .subscribe({
             next: (resp) => {
-              props.onCreate();
+              if (resp && resp.ok) {
+                props.onCreate();
+              }
             },
             error: (err) => {},
           })
@@ -106,20 +109,19 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     handleCreateRecording(attributes);
   }, [context.settings, context.settings.automatedAnalysisRecordingConfig, handleCreateRecording]);
 
-  const onDropdownSelect = React.useCallback(() => {
-    setIsDropdownOpen(false);
-    onDropdownFocus();
-  }, [setIsDropdownOpen]);
+  const onDropdownSelect = React.useCallback(() => {}, [setIsDropdownOpen]);
 
   const onExpand = () => {
     drawerRef.current && drawerRef.current.focus();
   };
 
-  const onClick = React.useCallback(() => {
+  const onOptionSelect = React.useCallback(() => {
+    setIsDropdownOpen(false);
+    onDropdownFocus();
     setIsExpanded(!isExpanded);
-  }, [setIsExpanded, isExpanded]);
+  }, [setIsExpanded, setIsDropdownOpen, isExpanded]);
 
-  const onCloseClick = React.useCallback(() => {
+  const onDrawerClose = React.useCallback(() => {
     setIsExpanded(false);
   }, [setIsExpanded]);
 
@@ -131,15 +133,15 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
             <AutomatedAnalysisConfigForm onCreate={props.onCreate} isSettingsForm={false} />
           </span>
           <DrawerActions>
-            <DrawerCloseButton onClick={onCloseClick} />
+            <DrawerCloseButton onClick={onDrawerClose} />
           </DrawerActions>
         </DrawerHead>
       </DrawerPanelContent>
     );
-  }, [props.onCreate, onCloseClick]);
+  }, [props.onCreate, onDrawerClose]);
 
   const dropdownItems = [
-    <DropdownItem key="custom" onClick={onClick} icon={<CogIcon />}>
+    <DropdownItem key="custom" onClick={onOptionSelect} icon={<CogIcon />}>
       Custom
     </DropdownItem>,
     <DropdownItem key="default" onClick={onDefaultRecordingStart} icon={<PlusCircleIcon />}>
@@ -154,13 +156,16 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
           <Dropdown
             isFlipEnabled
             menuAppendTo={'parent'}
-            onSelect={onDropdownSelect}
             toggle={
               <DropdownToggle
                 aria-label="Recording Config Dropdown"
                 id="automated-analysis-recording-config-toggle"
                 splitButtonItems={[
-                  <DropdownToggleAction key="recording-cog-action" aria-label="Recording Actions" onClick={onClick}>
+                  <DropdownToggleAction
+                    key="recording-cog-action"
+                    aria-label="Recording Actions"
+                    onClick={onOptionSelect}
+                  >
                     <CogIcon />
                   </DropdownToggleAction>,
                 ]}
@@ -177,7 +182,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
         </LevelItem>
       </Level>
     );
-  }, [isDropdownOpen, onToggle, onClick, onDropdownSelect]);
+  }, [isDropdownOpen, onToggle, onOptionSelect, onDropdownSelect]);
 
   return (
     <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>

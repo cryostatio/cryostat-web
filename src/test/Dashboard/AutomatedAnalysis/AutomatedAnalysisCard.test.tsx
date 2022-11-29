@@ -42,7 +42,6 @@ import { RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   ActiveRecording,
   ArchivedRecording,
-  automatedAnalysisConfigToRecordingAttributes,
   AutomatedAnalysisRecordingConfig,
   defaultAutomatedAnalysisRecordingConfig,
 } from '@app/Shared/Services/Api.service';
@@ -53,6 +52,7 @@ import {
   RuleEvaluation,
 } from '@app/Shared/Services/Report.service';
 import { defaultServices } from '@app/Shared/Services/Services';
+import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';

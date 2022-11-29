@@ -46,12 +46,7 @@ import {
 } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import {
-  ArchivedRecording,
-  automatedAnalysisConfigToRecordingAttributes,
-  automatedAnalysisRecordingName,
-  Recording,
-} from '@app/Shared/Services/Api.service';
+import { ArchivedRecording, automatedAnalysisRecordingName, Recording } from '@app/Shared/Services/Api.service';
 import {
   FAILED_REPORT_MESSAGE,
   INTERNAL_ERROR_MESSAGE,
@@ -60,6 +55,7 @@ import {
   RuleEvaluation,
 } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -385,7 +381,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     handleStateErrors,
   ]);
 
-  const handleErrorView = React.useCallback((): [string, undefined | (() => void) ] => {
+  const handleErrorView = React.useCallback((): [string, undefined | (() => void)] => {
     if (errorMessage === NO_RECORDINGS_MESSAGE) {
       return ['', undefined];
     } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {

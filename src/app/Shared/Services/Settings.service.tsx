@@ -38,12 +38,38 @@
 
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, LocalStorageKey, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { AutomatedAnalysisRecordingConfig, defaultAutomatedAnalysisRecordingConfig } from './Api.service';
+import {
+  AutomatedAnalysisRecordingConfig,
+  automatedAnalysisRecordingName,
+  defaultAutomatedAnalysisRecordingConfig,
+  RecordingAttributes,
+} from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
 
 export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
   return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
 }
+
+export const automatedAnalysisConfigToRecordingAttributes = (
+  config: AutomatedAnalysisRecordingConfig
+): RecordingAttributes => {
+  return {
+    name: automatedAnalysisRecordingName,
+    events: config.templates,
+    duration: undefined,
+    archiveOnStop: false,
+    options: {
+      toDisk: true,
+      maxAge: config.maxAge,
+      maxSize: config.maxSize,
+    },
+    metadata: {
+      labels: {
+        origin: automatedAnalysisRecordingName,
+      },
+    },
+  } as RecordingAttributes;
+};
 
 export class SettingsService {
   autoRefreshEnabled(): boolean {

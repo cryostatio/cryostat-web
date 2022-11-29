@@ -285,7 +285,7 @@ export class ApiService {
     );
   }
 
-  createRecording(recordingAttributes: RecordingAttributes): Observable<{ok: boolean, status: number } | undefined> {
+  createRecording(recordingAttributes: RecordingAttributes): Observable<{ ok: boolean; status: number } | undefined> {
     const form = new window.FormData();
     form.append('recordingName', recordingAttributes.name);
     form.append('events', recordingAttributes.events);
@@ -316,19 +316,17 @@ export class ApiService {
         }).pipe(
           map((resp) => {
             return {
-              ok: resp.ok, status: resp.status 
-            }
+              ok: resp.ok,
+              status: resp.status,
+            };
           }),
           catchError((err) => {
             if (isHttpError(err)) {
-              return of(
-                {
-                  ok: false, 
-                  status: err.httpResponse.status,
-                }
-              );
-            }
-            else {
+              return of({
+                ok: false,
+                status: err.httpResponse.status,
+              });
+            } else {
               return of(undefined);
             }
           }),
@@ -366,16 +364,9 @@ export class ApiService {
         this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
           method: 'POST',
         }).pipe(
-          concatMap((resp) => {
-            if (resp.status == 202) {
-              return throwError(() => new Error('Unable to create snapshot'));
-            } else if (resp.status == 427) {
-              return throwError(() => new Error('JMX Authentication Required'));
-            } else {
-              return resp.json();
-            }
-          }),
+          concatMap((resp) => resp.json()),
           map((response) => response.data.result),
+          catchError((_) => of(undefined)),
           first()
         )
       )
@@ -1353,27 +1344,6 @@ export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecording
   templates: 'template=Continuous,type=TARGET',
   maxSize: 2048,
   maxAge: 0,
-};
-
-export const automatedAnalysisConfigToRecordingAttributes = (
-  config: AutomatedAnalysisRecordingConfig
-): RecordingAttributes => {
-  return {
-    name: automatedAnalysisRecordingName,
-    events: config.templates,
-    duration: undefined,
-    archiveOnStop: false,
-    options: {
-      toDisk: true,
-      maxAge: config.maxAge,
-      maxSize: config.maxSize,
-    },
-    metadata: {
-      labels: {
-        origin: automatedAnalysisRecordingName,
-      },
-    },
-  } as RecordingAttributes;
 };
 
 // New target specific archived recording apis now enforce a non-empty target field

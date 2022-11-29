@@ -58,13 +58,10 @@ import { UserSetting } from './Settings';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
-  const [config, setConfig] = React.useState<AutomatedAnalysisRecordingConfig>(defaultAutomatedAnalysisRecordingConfig);
+  const [config, setConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
+    context.settings.automatedAnalysisRecordingConfig()
+  );
   const [expanded, setExpanded] = React.useState(false);
-
-  React.useEffect(() => {
-    const c = context.settings.automatedAnalysisRecordingConfig();
-    setConfig(c);
-  }, []);
 
   const onSave = React.useCallback(() => {
     const newConfig = context.settings.automatedAnalysisRecordingConfig();
