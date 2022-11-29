@@ -119,7 +119,7 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
           .pipe(first())
           .subscribe((resp) => {
             setLoading(false);
-            if (resp.ok) {
+            if (resp && resp.ok) {
               history.push('/recordings');
             }
           })

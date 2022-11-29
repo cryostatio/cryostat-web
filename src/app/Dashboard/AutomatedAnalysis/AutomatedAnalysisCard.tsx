@@ -368,7 +368,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     const attributes = automatedAnalysisConfigToRecordingAttributes(config);
     addSubscription(
       context.api.createRecording(attributes).subscribe((resp) => {
-        if (resp.ok || resp.status === 400) {
+        if (resp && (resp.ok || resp.status === 400)) {
           // in-case the recording already exists
           generateReport();
         } else {

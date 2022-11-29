@@ -285,7 +285,7 @@ export class ApiService {
     );
   }
 
-  createRecording(recordingAttributes: RecordingAttributes): Observable<Response> {
+  createRecording(recordingAttributes: RecordingAttributes): Observable<{ok: boolean, status: number } | undefined> {
     const form = new window.FormData();
     form.append('recordingName', recordingAttributes.name);
     form.append('events', recordingAttributes.events);
@@ -314,8 +314,24 @@ export class ApiService {
           method: 'POST',
           body: form,
         }).pipe(
-          map((resp) => resp),
-          catchError((_) => of()),
+          map((resp) => {
+            return {
+              ok: resp.ok, status: resp.status 
+            }
+          }),
+          catchError((err) => {
+            if (isHttpError(err)) {
+              return of(
+                {
+                  ok: false, 
+                  status: err.httpResponse.status,
+                }
+              );
+            }
+            else {
+              return of(undefined);
+            }
+          }),
           first()
         )
       )

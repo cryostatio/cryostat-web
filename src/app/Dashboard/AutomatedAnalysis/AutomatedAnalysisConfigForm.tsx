@@ -207,7 +207,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
         .pipe(first())
         .subscribe({
           next: (resp) => {
-            if (resp.ok && props.onCreate) {
+            if (resp && resp.ok && props.onCreate) {
               props.onCreate();
             }
             setIsLoading(false);
