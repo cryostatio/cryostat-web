@@ -67,6 +67,7 @@ import { CogIcon } from '@patternfly/react-icons';
 import { Link } from 'react-router-dom';
 import * as React from 'react';
 import { concatMap, filter, first, mergeMap, toArray } from 'rxjs';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 interface AutomatedAnalysisConfigFormProps {
   onCreate?: () => void;
   onSave?: () => void;
@@ -117,6 +118,8 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
       context.target
         .target()
         .pipe(
+          filter((target) => target !== NO_TARGET),
+          first(),
           concatMap((target) =>
             context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`).pipe(
               mergeMap((templates) => templates),
@@ -126,7 +129,14 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
             )
           )
         )
-        .subscribe(setTemplates)
+        .subscribe({
+          next: (templates) => {
+            setTemplates(templates);
+          },
+          error: (err) => {
+            setTemplates([]);
+          },
+        })
     );
   }, [addSubscription, context.target, context.api, setTemplates]);
 

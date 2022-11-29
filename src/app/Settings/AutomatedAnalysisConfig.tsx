@@ -42,7 +42,10 @@ import {
   defaultAutomatedAnalysisRecordingConfig,
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { TargetView } from '@app/TargetView/TargetView';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   DescriptionList,
   DescriptionListDescription,
@@ -58,6 +61,8 @@ import { UserSetting } from './Settings';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+
   const [config, setConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
     context.settings.automatedAnalysisRecordingConfig()
   );
@@ -69,38 +74,39 @@ const Component = () => {
   }, [context.settings, context.settings.automatedAnalysisRecordingConfig, setConfig]);
 
   return (
-    <TargetView pageTitle={''} compactSelect>
-      <Stack hasGutter>
-        <StackItem>
-          <Title headingLevel="h2" size="lg">
-            Current configuration
-          </Title>
-        </StackItem>
-        <StackItem>
-          <DescriptionList columnModifier={{ lg: '3Col' }}>
-            <DescriptionListGroup>
-              <DescriptionListTerm>Template</DescriptionListTerm>
-              <DescriptionListDescription>{config.templates}</DescriptionListDescription>
-            </DescriptionListGroup>
-            <DescriptionListGroup>
-              <DescriptionListTerm>Max Size (B)</DescriptionListTerm>
-              <DescriptionListDescription>{config.maxSize}</DescriptionListDescription>
-            </DescriptionListGroup>
-            <DescriptionListGroup>
-              <DescriptionListTerm>Max Age (s)</DescriptionListTerm>
-              <DescriptionListDescription>{config.maxAge}</DescriptionListDescription>
-            </DescriptionListGroup>
-          </DescriptionList>
-        </StackItem>
-        <ExpandableSection
-          toggleText={expanded ? 'Show configuration edit' : 'Hide configuration edit'}
-          onToggle={setExpanded}
-          isExpanded={expanded}
-        >
-          <AutomatedAnalysisConfigForm onSave={onSave} isSettingsForm={true} />
-        </ExpandableSection>
-      </Stack>
-    </TargetView>
+    <Stack hasGutter>
+      <StackItem>
+        <TargetSelect simple />
+      </StackItem>
+      <StackItem>
+        <Title headingLevel="h2" size="lg">
+          Current configuration
+        </Title>
+      </StackItem>
+      <StackItem>
+        <DescriptionList columnModifier={{ lg: '3Col' }}>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Template</DescriptionListTerm>
+            <DescriptionListDescription>{config.templates}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Max Size (B)</DescriptionListTerm>
+            <DescriptionListDescription>{config.maxSize}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Max Age (s)</DescriptionListTerm>
+            <DescriptionListDescription>{config.maxAge}</DescriptionListDescription>
+          </DescriptionListGroup>
+        </DescriptionList>
+      </StackItem>
+      <ExpandableSection
+        toggleText={expanded ? 'Show configuration edit' : 'Hide configuration edit'}
+        onToggle={setExpanded}
+        isExpanded={expanded}
+      >
+        <AutomatedAnalysisConfigForm onSave={onSave} isSettingsForm={true} />
+      </ExpandableSection>
+    </Stack>
   );
 };
 
