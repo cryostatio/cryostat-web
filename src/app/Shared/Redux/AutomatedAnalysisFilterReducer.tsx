@@ -156,7 +156,6 @@ export const automatedAnalysisFilterReducer = createReducer(initialState, (build
       const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
       let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
         ...oldAutomatedAnalysisFilter,
-        // do not change selectedCategory if score filter (since this changes the toolbar category)
         selectedCategory: payload.category,
         filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
           filterKey: payload.category!,
