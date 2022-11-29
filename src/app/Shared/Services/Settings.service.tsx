@@ -81,7 +81,7 @@ export class SettingsService {
   }
 
   autoRefreshPeriod(defaultPeriod = 30): number {
-    return getFromLocalStorage('AUTO_REFRESH_PERIOD', defaultPeriod);
+    return Number(getFromLocalStorage('AUTO_REFRESH_PERIOD', defaultPeriod));
   }
 
   setAutoRefreshPeriod(period: number): void {
@@ -89,7 +89,7 @@ export class SettingsService {
   }
 
   autoRefreshUnits(defaultUnits = 1000): number {
-    return getFromLocalStorage('AUTO_REFRESH_UNITS', defaultUnits);
+    return Number(getFromLocalStorage('AUTO_REFRESH_UNITS', defaultUnits));
   }
 
   setAutoRefreshUnits(units: number): void {
@@ -186,7 +186,7 @@ export class SettingsService {
   }
 
   webSocketDebounceMs(defaultWebSocketDebounceMs = 100): number {
-    return getFromLocalStorage('WEBSOCKET_DEBOUNCE_MS', defaultWebSocketDebounceMs);
+    return Number(getFromLocalStorage('WEBSOCKET_DEBOUNCE_MS', defaultWebSocketDebounceMs));
   }
 
   setWebSocketDebounceMs(debounce: number): void {

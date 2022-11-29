@@ -59,16 +59,7 @@ export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: a
   }
   try {
     const item = window.localStorage.getItem(key);
-    if (item === null) {
-      return defaultValue;
-    } else {
-      const parsed = JSON.parse(item);
-      if (isNaN(parsed)) {
-        return parsed;
-      } else {
-        return Number(parsed);
-      }
-    }
+    return item ? JSON.parse(item) : defaultValue;
   } catch (error) {
     return defaultValue;
   }

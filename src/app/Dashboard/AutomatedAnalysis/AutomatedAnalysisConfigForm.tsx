@@ -68,6 +68,7 @@ import { Link } from 'react-router-dom';
 import * as React from 'react';
 import { concatMap, filter, first, mergeMap, toArray } from 'rxjs';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 interface AutomatedAnalysisConfigFormProps {
   onCreate?: () => void;
   onSave?: () => void;
@@ -88,6 +89,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSaveLoading, setIsSaveLoading] = React.useState(false);
   const [showHelperMessage, setShowHelperMessage] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -131,26 +133,25 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
         )
         .subscribe({
           next: (templates) => {
-            console.log('SDF');
-
+            setErrorMessage('');
             setTemplates(templates);
           },
           error: (err) => {
-            console.log('Error retrieving templates: ', err);
-
+            setErrorMessage(err.message);
             setTemplates([]);
           },
         })
     );
-  }, [addSubscription, context.target, context.api, setTemplates]);
+  }, [addSubscription, context.target, context.api, setErrorMessage, setTemplates]);
 
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
+        setErrorMessage(authFailMessage);
         setTemplates([]);
       })
     );
-  }, [addSubscription, context.target, setTemplates]);
+  }, [addSubscription, context.target, setErrorMessage, setTemplates]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshTemplates));
@@ -279,6 +280,19 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     context.settings.setAutomatedAnalysisRecordingConfig,
   ]);
 
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target]);
+
+  if (errorMessage != '') {
+    return (
+      <ErrorView
+        title={'Error displaying recording creation form'}
+        message={errorMessage}
+        retry={isAuthFail(errorMessage) ? authRetry : undefined}
+      />
+    );
+  }
   return (
     <Form isHorizontal={props.isSettingsForm}>
       <FormSection title={props.isSettingsForm ? '' : 'Profiling Recording Configuration'}>
