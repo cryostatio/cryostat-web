@@ -37,7 +37,12 @@
  */
 import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { AutomatedAnalysisRecordingConfig, automatedAnalysisRecordingName, RecordingAttributes, RecordingOptions } from '@app/Shared/Services/Api.service';
+import {
+  AutomatedAnalysisRecordingConfig,
+  automatedAnalysisRecordingName,
+  RecordingAttributes,
+  RecordingOptions,
+} from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -81,6 +86,12 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSaveLoading, setIsSaveLoading] = React.useState(false);
   const [showHelperMessage, setShowHelperMessage] = React.useState(false);
+
+  React.useEffect(() => {
+    const config = context.settings.automatedAnalysisRecordingConfig();
+    setMaxAge(config.maxAge);
+    setMaxSize(config.maxSize);
+  }, []);
 
   const createButtonLoadingProps = React.useMemo(
     () =>

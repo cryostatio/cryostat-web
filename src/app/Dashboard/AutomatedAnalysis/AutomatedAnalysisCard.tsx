@@ -269,7 +269,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   const handleEmptyRecordings = React.useCallback(
     (connectUrl: string) => {
-      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);      
+      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);
       if (cachedReportAnalysis.report.length > 0) {
         setUsingCachedReport(true);
         setReportTime(cachedReportAnalysis.timestamp);

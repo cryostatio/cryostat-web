@@ -83,7 +83,6 @@ export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
                 </StackItem>
               )}
             </Stack>
-            <Text></Text>
           </>
         </EmptyStateBody>
       </EmptyState>

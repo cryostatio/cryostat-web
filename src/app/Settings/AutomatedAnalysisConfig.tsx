@@ -37,7 +37,10 @@
  */
 
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import { AutomatedAnalysisRecordingConfig, defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Api.service';
+import {
+  AutomatedAnalysisRecordingConfig,
+  defaultAutomatedAnalysisRecordingConfig,
+} from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
 import {

@@ -157,7 +157,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
             onSelect={onDropdownSelect}
             toggle={
               <DropdownToggle
-              aria-label="Recording Config Dropdown"
+                aria-label="Recording Config Dropdown"
                 id="automated-analysis-recording-config-toggle"
                 splitButtonItems={[
                   <DropdownToggleAction key="recording-cog-action" aria-label="Recording Actions" onClick={onClick}>
