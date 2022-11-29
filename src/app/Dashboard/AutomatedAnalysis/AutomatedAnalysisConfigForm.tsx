@@ -243,7 +243,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
         props.onSave();
       }
       setIsSaveLoading(false);
-    }, 1000);
+    }, 500);
     return () => clearInterval(timer);
   }, [
     getEventString,

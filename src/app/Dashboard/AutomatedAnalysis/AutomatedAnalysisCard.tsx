@@ -385,9 +385,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     handleStateErrors,
   ]);
 
-  const handleErrorView = React.useCallback((): [string, () => void] => {
+  const handleErrorView = React.useCallback((): [string, undefined | (() => void) ] => {
     if (errorMessage === NO_RECORDINGS_MESSAGE) {
-      return ['', () => {}];
+      return ['', undefined];
     } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
       return ['Retry starting recording', startProfilingRecording];
     } else if (errorMessage === FAILED_REPORT_MESSAGE) {
@@ -674,7 +674,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
             <Text component={TextVariants.small}>{errorMessage}</Text>
           </TextContent>
         }
-        retryButtonEnabled={errorMessage === NO_RECORDINGS_MESSAGE}
         retryButtonMessage={handleErrorView()[0]}
         retry={handleErrorView()[1]}
       />
