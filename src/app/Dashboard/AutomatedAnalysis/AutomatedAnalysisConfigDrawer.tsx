@@ -46,6 +46,7 @@ import {
   DrawerContent,
   DrawerContentBody,
   DrawerHead,
+  DrawerPanelBody,
   DrawerPanelContent,
   Dropdown,
   DropdownItem,
@@ -79,10 +80,10 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     [setIsDropdownOpen]
   );
 
-  const onDropdownFocus = () => {
+  const onDropdownFocus = React.useCallback(() => {
     const element = document.getElementById('automated-analysis-recording-config-toggle');
     element?.focus();
-  };
+  }, []);
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
@@ -109,11 +110,9 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     handleCreateRecording(attributes);
   }, [context.settings, context.settings.automatedAnalysisRecordingConfig, handleCreateRecording]);
 
-  const onDropdownSelect = React.useCallback(() => {}, [setIsDropdownOpen]);
-
-  const onExpand = () => {
+  const onExpand = React.useCallback(() => {
     drawerRef.current && drawerRef.current.focus();
-  };
+  }, []);
 
   const onOptionSelect = React.useCallback(() => {
     setIsDropdownOpen(false);
@@ -136,6 +135,9 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
             <DrawerCloseButton onClick={onDrawerClose} />
           </DrawerActions>
         </DrawerHead>
+        <DrawerPanelBody>
+
+        </DrawerPanelBody>
       </DrawerPanelContent>
     );
   }, [props.onCreate, onDrawerClose]);
@@ -182,7 +184,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
         </LevelItem>
       </Level>
     );
-  }, [isDropdownOpen, onToggle, onOptionSelect, onDropdownSelect]);
+  }, [isDropdownOpen, onToggle, onOptionSelect]);
 
   return (
     <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>

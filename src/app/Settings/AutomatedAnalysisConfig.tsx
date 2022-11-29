@@ -93,7 +93,7 @@ const Component = () => {
           </DescriptionList>
         </StackItem>
         <ExpandableSection
-          toggleText={expanded ? 'Show less' : 'Edit configuration'}
+          toggleText={expanded ? 'Show configuration edit' : 'Hide configuration edit'}
           onToggle={setExpanded}
           isExpanded={expanded}
         >
