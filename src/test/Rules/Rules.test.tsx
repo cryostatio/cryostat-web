@@ -166,7 +166,7 @@ describe('<Rules />', () => {
     expect(modal).toBeInTheDocument();
     expect(modal).toBeVisible();
 
-    const modalTitle = await within(modal).findByText('Upload Automatic Rules');
+    const modalTitle = await within(modal).findByText('Upload Automated Rules');
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
@@ -270,7 +270,7 @@ describe('<Rules />', () => {
     expect(modal).toBeInTheDocument();
     expect(modal).toBeVisible();
 
-    const modalTitle = await within(modal).findByText('Upload Automatic Rules');
+    const modalTitle = await within(modal).findByText('Upload Automated Rules');
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
