@@ -120,7 +120,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
 
   const panelContent = React.useMemo(() => {
     return (
-      <DrawerPanelContent>
+      <DrawerPanelContent style={{zIndex: 199}}>
         <DrawerHead>
           <span tabIndex={isExpanded ? 0 : -1} ref={drawerRef}></span>
           <DrawerActions>

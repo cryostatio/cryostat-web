@@ -64,6 +64,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
+import { Link } from 'react-router-dom';
 import * as React from 'react';
 import { concatMap, filter, first, mergeMap, toArray } from 'rxjs';
 interface AutomatedAnalysisConfigFormProps {
@@ -346,10 +347,10 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
                 {!props.isSettingsForm && (
                   <Text>
                     You can also change this in the&nbsp;
-                    <Button isInline component="a" href="settings" variant="link" icon={<CogIcon />}>
-                      Settings&nbsp;
+                    <Button isInline component="a" variant="link" icon={<CogIcon />}>
+                      <Link to="/settings">Settings</Link> 
                     </Button>
-                    view.
+                    &nbsp;view.
                   </Text>
                 )}
               </HelperTextItem>
