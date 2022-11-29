@@ -307,7 +307,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
           <SelectTemplateSelectorForm
             templates={templates}
             validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
-            disabled={isLoading}
+            disabled={isLoading || isSaveLoading}
             onSelect={handleTemplateChange}
           />
         </FormGroup>
@@ -322,10 +322,11 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
                 aria-label="max size value"
                 onChange={handleMaxSizeChange}
                 min="0"
+                isDisabled={isLoading || isSaveLoading}
               />
             </SplitItem>
             <SplitItem>
-              <FormSelect value={maxSizeUnits} onChange={handleMaxSizeUnitChange} aria-label="Max size units input">
+              <FormSelect value={maxSizeUnits} onChange={handleMaxSizeUnitChange} aria-label="Max size units input" isDisabled={isLoading || isSaveLoading}>
                 <FormSelectOption key="1" value="1" label="B" />
                 <FormSelectOption key="2" value={1024} label="KiB" />
                 <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
@@ -344,10 +345,11 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
                 aria-label="Max age duration"
                 onChange={handleMaxAgeChange}
                 min="0"
+                isDisabled={isLoading || isSaveLoading}
               />
             </SplitItem>
             <SplitItem>
-              <FormSelect value={maxAgeUnits} onChange={handleMaxAgeUnitChange} aria-label="Max Age units Input">
+              <FormSelect value={maxAgeUnits} onChange={handleMaxAgeUnitChange} aria-label="Max Age units Input" isDisabled={isLoading || isSaveLoading}>
                 <FormSelectOption key="1" value="1" label="Seconds" />
                 <FormSelectOption key="2" value={60} label="Minutes" />
                 <FormSelectOption key="3" value={60 * 60} label="Hours" />

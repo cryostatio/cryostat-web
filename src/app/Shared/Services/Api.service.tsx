@@ -358,13 +358,13 @@ export class ApiService {
     );
   }
 
-  createSnapshotV2(): Observable<Recording> {
+  createSnapshotV2(): Observable<ActiveRecording | undefined> {
     return this.target.target().pipe(
       concatMap((target) =>
         this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
           method: 'POST',
         }).pipe(
-          concatMap((resp) => resp.json()),
+          concatMap((resp) => resp.json() as Promise<RecordingResponse>),
           map((response) => response.data.result),
           catchError((_) => of(undefined)),
           first()
@@ -1182,12 +1182,19 @@ export interface ApiV2Response {
   data: Object;
 }
 
+
 interface AssetJwtResponse extends ApiV2Response {
   data: {
     result: {
       resourceUrl: string;
     };
   };
+}
+
+interface RecordingResponse extends ApiV2Response {
+  data: {
+    result: ActiveRecording
+  }
 }
 
 interface CredentialResponse extends ApiV2Response {
