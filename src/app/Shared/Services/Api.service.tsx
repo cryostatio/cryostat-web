@@ -285,7 +285,7 @@ export class ApiService {
     );
   }
 
-  createRecording(recordingAttributes: RecordingAttributes): Observable<{ ok: boolean; status: number } | undefined> {
+  createRecording(recordingAttributes: RecordingAttributes): Observable<SimpleResponse | undefined> {
     const form = new window.FormData();
     form.append('recordingName', recordingAttributes.name);
     form.append('events', recordingAttributes.events);
@@ -1172,6 +1172,8 @@ export class ApiService {
   }
 }
 
+type SimpleResponse = Pick<Response, 'ok' | 'status'>;
+
 export interface AllArchivesResponse {}
 
 export interface ApiV2Response {
@@ -1181,7 +1183,6 @@ export interface ApiV2Response {
   };
   data: Object;
 }
-
 
 interface AssetJwtResponse extends ApiV2Response {
   data: {
@@ -1193,8 +1194,8 @@ interface AssetJwtResponse extends ApiV2Response {
 
 interface RecordingResponse extends ApiV2Response {
   data: {
-    result: ActiveRecording
-  }
+    result: ActiveRecording;
+  };
 }
 
 interface CredentialResponse extends ApiV2Response {

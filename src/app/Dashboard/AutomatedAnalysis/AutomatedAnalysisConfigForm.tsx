@@ -326,7 +326,12 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
               />
             </SplitItem>
             <SplitItem>
-              <FormSelect value={maxSizeUnits} onChange={handleMaxSizeUnitChange} aria-label="Max size units input" isDisabled={isLoading || isSaveLoading}>
+              <FormSelect
+                value={maxSizeUnits}
+                onChange={handleMaxSizeUnitChange}
+                aria-label="Max size units input"
+                isDisabled={isLoading || isSaveLoading}
+              >
                 <FormSelectOption key="1" value="1" label="B" />
                 <FormSelectOption key="2" value={1024} label="KiB" />
                 <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
@@ -349,7 +354,12 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
               />
             </SplitItem>
             <SplitItem>
-              <FormSelect value={maxAgeUnits} onChange={handleMaxAgeUnitChange} aria-label="Max Age units Input" isDisabled={isLoading || isSaveLoading}>
+              <FormSelect
+                value={maxAgeUnits}
+                onChange={handleMaxAgeUnitChange}
+                aria-label="Max Age units Input"
+                isDisabled={isLoading || isSaveLoading}
+              >
                 <FormSelectOption key="1" value="1" label="Seconds" />
                 <FormSelectOption key="2" value={60} label="Minutes" />
                 <FormSelectOption key="3" value={60 * 60} label="Hours" />

@@ -107,7 +107,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
 
   const onExpand = React.useCallback(() => {
     drawerRef.current && drawerRef.current.focus();
-  }, []);
+  }, [drawerRef]);
 
   const onOptionSelect = React.useCallback(() => {
     setIsDropdownOpen(false);
@@ -134,14 +134,17 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     );
   }, [props.onCreate, onDrawerClose]);
 
-  const dropdownItems = [
-    <DropdownItem key="custom" onClick={onOptionSelect} icon={<CogIcon />}>
-      Custom
-    </DropdownItem>,
-    <DropdownItem key="default" onClick={onDefaultRecordingStart} icon={<PlusCircleIcon />}>
-      Default
-    </DropdownItem>,
-  ];
+  const dropdownItems = React.useMemo(
+    () => [
+      <DropdownItem key="custom" onClick={onOptionSelect} icon={<CogIcon />}>
+        Custom
+      </DropdownItem>,
+      <DropdownItem key="default" onClick={onDefaultRecordingStart} icon={<PlusCircleIcon />}>
+        Default
+      </DropdownItem>,
+    ],
+    [onOptionSelect, onDefaultRecordingStart]
+  );
 
   const dropdown = React.useMemo(() => {
     return (
@@ -176,7 +179,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
         </LevelItem>
       </Level>
     );
-  }, [isDropdownOpen, onToggle, onOptionSelect]);
+  }, [isDropdownOpen, dropdownItems, onToggle, onOptionSelect]);
 
   return (
     <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>
