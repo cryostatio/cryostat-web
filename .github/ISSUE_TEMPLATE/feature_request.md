@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-### Describe the feature
+## Describe the feature
 A clear and concise description of what the feature is. 
 
-### Any other information?
+## Any other information?

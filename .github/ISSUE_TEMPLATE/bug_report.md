@@ -7,25 +7,25 @@ assignees: ''
 
 ---
 
-### Current Behavior:
+## Current Behavior:
 A concise description of what you're experiencing.
 
-### Expected Behavior:
+## Expected Behavior:
 A concise description of what you expected to happen.
 
-### Screenshots
+## Screenshots
 If applicable, add screenshots to help explain your problem.
 
-### Steps To Reproduce:
+## Steps To Reproduce:
 1. In this environment...
 2. With this config...
 3. Run '...'
 4. See error...
 
-### Environment:
+## Environment:
 - OS: [e.g. Ubuntu 20.04]
 - Environment: [e.g. OpenShift 4.7]
 - Version [e.g. 2.2.0]
 
-### Anything else:
+## Anything else:
 Links? References? Anything that will give us more context about the issue that you are encountering!
