@@ -263,19 +263,6 @@ const Comp = () => {
     },
   ];
 
-<<<<<<< HEAD
-=======
-  const createButtonLoadingProps = React.useMemo(
-    () =>
-      ({
-        spinnerAriaValueText: 'Creating',
-        spinnerAriaLabel: 'creating-automated-rule',
-        isLoading: loading,
-      } as LoadingPropsType),
-    [loading]
-  );
-
->>>>>>> 54c6853 (fix(rules): rename Automatic to Automated (#693))
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
