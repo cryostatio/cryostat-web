@@ -119,7 +119,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const [errorMessage, setErrorMessage] = React.useState<string>('');
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [reportStalenessTimer, setReportStalenessTimer] = React.useState<number>(0);
-  const [reportStalenessTimerUnits, setReportStalenessTimerUnits] = React.useState<string>('seconds');
+  const [reportStalenessTimerUnits, setReportStalenessTimerUnits] = React.useState<string>('second');
   const [reportTime, setReportTime] = React.useState<number>(0);
   const [usingArchivedReport, setUsingArchivedReport] = React.useState<boolean>(false);
   const [usingCachedReport, setUsingCachedReport] = React.useState<boolean>(false);
@@ -269,7 +269,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   const handleEmptyRecordings = React.useCallback(
     (connectUrl: string) => {
-      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);
+      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);      
       if (cachedReportAnalysis.report.length > 0) {
         setUsingCachedReport(true);
         setReportTime(cachedReportAnalysis.timestamp);
@@ -420,19 +420,19 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     if (reportMillis < MINUTE_MILLIS) {
       timerQuantity = Math.round(reportMillis / SECOND_MILLIS);
       interval = SECOND_MILLIS - (reportMillis % SECOND_MILLIS);
-      setReportStalenessTimerUnits('seconds');
+      setReportStalenessTimerUnits('second');
     } else if (reportMillis < HOUR_MILLIS) {
       timerQuantity = Math.round(reportMillis / MINUTE_MILLIS);
       interval = MINUTE_MILLIS - (reportMillis % MINUTE_MILLIS);
-      setReportStalenessTimerUnits('minutes');
+      setReportStalenessTimerUnits('minute');
     } else if (reportMillis < DAY_MILLIS) {
       timerQuantity = Math.round(reportMillis / HOUR_MILLIS);
       interval = HOUR_MILLIS - (reportMillis % HOUR_MILLIS);
-      setReportStalenessTimerUnits('hours');
+      setReportStalenessTimerUnits('hour');
     } else {
       timerQuantity = Math.round(reportMillis / DAY_MILLIS);
       interval = DAY_MILLIS - reportMillis * DAY_MILLIS;
-      setReportStalenessTimerUnits('days');
+      setReportStalenessTimerUnits('day');
     }
     setReportStalenessTimer(timerQuantity);
     const timer = setInterval(() => {
@@ -571,7 +571,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       <TextContent>
         <Text className="stale-report-text" component={TextVariants.p}>
           {(usingArchivedReport ? 'Showing archived report from ' : 'Showing cached report from ') +
-            `from ${reportStalenessTimer} ${reportStalenessTimerUnits} ago.`}
+            `from ${reportStalenessTimer} ${reportStalenessTimerUnits}${reportStalenessTimer > 1 ? 's' : ''} ago.`}
           <Tooltip
             content={
               (usingArchivedReport ? 'Automatically' : 'Clear cached report and automatically') +
@@ -579,6 +579,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
             }
           >
             <Button
+              aria-label="Create default recording"
               variant="plain"
               isInline
               isSmall
