@@ -2,7 +2,7 @@
 name: ✨ Feature request
 about: Improve an existing feature or add a new one
 title: '[Request] <title>'
-labels: feat, needs triage
+labels: feat, needs-triage
 assignees: ''
 
 ---
