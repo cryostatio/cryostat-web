@@ -96,7 +96,6 @@ import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from '
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 
 interface AutomatedAnalysisCardProps {
-  pageTitle: string;
 }
 
 export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
