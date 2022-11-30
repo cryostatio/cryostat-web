@@ -51,11 +51,9 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
   const dispatch = useDispatch();
   const currentScore = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.state.globalFilters.filters;
-    if (!filters) return 0; // Target is not yet loaded
+    if (!filters) return 0;
     return filters.Score;
   });
-
-  const [value, setValue] = React.useState<number>(currentScore);
 
   const steps = [
     { value: 0, label: '0' },
@@ -68,14 +66,12 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
   ];
 
   const on100Reset = React.useCallback(() => {
-    setValue(100);
     dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 100));
-  }, [dispatch, setValue]);
+  }, [dispatch]);
 
   const on0Reset = React.useCallback(() => {
-    setValue(0);
     dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 0));
-  }, [dispatch, setValue]);
+  }, [dispatch]);
 
   const onChange = React.useCallback(
     (value, inputValue) => {
@@ -92,25 +88,24 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
           newValue = Math.floor(inputValue);
         }
       }
-      setValue(newValue);
       dispatch(automatedAnalysisAddGlobalFilterIntent('Score', newValue));
     },
-    [setValue, dispatch]
+    [dispatch]
   );
 
   const className = React.useMemo(() => {
-    if (value >= 75) {
+    if (currentScore >= 75) {
       return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-critical';
-    } else if (value >= 50) {
+    } else if (currentScore >= 50) {
       return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-warning';
     } else {
       return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok';
     }
-  }, [value]);
+  }, [currentScore]);
 
   return (
     <>
-      <Text component={TextVariants.small}>Only showing analysis with scores ≥ {value}</Text>
+      <Text component={TextVariants.small}>Only showing analysis with scores ≥ {currentScore}</Text>
       <Slider
         leftActions={
           <Level hasGutter>
@@ -134,8 +129,8 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
         customSteps={steps}
         isInputVisible
         inputLabel="Score"
-        inputValue={value}
-        value={value}
+        inputValue={currentScore}
+        value={currentScore}
         onChange={onChange}
         min={0}
         max={100}
