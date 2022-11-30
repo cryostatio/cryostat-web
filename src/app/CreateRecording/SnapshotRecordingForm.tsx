@@ -42,6 +42,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { first } from 'rxjs';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { authFailMessage, ErrorView, isAuthFail, missingSSLMessage } from '@app/ErrorView/ErrorView';
 
 export interface SnapshotRecordingFormProps {}
 
@@ -50,6 +51,7 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const handleCreateSnapshot = React.useCallback(() => {
     setLoading(true);
@@ -76,6 +78,53 @@ export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFor
     [loading]
   );
 
+  React.useEffect(() => {
+    addSubscription(
+      context.target.sslFailure().subscribe(() => {
+        // also triggered if api calls in Custom Recording form fail
+        setErrorMessage(missingSSLMessage);
+      })
+    );
+  }, [context.target, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authRetry().subscribe(() => {
+        setErrorMessage(''); // Reset on retry
+      })
+    );
+  }, [context.target, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.authFailure().subscribe(() => {
+        // also triggered if api calls in Custom Recording form fail
+        setErrorMessage(authFailMessage);
+      })
+    );
+  }, [context.target, setErrorMessage, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.target.target().subscribe(() => {
+        setErrorMessage(''); // Reset on change
+      })
+    );
+  }, [context.target, setErrorMessage, addSubscription]);
+
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target]);
+
+  if (errorMessage != '') {
+    return (
+      <ErrorView
+        title={'Error displaying recording creation form'}
+        message={errorMessage}
+        retry={isAuthFail(errorMessage) ? authRetry : undefined}
+      />
+    );
+  }
   return (
     <>
       <Form isHorizontal>
