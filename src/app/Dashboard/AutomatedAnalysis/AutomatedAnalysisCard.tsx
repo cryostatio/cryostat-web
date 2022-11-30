@@ -57,6 +57,7 @@ import {
 } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -83,7 +84,7 @@ import {
 import { PlusCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { first, map, tap } from 'rxjs';
+import { filter, finalize, first, map, tap } from 'rxjs';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import {
   AutomatedAnalysisFilters,
@@ -109,8 +110,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     CategorizedRuleEvaluations[]
   >([]);
   const [isCardExpanded, setIsCardExpanded] = React.useState<boolean>(true);
-  const [isError, setIsError] = React.useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = React.useState<string>('');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [reportStalenessTimer, setReportStalenessTimer] = React.useState<number>(0);
   const [reportStalenessTimerUnits, setReportStalenessTimerUnits] = React.useState<string>('second');
@@ -149,10 +149,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       });
       const sorted = (Array.from(map) as CategorizedRuleEvaluations[]).sort();
       setCategorizedEvaluation(sorted);
-      setIsLoading(false);
-      setIsError(false);
     },
-    [setCategorizedEvaluation, setIsLoading, setIsError]
+    [setCategorizedEvaluation]
   );
 
   // Will perform analysis on  the first ActiveRecording which has
@@ -213,20 +211,19 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const handleStateErrors = React.useCallback(
     (errorMessage: string) => {
       setErrorMessage(errorMessage);
-      setIsError(true);
       setIsLoading(false);
       setUsingArchivedReport(false);
       setUsingCachedReport(false);
     },
-    [setErrorMessage, setIsError, setIsLoading, setUsingArchivedReport, setUsingCachedReport]
+    [setErrorMessage, setIsLoading, setUsingArchivedReport, setUsingCachedReport]
   );
 
   const handleLoading = React.useCallback(() => {
+    setErrorMessage(undefined);
     setIsLoading(true);
-    setIsError(false);
     setUsingArchivedReport(false);
     setUsingCachedReport(false);
-  }, [setIsLoading, setIsError, setUsingArchivedReport, setUsingCachedReport]);
+  }, [setErrorMessage, setIsLoading, setUsingArchivedReport, setUsingCachedReport]);
 
   const handleArchivedRecordings = React.useCallback(
     (recordings: ArchivedRecording[]) => {
@@ -262,6 +259,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     ]
   );
 
+  // try generating report on cached or archived recordings
   const handleEmptyRecordings = React.useCallback(
     (connectUrl: string) => {
       const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);
@@ -305,11 +303,14 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   const generateReport = React.useCallback(() => {
     addSubscription(
-      context.target.target().subscribe((target) => {
+      context.target.target()
+      .pipe(
+        filter((target) => target !== NO_TARGET),
+      )
+      .subscribe((target) => {
         handleLoading();
         setTargetConnectURL(target.connectUrl);
         dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
-        // query for designated automated-analysis profiling recording
         addSubscription(
           queryActiveRecordings(target.connectUrl)
             .pipe(
@@ -336,9 +337,11 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
                   });
               },
               error: (_) => {
-                // try generating report on cached or archived recordings
                 handleEmptyRecordings(target.connectUrl);
               },
+              complete: () => {
+                setIsLoading(false);
+              }
             })
         );
       })
@@ -351,6 +354,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     context.reports,
     automatedAnalysisAddTargetIntent,
     setTargetConnectURL,
+    setIsLoading,
     categorizeEvaluation,
     queryActiveRecordings,
     handleEmptyRecordings,
@@ -402,8 +406,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [addSubscription, context.target, handleStateErrors]);
 
   React.useEffect(() => {
-    generateReport();
-  }, []);
+    context.target.target().subscribe((target) => {
+      setTargetConnectURL(target.connectUrl);
+      dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
+      generateReport();
+    });
+  }, [context.target, generateReport, setTargetConnectURL, dispatch]);
 
   React.useEffect(() => {
     if (reportTime == 0 || !(usingArchivedReport || usingCachedReport)) {
@@ -462,8 +470,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   ]);
 
   const onCardExpand = React.useCallback(() => {
-    setIsCardExpanded(!isCardExpanded);
-  }, [setIsCardExpanded, isCardExpanded]);
+    setIsCardExpanded(isCardExpanded => !isCardExpanded);
+  }, [setIsCardExpanded]);
 
   const handleNAScoreChange = React.useCallback(
     (checked: boolean) => {
@@ -596,15 +604,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   ]);
 
   const toolbar = React.useMemo(() => {
-    if (isError) {
-      return null;
-    }
     return (
       <Toolbar
         id="automated-analysis-toolbar"
         aria-label="automated-analysis-toolbar"
         clearAllFilters={handleClearFilters}
-        clearFiltersButtonText="Clear"
+        clearFiltersButtonText="Clear all filters"
         isFullHeight
       >
         <ToolbarContent>
@@ -648,7 +653,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
   }, [
     isLoading,
-    isError,
     showNAScores,
     targetConnectURL,
     categorizedEvaluation,
@@ -676,7 +680,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [errorMessage, handleErrorView]);
 
   const view = React.useMemo(() => {
-    if (isError) {
+    if (errorMessage) {
       if (errorMessage == 'Authentication failure') {
         return errorView;
       }
@@ -686,7 +690,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     } else {
       return filteredCategorizedLabels;
     }
-  }, [filteredCategorizedLabels, isError, isLoading, errorMessage, errorView, generateReport]);
+  }, [filteredCategorizedLabels, isLoading, errorMessage, errorView, generateReport]);
 
   return (
     <Card id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
@@ -706,7 +710,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         <Stack hasGutter>
           <StackItem>{toolbar}</StackItem>
           <StackItem className="automated-analysis-score-filter-stack-item">
-            {isError ? null : (
+            {errorMessage ? null : (
               <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL}> </AutomatedAnalysisScoreFilter>
             )}
           </StackItem>
