@@ -54,17 +54,18 @@ import {
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
   SortByDirection,
-  Table,
-  TableBody,
-  TableHeader,
   TableVariant,
-  ICell,
   ISortBy,
-  info,
-  sortable,
   IRowData,
-  IExtraData,
   IAction,
+  TableComposable,
+  Thead,
+  Tr,
+  Th,
+  ThProps,
+  Td,
+  Tbody,
+  ActionsColumn,
 } from '@patternfly/react-table';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
@@ -88,6 +89,12 @@ export interface Rule {
   preservedArchives: number;
   maxAgeSeconds: number;
   maxSizeBytes: number;
+}
+
+export interface RuleTableHeader {
+  title?: string;
+  sortable?: boolean;
+  tooltip?: React.ReactNode;
 }
 
 export const ruleObjKeys = [
@@ -125,79 +132,65 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
   const [rules, setRules] = React.useState([] as Rule[]);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
-  const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
+  const [ruleToDelete, setRuleToDelete] = React.useState<Rule | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
 
   const tableColumns = [
     { title: 'Enabled' },
     {
       title: 'Name',
-      transforms: [sortable],
+      sortable: true,
     },
     { title: 'Description' },
     {
       title: 'Match Expression',
-      transforms: [
-        info({
-          tooltip:
-            'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
-        }),
-      ],
+      tooltip:
+        'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
     },
     {
       title: 'Event Specifier',
-      transforms: [
-        info({
-          tooltip: 'The name and location of the Event Template applied by this rule.',
-        }),
-      ],
+      tooltip: 'The name and location of the Event Template applied by this rule.',
     },
     {
       title: 'Archival Period',
-      transforms: [
-        info({
-          tooltip:
-            'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.',
-        }),
-      ],
+      tooltip:
+        'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.',
     },
     {
       title: 'Initial Delay',
-      transforms: [
-        info({
-          tooltip:
-            'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.',
-        }),
-      ],
+      tooltip:
+        'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.',
     },
     {
       title: 'Preserved Archives',
-      transforms: [
-        info({
-          tooltip:
-            'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.',
-        }),
-      ],
+      tooltip:
+        'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.',
     },
     {
       title: 'Maximum Age',
-      transforms: [
-        info({
-          tooltip:
-            'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.',
-        }),
-      ],
+      tooltip:
+        'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.',
     },
     {
       title: 'Maximum Size',
-      transforms: [
-        info({
-          tooltip:
-            'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.',
-        }),
-      ],
+      tooltip:
+        'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.',
     },
-  ] as ICell[];
+  ] as RuleTableHeader[];
+
+  const getSortParams = React.useCallback(
+    (columnIndex: number): ThProps['sort'] => ({
+      sortBy: sortBy,
+      onSort: (_event, index, direction) => {
+        setSortBy({
+          index: index,
+          direction: direction,
+        });
+      },
+      columnIndex,
+    }),
+    [sortBy, setSortBy]
+  );
 
   const refreshRules = React.useCallback(() => {
     setIsLoading(true);
@@ -255,13 +248,6 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
     return () => window.clearInterval(id);
   }, []);
 
-  const handleSort = React.useCallback(
-    (event, index, direction) => {
-      setSortBy({ index, direction });
-    },
-    [setSortBy]
-  );
-
   const handleCreateRule = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
   }, [routerHistory]);
@@ -274,44 +260,14 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
     (rule: Rule, enabled: boolean): void => {
       addSubscription(context.api.updateRule({ ...rule, enabled }).subscribe());
     },
-    [context, context.api, addSubscription]
+    [context.api, addSubscription]
   );
 
-  const displayRules = React.useMemo(() => {
-    const { index, direction } = sortBy;
-    let sorted = [...rules];
-    if (typeof index === 'number') {
-      const keys = ['name'];
-      const key = keys[index];
-      sorted = rules.sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
-      sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
-    }
-    return sorted.map((r: Rule) => [
-      <>
-        <Switch
-          aria-label={`${r.name} is enabled`}
-          className={'switch-toggle-' + String(r.enabled)}
-          isChecked={r.enabled}
-          onChange={(state) => handleToggle(r, state)}
-        />
-      </>,
-      r.name,
-      r.description,
-      r.matchExpression,
-      r.eventSpecifier,
-      r.archivalPeriodSeconds,
-      r.initialDelaySeconds,
-      r.preservedArchives,
-      r.maxAgeSeconds,
-      r.maxSizeBytes,
-    ]);
-  }, [rules, sortBy, handleToggle]);
-
   const handleDelete = React.useCallback(
-    (rowData: IRowData, clean: boolean = true) => {
+    (rule: Rule, clean: boolean = true) => {
       addSubscription(
         context.api
-          .deleteRule(rowData[1], clean)
+          .deleteRule(rule.name, clean)
           .pipe(first())
           .subscribe(() => {} /* do nothing - notification will handle updating state */)
       );
@@ -319,55 +275,109 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
     [addSubscription, context, context.api]
   );
 
-  const handleDownload = React.useCallback(
-    (rowData: IRowData) => {
-      context.api.downloadRule(rowData[1]);
-    },
-    [context, context.api]
-  );
-
-  const actionResolver = (rowData: IRowData, extraData: IExtraData): IAction[] => {
-    if (typeof extraData.rowIndex == 'undefined') {
-      return [];
-    }
-    return [
-      {
-        title: 'Download',
-        onClick: (event, rowId, rowData) => handleDownload(rowData),
-      },
-      {
-        isSeparator: true,
-      },
-      {
-        title: 'Delete',
-        onClick: (event, rowId, rowData) => {
-          setRowDeleteData(rowData);
-          handleDeleteButton(rowData);
-        },
-      },
-    ];
-  };
-
   const handleDeleteButton = React.useCallback(
-    (rowData) => {
+    (rule: Rule) => {
       if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules)) {
+        setRuleToDelete(rule);
         setWarningModalOpen(true);
       } else {
-        handleDelete(rowData, cleanRuleEnabled);
+        handleDelete(rule, cleanRuleEnabled);
       }
     },
-    [context, context.settings, setWarningModalOpen, handleDelete, cleanRuleEnabled]
+    [context.settings, setWarningModalOpen, handleDelete, setRuleToDelete, cleanRuleEnabled]
+  );
+
+  const actionResolver = React.useCallback(
+    (rule: Rule): IAction[] => {
+      return [
+        {
+          title: 'Download',
+          onClick: () => context.api.downloadRule(rule.name),
+        },
+        {
+          isSeparator: true,
+        },
+        {
+          title: 'Delete',
+          onClick: () => handleDeleteButton(rule),
+        },
+      ];
+    },
+    [context.api, handleDeleteButton]
   );
 
   const handleUploadModalClose = React.useCallback(() => {
     setIsUploadModalOpen(false);
-    refreshRules();
-  }, [setIsUploadModalOpen, refreshRules]);
+  }, [setIsUploadModalOpen]);
 
-  const viewContent = () => {
+  const ruleRows = React.useMemo(() => {
+    const { index, direction } = sortBy;
+    let sorted = [...rules];
+    if (typeof index === 'number') {
+      const keys = [
+        'enabled',
+        'name',
+        'description',
+        'matchExpression',
+        'eventSpecifier',
+        'archivalPeriodSeconds',
+        'initialDelaySeconds',
+        'preservedArchives',
+        'maxAgeSeconds',
+        'maxSizeBytes',
+      ];
+      const key = keys[index];
+      sorted = rules.sort((a: Rule, b: Rule): number => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0));
+      sorted = direction === SortByDirection.asc ? sorted : sorted.reverse();
+    }
+    return sorted.map((r: Rule, index) => (
+      <Tr key={`automatic-rule-${index}`}>
+        <Td key={`automatic-rule-enabled-${index}`} dataLabel={tableColumns[0].title}>
+          <Switch
+            aria-label={`${r.name} is enabled`}
+            className={'switch-toggle-' + String(r.enabled)}
+            isChecked={r.enabled}
+            onChange={(state) => handleToggle(r, state)}
+          />
+        </Td>
+        <Td key={`automatic-rule-name-${index}`} dataLabel={tableColumns[1].title}>
+          {r.name}
+        </Td>
+        <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[2].title}>
+          {r.description}
+        </Td>
+        <Td key={`automatic-rule-matchExpression-${index}`} dataLabel={tableColumns[3].title}>
+          {r.matchExpression}
+        </Td>
+        <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[4].title}>
+          {r.eventSpecifier}
+        </Td>
+        <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[5].title}>
+          {r.archivalPeriodSeconds}
+        </Td>
+        <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[6].title}>
+          {r.initialDelaySeconds}
+        </Td>
+        <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[7].title}>
+          {r.preservedArchives}
+        </Td>
+        <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[8].title}>
+          {r.maxAgeSeconds}
+        </Td>
+        <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[9].title}>
+          {r.maxSizeBytes}
+        </Td>
+        <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
+          <ActionsColumn items={actionResolver(r)} />
+        </Td>
+      </Tr>
+    ));
+  }, [rules, sortBy, handleToggle, actionResolver]);
+
+  const viewContent = React.useMemo(() => {
     if (isLoading) {
       return <LoadingView />;
-    } else if (rules.length === 0) {
+    } else if (!rules.length) {
       return (
         <>
           <EmptyState>
@@ -380,27 +390,35 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
       );
     } else {
       return (
-        <>
-          <Table
-            aria-label="Automated Rules table"
-            variant={TableVariant.compact}
-            cells={tableColumns}
-            rows={displayRules}
-            actionResolver={actionResolver}
-            sortBy={sortBy}
-            onSort={handleSort}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
-        </>
+        <TableComposable aria-label="Automated Rules Table" variant={TableVariant.compact}>
+          <Thead>
+            <Tr>
+              {tableColumns.map((col, index) => (
+                <Th
+                  key={`automatic-rule-header-${col.title}`}
+                  sort={col.sortable ? getSortParams(index) : undefined}
+                  info={
+                    col.tooltip
+                      ? {
+                          tooltip: col.tooltip,
+                        }
+                      : undefined
+                  }
+                >
+                  {col.title}
+                </Th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>{ruleRows}</Tbody>
+        </TableComposable>
       );
     }
-  };
+  }, [isLoading, rules, ruleRows]);
 
   const handleWarningModalAccept = React.useCallback(() => {
-    handleDelete(rowDeleteData, cleanRuleEnabled);
-  }, [handleDelete, rowDeleteData, cleanRuleEnabled]);
+    handleDelete(ruleToDelete!, cleanRuleEnabled);
+  }, [handleDelete, ruleToDelete, cleanRuleEnabled]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
@@ -425,7 +443,7 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
                 </ToolbarGroup>
                 <RuleDeleteWarningModal
                   warningType={DeleteWarningType.DeleteAutomatedRules}
-                  rule={rowDeleteData[1]}
+                  rule={ruleToDelete?.name}
                   visible={warningModalOpen}
                   onAccept={handleWarningModalAccept}
                   onClose={handleWarningModalClose}
@@ -434,7 +452,7 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
                 />
               </ToolbarContent>
             </Toolbar>
-            {viewContent()}
+            {viewContent}
           </CardBody>
         </Card>
         <Card>

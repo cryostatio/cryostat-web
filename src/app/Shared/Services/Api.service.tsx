@@ -1018,11 +1018,13 @@ export const isActiveRecording = (toCheck: Recording): toCheck is ActiveRecordin
   return (toCheck as ActiveRecording).state !== undefined;
 };
 
+export type TemplateType = 'TARGET' | 'CUSTOM';
+
 export interface EventTemplate {
   name: string;
   description: string;
   provider: string;
-  type: 'CUSTOM' | 'TARGET';
+  type: TemplateType;
 }
 
 export interface RecordingOptions {

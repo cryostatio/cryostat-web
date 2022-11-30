@@ -37,7 +37,8 @@
  */
 import { FormSelect, FormSelectOption, FormSelectOptionGroup, ValidatedOptions } from '@patternfly/react-core';
 import * as React from 'react';
-import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
+import { EventTemplate } from '@app/CreateRecording/CreateRecording';
+import { TemplateType } from '@app/Shared/Services/Api.service';
 
 export interface TemplateSelectionGroup {
   groupLabel: string;
@@ -50,6 +51,7 @@ export interface TemplateSelectionGroup {
 }
 
 export interface SelectTemplateSelectorFormProps {
+  selected: string; // e.g. "Continous,TARGET"
   templates: EventTemplate[];
   disabled?: boolean;
   validated?: ValidatedOptions;
@@ -57,21 +59,6 @@ export interface SelectTemplateSelectorFormProps {
 }
 
 export const SelectTemplateSelectorForm: React.FunctionComponent<SelectTemplateSelectorFormProps> = (props) => {
-  const [selected, setSelected] = React.useState('');
-
-  const handleTemplateSelect = React.useCallback(
-    (selected: string) => {
-      setSelected(selected);
-      if (!selected.length) {
-        props.onSelect(undefined, undefined);
-      } else {
-        const str = selected.split(',');
-        props.onSelect(str[0], str[1] as TemplateType);
-      }
-    },
-    [setSelected, props.onSelect]
-  );
-
   const groups = React.useMemo(
     () =>
       [
@@ -97,11 +84,23 @@ export const SelectTemplateSelectorForm: React.FunctionComponent<SelectTemplateS
     [props.templates]
   );
 
+  const handleTemplateSelect = React.useCallback(
+    (selected: string) => {
+      if (!selected.length) {
+        props.onSelect(undefined, undefined);
+      } else {
+        const str = selected.split(',');
+        props.onSelect(str[0], str[1] as TemplateType);
+      }
+    },
+    [props.onSelect]
+  );
+
   return (
     <>
       <FormSelect
         isDisabled={props.disabled}
-        value={selected}
+        value={props.selected}
         validated={props.validated || ValidatedOptions.default}
         onChange={handleTemplateSelect}
         aria-label="Event Template Input"

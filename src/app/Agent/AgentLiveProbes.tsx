@@ -53,13 +53,16 @@ import {
   Title,
 } from '@patternfly/react-core';
 import {
-  Table,
-  TableBody,
-  TableHeader,
   TableVariant,
   ISortBy,
   SortByDirection,
-  sortable,
+  ThProps,
+  TableComposable,
+  Tbody,
+  Th,
+  Thead,
+  Tr,
+  Td,
 } from '@patternfly/react-table';
 import { first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
@@ -84,13 +87,21 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
   const [errorMessage, setErrorMessage] = React.useState('');
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
-  const tableColumns = [
-    { title: 'ID', transforms: [sortable] },
-    { title: 'Name', transforms: [sortable] },
-    { title: 'Class', transforms: [sortable] },
-    { title: 'Description' },
-    { title: 'Method', transforms: [sortable] },
-  ];
+  const tableColumns = ['ID', 'Name', 'Class', 'Description', 'Method'];
+
+  const getSortParams = React.useCallback(
+    (columnIndex: number): ThProps['sort'] => ({
+      sortBy: sortBy,
+      onSort: (_event, index, direction) => {
+        setSortBy({
+          index: index,
+          direction: direction,
+        });
+      },
+      columnIndex,
+    }),
+    [sortBy, setSortBy]
+  );
 
   const handleProbes = React.useCallback(
     (probes) => {
@@ -118,13 +129,6 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
       })
     );
   }, [addSubscription, context.api, setIsLoading, handleProbes, handleError]);
-
-  const handleSort = React.useCallback(
-    (evt, index, direction) => {
-      setSortBy({ index, direction });
-    },
-    [setSortBy]
-  );
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
@@ -220,8 +224,27 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
     setFilteredProbes([...filtered]);
   }, [filterText, probes, sortBy, setFilteredProbes]);
 
-  const displayProbes = React.useMemo(
-    () => filteredProbes.map((t: EventProbe) => [t.id, t.name, t.clazz, t.description, t.methodName]),
+  const probeRows = React.useMemo(
+    () =>
+      filteredProbes.map((t: EventProbe, index) => (
+        <Tr key={`active-probe-${index}`}>
+          <Td key={`active-probe-id-${index}`} dataLabel={tableColumns[0]}>
+            {t.id}
+          </Td>
+          <Td key={`active-probe-name-${index}`} dataLabel={tableColumns[1]}>
+            {t.name}
+          </Td>
+          <Td key={`active-probe-clazz-${index}`} dataLabel={tableColumns[2]}>
+            {t.clazz}
+          </Td>
+          <Td key={`active-probe-description-${index}`} dataLabel={tableColumns[3]}>
+            {t.description}
+          </Td>
+          <Td key={`active-probe-methodname-${index}`} dataLabel={tableColumns[4]}>
+            {t.methodName}
+          </Td>
+        </Tr>
+      )),
     [filteredProbes]
   );
 
@@ -277,17 +300,19 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
                 onClose={handleWarningModalClose}
               />
             </Toolbar>
-            {displayProbes.length ? (
-              <Table
-                aria-label="Active Probes"
-                variant={TableVariant.compact}
-                cells={tableColumns}
-                rows={displayProbes}
-                onSort={handleSort}
-              >
-                <TableHeader />
-                <TableBody />
-              </Table>
+            {probeRows.length ? (
+              <TableComposable aria-label="Active Probe Table" variant={TableVariant.compact}>
+                <Thead>
+                  <Tr>
+                    {tableColumns.map((column, index) => (
+                      <Th key={`active-probe-header-${column}`} sort={getSortParams(index)}>
+                        {column}
+                      </Th>
+                    ))}
+                  </Tr>
+                </Thead>
+                <Tbody>{probeRows}</Tbody>
+              </TableComposable>
             ) : (
               <EmptyState>
                 <EmptyStateIcon icon={SearchIcon} />

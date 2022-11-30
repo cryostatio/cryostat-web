@@ -56,19 +56,20 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { useHistory, withRouter } from 'react-router-dom';
-import { iif, of } from 'rxjs';
-import { catchError, filter, first, mergeMap, toArray } from 'rxjs/operators';
+import { iif } from 'rxjs';
+import { filter, first, mergeMap, toArray } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
+import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { Rule } from './Rules';
+import { TemplateType } from '@app/Shared/Services/Api.service';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
@@ -272,6 +273,13 @@ const Comp: React.FunctionComponent<{}> = () => {
     [loading]
   );
 
+  const selectedSpecifier = React.useMemo(() => {
+    if (templateName && templateType) {
+      return `${templateName},${templateType}`;
+    }
+    return '';
+  }, [templateName, templateType]);
+
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
   }, [context.target, context.target.setAuthRetry]);
@@ -379,6 +387,7 @@ const Comp: React.FunctionComponent<{}> = () => {
                     helperTextInvalid="A Template must be selected"
                   >
                     <SelectTemplateSelectorForm
+                      selected={selectedSpecifier}
                       disabled={loading}
                       validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
                       templates={templates}
