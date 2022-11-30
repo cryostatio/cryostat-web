@@ -147,7 +147,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           topicValue.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
         }
       });
-      setCategorizedEvaluation((Array.from(map) as CategorizedRuleEvaluations[]).sort());
+      const sorted = (Array.from(map) as CategorizedRuleEvaluations[]).sort();
+      setCategorizedEvaluation(sorted);
       setIsLoading(false);
       setIsError(false);
     },
