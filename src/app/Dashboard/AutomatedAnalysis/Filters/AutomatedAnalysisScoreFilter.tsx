@@ -39,7 +39,7 @@
 import { automatedAnalysisAddGlobalFilterIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { AutomatedAnalysisScore } from '@app/Shared/Services/Report.service';
-import { Button, Level, LevelItem, Slider, Text, TextVariants } from '@patternfly/react-core';
+import { Button, Level, LevelItem, Slider, SliderStepObject, Text, TextVariants } from '@patternfly/react-core';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -63,7 +63,7 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
     },
     { value: AutomatedAnalysisScore.RED_SCORE_THRESHOLD, label: String(AutomatedAnalysisScore.RED_SCORE_THRESHOLD) },
     { value: 100, label: '100' },
-  ];
+  ] as SliderStepObject[];
 
   const on100Reset = React.useCallback(() => {
     dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 100));
