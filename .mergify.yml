@@ -9,11 +9,3 @@ pull_request_rules:
           - cryostat-v2.2
         assignees:
           - "{{ author }}"
-
-  - name: auto label PRs from non-reviewers
-    conditions:
-      - author!=@reviewers
-    actions:
-      label:
-        add:
-          - needs-triage
