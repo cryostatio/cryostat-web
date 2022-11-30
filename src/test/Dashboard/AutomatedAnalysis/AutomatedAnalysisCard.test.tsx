@@ -56,7 +56,7 @@ import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Servic
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
-import { of, timer } from 'rxjs';
+import { of } from 'rxjs';
 import { renderWithServiceContextAndReduxStore } from '../../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
@@ -67,16 +67,13 @@ const mockEmptyCachedReport: CachedReportValue = {
   timestamp: 0,
 };
 
-const mockEvaluations: [string, RuleEvaluation][] = [
-  [
-    'rule1',
-    {
-      name: 'rule1',
-      description: 'rule1 description',
-      score: 100,
-      topic: 'rule1 topic',
-    },
-  ],
+const mockEvaluations: RuleEvaluation[] = [
+  {
+    name: 'rule1',
+    description: 'rule1 description',
+    score: 100,
+    topic: 'rule1 topic',
+  },
 ];
 
 const mockRecording = {

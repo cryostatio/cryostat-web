@@ -103,7 +103,7 @@ export class ReportService {
     );
   }
 
-  reportJson(recording: Recording, connectUrl: string): Observable<[string, RuleEvaluation][]> {
+  reportJson(recording: Recording, connectUrl: string): Observable<RuleEvaluation[]> {
     if (!recording.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
@@ -123,7 +123,7 @@ export class ReportService {
             resp
               .text()
               .then(JSON.parse)
-              .then((obj) => Object.entries(obj) as [string, RuleEvaluation][])
+              .then((obj) => Object.values(obj) as RuleEvaluation[])
           );
         } else {
           const ge: GenerationError = {
@@ -201,9 +201,11 @@ export class ReportService {
 }
 
 export interface CachedReportValue {
-  report: [string, RuleEvaluation][];
+  report: RuleEvaluation[];
   timestamp: number;
 }
+
+export type CategorizedRuleEvaluations = [string, RuleEvaluation[]];
 
 export type GenerationError = Error & {
   status: number;

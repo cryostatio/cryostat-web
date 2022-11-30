@@ -48,6 +48,7 @@ import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnaly
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { ArchivedRecording, automatedAnalysisRecordingName, Recording } from '@app/Shared/Services/Api.service';
 import {
+  CategorizedRuleEvaluations,
   FAILED_REPORT_MESSAGE,
   INTERNAL_ERROR_MESSAGE,
   NO_RECORDINGS_MESSAGE,
@@ -104,12 +105,10 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const dispatch = useDispatch<StateDispatch>();
 
   const [targetConnectURL, setTargetConnectURL] = React.useState('');
-  const [categorizedEvaluation, setCategorizedEvaluation] = React.useState<[string, RuleEvaluation[]][]>(
-    [] as [string, RuleEvaluation[]][]
-  );
+  const [categorizedEvaluation, setCategorizedEvaluation] = React.useState<CategorizedRuleEvaluations[]>([]);
   const [filteredCategorizedEvaluation, setFilteredCategorizedEvaluation] = React.useState<
-    [string, RuleEvaluation[]][]
-  >([] as [string, RuleEvaluation[]][]);
+    CategorizedRuleEvaluations[]
+  >([]);
   const [isCardExpanded, setIsCardExpanded] = React.useState<boolean>(true);
   const [isError, setIsError] = React.useState<boolean>(false);
   const [errorMessage, setErrorMessage] = React.useState<string>('');
@@ -138,9 +137,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }) as AutomatedAnalysisGlobalFiltersCategories;
 
   const categorizeEvaluation = React.useCallback(
-    (arr: [string, RuleEvaluation][]) => {
+    (arr: RuleEvaluation[]) => {
       const map = new Map<string, RuleEvaluation[]>();
-      arr.forEach(([_, evaluation]) => {
+      arr.forEach((evaluation) => {
         const topicValue = map.get(evaluation.topic);
         if (topicValue === undefined) {
           map.set(evaluation.topic, [evaluation]);
@@ -149,7 +148,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           topicValue.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
         }
       });
-      setCategorizedEvaluation((Array.from(map) as [string, RuleEvaluation[]][]).sort());
+      setCategorizedEvaluation((Array.from(map) as CategorizedRuleEvaluations[]).sort());
       setIsLoading(false);
       setIsError(false);
     },
