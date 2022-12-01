@@ -109,7 +109,7 @@ html, body, #root {
 }
 
 .automated-analysis-score-filter-slider .pf-c-slider__value .pf-c-form-control {
-  width: 5em;
+  width: 4.5em;
 }
 
 .clickable-automated-analysis-label-popover-header {
@@ -163,6 +163,50 @@ html, body, #root {
   border-radius: 0.5em;
 }
 
+.automated-analysis-score-filter-slider .pf-c-slider__step-label {
+  font-size: 0.85em;
+}
+
+/* Every 2nd, 4th, 6th score label handled specially (tick hidden, label above slider) */
+.automated-analysis-score-filter-slider .pf-c-slider__step:nth-child(2) .pf-c-slider__step-tick {
+  visibility: hidden;
+}
+
+.automated-analysis-score-filter-slider .pf-c-slider__step:nth-child(4) .pf-c-slider__step-tick {
+  visibility: hidden;
+}
+
+.automated-analysis-score-filter-slider .pf-c-slider__step:nth-child(6) .pf-c-slider__step-tick {
+  visibility: hidden;
+}
+
+.automated-analysis-score-filter-slider .pf-c-slider__step:nth-child(2) .pf-c-slider__step-label {
+  top: 0;
+}
+
+.automated-analysis-score-filter-slider .pf-c-slider__step:nth-child(4) .pf-c-slider__step-label {
+  top: 0;
+}
+
+.automated-analysis-score-filter-slider .pf-c-slider__step:nth-child(6) .pf-c-slider__step-label {
+  top: 0;
+}
+
+.automated-analysis-score-filter-slider-ok .pf-c-slider__step:nth-child(2) .pf-c-slider__step-label {
+  color: var(--pf-global--success-color--200);
+  font-weight: bold;
+}
+
+.automated-analysis-score-filter-slider-warning .pf-c-slider__step:nth-child(4) .pf-c-slider__step-label {
+  color: var(--pf-global--warning-color--200);
+  font-weight: bold;
+}
+
+.automated-analysis-score-filter-slider-critical .pf-c-slider__step:nth-child(6) .pf-c-slider__step-label {
+  color: var(--pf-global--danger-color--300);
+  font-weight: bold;
+}
+
 .automated-analysis-grid-item .pf-c-label-group__main {
   width: 100%;
 }
@@ -181,6 +225,10 @@ html, body, #root {
 
 .automated-analysis-grid-item .pf-c-label-group__label {
   font-weight: bold;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stale-report-text {

@@ -57,11 +57,14 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
 
   const steps = [
     { value: 0, label: '0' },
+    { value: 25, label: 'OK' },
     {
       value: AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD,
       label: String(AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD),
     },
+    { value: 62.5, label: 'WARNING' },
     { value: AutomatedAnalysisScore.RED_SCORE_THRESHOLD, label: String(AutomatedAnalysisScore.RED_SCORE_THRESHOLD) },
+    { value: 87.5, label: 'CRITICAL' },
     { value: 100, label: '100' },
   ] as SliderStepObject[];
 

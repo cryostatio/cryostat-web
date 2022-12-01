@@ -40,7 +40,6 @@ import { AutomatedAnalysisScore, RuleEvaluation } from '@app/Shared/Services/Rep
 import { Label, LabelProps, Popover } from '@patternfly/react-core';
 import { InfoCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
-import labelStyles from '@patternfly/react-styles/css/components/Label/label';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import React from 'react';
 
