@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import LoadingView from '@app/LoadingView/LoadingView';
 import {
   automatedAnalysisAddFilterIntent,
@@ -50,7 +50,6 @@ import { ArchivedRecording, automatedAnalysisRecordingName, Recording } from '@a
 import {
   CategorizedRuleEvaluations,
   FAILED_REPORT_MESSAGE,
-  INTERNAL_ERROR_MESSAGE,
   NO_RECORDINGS_MESSAGE,
   RECORDING_FAILURE_MESSAGE,
   RuleEvaluation,
@@ -262,8 +261,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   // try generating report on cached or archived recordings
   const handleEmptyRecordings = React.useCallback(
     (connectUrl: string) => {
-      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);      
-      if (cachedReportAnalysis.report.length > 0) {        
+      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);
+      if (cachedReportAnalysis.report.length > 0) {
         setUsingCachedReport(true);
         setReportTime(cachedReportAnalysis.timestamp);
         categorizeEvaluation(cachedReportAnalysis.report);
@@ -384,23 +383,25 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   ]);
 
   const authRetry = React.useCallback(() => {
-    context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
+    context.target.setAuthFailure();
+  }, [context.target]);
 
-  const handleErrorView = React.useCallback((): [string, undefined | (() => void)] => {
-    if (errorMessage === NO_RECORDINGS_MESSAGE) {
-      return ['', undefined];
-    } else if (errorMessage === authFailMessage) {
-      return ['Retry auth', authRetry];
-    } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
-      return ['Retry starting recording', startProfilingRecording];
-    } else if (errorMessage === FAILED_REPORT_MESSAGE) {
-      return ['Retry loading report', generateReport];
-    } else {
-      // errorMessage === INTERNAL_ERROR_MESSAGE
-      return ['Retry', generateReport];
+  const getMessageAndRetry = React.useCallback((errorMessage: string | undefined): [string | undefined, undefined | (() => void)] => {
+    if (errorMessage) {
+      if (errorMessage === NO_RECORDINGS_MESSAGE) {
+        return [undefined, undefined];
+      } else if (isAuthFail(errorMessage)) {
+        return ['Retry auth', generateReport];
+      } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
+        return ['Retry starting recording', startProfilingRecording];
+      } else if (errorMessage === FAILED_REPORT_MESSAGE) {
+        return ['Retry loading report', generateReport];
+      } else {
+        return ['Retry', generateReport];
+      }
     }
-  }, [errorMessage, startProfilingRecording, authRetry, generateReport]);
+    return [undefined, undefined];
+  }, [startProfilingRecording, authRetry, generateReport]);
 
   React.useEffect(() => {
     addSubscription(
@@ -417,8 +418,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       generateReport();
     });
   }, [context.target, generateReport, setTargetConnectURL, dispatch]);
-
-
 
   React.useEffect(() => {
     if (reportTime == 0 || !(usingArchivedReport || usingCachedReport)) {
@@ -523,21 +522,27 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [addSubscription, context.target, context.reports, startProfilingRecording]);
 
   const clearAnalysis = React.useCallback(() => {
-    setIsLoading(true);
-    if (usingCachedReport) {
-      context.reports.deleteCachedAnalysisReport(targetConnectURL);
-    } else if (usingArchivedReport) {
+    if (usingArchivedReport) {
       // do nothing, we don't want to delete unrelated archived reports
-      setIsLoading(false);
       return;
-    } else {
+    }
+    setIsLoading(true);
+    context.reports.deleteCachedAnalysisReport(targetConnectURL);
+    if (usingCachedReport) {
+      handleStateErrors(NO_RECORDINGS_MESSAGE);
+    }
+    else {
       addSubscription(
-        context.api.deleteRecording('automated-analysis').subscribe(() => {
-          context.reports.deleteCachedAnalysisReport(targetConnectURL);
+        context.api.deleteRecording('automated-analysis').subscribe({
+          next: () => {
+            handleStateErrors(NO_RECORDINGS_MESSAGE);
+          },
+          error: (error) => {
+            handleStateErrors(error.message);
+          }
         })
       );
     }
-    handleStateErrors(NO_RECORDINGS_MESSAGE);
   }, [
     addSubscription,
     context.api,
@@ -680,15 +685,15 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
             <Text component={TextVariants.small}>{errorMessage}</Text>
           </TextContent>
         }
-        retryButtonMessage={handleErrorView()[0]}
-        retry={handleErrorView()[1]}
+        retryButtonMessage={getMessageAndRetry(errorMessage)[0]}
+        retry={getMessageAndRetry(errorMessage)[1]}
       />
     );
-  }, [errorMessage, handleErrorView]);
+  }, [errorMessage, getMessageAndRetry]);
 
   const view = React.useMemo(() => {
     if (errorMessage) {
-      if (errorMessage == authFailMessage) {
+      if (isAuthFail(errorMessage)) {
         return errorView;
       }
       return <AutomatedAnalysisConfigDrawer onCreate={generateReport} drawerContent={errorView} />;
