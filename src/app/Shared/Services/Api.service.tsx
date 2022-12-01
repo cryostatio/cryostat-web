@@ -866,7 +866,8 @@ export class ApiService {
     apiVersion: ApiVersion,
     path: string,
     config?: RequestInit,
-    suppressNotifications = false
+    suppressNotifications = false,
+    skipStatusCheck = false
   ): Observable<Response> {
     const req = () =>
       this.login.getHeaders().pipe(
@@ -892,7 +893,12 @@ export class ApiService {
           if (resp.ok) return resp;
           throw new HttpError(resp);
         }),
-        catchError((err) => this.handleError<Response>(err, req, suppressNotifications))
+        catchError((err) => {
+          if (skipStatusCheck) {
+            throw err;
+          }
+          return this.handleError<Response>(err, req, suppressNotifications);
+        })
       );
     return req();
   }
