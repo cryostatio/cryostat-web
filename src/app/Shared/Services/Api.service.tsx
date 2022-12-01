@@ -766,12 +766,12 @@ export class ApiService {
       .target()
       .pipe(
         first(),
-        map(
-          (target) => [target.connectUrl,
-            `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(
-              target.connectUrl
-            )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`
-          ])
+        map((target) => [
+          target.connectUrl,
+          `${this.login.authority}/api/v2.1/targets/${encodeURIComponent(
+            target.connectUrl
+          )}/templates/${encodeURIComponent(template.name)}/type/${encodeURIComponent(template.type)}`,
+        ])
       )
       .subscribe((parts) => {
         const body = new window.FormData();
