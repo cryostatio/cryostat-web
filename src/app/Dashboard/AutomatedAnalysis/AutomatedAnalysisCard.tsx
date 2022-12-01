@@ -281,8 +281,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
                   handleStateErrors(NO_RECORDINGS_MESSAGE);
                 }
               },
-              error: () => {
-                handleStateErrors(NO_RECORDINGS_MESSAGE);
+              error: (err) => {
+                handleStateErrors(err.message);
               },
             })
         );
@@ -316,6 +316,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
             .pipe(
               finalize(() => setIsLoading(false)),
               first(),
+              tap((resp) => {
+                if (resp.errors) {
+                  context.target.setAuthFailure();
+                  throw new Error(authFailMessage);
+                }
+              }),
               map((v) => v.data.targetNodes[0].recordings.active.data[0] as Recording),
               tap((recording) => {
                 if (recording === null || recording === undefined) {
@@ -337,8 +343,13 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
                     },
                   });
               },
-              error: (_) => {
-                handleEmptyRecordings(target.connectUrl);
+              error: (err) => {
+                if (isAuthFail(err.message)) {
+                  context.target.setAuthRetry();
+                  handleStateErrors(authFailMessage);
+                } else {
+                  handleEmptyRecordings(target.connectUrl);
+                }
               },
             })
         );
@@ -382,10 +393,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     handleStateErrors,
   ]);
 
-  const authRetry = React.useCallback(() => {
-    context.target.setAuthFailure();
-  }, [context.target]);
-
   const getMessageAndRetry = React.useCallback((errorMessage: string | undefined): [string | undefined, undefined | (() => void)] => {
     if (errorMessage) {
       if (errorMessage === NO_RECORDINGS_MESSAGE) {
@@ -401,7 +408,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       }
     }
     return [undefined, undefined];
-  }, [startProfilingRecording, authRetry, generateReport]);
+  }, [startProfilingRecording, generateReport]);
 
   React.useEffect(() => {
     addSubscription(

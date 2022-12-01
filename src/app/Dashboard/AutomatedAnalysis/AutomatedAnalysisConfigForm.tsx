@@ -35,13 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { EventTemplate, TemplateType } from '@app/CreateRecording/CreateRecording';
+import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
   RecordingAttributes,
   RecordingOptions,
+  TemplateType,
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
@@ -282,7 +283,14 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
-  }, [context.target]);
+  }, [context.target, handleSubmit]);
+
+  const selectedSpecifier = React.useMemo(() => {
+    if (templateName && templateType) {
+      return `${templateName},${templateType}`;
+    }
+    return '';
+  }, [templateName, templateType]);
 
   if (errorMessage != '') {
     return (
@@ -308,7 +316,8 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
             templates={templates}
             validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
             disabled={isLoading || isSaveLoading}
-            onSelect={handleTemplateChange}
+            onSelect={handleTemplateChange} 
+            selected={selectedSpecifier}  
           />
         </FormGroup>
         <FormGroup label="Maximum size" fieldId="maxSize" helperText="The maximum size of recording data saved to disk">
