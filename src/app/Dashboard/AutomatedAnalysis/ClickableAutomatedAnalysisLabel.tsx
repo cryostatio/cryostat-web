@@ -135,9 +135,9 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
         key={`${clickableAutomatedAnalysisKey}-${label.name}`}
         isCompact
       >
-        <span className={css(labelStyles.labelText)}>{`${label.name}`}</span>
+        <span className={`${clickableAutomatedAnalysisKey}-name`}>{`${label.name}`}</span>
         {
-          // this is a hack to get rid of the tooltip (taken from @patternfly/react-core/.../Label/Label.tsx)
+          // don't use isTruncated here, it doesn't work with the popover because of helperText
         }
       </Label>
     </Popover>
