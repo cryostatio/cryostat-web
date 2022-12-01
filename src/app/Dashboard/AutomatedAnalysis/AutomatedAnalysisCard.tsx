@@ -58,6 +58,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { calculateAnalysisTimer } from '@app/utils/utils';
 import {
   Button,
   Card,
@@ -117,11 +118,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const [usingArchivedReport, setUsingArchivedReport] = React.useState<boolean>(false);
   const [usingCachedReport, setUsingCachedReport] = React.useState<boolean>(false);
   const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
-
-  const SECOND_MILLIS = 1000;
-  const MINUTE_MILLIS = 60 * SECOND_MILLIS;
-  const HOUR_MILLIS = 60 * MINUTE_MILLIS;
-  const DAY_MILLIS = 24 * HOUR_MILLIS;
 
   const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.state.targetFilters.filter(
@@ -230,7 +226,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         prev?.archivedTime > current?.archivedTime ? prev : current
       );
       addSubscription(
-        context.target.target().subscribe((target) => {
+        context.target.target().pipe(first()).subscribe((target) => {
           context.reports
             .reportJson(freshestRecording, target.connectUrl)
             .pipe(first())
@@ -238,7 +234,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
               next: (report) => {
                 setUsingArchivedReport(true);
                 setReportTime(freshestRecording.archivedTime);
-                categorizeEvaluation(report);
+                categorizeEvaluation(report);   
+                setIsLoading(false);             
               },
               error: (err) => {
                 handleStateErrors(err.message);
@@ -255,6 +252,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       handleStateErrors,
       setUsingArchivedReport,
       setReportTime,
+      setIsLoading,
     ]
   );
 
@@ -266,6 +264,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         setUsingCachedReport(true);
         setReportTime(cachedReportAnalysis.timestamp);
         categorizeEvaluation(cachedReportAnalysis.report);
+        setIsLoading(false);
       } else {
         addSubscription(
           queryArchivedRecordings(connectUrl)
@@ -297,6 +296,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       handleStateErrors,
       setUsingCachedReport,
       setReportTime,
+      setIsLoading,
     ]
   );
 
@@ -314,7 +314,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         addSubscription(
           queryActiveRecordings(target.connectUrl)
             .pipe(
-              finalize(() => setIsLoading(false)),
               first(),
               tap((resp) => {
                 if (resp.errors) {
@@ -337,6 +336,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
                   .subscribe({
                     next: (report) => {
                       categorizeEvaluation(report);
+                      setIsLoading(false);
                     },
                     error: (_) => {
                       handleStateErrors(FAILED_REPORT_MESSAGE);
@@ -398,7 +398,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       if (errorMessage === NO_RECORDINGS_MESSAGE) {
         return [undefined, undefined];
       } else if (isAuthFail(errorMessage)) {
-        return ['Retry auth', generateReport];
+        return ['Retry', generateReport];
       } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
         return ['Retry starting recording', startProfilingRecording];
       } else if (errorMessage === FAILED_REPORT_MESSAGE) {
@@ -409,14 +409,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     }
     return [undefined, undefined];
   }, [startProfilingRecording, generateReport]);
-
-  React.useEffect(() => {
-    addSubscription(
-      context.target.authFailure().subscribe(() => {
-        handleStateErrors(authFailMessage);
-      })
-    );
-  }, [addSubscription, context.target, handleStateErrors]);
 
   React.useEffect(() => {
     context.target.target().subscribe((target) => {
@@ -430,30 +422,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     if (reportTime == 0 || !(usingArchivedReport || usingCachedReport)) {
       return;
     }
-    let interval, timerQuantity;
-    let now = Date.now();
-    const reportMillis = now - reportTime;
-    if (reportMillis < MINUTE_MILLIS) {
-      timerQuantity = Math.round(reportMillis / SECOND_MILLIS);
-      interval = SECOND_MILLIS - (reportMillis % SECOND_MILLIS);
-      setReportStalenessTimerUnits('second');
-    } else if (reportMillis < HOUR_MILLIS) {
-      timerQuantity = Math.round(reportMillis / MINUTE_MILLIS);
-      interval = MINUTE_MILLIS - (reportMillis % MINUTE_MILLIS);
-      setReportStalenessTimerUnits('minute');
-    } else if (reportMillis < DAY_MILLIS) {
-      timerQuantity = Math.round(reportMillis / HOUR_MILLIS);
-      interval = HOUR_MILLIS - (reportMillis % HOUR_MILLIS);
-      setReportStalenessTimerUnits('hour');
-    } else {
-      timerQuantity = Math.round(reportMillis / DAY_MILLIS);
-      interval = DAY_MILLIS - reportMillis * DAY_MILLIS;
-      setReportStalenessTimerUnits('day');
-    }
-    setReportStalenessTimer(timerQuantity);
+    const analysisTimer = calculateAnalysisTimer(reportTime);
+    setReportStalenessTimer(analysisTimer.quantity);
+    setReportStalenessTimerUnits(analysisTimer.unit);
     const timer = setInterval(() => {
       setReportStalenessTimer((reportStalenessTimer) => reportStalenessTimer + 1);
-    }, interval);
+    }, analysisTimer.interval);
     return () => clearInterval(timer);
   }, [
     setReportStalenessTimer,

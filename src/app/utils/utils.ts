@@ -36,6 +36,11 @@
  * SOFTWARE.
  */
 
+const SECOND_MILLIS = 1000;
+const MINUTE_MILLIS = 60 * SECOND_MILLIS;
+const HOUR_MILLIS = 60 * MINUTE_MILLIS;
+const DAY_MILLIS = 24 * HOUR_MILLIS;
+
 export const createBlobURL = (content: any, contentType: string, timeout: number = 1000) => {
   const blob = new Blob([content], { type: contentType });
   const url = window.URL.createObjectURL(blob);
@@ -72,4 +77,38 @@ export const formatBytes = (bytes: number, decimals = 2): string => {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizeUnits[i]}`;
+};
+
+export interface AutomatedAnalysisTimerObject {
+  quantity: number;
+  unit: string;
+  interval: number;
+};
+
+export const calculateAnalysisTimer = (reportTime: number): AutomatedAnalysisTimerObject => {
+  let interval, timerQuantity, timerUnits;
+  let now = Date.now();
+  const reportMillis = now - reportTime;
+  if (reportMillis < MINUTE_MILLIS) {
+    timerQuantity = Math.round(reportMillis / SECOND_MILLIS);
+    interval = SECOND_MILLIS - (reportMillis % SECOND_MILLIS);
+    timerUnits = 'second';
+  } else if (reportMillis < HOUR_MILLIS) {
+    timerQuantity = Math.round(reportMillis / MINUTE_MILLIS);
+    interval = MINUTE_MILLIS - (reportMillis % MINUTE_MILLIS);
+    timerUnits = 'minute';
+  } else if (reportMillis < DAY_MILLIS) {
+    timerQuantity = Math.round(reportMillis / HOUR_MILLIS);
+    interval = HOUR_MILLIS - (reportMillis % HOUR_MILLIS);
+    timerUnits = 'hour';
+  } else {
+    timerQuantity = Math.round(reportMillis / DAY_MILLIS);
+    interval = DAY_MILLIS - reportMillis * DAY_MILLIS;
+    timerUnits = 'day';
+  }
+  return {
+    quantity: timerQuantity,
+    unit: timerUnits, 
+    interval: interval
+  } as AutomatedAnalysisTimerObject;
 };

@@ -137,9 +137,7 @@ export class ReportService {
       }),
       tap({
         next: (report) => {
-          const isArchived = !isActiveRecording(recording);
-          const isActiveStopped = !isArchived && recording.state === RecordingState.STOPPED;
-          if (isArchived || isActiveStopped) {
+          if (isActiveRecording(recording)) {
             try {
               sessionStorage.setItem(this.analysisKey(connectUrl), JSON.stringify(report));
               sessionStorage.setItem(this.analysisKeyTimestamp(connectUrl), Date.now().toString());
