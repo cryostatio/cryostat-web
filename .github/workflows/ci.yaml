@@ -16,6 +16,7 @@ on:
 
 jobs:
   build:
+    needs: [check-labels]
 
     runs-on: ubuntu-latest
 
@@ -24,9 +25,6 @@ jobs:
         node-version: [14.x]
 
     steps:
-    - name: Fail if needs-triage label applied
-      if: ${{ contains(github.event.pull_request.labels.*.name, 'needs-triage')}}
-      run: exit 1
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
