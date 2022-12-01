@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { ErrorView } from '@app/ErrorView/ErrorView';
+import { authFailMessage, ErrorView } from '@app/ErrorView/ErrorView';
 import LoadingView from '@app/LoadingView/LoadingView';
 import {
   automatedAnalysisAddFilterIntent,
@@ -241,8 +241,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
                 setReportTime(freshestRecording.archivedTime);
                 categorizeEvaluation(report);
               },
-              error: () => {
-                handleStateErrors(INTERNAL_ERROR_MESSAGE);
+              error: (err) => {
+                handleStateErrors(err.message);
               },
             });
         })
@@ -262,8 +262,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   // try generating report on cached or archived recordings
   const handleEmptyRecordings = React.useCallback(
     (connectUrl: string) => {
-      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);
-      if (cachedReportAnalysis.report.length > 0) {
+      const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);      
+      if (cachedReportAnalysis.report.length > 0) {        
         setUsingCachedReport(true);
         setReportTime(cachedReportAnalysis.timestamp);
         categorizeEvaluation(cachedReportAnalysis.report);
@@ -306,6 +306,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       context.target.target()
       .pipe(
         filter((target) => target !== NO_TARGET),
+        first(),
       )
       .subscribe((target) => {
         handleLoading();
@@ -314,10 +315,11 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         addSubscription(
           queryActiveRecordings(target.connectUrl)
             .pipe(
+              finalize(() => setIsLoading(false)),
               first(),
               map((v) => v.data.targetNodes[0].recordings.active.data[0] as Recording),
               tap((recording) => {
-                if (recording == null) {
+                if (recording === null || recording === undefined) {
                   throw new Error(NO_RECORDINGS_MESSAGE);
                 }
               })
@@ -339,9 +341,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
               error: (_) => {
                 handleEmptyRecordings(target.connectUrl);
               },
-              complete: () => {
-                setIsLoading(false);
-              }
             })
         );
       })
@@ -384,9 +383,15 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     handleStateErrors,
   ]);
 
+  const authRetry = React.useCallback(() => {
+    context.target.setAuthRetry();
+  }, [context.target, context.target.setAuthRetry]);
+
   const handleErrorView = React.useCallback((): [string, undefined | (() => void)] => {
     if (errorMessage === NO_RECORDINGS_MESSAGE) {
       return ['', undefined];
+    } else if (errorMessage === authFailMessage) {
+      return ['Retry auth', authRetry];
     } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
       return ['Retry starting recording', startProfilingRecording];
     } else if (errorMessage === FAILED_REPORT_MESSAGE) {
@@ -395,12 +400,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       // errorMessage === INTERNAL_ERROR_MESSAGE
       return ['Retry', generateReport];
     }
-  }, [errorMessage, startProfilingRecording, generateReport]);
+  }, [errorMessage, startProfilingRecording, authRetry, generateReport]);
 
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
-        handleStateErrors('Authentication failure');
+        handleStateErrors(authFailMessage);
       })
     );
   }, [addSubscription, context.target, handleStateErrors]);
@@ -412,6 +417,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       generateReport();
     });
   }, [context.target, generateReport, setTargetConnectURL, dispatch]);
+
+
 
   React.useEffect(() => {
     if (reportTime == 0 || !(usingArchivedReport || usingCachedReport)) {
@@ -508,7 +515,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   const clearCacheStartRecording = React.useCallback(() => {
     addSubscription(
-      context.target.target().subscribe((target) => {
+      context.target.target().pipe(first()).subscribe((target) => {
         context.reports.deleteCachedAnalysisReport(target.connectUrl);
         startProfilingRecording();
       })
@@ -568,7 +575,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
-      return '';
+      return undefined;
     }
     return (
       <TextContent>
@@ -681,7 +688,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   const view = React.useMemo(() => {
     if (errorMessage) {
-      if (errorMessage == 'Authentication failure') {
+      if (errorMessage == authFailMessage) {
         return errorView;
       }
       return <AutomatedAnalysisConfigDrawer onCreate={generateReport} drawerContent={errorView} />;
@@ -698,9 +705,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         isToggleRightAligned
         onExpand={onCardExpand}
         toggleButtonProps={{
-          id: 'toggle-button1',
+          id: 'automated-analysis-toggle-details',
           'aria-label': 'Details',
-          'aria-labelledby': 'automated-analysis-card-title toggle-button1',
+          'aria-labelledby': 'automated-analysis-card-title toggle-details',
           'aria-expanded': isCardExpanded,
         }}
       >
@@ -708,7 +715,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       </CardHeader>
       <CardExpandableContent>
         <Stack hasGutter>
-          <StackItem>{toolbar}</StackItem>
+          <StackItem>
+            {errorMessage ? null : toolbar}
+          </StackItem>
           <StackItem className="automated-analysis-score-filter-stack-item">
             {errorMessage ? null : (
               <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL}> </AutomatedAnalysisScoreFilter>
