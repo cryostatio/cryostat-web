@@ -73,7 +73,9 @@ const mockCreateTemplateNotification = {
     type: mockMessageType,
   } as MessageMeta,
   message: {
-    template: mockAnotherProbeTemplate,
+    templateName: mockAnotherProbeTemplate.name,
+    templateContent: mockAnotherProbeTemplate.xml,
+    probeTemplate: 'files-uploads/abcdfg',
   },
 } as NotificationMessage;
 
@@ -83,7 +85,7 @@ const mockDeleteTemplateNotification = {
     type: mockMessageType,
   },
   message: {
-    template: mockProbeTemplate,
+    probeTemplate: mockProbeTemplate.name,
   },
 } as NotificationMessage;
 
