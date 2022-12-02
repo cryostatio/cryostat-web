@@ -316,8 +316,8 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
             templates={templates}
             validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
             disabled={isLoading || isSaveLoading}
-            onSelect={handleTemplateChange} 
-            selected={selectedSpecifier}  
+            onSelect={handleTemplateChange}
+            selected={selectedSpecifier}
           />
         </FormGroup>
         <FormGroup label="Maximum size" fieldId="maxSize" helperText="The maximum size of recording data saved to disk">
@@ -402,7 +402,9 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
                 {!props.isSettingsForm && (
                   <Text>
                     You can also change this in the&nbsp;
-                      <Link to="/settings"><CogIcon />{' '}Settings</Link>
+                    <Link to="/settings">
+                      <CogIcon /> Settings
+                    </Link>
                     &nbsp;view.
                   </Text>
                 )}

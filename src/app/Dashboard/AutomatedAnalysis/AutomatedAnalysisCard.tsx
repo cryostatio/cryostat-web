@@ -42,17 +42,22 @@ import {
   automatedAnalysisAddTargetIntent,
   automatedAnalysisDeleteAllFiltersIntent,
   automatedAnalysisDeleteCategoryFiltersIntent,
-  automatedAnalysisDeleteFilterIntent
+  automatedAnalysisDeleteFilterIntent,
 } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { ArchivedRecording, automatedAnalysisRecordingName, isGraphQLAuthError, Recording } from '@app/Shared/Services/Api.service';
+import {
+  ArchivedRecording,
+  automatedAnalysisRecordingName,
+  isGraphQLAuthError,
+  Recording,
+} from '@app/Shared/Services/Api.service';
 import {
   CategorizedRuleEvaluations,
   FAILED_REPORT_MESSAGE,
   NO_RECORDINGS_MESSAGE,
   RECORDING_FAILURE_MESSAGE,
-  RuleEvaluation
+  RuleEvaluation,
 } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
@@ -68,7 +73,8 @@ import {
   CardTitle,
   Checkbox,
   Grid,
-  GridItem, LabelGroup,
+  GridItem,
+  LabelGroup,
   Split,
   SplitItem,
   Stack,
@@ -80,7 +86,7 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Tooltip
+  Tooltip,
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -92,13 +98,12 @@ import {
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
   emptyAutomatedAnalysisFilters,
-  filterAutomatedAnalysis
+  filterAutomatedAnalysis,
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 
-interface AutomatedAnalysisCardProps {
-}
+interface AutomatedAnalysisCardProps {}
 
 export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -228,23 +233,26 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         prev?.archivedTime > current?.archivedTime ? prev : current
       );
       addSubscription(
-        context.target.target().pipe(first()).subscribe((target) => {
-          context.reports
-            .reportJson(freshestRecording, target.connectUrl)
-            .pipe(first())
-            .subscribe({
-              next: (report) => {
-                setReport(freshestRecording.name);
-                setUsingArchivedReport(true);
-                setReportTime(freshestRecording.archivedTime);
-                categorizeEvaluation(report);   
-                setIsLoading(false);             
-              },
-              error: (err) => {
-                handleStateErrors(err.message);
-              },
-            });
-        })
+        context.target
+          .target()
+          .pipe(first())
+          .subscribe((target) => {
+            context.reports
+              .reportJson(freshestRecording, target.connectUrl)
+              .pipe(first())
+              .subscribe({
+                next: (report) => {
+                  setReport(freshestRecording.name);
+                  setUsingArchivedReport(true);
+                  setReportTime(freshestRecording.archivedTime);
+                  categorizeEvaluation(report);
+                  setIsLoading(false);
+                },
+                error: (err) => {
+                  handleStateErrors(err.message);
+                },
+              });
+          })
       );
     },
     [
@@ -308,66 +316,66 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   const generateReport = React.useCallback(() => {
     addSubscription(
-      context.target.target()
-      .pipe(
-        filter((target) => target !== NO_TARGET),
-        first(),
-      )
-      .subscribe((target) => {
-        handleLoading();
-        setTargetConnectURL(target.connectUrl);
-        dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
-        addSubscription(
-          queryActiveRecordings(target.connectUrl)
-            .pipe(
-              first(),
-              tap((resp) => {
-                if (resp.data == undefined) {
-                  if (isGraphQLAuthError(resp)) {
-                    context.target.setAuthFailure();
-                    throw new Error(authFailMessage);
-                  }                  
-                  else {
-                    throw new Error(resp.errors[0].message);
+      context.target
+        .target()
+        .pipe(
+          filter((target) => target !== NO_TARGET),
+          first()
+        )
+        .subscribe((target) => {
+          handleLoading();
+          setTargetConnectURL(target.connectUrl);
+          dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
+          addSubscription(
+            queryActiveRecordings(target.connectUrl)
+              .pipe(
+                first(),
+                tap((resp) => {
+                  if (resp.data == undefined) {
+                    if (isGraphQLAuthError(resp)) {
+                      context.target.setAuthFailure();
+                      throw new Error(authFailMessage);
+                    } else {
+                      throw new Error(resp.errors[0].message);
+                    }
                   }
-                }
-              }),
-              map((v) => v.data.targetNodes[0].recordings.active.data[0] as Recording),
-              tap((recording) => {
-                if (recording === null || recording === undefined) {
-                  throw new Error(NO_RECORDINGS_MESSAGE);
-                }
+                }),
+                map((v) => v.data.targetNodes[0].recordings.active.data[0] as Recording),
+                tap((recording) => {
+                  if (recording === null || recording === undefined) {
+                    throw new Error(NO_RECORDINGS_MESSAGE);
+                  }
+                })
+              )
+              .subscribe({
+                next: (recording) => {
+                  context.reports
+                    .reportJson(recording, target.connectUrl)
+                    .pipe(first())
+                    .subscribe({
+                      next: (report) => {
+                        setReport(recording.name);
+                        categorizeEvaluation(report);
+                        setIsLoading(false);
+                      },
+                      error: (_) => {
+                        handleStateErrors(FAILED_REPORT_MESSAGE);
+                      },
+                    });
+                },
+                error: (err) => {
+                  if (isAuthFail(err.message)) {
+                    context.target.setAuthRetry();
+                    handleStateErrors(authFailMessage);
+                  } else {
+                    console.log('SDF', err.message);
+
+                    handleEmptyRecordings(target.connectUrl);
+                  }
+                },
               })
-            )
-            .subscribe({
-              next: (recording) => {
-                context.reports
-                  .reportJson(recording, target.connectUrl)
-                  .pipe(first())
-                  .subscribe({
-                    next: (report) => {
-                      setReport(recording.name);
-                      categorizeEvaluation(report);
-                      setIsLoading(false);
-                    },
-                    error: (_) => {
-                      handleStateErrors(FAILED_REPORT_MESSAGE);
-                    },
-                  });
-              },
-              error: (err) => {
-                if (isAuthFail(err.message)) {
-                  context.target.setAuthRetry();
-                  handleStateErrors(authFailMessage);
-                } else {
-                  console.log("SDF", err.message);
-                  
-                  handleEmptyRecordings(target.connectUrl);
-                }
-              },
-            })
-        );
-      })
+          );
+        })
     );
   }, [
     addSubscription,
@@ -408,22 +416,25 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     handleStateErrors,
   ]);
 
-  const getMessageAndRetry = React.useCallback((errorMessage: string | undefined): [string | undefined, undefined | (() => void)] => {
-    if (errorMessage) {
-      if (errorMessage === NO_RECORDINGS_MESSAGE) {
-        return [undefined, undefined];
-      } else if (isAuthFail(errorMessage)) {
-        return ['Retry', generateReport];
-      } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
-        return ['Retry starting recording', startProfilingRecording];
-      } else if (errorMessage === FAILED_REPORT_MESSAGE) {
-        return ['Retry loading report', generateReport];
-      } else {
-        return ['Retry', generateReport];
+  const getMessageAndRetry = React.useCallback(
+    (errorMessage: string | undefined): [string | undefined, undefined | (() => void)] => {
+      if (errorMessage) {
+        if (errorMessage === NO_RECORDINGS_MESSAGE) {
+          return [undefined, undefined];
+        } else if (isAuthFail(errorMessage)) {
+          return ['Retry', generateReport];
+        } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
+          return ['Retry starting recording', startProfilingRecording];
+        } else if (errorMessage === FAILED_REPORT_MESSAGE) {
+          return ['Retry loading report', generateReport];
+        } else {
+          return ['Retry', generateReport];
+        }
       }
-    }
-    return [undefined, undefined];
-  }, [startProfilingRecording, generateReport]);
+      return [undefined, undefined];
+    },
+    [startProfilingRecording, generateReport]
+  );
 
   React.useEffect(() => {
     context.target.target().subscribe((target) => {
@@ -472,7 +483,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   ]);
 
   const onCardExpand = React.useCallback(() => {
-    setIsCardExpanded(isCardExpanded => !isCardExpanded);
+    setIsCardExpanded((isCardExpanded) => !isCardExpanded);
   }, [setIsCardExpanded]);
 
   const handleNAScoreChange = React.useCallback(
@@ -517,8 +528,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     context.reports.deleteCachedAnalysisReport(targetConnectURL);
     if (usingCachedReport) {
       generateReport();
-    }
-    else {
+    } else {
       addSubscription(
         context.api.deleteRecording('automated-analysis').subscribe({
           next: () => {
@@ -526,7 +536,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           },
           error: (error) => {
             handleStateErrors(error.message);
-          }
+          },
         })
       );
     }
@@ -573,72 +583,71 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     return (
       <TextContent>
         <Text className="stale-report-text" component={TextVariants.p}>
-          {`Most recent data from ${reportStalenessTimer} ${reportStalenessTimerUnits}${reportStalenessTimer > 1 ? 's' : ''} ago.`}&nbsp;
+          {`Most recent data from ${reportStalenessTimer} ${reportStalenessTimerUnits}${
+            reportStalenessTimer > 1 ? 's' : ''
+          } ago.`}
+          &nbsp;
           <Tooltip
             content={
-              "Report data is stale. Click the Create Recording button and choose and option to start an active recording to source automated reports from."
+              'Report data is stale. Click the Create Recording button and choose and option to start an active recording to source automated reports from.'
             }
           >
-            <OutlinedQuestionCircleIcon style={{ height: '0.85em', width: '0.85em', color: 'var(--pf-global--Color--100)'}} />
+            <OutlinedQuestionCircleIcon
+              style={{ height: '0.85em', width: '0.85em', color: 'var(--pf-global--Color--100)' }}
+            />
           </Tooltip>
         </Text>
       </TextContent>
     );
-  }, [
-    isLoading,
-    usingArchivedReport,
-    usingCachedReport,
-    reportStalenessTimer,
-    reportStalenessTimerUnits,
-  ]);
+  }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits]);
 
   const toolbar = React.useMemo(() => {
     return (
       <Toolbar
-          id="automated-analysis-toolbar"
-          aria-label="automated-analysis-toolbar"
-          clearAllFilters={handleClearFilters}
-          clearFiltersButtonText="Clear all filters"
-          isFullHeight
-        >
-          <ToolbarContent>
-            <AutomatedAnalysisFilters
-              target={targetConnectURL}
-              evaluations={categorizedEvaluation}
-              filters={targetAutomatedAnalysisFilters}
-              updateFilters={updateFilters}
-            />
-            <ToolbarGroup>
-              <ToolbarItem>
-                <Button
-                  isSmall
-                  isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
-                  aria-label="Refresh automated analysis"
-                  onClick={generateReport}
-                  variant="control"
-                  icon={<Spinner2Icon />}
-                />
-                <Button
-                  isSmall
-                  isAriaDisabled={isLoading}
-                  aria-label="Delete automated analysis"
-                  onClick={clearAnalysis}
-                  variant="control"
-                  icon={<TrashIcon />}
-                />
-              </ToolbarItem>
-              <ToolbarItem>
-                <Checkbox
-                  label="Show N/A scores"
-                  isChecked={showNAScores}
-                  onChange={handleNAScoreChange}
-                  id="show-na-scores"
-                  name="show-na-scores"
-                />
-              </ToolbarItem>
-            </ToolbarGroup>
-          </ToolbarContent>
-        </Toolbar>
+        id="automated-analysis-toolbar"
+        aria-label="automated-analysis-toolbar"
+        clearAllFilters={handleClearFilters}
+        clearFiltersButtonText="Clear all filters"
+        isFullHeight
+      >
+        <ToolbarContent>
+          <AutomatedAnalysisFilters
+            target={targetConnectURL}
+            evaluations={categorizedEvaluation}
+            filters={targetAutomatedAnalysisFilters}
+            updateFilters={updateFilters}
+          />
+          <ToolbarGroup>
+            <ToolbarItem>
+              <Button
+                isSmall
+                isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
+                aria-label="Refresh automated analysis"
+                onClick={generateReport}
+                variant="control"
+                icon={<Spinner2Icon />}
+              />
+              <Button
+                isSmall
+                isAriaDisabled={isLoading}
+                aria-label="Delete automated analysis"
+                onClick={clearAnalysis}
+                variant="control"
+                icon={<TrashIcon />}
+              />
+            </ToolbarItem>
+            <ToolbarItem>
+              <Checkbox
+                label="Show N/A scores"
+                isChecked={showNAScores}
+                onChange={handleNAScoreChange}
+                id="show-na-scores"
+                name="show-na-scores"
+              />
+            </ToolbarItem>
+          </ToolbarGroup>
+        </ToolbarContent>
+      </Toolbar>
     );
   }, [
     isLoading,
@@ -673,9 +682,17 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       if (isAuthFail(errorMessage)) {
         return errorView;
       }
-      return <AutomatedAnalysisConfigDrawer onCreate={generateReport} drawerContent={errorView} isContentAbove={true} />;
+      return (
+        <AutomatedAnalysisConfigDrawer onCreate={generateReport} drawerContent={errorView} isContentAbove={true} />
+      );
     } else if (usingArchivedReport) {
-      return <AutomatedAnalysisConfigDrawer onCreate={generateReport} drawerContent={filteredCategorizedLabels} isContentAbove={false} />;
+      return (
+        <AutomatedAnalysisConfigDrawer
+          onCreate={generateReport}
+          drawerContent={filteredCategorizedLabels}
+          isContentAbove={false}
+        />
+      );
     } else if (isLoading) {
       return <LoadingView />;
     } else {
@@ -687,14 +704,19 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     if (isLoading || errorMessage) {
       return undefined;
     }
-    return (<div style={{
-      color: 'var(--pf-global--Color--200)',
-      fontWeight: 'lighter',
-      fontSize: '0.90em', 
-      fontFamily: 'inherit',
-  }
-    }>{`${usingArchivedReport ? 'Archived' : usingCachedReport ? 'Cached' : 'Active'} report name:`} <span style={{color: 'var(--pf-global--Color--100)',
-    fontWeight: 'bold', fontStyle: 'italic'}}>{report}</span></div>);
+    return (
+      <div
+        style={{
+          color: 'var(--pf-global--Color--200)',
+          fontWeight: 'lighter',
+          fontSize: '0.90em',
+          fontFamily: 'inherit',
+        }}
+      >
+        {`${usingArchivedReport ? 'Archived' : usingCachedReport ? 'Cached' : 'Active'} report name:`}{' '}
+        <span style={{ color: 'var(--pf-global--Color--100)', fontWeight: 'bold', fontStyle: 'italic' }}>{report}</span>
+      </div>
+    );
   }, [usingArchivedReport, usingCachedReport, report, isLoading]);
 
   return (
@@ -711,20 +733,14 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       >
         <CardTitle component="h4">
           <Split>
-            <SplitItem isFilled>
-              Automated Analysis
-            </SplitItem>
-            <SplitItem>
-              { reportSource }
-            </SplitItem>
+            <SplitItem isFilled>Automated Analysis</SplitItem>
+            <SplitItem>{reportSource}</SplitItem>
           </Split>
         </CardTitle>
       </CardHeader>
       <CardExpandableContent>
         <Stack hasGutter>
-          <StackItem>
-            {errorMessage ? null : toolbar}
-          </StackItem>
+          <StackItem>{errorMessage ? null : toolbar}</StackItem>
           <StackItem className="automated-analysis-score-filter-stack-item">
             {errorMessage ? null : (
               <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL}> </AutomatedAnalysisScoreFilter>

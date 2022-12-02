@@ -189,12 +189,8 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
       <DrawerContent panelContent={panelContent}>
         <DrawerContentBody>
           <Stack hasGutter>
-            <StackItem>
-              {props.isContentAbove ? props.drawerContent : dropdown}
-            </StackItem>
-            <StackItem>
-              {props.isContentAbove ? dropdown : props.drawerContent}
-            </StackItem>
+            <StackItem>{props.isContentAbove ? props.drawerContent : dropdown}</StackItem>
+            <StackItem>{props.isContentAbove ? dropdown : props.drawerContent}</StackItem>
           </Stack>
         </DrawerContentBody>
       </DrawerContent>

@@ -83,7 +83,7 @@ export interface AutomatedAnalysisTimerObject {
   quantity: number;
   unit: string;
   interval: number;
-};
+}
 
 export const calculateAnalysisTimer = (reportTime: number): AutomatedAnalysisTimerObject => {
   let interval, timerQuantity, timerUnits;
@@ -108,7 +108,7 @@ export const calculateAnalysisTimer = (reportTime: number): AutomatedAnalysisTim
   }
   return {
     quantity: timerQuantity,
-    unit: timerUnits, 
-    interval: interval
+    unit: timerUnits,
+    interval: interval,
   } as AutomatedAnalysisTimerObject;
 };

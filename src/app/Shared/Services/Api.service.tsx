@@ -1282,10 +1282,10 @@ export const isActiveRecording = (toCheck: Recording): toCheck is ActiveRecordin
 
 export const isGraphQLAuthError = (resp: any): boolean => {
   if (resp.errors !== undefined) {
-    if (resp.errors[0].message.includes('Authentication failed!')) { 
-      return true;                   
+    if (resp.errors[0].message.includes('Authentication failed!')) {
+      return true;
     }
-  }  
+  }
   return false;
 };
 
