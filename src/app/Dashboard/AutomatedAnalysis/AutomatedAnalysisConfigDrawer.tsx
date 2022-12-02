@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import LoadingView from '@app/LoadingView/LoadingView';
 import { RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
@@ -74,6 +75,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
 
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const drawerRef = React.useRef<HTMLDivElement>(null);
 
   const onToggle = React.useCallback(
@@ -93,20 +95,24 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
             next: (resp) => {
               if (resp && resp.ok) {
                 props.onCreate();
+                setIsLoading(false);
               }
             },
-            error: (err) => {},
+            error: (err) => {
+              setIsLoading(false);
+            },
           })
       );
     },
-    [addSubscription, context.api, props.onCreate]
+    [addSubscription, context.api, props.onCreate, setIsLoading]
   );
 
   const onDefaultRecordingStart = React.useCallback(() => {
+    setIsLoading(true);
     const config = context.settings.automatedAnalysisRecordingConfig();
     const attributes = automatedAnalysisConfigToRecordingAttributes(config);
     handleCreateRecording(attributes);
-  }, [context.settings, context.settings.automatedAnalysisRecordingConfig, handleCreateRecording]);
+  }, [context.settings, context.settings.automatedAnalysisRecordingConfig, handleCreateRecording, setIsLoading]);
 
   const onExpand = React.useCallback(() => {
     drawerRef.current && drawerRef.current.focus();
@@ -184,16 +190,23 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     );
   }, [isDropdownOpen, dropdownItems, onToggle, onOptionSelect]);
 
+  const drawerContentBody = React.useMemo(() => {
+    return (
+      <DrawerContentBody>
+        <Stack hasGutter>
+          <StackItem>{props.isContentAbove ? props.drawerContent : dropdown}</StackItem>
+          <StackItem>{props.isContentAbove ? dropdown : props.drawerContent}</StackItem>
+        </Stack>
+      </DrawerContentBody>
+    );
+  }, [props.drawerContent, props.isContentAbove, dropdown, isLoading]);
+
+  if (isLoading) {
+    return <LoadingView />;
+  }
   return (
     <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>
-      <DrawerContent panelContent={panelContent}>
-        <DrawerContentBody>
-          <Stack hasGutter>
-            <StackItem>{props.isContentAbove ? props.drawerContent : dropdown}</StackItem>
-            <StackItem>{props.isContentAbove ? dropdown : props.drawerContent}</StackItem>
-          </Stack>
-        </DrawerContentBody>
-      </DrawerContent>
+      <DrawerContent panelContent={panelContent}>{drawerContentBody}</DrawerContent>
     </Drawer>
   );
 };

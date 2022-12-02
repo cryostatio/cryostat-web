@@ -303,7 +303,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
   }
   return (
     <Form isHorizontal={props.isSettingsForm}>
-      <FormSection title={props.isSettingsForm ? '' : 'Profiling Recording Configuration'}>
+      <FormSection title={props.isSettingsForm ? undefined : 'Profiling Recording Configuration'}>
         <FormGroup
           label="Template"
           isRequired

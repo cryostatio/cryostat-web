@@ -91,7 +91,7 @@ import {
 import { OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { filter, first, map, tap } from 'rxjs';
+import { concatMap, filter, first, map, tap } from 'rxjs';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import {
   AutomatedAnalysisFilters,
@@ -157,6 +157,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   // Will perform analysis on  the first ActiveRecording which has
   // name: 'automated-analysis' ; label: 'origin=automated-analysis'
+  // Query NEEDS 'state' so that isActiveRecording(result) is valid
   const queryActiveRecordings = React.useCallback(
     (connectUrl: string) => {
       return context.api.graphql<any>(
@@ -169,6 +170,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
               labels: ["origin=${automatedAnalysisRecordingName}"],
             }) {
               data {
+                state
                 name
                 downloadUrl
                 reportUrl
@@ -235,7 +237,10 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       addSubscription(
         context.target
           .target()
-          .pipe(first())
+          .pipe(
+            filter((target) => target !== NO_TARGET),
+            first()
+          )
           .subscribe((target) => {
             context.reports
               .reportJson(freshestRecording, target.connectUrl)
@@ -315,6 +320,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   );
 
   const generateReport = React.useCallback(() => {
+    handleLoading();
     addSubscription(
       context.target
         .target()
@@ -323,9 +329,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           first()
         )
         .subscribe((target) => {
-          handleLoading();
-          setTargetConnectURL(target.connectUrl);
-          dispatch(automatedAnalysisAddTargetIntent(target.connectUrl));
           addSubscription(
             queryActiveRecordings(target.connectUrl)
               .pipe(
@@ -365,11 +368,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
                 },
                 error: (err) => {
                   if (isAuthFail(err.message)) {
-                    context.target.setAuthRetry();
                     handleStateErrors(authFailMessage);
                   } else {
-                    console.log('SDF', err.message);
-
                     handleEmptyRecordings(target.connectUrl);
                   }
                 },
@@ -379,12 +379,10 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
   }, [
     addSubscription,
-    dispatch,
     context.api,
     context.target,
     context.reports,
     automatedAnalysisAddTargetIntent,
-    setTargetConnectURL,
     setIsLoading,
     setReport,
     categorizeEvaluation,
@@ -435,6 +433,10 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     },
     [startProfilingRecording, generateReport]
   );
+
+  React.useEffect(() => {
+    addSubscription(context.target.authRetry().subscribe(generateReport));
+  }, [addSubscription, context.target]);
 
   React.useEffect(() => {
     context.target.target().subscribe((target) => {
@@ -717,7 +719,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         <span style={{ color: 'var(--pf-global--Color--100)', fontWeight: 'bold', fontStyle: 'italic' }}>{report}</span>
       </div>
     );
-  }, [usingArchivedReport, usingCachedReport, report, isLoading]);
+  }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
   return (
     <Card id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
