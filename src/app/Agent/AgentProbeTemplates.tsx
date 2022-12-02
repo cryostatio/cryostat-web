@@ -228,19 +228,28 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel
-        .messages(NotificationCategory.ProbeTemplateUploaded)
-        .subscribe((v) => refreshTemplates())
+      context.notificationChannel.messages(NotificationCategory.ProbeTemplateUploaded).subscribe((event) => {
+        console.log(event);
+        setTemplates((old) => {
+          return [
+            ...old,
+            {
+              name: event.message.templateName,
+              xml: event.message.templateContent,
+            } as ProbeTemplate,
+          ];
+        });
+      })
     );
-  }, [addSubscription, context.notificationChannel, refreshTemplates]);
+  }, [addSubscription, context.notificationChannel, setTemplates]);
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel
-        .messages(NotificationCategory.ProbeTemplateDeleted)
-        .subscribe((v) => refreshTemplates())
+      context.notificationChannel.messages(NotificationCategory.ProbeTemplateDeleted).subscribe((event) => {
+        setTemplates((old) => old.filter((t) => t.name !== event.message.probeTemplate));
+      })
     );
-  }, [addSubscription, context.notificationChannel, refreshTemplates]);
+  }, [addSubscription, context.notificationChannel, setTemplates]);
 
   React.useEffect(() => {
     let filtered: ProbeTemplate[];
