@@ -283,7 +283,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
-  }, [context.target, handleSubmit]);
+  }, [context.target]);
 
   const selectedSpecifier = React.useMemo(() => {
     if (templateName && templateType) {
@@ -402,9 +402,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
                 {!props.isSettingsForm && (
                   <Text>
                     You can also change this in the&nbsp;
-                    <Button isInline component="a" variant="link" icon={<CogIcon />}>
-                      <Link to="/settings">Settings</Link>
-                    </Button>
+                      <Link to="/settings"><CogIcon />{' '}Settings</Link>
                     &nbsp;view.
                   </Text>
                 )}

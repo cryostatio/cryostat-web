@@ -54,6 +54,8 @@ import {
   DropdownToggleAction,
   Level,
   LevelItem,
+  Stack,
+  StackItem,
 } from '@patternfly/react-core';
 import { CogIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -62,6 +64,7 @@ import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
 interface AutomatedAnalysisConfigDrawerProps {
   drawerContent: React.ReactNode;
+  isContentAbove: boolean;
   onCreate: () => void;
 }
 
@@ -185,8 +188,14 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>
       <DrawerContent panelContent={panelContent}>
         <DrawerContentBody>
-          {props.drawerContent}
-          {dropdown}
+          <Stack hasGutter>
+            <StackItem>
+              {props.isContentAbove ? props.drawerContent : dropdown}
+            </StackItem>
+            <StackItem>
+              {props.isContentAbove ? dropdown : props.drawerContent}
+            </StackItem>
+          </Stack>
         </DrawerContentBody>
       </DrawerContent>
     </Drawer>
