@@ -72,6 +72,9 @@ import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { SearchIcon } from '@patternfly/react-icons';
 import { AboutAgentCard } from './AboutAgentCard';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+
+export type LiveProbeActions = 'REMOVE';
 
 export interface AgentLiveProbesProps {}
 
@@ -86,6 +89,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [actionLoadings, setActionLoadings] = React.useState<Record<LiveProbeActions, boolean>>({ REMOVE: false });
 
   const tableColumns = ['ID', 'Name', 'Class', 'Description', 'Method'];
 
@@ -135,15 +139,26 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
   }, [context.target, context.target.setAuthRetry]);
 
   const handleDeleteAllProbes = React.useCallback(() => {
+    setActionLoadings((old) => {
+      return {
+        ...old,
+        REMOVE: true,
+      };
+    });
     addSubscription(
       context.api
         .removeProbes()
         .pipe(first())
         .subscribe(() => {
-          // do nothing - notification updates state
+          setActionLoadings((old) => {
+            return {
+              ...old,
+              REMOVE: false,
+            };
+          });
         })
     );
-  }, [addSubscription, context.api]);
+  }, [addSubscription, context.api, setActionLoadings]);
 
   const handleWarningModalAccept = React.useCallback(() => handleDeleteAllProbes(), [handleDeleteAllProbes]);
 
@@ -248,6 +263,17 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
     [filteredProbes]
   );
 
+  const actionLoadingProps = React.useMemo<Record<LiveProbeActions, LoadingPropsType>>(
+    () => ({
+      REMOVE: {
+        spinnerAriaValueText: 'Removing',
+        spinnerAriaLabel: 'removing-all-probes',
+        isLoading: actionLoadings['REMOVE'],
+      } as LoadingPropsType,
+    }),
+    [actionLoadings]
+  );
+
   if (errorMessage != '') {
     return (
       <ErrorView
@@ -286,9 +312,10 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
                       key="delete"
                       variant="danger"
                       onClick={handleDeleteButton}
-                      isDisabled={!filteredProbes.length}
+                      isDisabled={!filteredProbes.length || actionLoadings['REMOVE']}
+                      {...actionLoadingProps['REMOVE']}
                     >
-                      Remove All Probes
+                      {actionLoadings['REMOVE'] ? 'Removing' : 'Remove'} All Probes
                     </Button>
                   </ToolbarItem>
                 </ToolbarGroup>
