@@ -708,7 +708,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
   }, [deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
 
   const isStopDisabled = React.useMemo(() => {
-    if (!props.checkedIndices.length) {
+    if (!props.checkedIndices.length || props.actionLoadings['STOP']) {
       return true;
     }
     const filtered = props.filteredRecordings.filter((r) => props.checkedIndices.includes(r.id));
@@ -749,7 +749,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
           key="archive"
           variant="secondary"
           onClick={props.handleArchiveRecordings}
-          isDisabled={!props.checkedIndices.length}
+          isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
           {...actionLoadingProps['ARCHIVE']}
         >
           {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
@@ -779,7 +779,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
         key="delete"
         variant="danger"
         onClick={handleDeleteButton}
-        isDisabled={!props.checkedIndices.length}
+        isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
         {...actionLoadingProps['DELETE']}
       >
         {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
