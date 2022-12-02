@@ -229,7 +229,6 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   React.useEffect(() => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ProbeTemplateUploaded).subscribe((event) => {
-        console.log(event);
         setTemplates((old) => {
           return [
             ...old,
