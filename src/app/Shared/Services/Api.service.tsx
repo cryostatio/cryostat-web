@@ -440,7 +440,8 @@ export class ApiService {
   isProbeEnabled(): Observable<boolean> {
     return this.getActiveProbes(true).pipe(
       concatMap((_) => of(true)),
-      catchError((_) => of(false))
+      catchError((_) => of(false)),
+      first()
     );
   }
 
