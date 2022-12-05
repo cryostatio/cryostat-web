@@ -54,22 +54,26 @@ import {
   TextInput,
   StackItem,
   Stack,
+  Dropdown,
+  DropdownItem,
+  KebabToggle,
+  DropdownPosition,
   EmptyState,
   EmptyStateIcon,
   Title,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
-  Table,
-  TableBody,
-  TableHeader,
   TableVariant,
-  IAction,
-  IRowData,
-  IExtraData,
   ISortBy,
   SortByDirection,
-  sortable,
+  Tr,
+  Td,
+  ThProps,
+  TableComposable,
+  Tbody,
+  Th,
+  Thead,
 } from '@patternfly/react-table';
 import { first } from 'rxjs/operators';
 import { LoadingView } from '@app/LoadingView/LoadingView';
@@ -96,10 +100,24 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   const [sortBy, setSortBy] = React.useState({} as ISortBy);
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const [rowDeleteData, setRowDeleteData] = React.useState({} as IRowData);
+  const [templateToDelete, setTemplateToDelete] = React.useState(undefined as ProbeTemplate | undefined);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
-  const tableColumns = React.useMemo(() => [{ title: 'Name', transforms: [sortable] }, { title: 'XML' }], [sortable]);
+  const tableColumns: string[] = ['Name', 'XML'];
+
+  const getSortParams = React.useCallback(
+    (columnIndex: number): ThProps['sort'] => ({
+      sortBy: sortBy,
+      onSort: (_event, index, direction) => {
+        setSortBy({
+          index: index,
+          direction: direction,
+        });
+      },
+      columnIndex,
+    }),
+    [sortBy, setSortBy]
+  );
 
   const handleTemplates = React.useCallback(
     (templates) => {
@@ -128,10 +146,10 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   }, [addSubscription, context.api, setIsLoading, handleTemplates, handleError]);
 
   const handleDelete = React.useCallback(
-    (rowData) => {
+    (template: ProbeTemplate) => {
       addSubscription(
         context.api
-          .deleteCustomProbeTemplate(rowData[0])
+          .deleteCustomProbeTemplate(template.name)
           .pipe(first())
           .subscribe(() => {
             /** Do nothing. Notifications hook will handle */
@@ -141,67 +159,13 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
     [addSubscription, context.api]
   );
 
-  const handleDeleteButton = React.useCallback(
-    (rowData) => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
-        setRowDeleteData(rowData);
-        setWarningModalOpen(true);
-      } else {
-        handleDelete(rowData);
-      }
-    },
-    [context.settings, setWarningModalOpen, setRowDeleteData, handleDelete]
-  );
-
   const handleWarningModalAccept = React.useCallback(() => {
-    handleDelete(rowDeleteData);
-  }, [handleDelete, rowDeleteData]);
+    handleDelete(templateToDelete!);
+  }, [handleDelete, templateToDelete]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
   }, [setWarningModalOpen]);
-
-  const handleSort = React.useCallback(
-    (event, index, direction) => {
-      setSortBy({ index, direction });
-    },
-    [setSortBy]
-  );
-
-  const handleInsert = React.useCallback(
-    (rowData) => {
-      addSubscription(
-        context.api
-          .insertProbes(rowData[0])
-          .pipe(first())
-          .subscribe(() => {})
-      );
-    },
-    [addSubscription, context.api]
-  );
-
-  const actionResolver = React.useCallback(
-    (rowData: IRowData, extraData: IExtraData) => {
-      if (typeof extraData.rowIndex == 'undefined') {
-        return [];
-      }
-      return [
-        {
-          title: 'Insert Probes...',
-          onClick: (event, rowId, rowData) => handleInsert(rowData),
-          isDisabled: !props.agentDetected,
-        },
-        {
-          isSeparator: true,
-        },
-        {
-          title: 'Delete',
-          onClick: (event, rowId, rowData) => handleDeleteButton(rowData),
-        },
-      ] as IAction[];
-    },
-    [handleInsert, handleDeleteButton, props.agentDetected]
-  );
 
   const handleTemplateUpload = React.useCallback(() => {
     setUploadModalOpen(true);
@@ -270,8 +234,51 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
     setFilteredTemplates([...filtered]);
   }, [filterText, templates, sortBy, setFilteredTemplates]);
 
-  const displayTemplates = React.useMemo(
-    () => filteredTemplates.map((t: ProbeTemplate) => [t.name, t.xml]),
+  const handleDeleteAction = React.useCallback(
+    (template: ProbeTemplate) => {
+      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+        setTemplateToDelete(template);
+        setWarningModalOpen(true);
+      } else {
+        handleDelete(template);
+      }
+    },
+    [context.settings, setWarningModalOpen, setTemplateToDelete, handleDelete]
+  );
+
+  const handleInsertAction = React.useCallback(
+    (template: ProbeTemplate) => {
+      addSubscription(
+        context.api
+          .insertProbes(template.name)
+          .pipe(first())
+          .subscribe(() => {})
+      );
+    },
+    [addSubscription, context.api]
+  );
+
+  const templateRows = React.useMemo(
+    () =>
+      filteredTemplates.map((t: ProbeTemplate, index) => {
+        return (
+          <Tr key={`probe-template-${index}`}>
+            <Td key={`probe-template-name-${index}`} dataLabel={tableColumns[0]}>
+              {t.name}
+            </Td>
+            <Td key={`probe-template-xml-${index}`} dataLabel={tableColumns[1]}>
+              {t.xml}
+            </Td>
+            <Td key={`probe-template-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
+              <AgentTemplateAction
+                template={t}
+                onDelete={handleDeleteAction}
+                onInsert={props.agentDetected ? handleInsertAction : undefined}
+              />
+            </Td>
+          </Tr>
+        );
+      }),
     [filteredTemplates]
   );
 
@@ -303,6 +310,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
                       placeholder="Filter..."
                       aria-label="Probe template filter"
                       onChange={setFilterText}
+                      value={filterText}
                     />
                   </ToolbarItem>
                 </ToolbarGroup>
@@ -321,19 +329,19 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
                 />
               </ToolbarContent>
             </Toolbar>
-            {displayTemplates.length ? (
-              <Table
-                aria-label="Probe Templates Table"
-                variant={TableVariant.compact}
-                cells={tableColumns}
-                rows={displayTemplates}
-                actionResolver={actionResolver}
-                sortBy={sortBy}
-                onSort={handleSort}
-              >
-                <TableHeader />
-                <TableBody />
-              </Table>
+            {templateRows.length ? (
+              <TableComposable aria-label="Probe Templates Table" variant={TableVariant.compact}>
+                <Thead>
+                  <Tr>
+                    {tableColumns.map((column, index) => (
+                      <Th key={`probe-template-header-${column}`} sort={getSortParams(index)}>
+                        {column}
+                      </Th>
+                    ))}
+                  </Tr>
+                </Thead>
+                <Tbody>{...templateRows}</Tbody>
+              </TableComposable>
             ) : (
               <EmptyState>
                 <EmptyStateIcon icon={SearchIcon} />
@@ -462,5 +470,47 @@ export const AgentProbeTemplateUploadModal: React.FunctionComponent<AgentProbeTe
         </ActionGroup>
       </Form>
     </Modal>
+  );
+};
+
+export interface AgentTemplateActionProps {
+  template: ProbeTemplate;
+  onInsert?: (template: ProbeTemplate) => void;
+  onDelete: (template: ProbeTemplate) => void;
+}
+
+export const AgentTemplateAction: React.FunctionComponent<AgentTemplateActionProps> = (props) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const actionItems = React.useMemo(() => {
+    return [
+      {
+        key: 'insert-template',
+        title: 'Insert Probes...',
+        onClick: () => props.onInsert && props.onInsert(props.template),
+        isDisabled: !props.onInsert,
+      },
+      {
+        key: 'delete-template',
+        title: 'Delete',
+        onClick: () => props.onDelete(props.template),
+      },
+    ];
+  }, [props.onInsert, props.onDelete, props.template]);
+
+  return (
+    <Dropdown
+      isPlain
+      isOpen={isOpen}
+      toggle={<KebabToggle id="probe-template-toggle-kebab" onToggle={setIsOpen} />}
+      menuAppendTo={document.body}
+      position={DropdownPosition.right}
+      isFlipEnabled
+      dropdownItems={actionItems.map((action) => (
+        <DropdownItem key={action.key} onClick={action.onClick} isDisabled={action.isDisabled}>
+          {action.title}
+        </DropdownItem>
+      ))}
+    />
   );
 };
