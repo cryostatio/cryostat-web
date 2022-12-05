@@ -35,53 +35,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
   Button,
-  FileUpload,
+  EmptyState,
+  EmptyStateIcon,
   Form,
   FormGroup,
   Modal,
   ModalVariant,
+  TextInput,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  TextInput,
-  EmptyState,
-  EmptyStateIcon,
-  Title,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
-  TableVariant,
+  ActionsColumn,
   IAction,
   ISortBy,
   SortByDirection,
   TableComposable,
-  Thead,
+  TableVariant,
   Tbody,
-  Tr,
-  Th,
-  ThProps,
   Td,
-  ActionsColumn,
+  Th,
+  Thead,
+  ThProps,
+  Tr,
 } from '@patternfly/react-table';
+import * as React from 'react';
 import { useHistory } from 'react-router-dom';
-import { concatMap, filter, first } from 'rxjs/operators';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/operators';
 
 export interface EventTemplatesProps {}
 
@@ -361,6 +361,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
               <ToolbarItem>
                 <Button
                   key="upload"
+                  aria-label="Upload"
                   variant="secondary"
                   onClick={handleUploadModalOpen}
                   isDisabled={errorMessage != ''}
@@ -410,61 +411,80 @@ export interface EventTemplatesUploadModalProps {
 }
 
 export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUploadModalProps> = (props) => {
-  const [uploadFile, setUploadFile] = React.useState<File | undefined>(undefined);
-  const [uploadFilename, setUploadFilename] = React.useState('');
-  const [uploading, setUploading] = React.useState(false);
-  const [fileRejected, setFileRejected] = React.useState(false);
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const notifications = React.useContext(NotificationsContext);
+  const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
+  const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
+
+  const [numOfFiles, setNumOfFiles] = React.useState(0);
+  const [allOks, setAllOks] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
 
   const reset = React.useCallback(() => {
-    setUploadFile(undefined);
-    setUploadFilename('');
+    setNumOfFiles(0);
     setUploading(false);
-    setFileRejected(false);
-  }, [setUploadFile, setUploadFilename, setUploading, setFileRejected]);
+  }, [setNumOfFiles, setUploading]);
 
   const handleClose = React.useCallback(() => {
-    reset();
-    props.onClose();
-  }, [reset, props.onClose]);
+    if (uploading) {
+      abortRef.current && abortRef.current.click();
+    } else {
+      reset();
+      props.onClose();
+    }
+  }, [uploading, abortRef.current, reset, props.onClose]);
 
-  const handleFileRejected = React.useCallback(() => {
-    setFileRejected(true);
-  }, [setFileRejected]);
+  const onFileSubmit = React.useCallback(
+    (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
+      setUploading(true);
 
-  const handleFileChange = React.useCallback(
-    (file, filename) => {
-      setFileRejected(false);
-      setUploadFile(file);
-      setUploadFilename(filename);
+      const tasks: Observable<boolean>[] = [];
+
+      fileUploads.forEach((fileUpload) => {
+        tasks.push(
+          context.api
+            .addCustomEventTemplate(
+              fileUpload.file,
+              getProgressUpdateCallback(fileUpload.file.name),
+              fileUpload.abortSignal
+            )
+            .pipe(
+              tap({
+                next: (_) => {
+                  onSingleSuccess(fileUpload.file.name);
+                },
+                error: (err) => {
+                  onSingleFailure(fileUpload.file.name, err);
+                },
+              }),
+              catchError((_) => of(false))
+            )
+        );
+      });
+
+      addSubscription(
+        forkJoin(tasks)
+          .pipe(defaultIfEmpty([true]))
+          .subscribe((oks) => {
+            setUploading(false);
+            setAllOks(oks.reduce((prev, curr, _) => prev && curr, true));
+          })
+      );
     },
-    [setFileRejected, setUploadFile, setUploadFilename]
+    [setUploading, addSubscription, context.api, handleClose, setAllOks]
   );
 
-  const handleUploadSubmit = React.useCallback(() => {
-    if (fileRejected) {
-      notifications.warning('File format is not compatible');
-      return;
-    }
-    if (!uploadFile) {
-      notifications.warning('Attempted to submit template upload without a file selected');
-      return;
-    }
-    setUploading(true);
-    addSubscription(
-      context.api
-        .addCustomEventTemplate(uploadFile)
-        .pipe(first())
-        .subscribe((success) => {
-          setUploading(false);
-          if (success) {
-            handleClose();
-          }
-        })
-    );
-  }, [fileRejected, uploadFile, window.console, setUploading, addSubscription, context.api, handleClose]);
+  const handleSubmit = React.useCallback(() => {
+    submitRef.current && submitRef.current.click();
+  }, [submitRef.current]);
+
+  const onFilesChange = React.useCallback(
+    (fileUploads: FUpload[]) => {
+      setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
+      setNumOfFiles(fileUploads.length);
+    },
+    [setNumOfFiles, setAllOks]
+  );
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
@@ -480,39 +500,42 @@ export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUp
     <Modal
       isOpen={props.isOpen}
       variant={ModalVariant.large}
-      showClose={!uploading}
+      showClose={true}
       onClose={handleClose}
       title="Create Custom Event Template"
       description="Create a customized event template. This is a specialized XML file with the extension .jfc, typically created using JDK Mission Control, which defines a set of events and their options to configure. Not all customized templates are applicable to all targets -- a template may specify a custom application event type, which is only available in targets running the associated application."
     >
       <Form>
-        <FormGroup label="Template XML" isRequired fieldId="template" validated={fileRejected ? 'error' : 'default'}>
-          <FileUpload
-            id="template-file-upload"
-            value={uploadFile}
-            filename={uploadFilename}
-            onChange={handleFileChange}
-            isDisabled={uploading}
-            isLoading={uploading}
-            validated={fileRejected ? 'error' : 'default'}
-            dropzoneProps={{
-              accept: '.xml,.jfc',
-              onDropRejected: handleFileRejected,
-            }}
+        <FormGroup label="Template XML" isRequired fieldId="template">
+          <MultiFileUpload
+            submitRef={submitRef}
+            abortRef={abortRef}
+            uploading={uploading}
+            displayAccepts={['XML', 'JFC']}
+            onFileSubmit={onFileSubmit}
+            onFilesChange={onFilesChange}
           />
         </FormGroup>
         <ActionGroup>
-          <Button
-            variant="primary"
-            onClick={handleUploadSubmit}
-            isDisabled={!uploadFilename || uploading}
-            {...submitButtonLoadingProps}
-          >
-            {uploading ? 'Submitting' : 'Submit'}
-          </Button>
-          <Button variant="link" onClick={handleClose} isDisabled={uploading}>
-            Cancel
-          </Button>
+          {allOks && numOfFiles ? (
+            <Button variant="primary" onClick={handleClose}>
+              Close
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                isDisabled={!numOfFiles || uploading}
+                {...submitButtonLoadingProps}
+              >
+                {uploading ? 'Submitting' : 'Submit'}
+              </Button>
+              <Button variant="link" onClick={handleClose}>
+                Cancel
+              </Button>
+            </>
+          )}
         </ActionGroup>
       </Form>
     </Modal>

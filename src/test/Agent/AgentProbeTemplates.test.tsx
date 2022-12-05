@@ -46,10 +46,10 @@ import {
 } from '@app/Shared/Services/NotificationChannel.service';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
-import { act as doAct, cleanup, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
-import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { of, Subject } from 'rxjs';
+import { renderWithServiceContextAndRouter } from '../Common';
 
 const mockMessageType = { type: 'application', subtype: 'json' } as MessageType;
 
@@ -118,7 +118,7 @@ describe('<AgentProbeTemplates />', () => {
   afterEach(cleanup);
 
   it('should add a probe template after receiving a notification', async () => {
-    renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     const addTemplateName = screen.getByText('anotherProbeTemplate');
     expect(addTemplateName).toBeInTheDocument();
@@ -126,13 +126,13 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should remove a probe template after receiving a notification', async () => {
-    renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     expect(screen.queryByText('someProbeTemplate')).not.toBeInTheDocument();
   });
 
   it('should display the column header fields', async () => {
-    renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     const nameHeader = screen.getByText('Name');
     expect(nameHeader).toBeInTheDocument();
@@ -144,7 +144,7 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should show modal when uploading', async () => {
-    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     const uploadButton = screen.getByRole('button', { name: 'Upload' });
     expect(uploadButton).toBeInTheDocument();
@@ -152,17 +152,17 @@ describe('<AgentProbeTemplates />', () => {
 
     await user.click(uploadButton);
 
-    const uploadModal = await screen.findByRole('dialog');
-    expect(uploadModal).toBeInTheDocument();
-    expect(uploadModal).toBeVisible();
+    const modal = await screen.findByRole('dialog');
+    expect(modal).toBeInTheDocument();
+    expect(modal).toBeVisible();
 
-    const modalTitle = within(uploadModal).getByText('Create Custom Probe Template');
+    const modalTitle = within(modal).getByText('Create Custom Probe Template');
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
   });
 
   it('should upload a probe template when form is filled and Submit is clicked', async () => {
-    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     const uploadButton = screen.getByRole('button', { name: 'Upload' });
     expect(uploadButton).toBeInTheDocument();
@@ -170,47 +170,50 @@ describe('<AgentProbeTemplates />', () => {
 
     await user.click(uploadButton);
 
-    const uploadModal = await screen.findByRole('dialog');
-    expect(uploadModal).toBeInTheDocument();
-    expect(uploadModal).toBeVisible();
+    const modal = await screen.findByRole('dialog');
+    expect(modal).toBeInTheDocument();
+    expect(modal).toBeVisible();
 
-    const modalTitle = within(uploadModal).getByText('Create Custom Probe Template');
+    const modalTitle = within(modal).getByText('Create Custom Probe Template');
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
-    const fileUploadDropZone = within(uploadModal).getByLabelText(
-      'Drag a file here or browse to upload'
-    ) as HTMLInputElement;
-    expect(fileUploadDropZone).toBeInTheDocument();
-    expect(fileUploadDropZone).toBeVisible();
+    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
 
-    const browseButton = within(uploadModal).getByRole('button', { name: 'Browse...' });
-    expect(browseButton).toBeInTheDocument();
-    expect(browseButton).toBeVisible();
+    const uploadButtonInModal = within(modal).getByText('Upload');
+    expect(uploadButtonInModal).toBeInTheDocument();
+    expect(uploadButtonInModal).toBeVisible();
 
-    const uploadInput = uploadModal.querySelector("input[accept='.xml'][type='file']") as HTMLInputElement;
+    const uploadInput = modal.querySelector("input[accept='.xml'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    await user.click(browseButton);
+    await user.click(uploadButtonInModal);
     await user.upload(uploadInput, mockFileUpload);
 
-    expect(uploadInput.files).not.toBe(null);
-    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
+    const submitButton = within(modal).getByText('Submit');
+    expect(submitButton).toBeInTheDocument();
+    expect(submitButton).toBeVisible();
+    expect(submitButton).not.toBeDisabled();
 
-    const submitButton = screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
-    await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await doAct(async () => {
-      await user.click(submitButton);
-    });
+    await user.click(submitButton);
 
     expect(uploadRequestSpy).toHaveBeenCalledTimes(1);
-    expect(uploadRequestSpy).toHaveBeenCalledWith(mockFileUpload);
+    expect(uploadRequestSpy).toHaveBeenCalledWith(mockFileUpload, expect.any(Function), expect.any(Subject));
+
+    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+
+    const closeButton = within(modal).getByText('Close');
+    expect(closeButton).toBeInTheDocument();
+    expect(closeButton).toBeVisible();
   });
 
   it('should delete a probe template when Delete is clicked', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
-    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -226,7 +229,7 @@ describe('<AgentProbeTemplates />', () => {
 
   it('should show warning modal and delete a probe template when confirmed', async () => {
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCustomProbeTemplate').mockReturnValue(of(true));
-    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -256,7 +259,7 @@ describe('<AgentProbeTemplates />', () => {
 
   it('should insert probes if agent is enabled', async () => {
     const insertProbesSpy = jest.spyOn(defaultServices.api, 'insertProbes').mockReturnValue(of(true));
-    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -272,7 +275,7 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should disable inserting probes if agent is not enabled', async () => {
-    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={false} />);
+    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={false} />);
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -283,7 +286,7 @@ describe('<AgentProbeTemplates />', () => {
   });
 
   it('should shown empty state when table is empty', async () => {
-    const { user } = renderWithServiceContext(<AgentProbeTemplates agentDetected={true} />);
+    const { user } = renderWithServiceContextAndRouter(<AgentProbeTemplates agentDetected={true} />);
 
     const filterInput = screen.getByLabelText('Probe template filter');
     expect(filterInput).toBeInTheDocument();

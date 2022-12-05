@@ -35,13 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Prompt } from 'react-router-dom';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
   Button,
   ExpandableSection,
-  FileUpload,
   Form,
   FormGroup,
   Modal,
@@ -50,14 +53,10 @@ import {
   Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { first } from 'rxjs/operators';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
-import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
 import { HelpIcon } from '@patternfly/react-icons';
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import * as React from 'react';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, defaultIfEmpty, tap } from 'rxjs/operators';
 
 export interface ArchiveUploadModalProps {
   visible: boolean;
@@ -65,15 +64,14 @@ export interface ArchiveUploadModalProps {
 }
 
 export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps> = (props) => {
+  const addSubscriptions = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const notifications = React.useContext(NotificationsContext);
+  const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
+  const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
 
-  const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
-  const [filename, setFilename] = React.useState('' as string | undefined);
   const [uploading, setUploading] = React.useState(false);
-  const [rejected, setRejected] = React.useState(false);
-  const [showCancelPrompt, setShowCancelPrompt] = React.useState(false);
-  const [abort, setAbort] = React.useState(new AbortController());
+  const [numOfFiles, setNumOfFiles] = React.useState(0);
+  const [allOks, setAllOks] = React.useState(false);
   const [labels, setLabels] = React.useState([] as RecordingLabel[]);
   const [valid, setValid] = React.useState(ValidatedOptions.success);
 
@@ -88,74 +86,73 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
   }, [labels]);
 
   const reset = React.useCallback(() => {
-    setUploadFile(undefined);
-    setFilename('');
     setUploading(false);
-    setRejected(true);
-    setShowCancelPrompt(false);
-    setAbort(new AbortController());
     setLabels([] as RecordingLabel[]);
     setValid(ValidatedOptions.success);
-  }, [setUploadFile, setFilename, setUploading, setRejected, setShowCancelPrompt, setAbort, setLabels, setValid]);
-
-  const handleFileChange = React.useCallback(
-    (file, filename) => {
-      setRejected(false);
-      setUploadFile(file);
-      setFilename(filename);
-      setShowCancelPrompt(false);
-    },
-    [setRejected, setUploadFile, setFilename, setShowCancelPrompt]
-  );
-
-  const handleReject = React.useCallback(() => {
-    setRejected(true);
-    setShowCancelPrompt(false);
-  }, [setRejected, setShowCancelPrompt]);
+    setNumOfFiles(0);
+  }, [setUploading, setLabels, setValid, setNumOfFiles]);
 
   const handleClose = React.useCallback(() => {
     if (uploading) {
-      setShowCancelPrompt(true);
+      abortRef.current && abortRef.current.click();
     } else {
       reset();
       props.onClose();
     }
-  }, [uploading, setShowCancelPrompt, reset, props.onClose]);
+  }, [uploading, abortRef.current, reset, props.onClose]);
+
+  const onFileSubmit = React.useCallback(
+    (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
+      setUploading(true);
+
+      const tasks: Observable<string | undefined>[] = [];
+
+      fileUploads.forEach((fileUpload) => {
+        tasks.push(
+          context.api
+            .uploadRecording(
+              fileUpload.file,
+              getFormattedLabels(),
+              getProgressUpdateCallback(fileUpload.file.name),
+              fileUpload.abortSignal
+            )
+            .pipe(
+              tap({
+                next: (_) => {
+                  onSingleSuccess(fileUpload.file.name);
+                },
+                error: (err) => {
+                  onSingleFailure(fileUpload.file.name, err);
+                },
+              }),
+              catchError((_) => of(undefined))
+            )
+        );
+      });
+
+      addSubscriptions(
+        forkJoin(tasks)
+          .pipe(defaultIfEmpty(['']))
+          .subscribe((savedNames) => {
+            setUploading(false);
+            setAllOks(!savedNames.some((name) => name === undefined));
+          })
+      );
+    },
+    [addSubscriptions, context.api, setUploading, handleClose, getFormattedLabels, setAllOks]
+  );
 
   const handleSubmit = React.useCallback(() => {
-    if (rejected) {
-      notifications.warning('File format is not compatible');
-      return;
-    }
-    if (!uploadFile) {
-      notifications.warning('Attempted to submit JFR upload without a file selected');
-      return;
-    }
-    setUploading(true);
-    context.api
-      .uploadRecording(uploadFile, getFormattedLabels(), abort.signal)
-      .pipe(first())
-      .subscribe({
-        next: () => handleClose(),
-        error: (_) => reset(),
-      });
-  }, [
-    context.api,
-    notifications,
-    setUploading,
-    abort.signal,
-    handleClose,
-    reset,
-    getFormattedLabels,
-    uploadFile,
-    rejected,
-  ]);
+    submitRef.current && submitRef.current.click();
+  }, [submitRef.current]);
 
-  const handleAbort = React.useCallback(() => {
-    abort.abort();
-    reset();
-    props.onClose();
-  }, [abort.abort, reset, props.onClose]);
+  const onFilesChange = React.useCallback(
+    (fileUploads: FUpload[]) => {
+      setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
+      setNumOfFiles(fileUploads.length);
+    },
+    [setNumOfFiles, setAllOks]
+  );
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
@@ -169,7 +166,6 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
 
   return (
     <>
-      <Prompt when={uploading} message="Are you sure you wish to cancel the file upload?" />
       <Modal
         isOpen={props.visible}
         variant={ModalVariant.large}
@@ -199,27 +195,15 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
           </Text>
         }
       >
-        <CancelUploadModal
-          visible={showCancelPrompt}
-          title="Upload in Progress"
-          message="Are you sure you wish to cancel the file upload?"
-          onYes={handleAbort}
-          onNo={() => setShowCancelPrompt(false)}
-        />
-        <Form isHorizontal>
-          <FormGroup label="JFR File" isRequired fieldId="file" validated={rejected ? 'error' : 'default'}>
-            <FileUpload
-              id="file-upload"
-              value={uploadFile}
-              filename={filename}
-              onChange={handleFileChange}
-              isLoading={uploading}
-              isDisabled={uploading}
-              validated={rejected ? 'error' : 'default'}
-              dropzoneProps={{
-                accept: '.jfr',
-                onDropRejected: handleReject,
-              }}
+        <Form>
+          <FormGroup label="JFR File" isRequired fieldId="file">
+            <MultiFileUpload
+              submitRef={submitRef}
+              abortRef={abortRef}
+              uploading={uploading}
+              displayAccepts={['JFR']}
+              onFileSubmit={onFileSubmit}
+              onFilesChange={onFilesChange}
             />
           </FormGroup>
           <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
@@ -242,17 +226,25 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
             </FormGroup>
           </ExpandableSection>
           <ActionGroup>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              isDisabled={!filename || valid !== ValidatedOptions.success || uploading}
-              {...submitButtonLoadingProps}
-            >
-              {uploading ? 'Submitting' : 'Submit'}
-            </Button>
-            <Button variant="link" onClick={handleClose}>
-              Cancel
-            </Button>
+            {allOks && numOfFiles ? (
+              <Button variant="primary" onClick={handleClose}>
+                Close
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="primary"
+                  onClick={handleSubmit}
+                  isDisabled={!numOfFiles || valid !== ValidatedOptions.success || uploading}
+                  {...submitButtonLoadingProps}
+                >
+                  {uploading ? 'Submitting' : 'Submit'}
+                </Button>
+                <Button variant="link" onClick={handleClose}>
+                  Cancel
+                </Button>
+              </>
+            )}
           </ActionGroup>
         </Form>
       </Modal>

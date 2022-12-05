@@ -35,18 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Prompt } from 'react-router-dom';
-import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '@app/Notifications/Notifications';
 import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { HelpIcon } from '@patternfly/react-icons';
-import { isRule, Rule } from './Rules';
-import { from, Observable, of } from 'rxjs';
-import { catchError, concatMap, first } from 'rxjs/operators';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
+import { HelpIcon } from '@patternfly/react-icons';
+import * as React from 'react';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { catchError, concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
+import { isRule, Rule } from './Rules';
 
 export interface RuleUploadModalProps {
   visible: boolean;
@@ -67,86 +66,78 @@ export const parseRule = (file: File): Observable<Rule> => {
 };
 
 export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (props) => {
-  const context = React.useContext(ServiceContext);
-  const notifications = React.useContext(NotificationsContext);
-  const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
-  const [filename, setFilename] = React.useState('' as string | undefined);
-  const [uploading, setUploading] = React.useState(false);
-  const [rejected, setRejected] = React.useState(false);
-  const [showCancelPrompt, setShowCancelPrompt] = React.useState(false);
-  const [abort, setAbort] = React.useState(new AbortController());
   const addSubscription = useSubscriptions();
+  const context = React.useContext(ServiceContext);
+  const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
+  const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
+
+  const [numOfFiles, setNumOfFiles] = React.useState(0);
+  const [allOks, setAllOks] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
 
   const reset = React.useCallback(() => {
-    setUploadFile(undefined);
-    setFilename('');
+    setNumOfFiles(0);
     setUploading(false);
-    setRejected(true);
-    setShowCancelPrompt(false);
-    setAbort(new AbortController());
-  }, [setUploadFile, setFilename, setUploading, setRejected, setShowCancelPrompt, setAbort]);
-
-  const handleFileChange = React.useCallback(
-    (file, filename) => {
-      setRejected(false);
-      setUploadFile(file);
-      setFilename(filename);
-      setShowCancelPrompt(false);
-    },
-    [setRejected, setUploadFile, setFilename, setShowCancelPrompt]
-  );
-
-  const handleReject = React.useCallback(() => {
-    setRejected(true);
-    setShowCancelPrompt(false);
-  }, [setRejected, setShowCancelPrompt]);
+  }, [setNumOfFiles, setUploading]);
 
   const handleClose = React.useCallback(() => {
     if (uploading) {
-      setShowCancelPrompt(true);
+      abortRef.current && abortRef.current.click();
     } else {
       reset();
       props.onClose();
     }
-  }, [uploading, setShowCancelPrompt, reset]);
+  }, [uploading, abortRef.current, reset, props.onClose]);
+
+  const onFileSubmit = React.useCallback(
+    (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
+      setUploading(true);
+
+      const tasks: Observable<boolean>[] = [];
+
+      fileUploads.forEach((fileUpload) => {
+        tasks.push(
+          parseRule(fileUpload.file).pipe(
+            first(),
+            concatMap((rule) =>
+              context.api.uploadRule(rule, getProgressUpdateCallback(fileUpload.file.name), fileUpload.abortSignal)
+            ),
+            tap({
+              next: (_) => {
+                onSingleSuccess(fileUpload.file.name);
+              },
+              error: (err) => {
+                onSingleFailure(fileUpload.file.name, err);
+              },
+            }),
+            catchError((_) => of(false))
+          )
+        );
+      });
+
+      addSubscription(
+        forkJoin(tasks)
+          .pipe(defaultIfEmpty([true]))
+          .subscribe((oks) => {
+            setUploading(false);
+            setAllOks(oks.reduce((prev, curr, _) => prev && curr, true));
+          })
+      );
+    },
+    [setUploading, context.api, handleClose, addSubscription, setAllOks]
+  );
 
   const handleSubmit = React.useCallback(() => {
-    if (rejected) {
-      notifications.warning('File format is not compatible');
-      return;
-    }
-    if (!uploadFile) {
-      notifications.warning('Attempted to submit automated rule without a file selected');
-      return;
-    }
-    setUploading(true);
-    addSubscription(
-      parseRule(uploadFile)
-        .pipe(
-          first(),
-          concatMap((rule) => context.api.createRule(rule)), // FIXME: Add abort signal to request
-          catchError((err) => {
-            // parseRule might throw
-            notifications.danger('Automated rule upload failed', err.message);
-            return of(false);
-          })
-        )
-        .subscribe((success) => {
-          setUploading(false);
-          if (success) {
-            handleClose();
-          }
-        })
-    );
-  }, [context.api, notifications, setUploading, uploadFile, rejected, handleClose]);
+    submitRef.current && submitRef.current.click();
+  }, [submitRef.current]);
 
-  const handleAbort = React.useCallback(() => {
-    abort.abort();
-    reset();
-    props.onClose();
-  }, [abort, reset, props.onClose]);
-
-  const handleCloseCancelModal = React.useCallback(() => setShowCancelPrompt(false), [setShowCancelPrompt]);
+  const onFilesChange = React.useCallback(
+    (fileUploads: FUpload[]) => {
+      setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
+      setNumOfFiles(fileUploads.length);
+    },
+    [setNumOfFiles, setAllOks]
+  );
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
@@ -160,11 +151,10 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
 
   return (
     <>
-      <Prompt when={uploading} message="Are you sure you wish to cancel the file upload?" />
       <Modal
         isOpen={props.visible}
         variant={ModalVariant.large}
-        showClose={!uploading}
+        showClose={true}
         onClose={handleClose}
         title="Upload Automated Rules"
         description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
@@ -186,41 +176,38 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
           </Popover>
         }
       >
-        <CancelUploadModal
-          visible={showCancelPrompt}
-          title="Upload in Progress"
-          message="Are you sure you wish to cancel the file upload?"
-          onYes={handleAbort}
-          onNo={handleCloseCancelModal}
-        />
         <Form>
-          <FormGroup label="JSON File" isRequired fieldId="file" validated={rejected ? 'error' : 'default'}>
-            <FileUpload
-              id="file-upload"
-              value={uploadFile}
-              filename={filename}
-              onChange={handleFileChange}
-              isDisabled={uploading}
-              isLoading={uploading}
-              validated={rejected ? 'error' : 'default'}
-              dropzoneProps={{
-                accept: '.json',
-                onDropRejected: handleReject,
-              }}
+          <FormGroup label="JSON File" isRequired fieldId="file">
+            <MultiFileUpload
+              submitRef={submitRef}
+              abortRef={abortRef}
+              uploading={uploading}
+              dropZoneAccepts={['application/json']}
+              displayAccepts={['JSON']}
+              onFileSubmit={onFileSubmit}
+              onFilesChange={onFilesChange}
             />
           </FormGroup>
           <ActionGroup>
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              isDisabled={!filename || uploading}
-              {...submitButtonLoadingProps}
-            >
-              Submit
-            </Button>
-            <Button variant="link" onClick={handleClose} isDisabled={uploading}>
-              Cancel
-            </Button>
+            {allOks && numOfFiles ? (
+              <Button variant="primary" onClick={handleClose}>
+                Close
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="primary"
+                  onClick={handleSubmit}
+                  isDisabled={!numOfFiles || uploading}
+                  {...submitButtonLoadingProps}
+                >
+                  Submit
+                </Button>
+                <Button variant="link" onClick={handleClose}>
+                  Cancel
+                </Button>
+              </>
+            )}
           </ActionGroup>
         </Form>
       </Modal>

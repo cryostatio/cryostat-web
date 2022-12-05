@@ -41,8 +41,7 @@ import { createMemoryHistory } from 'history';
 import { of, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
 import renderer, { act } from 'react-test-renderer';
-import { act as doAct, cleanup, screen, within, waitFor } from '@testing-library/react';
-import * as tlr from '@testing-library/react';
+import { act as doAct, cleanup, screen, within } from '@testing-library/react';
 import { Rules, Rule } from '@app/Rules/Rules';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import {
@@ -69,8 +68,8 @@ const mockRule: Rule = {
 const mockRuleListResponse = { data: { result: [mockRule] as Rule[] } };
 const mockRuleListEmptyResponse = { data: { result: [] as Rule[] } };
 
-const mockFileUpload = new File([JSON.stringify(mockRule)], `${mockRule.name}.json`, { type: 'json' });
-mockFileUpload.text = jest.fn(() => new Promise((resolve, _) => resolve(JSON.stringify(mockRule))));
+const mockFileUpload = new File([JSON.stringify(mockRule)], `${mockRule.name}.json`, { type: 'application/json' });
+mockFileUpload.text = jest.fn(() => Promise.resolve(JSON.stringify(mockRule)));
 
 const mockDeleteNotification = { message: { ...mockRule } } as NotificationMessage;
 
@@ -85,7 +84,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
-const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
+const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRule').mockReturnValue(of(true));
 const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
 jest
   .spyOn(defaultServices.api, 'doGet')
@@ -170,9 +169,9 @@ describe('<Rules />', () => {
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
-    const fileUploadDropZone = await within(modal).findByLabelText('Drag a file here or browse to upload');
-    expect(fileUploadDropZone).toBeInTheDocument();
-    expect(fileUploadDropZone).toBeVisible();
+    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
   });
 
   it('shows a popup when Delete is clicked and then deletes the Rule after clicking confirmation Delete', async () => {
@@ -274,35 +273,40 @@ describe('<Rules />', () => {
     expect(modalTitle).toBeInTheDocument();
     expect(modalTitle).toBeVisible();
 
-    const fileUploadDropZone = (await within(modal).findByLabelText(
-      'Drag a file here or browse to upload'
-    )) as HTMLInputElement;
-    expect(fileUploadDropZone).toBeInTheDocument();
-    expect(fileUploadDropZone).toBeVisible();
+    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
 
-    const browseButton = await within(modal).findByRole('button', { name: 'Browse...' });
-    expect(browseButton).toBeInTheDocument();
-    expect(browseButton).toBeVisible();
+    const uploadButton = within(modal).getByText('Upload');
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
-    const submitButton = screen.getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
-    await user.click(submitButton);
-
-    const uploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
+    const uploadInput = modal.querySelector("input[accept='application/json'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    await user.click(browseButton);
+    await user.click(uploadButton);
     await user.upload(uploadInput, mockFileUpload);
 
-    expect(uploadInput.files).not.toBe(null);
-    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
+    const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
+    expect(fileUploadNameText).toBeInTheDocument();
+    expect(fileUploadNameText).toBeVisible();
 
-    await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await tlr.act(async () => {
-      await user.click(submitButton);
-    });
+    const submitButton = within(modal).getByText('Submit');
+    expect(submitButton).toBeInTheDocument();
+    expect(submitButton).toBeVisible();
+    expect(submitButton).not.toBeDisabled();
 
-    expect(createSpy).toHaveBeenCalled();
-    expect(createSpy).toHaveBeenCalledWith(mockRule);
+    await user.click(submitButton);
+
+    expect(uploadSpy).toHaveBeenCalled();
+    expect(uploadSpy).toHaveBeenCalledWith(mockRule, expect.any(Function), expect.any(Subject));
+
+    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+
+    const closeButton = within(modal).getByText('Close');
+    expect(closeButton).toBeInTheDocument();
+    expect(closeButton).toBeVisible();
   });
 });

@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { createMemoryHistory } from 'history';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { Text } from '@patternfly/react-core';
 import { screen, within, waitFor, cleanup } from '@testing-library/react';
 import * as tlr from '@testing-library/react';
@@ -67,9 +67,7 @@ const mockMetadataFile = new File(
   mockMetadataFileName,
   { type: 'json' }
 );
-mockMetadataFile.text = jest.fn(
-  () => new Promise((resolve, _) => resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })))
-);
+mockMetadataFile.text = jest.fn(() => Promise.resolve(JSON.stringify({ labels: { ...mockUploadedRecordingLabels } })));
 
 const mockRecording: ArchivedRecording = {
   name: 'someRecording',
@@ -459,37 +457,41 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(fileLabel).toBeInTheDocument();
     expect(fileLabel).toBeInTheDocument();
 
-    const fileUploadDropZone = (await within(modal).findByLabelText(
-      'Drag a file here or browse to upload'
-    )) as HTMLInputElement;
-    expect(fileUploadDropZone).toBeInTheDocument();
-    expect(fileUploadDropZone).toBeVisible();
+    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
 
-    const browseButton = await within(modal).findByRole('button', { name: 'Browse...' });
-    expect(browseButton).toBeInTheDocument();
-    expect(browseButton).toBeVisible();
+    const uploadButton = within(modal).getByText('Upload');
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
     const uploadInput = modal.querySelector("input[accept='.jfr'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    await user.click(browseButton);
+    await user.click(uploadButton);
     await user.upload(uploadInput, mockFileUpload);
 
-    expect(uploadInput.files).not.toBe(null);
-    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
+    const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
+    expect(fileUploadNameText).toBeInTheDocument();
+    expect(fileUploadNameText).toBeVisible();
 
-    const submitButton = within(modal).getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
+    const submitButton = within(modal).getByText('Submit');
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
+    expect(submitButton).not.toBeDisabled();
 
-    await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await tlr.act(async () => {
-      await user.click(submitButton);
-    });
+    await user.click(submitButton);
 
     expect(uploadSpy).toHaveBeenCalled();
-    expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, {}, expect.anything());
+    expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, {}, expect.any(Function), expect.any(Subject));
+
+    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+
+    const closeButton = within(modal).getByText('Close');
+    expect(closeButton).toBeInTheDocument();
+    expect(closeButton).toBeVisible();
   });
 
   it('uploads an archived recording with labels from editors when Submit is clicked', async () => {
@@ -515,25 +517,24 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(fileLabel).toBeInTheDocument();
     expect(fileLabel).toBeInTheDocument();
 
-    const fileUploadDropZone = (await within(modal).findByLabelText(
-      'Drag a file here or browse to upload'
-    )) as HTMLInputElement;
-    expect(fileUploadDropZone).toBeInTheDocument();
-    expect(fileUploadDropZone).toBeVisible();
+    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
 
-    const browseButton = await within(modal).findByRole('button', { name: 'Browse...' });
-    expect(browseButton).toBeInTheDocument();
-    expect(browseButton).toBeVisible();
+    const uploadButton = within(modal).getByText('Upload');
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
     const uploadInput = modal.querySelector("input[accept='.jfr'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    await user.click(browseButton);
+    await user.click(uploadButton);
     await user.upload(uploadInput, mockFileUpload);
 
-    expect(uploadInput.files).not.toBe(null);
-    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
+    const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
+    expect(fileUploadNameText).toBeInTheDocument();
+    expect(fileUploadNameText).toBeVisible();
 
     const metadataEditorToggle = within(modal).getByText('Show metadata options');
     expect(metadataEditorToggle).toBeInTheDocument();
@@ -541,32 +542,44 @@ describe('<ArchivedRecordingsTable />', () => {
 
     await user.click(metadataEditorToggle);
 
-    const addLabelButton = await within(modal).findByRole('button', { name: 'Add Label' });
+    const addLabelButton = within(modal).getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
     await user.click(addLabelButton);
 
-    const keyInput = await within(modal).findByLabelText('Label Key');
+    const keyInput = within(modal).getByLabelText('Label Key');
     expect(keyInput).toBeInTheDocument();
     expect(keyInput).toBeVisible();
 
-    const valueInput = await within(modal).findByLabelText('Label Value');
+    const valueInput = within(modal).getByLabelText('Label Value');
     expect(valueInput).toBeInTheDocument();
     expect(valueInput).toBeVisible();
 
     await user.type(keyInput, 'someLabel');
     await user.type(valueInput, 'someValue');
 
-    const submitButton = within(modal).getByRole('button', { name: 'Submit' }) as HTMLButtonElement;
+    const submitButton = within(modal).getByText('Submit');
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
+    expect(submitButton).not.toBeDisabled();
 
-    await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await tlr.act(async () => await user.click(submitButton));
+    await user.click(submitButton);
 
     expect(uploadSpy).toHaveBeenCalled();
-    expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, { someLabel: 'someValue' }, expect.anything());
+    expect(uploadSpy).toHaveBeenCalledWith(
+      mockFileUpload,
+      { someLabel: 'someValue' },
+      expect.any(Function),
+      expect.any(Subject)
+    );
+
+    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+
+    const closeButton = within(modal).getByText('Close');
+    expect(closeButton).toBeInTheDocument();
+    expect(closeButton).toBeVisible();
   });
 
   it('uploads an archived recording with labels from uploads when Submit is clicked', async () => {
@@ -592,25 +605,24 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(fileLabel).toBeInTheDocument();
     expect(fileLabel).toBeInTheDocument();
 
-    const fileUploadDropZone = (await within(modal).findByLabelText(
-      'Drag a file here or browse to upload'
-    )) as HTMLInputElement;
-    expect(fileUploadDropZone).toBeInTheDocument();
-    expect(fileUploadDropZone).toBeVisible();
+    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
 
-    const browseButton = await within(modal).findByRole('button', { name: 'Browse...' });
-    expect(browseButton).toBeInTheDocument();
-    expect(browseButton).toBeVisible();
+    const uploadButton = within(modal).getByText('Upload');
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
     const uploadInput = modal.querySelector("input[accept='.jfr'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
     expect(uploadInput).not.toBeVisible();
 
-    await user.click(browseButton);
+    await user.click(uploadButton);
     await user.upload(uploadInput, mockFileUpload);
 
-    expect(uploadInput.files).not.toBe(null);
-    expect(uploadInput.files![0]).toStrictEqual(mockFileUpload);
+    const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
+    expect(fileUploadNameText).toBeInTheDocument();
+    expect(fileUploadNameText).toBeVisible();
 
     const metadataEditorToggle = within(modal).getByText('Show metadata options');
     expect(metadataEditorToggle).toBeInTheDocument();
@@ -618,7 +630,7 @@ describe('<ArchivedRecordingsTable />', () => {
 
     await user.click(metadataEditorToggle);
 
-    const uploadeLabelButton = await within(modal).findByRole('button', { name: 'Upload Labels' });
+    const uploadeLabelButton = within(modal).getByRole('button', { name: 'Upload Labels' });
     expect(uploadeLabelButton).toBeInTheDocument();
     expect(uploadeLabelButton).toBeVisible();
 
@@ -627,22 +639,32 @@ describe('<ArchivedRecordingsTable />', () => {
     const labelUploadInput = modal.querySelector("input[accept='.json'][type='file']") as HTMLInputElement;
     expect(labelUploadInput).toBeInTheDocument();
 
-    await tlr.act(async () => {
-      await user.upload(labelUploadInput, mockMetadataFile);
-    });
+    await user.upload(labelUploadInput, mockMetadataFile);
 
     expect(labelUploadInput.files).not.toBe(null);
     expect(labelUploadInput.files![0]).toStrictEqual(mockMetadataFile);
 
-    const submitButton = within(modal).getByRole('button', { name: 'Submit' });
+    const submitButton = within(modal).getByText('Submit');
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
 
-    await waitFor(() => expect(submitButton).not.toBeDisabled());
-    await tlr.act(async () => await user.click(submitButton));
+    expect(submitButton).not.toBeDisabled();
+    await user.click(submitButton);
 
     expect(uploadSpy).toHaveBeenCalled();
-    expect(uploadSpy).toHaveBeenCalledWith(mockFileUpload, mockUploadedRecordingLabels, expect.anything());
+    expect(uploadSpy).toHaveBeenCalledWith(
+      mockFileUpload,
+      mockUploadedRecordingLabels,
+      expect.any(Function),
+      expect.any(Subject)
+    );
+
+    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+
+    const closeButton = within(modal).getByText('Close');
+    expect(closeButton).toBeInTheDocument();
+    expect(closeButton).toBeVisible();
   });
 
   it('should show warning popover if any metadata file upload has invalid contents', async () => {
@@ -666,15 +688,13 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(fileLabel).toBeInTheDocument();
     expect(fileLabel).toBeInTheDocument();
 
-    const fileUploadDropZone = (await within(modal).findByLabelText(
-      'Drag a file here or browse to upload'
-    )) as HTMLInputElement;
-    expect(fileUploadDropZone).toBeInTheDocument();
-    expect(fileUploadDropZone).toBeVisible();
+    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
 
-    const browseButton = await within(modal).findByRole('button', { name: 'Browse...' });
-    expect(browseButton).toBeInTheDocument();
-    expect(browseButton).toBeVisible();
+    const uploadButton = within(modal).getByText('Upload');
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
 
     const uploadInput = modal.querySelector("input[accept='.jfr'][type='file']") as HTMLInputElement;
     expect(uploadInput).toBeInTheDocument();
@@ -688,9 +708,9 @@ describe('<ArchivedRecordingsTable />', () => {
 
     const invalidMetadataFileName = 'invalid.metadata.json';
     const invalidMetadataFile = new File(['asdfg'], invalidMetadataFileName, { type: 'json' });
-    invalidMetadataFile.text = jest.fn(() => new Promise((resolve, _) => resolve('asdfg')));
+    invalidMetadataFile.text = jest.fn(() => Promise.resolve('asdfg'));
 
-    const uploadeLabelButton = await within(modal).findByRole('button', { name: 'Upload Labels' });
+    const uploadeLabelButton = within(modal).getByRole('button', { name: 'Upload Labels' });
     expect(uploadeLabelButton).toBeInTheDocument();
     expect(uploadeLabelButton).toBeVisible();
 
