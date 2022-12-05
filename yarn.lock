@@ -827,14 +827,14 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@patternfly/react-core@^4.224.1", "@patternfly/react-core@^4.258.3":
-  version "4.261.0"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-4.261.0.tgz#169091ff931cce2fbb6791c039ddcdb9e120f7c1"
-  integrity sha512-yCX7wZpJOabMPRxQXduJ1E0sWALAUu9kMEA3iuty8OpwWbwL9DDgyKuqAEOiDcRN0Ju/4k7U++e8+28JV10nXQ==
+"@patternfly/react-core@^4.258.3", "@patternfly/react-core@^4.264.0":
+  version "4.264.0"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-4.264.0.tgz#8bc2f28858036c8176ef4873dc1c1e6c1deb8094"
+  integrity sha512-tK0BMWxw8nhukev40HZ6q6d02pDnjX7oyA91vHa18aakJUKBWMaerqpG4NZVMoh0tPKX3aLNj+zyCwDALFAZZw==
   dependencies:
-    "@patternfly/react-icons" "^4.92.10"
-    "@patternfly/react-styles" "^4.91.10"
-    "@patternfly/react-tokens" "^4.93.10"
+    "@patternfly/react-icons" "^4.93.0"
+    "@patternfly/react-styles" "^4.92.0"
+    "@patternfly/react-tokens" "^4.94.0"
     focus-trap "6.9.2"
     react-dropzone "9.0.0"
     tippy.js "5.1.2"
@@ -862,10 +862,10 @@
     lodash "^4.17.19"
     tslib "^2.0.0"
 
-"@patternfly/react-tokens@^4.93.10":
-  version "4.93.10"
-  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.93.10.tgz#5a84999c63c2cf031fefdc9a22dfcbf2e2b0744d"
-  integrity sha512-F+j1irDc9M6zvY6qNtDryhbpnHz3R8ymHRdGelNHQzPTIK88YSWEnT1c9iUI+uM/iuZol7sJmO5STtg2aPIDRQ==
+"@patternfly/react-tokens@^4.93.10", "@patternfly/react-tokens@^4.94.0":
+  version "4.94.0"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-tokens/-/react-tokens-4.94.0.tgz#d605487667c544a71ab3495a19e3ad2777191943"
+  integrity sha512-fYXxUJZnzpn89K2zzHF0cSncZZVGKrohdb5f5T1wzxwU2NZPVGpvr88xhm+V2Y/fSrrTPwXcP3IIdtNOOtJdZw==
 
 "@polka/url@^1.0.0-next.9":
   version "1.0.0-next.12"
