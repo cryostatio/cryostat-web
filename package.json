@@ -71,7 +71,7 @@
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.7",
-    "style-loader": "^2.0.0",
+    "style-loader": "^3.3.1",
     "svg-url-loader": "^8.0.0",
     "terser-webpack-plugin": "^5.3.3",
     "ts-jest": "^27.0.5",
