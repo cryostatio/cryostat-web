@@ -507,7 +507,14 @@ export const AgentTemplateAction: React.FunctionComponent<AgentTemplateActionPro
       position={DropdownPosition.right}
       isFlipEnabled
       dropdownItems={actionItems.map((action) => (
-        <DropdownItem key={action.key} onClick={action.onClick} isDisabled={action.isDisabled}>
+        <DropdownItem
+          key={action.key}
+          onClick={() => {
+            setIsOpen(false);
+            action.onClick();
+          }}
+          isDisabled={action.isDisabled}
+        >
           {action.title}
         </DropdownItem>
       ))}
