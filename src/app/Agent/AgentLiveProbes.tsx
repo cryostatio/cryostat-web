@@ -206,10 +206,10 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied).subscribe((e) => {
         setProbes((old) => {
-          const probes = e.message.events;
+          const probes = e.message.events as EventProbe[];
+          const probeIds = probes.map((p) => p.id);
           if (probes?.length > 0) {
-            const newProbe = probes[0] as EventProbe;
-            return [...old.filter((probe) => probe.id !== newProbe.id), newProbe];
+            return [...old.filter((probe) => !probeIds.includes(probe.id)), ...probes];
           }
           return old;
         });
