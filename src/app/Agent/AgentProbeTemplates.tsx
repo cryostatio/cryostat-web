@@ -279,7 +279,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
           </Tr>
         );
       }),
-    [filteredTemplates]
+    [filteredTemplates, props.agentDetected, handleInsertAction, handleDeleteAction]
   );
 
   if (errorMessage != '') {
