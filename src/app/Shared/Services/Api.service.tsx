@@ -440,7 +440,8 @@ export class ApiService {
   isProbeEnabled(): Observable<boolean> {
     return this.getActiveProbes(true).pipe(
       concatMap((_) => of(true)),
-      catchError((_) => of(false))
+      catchError((_) => of(false)),
+      first()
     );
   }
 
@@ -477,12 +478,8 @@ export class ApiService {
         this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/probes`, {
           method: 'DELETE',
         }).pipe(
-          tap((resp) => {
-            if (resp.status == 400) {
-              this.notifications.warning('Failed to remove Probes', 'The probes failed to be removed from the target');
-            }
-          }),
-          map((resp) => resp.status == 200),
+          map((resp) => resp.ok),
+          catchError(() => of(false)),
           first()
         )
       )

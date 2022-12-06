@@ -733,7 +733,7 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
             <Button
               variant="danger"
               onClick={handleDeleteButton}
-              isDisabled={!props.checkedIndices.length}
+              isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
               {...actionLoadingProps['DELETE']}
             >
               {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}

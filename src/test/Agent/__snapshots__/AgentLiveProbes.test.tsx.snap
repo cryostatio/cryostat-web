@@ -81,7 +81,7 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
               <button
                 aria-disabled={false}
                 aria-label={null}
-                className="pf-c-button pf-m-danger"
+                className="pf-c-button pf-m-danger pf-m-progress"
                 data-ouia-component-id="OUIA-Generated-Button-danger-1"
                 data-ouia-component-type="PF4/Button"
                 data-ouia-safe={true}
@@ -90,7 +90,8 @@ exports[`<AgentLiveProbes /> renders correctly 1`] = `
                 role={null}
                 type="button"
               >
-                Remove All Probes
+                Remove
+                 All Probes
               </button>
             </div>
           </div>
