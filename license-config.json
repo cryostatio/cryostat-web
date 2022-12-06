@@ -9,5 +9,20 @@
 			}
 		}
 	},
-	"ignore": [".git", "tags", "coverage", "stories", "__mocks__","**/.*", "README.md", "TESTING.md", "**/*.js", "yarn.lock", ".github/**/*", "src/app/assets/*", "src/test/**/*.snap"]
+	"ignore": [
+    ".git",
+    "tags",
+    "coverage",
+    "stories",
+    "__mocks__",
+    "**/.*",
+    "README.md",
+    "TESTING.md",
+    "**/*.js",
+    "yarn.lock",
+    ".yarn/**/*",
+    ".github/**/*",
+    "src/app/assets/*",
+    "src/test/**/*.snap"
+  ]
 }
