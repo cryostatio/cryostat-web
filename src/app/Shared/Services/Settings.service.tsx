@@ -55,7 +55,7 @@ export const automatedAnalysisConfigToRecordingAttributes = (
 ): RecordingAttributes => {
   return {
     name: automatedAnalysisRecordingName,
-    events: config.templates,
+    events: config.template,
     duration: undefined,
     archiveOnStop: false,
     options: {

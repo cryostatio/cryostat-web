@@ -86,7 +86,7 @@ const Component = () => {
         <DescriptionList columnModifier={{ lg: '3Col' }}>
           <DescriptionListGroup>
             <DescriptionListTerm>Template</DescriptionListTerm>
-            <DescriptionListDescription>{config.templates}</DescriptionListDescription>
+            <DescriptionListDescription>{config.template}</DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
             <DescriptionListTerm>Max Size (B)</DescriptionListTerm>

@@ -40,9 +40,8 @@ import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app
 import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import {
-  ActiveRecording,
   ArchivedRecording,
-  AutomatedAnalysisRecordingConfig,
+  automatedAnalysisRecordingName,
   defaultAutomatedAnalysisRecordingConfig,
 } from '@app/Shared/Services/Api.service';
 import {
@@ -54,26 +53,53 @@ import {
 import { defaultServices } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import '@testing-library/jest-dom';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContextAndReduxStore } from '../../Common';
 
-const mockConnectUrl = 'service:jmx:rmi://someUrl';
-const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
+const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 
 const mockEmptyCachedReport: CachedReportValue = {
   report: [],
   timestamp: 0,
 };
 
-const mockEvaluations: RuleEvaluation[] = [
-  {
-    name: 'rule1',
-    description: 'rule1 description',
-    score: 100,
-    topic: 'rule1 topic',
-  },
+const mockRuleEvaluation1: RuleEvaluation = {
+  name: 'rule1',
+  description: 'rule1 description',
+  score: 100,
+  topic: 'myTopic',
+};
+
+const mockRuleEvaluation2: RuleEvaluation = {
+  name: 'rule2',
+  description: 'rule2 description',
+  score: 0,
+  topic: 'fakeTopic',
+};
+
+const mockRuleEvaluation3: RuleEvaluation = {
+  name: 'rule3',
+  description: 'rule3 description',
+  score: 55,
+  topic: 'fakeTopic',
+};
+
+const mockNaRuleEvaluation: RuleEvaluation = {
+  name: 'N/A rule',
+  description: 'N/A description',
+  score: -1,
+  topic: 'fakeTopic',
+};
+
+const mockEvaluations: RuleEvaluation[] = [mockRuleEvaluation1];
+
+const mockFilteredEvaluations: RuleEvaluation[] = [
+  mockRuleEvaluation1,
+  mockRuleEvaluation2,
+  mockRuleEvaluation3,
+  mockNaRuleEvaluation,
 ];
 
 const mockRecording = {
@@ -89,10 +115,9 @@ const mockArchivedRecording: ArchivedRecording = {
   archivedTime: 1663027200000, // 2022-09-13T00:00:00.000Z in milliseconds
 };
 
-const mockRecordingConfig: AutomatedAnalysisRecordingConfig = {
-  templates: '',
-  maxSize: 0,
-  maxAge: 0,
+const mockCachedReport: CachedReportValue = {
+  report: [mockRuleEvaluation1, mockRuleEvaluation2],
+  timestamp: 1663027200000, // 2022-09-13T00:00:00.000Z in milliseconds
 };
 
 const mockTargetNode = {
@@ -139,35 +164,9 @@ const mockEmptyArchivedRecordingsResponse = {
   },
 };
 
-jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters', () => {
-  return {
-    ...jest.requireActual('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters'),
-    RecordingFilters: jest.fn(() => {
-      return <div>AutomatedAnalysisFilters</div>;
-    }),
-  };
-});
-
-jest.mock('@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisScoreFilter', () => {
-  return {
-    ...jest.requireActual('@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisScoreFilter'),
-    RecordingFilters: jest.fn(() => {
-      return <div>Score Filter</div>;
-    }),
-  };
-});
-
-jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigDrawer', () => {
-  return {
-    ...jest.requireActual('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigDrawer'),
-    RecordingFilters: jest.fn(() => {
-      return <div>AutomatedAnalysisConfigDrawer</div>;
-    }),
-  };
-});
-
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
+jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 
 describe('<AutomatedAnalysisCard />', () => {
   let preloadedState: RootState;
@@ -206,40 +205,6 @@ describe('<AutomatedAnalysisCard />', () => {
     cleanup();
     jest.useRealTimers();
   });
-
-  // it('renders correctly', async () => {
-  //   const myObservable = timer(0, 200);
-
-  //   jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of());
-  //   jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of());
-
-  //   jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of());
-  //   jest.spyOn(defaultServices.reports, 'getCachedAnalysisReport').mockReturnValueOnce(mockEmptyCachedReport);
-
-  //   renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard pageTitle={'Automated Analysis'} />, {
-  //     preloadState: preloadedState,
-  //   });
-
-  //   expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
-  //   expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-  //   expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
-  //   expect(screen.getByLabelText('Refresh automated analysis')).toBeInTheDocument(); // Refresh button
-  //   expect(screen.getByLabelText('Delete automated analysis')).toBeInTheDocument(); // Delete button
-  //   expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-  //   expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
-
-  //   expect(screen.getByText("Loading")).toBeInTheDocument(); // Loading view
-
-  //   // jest.advanceTimersByTime(0);
-
-  //   myObservable.subscribe(() => {
-  //     console.log("SFD")
-
-  //     expect(screen.getByText("Loading")).toBeInTheDocument(); // Loading view
-
-  //   });
-
-  // });
 
   it('renders report generation error view correctly', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
@@ -292,7 +257,53 @@ describe('<AutomatedAnalysisCard />', () => {
     );
   });
 
-  it('renders archived recordings', async () => {
+  it('renders active recording analysis', async () => {
+    jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
+
+    jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+      preloadState: preloadedState,
+    });
+
+    expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
+    expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
+    expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
+    const refreshButton = screen.getByRole('button', {
+      // Refresh button
+      name: /refresh automated analysis/i,
+    });
+    expect(refreshButton).toBeInTheDocument();
+    expect(refreshButton).not.toBeDisabled();
+    const deleteButton = screen.getByRole('button', {
+      // Delete button
+      name: /delete automated analysis/i,
+    });
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).not.toBeDisabled();
+    expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
+    expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
+
+    expect(screen.getByText(`${mockRecording.name}`)).toBeInTheDocument(); // Active report name
+    expect(screen.queryByText('Most recent data')).not.toBeInTheDocument(); // Last updated text
+
+    expect(
+      screen.queryByRole('button', {
+        name: /recording config dropdown/i,
+      })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', {
+        name: /recording actions/i,
+      })
+    ).not.toBeInTheDocument();
+
+    mockEvaluations.forEach((evaluation) => {
+      expect(screen.getByText(evaluation.name)).toBeInTheDocument();
+      expect(screen.getByText(evaluation.topic)).toBeInTheDocument();
+    });
+  });
+
+  it('renders archived recording analysis', async () => {
     const mockCurrentDate = new Date('14 Sep 2022 00:00:00 UTC');
     jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyActiveRecordingsResponse));
@@ -300,68 +311,168 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockArchivedRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    jest.spyOn(defaultServices.api, 'createRecording').mockReturnValueOnce(of());
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
       preloadState: preloadedState,
     });
-    const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
-    screen.logTestingPlaygroundURL();
 
     expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
     expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
-    expect(screen.getByLabelText('Refresh automated analysis')).toBeInTheDocument(); // Refresh button
-    expect(screen.getByLabelText('Delete automated analysis')).toBeInTheDocument(); // Delete button
+    const refreshButton = screen.getByRole('button', {
+      // Refresh button
+      name: /refresh automated analysis/i,
+    });
+    expect(refreshButton).toBeInTheDocument();
+    expect(refreshButton).toBeDisabled();
+    const deleteButton = screen.getByRole('button', {
+      // Delete button
+      name: /delete automated analysis/i,
+    });
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).not.toBeDisabled();
     expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
     expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
 
-    const createButton = screen.getByRole('button', {
-      name: /create default recording/i,
+    expect(screen.getByText(`${mockArchivedRecording.name}`)).toBeInTheDocument(); // Archived report name
+    expect(screen.getByText('Most recent data from 1 day ago.')).toBeInTheDocument(); // Last updated text
+
+    expect(
+      screen.getByRole('button', {
+        name: /recording config dropdown/i,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {
+        name: /recording actions/i,
+      })
+    ).toBeInTheDocument();
+
+    mockEvaluations.forEach((evaluation) => {
+      expect(screen.getByText(evaluation.name)).toBeInTheDocument();
+      expect(screen.getByText(evaluation.topic)).toBeInTheDocument();
     });
-    expect(createButton).toBeInTheDocument(); // Loading view
-    expect(screen.getByText('Showing archived report from from 1 day ago.')).toBeInTheDocument(); // Loading view
-
-    jest.useRealTimers();
-
-    await user.click(createButton);
-
-    expect(requestSpy).toHaveBeenCalledTimes(1);
-    expect(requestSpy).toBeCalledWith(
-      automatedAnalysisConfigToRecordingAttributes(defaultAutomatedAnalysisRecordingConfig)
-    );
   });
 
-  //   it('should show error view if failing to retrieve recordings', async () => {
-  //     const subj = new Subject<void>();
-  //     const mockTargetSvc = {
-  //       target: () => of(mockTarget),
-  //       authFailure: () => subj.asObservable(),
-  //     } as TargetService;
-  //     const services: Services = {
-  //       ...defaultServices,
-  //       target: mockTargetSvc,
-  //     };
+  it('renders cached recording analysis', async () => {
+    const mockCurrentDate = new Date('15 Sep 2022 00:00:00 UTC'); // 2 days after the cached recording
+    jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
+    jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyActiveRecordingsResponse));
+    jest.spyOn(defaultServices.reports, 'getCachedAnalysisReport').mockReturnValueOnce(mockCachedReport);
 
-  //     renderWithServiceContextAndReduxStore(<ActiveRecordingsTable archiveEnabled={true} />, {
-  //       preloadState: preloadedState,
-  //       services,
-  //     });
+    // set global filter Score = 0 to render all rules
+    const newPreloadedState = {
+      ...preloadedState,
+      automatedAnalysisFilters: {
+        state: {
+          targetFilters: [],
+          globalFilters: {
+            filters: {
+              Score: 0,
+            },
+          },
+        },
+      },
+    };
 
-  //     await act(async () => subj.next());
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+      preloadState: newPreloadedState,
+    });
 
-  //     const failTitle = screen.getByText('Error retrieving recordings');
-  //     expect(failTitle).toBeInTheDocument();
-  //     expect(failTitle).toBeVisible();
+    expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
+    expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
+    expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
+    const refreshButton = screen.getByRole('button', {
+      // Refresh button
+      name: /refresh automated analysis/i,
+    });
+    expect(refreshButton).toBeInTheDocument();
+    expect(refreshButton).toBeDisabled();
+    const deleteButton = screen.getByRole('button', {
+      // Delete button
+      name: /delete automated analysis/i,
+    });
+    expect(deleteButton).toBeInTheDocument();
+    expect(deleteButton).not.toBeDisabled();
+    expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
+    expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
 
-  //     const authFailText = screen.getByText('Auth failure');
-  //     expect(authFailText).toBeInTheDocument();
-  //     expect(authFailText).toBeVisible();
+    expect(screen.getByText(automatedAnalysisRecordingName)).toBeInTheDocument(); // Cached report name
+    expect(screen.getByText('Most recent data from 2 days ago.')).toBeInTheDocument(); // Last updated text
 
-  //     const retryButton = screen.getByText('Retry');
-  //     expect(retryButton).toBeInTheDocument();
-  //     expect(retryButton).toBeVisible();
+    expect(
+      screen.getByRole('button', {
+        name: /recording config dropdown/i,
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {
+        name: /recording actions/i,
+      })
+    ).toBeInTheDocument();
 
-  //     const toolbar = screen.queryByLabelText('active-recording-toolbar');
-  //     expect(toolbar).not.toBeInTheDocument();
-  //   });
+    mockCachedReport.report.forEach((evaluation) => {
+      expect(screen.getByText(evaluation.name)).toBeInTheDocument();
+      expect(screen.getByText(evaluation.topic)).toBeInTheDocument();
+    });
+  });
+
+  it('filters correctly', async () => {
+    jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
+
+    jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+      preloadState: preloadedState, // Filter score default = 100
+    });
+
+    expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument(); // Score: 100
+    expect(screen.queryByText(mockRuleEvaluation2.name)).not.toBeInTheDocument(); // Score: 0
+    expect(screen.queryByText(mockRuleEvaluation3.name)).not.toBeInTheDocument(); // Score: 55
+    expect(screen.queryByText(mockNaRuleEvaluation.name)).not.toBeInTheDocument(); // Score: -1
+
+    const showNAScores = screen.getByRole('checkbox', {
+      name: /show n\/a scores/i,
+    });
+
+    await user.click(showNAScores);
+
+    expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument(); // Score: 100
+    expect(screen.queryByText(mockRuleEvaluation2.name)).not.toBeInTheDocument(); // Score: 0
+    expect(screen.queryByText(mockRuleEvaluation3.name)).not.toBeInTheDocument(); // Score: 55
+    expect(screen.queryByText(mockNaRuleEvaluation.name)).toBeInTheDocument(); // Score: -1
+
+    const spinner = screen.getByRole('spinbutton', {
+      name: /slider value input/i,
+    });
+
+    await user.clear(spinner);
+    await waitFor(() => expect(spinner).toHaveValue(0));
+    await user.click(spinner);
+    await user.keyboard('{Enter}');
+
+    mockFilteredEvaluations.forEach((evaluation) => {
+      // all rules
+      expect(screen.getByText(evaluation.name)).toBeInTheDocument();
+      expect(screen.getByText(evaluation.topic)).toBeInTheDocument();
+    });
+
+    const nameFilter = screen.getByRole('button', { name: 'Name' });
+    await user.click(nameFilter);
+
+    const topic = screen.getByRole('menuitem', { name: /topic/i });
+    await user.click(topic);
+
+    const filterByTopic = screen.getByRole('textbox', { name: /filter by topic\.\.\./i });
+
+    await user.type(filterByTopic, 'fakeTopic');
+    await user.click(screen.getByRole('option', { name: /faketopic/i }));
+
+    mockFilteredEvaluations
+      .filter((evaluation) => evaluation.topic == 'fakeTopic')
+      .forEach((evaluation) => {
+        // all rules
+        expect(screen.getByText(evaluation.name)).toBeInTheDocument();
+      });
+
+    expect(screen.queryByText(mockRuleEvaluation1.name)).not.toBeInTheDocument(); // Score: 100
+  });
 });

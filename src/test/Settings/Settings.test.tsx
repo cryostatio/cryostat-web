@@ -42,13 +42,19 @@ import { cleanup } from '@testing-library/react';
 import { Text } from '@patternfly/react-core';
 import { Settings } from '@app/Settings/Settings';
 
-// jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {
     title: 'Notification Control Title',
     description: 'Notification Control Description',
     content: () => <Text>Notification Control Component</Text>,
+  },
+}));
+
+jest.mock('@app/Settings/AutomatedAnalysisConfig', () => ({
+  AutomatedAnalysisConfig: {
+    title: 'Automated Analysis Config Title',
+    description: 'Automated Analysis Config Description',
+    content: () => <Text>Automated Analysis Config Component</Text>,
   },
 }));
 

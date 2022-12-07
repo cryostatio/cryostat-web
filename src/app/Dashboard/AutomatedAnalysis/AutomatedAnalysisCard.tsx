@@ -278,7 +278,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     (connectUrl: string) => {
       const cachedReportAnalysis = context.reports.getCachedAnalysisReport(connectUrl);
       if (cachedReportAnalysis.report.length > 0) {
-        setReport('automated-analysis');
+        setReport(automatedAnalysisRecordingName);
         setUsingCachedReport(true);
         setReportTime(cachedReportAnalysis.timestamp);
         categorizeEvaluation(cachedReportAnalysis.report);
@@ -591,7 +591,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           &nbsp;
           <Tooltip
             content={
-              'Report data is stale. Click the Create Recording button and choose and option to start an active recording to source automated reports from.'
+              'Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from.'
             }
           >
             <OutlinedQuestionCircleIcon
@@ -623,6 +623,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
             <ToolbarItem>
               <Button
                 isSmall
+                isDisabled={isLoading || usingCachedReport || usingArchivedReport}
                 isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
                 aria-label="Refresh automated analysis"
                 onClick={generateReport}
@@ -631,6 +632,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
               />
               <Button
                 isSmall
+                isDisabled={isLoading}
                 isAriaDisabled={isLoading}
                 aria-label="Delete automated analysis"
                 onClick={clearAnalysis}
@@ -687,7 +689,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       return (
         <AutomatedAnalysisConfigDrawer onCreate={generateReport} drawerContent={errorView} isContentAbove={true} />
       );
-    } else if (usingArchivedReport) {
+    } else if (usingArchivedReport || usingCachedReport) {
       return (
         <AutomatedAnalysisConfigDrawer
           onCreate={generateReport}
@@ -700,7 +702,15 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     } else {
       return filteredCategorizedLabels;
     }
-  }, [filteredCategorizedLabels, usingArchivedReport, isLoading, errorMessage, errorView, generateReport]);
+  }, [
+    filteredCategorizedLabels,
+    usingArchivedReport,
+    usingCachedReport,
+    isLoading,
+    errorMessage,
+    errorView,
+    generateReport,
+  ]);
 
   const reportSource = React.useMemo(() => {
     if (isLoading || errorMessage) {

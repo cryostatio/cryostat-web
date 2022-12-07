@@ -1172,7 +1172,7 @@ export class ApiService {
   }
 }
 
-type SimpleResponse = Pick<Response, 'ok' | 'status'>;
+export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
 
 export interface AllArchivesResponse {}
 
@@ -1352,13 +1352,13 @@ export interface MatchedCredential {
 export const automatedAnalysisRecordingName = 'automated-analysis';
 
 export interface AutomatedAnalysisRecordingConfig {
-  templates: string;
+  template: string;
   maxSize: number;
   maxAge: number;
 }
 
 export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
-  templates: 'template=Continuous,type=TARGET',
+  template: 'template=Continuous,type=TARGET',
   maxSize: 2048,
   maxAge: 0,
 };

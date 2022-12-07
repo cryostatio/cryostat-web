@@ -95,7 +95,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            Credentials Storage Title
+            Automated Analysis Config Title
           </p>
           <small
             className=""
@@ -104,7 +104,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            Credentials Storage Description
+            Automated Analysis Config Description
           </small>
         </div>
         <div
@@ -117,7 +117,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            Credentials Storage Component
+            Automated Analysis Config Component
           </p>
         </div>
       </article>
@@ -142,7 +142,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            Deletion Dialog Control Title
+            Credentials Storage Title
           </p>
           <small
             className=""
@@ -151,7 +151,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            Deletion Dialog Control Description
+            Credentials Storage Description
           </small>
         </div>
         <div
@@ -164,7 +164,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            Deletion Dialog Control Component
+            Credentials Storage Component
           </p>
         </div>
       </article>
@@ -189,7 +189,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            WebSocket Debounce Title
+            Deletion Dialog Control Title
           </p>
           <small
             className=""
@@ -198,7 +198,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            WebSocket Debounce Description
+            Deletion Dialog Control Description
           </small>
         </div>
         <div
@@ -211,7 +211,7 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            WebSocket Debounce Component
+            Deletion Dialog Control Component
           </p>
         </div>
       </article>
@@ -236,11 +236,58 @@ exports[`<Settings/> renders correctly 1`] = `
             data-ouia-safe={true}
             data-pf-content={true}
           >
-            AutoRefresh Title
+            WebSocket Debounce Title
           </p>
           <small
             className=""
             data-ouia-component-id="OUIA-Generated-Text-14"
+            data-ouia-component-type="PF4/Text"
+            data-ouia-safe={true}
+            data-pf-content={true}
+          >
+            WebSocket Debounce Description
+          </small>
+        </div>
+        <div
+          className="pf-c-card__body"
+        >
+          <p
+            className=""
+            data-ouia-component-id="OUIA-Generated-Text-15"
+            data-ouia-component-type="PF4/Text"
+            data-ouia-safe={true}
+            data-pf-content={true}
+          >
+            WebSocket Debounce Component
+          </p>
+        </div>
+      </article>
+    </div>
+    <div
+      className="pf-l-stack__item"
+    >
+      <article
+        className="pf-c-card"
+        data-ouia-component-id="OUIA-Generated-Card-6"
+        data-ouia-component-type="PF4/Card"
+        data-ouia-safe={true}
+        id=""
+      >
+        <div
+          className="pf-c-card__title"
+        >
+          <p
+            className=""
+            data-ouia-component-id="OUIA-Generated-Text-16"
+            data-ouia-component-type="PF4/Text"
+            data-ouia-safe={true}
+            data-pf-content={true}
+          >
+            AutoRefresh Title
+          </p>
+          <small
+            className=""
+            data-ouia-component-id="OUIA-Generated-Text-17"
             data-ouia-component-type="PF4/Text"
             data-ouia-safe={true}
             data-pf-content={true}
@@ -253,7 +300,7 @@ exports[`<Settings/> renders correctly 1`] = `
         >
           <p
             className=""
-            data-ouia-component-id="OUIA-Generated-Text-15"
+            data-ouia-component-id="OUIA-Generated-Text-18"
             data-ouia-component-type="PF4/Text"
             data-ouia-safe={true}
             data-pf-content={true}

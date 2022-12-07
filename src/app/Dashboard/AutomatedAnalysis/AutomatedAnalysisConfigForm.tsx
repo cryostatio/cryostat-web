@@ -70,6 +70,7 @@ import * as React from 'react';
 import { concatMap, filter, first, mergeMap, toArray } from 'rxjs';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 interface AutomatedAnalysisConfigFormProps {
   onCreate?: () => void;
   onSave?: () => void;
@@ -207,23 +208,12 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
 
   const handleSubmit = React.useCallback(() => {
     setIsLoading(true);
-    const options: RecordingOptions = {
-      toDisk: true,
+    const config: AutomatedAnalysisRecordingConfig = {
+      template: getEventString(),
       maxAge: maxAge * maxAgeUnits,
       maxSize: maxSize * maxSizeUnits,
     };
-    const recordingAttributes: RecordingAttributes = {
-      name: automatedAnalysisRecordingName,
-      events: getEventString(),
-      duration: undefined,
-      archiveOnStop: false,
-      options: options,
-      metadata: {
-        labels: {
-          origin: automatedAnalysisRecordingName,
-        },
-      },
-    };
+    const recordingAttributes = automatedAnalysisConfigToRecordingAttributes(config);
     addSubscription(
       context.api
         .createRecording(recordingAttributes)
@@ -254,7 +244,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
 
   const handleSaveConfig = React.useCallback(() => {
     const options: AutomatedAnalysisRecordingConfig = {
-      templates: getEventString(),
+      template: getEventString(),
       maxAge: maxAge * maxAgeUnits,
       maxSize: maxSize * maxSizeUnits,
     };
