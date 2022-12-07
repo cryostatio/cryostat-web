@@ -36,17 +36,11 @@
  * SOFTWARE.
  */
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import {
-  automatedAnalysisRecordingName,
-  defaultAutomatedAnalysisRecordingConfig,
-  EventTemplate,
-  RecordingAttributes,
-  RecordingOptions,
-} from '@app/Shared/Services/Api.service';
+import { defaultAutomatedAnalysisRecordingConfig, EventTemplate } from '@app/Shared/Services/Api.service';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import '@testing-library/jest-dom';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContext } from '../../Common';

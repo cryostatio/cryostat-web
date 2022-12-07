@@ -60,6 +60,7 @@ import {
   Split,
   SplitItem,
   Text,
+  TextContent,
   TextInput,
   TextVariants,
   ValidatedOptions,
@@ -125,12 +126,9 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
           filter((target) => target !== NO_TARGET),
           first(),
           concatMap((target) =>
-            context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`).pipe(
-              mergeMap((templates) => templates),
-              filter((template) => template.provider !== 'Cryostat' || template.name !== 'Cryostat'),
-              toArray(),
-              first()
-            )
+            context.api
+              .doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
+              .pipe(first())
           )
         )
         .subscribe({
@@ -299,7 +297,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
           isRequired
           fieldId="recording-template"
           validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
-          helperText={'The Event Template to be applied in this recording'}
+          helperText="The Event Template to be applied in this recording"
           helperTextInvalid="A Template must be selected"
         >
           <SelectTemplateSelectorForm
@@ -398,6 +396,16 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
                     &nbsp;view.
                   </Text>
                 )}
+              </HelperTextItem>
+            </HelperText>
+          )}
+          {templateType == 'TARGET' && (
+            <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
+              <HelperTextItem variant="warning">
+                <Text component={TextVariants.p}>
+                  WARNING: Setting a Target Template as a default template type configuration may not apply to all
+                  Target JVMs if they do not support them.
+                </Text>
               </HelperTextItem>
             </HelperText>
           )}

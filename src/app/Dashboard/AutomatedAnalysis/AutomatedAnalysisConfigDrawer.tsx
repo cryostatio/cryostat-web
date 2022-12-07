@@ -37,6 +37,7 @@
  */
 import LoadingView from '@app/LoadingView/LoadingView';
 import { RecordingAttributes } from '@app/Shared/Services/Api.service';
+import { RECORDING_FAILURE_MESSAGE, TEMPLATE_UNSUPPORTED_MESSAGE } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -60,13 +61,14 @@ import {
 } from '@patternfly/react-core';
 import { CogIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { first } from 'rxjs';
+import { finalize, first } from 'rxjs';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
 interface AutomatedAnalysisConfigDrawerProps {
   drawerContent: React.ReactNode;
   isContentAbove: boolean;
   onCreate: () => void;
+  onError: (error: Error) => void;
 }
 
 export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAnalysisConfigDrawerProps> = (props) => {
@@ -87,32 +89,40 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
+      setIsLoading(true);
       addSubscription(
         context.api
           .createRecording(recordingAttributes)
-          .pipe(first())
+          .pipe(
+            finalize(() => {
+              setIsLoading(false);
+            }),
+            first()
+          )
           .subscribe({
             next: (resp) => {
               if (resp && resp.ok) {
                 props.onCreate();
-                setIsLoading(false);
+              } else if (resp?.status === 500) {
+                props.onError(new Error(TEMPLATE_UNSUPPORTED_MESSAGE));
+              } else {
+                props.onError(new Error(RECORDING_FAILURE_MESSAGE));
               }
             },
             error: (err) => {
-              setIsLoading(false);
+              props.onError(err);
             },
           })
       );
     },
-    [addSubscription, context.api, props.onCreate, setIsLoading]
+    [addSubscription, context.api, props.onCreate, props.onError, setIsLoading]
   );
 
   const onDefaultRecordingStart = React.useCallback(() => {
-    setIsLoading(true);
     const config = context.settings.automatedAnalysisRecordingConfig();
     const attributes = automatedAnalysisConfigToRecordingAttributes(config);
     handleCreateRecording(attributes);
-  }, [context.settings, context.settings.automatedAnalysisRecordingConfig, handleCreateRecording, setIsLoading]);
+  }, [context.settings, handleCreateRecording]);
 
   const onExpand = React.useCallback(() => {
     drawerRef.current && drawerRef.current.focus();
@@ -199,14 +209,18 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
         </Stack>
       </DrawerContentBody>
     );
-  }, [props.drawerContent, props.isContentAbove, dropdown, isLoading]);
+  }, [props.drawerContent, props.isContentAbove, dropdown]);
 
-  if (isLoading) {
-    return <LoadingView />;
-  }
-  return (
-    <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>
-      <DrawerContent panelContent={panelContent}>{drawerContentBody}</DrawerContent>
-    </Drawer>
-  );
+  const view = React.useMemo(() => {
+    if (isLoading) {
+      return <LoadingView />;
+    }
+    return (
+      <Drawer isExpanded={isExpanded} position="right" onExpand={onExpand} isInline>
+        <DrawerContent panelContent={panelContent}>{drawerContentBody}</DrawerContent>
+      </Drawer>
+    );
+  }, [isExpanded, onExpand, panelContent, drawerContentBody, isLoading]);
+
+  return view;
 };

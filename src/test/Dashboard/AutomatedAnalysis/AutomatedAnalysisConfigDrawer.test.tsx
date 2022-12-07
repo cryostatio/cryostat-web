@@ -36,14 +36,7 @@
  * SOFTWARE.
  */
 import { AutomatedAnalysisConfigDrawer } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigDrawer';
-import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
-import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
-import {
-  AutomatedAnalysisRecordingConfig,
-  defaultAutomatedAnalysisRecordingConfig,
-  SimpleResponse,
-} from '@app/Shared/Services/Api.service';
+import { defaultAutomatedAnalysisRecordingConfig, SimpleResponse } from '@app/Shared/Services/Api.service';
 import { defaultServices } from '@app/Shared/Services/Services';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
@@ -74,7 +67,12 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
 
   it('renders default view correctly', async () => {
     renderWithServiceContext(
-      <AutomatedAnalysisConfigDrawer drawerContent={drawerContent} isContentAbove={false} onCreate={() => {}} />
+      <AutomatedAnalysisConfigDrawer
+        drawerContent={drawerContent}
+        isContentAbove={false}
+        onCreate={() => {}}
+        onError={() => {}}
+      />
     );
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
@@ -90,7 +88,12 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
 
   it('opens drawer when button clicked', async () => {
     const { user } = renderWithServiceContext(
-      <AutomatedAnalysisConfigDrawer drawerContent={drawerContent} isContentAbove={false} onCreate={() => {}} />
+      <AutomatedAnalysisConfigDrawer
+        drawerContent={drawerContent}
+        isContentAbove={false}
+        onCreate={() => {}}
+        onError={() => {}}
+      />
     );
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
@@ -106,7 +109,12 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
     const onCreateFunction = jest.fn();
     const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
     const { user } = renderWithServiceContext(
-      <AutomatedAnalysisConfigDrawer drawerContent={drawerContent} isContentAbove={false} onCreate={onCreateFunction} />
+      <AutomatedAnalysisConfigDrawer
+        drawerContent={drawerContent}
+        isContentAbove={false}
+        onCreate={onCreateFunction}
+        onError={() => {}}
+      />
     );
 
     const createRecording = screen.getByRole('button', {

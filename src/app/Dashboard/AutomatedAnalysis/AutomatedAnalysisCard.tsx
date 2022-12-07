@@ -58,6 +58,7 @@ import {
   NO_RECORDINGS_MESSAGE,
   RECORDING_FAILURE_MESSAGE,
   RuleEvaluation,
+  TEMPLATE_UNSUPPORTED_MESSAGE,
 } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
@@ -339,6 +340,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
                       context.target.setAuthFailure();
                       throw new Error(authFailMessage);
                     } else {
+                      console.log(resp);
+
                       throw new Error(resp.errors[0].message);
                     }
                   }
@@ -395,8 +398,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const startProfilingRecording = React.useCallback(() => {
     const config = context.settings.automatedAnalysisRecordingConfig();
     const attributes = automatedAnalysisConfigToRecordingAttributes(config);
+    console.log('??');
+
     addSubscription(
       context.api.createRecording(attributes).subscribe((resp) => {
+        console.log(resp);
+
         if (resp && (resp.ok || resp.status === 400)) {
           // in-case the recording already exists
           generateReport();
@@ -425,6 +432,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           return ['Retry starting recording', startProfilingRecording];
         } else if (errorMessage === FAILED_REPORT_MESSAGE) {
           return ['Retry loading report', generateReport];
+        } else if (errorMessage === TEMPLATE_UNSUPPORTED_MESSAGE) {
+          return [undefined, undefined];
         } else {
           return ['Retry', generateReport];
         }
@@ -681,13 +690,28 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
   }, [errorMessage, getMessageAndRetry]);
 
+  const handleConfigError = React.useCallback(
+    (error) => {
+      handleStateErrors(error.message);
+    },
+    [handleStateErrors]
+  );
+
   const view = React.useMemo(() => {
+    if (isLoading) {
+      return <LoadingView />;
+    }
     if (errorMessage) {
       if (isAuthFail(errorMessage)) {
         return errorView;
       }
       return (
-        <AutomatedAnalysisConfigDrawer onCreate={generateReport} drawerContent={errorView} isContentAbove={true} />
+        <AutomatedAnalysisConfigDrawer
+          onCreate={generateReport}
+          drawerContent={errorView}
+          isContentAbove={true}
+          onError={handleConfigError}
+        />
       );
     } else if (usingArchivedReport || usingCachedReport) {
       return (
@@ -695,10 +719,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           onCreate={generateReport}
           drawerContent={filteredCategorizedLabels}
           isContentAbove={false}
+          onError={handleConfigError}
         />
       );
-    } else if (isLoading) {
-      return <LoadingView />;
     } else {
       return filteredCategorizedLabels;
     }
@@ -710,6 +733,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     errorMessage,
     errorView,
     generateReport,
+    handleConfigError,
   ]);
 
   const reportSource = React.useMemo(() => {
