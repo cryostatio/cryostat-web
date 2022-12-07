@@ -340,8 +340,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
                       context.target.setAuthFailure();
                       throw new Error(authFailMessage);
                     } else {
-                      console.log(resp);
-
                       throw new Error(resp.errors[0].message);
                     }
                   }
@@ -398,15 +396,15 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   const startProfilingRecording = React.useCallback(() => {
     const config = context.settings.automatedAnalysisRecordingConfig();
     const attributes = automatedAnalysisConfigToRecordingAttributes(config);
-    console.log('??');
 
     addSubscription(
       context.api.createRecording(attributes).subscribe((resp) => {
-        console.log(resp);
-
-        if (resp && (resp.ok || resp.status === 400)) {
-          // in-case the recording already exists
-          generateReport();
+        if (resp) {
+          if (resp.ok || resp.status === 400) { // in-case the recording already exists
+            generateReport();
+          } else if (resp?.status === 500) {
+            handleStateErrors(TEMPLATE_UNSUPPORTED_MESSAGE);
+          }
         } else {
           handleStateErrors(RECORDING_FAILURE_MESSAGE);
         }

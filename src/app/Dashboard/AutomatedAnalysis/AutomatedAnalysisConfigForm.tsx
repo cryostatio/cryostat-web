@@ -215,7 +215,6 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     addSubscription(
       context.api
         .createRecording(recordingAttributes)
-        .pipe(first())
         .subscribe({
           next: (resp) => {
             if (resp && resp.ok && props.onCreate) {
