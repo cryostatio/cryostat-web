@@ -28,7 +28,7 @@
     "build:bundle-analyze": "webpack-bundle-analyzer ./stats.json dist",
     "build:bundle-profile-analyze": "npm-run-all -l build:bundle-profile build:bundle-analyze",
     "yarn:install": "yarn install",
-    "yarn:frzinstall": "yarn install --frozen-lockfile"
+    "yarn:frzinstall": "yarn install --immutable"
   },
   "devDependencies": {
     "@testing-library/dom": "^8.19.0",
@@ -98,5 +98,6 @@
     "react-dom": "^17.0.2",
     "react-redux": "^8.0.5",
     "react-router-last-location": "^2.0.1"
-  }
+  },
+  "packageManager": "yarn@3.3.0"
 }
