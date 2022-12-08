@@ -105,7 +105,10 @@ import {
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 
-interface AutomatedAnalysisCardProps {}
+interface AutomatedAnalysisCardProps {
+  isLarge?: boolean;
+  isCompact?: boolean;
+}
 
 export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -756,7 +759,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
   return (
-    <Card id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
+    <Card id="automated-analysis-card" isRounded {...props} isExpanded={isCardExpanded}>
       <CardHeader
         isToggleRightAligned
         onExpand={onCardExpand}

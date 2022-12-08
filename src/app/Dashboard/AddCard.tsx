@@ -36,48 +36,65 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Stack, StackItem } from '@patternfly/react-core';
-import { TargetView } from '@app/TargetView/TargetView';
-import { AddCard } from './AddCard';
-import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import {
+  Bullseye,
+  Button,
+  Card, EmptyState,
+  EmptyStateIcon,
+  EmptyStateSecondaryActions,
+  EmptyStateVariant, Select, SelectOption, Title
+} from '@patternfly/react-core';
+import { PlusCircleIcon } from '@patternfly/react-icons';
+import { CardConfig, DashboardCards } from './Dashboard';
 
-export interface CardConfig {
-  component: string;
-  props?: React.PropsWithChildren<any>
+interface AddCardProps {
+  onAdd?: (cardConfig: CardConfig) => void;
 }
 
-export interface DashboardProps {}
+export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
+  const [selection, setSelection] = React.useState('None');
+  const [selectOpen, setSelectOpen] = React.useState(false);
 
-export const DashboardCards = [
-  AutomatedAnalysisCard,
-];
+  const options = React.useMemo(() => {
+    return [
+      <SelectOption key={0} isPlaceholder value="None" />,
+      ...DashboardCards.map(( choice, idx ) => <SelectOption key={idx + 1} value={choice.name} />)
+    ];
+  }, [DashboardCards]);
 
-function getComponentByName(name: String) {
-  for (const choice of DashboardCards) {
-    if (choice.name === name) {
-      return choice;
+  const handleToggle = React.useCallback(isOpen => {
+    setSelectOpen(isOpen)
+  }, [setSelectOpen]);
+
+  const handleSelect = React.useCallback((_, selection, isPlaceholder) => {
+    if (isPlaceholder) {
+      setSelection('None');
+    } else {
+      setSelection(selection);
     }
-  }
-  throw new Error(`Unknown card type selection: ${name}`);
+    setSelectOpen(false);
+  }, [setSelection, setSelectOpen]);
+
+  const handleAdd = React.useCallback(() => {
+    props.onAdd && selection && props.onAdd({ component: selection });
+  }, [selection]);
+
+  return (<>
+    <Card>
+      <Bullseye>
+        <EmptyState variant={EmptyStateVariant.large}>
+          <EmptyStateIcon icon={PlusCircleIcon} />
+          <Title headingLevel="h2" size="md">
+            Add a new card
+          </Title>
+          <EmptyStateSecondaryActions>
+            <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection} >
+              {options}
+            </Select>
+            <Button variant="link" isDisabled={selection === 'None'} onClick={handleAdd}>Add</Button>
+          </EmptyStateSecondaryActions>
+        </EmptyState>
+      </Bullseye>
+    </Card>
+    </>);
 }
-
-export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
-  const [contentConfigs, setContentConfigs] = React.useState([] as CardConfig[]);
-
-  const handleAdd = React.useCallback((cfg) => {
-    setContentConfigs(old => [cfg, ...old]);
-  }, [setContentConfigs]);
-
-  return (
-    <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
-      <Stack hasGutter>
-        { contentConfigs.map((cfg, idx) => <StackItem key={idx}>{React.createElement(getComponentByName(cfg.component), cfg.props)}</StackItem>) }
-        <StackItem key={contentConfigs.length}>
-          <AddCard onAdd={handleAdd} />
-        </StackItem>
-      </Stack>
-    </TargetView>
-  );
-};
-
-export default Dashboard;

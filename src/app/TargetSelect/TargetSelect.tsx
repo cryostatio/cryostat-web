@@ -266,7 +266,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   return (
     <>
-      <Card isExpanded={isExpanded}>
+      <Card isRounded isCompact isExpanded={isExpanded}>
         <CardHeader {...cardHeaderProps}>
           <CardTitle>Target JVM</CardTitle>
           <CardActions>

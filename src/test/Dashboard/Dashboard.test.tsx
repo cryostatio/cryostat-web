@@ -61,8 +61,8 @@ jest.mock('@app/TargetSelect/TargetSelect', () => ({
   TargetSelect: (props) => <div>Target Select</div>,
 }));
 
-jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard', () => ({
-  AutomatedAnalysisCard: (props) => <div>Automated Analysis Card</div>,
+jest.mock('@app/Dashboard/AddCard', () => ({
+  AddCard: (props) => <div>Add Card</div>,
 }));
 
 jest
