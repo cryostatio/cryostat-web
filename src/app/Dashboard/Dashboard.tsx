@@ -43,14 +43,12 @@ import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard
 
 export interface CardConfig {
   component: string;
-  props?: React.PropsWithChildren<any>
+  props?: React.PropsWithChildren<any>;
 }
 
 export interface DashboardProps {}
 
-export const DashboardCards = [
-  AutomatedAnalysisCard,
-];
+export const DashboardCards = [AutomatedAnalysisCard];
 
 function getComponentByName(name: String) {
   for (const choice of DashboardCards) {
@@ -64,14 +62,19 @@ function getComponentByName(name: String) {
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
   const [contentConfigs, setContentConfigs] = React.useState([] as CardConfig[]);
 
-  const handleAdd = React.useCallback((cfg) => {
-    setContentConfigs(old => [cfg, ...old]);
-  }, [setContentConfigs]);
+  const handleAdd = React.useCallback(
+    (cfg) => {
+      setContentConfigs((old) => [cfg, ...old]);
+    },
+    [setContentConfigs]
+  );
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
       <Stack hasGutter>
-        { contentConfigs.map((cfg, idx) => <StackItem key={idx}>{React.createElement(getComponentByName(cfg.component), cfg.props)}</StackItem>) }
+        {contentConfigs.map((cfg, idx) => (
+          <StackItem key={idx}>{React.createElement(getComponentByName(cfg.component), cfg.props)}</StackItem>
+        ))}
         <StackItem key={contentConfigs.length}>
           <AddCard onAdd={handleAdd} />
         </StackItem>

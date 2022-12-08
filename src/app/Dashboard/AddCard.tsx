@@ -39,10 +39,14 @@ import * as React from 'react';
 import {
   Bullseye,
   Button,
-  Card, EmptyState,
+  Card,
+  EmptyState,
   EmptyStateIcon,
   EmptyStateSecondaryActions,
-  EmptyStateVariant, Select, SelectOption, Title
+  EmptyStateVariant,
+  Select,
+  SelectOption,
+  Title,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { CardConfig, DashboardCards } from './Dashboard';
@@ -58,43 +62,53 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   const options = React.useMemo(() => {
     return [
       <SelectOption key={0} isPlaceholder value="None" />,
-      ...DashboardCards.map(( choice, idx ) => <SelectOption key={idx + 1} value={choice.name} />)
+      ...DashboardCards.map((choice, idx) => <SelectOption key={idx + 1} value={choice.name} />),
     ];
   }, [DashboardCards]);
 
-  const handleToggle = React.useCallback(isOpen => {
-    setSelectOpen(isOpen)
-  }, [setSelectOpen]);
+  const handleToggle = React.useCallback(
+    (isOpen) => {
+      setSelectOpen(isOpen);
+    },
+    [setSelectOpen]
+  );
 
-  const handleSelect = React.useCallback((_, selection, isPlaceholder) => {
-    if (isPlaceholder) {
-      setSelection('None');
-    } else {
-      setSelection(selection);
-    }
-    setSelectOpen(false);
-  }, [setSelection, setSelectOpen]);
+  const handleSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (isPlaceholder) {
+        setSelection('None');
+      } else {
+        setSelection(selection);
+      }
+      setSelectOpen(false);
+    },
+    [setSelection, setSelectOpen]
+  );
 
   const handleAdd = React.useCallback(() => {
     props.onAdd && selection && props.onAdd({ component: selection });
   }, [selection]);
 
-  return (<>
-    <Card>
-      <Bullseye>
-        <EmptyState variant={EmptyStateVariant.large}>
-          <EmptyStateIcon icon={PlusCircleIcon} />
-          <Title headingLevel="h2" size="md">
-            Add a new card
-          </Title>
-          <EmptyStateSecondaryActions>
-            <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection} >
-              {options}
-            </Select>
-            <Button variant="link" isDisabled={selection === 'None'} onClick={handleAdd}>Add</Button>
-          </EmptyStateSecondaryActions>
-        </EmptyState>
-      </Bullseye>
-    </Card>
-    </>);
-}
+  return (
+    <>
+      <Card>
+        <Bullseye>
+          <EmptyState variant={EmptyStateVariant.large}>
+            <EmptyStateIcon icon={PlusCircleIcon} />
+            <Title headingLevel="h2" size="md">
+              Add a new card
+            </Title>
+            <EmptyStateSecondaryActions>
+              <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
+                {options}
+              </Select>
+              <Button variant="link" isDisabled={selection === 'None'} onClick={handleAdd}>
+                Add
+              </Button>
+            </EmptyStateSecondaryActions>
+          </EmptyState>
+        </Bullseye>
+      </Card>
+    </>
+  );
+};
