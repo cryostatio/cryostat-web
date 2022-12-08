@@ -112,7 +112,7 @@ jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
 describe('<CreateRule />', () => {
   beforeEach(() => {
-    history.go(-history.length);
+    history.go(-1);
   });
 
   afterEach(cleanup);

@@ -96,7 +96,7 @@ jest.mock('react-router-dom', () => ({
 
 describe('<CustomRecordingForm />', () => {
   beforeEach(() => {
-    history.go(-history.length);
+    history.go(-1);
   });
 
   afterEach(cleanup);

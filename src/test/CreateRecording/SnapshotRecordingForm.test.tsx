@@ -66,7 +66,7 @@ jest.spyOn(defaultServices.target, 'authRetry').mockReturnValue(of());
 
 describe('<SnapshotRecordingForm />', () => {
   beforeEach(() => {
-    history.go(-history.length);
+    history.go(-1);
   });
 
   afterEach(cleanup);
@@ -93,10 +93,12 @@ describe('<SnapshotRecordingForm />', () => {
     expect(createButton).toBeInTheDocument();
     expect(createButton).toBeVisible();
 
+    expect(history.location.pathname).toStrictEqual('/recordings/create');
+
     await user.click(createButton);
 
     expect(onCreateSpy).toHaveBeenCalledTimes(1);
-    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/recordings/create', '/recordings']);
+    expect(history.location.pathname).toStrictEqual('/recordings');
   });
 
   it('should show error view if failing to retrieve templates or recording options', async () => {

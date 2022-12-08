@@ -37,7 +37,8 @@
  */
 import * as React from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { CompatRouter } from 'react-router-dom-v5-compat';
 import { AppLayout } from '@app/AppLayout/AppLayout';
 import { AppRoutes } from '@app/routes';
 import '@app/app.css';
@@ -50,11 +51,13 @@ const App: React.FunctionComponent = () => (
   <ServiceContext.Provider value={defaultServices}>
     <NotificationsContext.Provider value={NotificationsInstance}>
       <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
+        <BrowserRouter>
+          <CompatRouter>
+            <AppLayout>
+              <AppRoutes />
+            </AppLayout>
+          </CompatRouter>
+        </BrowserRouter>
       </Provider>
     </NotificationsContext.Provider>
   </ServiceContext.Provider>

@@ -867,7 +867,6 @@ exports[`<CreateRule /> renders correctly 1`] = `
                         data-ouia-component-type="PF4/Button"
                         data-ouia-safe={true}
                         disabled={false}
-                        onClick={[Function]}
                         role={null}
                         type="button"
                       >

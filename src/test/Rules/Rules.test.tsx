@@ -127,7 +127,7 @@ jest
 
 describe('<Rules />', () => {
   beforeEach(() => {
-    history.go(-history.length);
+    history.go(-1);
   });
 
   afterEach(cleanup);
@@ -151,9 +151,11 @@ describe('<Rules />', () => {
   it('opens create rule view when Create is clicked', async () => {
     const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
+    expect(history.location.pathname).toStrictEqual('/rules');
+
     await user.click(screen.getByRole('button', { name: /Create/ }));
 
-    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/rules', '/rules/create']);
+    expect(history.location.pathname).toStrictEqual('/rules/create');
   });
 
   it('opens upload modal when upload icon is clicked', async () => {

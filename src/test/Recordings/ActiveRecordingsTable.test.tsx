@@ -176,7 +176,7 @@ describe('<ActiveRecordingsTable />', () => {
   beforeEach(() => {
     mockRecording.metadata.labels = mockRecordingLabels;
     mockRecording.state = RecordingState.RUNNING;
-    history.go(-history.length);
+    history.go(-1);
     preloadedState = {
       recordingFilters: {
         list: [
@@ -306,9 +306,11 @@ describe('<ActiveRecordingsTable />', () => {
       history: history,
     });
 
+    expect(history.location.pathname).toStrictEqual('/recordings');
+
     await user.click(screen.getByText('Create'));
 
-    expect(history.entries.map((entry) => entry.pathname)).toStrictEqual(['/recordings', '/recordings/create']);
+    expect(history.location.pathname).toStrictEqual('/recordings/create');
   });
 
   it('archives the selected recording when Archive is clicked', async () => {

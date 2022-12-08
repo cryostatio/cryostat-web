@@ -166,7 +166,7 @@ jest.spyOn(window, 'open').mockReturnValue(null);
 describe('<ArchivedRecordingsTable />', () => {
   let preloadedState: RootState;
   beforeEach(() => {
-    history.go(-history.length);
+    history.go(-1);
     preloadedState = {
       recordingFilters: {
         list: [
