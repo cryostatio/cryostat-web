@@ -38,7 +38,7 @@ module.exports = {
   testEnvironment: "jsdom",
 
   // A list of paths to snapshot serializer modules Jest should use for snapshot testing
-  snapshotSerializers: ['enzyme-to-json/serializer'],
+  // snapshotSerializers: ['enzyme-to-json/serializer'],
 
   // The glob patterns Jest uses to detect test files
   testMatch: [
@@ -57,7 +57,7 @@ module.exports = {
     }
   },
 
-  // An array of regexp pattern strings that are matched against all source file paths before transformation. 
+  // An array of regexp pattern strings that are matched against all source file paths before transformation.
   // If the file path matches any of the patterns, it will not be transformed.
   transformIgnorePatterns: ["/node_modules/(?!@patternfly)"]
 };
