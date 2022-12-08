@@ -778,9 +778,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         <Stack hasGutter>
           <StackItem>{errorMessage ? null : toolbar}</StackItem>
           <StackItem className="automated-analysis-score-filter-stack-item">
-            {errorMessage ? null : (
-              <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL} />
-            )}
+            {errorMessage ? null : <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL} />}
           </StackItem>
           <StackItem>
             <CardBody isFilled={true}>
