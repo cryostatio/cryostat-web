@@ -54,11 +54,20 @@ export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActio
 
   return (
     <>
-      <Dropdown isPlain isOpen={isOpen} toggle={<KebabToggle onToggle={setOpen} />} onSelect={onSelect}>
-        <DropdownItem key="Remove" onClick={props.onRemove}>
-          Remove
-        </DropdownItem>
-      </Dropdown>
+      <Dropdown
+        isPlain
+        isFlipEnabled
+        menuAppendTo={'parent'}
+        position={'right'}
+        isOpen={isOpen}
+        toggle={<KebabToggle onToggle={setOpen} />}
+        onSelect={onSelect}
+        dropdownItems={[
+          <DropdownItem key="Remove" onClick={props.onRemove}>
+            Remove
+          </DropdownItem>,
+        ]}
+      />
     </>
   );
 };

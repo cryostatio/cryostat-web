@@ -763,7 +763,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   return (
     <Card id="automated-analysis-card" isRounded {...props} isExpanded={isCardExpanded}>
       <CardHeader
-        isToggleRightAligned
         onExpand={onCardExpand}
         toggleButtonProps={{
           id: 'automated-analysis-toggle-details',
