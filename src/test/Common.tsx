@@ -43,6 +43,7 @@ import { setupStore } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { Router } from 'react-router-dom';
+import { CompatRouter } from 'react-router-dom-v5-compat';
 import { createMemoryHistory } from 'history';
 // userEvent functions are recommended to be called in tests (i.e it()).
 // See https://testing-library.com/docs/user-event/intro#writing-tests-with-userevent
@@ -113,9 +114,9 @@ export const renderWithRouter = (
   const Wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
       <NotificationsContext.Provider value={notifications}>
-        <Router location={history.location} history={history}>
+        <CompatRouter>
           {children}
-        </Router>
+        </CompatRouter>
       </NotificationsContext.Provider>
     );
   };
@@ -159,9 +160,9 @@ export const renderWithServiceContextAndRouter = (
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
-          <Router location={history.location} history={history}>
+          <CompatRouter>
             {children}
-          </Router>
+          </CompatRouter>
         </NotificationsContext.Provider>
       </ServiceContext.Provider>
     );
@@ -186,9 +187,9 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
           <Provider store={store}>
-            <Router location={history.location} history={history}>
+            <CompatRouter>
               {children}
-            </Router>
+            </CompatRouter>
           </Provider>
         </NotificationsContext.Provider>
       </ServiceContext.Provider>

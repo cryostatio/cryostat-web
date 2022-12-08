@@ -37,7 +37,7 @@
  */
 import * as React from 'react';
 import { Button, Modal, ModalVariant, Text } from '@patternfly/react-core';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 
 export interface SslErrorModalProps {
   visible: boolean;
@@ -45,11 +45,10 @@ export interface SslErrorModalProps {
 }
 
 export const SslErrorModal: React.FunctionComponent<SslErrorModalProps> = (props) => {
-  const routerHistory = useHistory();
-  const { url } = useRouteMatch();
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    routerHistory.push('/security');
+    navigate('/security');
     props.onDismiss();
   };
 

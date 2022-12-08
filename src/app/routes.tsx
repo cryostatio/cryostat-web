@@ -52,7 +52,8 @@ const About = lazy(() => import('@app/About/About'));
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useDocumentTitle } from '@app/utils/useDocumentTitle';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { RouteComponentProps, Switch } from 'react-router-dom';
+import { CompatRoute } from 'react-router-dom-v5-compat';
 // import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
 import { SessionState } from './Shared/Services/Login.service';
 import { useSubscriptions } from './utils/useSubscriptions';
@@ -181,32 +182,31 @@ const flatten = (routes: IAppRoute[]): IAppRoute[] => {
 // a custom hook for sending focus to the primary content container
 // after a view has loaded so that subsequent press of tab key
 // sends focus directly to relevant content
-// const useA11yRouteChange = (isAsync: boolean) => {
-//   const lastNavigation = useLastLocation();
-//   React.useEffect(() => {
-//     if (!isAsync && lastNavigation !== null) {
-//       routeFocusTimer = accessibleRouteChangeHandler();
-//     }
-//     return () => {
-//       window.clearTimeout(routeFocusTimer);
-//     };
-//   }, [isAsync, lastNavigation]);
-// };
+const useA11yRouteChange = (isAsync: boolean) => {
+  React.useEffect(() => {
+    if (!isAsync) {
+      routeFocusTimer = accessibleRouteChangeHandler();
+    }
+    return () => {
+      window.clearTimeout(routeFocusTimer);
+    };
+  }, [isAsync]);
+};
 
 const RouteWithTitleUpdates = ({ component: Component, isAsync = false, path, title, ...rest }: IAppRoute) => {
-  // useA11yRouteChange(isAsync);
+  useA11yRouteChange(isAsync);
   useDocumentTitle(title);
 
   function routeWithTitle(routeProps: RouteComponentProps) {
     return <Component {...rest} {...routeProps} />;
   }
 
-  return <Route render={routeWithTitle} path={path} />;
+  return <CompatRoute render={routeWithTitle} path={path} />;
 };
 
 const PageNotFound = ({ title }: { title: string }) => {
   useDocumentTitle(title);
-  return <Route component={NotFound} />;
+  return <CompatRoute component={NotFound} />;
 };
 
 export interface AppRoutesProps {}
@@ -225,7 +225,6 @@ const AppRoutes: React.FunctionComponent<AppRoutesProps> = (props) => {
   }, [addSubscription, context.login, setShowDashboard]);
 
   return (
-    // <LastLocationProvider>
       <Suspense fallback={<LoadingView />}>
         <Switch>
           {showDashboard ? (
@@ -245,7 +244,6 @@ const AppRoutes: React.FunctionComponent<AppRoutesProps> = (props) => {
           <PageNotFound title="404 Page Not Found" />
         </Switch>
       </Suspense>
-    // </LastLocationProvider>
   );
 };
 

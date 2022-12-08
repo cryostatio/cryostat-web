@@ -55,7 +55,8 @@ import {
   TextVariants,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { useHistory, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { iif } from 'rxjs';
 import { filter, first, mergeMap, toArray } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -77,7 +78,7 @@ export const RuleNamePattern = /^[\w_]+$/;
 const Comp: React.FunctionComponent<{}> = () => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
 
   const [name, setName] = React.useState('');
@@ -184,7 +185,7 @@ const Comp: React.FunctionComponent<{}> = () => {
       context.api.createRule(rule).subscribe((success) => {
         setLoading(false);
         if (success) {
-          history.push('/rules');
+          navigate('/rules');
         }
       })
     );
@@ -193,7 +194,7 @@ const Comp: React.FunctionComponent<{}> = () => {
     addSubscription,
     context,
     context.api,
-    history,
+    navigate,
     name,
     nameValid,
     description,
@@ -553,7 +554,7 @@ const Comp: React.FunctionComponent<{}> = () => {
                     >
                       {loading ? 'Creating' : 'Create'}
                     </Button>
-                    <Button variant="secondary" onClick={history.goBack} isAriaDisabled={loading}>
+                    <Button variant="secondary" onClick={() => navigate(-1)} isAriaDisabled={loading}>
                       Cancel
                     </Button>
                   </ActionGroup>

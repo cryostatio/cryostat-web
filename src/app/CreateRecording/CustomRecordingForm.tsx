@@ -59,7 +59,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { concatMap, first, filter } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
 import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.service';
@@ -87,7 +87,7 @@ export const DurationPattern = /^[1-9][0-9]*$/;
 export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormProps> = ({ prefilled }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
 
   const [recordingName, setRecordingName] = React.useState('');
@@ -120,12 +120,12 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
           .subscribe((success) => {
             setLoading(false);
             if (success) {
-              history.push('/recordings');
+              navigate('/recordings');
             }
           })
       );
     },
-    [addSubscription, context.api, history, setLoading]
+    [addSubscription, context.api, navigate, setLoading]
   );
 
   const handleContinuousChange = React.useCallback(
@@ -576,7 +576,7 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
           >
             {loading ? 'Creating' : 'Create'}
           </Button>
-          <Button variant="secondary" onClick={history.goBack} isDisabled={loading}>
+          <Button variant="secondary" onClick={() => navigate(-1)} isDisabled={loading}>
             Cancel
           </Button>
         </ActionGroup>

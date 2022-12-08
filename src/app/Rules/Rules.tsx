@@ -67,7 +67,8 @@ import {
   Tbody,
   ActionsColumn,
 } from '@patternfly/react-table';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { first } from 'rxjs/operators';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -123,7 +124,7 @@ export interface RulesProps {}
 
 export const Rules: React.FunctionComponent<RulesProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const routerHistory = useHistory();
+  const navigate = useNavigate();
   const addSubscription = useSubscriptions();
 
   const { url } = useRouteMatch();
@@ -249,8 +250,8 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
   }, []);
 
   const handleCreateRule = React.useCallback(() => {
-    routerHistory.push(`${url}/create`);
-  }, [routerHistory]);
+    navigate(`${url}/create`);
+  }, [navigate]);
 
   const handleUploadRule = React.useCallback(() => {
     setIsUploadModalOpen(true);

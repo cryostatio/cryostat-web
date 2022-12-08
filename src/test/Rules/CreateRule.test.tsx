@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Router } from 'react-router-dom';
+import { CompatRouter } from 'react-router-dom-v5-compat';
 import { createMemoryHistory } from 'history';
 import { of, Subject } from 'rxjs';
 import '@testing-library/jest-dom';
@@ -123,9 +123,9 @@ describe('<CreateRule />', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
-            <Router location={history.location} history={history}>
+            <CompatRouter>
               <CreateRule />
-            </Router>
+            </CompatRouter>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );

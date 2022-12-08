@@ -56,7 +56,8 @@ import {
 } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom-v5-compat';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
@@ -94,7 +95,7 @@ export interface ActiveRecordingsTableProps {
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const routerHistory = useHistory();
+  const navigate = useNavigate();
   const { url } = useRouteMatch();
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
@@ -145,8 +146,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   );
 
   const handleCreateRecording = React.useCallback(() => {
-    routerHistory.push(`${url}/create`);
-  }, [routerHistory]);
+    navigate(`${url}/create`);
+  }, [navigate]);
 
   const handleEditLabels = React.useCallback(() => {
     setShowDetailsPanel(true);

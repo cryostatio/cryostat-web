@@ -40,6 +40,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
 import { StaticContext } from 'react-router';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useLocation } from 'react-router-dom-v5-compat';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 import { TemplateType } from '@app/Shared/Services/Api.service';
@@ -58,15 +59,16 @@ export interface EventTemplate {
 
 const Comp: React.FunctionComponent<RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
   const [activeTab, setActiveTab] = React.useState(0);
+  const location = useLocation();
 
   const onTabSelect = React.useCallback((evt, idx) => setActiveTab(Number(idx)), [setActiveTab]);
 
   const prefilled = React.useMemo(
     () => ({
-      templateName: props.location?.state?.templateName,
-      templateType: props.location?.state?.templateType,
+      templateName: location.state?.templateName,
+      templateType: location.state?.templateType,
     }),
-    [props.location]
+    [location]
   );
 
   return (

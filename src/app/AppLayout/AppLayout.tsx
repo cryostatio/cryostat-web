@@ -66,7 +66,8 @@ import {
 } from '@patternfly/react-core';
 import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
-import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
+import { matchPath, useLocation } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom-v5-compat';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
@@ -84,7 +85,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
-  const routerHistory = useHistory();
+  const navigate = useNavigate();
   const logoProps = {
     href: '/',
   };
@@ -192,8 +193,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   );
 
   const handleSettingsButtonClick = React.useCallback(() => {
-    routerHistory.push('/settings');
-  }, [routerHistory.push]);
+    navigate('settings');
+  }, [navigate]);
 
   const handleNotificationCenterToggle = React.useCallback(() => {
     setNotificationDrawerExpanded((isNotificationDrawerExpanded) => !isNotificationDrawerExpanded);
@@ -312,7 +313,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
                         id={`${route.label}-${idx}`}
                         isActive={isActiveRoute(route)}
                       >
-                        <NavLink exact to={route.path} activeClassName="pf-m-current">
+                        <NavLink end to={route.path} className={ ({ isActive }) => isActive ? "pf-m-current" : "" }>
                           {route.label}
                         </NavLink>
                       </NavItem>
