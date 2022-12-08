@@ -49,10 +49,10 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { CardConfig, DashboardCards } from './Dashboard';
+import { DashboardCards } from './Dashboard';
 
 interface AddCardProps {
-  onAdd?: (cardConfig: CardConfig) => void;
+  onAdd(name: string): void;
 }
 
 export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
@@ -62,7 +62,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   const options = React.useMemo(() => {
     return [
       <SelectOption key={0} isPlaceholder value="None" />,
-      ...DashboardCards.map((choice, idx) => <SelectOption key={idx + 1} value={choice.name} />),
+      ...DashboardCards.map((choice, idx) => <SelectOption key={idx + 1} value={choice.component.name} />),
     ];
   }, [DashboardCards]);
 
@@ -86,7 +86,10 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   );
 
   const handleAdd = React.useCallback(() => {
-    props.onAdd && selection && props.onAdd({ component: selection });
+    if (selection === 'None') {
+      return;
+    }
+    props.onAdd(selection);
   }, [selection]);
 
   return (

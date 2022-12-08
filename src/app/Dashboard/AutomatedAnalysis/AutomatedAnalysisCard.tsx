@@ -69,6 +69,7 @@ import { calculateAnalysisTimer } from '@app/utils/utils';
 import {
   Button,
   Card,
+  CardActions,
   CardBody,
   CardExpandableContent,
   CardHeader,
@@ -104,8 +105,9 @@ import {
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
+import { DashboardCardProps } from '../Dashboard';
 
-interface AutomatedAnalysisCardProps {
+interface AutomatedAnalysisCardProps extends DashboardCardProps {
   isLarge?: boolean;
   isCompact?: boolean;
 }
@@ -770,6 +772,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           'aria-expanded': isCardExpanded,
         }}
       >
+        <CardActions>{...props.actions || []}</CardActions>
         <CardTitle component="h4">
           <Split>
             <SplitItem isFilled>Automated Analysis</SplitItem>

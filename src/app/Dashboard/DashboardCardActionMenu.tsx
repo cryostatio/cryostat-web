@@ -35,80 +35,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import * as React from 'react';
-import { Stack, StackItem } from '@patternfly/react-core';
-import { TargetView } from '@app/TargetView/TargetView';
-import { AddCard } from './AddCard';
-import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
 
-export interface CardConfig {
-  component: React.FunctionComponent;
-  props?: React.PropsWithChildren<any>;
+export interface DashboardCardActionProps {
+  onRemove: () => void;
 }
 
-export interface DashboardProps {}
+export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = (props) => {
+  const [isOpen, setOpen] = React.useState(false);
 
-export interface DashboardCardProps {
-  actions?: JSX.Element[];
-}
-
-export const DashboardCards: CardConfig[] = [
-  {
-    component: AutomatedAnalysisCard,
-    props: {
-      isLarge: true,
+  const onSelect = React.useCallback(
+    (_) => {
+      setOpen(false);
     },
-  },
-];
-
-function getConfigByName(name: String): CardConfig {
-  for (const choice of DashboardCards) {
-    if (choice.component.name === name) {
-      return choice;
-    }
-  }
-  throw new Error(`Unknown card type selection: ${name}`);
-}
-
-export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
-  const [cardNames, setCardNames] = React.useState([] as string[]);
-
-  const handleAdd = React.useCallback(
-    (name: string) => {
-      setCardNames((old) => [name, ...old]);
-    },
-    [setCardNames]
-  );
-
-  const handleRemove = React.useCallback(
-    (idx: number) => {
-      setCardNames((old) => {
-        const copy = [...old];
-        copy.splice(idx, 1);
-        return copy;
-      });
-    },
-    [setCardNames]
+    [setOpen]
   );
 
   return (
-    <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
-      <Stack hasGutter>
-        {cardNames.map(getConfigByName).map((cfg, idx) => (
-          <StackItem key={idx}>
-            {React.createElement(cfg.component, {
-              ...cfg.props,
-              actions: [<DashboardCardActionMenu onRemove={() => handleRemove(idx)} />],
-            })}
-          </StackItem>
-        ))}
-        <StackItem key={cardNames.length}>
-          <AddCard onAdd={handleAdd} />
-        </StackItem>
-      </Stack>
-    </TargetView>
+    <>
+      <Dropdown isPlain isOpen={isOpen} toggle={<KebabToggle onToggle={setOpen} />} onSelect={onSelect}>
+        <DropdownItem key="Remove" onClick={props.onRemove}>
+          Remove
+        </DropdownItem>
+      </Dropdown>
+    </>
   );
 };
-
-export default Dashboard;
