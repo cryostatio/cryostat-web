@@ -45,12 +45,9 @@ import {
   LevelItem,
   Slider,
   SliderStepObject,
-  Text,
-  TextContent,
-  TextVariants,
-  Tooltip,
+  Text, TextVariants,
+  Tooltip
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

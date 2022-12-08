@@ -36,15 +36,15 @@
  * SOFTWARE.
  */
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import {
   AutomatedAnalysisRecordingConfig,
-  automatedAnalysisRecordingName,
-  RecordingAttributes,
-  RecordingOptions,
-  TemplateType,
+  automatedAnalysisRecordingName, TemplateType
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -59,19 +59,14 @@ import {
   HelperTextItem,
   Split,
   SplitItem,
-  Text,
-  TextContent,
-  TextInput,
+  Text, TextInput,
   TextVariants,
-  ValidatedOptions,
+  ValidatedOptions
 } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
-import { Link } from 'react-router-dom';
 import * as React from 'react';
-import { concatMap, filter, first, mergeMap, toArray } from 'rxjs';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
+import { Link } from 'react-router-dom';
+import { concatMap, filter, first } from 'rxjs';
 interface AutomatedAnalysisConfigFormProps {
   onCreate?: () => void;
   onSave?: () => void;

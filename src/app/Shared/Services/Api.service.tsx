@@ -39,7 +39,6 @@ import { Notifications } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
 import { createBlobURL } from '@app/utils/utils';
-<<<<<<< HEAD
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
@@ -47,11 +46,6 @@ import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/o
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { NO_TARGET, Target, TargetService } from './Target.service';
-import { ORANGE_SCORE_THRESHOLD, RED_SCORE_THRESHOLD } from './Report.service';
-import { automatedAnalysisRecordingName } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard';
-import { AutomatedAnalysisRecordingConfig } from './Settings.service';
-=======
->>>>>>> e8027ce (fixed most initial tests)
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 

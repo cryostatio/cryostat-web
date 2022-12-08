@@ -42,7 +42,7 @@ import {
   automatedAnalysisAddTargetIntent,
   automatedAnalysisDeleteAllFiltersIntent,
   automatedAnalysisDeleteCategoryFiltersIntent,
-  automatedAnalysisDeleteFilterIntent,
+  automatedAnalysisDeleteFilterIntent
 } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
@@ -50,7 +50,7 @@ import {
   ArchivedRecording,
   automatedAnalysisRecordingName,
   isGraphQLAuthError,
-  Recording,
+  Recording
 } from '@app/Shared/Services/Api.service';
 import {
   CategorizedRuleEvaluations,
@@ -58,7 +58,7 @@ import {
   NO_RECORDINGS_MESSAGE,
   RECORDING_FAILURE_MESSAGE,
   RuleEvaluation,
-  TEMPLATE_UNSUPPORTED_MESSAGE,
+  TEMPLATE_UNSUPPORTED_MESSAGE
 } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
@@ -87,19 +87,19 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Tooltip,
+  Tooltip
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { concatMap, filter, first, map, tap } from 'rxjs';
+import { filter, first, map, tap } from 'rxjs';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import {
   AutomatedAnalysisFilters,
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
   emptyAutomatedAnalysisFilters,
-  filterAutomatedAnalysis,
+  filterAutomatedAnalysis
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
