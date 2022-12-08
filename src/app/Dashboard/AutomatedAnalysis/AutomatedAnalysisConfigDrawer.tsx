@@ -57,7 +57,7 @@ import {
   Level,
   LevelItem,
   Stack,
-  StackItem
+  StackItem,
 } from '@patternfly/react-core';
 import { CogIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';

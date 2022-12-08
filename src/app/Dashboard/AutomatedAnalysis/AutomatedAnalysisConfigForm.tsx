@@ -40,7 +40,8 @@ import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import {
   AutomatedAnalysisRecordingConfig,
-  automatedAnalysisRecordingName, TemplateType
+  automatedAnalysisRecordingName,
+  TemplateType,
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
@@ -59,9 +60,10 @@ import {
   HelperTextItem,
   Split,
   SplitItem,
-  Text, TextInput,
+  Text,
+  TextInput,
   TextVariants,
-  ValidatedOptions
+  ValidatedOptions,
 } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
 import * as React from 'react';

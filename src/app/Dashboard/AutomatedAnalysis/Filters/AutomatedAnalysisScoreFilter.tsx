@@ -45,8 +45,9 @@ import {
   LevelItem,
   Slider,
   SliderStepObject,
-  Text, TextVariants,
-  Tooltip
+  Text,
+  TextVariants,
+  Tooltip,
 } from '@patternfly/react-core';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
