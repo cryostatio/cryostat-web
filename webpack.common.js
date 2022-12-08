@@ -82,29 +82,28 @@ module.exports = (env) => {
             path.resolve(__dirname, 'node_modules/@patternfly/patternfly/assets/fonts'),
             path.resolve(__dirname, 'node_modules/@patternfly/patternfly/assets/pficon')
           ],
-          use: {
-            loader: 'file-loader',
-            options: {
-              // Limit at 50k. larger files emited into separate files
-              limit: 5000,
-              outputPath: 'fonts',
-              name: '[name].[ext]',
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 5000 // Limit at 50kb. larger files emited into separate files
             }
+          },
+          generator: {
+            filename: 'fonts/[name][ext]'
           }
         },
         {
           test: /\.svg$/,
           include: input => input.indexOf('background-filter.svg') > 1,
-          use: [
-            {
-              loader: 'url-loader',
-              options: {
-                limit: 5000,
-                outputPath: 'svgs',
-                name: '[name].[ext]',
-              }
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 5000
             }
-          ]
+          },
+          generator: {
+            filename: 'svgs/[name][ext]'
+          }
         },
         {
           test: /\.svg$/,
@@ -129,10 +128,7 @@ module.exports = (env) => {
           exclude: [
             path.resolve(__dirname, 'src/app/assets')
           ],
-          use: {
-            loader: 'raw-loader',
-            options: {}
-          }
+          type: 'asset/source',
         },
         {
           test: /\.(jpg|jpeg|png|gif|svg)$/i,
@@ -146,16 +142,15 @@ module.exports = (env) => {
             path.resolve(__dirname, 'node_modules/@patternfly/react-table/node_modules/@patternfly/react-styles/css/assets/images'),
             path.resolve(__dirname, 'node_modules/@patternfly/react-inline-edit-extension/node_modules/@patternfly/react-styles/css/assets/images')
           ],
-          use: [
-            {
-              loader: 'url-loader',
-              options: {
-                limit: 5000,
-                outputPath: 'images',
-                name: '[name].[ext]',
-              }
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 5000
             }
-          ]
+          },
+          generator: {
+            filename: 'images/[name][ext]'
+          },
         }
       ]
     },
