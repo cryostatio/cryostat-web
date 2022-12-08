@@ -66,8 +66,8 @@ import {
 } from '@patternfly/react-core';
 import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
-import { matchPath, useLocation } from 'react-router-dom';
-import { useNavigate, NavLink } from 'react-router-dom-v5-compat';
+import { Link, matchPath, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom-v5-compat';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
@@ -85,7 +85,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
-  const navigate = useNavigate();
   const logoProps = {
     href: '/',
   };
@@ -192,10 +191,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     [isMobileView, setIsNavOpenMobile]
   );
 
-  const handleSettingsButtonClick = React.useCallback(() => {
-    navigate('settings');
-  }, [navigate]);
-
   const handleNotificationCenterToggle = React.useCallback(() => {
     setNotificationDrawerExpanded((isNotificationDrawerExpanded) => !isNotificationDrawerExpanded);
   }, [setNotificationDrawerExpanded]);
@@ -253,7 +248,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
             </NotificationBadge>
           </PageHeaderToolsItem>
           <PageHeaderToolsItem>
-            <Button onClick={handleSettingsButtonClick} variant="link" icon={<CogIcon color="white " size="sm" />} />
+            <Button variant="link" component={(props) => <Link {...props} to='/settings' />} >
+              <CogIcon color="white " size="sm" />
+            </Button>
             <Button onClick={handleAboutModalToggle} variant="link" icon={<HelpIcon color="white" size="sm" />} />
           </PageHeaderToolsItem>
           <PageHeaderToolsItem visibility={{ default: showUserIcon ? 'visible' : 'hidden' }}>
