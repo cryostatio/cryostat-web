@@ -77,6 +77,7 @@ import {
   Checkbox,
   Grid,
   GridItem,
+  Label,
   LabelGroup,
   Split,
   SplitItem,
@@ -91,7 +92,7 @@ import {
   ToolbarItem,
   Tooltip,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
+import { InfoCircleIcon, OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
@@ -746,17 +747,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       return undefined;
     }
     return (
-      <div
-        style={{
-          color: 'var(--pf-global--Color--200)',
-          fontWeight: 'lighter',
-          fontSize: '0.90em',
-          fontFamily: 'inherit',
-        }}
-      >
-        {`${usingArchivedReport ? 'Archived' : usingCachedReport ? 'Cached' : 'Active'} report name:`}{' '}
-        <span style={{ color: 'var(--pf-global--Color--100)', fontWeight: 'bold', fontStyle: 'italic' }}>{report}</span>
-      </div>
+      <Label icon={<InfoCircleIcon />} color={'cyan'}>
+        {`${usingArchivedReport ? 'Archived' : usingCachedReport ? 'Cached' : 'Active'} report name=${report}`}
+      </Label>
     );
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
@@ -773,8 +766,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       >
         <CardActions>{...props.actions || []}</CardActions>
         <CardTitle component="h4">
-          <Split>
-            <SplitItem isFilled>Automated Analysis</SplitItem>
+          <Split hasGutter>
+            <SplitItem>Automated Analysis</SplitItem>
             <SplitItem>{reportSource}</SplitItem>
           </Split>
         </CardTitle>
