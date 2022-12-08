@@ -39,7 +39,18 @@
 import { automatedAnalysisAddGlobalFilterIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { AutomatedAnalysisScore } from '@app/Shared/Services/Report.service';
-import { Button, Level, LevelItem, Slider, SliderStepObject, Text, TextVariants } from '@patternfly/react-core';
+import {
+  Button,
+  Level,
+  LevelItem,
+  Slider,
+  SliderStepObject,
+  Text,
+  TextContent,
+  TextVariants,
+  Tooltip,
+} from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -57,7 +68,7 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
 
   const steps = [
     { value: 0, label: '0' },
-    { value: 25, label: 'OK' },
+    { value: 25, label: 'OK' }, // some hacks that work with css to get bolded and coloured labels above slider
     {
       value: AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD,
       label: String(AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD),
@@ -108,7 +119,13 @@ export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnal
 
   return (
     <>
-      <Text component={TextVariants.small}>Only showing analysis with scores ≥ {currentScore}</Text>
+      <Tooltip
+        content={
+          'Severity scores are calculated based on the number of JFR events that were triggered by the application in the time the report was generated.'
+        }
+      >
+        <Text component={TextVariants.small}>Only showing analysis results with severity scores ≥ {currentScore}:</Text>
+      </Tooltip>
       <Slider
         leftActions={
           <Level hasGutter>

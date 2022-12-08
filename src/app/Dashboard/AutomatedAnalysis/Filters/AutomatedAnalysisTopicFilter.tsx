@@ -38,10 +38,10 @@
 
 import React from 'react';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import { RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
 
 export interface AutomatedAnalysisTopicFilterProps {
-  evaluations: [string, RuleEvaluation[]][];
+  evaluations: CategorizedRuleEvaluations[];
   filteredTopics: string[];
   onSubmit: (inputName: string) => void;
 }

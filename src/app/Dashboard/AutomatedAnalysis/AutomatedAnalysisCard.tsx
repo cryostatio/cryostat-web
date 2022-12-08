@@ -400,7 +400,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     addSubscription(
       context.api.createRecording(attributes).subscribe((resp) => {
         if (resp) {
-          if (resp.ok || resp.status === 400) { // in-case the recording already exists
+          if (resp.ok || resp.status === 400) {
+            // in-case the recording already exists
             generateReport();
           } else if (resp?.status === 500) {
             handleStateErrors(TEMPLATE_UNSUPPORTED_MESSAGE);

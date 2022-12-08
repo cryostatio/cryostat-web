@@ -82,7 +82,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
   const colorScheme = React.useMemo((): LabelProps['color'] => {
     // TODO: use label color schemes based on settings for accessibility
     // context.settings.etc.
-    return label.score == -1
+    return label.score == AutomatedAnalysisScore.NA_SCORE
       ? 'grey'
       : label.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
       ? 'green'
@@ -92,7 +92,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
   }, [label.score]);
 
   const alertPopoverVariant = React.useMemo(() => {
-    return label.score == -1
+    return label.score == AutomatedAnalysisScore.NA_SCORE
       ? 'default'
       : label.score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD
       ? 'success'
@@ -117,7 +117,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
           key={`${clickableAutomatedAnalysisKey}-popover-body-${label.name}`}
         >
           <p className={css(alertStyle[alertPopoverVariant], `${clickableAutomatedAnalysisKey}-popover-body-score`)}>
-            {label.score == -1 ? 'N/A' : label.score.toFixed(1)}
+            {label.score == AutomatedAnalysisScore.NA_SCORE ? 'N/A' : label.score.toFixed(1)}
           </p>
           <p>{label.description}</p>
         </div>

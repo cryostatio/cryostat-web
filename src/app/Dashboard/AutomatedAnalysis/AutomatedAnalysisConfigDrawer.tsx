@@ -87,29 +87,26 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
     [setIsDropdownOpen]
   );
 
-
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
       setIsLoading(true);
       addSubscription(
-        context.api
-          .createRecording(recordingAttributes)
-          .subscribe({
-            next: (resp) => {
-              setIsLoading(false);
-              if (resp && resp.ok) {
-                props.onCreate();
-              } else if (resp?.status === 500) {
-                props.onError(new Error(TEMPLATE_UNSUPPORTED_MESSAGE));
-              } else {
-                props.onError(new Error(RECORDING_FAILURE_MESSAGE));
-              }
-            },
-            error: (err) => {
-              setIsLoading(false);
-              props.onError(err);
-            },
-          })
+        context.api.createRecording(recordingAttributes).subscribe({
+          next: (resp) => {
+            setIsLoading(false);
+            if (resp && resp.ok) {
+              props.onCreate();
+            } else if (resp?.status === 500) {
+              props.onError(new Error(TEMPLATE_UNSUPPORTED_MESSAGE));
+            } else {
+              props.onError(new Error(RECORDING_FAILURE_MESSAGE));
+            }
+          },
+          error: (err) => {
+            setIsLoading(false);
+            props.onError(err);
+          },
+        })
       );
     },
     [addSubscription, context.api, props.onCreate, props.onError, setIsLoading]
@@ -168,7 +165,7 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
         <LevelItem style={{ margin: 'auto' }}>
           <Dropdown
             isFlipEnabled
-            menuAppendTo={() => document.getElementById("automated-analysis-card") || document.body} // shouldn't be appended to parent
+            menuAppendTo={() => document.getElementById('automated-analysis-card') || document.body} // shouldn't be appended to parent
             toggle={
               <DropdownToggle
                 aria-label="Recording Config Dropdown"

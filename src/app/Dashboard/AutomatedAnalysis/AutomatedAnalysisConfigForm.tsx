@@ -213,19 +213,17 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     };
     const recordingAttributes = automatedAnalysisConfigToRecordingAttributes(config);
     addSubscription(
-      context.api
-        .createRecording(recordingAttributes)
-        .subscribe({
-          next: (resp) => {
-            if (resp && resp.ok && props.onCreate) {
-              props.onCreate();
-            }
-            setIsLoading(false);
-          },
-          error: (err) => {
-            setIsLoading(false);
-          },
-        })
+      context.api.createRecording(recordingAttributes).subscribe({
+        next: (resp) => {
+          if (resp && resp.ok && props.onCreate) {
+            props.onCreate();
+          }
+          setIsLoading(false);
+        },
+        error: (err) => {
+          setIsLoading(false);
+        },
+      })
     );
   }, [
     addSubscription,
