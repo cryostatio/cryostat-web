@@ -42,6 +42,7 @@ import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, PageSection, Stack, Stac
 interface BreadcrumbPageProps {
   pageTitle: string;
   breadcrumbs?: BreadcrumbTrail[];
+  children?: React.ReactNode;
 }
 
 export interface BreadcrumbTrail {

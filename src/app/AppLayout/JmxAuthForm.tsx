@@ -44,6 +44,7 @@ export interface JmxAuthFormProps {
   onSave: (username: string, password: string) => void;
   focus?: boolean;
   loading?: boolean;
+  children?: React.ReactNode;
 }
 
 export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) => {
