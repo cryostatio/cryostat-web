@@ -94,6 +94,7 @@ const mockArchivedRecording: ArchivedRecording = {
   reportUrl: 'http://reportUrl',
   metadata: { labels: mockRecordingLabels },
   size: 2048,
+  archivedTime: 2048,
 };
 const mockArchivedRecordingList = [
   mockArchivedRecording,
@@ -140,6 +141,16 @@ describe('<RecordingFilters />', () => {
             },
           } as TargetRecordingFilters,
         ],
+      },
+      automatedAnalysisFilters: {
+        state: {
+          targetFilters: [],
+          globalFilters: {
+            filters: {
+              Score: 100,
+            },
+          },
+        },
       },
     };
   });

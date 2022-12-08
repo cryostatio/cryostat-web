@@ -279,7 +279,7 @@ export class ApiService {
     );
   }
 
-  createRecording(recordingAttributes: RecordingAttributes): Observable<boolean> {
+  createRecording(recordingAttributes: RecordingAttributes): Observable<SimpleResponse | undefined> {
     const form = new window.FormData();
     form.append('recordingName', recordingAttributes.name);
     form.append('events', recordingAttributes.events);
@@ -308,8 +308,22 @@ export class ApiService {
           method: 'POST',
           body: form,
         }).pipe(
-          map((resp) => resp.ok),
-          catchError((_) => of(false)),
+          map((resp) => {
+            return {
+              ok: resp.ok,
+              status: resp.status,
+            };
+          }),
+          catchError((err) => {
+            if (isHttpError(err)) {
+              return of({
+                ok: false,
+                status: err.httpResponse.status,
+              });
+            } else {
+              return of(undefined);
+            }
+          }),
           first()
         )
       )
@@ -332,6 +346,21 @@ export class ApiService {
           }),
           map((resp) => resp.status == 200),
           catchError((_) => of(false)),
+          first()
+        )
+      )
+    );
+  }
+
+  createSnapshotV2(): Observable<ActiveRecording | undefined> {
+    return this.target.target().pipe(
+      concatMap((target) =>
+        this.sendRequest('v2', `targets/${encodeURIComponent(target.connectUrl)}/snapshot`, {
+          method: 'POST',
+        }).pipe(
+          concatMap((resp) => resp.json() as Promise<RecordingResponse>),
+          map((response) => response.data.result),
+          catchError((_) => of(undefined)),
           first()
         )
       )
@@ -1137,6 +1166,8 @@ export class ApiService {
   }
 }
 
+export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
+
 export interface AllArchivesResponse {}
 
 export interface ApiV2Response {
@@ -1152,6 +1183,12 @@ interface AssetJwtResponse extends ApiV2Response {
     result: {
       resourceUrl: string;
     };
+  };
+}
+
+interface RecordingResponse extends ApiV2Response {
+  data: {
+    result: ActiveRecording;
   };
 }
 
@@ -1211,9 +1248,10 @@ export interface ArchivedRecording {
   reportUrl: string;
   metadata: Metadata;
   size: number;
+  archivedTime: number;
 }
 
-export interface ActiveRecording extends Omit<ArchivedRecording, 'size'> {
+export interface ActiveRecording extends Omit<ArchivedRecording, 'size' | 'archivedTime'> {
   id: number;
   state: RecordingState;
   duration: number;
@@ -1234,6 +1272,15 @@ export type Recording = ActiveRecording | ArchivedRecording;
 
 export const isActiveRecording = (toCheck: Recording): toCheck is ActiveRecording => {
   return (toCheck as ActiveRecording).state !== undefined;
+};
+
+export const isGraphQLAuthError = (resp: any): boolean => {
+  if (resp.errors !== undefined) {
+    if (resp.errors[0].message.includes('Authentication failed!')) {
+      return true;
+    }
+  }
+  return false;
 };
 
 export type TemplateType = 'TARGET' | 'CUSTOM';
@@ -1295,6 +1342,20 @@ export interface MatchedCredential {
   matchExpression: string;
   targets: Target[];
 }
+
+export const automatedAnalysisRecordingName = 'automated-analysis';
+
+export interface AutomatedAnalysisRecordingConfig {
+  template: string;
+  maxSize: number;
+  maxAge: number;
+}
+
+export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
+  template: 'template=Continuous,type=TARGET',
+  maxSize: 2048,
+  maxAge: 0,
+};
 
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"

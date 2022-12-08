@@ -35,54 +35,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import {
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  Title,
-  Text,
-  StackItem,
-  Stack,
-} from '@patternfly/react-core';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
-export const authFailMessage = 'Auth failure';
+import React from 'react';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
 
-export const missingSSLMessage = 'Bad Gateway';
-
-export const isAuthFail = (message: string) => message === authFailMessage;
-export interface ErrorViewProps {
-  title: string | React.ReactNode;
-  message: string | React.ReactNode;
-  retryButtonMessage?: string;
-  retry?: () => void;
+export interface AutomatedAnalysisTopicFilterProps {
+  evaluations: CategorizedRuleEvaluations[];
+  filteredTopics: string[];
+  onSubmit: (inputName: string) => void;
 }
 
-export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
+export const AutomatedAnalysisTopicFilter: React.FunctionComponent<AutomatedAnalysisTopicFilterProps> = (props) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  const onSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        setIsExpanded(false);
+        props.onSubmit(selection);
+      }
+    },
+    [props.onSubmit, setIsExpanded]
+  );
+
+  const topicOptions = React.useMemo(() => {
+    return props.evaluations
+      .map((r) => r[0])
+      .filter((n) => !props.filteredTopics.includes(n))
+      .map((option, index) => <SelectOption key={index} value={option} />);
+  }, [props.evaluations, props.filteredTopics]);
+
   return (
-    <>
-      <EmptyState>
-        <EmptyStateIcon icon={ExclamationCircleIcon} color={'#a30000'} />
-        <Title headingLevel="h4" size="lg">
-          {props.title}
-        </Title>
-        <EmptyStateBody>
-          <>
-            <Stack>
-              <StackItem>{props.message}</StackItem>
-              {props.retry && (
-                <StackItem>
-                  <Button variant="link" onClick={props.retry}>
-                    {props.retryButtonMessage || 'Retry'}
-                  </Button>
-                </StackItem>
-              )}
-            </Stack>
-          </>
-        </EmptyStateBody>
-      </EmptyState>
-    </>
+    <Select
+      variant={SelectVariant.typeahead}
+      onToggle={setIsExpanded}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      typeAheadAriaLabel="Filter by topic..."
+      placeholderText="Filter by topic..."
+      aria-label="Filter by topic"
+      maxHeight="16em"
+    >
+      {topicOptions}
+    </Select>
   );
 };

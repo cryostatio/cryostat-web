@@ -117,9 +117,9 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
         context.api
           .createRecording(recordingAttributes)
           .pipe(first())
-          .subscribe((success) => {
+          .subscribe((resp) => {
             setLoading(false);
-            if (success) {
+            if (resp && resp.ok) {
               history.push('/recordings');
             }
           })

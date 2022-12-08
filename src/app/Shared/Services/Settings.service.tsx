@@ -37,78 +37,91 @@
  */
 
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { getFromLocalStorage, LocalStorageKey, saveToLocalStorage } from '@app/utils/LocalStorage';
+import {
+  AutomatedAnalysisRecordingConfig,
+  automatedAnalysisRecordingName,
+  defaultAutomatedAnalysisRecordingConfig,
+  RecordingAttributes,
+} from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
-
-enum StorageKeys {
-  AutoRefreshEnabled = 'auto-refresh-enabled',
-  AutoRefreshPeriod = 'auto-refresh-period',
-  AutoRefreshUnits = 'auto-refresh-units',
-  DeletionDialogsEnabled = 'deletion-dialogs-enabled',
-  NotificationsEnabled = 'notifications-enabled',
-  WebSocketDebounceMs = 'web-socket-debounce-ms',
-}
 
 export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
   return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
 }
 
+export const automatedAnalysisConfigToRecordingAttributes = (
+  config: AutomatedAnalysisRecordingConfig
+): RecordingAttributes => {
+  return {
+    name: automatedAnalysisRecordingName,
+    events: config.template,
+    duration: undefined,
+    archiveOnStop: false,
+    options: {
+      toDisk: true,
+      maxAge: config.maxAge,
+      maxSize: config.maxSize,
+    },
+    metadata: {
+      labels: {
+        origin: automatedAnalysisRecordingName,
+      },
+    },
+  } as RecordingAttributes;
+};
+
 export class SettingsService {
   autoRefreshEnabled(): boolean {
-    return window.localStorage.getItem(StorageKeys.AutoRefreshEnabled) === 'true';
+    return getFromLocalStorage('AUTO_REFRESH_ENABLED', 'false') === 'true';
   }
 
   setAutoRefreshEnabled(enabled: boolean): void {
-    window.localStorage.setItem(StorageKeys.AutoRefreshEnabled, String(enabled));
+    saveToLocalStorage('AUTO_REFRESH_ENABLED', String(enabled));
   }
 
   autoRefreshPeriod(defaultPeriod = 30): number {
-    const raw = window.localStorage.getItem(StorageKeys.AutoRefreshPeriod);
-    if (raw) {
-      return Number(raw);
-    }
-    this.setAutoRefreshPeriod(defaultPeriod);
-    return defaultPeriod;
+    return Number(getFromLocalStorage('AUTO_REFRESH_PERIOD', defaultPeriod));
   }
 
   setAutoRefreshPeriod(period: number): void {
-    window.localStorage.setItem(StorageKeys.AutoRefreshPeriod, String(period));
+    saveToLocalStorage('AUTO_REFRESH_PERIOD', String(period));
   }
 
   autoRefreshUnits(defaultUnits = 1000): number {
-    const raw = window.localStorage.getItem(StorageKeys.AutoRefreshUnits);
-    if (raw) {
-      return Number(raw);
-    }
-    this.setAutoRefreshUnits(defaultUnits);
-    return defaultUnits;
+    return Number(getFromLocalStorage('AUTO_REFRESH_UNITS', defaultUnits));
   }
 
   setAutoRefreshUnits(units: number): void {
-    window.localStorage.setItem(StorageKeys.AutoRefreshUnits, String(units));
+    saveToLocalStorage('AUTO_REFRESH_UNITS', String(units));
+  }
+
+  automatedAnalysisRecordingConfig(
+    defaultConfig = defaultAutomatedAnalysisRecordingConfig
+  ): AutomatedAnalysisRecordingConfig {
+    return getFromLocalStorage('AUTOMATED_ANALYSIS_RECORDING_CONFIG', defaultConfig);
+  }
+
+  setAutomatedAnalysisRecordingConfig(config: AutomatedAnalysisRecordingConfig): void {
+    saveToLocalStorage('AUTOMATED_ANALYSIS_RECORDING_CONFIG', config);
   }
 
   deletionDialogsEnabled(): Map<DeleteWarningType, boolean> {
-    const raw = window.localStorage.getItem(StorageKeys.DeletionDialogsEnabled);
-    if (!!raw) {
-      try {
-        const map = JSON.parse(raw);
-        if (typeof map === 'object') {
-          const obj = new Map(Array.from(Object.entries(map)));
-          const res = new Map<DeleteWarningType, boolean>();
-          obj.forEach((v: any) => {
-            res.set(v[0] as DeleteWarningType, v[1] as boolean);
-          });
-          for (const t in DeleteWarningType) {
-            if (!res.has(DeleteWarningType[t])) {
-              res.set(DeleteWarningType[t], true);
-            }
-          }
-          return res;
+    const value = getFromLocalStorage('DELETION_DIALOGS_ENABLED', undefined);
+    if (typeof value === 'object') {
+      const obj = new Map(Array.from(Object.entries(value)));
+      const res = new Map<DeleteWarningType, boolean>();
+      obj.forEach((v: any) => {
+        res.set(v[0] as DeleteWarningType, v[1] as boolean);
+      });
+      for (const t in DeleteWarningType) {
+        if (!res.has(DeleteWarningType[t])) {
+          res.set(DeleteWarningType[t], true);
         }
-      } catch (e) {
-        console.error(e);
       }
+      return res;
     }
+
     const map = new Map<DeleteWarningType, boolean>();
     for (const cat in DeleteWarningType) {
       map.set(DeleteWarningType[cat], true);
@@ -126,8 +139,8 @@ export class SettingsService {
   }
 
   setDeletionDialogsEnabled(map: Map<DeleteWarningType, boolean>): void {
-    const raw = JSON.stringify(Array.from(map.entries()));
-    window.localStorage.setItem(StorageKeys.DeletionDialogsEnabled, raw);
+    const value = Array.from(map.entries());
+    saveToLocalStorage('DELETION_DIALOGS_ENABLED', value);
   }
 
   setDeletionDialogsEnabledFor(type: DeleteWarningType, enabled: boolean) {
@@ -137,26 +150,19 @@ export class SettingsService {
   }
 
   notificationsEnabled(): Map<NotificationCategory, boolean> {
-    const raw = window.localStorage.getItem(StorageKeys.NotificationsEnabled);
-    if (!!raw) {
-      try {
-        const map = JSON.parse(raw);
-        if (typeof map === 'object') {
-          const obj = new Map(Array.from(Object.entries(map)));
-          const res = new Map<NotificationCategory, boolean>();
-          obj.forEach((v: any) => {
-            res.set(v[0] as NotificationCategory, v[1] as boolean);
-          });
-          for (const c in NotificationCategory) {
-            if (!res.has(NotificationCategory[c])) {
-              res.set(NotificationCategory[c], true);
-            }
-          }
-          return res;
+    const value = getFromLocalStorage('NOTIFICATIONS_ENABLED', undefined);
+    if (typeof value === 'object') {
+      const obj = new Map(Array.from(Object.entries(value)));
+      const res = new Map<NotificationCategory, boolean>();
+      obj.forEach((v: any) => {
+        res.set(v[0] as NotificationCategory, v[1] as boolean);
+      });
+      for (const t in NotificationCategory) {
+        if (!res.has(NotificationCategory[t])) {
+          res.set(NotificationCategory[t], true);
         }
-      } catch (e) {
-        console.error(e);
       }
+      return res;
     }
     const map = new Map<NotificationCategory, boolean>();
     for (const cat in NotificationCategory) {
@@ -175,20 +181,15 @@ export class SettingsService {
   }
 
   setNotificationsEnabled(map: Map<NotificationCategory, boolean>): void {
-    const raw = JSON.stringify(Array.from(map.entries()));
-    window.localStorage.setItem(StorageKeys.NotificationsEnabled, raw);
+    const value = Array.from(map.entries());
+    saveToLocalStorage('NOTIFICATIONS_ENABLED', value);
   }
 
   webSocketDebounceMs(defaultWebSocketDebounceMs = 100): number {
-    const raw = window.localStorage.getItem(StorageKeys.WebSocketDebounceMs);
-    if (raw) {
-      return Number(raw);
-    }
-    this.setWebSocketDebounceMs(defaultWebSocketDebounceMs);
-    return defaultWebSocketDebounceMs;
+    return Number(getFromLocalStorage('WEBSOCKET_DEBOUNCE_MS', defaultWebSocketDebounceMs));
   }
 
   setWebSocketDebounceMs(debounce: number): void {
-    window.localStorage.setItem(StorageKeys.WebSocketDebounceMs, String(debounce));
+    saveToLocalStorage('WEBSOCKET_DEBOUNCE_MS', String(debounce));
   }
 }

@@ -37,17 +37,21 @@
  */
 
 export enum LocalStorageKey {
+  AUTOMATED_ANALYSIS_FILTERS,
   TARGET_RECORDING_FILTERS,
   JMX_CREDENTIAL_LOCATION,
   JMX_CREDENTIALS,
   TARGET,
+  AUTO_REFRESH_ENABLED,
+  AUTO_REFRESH_PERIOD,
+  AUTO_REFRESH_UNITS,
+  AUTOMATED_ANALYSIS_RECORDING_CONFIG,
+  DELETION_DIALOGS_ENABLED,
+  NOTIFICATIONS_ENABLED,
+  WEBSOCKET_DEBOUNCE_MS,
 }
 
-/**
- * This is equivalent to:
- * type LocalStorageKeyStrings = 'ACTIVE_RECORDING_FILTER';
- */
-type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
+export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
 
 export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
   if (typeof window === 'undefined') {

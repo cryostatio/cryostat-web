@@ -43,6 +43,8 @@ import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { of } from 'rxjs';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { Provider } from 'react-redux';
+import { store } from '@app/Shared/Redux/ReduxStore';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 
@@ -59,6 +61,10 @@ jest.mock('@app/TargetSelect/TargetSelect', () => ({
   TargetSelect: (props) => <div>Target Select</div>,
 }));
 
+jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCard', () => ({
+  AutomatedAnalysisCard: (props) => <div>Automated Analysis Card</div>,
+}));
+
 jest
   .spyOn(defaultServices.target, 'target')
   .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
@@ -72,7 +78,9 @@ describe('<Dashboard />', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
-            <Dashboard />
+            <Provider store={store}>
+              <Dashboard />
+            </Provider>
           </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );

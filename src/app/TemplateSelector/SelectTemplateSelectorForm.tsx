@@ -51,7 +51,7 @@ export interface TemplateSelectionGroup {
 }
 
 export interface SelectTemplateSelectorFormProps {
-  selected: string; // e.g. "Continous,TARGET"
+  selected: string; // e.g. "Continuous,TARGET"
   templates: EventTemplate[];
   disabled?: boolean;
   validated?: ValidatedOptions;

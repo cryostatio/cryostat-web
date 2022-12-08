@@ -50,6 +50,14 @@ jest.mock('@app/Settings/NotificationControl', () => ({
   },
 }));
 
+jest.mock('@app/Settings/AutomatedAnalysisConfig', () => ({
+  AutomatedAnalysisConfig: {
+    title: 'Automated Analysis Config Title',
+    description: 'Automated Analysis Config Description',
+    content: () => <Text>Automated Analysis Config Component</Text>,
+  },
+}));
+
 jest.mock('@app/Settings/CredentialsStorage', () => ({
   CredentialsStorage: {
     title: 'Credentials Storage Title',

@@ -35,54 +35,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import {
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  Title,
-  Text,
-  StackItem,
-  Stack,
-} from '@patternfly/react-core';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
-export const authFailMessage = 'Auth failure';
+import React from 'react';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import { CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
 
-export const missingSSLMessage = 'Bad Gateway';
-
-export const isAuthFail = (message: string) => message === authFailMessage;
-export interface ErrorViewProps {
-  title: string | React.ReactNode;
-  message: string | React.ReactNode;
-  retryButtonMessage?: string;
-  retry?: () => void;
+export interface AutomatedAnalysisNameFilterProps {
+  evaluations: CategorizedRuleEvaluations[];
+  filteredNames: string[];
+  onSubmit: (inputName: string) => void;
 }
 
-export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
+export const AutomatedAnalysisNameFilter: React.FunctionComponent<AutomatedAnalysisNameFilterProps> = (props) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  const onSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        setIsExpanded(false);
+        props.onSubmit(selection);
+      }
+    },
+    [props.onSubmit, setIsExpanded]
+  );
+
+  const nameOptions = React.useMemo(() => {
+    const flatEvalMap: string[] = [] as string[];
+    for (let topic of props.evaluations.map((r) => r[1])) {
+      for (let rule of topic) {
+        flatEvalMap.push(rule.name);
+      }
+    }
+    return flatEvalMap
+      .filter((n) => !props.filteredNames.includes(n))
+      .sort()
+      .map((option, index) => <SelectOption key={index} value={option} />);
+  }, [props.evaluations, props.filteredNames]);
+
   return (
-    <>
-      <EmptyState>
-        <EmptyStateIcon icon={ExclamationCircleIcon} color={'#a30000'} />
-        <Title headingLevel="h4" size="lg">
-          {props.title}
-        </Title>
-        <EmptyStateBody>
-          <>
-            <Stack>
-              <StackItem>{props.message}</StackItem>
-              {props.retry && (
-                <StackItem>
-                  <Button variant="link" onClick={props.retry}>
-                    {props.retryButtonMessage || 'Retry'}
-                  </Button>
-                </StackItem>
-              )}
-            </Stack>
-          </>
-        </EmptyStateBody>
-      </EmptyState>
-    </>
+    <Select
+      variant={SelectVariant.typeahead}
+      onToggle={setIsExpanded}
+      onSelect={onSelect}
+      isOpen={isExpanded}
+      typeAheadAriaLabel="Filter by name..."
+      placeholderText="Filter by name..."
+      aria-label="Filter by name"
+      maxHeight="16em"
+    >
+      {nameOptions}
+    </Select>
   );
 };

@@ -37,11 +37,21 @@
  */
 import * as React from 'react';
 import { TargetView } from '@app/TargetView/TargetView';
+import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import { Grid, GridItem } from '@patternfly/react-core';
 
 export interface DashboardProps {}
 
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
-  return <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState />;
+  return (
+    <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
+      <Grid hasGutter>
+        <GridItem xl2={8} xl={10} lg={10} md={12} sm={12}>
+          <AutomatedAnalysisCard />
+        </GridItem>
+      </Grid>
+    </TargetView>
+  );
 };
 
 export default Dashboard;
