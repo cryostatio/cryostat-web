@@ -38,6 +38,7 @@
 import * as React from 'react';
 import { Stack, StackItem } from '@patternfly/react-core';
 import { TargetView } from '@app/TargetView/TargetView';
+import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { AddCard } from './AddCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
@@ -72,7 +73,11 @@ function getConfigByName(name: String): CardConfig {
 }
 
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
-  const [cardNames, setCardNames] = React.useState([] as string[]);
+  const [cardNames, setCardNames] = React.useState(getFromLocalStorage('DASHBOARD_CFG', []));
+
+  React.useEffect(() => {
+    saveToLocalStorage('DASHBOARD_CFG', cardNames);
+  }, [cardNames]);
 
   const handleAdd = React.useCallback(
     (name: string) => {
