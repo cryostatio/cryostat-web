@@ -46,7 +46,7 @@ import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/
 import { EventTemplates } from '@app/Events/EventTemplates';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { TargetService } from '@app/Shared/Services/Target.service';
-import { renderWithServiceContext } from '../Common';
+import { renderWithServiceContextAndRouter } from '../Common';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
@@ -79,6 +79,9 @@ const mockDeleteTemplateNotification = {
     type: mockMessageType,
   },
 };
+
+const mockEventTemplateContent = '<some><other><xml></xml></dummy></some>';
+const mockFileUpload = new File([mockEventTemplateContent], 'mockEventTemplate.xml', { type: 'xml' });
 
 const mockHistoryPush = jest.fn();
 
@@ -134,20 +137,20 @@ describe('<EventTemplates />', () => {
   });
 
   it('adds a recording after receiving a notification', async () => {
-    renderWithServiceContext(<EventTemplates />);
+    renderWithServiceContextAndRouter(<EventTemplates />);
 
     expect(screen.getByText('someEventTemplate')).toBeInTheDocument();
     expect(screen.getByText('anotherEventTemplate')).toBeInTheDocument();
   });
 
   it('removes a recording after receiving a notification', async () => {
-    renderWithServiceContext(<EventTemplates />);
+    renderWithServiceContextAndRouter(<EventTemplates />);
 
     expect(screen.queryByText('anotherEventTemplate')).not.toBeInTheDocument();
   });
 
   it('displays the column header fields', async () => {
-    renderWithServiceContext(<EventTemplates />);
+    renderWithServiceContextAndRouter(<EventTemplates />);
 
     expect(screen.getByText('Name')).toBeInTheDocument();
     expect(screen.getByText('Description')).toBeInTheDocument();
@@ -156,7 +159,7 @@ describe('<EventTemplates />', () => {
   });
 
   it('shows a popup when uploading', async () => {
-    const { user } = renderWithServiceContext(<EventTemplates />);
+    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
 
     expect(screen.queryByLabelText('Create Custom Event Template')).not.toBeInTheDocument();
 
@@ -168,7 +171,7 @@ describe('<EventTemplates />', () => {
   });
 
   it('downloads an event template when Download is clicked on template action bar', async () => {
-    const { user } = renderWithServiceContext(<EventTemplates />);
+    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
 
     await user.click(screen.getByLabelText('Actions'));
     await user.click(screen.getByText('Download'));
@@ -180,7 +183,7 @@ describe('<EventTemplates />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the template after clicking confirmation Delete', async () => {
-    const { user } = renderWithServiceContext(<EventTemplates />);
+    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -205,7 +208,7 @@ describe('<EventTemplates />', () => {
   });
 
   it('deletes the template when Delete is clicked w/o popup warning', async () => {
-    const { user } = renderWithServiceContext(<EventTemplates />);
+    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
 
     await user.click(screen.getByLabelText('Actions'));
 
@@ -232,7 +235,7 @@ describe('<EventTemplates />', () => {
       target: mockTargetSvc,
     };
 
-    renderWithServiceContext(<EventTemplates />, { services: services });
+    renderWithServiceContextAndRouter(<EventTemplates />, { services: services });
 
     await doAct(async () => subj.next());
 
@@ -250,7 +253,7 @@ describe('<EventTemplates />', () => {
   });
 
   it('should shown empty state when table is empty', async () => {
-    const { user } = renderWithServiceContext(<EventTemplates />);
+    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
 
     const filterInput = screen.getByLabelText('Event template filter');
     expect(filterInput).toBeInTheDocument();
@@ -263,5 +266,60 @@ describe('<EventTemplates />', () => {
     const hintText = screen.getByText('No Event Templates');
     expect(hintText).toBeInTheDocument();
     expect(hintText).toBeVisible();
+  });
+
+  it('should upload event template when submit button is clicked', async () => {
+    const createSpy = jest.spyOn(defaultServices.api, 'addCustomEventTemplate').mockReturnValueOnce(of(true));
+    const { user } = renderWithServiceContextAndRouter(<EventTemplates />);
+
+    const uploadButton = screen.getByRole('button', { name: 'Upload' });
+    expect(uploadButton).toBeInTheDocument();
+    expect(uploadButton).toBeVisible();
+
+    await user.click(uploadButton);
+
+    const modal = await screen.findByRole('dialog');
+    expect(modal).toBeInTheDocument();
+    expect(modal).toBeVisible();
+
+    const modalTitle = await within(modal).findByText('Create Custom Event Template');
+    expect(modalTitle).toBeInTheDocument();
+    expect(modalTitle).toBeVisible();
+
+    const dropZoneText = within(modal).getByText('Drag and drop files here');
+    expect(dropZoneText).toBeInTheDocument();
+    expect(dropZoneText).toBeVisible();
+
+    const uploadButtonInModal = within(modal).getByText('Upload');
+    expect(uploadButtonInModal).toBeInTheDocument();
+    expect(uploadButtonInModal).toBeVisible();
+
+    const uploadInput = modal.querySelector("input[accept='.xml,.jfc'][type='file']") as HTMLInputElement;
+    expect(uploadInput).toBeInTheDocument();
+    expect(uploadInput).not.toBeVisible();
+
+    await user.click(uploadButton);
+    await user.upload(uploadInput, mockFileUpload);
+
+    const fileUploadNameText = within(modal).getByText(mockFileUpload.name);
+    expect(fileUploadNameText).toBeInTheDocument();
+    expect(fileUploadNameText).toBeVisible();
+
+    const submitButton = within(modal).getByText('Submit');
+    expect(submitButton).toBeInTheDocument();
+    expect(submitButton).toBeVisible();
+    expect(submitButton).not.toBeDisabled();
+
+    await user.click(submitButton);
+
+    expect(createSpy).toHaveBeenCalled();
+    expect(createSpy).toHaveBeenCalledWith(mockFileUpload, expect.any(Function), expect.any(Subject));
+
+    expect(within(modal).queryByText('Submit')).not.toBeInTheDocument();
+    expect(within(modal).queryByText('Cancel')).not.toBeInTheDocument();
+
+    const closeButton = within(modal).getByText('Close');
+    expect(closeButton).toBeInTheDocument();
+    expect(closeButton).toBeVisible();
   });
 });

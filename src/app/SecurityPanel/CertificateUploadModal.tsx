@@ -35,12 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ActionGroup, Button, FileUpload, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
-import { first } from 'rxjs/operators';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '@app/Notifications/Notifications';
+import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
+import * as React from 'react';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, defaultIfEmpty, tap } from 'rxjs/operators';
 
 export interface CertificateUploadModalProps {
   visible: boolean;
@@ -48,63 +50,79 @@ export interface CertificateUploadModalProps {
 }
 
 export const CertificateUploadModal: React.FunctionComponent<CertificateUploadModalProps> = (props) => {
+  const addSubscriptions = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const notifications = React.useContext(NotificationsContext);
-  const [uploadFile, setUploadFile] = React.useState(undefined as File | undefined);
-  const [filename, setFilename] = React.useState('' as string | undefined);
+  const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
+  const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
+
+  const [allOks, setAllOks] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
-  const [rejected, setRejected] = React.useState(false);
+  const [numOfFiles, setNumOfFiles] = React.useState(0);
 
   const reset = React.useCallback(() => {
-    setUploadFile(undefined);
-    setFilename('');
     setUploading(false);
-    setRejected(true);
-  }, [setUploadFile, setFilename, setUploading, setRejected]);
+    setNumOfFiles(0);
+  }, [setUploading, setNumOfFiles]);
 
-  const handleFileChange = React.useCallback(
-    (file, filename) => {
-      setRejected(false);
-      setUploadFile(file);
-      setFilename(filename);
+  const onFilesChange = React.useCallback(
+    (fileUploads: FUpload[]) => {
+      setAllOks(!fileUploads.some((f) => !f.progress || f.progress.progressVariant !== 'success'));
+      setNumOfFiles(fileUploads.length);
     },
-    [setRejected, setUploadFile, setFilename]
+    [setNumOfFiles, setAllOks]
   );
 
-  const handleReject = React.useCallback(() => {
-    setRejected(true);
-  }, [setRejected]);
-
   const handleClose = React.useCallback(() => {
-    reset();
-    props.onClose();
-  }, [reset, props.onClose]);
+    if (uploading) {
+      abortRef.current && abortRef.current.click();
+    } else {
+      reset();
+      props.onClose();
+    }
+  }, [uploading, abortRef.current, reset, props.onClose]);
 
   const handleSubmit = React.useCallback(() => {
-    if (rejected) {
-      notifications.warning('File format is not compatible');
-      return;
-    }
-    if (!uploadFile) {
-      notifications.warning('Attempted to submit certificate upload without a file selected');
-      return;
-    }
-    let type = uploadFile.type;
-    if (type != 'application/x-x509-ca-cert' && type != 'application/pkix-cert') {
-      notifications.warning('File format is not compatible');
-      return;
-    }
-    setUploading(true);
-    context.api
-      .uploadSSLCertificate(uploadFile)
-      .pipe(first())
-      .subscribe((success) => {
-        setUploading(false);
-        if (success) {
-          handleClose();
-        }
+    submitRef.current && submitRef.current.click();
+  }, [submitRef.current]);
+
+  const onFileSubmit = React.useCallback(
+    (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
+      setUploading(true);
+
+      const tasks: Observable<boolean>[] = [];
+      fileUploads.forEach((fileUpload) => {
+        tasks.push(
+          context.api
+            .uploadSSLCertificate(
+              fileUpload.file,
+              getProgressUpdateCallback(fileUpload.file.name),
+              fileUpload.abortSignal
+            )
+            .pipe(
+              tap({
+                next: () => {
+                  onSingleSuccess(fileUpload.file.name);
+                },
+                error: (err) => {
+                  onSingleFailure(fileUpload.file.name, err);
+                },
+              }),
+              catchError((_) => of(false))
+            )
+        );
       });
-  }, [rejected, uploadFile, notifications, setUploading, context.api, handleClose]);
+
+      addSubscriptions(
+        forkJoin(tasks)
+          .pipe(defaultIfEmpty([true]))
+          .subscribe((oks) => {
+            setUploading(false);
+            setAllOks(oks.reduce((prev, curr, _) => prev && curr, true));
+          })
+      );
+    },
+    [setUploading, context.api, addSubscriptions, handleClose, setAllOks]
+  );
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
@@ -120,39 +138,43 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
     <Modal
       isOpen={props.visible}
       variant={ModalVariant.large}
-      showClose={!uploading}
+      showClose={true}
       onClose={handleClose}
       title="Upload SSL certificate"
       description="Select a certificate file to upload. Certificates must be DER-encoded (can be binary or base64) and can have .der or .cer extensions."
     >
       <Form>
-        <FormGroup label="Certificate File" isRequired fieldId="file" validated={rejected ? 'error' : 'default'}>
-          <FileUpload
-            id="file-upload"
-            value={uploadFile}
-            filename={filename}
-            onChange={handleFileChange}
-            isLoading={uploading}
-            isDisabled={uploading}
-            validated={rejected ? 'error' : 'default'}
-            dropzoneProps={{
-              accept: 'application/x-x509-ca-cert, application/pkix-cert',
-              onDropRejected: handleReject,
-            }}
+        <FormGroup label="Certificate File" isRequired fieldId="file">
+          <MultiFileUpload
+            submitRef={submitRef}
+            abortRef={abortRef}
+            uploading={uploading}
+            dropZoneAccepts={['application/x-x509-ca-cert', 'application/pkix-cert']}
+            displayAccepts={['CER', 'DER']}
+            onFileSubmit={onFileSubmit}
+            onFilesChange={onFilesChange}
           />
         </FormGroup>
         <ActionGroup>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            isDisabled={!filename || uploading}
-            {...submitButtonLoadingProps}
-          >
-            {uploading ? 'Submitting' : 'Submit'}
-          </Button>
-          <Button variant="link" onClick={handleClose} isDisabled={uploading}>
-            Cancel
-          </Button>
+          {allOks && numOfFiles ? (
+            <Button variant="primary" onClick={handleClose}>
+              Close
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                isDisabled={!numOfFiles || uploading}
+                {...submitButtonLoadingProps}
+              >
+                {uploading ? 'Submitting' : 'Submit'}
+              </Button>
+              <Button variant="link" onClick={handleClose}>
+                Cancel
+              </Button>
+            </>
+          )}
         </ActionGroup>
       </Form>
     </Modal>

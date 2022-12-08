@@ -56,10 +56,10 @@ export const CancelUploadModal: React.FunctionComponent<CancelUploadModalProps> 
       onClose={props.onNo}
       title={props.title}
       actions={[
-        <Button variant="primary" onClick={props.onYes}>
+        <Button key={'Yes'} variant="primary" onClick={props.onYes}>
           Yes
         </Button>,
-        <Button variant="secondary" onClick={props.onNo}>
+        <Button key={'No'} variant="secondary" onClick={props.onNo}>
           No
         </Button>,
       ]}

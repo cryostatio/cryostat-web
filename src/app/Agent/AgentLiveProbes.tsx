@@ -146,17 +146,14 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
       };
     });
     addSubscription(
-      context.api
-        .removeProbes()
-        .pipe(first())
-        .subscribe(() => {
-          setActionLoadings((old) => {
-            return {
-              ...old,
-              REMOVE: false,
-            };
-          });
-        })
+      context.api.removeProbes().subscribe(() => {
+        setActionLoadings((old) => {
+          return {
+            ...old,
+            REMOVE: false,
+          };
+        });
+      })
     );
   }, [addSubscription, context.api, setActionLoadings]);
 

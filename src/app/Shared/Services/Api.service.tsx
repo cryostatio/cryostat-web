@@ -35,17 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { from, Observable, ObservableInput, of, ReplaySubject, forkJoin, throwError, EMPTY, shareReplay } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
-import { NO_TARGET, Target, TargetService } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
-import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
-import { NotificationCategory } from './NotificationChannel.service';
-import _ from 'lodash';
 import { createBlobURL } from '@app/utils/utils';
+import _ from 'lodash';
+import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
+import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
+import { AuthMethod, LoginService, SessionState } from './Login.service';
+import { NotificationCategory } from './NotificationChannel.service';
+import { NO_TARGET, Target, TargetService } from './Target.service';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
@@ -58,11 +58,31 @@ export class HttpError extends Error {
   }
 }
 
+export class XMLHttpError extends Error {
+  readonly xmlHttpResponse: XMLHttpResponse;
+
+  constructor(xmlHttpResponse: XMLHttpResponse) {
+    super(xmlHttpResponse.statusText);
+    this.xmlHttpResponse = xmlHttpResponse;
+  }
+}
+
 export const isHttpError = (toCheck: any): toCheck is HttpError => {
   if (!(toCheck instanceof Error)) {
     return false;
   }
   return (toCheck as HttpError).httpResponse !== undefined;
+};
+
+export const isXMLHttpError = (toCheck: any): toCheck is XMLHttpError => {
+  if (!(toCheck instanceof Error)) {
+    return false;
+  }
+  return (toCheck as XMLHttpError).xmlHttpResponse !== undefined;
+};
+
+export const isHttpOk = (statusCode: number) => {
+  return statusCode >= 200 && statusCode < 300;
 };
 
 export class ApiService {
@@ -190,6 +210,35 @@ export class ApiService {
     }).pipe(
       map((resp) => resp.ok),
       catchError(() => of(false)),
+      first()
+    );
+  }
+
+  uploadRule(
+    rule: Rule,
+    onUploadProgress?: (progress: string | number) => void,
+    abortSignal?: Observable<void>
+  ): Observable<boolean> {
+    window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
+
+    const headers = {};
+    headers['Content-Type'] = 'application/json';
+    return this.sendLegacyRequest('v2', 'rules', {
+      method: 'POST',
+      body: JSON.stringify(rule),
+      headers: headers,
+      listeners: {
+        onUploadProgress: (event) => {
+          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+        },
+      },
+      abortSignal,
+    }).pipe(
+      map((resp) => resp.ok),
+      tap({
+        next: () => (window.onbeforeunload = null),
+        error: () => (window.onbeforeunload = null),
+      }),
       first()
     );
   }
@@ -448,27 +497,39 @@ export class ApiService {
   deleteCustomEventTemplate(templateName: string): Observable<boolean> {
     return this.sendRequest('v1', `templates/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
-      body: null,
     }).pipe(
-      map((response) => {
-        if (!response.ok) {
-          throw response.statusText;
-        }
-        return true;
-      }),
-      catchError((): ObservableInput<boolean> => of(false))
+      map((resp) => resp.ok),
+      catchError(() => of(false)),
+      first()
     );
   }
 
-  addCustomEventTemplate(file: File): Observable<boolean> {
+  addCustomEventTemplate(
+    file: File,
+    onUploadProgress?: (progress: string | number) => void,
+    abortSignal?: Observable<void>
+  ): Observable<boolean> {
+    window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
+
     const body = new window.FormData();
     body.append('template', file);
-    return this.sendRequest('v1', `templates`, {
+    return this.sendLegacyRequest('v1', 'templates', {
+      body: body,
       method: 'POST',
-      body,
+      headers: {},
+      listeners: {
+        onUploadProgress: (event) => {
+          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+        },
+      },
+      abortSignal,
     }).pipe(
       map((resp) => resp.ok),
-      catchError((_) => of(false))
+      tap({
+        next: () => (window.onbeforeunload = null),
+        error: () => (window.onbeforeunload = null),
+      }),
+      first()
     );
   }
 
@@ -504,37 +565,50 @@ export class ApiService {
               );
             }
           }),
-          map((resp) => resp.status == 200),
+          map((resp) => resp.ok),
+          catchError((_) => of(false)),
           first()
         )
       )
     );
   }
 
-  addCustomProbeTemplate(file: File): Observable<boolean> {
+  addCustomProbeTemplate(
+    file: File,
+    onUploadProgress?: (progress: string | number) => void,
+    abortSignal?: Observable<void>
+  ): Observable<boolean> {
+    window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
+
     const body = new window.FormData();
     body.append('probeTemplate', file);
-    return this.sendRequest('v2', `probes/` + file.name, {
+    return this.sendLegacyRequest('v2', `probes/${file.name}`, {
       method: 'POST',
-      body,
+      body: body,
+      headers: {},
+      listeners: {
+        onUploadProgress: (event) => {
+          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+        },
+      },
+      abortSignal,
     }).pipe(
       map((resp) => resp.ok),
-      catchError((): ObservableInput<boolean> => of(false))
+      tap({
+        next: () => (window.onbeforeunload = null),
+        error: () => (window.onbeforeunload = null),
+      }),
+      first()
     );
   }
 
   deleteCustomProbeTemplate(templateName: string): Observable<boolean> {
     return this.sendRequest('v2', `probes/${encodeURIComponent(templateName)}`, {
       method: 'DELETE',
-      body: null,
     }).pipe(
-      map((response) => {
-        if (!response.ok) {
-          throw response.statusText;
-        }
-        return true;
-      }),
-      catchError((): ObservableInput<boolean> => of(false))
+      map((resp) => resp.ok),
+      catchError(() => of(false)),
+      first()
     );
   }
 
@@ -690,51 +764,69 @@ export class ApiService {
       });
   }
 
-  uploadRecording(file: File, labels: Object, signal?: AbortSignal): Observable<string> {
-    window.onbeforeunload = () => true;
-    return this.login.getHeaders().pipe(
-      concatMap((headers) => {
-        const body = new window.FormData();
-        body.append('recording', file);
-        body.append('labels', JSON.stringify(labels));
+  uploadRecording(
+    file: File,
+    labels: Object,
+    onUploadProgress?: (progress: number) => void,
+    abortSignal?: Observable<void>
+  ): Observable<string> {
+    window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
 
-        return fromFetch(`${this.login.authority}/api/v1/recordings`, {
-          credentials: 'include',
-          mode: 'cors',
-          method: 'POST',
-          body,
-          headers,
-          signal,
-        });
-      }),
-      concatMap((v) => {
-        if (v.ok) {
-          return from(v.text());
+    const body = new window.FormData();
+    body.append('recording', file);
+    body.append('labels', JSON.stringify(labels));
+
+    return this.sendLegacyRequest('v1', 'recordings', {
+      method: 'POST',
+      body: body,
+      headers: {},
+      listeners: {
+        onUploadProgress: (event) => {
+          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+        },
+      },
+      abortSignal,
+    }).pipe(
+      map((resp) => {
+        if (resp.ok) {
+          return resp.body as string;
         }
-        throw from(v.text());
+        throw new XMLHttpError(resp);
       }),
       tap({
         next: () => (window.onbeforeunload = null),
-        error: (err) => {
-          window.onbeforeunload = null;
-          err.subscribe((msg) =>
-            this.notifications.danger('Upload Failed', msg, NotificationCategory.ArchivedRecordingCreated)
-          );
-        },
-        complete: () => (window.onbeforeunload = null),
-      })
+        error: () => (window.onbeforeunload = null),
+      }),
+      first()
     );
   }
 
-  uploadSSLCertificate(file: File): Observable<boolean> {
+  uploadSSLCertificate(
+    file: File,
+    onUploadProgress?: (progress: number) => void,
+    abortSignal?: Observable<void>
+  ): Observable<boolean> {
+    window.onbeforeunload = (event: BeforeUnloadEvent) => event.preventDefault();
+
     const body = new window.FormData();
     body.append('cert', file);
-    return this.sendRequest('v2', 'certificates', {
+    return this.sendLegacyRequest('v2', 'certificates', {
       method: 'POST',
       body,
+      headers: {},
+      listeners: {
+        onUploadProgress: (event) => {
+          onUploadProgress && onUploadProgress(Math.floor((event.loaded * 100) / event.total));
+        },
+      },
+      abortSignal,
     }).pipe(
       map((resp) => resp.ok),
-      catchError((_) => of(false))
+      tap({
+        next: () => (window.onbeforeunload = null),
+        error: () => (window.onbeforeunload = null),
+      }),
+      first()
     );
   }
 
@@ -859,6 +951,22 @@ export class ApiService {
     );
   }
 
+  private downloadFile(url: string, filename: string, download = true): void {
+    const anchor = document.createElement('a');
+    anchor.setAttribute('style', 'display: none; visibility: hidden;');
+    anchor.target = '_blank';
+    if (download) {
+      anchor.download = filename;
+    }
+    anchor.href = url;
+    anchor.click();
+    anchor.remove();
+  }
+
+  private stringifyRecordingLabels(labels: RecordingLabel[]): string {
+    return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
+  }
+
   private sendRequest(
     apiVersion: ApiVersion,
     path: string,
@@ -875,12 +983,12 @@ export class ApiService {
             headers: headers,
           } as RequestInit;
 
-          function customizer(dest, src) {
+          const customizer = (dest: any, src: any) => {
             if (dest instanceof Headers && src instanceof Headers) {
               src.forEach((v, k) => dest.set(k, v));
             }
             return dest;
-          }
+          };
 
           _.mergeWith(config, defaultReq, customizer);
 
@@ -898,18 +1006,6 @@ export class ApiService {
         })
       );
     return req();
-  }
-
-  private downloadFile(url: string, filename: string, download = true): void {
-    const anchor = document.createElement('a');
-    anchor.setAttribute('style', 'display: none; visibility: hidden;');
-    anchor.target = '_blank';
-    if (download) {
-      anchor.download = filename;
-    }
-    anchor.href = url;
-    anchor.click();
-    anchor.remove();
   }
 
   private handleError<T>(error: Error, retry: () => Observable<T>, suppressNotifications = false): ObservableInput<T> {
@@ -937,8 +1033,107 @@ export class ApiService {
     throw error;
   }
 
-  private stringifyRecordingLabels(labels: RecordingLabel[]): string {
-    return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
+  private sendLegacyRequest(
+    // Used for uploading. Prefer sendRequest for other operations
+    apiVersion: ApiVersion,
+    path: string,
+    { method = 'GET', body, headers = {}, listeners, abortSignal }: XMLHttpRequestConfig,
+    suppressNotifications = false,
+    skipStatusCheck = false
+  ): Observable<XMLHttpResponse> {
+    const req = () =>
+      this.login.getHeaders().pipe(
+        concatMap((defaultHeaders) => {
+          return from(
+            new Promise<XMLHttpResponse>((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+              xhr.open(method, `${this.login.authority}/api/${apiVersion}/${path}`, true);
+
+              listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
+
+              abortSignal && abortSignal.subscribe(() => xhr.abort()); // Listen to abort signal if any
+
+              xhr.addEventListener('readystatechange', () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                  if (xhr.status === 0) {
+                    // aborted
+                    reject(new Error('Aborted'));
+                  }
+                  const ok = isHttpOk(xhr.status);
+                  const respHeaders = {};
+                  const arr = xhr
+                    .getAllResponseHeaders()
+                    .trim()
+                    .split(/[\r\n]+/);
+                  arr.forEach((line) => {
+                    const parts = line.split(': ');
+                    const header = parts.shift();
+                    const value = parts.join(': ');
+                    respHeaders[header!] = value;
+                  });
+
+                  resolve({
+                    body: xhr.response,
+                    headers: respHeaders,
+                    respType: xhr.responseType,
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    ok: ok,
+                  } as XMLHttpResponse);
+                }
+              });
+
+              // Populate headers
+              defaultHeaders.forEach((v, k) => xhr.setRequestHeader(k, v));
+              headers && Object.keys(headers).forEach((k) => xhr.setRequestHeader(k, headers[k]));
+              xhr.withCredentials = true;
+
+              // Send request
+              xhr.send(body);
+            })
+          );
+        }),
+        map((resp) => {
+          if (resp.ok) return resp;
+          throw new XMLHttpError(resp);
+        }),
+        catchError((err) => {
+          if (skipStatusCheck) {
+            throw err;
+          }
+          return this.handleLegacyError<XMLHttpResponse>(err, req, suppressNotifications);
+        })
+      );
+    return req();
+  }
+
+  private handleLegacyError<T>(
+    error: Error,
+    retry: () => Observable<T>,
+    suppressNotifications = false
+  ): ObservableInput<T> {
+    if (isXMLHttpError(error)) {
+      if (error.xmlHttpResponse.status === 427) {
+        const jmxAuthScheme = error.xmlHttpResponse.headers['X-JMX-Authenticate'];
+        if (jmxAuthScheme === AuthMethod.BASIC) {
+          this.target.setAuthFailure();
+          return this.target.authRetry().pipe(mergeMap(() => retry()));
+        }
+      } else if (error.xmlHttpResponse.status === 502) {
+        this.target.setSslFailure();
+      } else {
+        Promise.resolve(error.xmlHttpResponse.body as string).then((detail) => {
+          if (!suppressNotifications) {
+            this.notifications.danger(`Request failed (${error.xmlHttpResponse.status} ${error.message})`, detail);
+          }
+        });
+      }
+      throw error;
+    }
+    if (!suppressNotifications) {
+      this.notifications.danger(`Request failed`, error.message);
+    }
+    throw error;
   }
 }
 
@@ -982,6 +1177,26 @@ interface CredentialsResponse extends ApiV2Response {
   data: {
     result: StoredCredential[];
   };
+}
+
+interface XMLHttpResponse {
+  body: any;
+  headers: {};
+  respType: XMLHttpRequestResponseType;
+  status: number;
+  statusText: string;
+  ok: boolean;
+  text: () => Promise<string>;
+}
+
+interface XMLHttpRequestConfig {
+  body?: XMLHttpRequestBodyInit;
+  headers: {};
+  method: string;
+  listeners?: {
+    onUploadProgress?: (e: ProgressEvent) => void;
+  };
+  abortSignal?: Observable<void>;
 }
 
 export interface RecordingDirectory {
