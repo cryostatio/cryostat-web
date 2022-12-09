@@ -44,11 +44,14 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
+  Form,
+  FormGroup,
   Select,
   SelectOption,
   Stack,
   StackItem,
   Text,
+  TextVariants,
   Title,
 } from '@patternfly/react-core';
 import { Wizard, WizardStep } from '@patternfly/react-core/dist/js/next';
@@ -110,16 +113,25 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
         {showWizard ? (
           <Wizard onClose={handleStop} onSave={handleAdd}>
             <WizardStep id="card-type-select" name="Card Type" footer={{ nextButtonText: 'Finish' }}>
-              <Stack hasGutter>
-                <StackItem>
-                  <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
-                    {options}
-                  </Select>
-                </StackItem>
-                <StackItem>
-                  <Text>{getConfigByTitle(selection).descriptionFull}</Text>
-                </StackItem>
-              </Stack>
+              <Form>
+                <FormGroup label="Select a card type" isRequired>
+                  <Stack hasGutter>
+                    <StackItem>
+                      <Select
+                        onToggle={handleToggle}
+                        isOpen={selectOpen}
+                        onSelect={handleSelect}
+                        selections={selection}
+                      >
+                        {options}
+                      </Select>
+                    </StackItem>
+                    <StackItem>
+                      <Text>{getConfigByTitle(selection).descriptionFull}</Text>
+                    </StackItem>
+                  </Stack>
+                </FormGroup>
+              </Form>
             </WizardStep>
           </Wizard>
         ) : (
