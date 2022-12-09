@@ -51,7 +51,6 @@ import {
   Stack,
   StackItem,
   Text,
-  TextVariants,
   Title,
 } from '@patternfly/react-core';
 import { Wizard, WizardStep } from '@patternfly/react-core/dist/js/next';
@@ -59,22 +58,21 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
 import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
-import { DashboardCards, getConfigByName, getConfigByTitle } from './Dashboard';
+import { DashboardCards, getConfigByTitle } from './Dashboard';
 
 interface AddCardProps {}
 
 export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
   const [showWizard, setShowWizard] = React.useState(false);
-  const [selection, setSelection] = React.useState(DashboardCards[0].title);
+  const [selection, setSelection] = React.useState('');
   const [selectOpen, setSelectOpen] = React.useState(false);
   const dispatch = useDispatch<StateDispatch>();
 
   const options = React.useMemo(() => {
     return [
+      <SelectOption key={0} value={'None'} isPlaceholder />,
       ...DashboardCards.map((choice, idx) => (
-        <SelectOption key={idx} value={choice.title} description={choice.description}>
-          {choice.title}
-        </SelectOption>
+        <SelectOption key={idx + 1} value={choice.title} description={choice.description} />
       )),
     ];
   }, [DashboardCards]);
@@ -87,8 +85,8 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   );
 
   const handleSelect = React.useCallback(
-    (_, selection) => {
-      setSelection(selection);
+    (_, selection, isPlaceholder) => {
+      setSelection(isPlaceholder ? '' : selection);
       setSelectOpen(false);
     },
     [setSelection, setSelectOpen]
@@ -111,8 +109,12 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard onClose={handleStop} onSave={handleAdd}>
-            <WizardStep id="card-type-select" name="Card Type" footer={{ nextButtonText: 'Finish' }}>
+          <Wizard onClose={handleStop} onSave={handleAdd} height={300}>
+            <WizardStep
+              id="card-type-select"
+              name="Card Type"
+              footer={{ nextButtonText: 'Finish', isNextDisabled: !selection }}
+            >
               <Form>
                 <FormGroup label="Select a card type" isRequired>
                   <Stack hasGutter>
@@ -127,7 +129,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
                       </Select>
                     </StackItem>
                     <StackItem>
-                      <Text>{getConfigByTitle(selection).descriptionFull}</Text>
+                      <Text>{selection && getConfigByTitle(selection).descriptionFull}</Text>
                     </StackItem>
                   </Stack>
                 </FormGroup>
