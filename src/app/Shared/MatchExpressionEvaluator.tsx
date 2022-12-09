@@ -35,9 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { SerializedTarget } from '@app/Shared/SerializedTarget';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
+  ClipboardCopyButton,
   CodeBlock,
+  CodeBlockAction,
   CodeBlockCode,
   Label,
   Split,
@@ -48,11 +54,6 @@ import {
   Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Target } from '@app/Shared/Services/Target.service';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -60,7 +61,7 @@ import {
   InfoCircleIcon,
   WarningTriangleIcon,
 } from '@patternfly/react-icons';
-import { SerializedTarget } from '@app/Shared/SerializedTarget';
+import * as React from 'react';
 
 export interface MatchExpressionEvaluatorProps {
   inlineHint?: boolean;
@@ -73,6 +74,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   const addSubscription = useSubscriptions();
   const [target, setTarget] = React.useState(undefined as Target | undefined);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
+  const [copied, setCopied] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(setTarget));
@@ -152,6 +154,32 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     return body;
   }, [target]);
 
+  const onSaveToClipboard = React.useCallback(() => {
+    setCopied(true);
+    navigator.clipboard.writeText(exampleExpression);
+  }, [setCopied, navigator.clipboard, exampleExpression]);
+
+  const actions = React.useMemo(() => {
+    return (
+      <>
+        <CodeBlockAction>
+          <ClipboardCopyButton
+            id="match-expression-copy-button"
+            textId="match-expression-code-content"
+            aria-label="Copy to clipboard"
+            onClick={onSaveToClipboard}
+            exitDelay={copied ? 1500 : 600}
+            maxWidth="110px"
+            variant="plain"
+            onTooltipHidden={() => setCopied(false)}
+          >
+            {copied ? 'Copied!' : 'Click to copy to clipboard'}
+          </ClipboardCopyButton>
+        </CodeBlockAction>
+      </>
+    );
+  }, [exampleExpression, copied, onSaveToClipboard, setCopied]);
+
   return (
     <>
       <Stack hasGutter>
@@ -182,7 +210,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
         {props.inlineHint ? (
           <StackItem>
             <Text>Hint: try an expression like</Text>
-            <CodeBlock>
+            <CodeBlock actions={actions}>
               <CodeBlockCode>{exampleExpression}</CodeBlockCode>
             </CodeBlock>
           </StackItem>
