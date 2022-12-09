@@ -41,7 +41,6 @@ import { Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
-  ClipboardCopy,
   ClipboardCopyButton,
   CodeBlock,
   CodeBlockAction,
@@ -107,15 +106,6 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     }
   }, [props.onChange, valid]);
 
-  const clipboardCopyFunc = (event, text) => {
-    navigator.clipboard.writeText(text.toString());
-  };
-
-  const onClick = (event, text) => {
-    clipboardCopyFunc(event, text);
-    setCopied(true);
-  };
-
   const statusLabel = React.useMemo(() => {
     switch (valid) {
       case ValidatedOptions.success:
@@ -164,6 +154,11 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     return body;
   }, [target]);
 
+  const onSaveToClipboard = React.useCallback(() => {
+    setCopied(true);
+    navigator.clipboard.writeText(exampleExpression);
+  }, [setCopied, navigator.clipboard, exampleExpression]);
+
   const actions = React.useMemo(() => {
     return (
       <>
@@ -172,18 +167,18 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
             id="match-expression-copy-button"
             textId="match-expression-code-content"
             aria-label="Copy to clipboard"
-            onClick={(e) => onClick(e, exampleExpression)}
+            onClick={onSaveToClipboard}
             exitDelay={copied ? 1500 : 600}
             maxWidth="110px"
             variant="plain"
             onTooltipHidden={() => setCopied(false)}
           >
-            {copied ? 'Successfully copied to clipboard!' : 'Copy to clipboard'}
+            {copied ? 'Copied!' : 'Click to copy to clipboard'}
           </ClipboardCopyButton>
         </CodeBlockAction>
       </>
     );
-  }, [exampleExpression, copied, onClick, setCopied]);
+  }, [exampleExpression, copied, onSaveToClipboard, setCopied]);
 
   return (
     <>

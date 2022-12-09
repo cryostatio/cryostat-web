@@ -139,8 +139,9 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
             fieldId="connect-url"
             helperText={
               <FormHelperText isHidden={false} component="div">
-                JMX Service URL e.g.
+                JMX Service URL
                 <br />
+                e.g.
                 <ClipboardCopy hoverTip="Click to copy to clipboard" clickTip="Copied!" variant="inline-compact">
                   {'service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi'}
                 </ClipboardCopy>
