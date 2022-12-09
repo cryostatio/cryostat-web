@@ -76,6 +76,15 @@ function getConfigByName(name: String): CardConfig {
   throw new Error(`Unknown card type selection: ${name}`);
 }
 
+export function getConfigByTitle(title: String): CardConfig {
+  for (const choice of DashboardCards) {
+    if (choice.title === title) {
+      return choice;
+    }
+  }
+  throw new Error(`Unknown card type selection: ${title}`);
+}
+
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
   const dispatch = useDispatch<StateDispatch>();
   const cardNames = useSelector((state: RootState) => state.dashboardConfigs.list);

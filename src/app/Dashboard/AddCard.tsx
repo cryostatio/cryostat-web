@@ -41,31 +41,32 @@ import {
   Button,
   Card,
   EmptyState,
+  EmptyStateBody,
   EmptyStateIcon,
-  EmptyStateSecondaryActions,
   EmptyStateVariant,
   Select,
   SelectOption,
   Title,
 } from '@patternfly/react-core';
+import { Wizard, WizardStep } from '@patternfly/react-core/dist/js/next';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
 import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
-import { DashboardCards } from './Dashboard';
+import { DashboardCards, getConfigByTitle } from './Dashboard';
 
 interface AddCardProps {}
 
 export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
-  const [selection, setSelection] = React.useState('None');
+  const [showWizard, setShowWizard] = React.useState(false);
+  const [selection, setSelection] = React.useState(DashboardCards[0].title);
   const [selectOpen, setSelectOpen] = React.useState(false);
   const dispatch = useDispatch<StateDispatch>();
 
   const options = React.useMemo(() => {
     return [
-      <SelectOption key={0} isPlaceholder value="None" />,
       ...DashboardCards.map((choice, idx) => (
-        <SelectOption key={idx + 1} value={choice.component.name}>
+        <SelectOption key={idx} value={choice.component.name}>
           {choice.title}
         </SelectOption>
       )),
@@ -80,44 +81,59 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   );
 
   const handleSelect = React.useCallback(
-    (_, selection, isPlaceholder) => {
-      if (isPlaceholder) {
-        setSelection('None');
-      } else {
-        setSelection(selection);
-      }
+    (_, selection) => {
+      setSelection(selection);
       setSelectOpen(false);
     },
     [setSelection, setSelectOpen]
   );
 
   const handleAdd = React.useCallback(() => {
-    if (selection === 'None') {
-      return;
-    }
-    dispatch(addCardIntent(selection));
+    setShowWizard(false);
+    dispatch(addCardIntent(getConfigByTitle(selection).component.name));
   }, [dispatch, selection]);
 
-  return (
-    <>
-      <Card>
-        <Bullseye>
-          <EmptyState variant={EmptyStateVariant.large}>
-            <EmptyStateIcon icon={PlusCircleIcon} />
-            <Title headingLevel="h2" size="md">
-              Add a new card
-            </Title>
-            <EmptyStateSecondaryActions>
-              <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
-                {options}
-              </Select>
-              <Button variant="link" isDisabled={selection === 'None'} onClick={handleAdd}>
+  const handleStart = React.useCallback(() => {
+    setShowWizard(true);
+  }, [setShowWizard]);
+
+  const handleStop = React.useCallback(() => {
+    setShowWizard(false);
+  }, [setShowWizard]);
+
+  if (!showWizard) {
+    return (
+      <>
+        <Card>
+          <Bullseye>
+            <EmptyState variant={EmptyStateVariant.large}>
+              <EmptyStateIcon icon={PlusCircleIcon} />
+              <Title headingLevel="h2" size="md">
+                Add a new card
+              </Title>
+              <EmptyStateBody>
+                Cards added to this Dashboard layout present information at a glance about the selected target. The
+                layout is preserved for all targets viewed on this client.
+              </EmptyStateBody>
+              <Button variant="primary" onClick={handleStart}>
                 Add
               </Button>
-            </EmptyStateSecondaryActions>
-          </EmptyState>
-        </Bullseye>
-      </Card>
-    </>
-  );
+            </EmptyState>
+          </Bullseye>
+        </Card>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Wizard onClose={handleStop} onSave={handleAdd}>
+          <WizardStep id="card-type-select" name="Card Type">
+            <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
+              {options}
+            </Select>
+          </WizardStep>
+        </Wizard>
+      </>
+    );
+  }
 };
