@@ -840,24 +840,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-core@npm:^4.267.4":
-  version: 4.267.4
-  resolution: "@patternfly/react-core@npm:4.267.4"
-  dependencies:
-    "@patternfly/react-icons": ^4.93.3
-    "@patternfly/react-styles": ^4.92.3
-    "@patternfly/react-tokens": ^4.94.3
-    focus-trap: 6.9.2
-    react-dropzone: 9.0.0
-    tippy.js: 5.1.2
-    tslib: ^2.0.0
-  peerDependencies:
-    react: ^16.8 || ^17 || ^18
-    react-dom: ^16.8 || ^17 || ^18
-  checksum: a38d7036dd37b31de379d708c903afbfaa66098a495277337b5bf5543945f932be9d82c71febd63b075ba570b78b1037903acb62f475b4c9f8010bb53f266a6a
-  languageName: node
-  linkType: hard
-
 "@patternfly/react-core@npm:^4.267.5":
   version: 4.267.5
   resolution: "@patternfly/react-core@npm:4.267.5"
@@ -893,11 +875,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-table@npm:^4.111.45":
-  version: 4.112.4
-  resolution: "@patternfly/react-table@npm:4.112.4"
+"@patternfly/react-table@npm:^4.112.5":
+  version: 4.112.5
+  resolution: "@patternfly/react-table@npm:4.112.5"
   dependencies:
-    "@patternfly/react-core": ^4.267.4
+    "@patternfly/react-core": ^4.267.5
     "@patternfly/react-icons": ^4.93.3
     "@patternfly/react-styles": ^4.92.3
     "@patternfly/react-tokens": ^4.94.3
@@ -906,7 +888,7 @@ __metadata:
   peerDependencies:
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
-  checksum: f0134597cbf7d0f6b01a357d9879cc537f71ab2622f252977a2fc5b413679dcc230008ae8eb1d9af82ee804c89b671cfe9bde2434485017d9ea19a86c74b1d6b
+  checksum: ccd06c1e1f240956556c0fc2fe5d08c98f49e97e34d1d53e5f5fa45aab41b793bae353bd3adca78661fecd53c2a58666394109b126f31ac4a0c6841782481ff9
   languageName: node
   linkType: hard
 
@@ -3055,7 +3037,7 @@ __metadata:
     "@patternfly/react-core": ^4.267.5
     "@patternfly/react-icons": ^4.93.0
     "@patternfly/react-styles": ^4.92.0
-    "@patternfly/react-table": ^4.111.45
+    "@patternfly/react-table": ^4.112.5
     "@reduxjs/toolkit": ^1.9.0
     "@testing-library/dom": ^8.19.0
     "@testing-library/jest-dom": ^5.16.5
