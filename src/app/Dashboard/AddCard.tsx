@@ -101,10 +101,18 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     setShowWizard(false);
   }, [setShowWizard]);
 
-  if (!showWizard) {
-    return (
-      <>
-        <Card isRounded isLarge>
+  return (
+    <>
+      <Card isRounded isLarge>
+        {showWizard ? (
+          <Wizard onClose={handleStop} onSave={handleAdd}>
+            <WizardStep id="card-type-select" name="Card Type" footer={{ nextButtonText: 'Finish' }}>
+              <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
+                {options}
+              </Select>
+            </WizardStep>
+          </Wizard>
+        ) : (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.large}>
               <EmptyStateIcon icon={PlusCircleIcon} />
@@ -120,22 +128,8 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
               </Button>
             </EmptyState>
           </Bullseye>
-        </Card>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <Card isRounded isLarge>
-          <Wizard onClose={handleStop} onSave={handleAdd}>
-            <WizardStep id="card-type-select" name="Card Type" footer={{ nextButtonText: 'Finish' }}>
-              <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
-                {options}
-              </Select>
-            </WizardStep>
-          </Wizard>
-        </Card>
-      </>
-    );
-  }
+        )}
+      </Card>
+    </>
+  );
 };
