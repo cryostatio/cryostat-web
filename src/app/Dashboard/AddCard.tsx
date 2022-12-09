@@ -127,7 +127,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     return (
       <>
         <Wizard onClose={handleStop} onSave={handleAdd}>
-          <WizardStep id="card-type-select" name="Card Type">
+          <WizardStep id="card-type-select" name="Card Type" footer={{ nextButtonText: 'Finish' }}>
             <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
               {options}
             </Select>
