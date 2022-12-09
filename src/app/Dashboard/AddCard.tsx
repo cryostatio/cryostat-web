@@ -46,6 +46,9 @@ import {
   EmptyStateVariant,
   Select,
   SelectOption,
+  Stack,
+  StackItem,
+  Text,
   Title,
 } from '@patternfly/react-core';
 import { Wizard, WizardStep } from '@patternfly/react-core/dist/js/next';
@@ -53,7 +56,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
 import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
-import { DashboardCards, getConfigByTitle } from './Dashboard';
+import { DashboardCards, getConfigByName, getConfigByTitle } from './Dashboard';
 
 interface AddCardProps {}
 
@@ -107,9 +110,16 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
         {showWizard ? (
           <Wizard onClose={handleStop} onSave={handleAdd}>
             <WizardStep id="card-type-select" name="Card Type" footer={{ nextButtonText: 'Finish' }}>
-              <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
-                {options}
-              </Select>
+              <Stack hasGutter>
+                <StackItem>
+                  <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
+                    {options}
+                  </Select>
+                </StackItem>
+                <StackItem>
+                  <Text>{getConfigByTitle(selection).description}</Text>
+                </StackItem>
+              </Stack>
             </WizardStep>
           </Wizard>
         ) : (

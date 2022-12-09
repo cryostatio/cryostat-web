@@ -47,6 +47,7 @@ import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
 export interface CardConfig {
   title: string;
+  description: JSX.Element | string;
   component: React.FunctionComponent;
   props?: React.PropsWithChildren<any>;
 }
@@ -60,6 +61,11 @@ export interface DashboardCardProps {
 export const DashboardCards: CardConfig[] = [
   {
     title: 'Automated Analysis',
+    description: `
+Creates a recording and periodically evalutes various common problems.
+Results are displayed with scores from 0-100 with colour coding and in groups.
+This card should be unique on a dashboard.
+      `,
     component: AutomatedAnalysisCard,
     props: {
       isCompact: true,
@@ -67,7 +73,7 @@ export const DashboardCards: CardConfig[] = [
   },
 ];
 
-function getConfigByName(name: String): CardConfig {
+export function getConfigByName(name: String): CardConfig {
   for (const choice of DashboardCards) {
     if (choice.component.name === name) {
       return choice;
