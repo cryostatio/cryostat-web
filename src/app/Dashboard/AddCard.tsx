@@ -49,15 +49,17 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
+import { useDispatch } from 'react-redux';
+import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
 import { DashboardCards } from './Dashboard';
 
-interface AddCardProps {
-  onAdd(name: string): void;
-}
+interface AddCardProps {}
 
 export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
   const [selection, setSelection] = React.useState('None');
   const [selectOpen, setSelectOpen] = React.useState(false);
+  const dispatch = useDispatch<StateDispatch>();
 
   const options = React.useMemo(() => {
     return [
@@ -93,8 +95,8 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     if (selection === 'None') {
       return;
     }
-    props.onAdd(selection);
-  }, [selection, props.onAdd]);
+    dispatch(addCardIntent(selection));
+  }, [dispatch, selection]);
 
   return (
     <>

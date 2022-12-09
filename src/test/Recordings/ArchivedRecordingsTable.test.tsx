@@ -169,6 +169,9 @@ describe('<ArchivedRecordingsTable />', () => {
   beforeEach(() => {
     history.go(-history.length);
     preloadedState = {
+      dashboardConfigs: {
+        list: [],
+      },
       recordingFilters: {
         list: [
           {

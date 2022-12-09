@@ -36,35 +36,21 @@
  * SOFTWARE.
  */
 
-import { saveToLocalStorage } from '@app/utils/LocalStorage';
-import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import { dashboardConfigReducer } from './DashboardConfigReducer';
-import { recordingFilterReducer } from './RecordingFilterReducer';
-import { automatedAnalysisFilterReducer } from './AutomatedAnalysisFilterReducer';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { createReducer } from '@reduxjs/toolkit';
+import { addCardIntent, deleteCardIntent } from './DashboardConfigActions';
 
-export const rootReducer = combineReducers({
-  dashboardConfigs: dashboardConfigReducer,
-  recordingFilters: recordingFilterReducer,
-  automatedAnalysisFilters: automatedAnalysisFilterReducer,
-});
+// Initial states are loaded from local storage if there are any
+const initialState = {
+  list: getFromLocalStorage('DASHBOARD_CFG', []) as string[],
+};
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
-  configureStore({
-    reducer: rootReducer,
-    preloadedState,
-  });
-
-export const store = setupStore();
-
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof rootReducer>;
-export type StateDispatch = typeof store.dispatch;
-export type Store = ReturnType<typeof setupStore>;
-
-// Add a subscription to save filter states to local storage
-// if states change.
-store.subscribe(() => {
-  saveToLocalStorage('DASHBOARD_CFG', store.getState().dashboardConfigs.list);
-  saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list);
-  saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.state);
+export const dashboardConfigReducer = createReducer(initialState, (builder) => {
+  builder
+    .addCase(addCardIntent, (state, { payload }) => {
+      state.list.splice(payload.idx || 0, 0, payload.name);
+    })
+    .addCase(deleteCardIntent, (state, { payload }) => {
+      state.list.splice(payload.idx || 0, 1);
+    });
 });

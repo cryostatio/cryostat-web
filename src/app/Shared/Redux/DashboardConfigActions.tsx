@@ -36,35 +36,27 @@
  * SOFTWARE.
  */
 
-import { saveToLocalStorage } from '@app/utils/LocalStorage';
-import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import { dashboardConfigReducer } from './DashboardConfigReducer';
-import { recordingFilterReducer } from './RecordingFilterReducer';
-import { automatedAnalysisFilterReducer } from './AutomatedAnalysisFilterReducer';
+import { createAction } from '@reduxjs/toolkit';
 
-export const rootReducer = combineReducers({
-  dashboardConfigs: dashboardConfigReducer,
-  recordingFilters: recordingFilterReducer,
-  automatedAnalysisFilters: automatedAnalysisFilterReducer,
-});
+// Common action string format: "resource(s)/action"
+export enum DashboardConfigAction {
+  CARD_ADD = 'card/add',
+  CARD_REMOVE = 'card/remove',
+}
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
-  configureStore({
-    reducer: rootReducer,
-    preloadedState,
-  });
+export interface DashboardConfigActionPayload {
+  name: string;
+  idx: number;
+}
 
-export const store = setupStore();
+export const addCardIntent = createAction(DashboardConfigAction.CARD_ADD, (name: string) => ({
+  payload: {
+    name,
+  } as DashboardConfigActionPayload,
+}));
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof rootReducer>;
-export type StateDispatch = typeof store.dispatch;
-export type Store = ReturnType<typeof setupStore>;
-
-// Add a subscription to save filter states to local storage
-// if states change.
-store.subscribe(() => {
-  saveToLocalStorage('DASHBOARD_CFG', store.getState().dashboardConfigs.list);
-  saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list);
-  saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.state);
-});
+export const deleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
+  payload: {
+    idx,
+  } as DashboardConfigActionPayload,
+}));

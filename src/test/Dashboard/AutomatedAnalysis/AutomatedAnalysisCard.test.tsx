@@ -173,6 +173,9 @@ describe('<AutomatedAnalysisCard />', () => {
 
   beforeEach(() => {
     preloadedState = {
+      dashboardConfigs: {
+        list: [],
+      },
       recordingFilters: {
         list: [
           {

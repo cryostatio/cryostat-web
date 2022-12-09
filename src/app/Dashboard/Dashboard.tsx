@@ -37,11 +37,13 @@
  */
 import * as React from 'react';
 import { Stack, StackItem } from '@patternfly/react-core';
+import { useDispatch, useSelector } from 'react-redux';
+import { addCardIntent, deleteCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
 import { TargetView } from '@app/TargetView/TargetView';
-import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { AddCard } from './AddCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
 export interface CardConfig {
   title: string;
@@ -75,28 +77,14 @@ function getConfigByName(name: String): CardConfig {
 }
 
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
-  const [cardNames, setCardNames] = React.useState(getFromLocalStorage('DASHBOARD_CFG', []));
-
-  React.useEffect(() => {
-    saveToLocalStorage('DASHBOARD_CFG', cardNames);
-  }, [cardNames]);
-
-  const handleAdd = React.useCallback(
-    (name: string) => {
-      setCardNames((old) => [name, ...old]);
-    },
-    [setCardNames]
-  );
+  const dispatch = useDispatch<StateDispatch>();
+  const cardNames = useSelector((state: RootState) => state.dashboardConfigs.list);
 
   const handleRemove = React.useCallback(
     (idx: number) => {
-      setCardNames((old) => {
-        const copy = [...old];
-        copy.splice(idx, 1);
-        return copy;
-      });
+      dispatch(deleteCardIntent(idx));
     },
-    [setCardNames]
+    [dispatch, cardNames]
   );
 
   return (
@@ -111,7 +99,7 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
           </StackItem>
         ))}
         <StackItem key={cardNames.length}>
-          <AddCard onAdd={handleAdd} />
+          <AddCard />
         </StackItem>
       </Stack>
     </TargetView>

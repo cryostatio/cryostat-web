@@ -178,6 +178,9 @@ describe('<ActiveRecordingsTable />', () => {
     mockRecording.state = RecordingState.RUNNING;
     history.go(-history.length);
     preloadedState = {
+      dashboardConfigs: {
+        list: [],
+      },
       recordingFilters: {
         list: [
           {
