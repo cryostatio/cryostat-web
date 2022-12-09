@@ -242,7 +242,7 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
 
   const updateFilters = React.useCallback(
-    (target, { filterValue, filterKey, deleted = false, deleteOptions }) => {
+    (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
           dispatch(deleteCategoryFiltersIntent(target, filterKey, true));

@@ -14,7 +14,9 @@
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
   ],
   "globals": {
     "window": "readonly",
@@ -34,16 +36,34 @@
   "plugins": [
     "@typescript-eslint",
     "react-hooks",
-    "eslint-plugin-react-hooks"
+    "eslint-plugin-react-hooks",
+    "unused-imports",
+    "import"
   ],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "off",
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
     "@typescript-eslint/interface-name-prefix": "off",
-    "prettier/prettier": "off",
+    "@typescript-eslint/no-unused-vars": "off",
     "import/no-unresolved": "off",
     "import/extensions": "off",
-    "react/prop-types": "off"
+    "import/first": "warn",
+    "import/order": ["warn", {
+      "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+      "alphabetize": {
+        "order": "asc",
+        "caseInsensitive": true
+      }
+    }],
+    "prettier/prettier": "off",
+    "react/prop-types": "off",
+    "react/jsx-uses-react": "warn",
+    "react/jsx-uses-vars": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+		"unused-imports/no-unused-imports": "error",
+		"unused-imports/no-unused-vars": [
+			"warn",
+			{ "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
+    ]
   }
 }

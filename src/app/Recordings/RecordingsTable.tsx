@@ -64,6 +64,7 @@ export interface RecordingsTableProps {
   errorMessage: string;
   onHeaderCheck: (event, checked: boolean) => void;
   clearFilters?: (filterType) => void;
+  children: React.ReactNode;
 }
 
 export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {

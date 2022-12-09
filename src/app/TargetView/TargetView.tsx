@@ -49,6 +49,7 @@ interface TargetViewProps {
   compactSelect?: boolean;
   hideEmptyState?: boolean;
   breadcrumbs?: BreadcrumbTrail[];
+  children: React.ReactNode;
 }
 
 export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {

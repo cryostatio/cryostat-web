@@ -45,6 +45,7 @@ import {
   automatedAnalysisDeleteFilterIntent,
 } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
 import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
+import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import {
   ArchivedRecording,
@@ -563,7 +564,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   ]);
 
   const updateFilters = React.useCallback(
-    (target, { filterValue, filterKey, deleted = false, deleteOptions }) => {
+    (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
           dispatch(automatedAnalysisDeleteCategoryFiltersIntent(target, filterKey));
@@ -777,9 +778,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         <Stack hasGutter>
           <StackItem>{errorMessage ? null : toolbar}</StackItem>
           <StackItem className="automated-analysis-score-filter-stack-item">
-            {errorMessage ? null : (
-              <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL}> </AutomatedAnalysisScoreFilter>
-            )}
+            {errorMessage ? null : <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL} />}
           </StackItem>
           <StackItem>
             <CardBody isFilled={true}>
