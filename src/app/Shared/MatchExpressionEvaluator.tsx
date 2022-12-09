@@ -42,7 +42,9 @@ import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ClipboardCopy,
+  ClipboardCopyButton,
   CodeBlock,
+  CodeBlockAction,
   CodeBlockCode,
   Label,
   Split,
@@ -73,6 +75,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   const addSubscription = useSubscriptions();
   const [target, setTarget] = React.useState(undefined as Target | undefined);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
+  const [copied, setCopied] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(setTarget));
@@ -103,6 +106,15 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
       props.onChange(valid);
     }
   }, [props.onChange, valid]);
+
+  const clipboardCopyFunc = (event, text) => {
+    navigator.clipboard.writeText(text.toString());
+  };
+
+  const onClick = (event, text) => {
+    clipboardCopyFunc(event, text);
+    setCopied(true);
+  };
 
   const statusLabel = React.useMemo(() => {
     switch (valid) {
@@ -149,20 +161,29 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     }
     body = JSON.stringify(body, null, 2);
     body = body.substring(1, body.length - 1);
-    return !props.inlineHint ? (
-      body
-    ) : (
-      <ClipboardCopy
-        hoverTip="Click to copy to clipboard"
-        clickTip="Copied!"
-        variant="inline-compact"
-        isBlock
-        isCode={props.inlineHint}
-      >
-        {body}
-      </ClipboardCopy>
-    );
+    return body;
   }, [target]);
+
+  const actions = React.useMemo(() => {
+    return (
+      <>
+        <CodeBlockAction>
+          <ClipboardCopyButton
+            id="match-expression-copy-button"
+            textId="match-expression-code-content"
+            aria-label="Copy to clipboard"
+            onClick={(e) => onClick(e, exampleExpression)}
+            exitDelay={copied ? 1500 : 600}
+            maxWidth="110px"
+            variant="plain"
+            onTooltipHidden={() => setCopied(false)}
+          >
+            {copied ? 'Successfully copied to clipboard!' : 'Copy to clipboard'}
+          </ClipboardCopyButton>
+        </CodeBlockAction>
+      </>
+    );
+  }, [exampleExpression, copied, onClick, setCopied]);
 
   return (
     <>
@@ -194,7 +215,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
         {props.inlineHint ? (
           <StackItem>
             <Text>Hint: try an expression like</Text>
-            <CodeBlock>
+            <CodeBlock actions={actions}>
               <CodeBlockCode>{exampleExpression}</CodeBlockCode>
             </CodeBlock>
           </StackItem>

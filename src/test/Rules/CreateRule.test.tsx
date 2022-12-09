@@ -35,21 +35,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
-import { of, Subject } from 'rxjs';
-import '@testing-library/jest-dom';
-import renderer, { act } from 'react-test-renderer';
-import { act as doAct, cleanup, screen, waitFor } from '@testing-library/react';
-import { Rule } from '@app/Rules/Rules';
-import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
-import { CreateRule } from '@app/Rules/CreateRule';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
-import { Target, TargetService } from '@app/Shared/Services/Target.service';
+import { CreateRule } from '@app/Rules/CreateRule';
+import { Rule } from '@app/Rules/Rules';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { defaultServices, Services } from '@app/Shared/Services/Services';
+import { Target, TargetService } from '@app/Shared/Services/Target.service';
+import '@testing-library/jest-dom';
+import { act as doAct, cleanup, screen } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import * as React from 'react';
+import { of, Subject } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const escapeKeyboardInput = (value: string) => {
   return value.replace(/[{[]/g, '$&$&');
@@ -116,22 +113,6 @@ describe('<CreateRule />', () => {
   });
 
   afterEach(cleanup);
-
-  // it('renders correctly', async () => {
-  //   let tree;
-  //   await act(async () => {
-  //     tree = renderer.create(
-  //       <ServiceContext.Provider value={defaultServices}>
-  //         <NotificationsContext.Provider value={NotificationsInstance}>
-  //           <Router location={history.location} history={history}>
-  //             <CreateRule />
-  //           </Router>
-  //         </NotificationsContext.Provider>
-  //       </ServiceContext.Provider>
-  //     );
-  //   });
-  //   expect(tree.toJSON()).toMatchSnapshot();
-  // });
 
   it('should show error view if failing to retrieve templates', async () => {
     const subj = new Subject<void>();
