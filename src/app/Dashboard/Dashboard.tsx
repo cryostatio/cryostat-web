@@ -47,7 +47,8 @@ import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
 export interface CardConfig {
   title: string;
-  description: JSX.Element | string;
+  description: string;
+  descriptionFull: JSX.Element | string;
   component: React.FunctionComponent;
   props?: React.PropsWithChildren<any>;
 }
@@ -62,7 +63,10 @@ export const DashboardCards: CardConfig[] = [
   {
     title: 'Automated Analysis',
     description: `
-Creates a recording and periodically evalutes various common problems.
+Assess common application performance and configuration issues.
+    `,
+    descriptionFull: `
+Creates a recording and periodically evalutes various common problems in application configuration and performance.
 Results are displayed with scores from 0-100 with colour coding and in groups.
 This card should be unique on a dashboard.
       `,
