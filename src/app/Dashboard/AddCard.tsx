@@ -94,7 +94,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
       return;
     }
     props.onAdd(selection);
-  }, [selection]);
+  }, [selection, props.onAdd]);
 
   return (
     <>
