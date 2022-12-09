@@ -58,7 +58,7 @@ export const DashboardCards: CardConfig[] = [
   {
     component: AutomatedAnalysisCard,
     props: {
-      isLarge: true,
+      isCompact: true,
     },
   },
 ];
