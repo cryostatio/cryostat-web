@@ -43,8 +43,10 @@ import {
   ActionGroup,
   Button,
   ButtonType,
+  ClipboardCopy,
   Form,
   FormGroup,
+  FormHelperText,
   Modal,
   ModalVariant,
   TextInput,
@@ -135,7 +137,15 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
             label="Connection URL"
             isRequired
             fieldId="connect-url"
-            helperText="JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi"
+            helperText={
+              <FormHelperText isHidden={false} component="div">
+                JMX Service URL e.g.
+                <br />
+                <ClipboardCopy hoverTip="Click to copy to clipboard" clickTip="Copied!" variant="inline-compact">
+                  {'service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi'}
+                </ClipboardCopy>
+              </FormHelperText>
+            }
             helperTextInvalid={
               'Must be a JMX Service URL, e.g. service:jmx:rmi:///jndi/rmi://localhost:0/jmxrmi, or host:port pair'
             }

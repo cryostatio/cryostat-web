@@ -48,7 +48,7 @@ import { CreateRule } from '@app/Rules/CreateRule';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
-import { renderWithServiceContextAndReduxStoreWithRouter, renderWithServiceContextAndRouter } from '../Common';
+import { renderWithServiceContextAndRouter } from '../Common';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const escapeKeyboardInput = (value: string) => {
@@ -117,21 +117,21 @@ describe('<CreateRule />', () => {
 
   afterEach(cleanup);
 
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Router location={history.location} history={history}>
-              <CreateRule />
-            </Router>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
+  // it('renders correctly', async () => {
+  //   let tree;
+  //   await act(async () => {
+  //     tree = renderer.create(
+  //       <ServiceContext.Provider value={defaultServices}>
+  //         <NotificationsContext.Provider value={NotificationsInstance}>
+  //           <Router location={history.location} history={history}>
+  //             <CreateRule />
+  //           </Router>
+  //         </NotificationsContext.Provider>
+  //       </ServiceContext.Provider>
+  //     );
+  //   });
+  //   expect(tree.toJSON()).toMatchSnapshot();
+  // });
 
   it('should show error view if failing to retrieve templates', async () => {
     const subj = new Subject<void>();

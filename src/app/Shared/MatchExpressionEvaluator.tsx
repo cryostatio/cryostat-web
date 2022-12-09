@@ -35,8 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { SerializedTarget } from '@app/Shared/SerializedTarget';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
+  ClipboardCopy,
   CodeBlock,
   CodeBlockCode,
   Label,
@@ -48,11 +53,6 @@ import {
   Tooltip,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Target } from '@app/Shared/Services/Target.service';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -60,7 +60,7 @@ import {
   InfoCircleIcon,
   WarningTriangleIcon,
 } from '@patternfly/react-icons';
-import { SerializedTarget } from '@app/Shared/SerializedTarget';
+import * as React from 'react';
 
 export interface MatchExpressionEvaluatorProps {
   inlineHint?: boolean;
@@ -149,7 +149,19 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
     }
     body = JSON.stringify(body, null, 2);
     body = body.substring(1, body.length - 1);
-    return body;
+    return !props.inlineHint ? (
+      body
+    ) : (
+      <ClipboardCopy
+        hoverTip="Click to copy to clipboard"
+        clickTip="Copied!"
+        variant="inline-compact"
+        isBlock
+        isCode={props.inlineHint}
+      >
+        {body}
+      </ClipboardCopy>
+    );
   }, [target]);
 
   return (
