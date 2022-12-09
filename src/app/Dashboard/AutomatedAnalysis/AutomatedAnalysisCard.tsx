@@ -79,6 +79,8 @@ import {
   GridItem,
   Label,
   LabelGroup,
+  Level,
+  LevelItem,
   Split,
   SplitItem,
   Stack,
@@ -765,12 +767,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         }}
       >
         <CardActions>{...props.actions || []}</CardActions>
-        <CardTitle component="h4">
-          <Split hasGutter>
-            <SplitItem>Automated Analysis</SplitItem>
-            <SplitItem>{reportSource}</SplitItem>
-          </Split>
-        </CardTitle>
+        <Level hasGutter>
+          <LevelItem>
+            <CardTitle component="h4">Automated Analysis</CardTitle>
+          </LevelItem>
+          <LevelItem>{reportSource}</LevelItem>
+        </Level>
       </CardHeader>
       <CardExpandableContent>
         <Stack hasGutter>
