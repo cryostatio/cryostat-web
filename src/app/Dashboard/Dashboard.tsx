@@ -44,6 +44,7 @@ import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
 
 export interface CardConfig {
+  title: string;
   component: React.FunctionComponent;
   props?: React.PropsWithChildren<any>;
 }
@@ -56,6 +57,7 @@ export interface DashboardCardProps {
 
 export const DashboardCards: CardConfig[] = [
   {
+    title: 'Automated Analysis',
     component: AutomatedAnalysisCard,
     props: {
       isCompact: true,
