@@ -69,7 +69,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   const options = React.useMemo(() => {
     return [
       ...DashboardCards.map((choice, idx) => (
-        <SelectOption key={idx} value={choice.component.name}>
+        <SelectOption key={idx} value={choice.title}>
           {choice.title}
         </SelectOption>
       )),
