@@ -91,7 +91,7 @@ jobs:
     - run: git submodule update --remote
     - run: cd web-client && git fetch origin pull/${{ github.event.number }}/head:pr-${{ github.event.number }} && git checkout pr-${{ github.event.number }}
     - run: cd ..
-    - run: mvn -B -U clean package
+    - run: mvn -B -U -Dmaven.test.skip=true clean package
     - name: Tag cryostat image
       run: podman tag cryostat ghcr.io/${{ github.repository_owner }}/cryostat-web:pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}
     - name: Push PR test image to ghcr.io
