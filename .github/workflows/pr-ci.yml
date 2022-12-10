@@ -22,15 +22,15 @@ jobs:
   get-pom-properties:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        repository: cryostatio/cryostat
     - name: Fail if safe-to-test label NOT applied
       if: ${{ !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
       run: exit 1
     - name: Fail if needs-triage label applied
       if: ${{ contains(github.event.pull_request.labels.*.name, 'needs-triage')}}
       run: exit 1
+    - uses: actions/checkout@v2
+      with:
+        repository: cryostatio/cryostat
     - id: query-pom
       name: Get properties from POM
       # Query POM for core and image version and save as output parameter
