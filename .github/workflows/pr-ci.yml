@@ -38,7 +38,7 @@ jobs:
         CORE_VERSION="$(mvn help:evaluate -Dexpression=io.cryostat.core.version -q -DforceStdout)"
         echo "core-version=v$CORE_VERSION" >> $GITHUB_OUTPUT
         IMAGE_VERSION="$(mvn validate help:evaluate -Dexpression=cryostat.imageVersionLower -q -DforceStdout)"
-        echo "image-version=$IMAGE_VERSION >> $GITHUB_OUTPUT
+        echo "image-version=$IMAGE_VERSION" >> $GITHUB_OUTPUT
     outputs:
       core-version: ${{ steps.query-pom.outputs.core-version }}
       image-version: ${{ steps.query-pom.outputs.image-version }}
