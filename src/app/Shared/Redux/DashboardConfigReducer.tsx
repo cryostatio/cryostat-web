@@ -35,56 +35,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Dashboard } from '@app/Dashboard/Dashboard';
-import { act } from 'react-test-renderer';
-import renderer from 'react-test-renderer';
-import React from 'react';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { of } from 'rxjs';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { Provider } from 'react-redux';
-import { store } from '@app/Shared/Redux/ReduxStore';
 
-const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { createReducer } from '@reduxjs/toolkit';
+import { addCardIntent, deleteCardIntent } from './DashboardConfigActions';
 
-const mockFooTarget: Target = {
-  connectUrl: mockFooConnectUrl,
-  alias: 'fooTarget',
-  annotations: {
-    cryostat: {},
-    platform: {},
-  },
+// Initial states are loaded from local storage if there are any
+const initialState = {
+  list: getFromLocalStorage('DASHBOARD_CFG', []) as string[],
 };
 
-jest.mock('@app/TargetSelect/TargetSelect', () => ({
-  TargetSelect: (props) => <div>Target Select</div>,
-}));
-
-jest.mock('@app/Dashboard/AddCard', () => ({
-  AddCard: (props) => <div>Add Card</div>,
-}));
-
-jest
-  .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
-  .mockReturnValueOnce(of()) //
-  .mockReturnValue(of(mockFooTarget));
-
-describe('<Dashboard />', () => {
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Provider store={store}>
-              <Dashboard />
-            </Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      );
+export const dashboardConfigReducer = createReducer(initialState, (builder) => {
+  builder
+    .addCase(addCardIntent, (state, { payload }) => {
+      state.list.splice(payload.idx || 0, 0, payload.name);
+    })
+    .addCase(deleteCardIntent, (state, { payload }) => {
+      state.list.splice(payload.idx || 0, 1);
     });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
 });

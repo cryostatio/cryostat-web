@@ -173,6 +173,9 @@ describe('<AutomatedAnalysisCard />', () => {
 
   beforeEach(() => {
     preloadedState = {
+      dashboardConfigs: {
+        list: [],
+      },
       recordingFilters: {
         list: [
           {
@@ -283,7 +286,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
     expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
 
-    expect(screen.getByText(`${mockRecording.name}`)).toBeInTheDocument(); // Active report name
+    expect(screen.getByText(`Active report name=${mockRecording.name}`)).toBeInTheDocument(); // Active report name
     expect(screen.queryByText('Most recent data')).not.toBeInTheDocument(); // Last updated text
 
     expect(
@@ -333,7 +336,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
     expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
 
-    expect(screen.getByText(`${mockArchivedRecording.name}`)).toBeInTheDocument(); // Archived report name
+    expect(screen.getByText(`Archived report name=${mockArchivedRecording.name}`)).toBeInTheDocument(); // Archived report name
     expect(screen.getByText('Most recent data from 1 day ago.')).toBeInTheDocument(); // Last updated text
 
     expect(
@@ -396,7 +399,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
     expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
 
-    expect(screen.getByText(automatedAnalysisRecordingName)).toBeInTheDocument(); // Cached report name
+    expect(screen.getByText(`Cached report name=${automatedAnalysisRecordingName}`)).toBeInTheDocument(); // Cached report name
     expect(screen.getByText('Most recent data from 2 days ago.')).toBeInTheDocument(); // Last updated text
 
     expect(

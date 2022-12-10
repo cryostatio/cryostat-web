@@ -127,6 +127,9 @@ describe('<RecordingFilters />', () => {
     } as RecordingFiltersCategories;
 
     preloadedState = {
+      dashboardConfigs: {
+        list: [],
+      },
       recordingFilters: {
         list: [
           {

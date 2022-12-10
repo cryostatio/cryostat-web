@@ -35,56 +35,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Dashboard } from '@app/Dashboard/Dashboard';
-import { act } from 'react-test-renderer';
-import renderer from 'react-test-renderer';
-import React from 'react';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { of } from 'rxjs';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { Provider } from 'react-redux';
-import { store } from '@app/Shared/Redux/ReduxStore';
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
+import * as React from 'react';
 
-const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
+export interface DashboardCardActionProps {
+  onRemove: () => void;
+}
 
-const mockFooTarget: Target = {
-  connectUrl: mockFooConnectUrl,
-  alias: 'fooTarget',
-  annotations: {
-    cryostat: {},
-    platform: {},
-  },
+export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = (props) => {
+  const [isOpen, setOpen] = React.useState(false);
+
+  const onSelect = React.useCallback(
+    (_) => {
+      setOpen(false);
+    },
+    [setOpen]
+  );
+
+  return (
+    <>
+      <Dropdown
+        isPlain
+        isFlipEnabled
+        menuAppendTo={'parent'}
+        position={'right'}
+        isOpen={isOpen}
+        toggle={<KebabToggle onToggle={setOpen} />}
+        onSelect={onSelect}
+        dropdownItems={[
+          <DropdownItem key="Remove" onClick={props.onRemove}>
+            Remove
+          </DropdownItem>,
+        ]}
+      />
+    </>
+  );
 };
-
-jest.mock('@app/TargetSelect/TargetSelect', () => ({
-  TargetSelect: (props) => <div>Target Select</div>,
-}));
-
-jest.mock('@app/Dashboard/AddCard', () => ({
-  AddCard: (props) => <div>Add Card</div>,
-}));
-
-jest
-  .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
-  .mockReturnValueOnce(of()) //
-  .mockReturnValue(of(mockFooTarget));
-
-describe('<Dashboard />', () => {
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Provider store={store}>
-              <Dashboard />
-            </Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
-});

@@ -69,6 +69,7 @@ import { calculateAnalysisTimer } from '@app/utils/utils';
 import {
   Button,
   Card,
+  CardActions,
   CardBody,
   CardExpandableContent,
   CardHeader,
@@ -76,7 +77,10 @@ import {
   Checkbox,
   Grid,
   GridItem,
+  Label,
   LabelGroup,
+  Level,
+  LevelItem,
   Split,
   SplitItem,
   Stack,
@@ -90,7 +94,7 @@ import {
   ToolbarItem,
   Tooltip,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
+import { InfoCircleIcon, OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
@@ -104,8 +108,12 @@ import {
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
+import { DashboardCardProps } from '../Dashboard';
 
-interface AutomatedAnalysisCardProps {}
+interface AutomatedAnalysisCardProps extends DashboardCardProps {
+  isLarge?: boolean;
+  isCompact?: boolean;
+}
 
 export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -741,24 +749,15 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       return undefined;
     }
     return (
-      <div
-        style={{
-          color: 'var(--pf-global--Color--200)',
-          fontWeight: 'lighter',
-          fontSize: '0.90em',
-          fontFamily: 'inherit',
-        }}
-      >
-        {`${usingArchivedReport ? 'Archived' : usingCachedReport ? 'Cached' : 'Active'} report name:`}{' '}
-        <span style={{ color: 'var(--pf-global--Color--100)', fontWeight: 'bold', fontStyle: 'italic' }}>{report}</span>
-      </div>
+      <Label icon={<InfoCircleIcon />} color={'cyan'}>
+        {`${usingArchivedReport ? 'Archived' : usingCachedReport ? 'Cached' : 'Active'} report name=${report}`}
+      </Label>
     );
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
   return (
-    <Card id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
+    <Card id="automated-analysis-card" isRounded {...props} isExpanded={isCardExpanded}>
       <CardHeader
-        isToggleRightAligned
         onExpand={onCardExpand}
         toggleButtonProps={{
           id: 'automated-analysis-toggle-details',
@@ -767,12 +766,13 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           'aria-expanded': isCardExpanded,
         }}
       >
-        <CardTitle component="h4">
-          <Split>
-            <SplitItem isFilled>Automated Analysis</SplitItem>
-            <SplitItem>{reportSource}</SplitItem>
-          </Split>
-        </CardTitle>
+        <CardActions>{...props.actions || []}</CardActions>
+        <Level hasGutter>
+          <LevelItem>
+            <CardTitle component="h4">Automated Analysis</CardTitle>
+          </LevelItem>
+          <LevelItem>{reportSource}</LevelItem>
+        </Level>
       </CardHeader>
       <CardExpandableContent>
         <Stack hasGutter>

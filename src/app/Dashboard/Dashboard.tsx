@@ -36,20 +36,91 @@
  * SOFTWARE.
  */
 import * as React from 'react';
+import { Stack, StackItem } from '@patternfly/react-core';
+import { useDispatch, useSelector } from 'react-redux';
+import { addCardIntent, deleteCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
 import { TargetView } from '@app/TargetView/TargetView';
+import { AddCard } from './AddCard';
+import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
-import { Grid, GridItem } from '@patternfly/react-core';
+import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+
+export interface CardConfig {
+  title: string;
+  description: string;
+  descriptionFull: JSX.Element | string;
+  component: React.FunctionComponent;
+  props?: React.PropsWithChildren<any>;
+}
 
 export interface DashboardProps {}
 
+export interface DashboardCardProps {
+  actions?: JSX.Element[];
+}
+
+export const DashboardCards: CardConfig[] = [
+  {
+    title: 'Automated Analysis',
+    description: `
+Assess common application performance and configuration issues.
+    `,
+    descriptionFull: `
+Creates a recording and periodically evalutes various common problems in application configuration and performance.
+Results are displayed with scores from 0-100 with colour coding and in groups.
+This card should be unique on a dashboard.
+      `,
+    component: AutomatedAnalysisCard,
+    props: {
+      isCompact: true,
+    },
+  },
+];
+
+export function getConfigByName(name: String): CardConfig {
+  for (const choice of DashboardCards) {
+    if (choice.component.name === name) {
+      return choice;
+    }
+  }
+  throw new Error(`Unknown card type selection: ${name}`);
+}
+
+export function getConfigByTitle(title: String): CardConfig {
+  for (const choice of DashboardCards) {
+    if (choice.title === title) {
+      return choice;
+    }
+  }
+  throw new Error(`Unknown card type selection: ${title}`);
+}
+
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
+  const dispatch = useDispatch<StateDispatch>();
+  const cardNames = useSelector((state: RootState) => state.dashboardConfigs.list);
+
+  const handleRemove = React.useCallback(
+    (idx: number) => {
+      dispatch(deleteCardIntent(idx));
+    },
+    [dispatch, cardNames]
+  );
+
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
-      <Grid hasGutter>
-        <GridItem xl2={8} xl={10} lg={10} md={12} sm={12}>
-          <AutomatedAnalysisCard />
-        </GridItem>
-      </Grid>
+      <Stack hasGutter>
+        {cardNames.map(getConfigByName).map((cfg, idx) => (
+          <StackItem key={idx}>
+            {React.createElement(cfg.component, {
+              ...cfg.props,
+              actions: [<DashboardCardActionMenu onRemove={() => handleRemove(idx)} />],
+            })}
+          </StackItem>
+        ))}
+        <StackItem key={cardNames.length}>
+          <AddCard />
+        </StackItem>
+      </Stack>
     </TargetView>
   );
 };

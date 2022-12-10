@@ -35,56 +35,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Dashboard } from '@app/Dashboard/Dashboard';
-import { act } from 'react-test-renderer';
-import renderer from 'react-test-renderer';
-import React from 'react';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { of } from 'rxjs';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { Provider } from 'react-redux';
-import { store } from '@app/Shared/Redux/ReduxStore';
 
-const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
+import { createAction } from '@reduxjs/toolkit';
 
-const mockFooTarget: Target = {
-  connectUrl: mockFooConnectUrl,
-  alias: 'fooTarget',
-  annotations: {
-    cryostat: {},
-    platform: {},
-  },
-};
+// Common action string format: "resource(s)/action"
+export enum DashboardConfigAction {
+  CARD_ADD = 'card/add',
+  CARD_REMOVE = 'card/remove',
+}
 
-jest.mock('@app/TargetSelect/TargetSelect', () => ({
-  TargetSelect: (props) => <div>Target Select</div>,
+export interface DashboardConfigActionPayload {
+  name: string;
+  idx: number;
+}
+
+export const addCardIntent = createAction(DashboardConfigAction.CARD_ADD, (name: string) => ({
+  payload: {
+    name,
+  } as DashboardConfigActionPayload,
 }));
 
-jest.mock('@app/Dashboard/AddCard', () => ({
-  AddCard: (props) => <div>Add Card</div>,
+export const deleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
+  payload: {
+    idx,
+  } as DashboardConfigActionPayload,
 }));
-
-jest
-  .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
-  .mockReturnValueOnce(of()) //
-  .mockReturnValue(of(mockFooTarget));
-
-describe('<Dashboard />', () => {
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <Provider store={store}>
-              <Dashboard />
-            </Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      );
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
-});

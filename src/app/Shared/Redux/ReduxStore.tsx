@@ -38,12 +38,14 @@
 
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import { recordingFilterReducer as recordingFiltersReducer } from './RecordingFilterReducer';
-import { automatedAnalysisFilterReducer as automatedAnalysisFiltersReducer } from './AutomatedAnalysisFilterReducer';
+import { dashboardConfigReducer } from './DashboardConfigReducer';
+import { recordingFilterReducer } from './RecordingFilterReducer';
+import { automatedAnalysisFilterReducer } from './AutomatedAnalysisFilterReducer';
 
 export const rootReducer = combineReducers({
-  recordingFilters: recordingFiltersReducer,
-  automatedAnalysisFilters: automatedAnalysisFiltersReducer,
+  dashboardConfigs: dashboardConfigReducer,
+  recordingFilters: recordingFilterReducer,
+  automatedAnalysisFilters: automatedAnalysisFilterReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
@@ -62,6 +64,7 @@ export type Store = ReturnType<typeof setupStore>;
 // Add a subscription to save filter states to local storage
 // if states change.
 store.subscribe(() => {
+  saveToLocalStorage('DASHBOARD_CFG', store.getState().dashboardConfigs.list);
   saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list);
   saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.state);
 });
