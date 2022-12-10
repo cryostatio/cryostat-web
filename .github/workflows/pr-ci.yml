@@ -89,7 +89,7 @@ jobs:
         path: /home/runner/.m2/repository/io/cryostat/cryostat-core/
     - run: git submodule init
     - run: git submodule update --remote
-    - run: cd web-client && git fetch origin pull/${{ github.event.number }}/head:pr-${{ github.event.number }} && git checkout pr-${{ github.event.number }}
+    - run: cd web-client && git fetch origin pull/707/head:pr-${{ github.event.number }} && git checkout pr-${{ github.event.number }}
     - run: cd ..
     - run: mvn -B -U -Dmaven.test.skip=true clean package
     - name: Tag cryostat image
