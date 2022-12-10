@@ -25,6 +25,12 @@ jobs:
     - uses: actions/checkout@v2
       with:
         repository: cryostatio/cryostat
+    - id: fail push if safe-to-test label NOT applied
+      if: ${{ !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
+      run: exit 1
+    - id: fail push if needs-triage label applied
+      if: ${{ contains(github.event.pull_request.labels.*.name, 'needs-triage') }}
+      run: exit 1
     - id: query-pom
       name: Get properties from POM
       # Query POM for core and image version and save as output parameter
@@ -36,7 +42,7 @@ jobs:
     outputs:
       core-version: ${{ steps.query-pom.outputs.core-version }}
       image-version: ${{ steps.query-pom.outputs.image-version }}
-    if: github.repository_owner == 'cryostatio' && contains(github.event.pull_request.labels.*.name, 'safe-to-test') && !contains(github.event.pull_request.labels.*.name, 'needs-triage')
+    if: github.repository_owner == 'maxcao13'
 
   build-deps:
     runs-on: ubuntu-latest
