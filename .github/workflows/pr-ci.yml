@@ -55,17 +55,11 @@ jobs:
       with:
         java-version: '17'
         distribution: 'adopt'
-    - uses: skjolber/maven-cache-github-action@v1
-      with:
-        step: restore
     - run: mvn -B -U -DskipTests=true clean install
     - uses: actions/upload-artifact@v3
       with:
         name: cryostat-core
         path: /home/runner/.m2/repository/io/cryostat/cryostat-core/
-    - uses: skjolber/maven-cache-github-action@v1
-      with:
-        step: save
 
   build-image:
     runs-on: ubuntu-latest
@@ -80,9 +74,6 @@ jobs:
       with:
         java-version: '17'
         distribution: 'adopt'
-    - uses: skjolber/maven-cache-github-action@v1
-      with:
-        step: restore
     - uses: actions/download-artifact@v3
       with:
         name: cryostat-core
@@ -111,6 +102,4 @@ jobs:
           ```
           $ CRYOSTAT_IMAGE=${{ steps.push-to-ghcr.outputs.registry-path }} sh smoketest.sh
           ```
-    - uses: skjolber/maven-cache-github-action@v1
-      with:
-        step: save
+
