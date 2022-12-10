@@ -21,7 +21,6 @@ on:
 jobs:
   get-pom-properties:
     runs-on: ubuntu-latest
-    needs: [build-and-test]
     steps:
     - uses: actions/checkout@v2
       with:
