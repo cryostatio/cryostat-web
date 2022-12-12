@@ -57,7 +57,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
 import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
-import { DashboardCards, getConfigByTitle, PropControl, PropKind } from './Dashboard';
+import { DashboardCards, getConfigByTitle, PropControl } from './Dashboard';
 
 interface AddCardProps {}
 
@@ -189,7 +189,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
 
   const createControl = (ctrl: PropControl): JSX.Element => {
     switch (ctrl.kind) {
-      case PropKind.BOOLEAN:
+      case 'boolean':
         return (
           <FormGroup key={`${ctrl.key}}`} helperText={ctrl.description} isInline isStack>
             <Switch label={ctrl.name} isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />

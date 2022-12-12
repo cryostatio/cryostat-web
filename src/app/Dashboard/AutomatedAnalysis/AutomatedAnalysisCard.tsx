@@ -108,7 +108,7 @@ import {
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
-import { DashboardCardDescriptor, DashboardCardProps, PropKind } from '../Dashboard';
+import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
 
 interface AutomatedAnalysisCardProps extends DashboardCardProps {
   isLarge?: boolean;
@@ -808,7 +808,7 @@ This card should be unique on a dashboard.
       name: 'Compact Style',
       key: 'isCompact',
       description: 'Apply PatternFly compact Card styling to reduce padding',
-      kind: PropKind.BOOLEAN,
+      kind: 'boolean',
       defaultValue: true,
     },
     // TODO remove one or both of these, they are useful for development testing but not for a user
@@ -816,7 +816,7 @@ This card should be unique on a dashboard.
       name: 'Large Style',
       key: 'isLarge',
       description: 'Apply PatternFly large Card styling',
-      kind: PropKind.BOOLEAN,
+      kind: 'boolean',
       defaultValue: false,
     },
   ],

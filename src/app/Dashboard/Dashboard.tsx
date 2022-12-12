@@ -53,15 +53,11 @@ export interface DashboardCardDescriptor {
   propControls: PropControl[];
 }
 
-export enum PropKind {
-  BOOLEAN,
-}
-
 export interface PropControl {
   name: string;
   key: string;
   description: string;
-  kind: PropKind;
+  kind: 'boolean';
   defaultValue: any;
 }
 
