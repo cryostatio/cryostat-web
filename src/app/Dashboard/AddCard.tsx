@@ -138,6 +138,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
             <WizardStep id="card-props-config" name="Configuration" footer={{ nextButtonText: 'Finish' }}>
               {selection ? (
                 <PropsConfigForm
+                  cardTitle={selection}
                   initialState={propsConfig}
                   controls={getConfigByTitle(selection).propControls}
                   onChange={setPropsConfig}
@@ -170,6 +171,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 };
 
 interface PropsConfigFormProps {
+  cardTitle: string;
   controls: PropControl[];
   initialState: any;
   onChange: ({}) => void;
@@ -268,7 +270,9 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
     <>
       {props.controls.length > 0 ? (
         <Form>
-          <FormGroup label="Configure the card">{props.controls.map((ctrl) => createControl(ctrl))}</FormGroup>
+          <FormGroup label={`Configure the ${props.cardTitle} card`}>
+            {props.controls.map((ctrl) => createControl(ctrl))}
+          </FormGroup>
         </Form>
       ) : (
         <Text>No configuration required.</Text>
