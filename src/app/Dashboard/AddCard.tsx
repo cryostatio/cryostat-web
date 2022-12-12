@@ -46,10 +46,13 @@ import {
   EmptyStateVariant,
   Form,
   FormGroup,
+  NumberInput,
   Select,
   SelectOption,
   Switch,
   Text,
+  TextArea,
+  TextInput,
   Title,
 } from '@patternfly/react-core';
 import { Wizard, WizardStep } from '@patternfly/react-core/dist/js/next';
@@ -187,17 +190,78 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
     [props, props.onChange, setPropsConfig]
   );
 
+  const handleNumeric = React.useCallback(
+    (k) => (e) => {
+      const value = (e.target as HTMLInputElement).value;
+      setPropsConfig((old) => {
+        const copy = { ...old };
+        copy[k] = value;
+        props.onChange(copy);
+        return copy;
+      });
+    },
+    [props, props.onChange, setPropsConfig]
+  );
+
+  const handleNumericStep = React.useCallback(
+    (k, v) => (e) => {
+      setPropsConfig((old) => {
+        const copy = { ...old };
+        copy[k] = old[k] + v;
+        props.onChange(copy);
+        return copy;
+      });
+    },
+    [props, props.onChange, setPropsConfig]
+  );
+
   const createControl = (ctrl: PropControl): JSX.Element => {
+    let input;
     switch (ctrl.kind) {
       case 'boolean':
-        return (
-          <FormGroup key={`${ctrl.key}}`} helperText={ctrl.description} isInline isStack>
-            <Switch label={ctrl.name} isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />
-          </FormGroup>
+        input = <Switch label={ctrl.name} isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />;
+        break;
+      case 'number':
+        input = (
+          <NumberInput
+            inputName={ctrl.name}
+            inputAriaLabel={`${ctrl.name} input`}
+            value={propsConfig[ctrl.key]}
+            onChange={handleNumeric(ctrl.key)}
+            onPlus={handleNumericStep(ctrl.key, 1)}
+            onMinus={handleNumericStep(ctrl.key, -1)}
+          />
         );
+        break;
+      case 'string':
+        input = (
+          <TextInput
+            type="text"
+            aria-label={`${ctrl.key} input`}
+            value={propsConfig[ctrl.key]}
+            onChange={handleChange(ctrl.key)}
+          />
+        );
+        break;
+      case 'text':
+        input = (
+          <TextArea aria-label={`${ctrl.key} input`} value={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />
+        );
+        break;
       default:
-        return <Text>Bad config</Text>;
+        input = <Text>Bad config</Text>;
     }
+    return (
+      <FormGroup
+        key={`${ctrl.key}}`}
+        label={ctrl.kind == 'number' ? ctrl.name : undefined}
+        helperText={ctrl.description}
+        isInline
+        isStack
+      >
+        {input}
+      </FormGroup>
+    );
   };
 
   return (
