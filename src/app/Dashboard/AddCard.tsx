@@ -179,7 +179,11 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
                   <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
                     {options}
                   </Select>
-                  <Text>{selection && getConfigByTitle(selection).descriptionFull}</Text>
+                  <Text>
+                    {selection
+                      ? getConfigByTitle(selection).descriptionFull
+                      : 'Choose a card type to add to your dashboard. Some cards require additional configuration.'}
+                  </Text>
                 </FormGroup>
               </Form>
             </WizardStep>
