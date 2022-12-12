@@ -90,7 +90,7 @@
     "yarn": "^1.22.19"
   },
   "dependencies": {
-    "@patternfly/react-core": "^4.267.5",
+    "@patternfly/react-core": "^4.267.6",
     "@patternfly/react-icons": "^4.93.0",
     "@patternfly/react-styles": "^4.92.0",
     "@patternfly/react-table": "^4.112.5",
