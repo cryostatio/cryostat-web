@@ -285,7 +285,9 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
       let input: JSX.Element;
       switch (ctrl.kind) {
         case 'boolean':
-          input = <Switch label={ctrl.name} isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />;
+          input = (
+            <Switch label={ctrl.name} isReversed isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />
+          );
           break;
         case 'number':
           input = (
@@ -326,7 +328,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
       return (
         <FormGroup
           key={`${ctrl.key}}`}
-          label={ctrl.kind == 'number' ? ctrl.name : undefined}
+          label={ctrl.kind !== 'boolean' ? ctrl.name : undefined}
           helperText={ctrl.description}
           isInline
           isStack
