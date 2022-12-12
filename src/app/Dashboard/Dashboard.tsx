@@ -38,7 +38,7 @@
 import * as React from 'react';
 import { Stack, StackItem } from '@patternfly/react-core';
 import { useDispatch, useSelector } from 'react-redux';
-import { addCardIntent, deleteCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
+import { deleteCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
 import { TargetView } from '@app/TargetView/TargetView';
 import { AddCard } from './AddCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
@@ -50,7 +50,19 @@ export interface CardDescriptor {
   description: string;
   descriptionFull: JSX.Element | string;
   component: React.FunctionComponent;
-  props?: React.PropsWithChildren<any>;
+  propControls: PropControl[];
+}
+
+export enum PropKind {
+  BOOLEAN,
+}
+
+export interface PropControl {
+  name: string;
+  key: string;
+  description: string;
+  kind: PropKind;
+  defaultValue: any;
 }
 
 export interface DashboardProps {}
@@ -71,9 +83,23 @@ Results are displayed with scores from 0-100 with colour coding and in groups.
 This card should be unique on a dashboard.
       `,
     component: AutomatedAnalysisCard,
-    props: {
-      isCompact: true,
-    },
+    propControls: [
+      {
+        name: 'Compact Style',
+        key: 'isCompact',
+        description: 'Apply PatternFly compact Card styling to reduce padding',
+        kind: PropKind.BOOLEAN,
+        defaultValue: true,
+      },
+      // TODO remove one or both of these, they are useful for development testing but not for a user
+      {
+        name: 'Large Style',
+        key: 'isLarge',
+        description: 'Apply PatternFly large Card styling',
+        kind: PropKind.BOOLEAN,
+        defaultValue: false,
+      },
+    ],
   },
 ];
 
@@ -109,17 +135,14 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
       <Stack hasGutter>
-        {cardConfigs
-          .map((card) => card.name)
-          .map(getConfigByName)
-          .map((cfg, idx) => (
-            <StackItem key={idx}>
-              {React.createElement(cfg.component, {
-                ...cfg.props,
-                actions: [<DashboardCardActionMenu onRemove={() => handleRemove(idx)} />],
-              })}
-            </StackItem>
-          ))}
+        {cardConfigs.map((cfg, idx) => (
+          <StackItem key={idx}>
+            {React.createElement(getConfigByName(cfg.name).component, {
+              ...cfg.props,
+              actions: [<DashboardCardActionMenu onRemove={() => handleRemove(idx)} />],
+            })}
+          </StackItem>
+        ))}
         <StackItem key={cardConfigs.length}>
           <AddCard />
         </StackItem>

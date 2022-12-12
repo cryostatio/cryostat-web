@@ -50,6 +50,7 @@ import {
   SelectOption,
   Stack,
   StackItem,
+  Switch,
   Text,
   Title,
 } from '@patternfly/react-core';
@@ -58,15 +59,26 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
 import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
-import { DashboardCards, getConfigByTitle } from './Dashboard';
+import { DashboardCards, getConfigByTitle, PropControl, PropKind } from './Dashboard';
 
 interface AddCardProps {}
 
 export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
   const [showWizard, setShowWizard] = React.useState(false);
   const [selection, setSelection] = React.useState('');
+  const [propsConfig, setPropsConfig] = React.useState({});
   const [selectOpen, setSelectOpen] = React.useState(false);
   const dispatch = useDispatch<StateDispatch>();
+
+  React.useEffect(() => {
+    const c = {};
+    if (selection) {
+      for (const ctrl of getConfigByTitle(selection).propControls) {
+        c[ctrl.key] = ctrl.defaultValue;
+      }
+    }
+    setPropsConfig(c);
+  }, [props, getConfigByTitle, selection, setPropsConfig]);
 
   const options = React.useMemo(() => {
     return [
@@ -94,8 +106,10 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
-    dispatch(addCardIntent(getConfigByTitle(selection).component.name, {}));
-  }, [dispatch, selection]);
+    const cardTitle = getConfigByTitle(selection).component.name;
+    console.info('creating card', { cardTitle, ...propsConfig });
+    dispatch(addCardIntent(cardTitle, propsConfig));
+  }, [setShowWizard, dispatch, addCardIntent, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {
     setShowWizard(true);
@@ -110,11 +124,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
       <Card isRounded isLarge>
         {showWizard ? (
           <Wizard onClose={handleStop} onSave={handleAdd} height={300}>
-            <WizardStep
-              id="card-type-select"
-              name="Card Type"
-              footer={{ nextButtonText: 'Finish', isNextDisabled: !selection }}
-            >
+            <WizardStep id="card-type-select" name="Card Type" footer={{ isNextDisabled: !selection }}>
               <Form>
                 <FormGroup label="Select a card type" isRequired>
                   <Stack hasGutter>
@@ -135,6 +145,17 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
                 </FormGroup>
               </Form>
             </WizardStep>
+            <WizardStep id="card-props-config" name="Configuration" footer={{ nextButtonText: 'Finish' }}>
+              {selection ? (
+                <PropsConfigForm
+                  initialState={propsConfig}
+                  controls={getConfigByTitle(selection).propControls}
+                  onChange={setPropsConfig}
+                />
+              ) : (
+                <></>
+              )}
+            </WizardStep>
           </Wizard>
         ) : (
           <Bullseye>
@@ -154,6 +175,51 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
           </Bullseye>
         )}
       </Card>
+    </>
+  );
+};
+
+interface PropsConfigFormProps {
+  controls: PropControl[];
+  initialState: any;
+  onChange: ({}) => void;
+}
+
+const PropsConfigForm = (props: PropsConfigFormProps) => {
+  const [propsConfig, setPropsConfig] = React.useState(props.initialState);
+
+  const handleChange = React.useCallback(
+    (k) => (e) => {
+      setPropsConfig((old) => {
+        const copy = { ...old };
+        copy[k] = e;
+        props.onChange(copy);
+        return copy;
+      });
+    },
+    [props, props.onChange, setPropsConfig]
+  );
+
+  const createControl = (ctrl: PropControl): JSX.Element => {
+    switch (ctrl.kind) {
+      case PropKind.BOOLEAN:
+        return (
+          <FormGroup key={`${ctrl.key}}`} label={ctrl.name} helperText={ctrl.description}>
+            <Stack hasGutter>
+              <StackItem>
+                <Switch label={ctrl.name} isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />
+              </StackItem>
+            </Stack>
+          </FormGroup>
+        );
+      default:
+        return <Text>Bad config</Text>;
+    }
+  };
+
+  return (
+    <>
+      <Form>{props.controls.map((ctrl) => createControl(ctrl))}</Form>
     </>
   );
 };
