@@ -131,6 +131,7 @@ export const DashboardCards: DashboardCardDescriptor[] = [
         kind: 'number',
       },
     ],
+    advancedConfig: <Text>This is an advanced configuration component</Text>,
   },
 ];
 
