@@ -122,10 +122,11 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   }, [setShowWizard]);
 
   return (
+    // FIXME wizard navigation by clicking left-side step names should be disabled if the first step selection is empty
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard onClose={handleStop} onSave={handleAdd} height={500}>
+          <Wizard isStepVisitRequired onClose={handleStop} onSave={handleAdd} height={500}>
             <WizardStep id="card-type-select" name="Card Type" footer={{ isNextDisabled: !selection }}>
               <Form>
                 <FormGroup label="Select a card type" isRequired isStack>
