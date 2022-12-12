@@ -124,7 +124,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard onClose={handleStop} onSave={handleAdd} height={400}>
+          <Wizard onClose={handleStop} onSave={handleAdd} height={500}>
             <WizardStep id="card-type-select" name="Card Type" footer={{ isNextDisabled: !selection }}>
               <Form>
                 <FormGroup label="Select a card type" isRequired isStack>
