@@ -109,6 +109,7 @@ import {
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
+import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
 interface AutomatedAnalysisCardProps extends DashboardCardProps {
   isLarge?: boolean;
@@ -820,4 +821,6 @@ This card should be unique on a dashboard.
       defaultValue: false,
     },
   ],
+  // FIXME this form gets embedded within a form, and should not have its own independent create/save controls
+  advancedConfig: <AutomatedAnalysisConfigForm isSettingsForm={false}></AutomatedAnalysisConfigForm>,
 };

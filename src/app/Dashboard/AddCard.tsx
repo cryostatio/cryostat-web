@@ -175,6 +175,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
                   cardTitle={selection}
                   initialState={propsConfig}
                   controls={getConfigByTitle(selection).propControls}
+                  advancedConfig={getConfigByTitle(selection).advancedConfig}
                   onChange={setPropsConfig}
                 />
               ) : (
@@ -207,6 +208,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 interface PropsConfigFormProps {
   cardTitle: string;
   controls: PropControl[];
+  advancedConfig?: JSX.Element;
   initialState: any;
   onChange: ({}) => void;
 }
@@ -316,6 +318,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
           <FormGroup label={`Configure the ${props.cardTitle} card`}>
             {props.controls.map((ctrl) => createControl(ctrl))}
           </FormGroup>
+          {props.advancedConfig}
         </Form>
       ) : (
         <Text>No configuration required.</Text>
