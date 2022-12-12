@@ -281,7 +281,12 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         break;
       case 'text':
         input = (
-          <TextArea aria-label={`${ctrl.key} input`} value={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />
+          <TextArea
+            type="text"
+            aria-label={`${ctrl.key} input`}
+            value={propsConfig[ctrl.key]}
+            onChange={handleChange(ctrl.key)}
+          />
         );
         break;
       default:
