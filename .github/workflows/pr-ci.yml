@@ -1,0 +1,104 @@
+name: CI build and push (PR)
+
+concurrency:
+  group: pr-${{ github.event.number }}
+  cancel-in-progress: true
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+    branches:
+      - main
+      - v[0-9]+
+      - v[0-9]+.[0-9]+
+      - cryostat-v[0-9]+.[0-9]+
+
+jobs:
+  get-pom-properties:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Fail if safe-to-test label NOT applied
+      if: ${{ !contains(github.event.pull_request.labels.*.name, 'safe-to-test') }}
+      run: exit 1
+    - name: Fail if needs-triage label applied
+      if: ${{ contains(github.event.pull_request.labels.*.name, 'needs-triage')}}
+      run: exit 1
+    - uses: actions/checkout@v2
+      with:
+        repository: cryostatio/cryostat
+    - id: query-pom
+      name: Get properties from POM
+      run: |
+        CORE_VERSION="$(mvn help:evaluate -Dexpression=io.cryostat.core.version -q -DforceStdout)"
+        echo "core-version=v$CORE_VERSION" >> $GITHUB_OUTPUT
+        IMAGE_VERSION="$(mvn validate help:evaluate -Dexpression=cryostat.imageVersionLower -q -DforceStdout)"
+        echo "image-version=$IMAGE_VERSION" >> $GITHUB_OUTPUT
+    outputs:
+      core-version: ${{ steps.query-pom.outputs.core-version }}
+      image-version: ${{ steps.query-pom.outputs.image-version }}
+    if: github.repository_owner == 'cryostatio'
+  build-deps:
+    runs-on: ubuntu-latest
+    needs: [get-pom-properties]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: cryostatio/cryostat-core
+        ref: ${{ needs.get-pom-properties.outputs.core-version }}
+    - uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+    - run: mvn -B -U -DskipTests=true clean install
+    - uses: actions/upload-artifact@v3
+      with:
+        name: cryostat-core
+        path: /home/runner/.m2/repository/io/cryostat/cryostat-core/
+
+  build-image-and-push:
+    runs-on: ubuntu-latest
+    needs: [get-pom-properties, build-deps]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: cryostatio/cryostat
+        submodules: true
+        fetch-depth: 0
+    - uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+    - uses: actions/download-artifact@v3
+      with:
+        name: cryostat-core
+        path: /home/runner/.m2/repository/io/cryostat/cryostat-core/
+    - run: git submodule init
+    - run: git submodule update --remote
+    - run: cd web-client && git fetch origin pull/${{ github.event.number }}/head:pr-${{ github.event.number }} && git checkout pr-${{ github.event.number }}
+    - run: cd ..
+    - run: mvn -B -U -Dmaven.test.skip=true clean package
+    - name: Tag cryostat image
+      run: podman tag cryostat ghcr.io/${{ github.repository_owner }}/cryostat-web:pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}
+    - name: Push PR test image to ghcr.io
+      id: push-to-ghcr
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: cryostat-web
+        tags: pr-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}
+        registry: ghcr.io/${{ github.repository_owner }}
+        username: ${{ github.event.pull_request.user.login }}
+        password: ${{ secrets.GHCR_PR_TOKEN }}
+    - name: Comment test image link
+      uses: thollander/actions-comment-pull-request@v1
+      with:
+        message: |-
+          Test image available:
+          ```
+          CRYOSTAT_IMAGE=${{ steps.push-to-ghcr.outputs.registry-path }} sh smoketest.sh
+          ```
+
