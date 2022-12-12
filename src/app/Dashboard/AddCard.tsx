@@ -86,7 +86,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
       }
     }
     setPropsConfig(c);
-  }, [props, getConfigByTitle, selection, setPropsConfig]);
+  }, [getConfigByTitle, selection, setPropsConfig]);
 
   const options = React.useMemo(() => {
     return [
@@ -248,7 +248,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         return copy;
       });
     },
-    [props, props.onChange, setPropsConfig]
+    [props.onChange, setPropsConfig]
   );
 
   const handleNumeric = React.useCallback(
@@ -261,7 +261,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         return copy;
       });
     },
-    [props, props.onChange, setPropsConfig]
+    [props.onChange, setPropsConfig]
   );
 
   const handleNumericStep = React.useCallback(
@@ -273,7 +273,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         return copy;
       });
     },
-    [props, props.onChange, setPropsConfig]
+    [props.onChange, setPropsConfig]
   );
 
   const createControl = React.useCallback(
