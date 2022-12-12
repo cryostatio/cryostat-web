@@ -42,10 +42,10 @@ import { deleteCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
 import { TargetView } from '@app/TargetView/TargetView';
 import { AddCard } from './AddCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
-export interface CardDescriptor {
+export interface DashboardCardDescriptor {
   title: string;
   description: string;
   descriptionFull: JSX.Element | string;
@@ -85,36 +85,8 @@ const PlaceholderCard: React.FunctionComponent = (props: DashboardCardProps) => 
   );
 };
 
-export const DashboardCards: CardDescriptor[] = [
-  {
-    title: 'Automated Analysis',
-    description: `
-Assess common application performance and configuration issues.
-    `,
-    descriptionFull: `
-Creates a recording and periodically evalutes various common problems in application configuration and performance.
-Results are displayed with scores from 0-100 with colour coding and in groups.
-This card should be unique on a dashboard.
-      `,
-    component: AutomatedAnalysisCard,
-    propControls: [
-      {
-        name: 'Compact Style',
-        key: 'isCompact',
-        description: 'Apply PatternFly compact Card styling to reduce padding',
-        kind: PropKind.BOOLEAN,
-        defaultValue: true,
-      },
-      // TODO remove one or both of these, they are useful for development testing but not for a user
-      {
-        name: 'Large Style',
-        key: 'isLarge',
-        description: 'Apply PatternFly large Card styling',
-        kind: PropKind.BOOLEAN,
-        defaultValue: false,
-      },
-    ],
-  },
+export const DashboardCards: DashboardCardDescriptor[] = [
+  AutomatedAnalysisCardDescriptor,
   {
     title: 'Placeholder',
     description: 'placeholder',
@@ -124,7 +96,7 @@ This card should be unique on a dashboard.
   },
 ];
 
-export function getConfigByName(name: string): CardDescriptor {
+export function getConfigByName(name: string): DashboardCardDescriptor {
   for (const choice of DashboardCards) {
     if (choice.component.name === name) {
       return choice;
@@ -133,7 +105,7 @@ export function getConfigByName(name: string): CardDescriptor {
   throw new Error(`Unknown card type selection: ${name}`);
 }
 
-export function getConfigByTitle(title: string): CardDescriptor {
+export function getConfigByTitle(title: string): DashboardCardDescriptor {
   for (const choice of DashboardCards) {
     if (choice.title === title) {
       return choice;

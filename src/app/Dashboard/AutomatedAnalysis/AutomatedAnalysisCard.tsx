@@ -108,7 +108,7 @@ import {
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
-import { DashboardCardProps } from '../Dashboard';
+import { DashboardCardDescriptor, DashboardCardProps, PropKind } from '../Dashboard';
 
 interface AutomatedAnalysisCardProps extends DashboardCardProps {
   isLarge?: boolean;
@@ -790,4 +790,34 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       </CardExpandableContent>
     </Card>
   );
+};
+
+export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
+  title: 'Automated Analysis',
+  description: `
+Assess common application performance and configuration issues.
+    `,
+  descriptionFull: `
+Creates a recording and periodically evalutes various common problems in application configuration and performance.
+Results are displayed with scores from 0-100 with colour coding and in groups.
+This card should be unique on a dashboard.
+      `,
+  component: AutomatedAnalysisCard,
+  propControls: [
+    {
+      name: 'Compact Style',
+      key: 'isCompact',
+      description: 'Apply PatternFly compact Card styling to reduce padding',
+      kind: PropKind.BOOLEAN,
+      defaultValue: true,
+    },
+    // TODO remove one or both of these, they are useful for development testing but not for a user
+    {
+      name: 'Large Style',
+      key: 'isLarge',
+      description: 'Apply PatternFly large Card styling',
+      kind: PropKind.BOOLEAN,
+      defaultValue: false,
+    },
+  ],
 };
