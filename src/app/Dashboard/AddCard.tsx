@@ -252,7 +252,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
   );
 
   const createControl = (ctrl: PropControl): JSX.Element => {
-    let input;
+    let input: JSX.Element;
     switch (ctrl.kind) {
       case 'boolean':
         input = <Switch label={ctrl.name} isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />;
