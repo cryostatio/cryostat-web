@@ -137,17 +137,19 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     ) => {
       return (
         <WizardNav isExpanded={isExpanded}>
-          {steps.map((step, idx) => (
-            <WizardNavItem
-              key={step.id}
-              id={step.id}
-              content={step.name}
-              isCurrent={activeStep.id === step.id}
-              isDisabled={step.isDisabled || (idx > 0 && !selection)}
-              stepIndex={step.index}
-              onNavItemClick={goToStepByIndex}
-            />
-          ))}
+          {steps
+            .filter((step) => !step.isHidden)
+            .map((step, idx) => (
+              <WizardNavItem
+                key={step.id}
+                id={step.id}
+                content={step.name}
+                isCurrent={activeStep.id === step.id}
+                isDisabled={step.isDisabled || (idx > 0 && !selection)}
+                stepIndex={step.index}
+                onNavItemClick={goToStepByIndex}
+              />
+            ))}
         </WizardNav>
       );
     },
@@ -158,8 +160,20 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard isStepVisitRequired onClose={handleStop} onSave={handleAdd} height={500} nav={customNav}>
-            <WizardStep id="card-type-select" name="Card Type" footer={{ isNextDisabled: !selection }}>
+          <Wizard onClose={handleStop} onSave={handleAdd} height={500} nav={customNav}>
+            <WizardStep
+              id="card-type-select"
+              name="Card Type"
+              footer={{
+                isNextDisabled: !selection,
+                nextButtonText:
+                  selection &&
+                  !getConfigByTitle(selection).propControls.length &&
+                  !getConfigByTitle(selection).advancedConfig
+                    ? 'Finish'
+                    : 'Next',
+              }}
+            >
               <Form>
                 <FormGroup label="Select a card type" isRequired isStack>
                   <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
@@ -169,18 +183,28 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
                 </FormGroup>
               </Form>
             </WizardStep>
-            <WizardStep id="card-props-config" name="Configuration" footer={{ nextButtonText: 'Finish' }}>
-              {selection ? (
+            <WizardStep
+              id="card-props-config"
+              name="Configuration"
+              footer={{ nextButtonText: selection && !getConfigByTitle(selection).advancedConfig ? 'Finish' : 'Next' }}
+              isHidden={!selection || !getConfigByTitle(selection).propControls.length}
+            >
+              {selection && (
                 <PropsConfigForm
                   cardTitle={selection}
                   initialState={propsConfig}
                   controls={getConfigByTitle(selection).propControls}
-                  advancedConfig={getConfigByTitle(selection).advancedConfig}
                   onChange={setPropsConfig}
                 />
-              ) : (
-                <></>
               )}
+            </WizardStep>
+            <WizardStep
+              id="card-adv-config"
+              name="Advanced Configuration"
+              footer={{ nextButtonText: 'Finish' }}
+              isHidden={!selection || !getConfigByTitle(selection).advancedConfig}
+            >
+              {selection && getConfigByTitle(selection).advancedConfig}
             </WizardStep>
           </Wizard>
         ) : (
@@ -208,7 +232,6 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 interface PropsConfigFormProps {
   cardTitle: string;
   controls: PropControl[];
-  advancedConfig?: JSX.Element;
   initialState: any;
   onChange: ({}) => void;
 }
@@ -318,7 +341,6 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
           <FormGroup label={`Configure the ${props.cardTitle} card`}>
             {props.controls.map((ctrl) => createControl(ctrl))}
           </FormGroup>
-          {props.advancedConfig}
         </Form>
       ) : (
         <Text>No configuration required.</Text>
