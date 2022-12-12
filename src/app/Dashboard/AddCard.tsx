@@ -55,7 +55,14 @@ import {
   TextInput,
   Title,
 } from '@patternfly/react-core';
-import { Wizard, WizardStep } from '@patternfly/react-core/dist/js/next';
+import {
+  CustomWizardNavFunction,
+  Wizard,
+  WizardControlStep,
+  WizardNav,
+  WizardNavItem,
+  WizardStep,
+} from '@patternfly/react-core/dist/js/next';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
 import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
@@ -121,12 +128,38 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     setShowWizard(false);
   }, [setShowWizard]);
 
+  // custom nav for disabling subsequent steps (ex. configuration) if a card type hasn't been selected first
+  const customNav: CustomWizardNavFunction = React.useCallback(
+    (
+      isExpanded: boolean,
+      steps: WizardControlStep[],
+      activeStep: WizardControlStep,
+      goToStepByIndex: (index: number) => void
+    ) => {
+      return (
+        <WizardNav isExpanded={isExpanded}>
+          {steps.map((step, idx) => (
+            <WizardNavItem
+              key={step.id}
+              id={step.id}
+              content={step.name}
+              isCurrent={activeStep.id === step.id}
+              isDisabled={step.isDisabled || (idx > 0 && !selection)}
+              stepIndex={step.index}
+              onNavItemClick={goToStepByIndex}
+            />
+          ))}
+        </WizardNav>
+      );
+    },
+    [selection]
+  );
+
   return (
-    // FIXME wizard navigation by clicking left-side step names should be disabled if the first step selection is empty
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard isStepVisitRequired onClose={handleStop} onSave={handleAdd} height={500}>
+          <Wizard isStepVisitRequired onClose={handleStop} onSave={handleAdd} height={500} nav={customNav}>
             <WizardStep id="card-type-select" name="Card Type" footer={{ isNextDisabled: !selection }}>
               <Form>
                 <FormGroup label="Select a card type" isRequired isStack>
