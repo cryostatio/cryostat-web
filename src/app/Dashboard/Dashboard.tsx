@@ -159,7 +159,7 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
     (idx: number) => {
       dispatch(deleteCardIntent(idx));
     },
-    [dispatch, cardConfigs]
+    [dispatch, deleteCardIntent]
   );
 
   return (
