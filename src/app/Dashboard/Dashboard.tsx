@@ -49,7 +49,7 @@ export interface DashboardCardDescriptor {
   title: string;
   description: string;
   descriptionFull: JSX.Element | string;
-  component: React.FunctionComponent;
+  component: React.FunctionComponent<any>;
   propControls: PropControl[];
 }
 
@@ -57,7 +57,7 @@ export interface PropControl {
   name: string;
   key: string;
   description: string;
-  kind: 'boolean';
+  kind: 'boolean' | 'number' | 'string' | 'text';
   defaultValue: any;
 }
 
@@ -68,14 +68,19 @@ export interface DashboardCardProps {
 }
 
 // TODO remove this
-const PlaceholderCard: React.FunctionComponent = (props: DashboardCardProps) => {
+const PlaceholderCard: React.FunctionComponent<
+  { title: string; message: string; count: number; toggleswitch: boolean } & DashboardCardProps
+> = (props) => {
   return (
-    <Card isRounded {...props}>
+    <Card isRounded>
       <CardHeader>
         <CardActions>{...props.actions || []}</CardActions>
       </CardHeader>
       <CardBody>
-        <Text>Hello! This is a placeholder.</Text>
+        <Text>title: {props.title}</Text>
+        <Text>message: {props.message}</Text>
+        <Text>count: {props.count}</Text>
+        <Text>toggle: {String(props.toggleswitch)}</Text>
       </CardBody>
     </Card>
   );
@@ -84,11 +89,47 @@ const PlaceholderCard: React.FunctionComponent = (props: DashboardCardProps) => 
 export const DashboardCards: DashboardCardDescriptor[] = [
   AutomatedAnalysisCardDescriptor,
   {
-    title: 'Placeholder',
+    title: 'None Placeholder',
     description: 'placeholder',
     descriptionFull: 'This is a do-nothing placeholder with no config',
     component: PlaceholderCard,
     propControls: [],
+  },
+  {
+    title: 'All Placeholder',
+    description: 'placeholder',
+    descriptionFull: 'This is a do-nothing placeholder with all the config',
+    component: PlaceholderCard,
+    propControls: [
+      {
+        name: 'string',
+        key: 'title',
+        defaultValue: 'a short text',
+        description: 'a string input',
+        kind: 'string',
+      },
+      {
+        name: 'text',
+        key: 'message',
+        defaultValue: 'a long text',
+        description: 'a text input',
+        kind: 'text',
+      },
+      {
+        name: 'a switch',
+        key: 'toggleswitch',
+        defaultValue: false,
+        description: 'a boolean input',
+        kind: 'boolean',
+      },
+      {
+        name: 'numeric spinner input',
+        key: 'count',
+        defaultValue: 5,
+        description: 'a number input',
+        kind: 'number',
+      },
+    ],
   },
 ];
 
