@@ -160,7 +160,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard onClose={handleStop} onSave={handleAdd} height={500} nav={customNav}>
+          <Wizard onClose={handleStop} onSave={handleAdd} height={640} nav={customNav}>
             <WizardStep
               id="card-type-select"
               name="Card Type"
@@ -208,6 +208,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
               footer={{ nextButtonText: 'Finish' }}
               isHidden={!selection || !getConfigByTitle(selection).advancedConfig}
             >
+              <Title headingLevel="h5">Provide advanced configuration for the {selection} card</Title>
               {selection && getConfigByTitle(selection).advancedConfig}
             </WizardStep>
           </Wizard>
@@ -344,9 +345,8 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
     <>
       {props.controls.length > 0 ? (
         <Form>
-          <FormGroup label={`Configure the ${props.cardTitle} card`}>
-            {props.controls.map((ctrl) => createControl(ctrl))}
-          </FormGroup>
+          <Title headingLevel={'h5'}>Configure the {props.cardTitle} card</Title>
+          {props.controls.map((ctrl) => createControl(ctrl))}
         </Form>
       ) : (
         <Text>No configuration required.</Text>
