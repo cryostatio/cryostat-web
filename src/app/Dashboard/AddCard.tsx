@@ -117,6 +117,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   }, [setShowWizard]);
 
   const handleStop = React.useCallback(() => {
+    setSelection('');
     setShowWizard(false);
   }, [setShowWizard]);
 
