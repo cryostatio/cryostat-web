@@ -94,7 +94,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
-    dispatch(addCardIntent(getConfigByTitle(selection).component.name));
+    dispatch(addCardIntent(getConfigByTitle(selection).component.name, {}));
   }, [dispatch, selection]);
 
   const handleStart = React.useCallback(() => {

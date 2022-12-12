@@ -45,7 +45,7 @@ import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCard } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 
-export interface CardConfig {
+export interface CardDescriptor {
   title: string;
   description: string;
   descriptionFull: JSX.Element | string;
@@ -59,7 +59,7 @@ export interface DashboardCardProps {
   actions?: JSX.Element[];
 }
 
-export const DashboardCards: CardConfig[] = [
+export const DashboardCards: CardDescriptor[] = [
   {
     title: 'Automated Analysis',
     description: `
@@ -77,7 +77,7 @@ This card should be unique on a dashboard.
   },
 ];
 
-export function getConfigByName(name: String): CardConfig {
+export function getConfigByName(name: string): CardDescriptor {
   for (const choice of DashboardCards) {
     if (choice.component.name === name) {
       return choice;
@@ -86,7 +86,7 @@ export function getConfigByName(name: String): CardConfig {
   throw new Error(`Unknown card type selection: ${name}`);
 }
 
-export function getConfigByTitle(title: String): CardConfig {
+export function getConfigByTitle(title: string): CardDescriptor {
   for (const choice of DashboardCards) {
     if (choice.title === title) {
       return choice;
@@ -97,27 +97,30 @@ export function getConfigByTitle(title: String): CardConfig {
 
 export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
   const dispatch = useDispatch<StateDispatch>();
-  const cardNames = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const cardConfigs = useSelector((state: RootState) => state.dashboardConfigs.list);
 
   const handleRemove = React.useCallback(
     (idx: number) => {
       dispatch(deleteCardIntent(idx));
     },
-    [dispatch, cardNames]
+    [dispatch, cardConfigs]
   );
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
       <Stack hasGutter>
-        {cardNames.map(getConfigByName).map((cfg, idx) => (
-          <StackItem key={idx}>
-            {React.createElement(cfg.component, {
-              ...cfg.props,
-              actions: [<DashboardCardActionMenu onRemove={() => handleRemove(idx)} />],
-            })}
-          </StackItem>
-        ))}
-        <StackItem key={cardNames.length}>
+        {cardConfigs
+          .map((card) => card.name)
+          .map(getConfigByName)
+          .map((cfg, idx) => (
+            <StackItem key={idx}>
+              {React.createElement(cfg.component, {
+                ...cfg.props,
+                actions: [<DashboardCardActionMenu onRemove={() => handleRemove(idx)} />],
+              })}
+            </StackItem>
+          ))}
+        <StackItem key={cardConfigs.length}>
           <AddCard />
         </StackItem>
       </Stack>

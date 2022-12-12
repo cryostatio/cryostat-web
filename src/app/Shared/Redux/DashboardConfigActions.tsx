@@ -44,19 +44,24 @@ export enum DashboardConfigAction {
   CARD_REMOVE = 'card/remove',
 }
 
-export interface DashboardConfigActionPayload {
+export interface DashboardAddConfigActionPayload {
   name: string;
+  props: any;
+}
+
+export interface DashboardDeleteConfigActionPayload {
   idx: number;
 }
 
-export const addCardIntent = createAction(DashboardConfigAction.CARD_ADD, (name: string) => ({
+export const addCardIntent = createAction(DashboardConfigAction.CARD_ADD, (name: string, props: any) => ({
   payload: {
     name,
-  } as DashboardConfigActionPayload,
+    props,
+  } as DashboardAddConfigActionPayload,
 }));
 
 export const deleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
   payload: {
     idx,
-  } as DashboardConfigActionPayload,
+  } as DashboardDeleteConfigActionPayload,
 }));
