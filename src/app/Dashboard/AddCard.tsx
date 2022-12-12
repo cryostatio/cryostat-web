@@ -48,8 +48,6 @@ import {
   FormGroup,
   Select,
   SelectOption,
-  Stack,
-  StackItem,
   Switch,
   Text,
   Title,
@@ -126,22 +124,11 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
           <Wizard onClose={handleStop} onSave={handleAdd} height={300}>
             <WizardStep id="card-type-select" name="Card Type" footer={{ isNextDisabled: !selection }}>
               <Form>
-                <FormGroup label="Select a card type" isRequired>
-                  <Stack hasGutter>
-                    <StackItem>
-                      <Select
-                        onToggle={handleToggle}
-                        isOpen={selectOpen}
-                        onSelect={handleSelect}
-                        selections={selection}
-                      >
-                        {options}
-                      </Select>
-                    </StackItem>
-                    <StackItem>
-                      <Text>{selection && getConfigByTitle(selection).descriptionFull}</Text>
-                    </StackItem>
-                  </Stack>
+                <FormGroup label="Select a card type" isRequired isStack>
+                  <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
+                    {options}
+                  </Select>
+                  <Text>{selection && getConfigByTitle(selection).descriptionFull}</Text>
                 </FormGroup>
               </Form>
             </WizardStep>
@@ -204,12 +191,8 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
     switch (ctrl.kind) {
       case PropKind.BOOLEAN:
         return (
-          <FormGroup key={`${ctrl.key}}`} label={ctrl.name} helperText={ctrl.description}>
-            <Stack hasGutter>
-              <StackItem>
-                <Switch label={ctrl.name} isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />
-              </StackItem>
-            </Stack>
+          <FormGroup key={`${ctrl.key}}`} helperText={ctrl.description} isInline isStack>
+            <Switch label={ctrl.name} isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />
           </FormGroup>
         );
       default:
@@ -219,7 +202,9 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
 
   return (
     <>
-      <Form>{props.controls.map((ctrl) => createControl(ctrl))}</Form>
+      <Form>
+        <FormGroup label="Configure the card">{props.controls.map((ctrl) => createControl(ctrl))}</FormGroup>
+      </Form>
     </>
   );
 };
