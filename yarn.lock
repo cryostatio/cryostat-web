@@ -856,6 +856,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/react-core@npm:^4.267.6":
+  version: 4.267.6
+  resolution: "@patternfly/react-core@npm:4.267.6"
+  dependencies:
+    "@patternfly/react-icons": ^4.93.3
+    "@patternfly/react-styles": ^4.92.3
+    "@patternfly/react-tokens": ^4.94.3
+    focus-trap: 6.9.2
+    react-dropzone: 9.0.0
+    tippy.js: 5.1.2
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 79837420945fa185636c76bbe94832d25a67fc30269a3a6c95639b4239019808de807ab68ed0a70940e1d53d39bf4f8fa8f1032ff30fc13ac7567dbbf6d2bdf7
+  languageName: node
+  linkType: hard
+
 "@patternfly/react-icons@npm:^4.93.0, @patternfly/react-icons@npm:^4.93.3":
   version: 4.93.3
   resolution: "@patternfly/react-icons@npm:4.93.3"
@@ -3070,7 +3088,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cryostat-web@workspace:."
   dependencies:
-    "@patternfly/react-core": ^4.267.5
+    "@patternfly/react-core": ^4.267.6
     "@patternfly/react-icons": ^4.93.0
     "@patternfly/react-styles": ^4.92.0
     "@patternfly/react-table": ^4.112.5
