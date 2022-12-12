@@ -125,7 +125,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   const handleStop = React.useCallback(() => {
     setSelection('');
     setShowWizard(false);
-  }, [setShowWizard]);
+  }, [setSelection, setShowWizard]);
 
   // custom nav for disabling subsequent steps (ex. configuration) if a card type hasn't been selected first
   const customNav: CustomWizardNavFunction = React.useCallback(
