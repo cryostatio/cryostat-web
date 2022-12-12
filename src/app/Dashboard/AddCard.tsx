@@ -291,6 +291,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         break;
       default:
         input = <Text>Bad config</Text>;
+        break;
     }
     return (
       <FormGroup
