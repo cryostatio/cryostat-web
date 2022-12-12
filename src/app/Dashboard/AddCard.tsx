@@ -251,7 +251,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
     [props, props.onChange, setPropsConfig]
   );
 
-  const createControl = (ctrl: PropControl): JSX.Element => {
+  const createControl = React.useCallback((ctrl: PropControl): JSX.Element => {
     let input: JSX.Element;
     switch (ctrl.kind) {
       case 'boolean':
@@ -304,7 +304,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         {input}
       </FormGroup>
     );
-  };
+  }, [propsConfig, handleChange, handleNumeric, handleNumericStep]);
 
   return (
     <>
