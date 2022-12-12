@@ -121,7 +121,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard onClose={handleStop} onSave={handleAdd} height={300}>
+          <Wizard onClose={handleStop} onSave={handleAdd} height={400}>
             <WizardStep id="card-type-select" name="Card Type" footer={{ isNextDisabled: !selection }}>
               <Form>
                 <FormGroup label="Select a card type" isRequired isStack>
@@ -202,9 +202,13 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
 
   return (
     <>
-      <Form>
-        <FormGroup label="Configure the card">{props.controls.map((ctrl) => createControl(ctrl))}</FormGroup>
-      </Form>
+      {props.controls.length > 0 ? (
+        <Form>
+          <FormGroup label="Configure the card">{props.controls.map((ctrl) => createControl(ctrl))}</FormGroup>
+        </Form>
+      ) : (
+        <Text>No configuration required.</Text>
+      )}
     </>
   );
 };

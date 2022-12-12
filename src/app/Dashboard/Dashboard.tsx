@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { Stack, StackItem } from '@patternfly/react-core';
+import { Card, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
 import { TargetView } from '@app/TargetView/TargetView';
@@ -71,6 +71,20 @@ export interface DashboardCardProps {
   actions?: JSX.Element[];
 }
 
+// TODO remove this
+const PlaceholderCard: React.FunctionComponent = (props: DashboardCardProps) => {
+  return (
+    <Card isRounded {...props}>
+      <CardHeader>
+        <CardActions>{...props.actions || []}</CardActions>
+      </CardHeader>
+      <CardBody>
+        <Text>Hello! This is a placeholder.</Text>
+      </CardBody>
+    </Card>
+  );
+};
+
 export const DashboardCards: CardDescriptor[] = [
   {
     title: 'Automated Analysis',
@@ -100,6 +114,13 @@ This card should be unique on a dashboard.
         defaultValue: false,
       },
     ],
+  },
+  {
+    title: 'Placeholder',
+    description: 'placeholder',
+    descriptionFull: 'This is a do-nothing placeholder with no config',
+    component: PlaceholderCard,
+    propControls: [],
   },
 ];
 
