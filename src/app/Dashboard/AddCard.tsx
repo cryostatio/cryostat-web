@@ -307,7 +307,11 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
           break;
         case 'select':
           input = (
-            <SelectControl handleChange={handleChange(ctrl.key)} config={props.config[ctrl.key]} control={ctrl} />
+            <SelectControl
+              handleChange={handleChange(ctrl.key)}
+              selectedConfig={props.config[ctrl.key]}
+              control={ctrl}
+            />
           );
           break;
         default:
@@ -337,7 +341,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
   );
 };
 
-const SelectControl = (props: { handleChange: ({}) => void; control: PropControl; config: any }) => {
+const SelectControl = (props: { handleChange: ({}) => void; control: PropControl; selectedConfig: any }) => {
   const addSubscription = useSubscriptions();
 
   const [selectOpen, setSelectOpen] = React.useState(false);
@@ -381,7 +385,7 @@ const SelectControl = (props: { handleChange: ({}) => void; control: PropControl
   }, [props.control, props.control.values, of, addSubscription, setOptions, setErrored]);
 
   return (
-    <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={props.config}>
+    <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={props.selectedConfig}>
       {errored
         ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
         : [<SelectOption key={0} value={'None'} isPlaceholder />].concat(
