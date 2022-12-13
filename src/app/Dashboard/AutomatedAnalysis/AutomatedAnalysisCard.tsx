@@ -81,8 +81,6 @@ import {
   LabelGroup,
   Level,
   LevelItem,
-  Split,
-  SplitItem,
   Stack,
   StackItem,
   Text,
@@ -108,12 +106,10 @@ import {
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
-import { DashboardCardProps } from '../Dashboard';
+import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
+import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
-interface AutomatedAnalysisCardProps extends DashboardCardProps {
-  isLarge?: boolean;
-  isCompact?: boolean;
-}
+interface AutomatedAnalysisCardProps extends DashboardCardProps {}
 
 export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -756,7 +752,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
   return (
-    <Card id="automated-analysis-card" isRounded {...props} isExpanded={isCardExpanded}>
+    <Card id="automated-analysis-card" isRounded isCompact {...props} isExpanded={isCardExpanded}>
       <CardHeader
         onExpand={onCardExpand}
         toggleButtonProps={{
@@ -790,4 +786,20 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
       </CardExpandableContent>
     </Card>
   );
+};
+
+export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
+  title: 'Automated Analysis',
+  description: `
+Assess common application performance and configuration issues.
+    `,
+  descriptionFull: `
+Creates a recording and periodically evalutes various common problems in application configuration and performance.
+Results are displayed with scores from 0-100 with colour coding and in groups.
+This card should be unique on a dashboard.
+      `,
+  component: AutomatedAnalysisCard,
+  propControls: [],
+  // FIXME this form gets embedded within a form, and should not have its own independent create/save controls
+  advancedConfig: <AutomatedAnalysisConfigForm isSettingsForm={false}></AutomatedAnalysisConfigForm>,
 };

@@ -46,25 +46,37 @@ import {
   EmptyStateVariant,
   Form,
   FormGroup,
+  NumberInput,
   Select,
   SelectOption,
-  Stack,
-  StackItem,
+  Switch,
   Text,
+  TextArea,
+  TextInput,
   Title,
 } from '@patternfly/react-core';
-import { Wizard, WizardStep } from '@patternfly/react-core/dist/js/next';
+import {
+  CustomWizardNavFunction,
+  Wizard,
+  WizardControlStep,
+  WizardNav,
+  WizardNavItem,
+  WizardStep,
+} from '@patternfly/react-core/dist/js/next';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
 import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
-import { DashboardCards, getConfigByTitle } from './Dashboard';
+import { DashboardCards, getConfigByTitle, PropControl } from './Dashboard';
+import { Observable, of } from 'rxjs';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 interface AddCardProps {}
 
 export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
   const [showWizard, setShowWizard] = React.useState(false);
   const [selection, setSelection] = React.useState('');
+  const [propsConfig, setPropsConfig] = React.useState({});
   const [selectOpen, setSelectOpen] = React.useState(false);
   const dispatch = useDispatch<StateDispatch>();
 
@@ -77,25 +89,27 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     ];
   }, [DashboardCards]);
 
-  const handleToggle = React.useCallback(
-    (isOpen) => {
-      setSelectOpen(isOpen);
-    },
-    [setSelectOpen]
-  );
-
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       setSelection(isPlaceholder ? '' : selection);
       setSelectOpen(false);
+
+      const c = {};
+      if (selection) {
+        for (const ctrl of getConfigByTitle(selection).propControls) {
+          c[ctrl.key] = ctrl.defaultValue;
+        }
+      }
+      setPropsConfig(c);
     },
-    [setSelection, setSelectOpen]
+    [setSelection, setSelectOpen, getConfigByTitle, setPropsConfig]
   );
 
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
-    dispatch(addCardIntent(getConfigByTitle(selection).component.name));
-  }, [dispatch, selection]);
+    const cardTitle = getConfigByTitle(selection).component.name;
+    dispatch(addCardIntent(cardTitle, propsConfig));
+  }, [setShowWizard, dispatch, addCardIntent, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {
     setShowWizard(true);
@@ -103,37 +117,93 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 
   const handleStop = React.useCallback(() => {
     setShowWizard(false);
-  }, [setShowWizard]);
+    setSelection('');
+    setPropsConfig({});
+  }, [setSelection, setShowWizard, setPropsConfig]);
+
+  // custom nav for disabling subsequent steps (ex. configuration) if a card type hasn't been selected first
+  const customNav: CustomWizardNavFunction = React.useCallback(
+    (
+      isExpanded: boolean,
+      steps: WizardControlStep[],
+      activeStep: WizardControlStep,
+      goToStepByIndex: (index: number) => void
+    ) => {
+      return (
+        <WizardNav isExpanded={isExpanded}>
+          {steps
+            .filter((step) => !step.isHidden)
+            .map((step, idx) => (
+              <WizardNavItem
+                key={step.id}
+                id={step.id}
+                content={step.name}
+                isCurrent={activeStep.id === step.id}
+                isDisabled={step.isDisabled || (idx > 0 && !selection)}
+                stepIndex={step.index}
+                onNavItemClick={goToStepByIndex}
+              />
+            ))}
+        </WizardNav>
+      );
+    },
+    [selection]
+  );
 
   return (
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard onClose={handleStop} onSave={handleAdd} height={300}>
+          <Wizard onClose={handleStop} onSave={handleAdd} height={'30rem'} nav={customNav}>
             <WizardStep
               id="card-type-select"
               name="Card Type"
-              footer={{ nextButtonText: 'Finish', isNextDisabled: !selection }}
+              footer={{
+                isNextDisabled: !selection,
+                nextButtonText:
+                  selection &&
+                  !getConfigByTitle(selection).propControls.length &&
+                  !getConfigByTitle(selection).advancedConfig
+                    ? 'Finish'
+                    : 'Next',
+              }}
             >
               <Form>
-                <FormGroup label="Select a card type" isRequired>
-                  <Stack hasGutter>
-                    <StackItem>
-                      <Select
-                        onToggle={handleToggle}
-                        isOpen={selectOpen}
-                        onSelect={handleSelect}
-                        selections={selection}
-                      >
-                        {options}
-                      </Select>
-                    </StackItem>
-                    <StackItem>
-                      <Text>{selection && getConfigByTitle(selection).descriptionFull}</Text>
-                    </StackItem>
-                  </Stack>
+                <FormGroup label="Select a card type" isRequired isStack>
+                  <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
+                    {options}
+                  </Select>
+                  <Text>
+                    {selection
+                      ? getConfigByTitle(selection).descriptionFull
+                      : 'Choose a card type to add to your dashboard. Some cards require additional configuration.'}
+                  </Text>
                 </FormGroup>
               </Form>
+            </WizardStep>
+            <WizardStep
+              id="card-props-config"
+              name="Configuration"
+              footer={{ nextButtonText: selection && !getConfigByTitle(selection).advancedConfig ? 'Finish' : 'Next' }}
+              isHidden={!selection || !getConfigByTitle(selection).propControls.length}
+            >
+              {selection && (
+                <PropsConfigForm
+                  cardTitle={selection}
+                  config={propsConfig}
+                  controls={getConfigByTitle(selection).propControls}
+                  onChange={setPropsConfig}
+                />
+              )}
+            </WizardStep>
+            <WizardStep
+              id="card-adv-config"
+              name="Advanced Configuration"
+              footer={{ nextButtonText: 'Finish' }}
+              isHidden={!selection || !getConfigByTitle(selection).advancedConfig}
+            >
+              <Title headingLevel="h5">Provide advanced configuration for the {selection} card</Title>
+              {selection && getConfigByTitle(selection).advancedConfig}
             </WizardStep>
           </Wizard>
         ) : (
@@ -155,5 +225,172 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
         )}
       </Card>
     </>
+  );
+};
+
+interface PropsConfigFormProps {
+  cardTitle: string;
+  controls: PropControl[];
+  config: any;
+  onChange: ({}) => void;
+}
+
+const PropsConfigForm = (props: PropsConfigFormProps) => {
+  const handleChange = React.useCallback(
+    (k) => (e) => {
+      const copy = { ...props.config };
+      copy[k] = e;
+      props.onChange(copy);
+    },
+    [props.config, props.onChange]
+  );
+
+  const handleNumeric = React.useCallback(
+    (k) => (e) => {
+      const value = (e.target as HTMLInputElement).value;
+      const copy = { ...props.config };
+      copy[k] = value;
+      props.onChange(copy);
+    },
+    [props.config, props.onChange]
+  );
+
+  const handleNumericStep = React.useCallback(
+    (k, v) => (e) => {
+      const copy = { ...props.config };
+      copy[k] = props.config[k] + v;
+      props.onChange(copy);
+    },
+    [props.config, props.onChange]
+  );
+
+  const createControl = React.useCallback(
+    (ctrl: PropControl): JSX.Element => {
+      let input: JSX.Element;
+      switch (ctrl.kind) {
+        case 'boolean':
+          input = (
+            <Switch label="On" labelOff="Off" isChecked={props.config[ctrl.key]} onChange={handleChange(ctrl.key)} />
+          );
+          break;
+        case 'number':
+          input = (
+            <NumberInput
+              inputName={ctrl.name}
+              inputAriaLabel={`${ctrl.name} input`}
+              value={props.config[ctrl.key]}
+              onChange={handleNumeric(ctrl.key)}
+              onPlus={handleNumericStep(ctrl.key, 1)}
+              onMinus={handleNumericStep(ctrl.key, -1)}
+            />
+          );
+          break;
+        case 'string':
+          input = (
+            <TextInput
+              type="text"
+              aria-label={`${ctrl.key} input`}
+              value={props.config[ctrl.key]}
+              onChange={handleChange(ctrl.key)}
+            />
+          );
+          break;
+        case 'text':
+          input = (
+            <TextArea
+              type="text"
+              aria-label={`${ctrl.key} input`}
+              value={props.config[ctrl.key]}
+              onChange={handleChange(ctrl.key)}
+            />
+          );
+          break;
+        case 'select':
+          input = (
+            <SelectControl
+              handleChange={handleChange(ctrl.key)}
+              selectedConfig={props.config[ctrl.key]}
+              control={ctrl}
+            />
+          );
+          break;
+        default:
+          input = <Text>Bad config</Text>;
+          break;
+      }
+      return (
+        <FormGroup key={`${ctrl.key}}`} label={ctrl.name} helperText={ctrl.description} isInline isStack>
+          {input}
+        </FormGroup>
+      );
+    },
+    [props.config, handleChange, handleNumeric, handleNumericStep]
+  );
+
+  return (
+    <>
+      {props.controls.length > 0 ? (
+        <Form>
+          <Title headingLevel={'h5'}>Configure the {props.cardTitle} card</Title>
+          {props.controls.map((ctrl) => createControl(ctrl))}
+        </Form>
+      ) : (
+        <Text>No configuration required.</Text>
+      )}
+    </>
+  );
+};
+
+const SelectControl = (props: { handleChange: ({}) => void; control: PropControl; selectedConfig: any }) => {
+  const addSubscription = useSubscriptions();
+
+  const [selectOpen, setSelectOpen] = React.useState(false);
+  const [options, setOptions] = React.useState([] as string[]);
+  const [errored, setErrored] = React.useState(false);
+
+  const handleSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        props.handleChange(selection);
+      }
+      setSelectOpen(false);
+    },
+    [props.handleChange, setSelectOpen]
+  );
+
+  React.useEffect(() => {
+    let obs;
+    if (props.control.values instanceof Observable) {
+      obs = props.control.values;
+    } else {
+      obs = of(props.control.values);
+    }
+    addSubscription(
+      obs.subscribe({
+        next: (v) => {
+          setErrored(false);
+          setOptions((old) => {
+            if (Array.isArray(v)) {
+              return v;
+            }
+            return [...old, v];
+          });
+        },
+        error: (err) => {
+          setErrored(true);
+          setOptions([err]);
+        },
+      })
+    );
+  }, [props.control, props.control.values, of, addSubscription, setOptions, setErrored]);
+
+  return (
+    <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={props.selectedConfig}>
+      {errored
+        ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
+        : [<SelectOption key={0} value={'None'} isPlaceholder />].concat(
+            options.map((choice, idx) => <SelectOption key={idx + 1} value={choice} />)
+          )}
+    </Select>
   );
 };
