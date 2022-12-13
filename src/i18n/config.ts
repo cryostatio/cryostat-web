@@ -35,33 +35,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
 
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import '@i18n/config';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import i18next from 'i18next';
+import Backend from 'i18next-fs-backend';
+import { initReactI18next } from 'react-i18next';
 
-const App: React.FunctionComponent = () => (
-  <React.Suspense fallback={<LoadingView />}>
-    <ServiceContext.Provider value={defaultServices}>
-      <NotificationsContext.Provider value={NotificationsInstance}>
-        <Provider store={store}>
-          <Router>
-            <AppLayout>
-              <AppRoutes />
-            </AppLayout>
-          </Router>
-        </Provider>
-      </NotificationsContext.Provider>
-    </ServiceContext.Provider>
-  </React.Suspense>
-);
+import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 
-export { App };
+export const defaultNS = 'common';
+
+
+export const i18nResources = {
+  en: {
+    engTranslation: require('./en/translation.json'),
+    engCommon: require('./en/common.json'),
+  },
+  zh: {
+    zhTranslation: require('./zh/translation.json'),
+    zhCommon: require('./zh/common.json'),
+  }
+};
+
+export const en = Object.keys(i18nResources.en);
+
+export const namespaceLocale = (ns: string) => {
+  return i18nResources.en.engTranslation
+}
+
+
+i18next
+  .use(I18nextBrowserLanguageDetector)
+   // TODO: .use(Backend) eventually store translations on backend?
+  .use(initReactI18next)
+  .init({
+    resources: i18nResources,
+    initImmediate: false,
+    defaultNS: defaultNS,
+    fallbackLng: 'en',
+    debug: true,
+    interpolation: {
+      escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+    },
+    react: {
+      useSuspense: true,
+    },
+    backend: {
+      loadPath: './{{lng}}/{{ns}}.json',
+    }
+}), () => {
+  console.log('i18next initialized');
+};
+
+

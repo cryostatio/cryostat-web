@@ -20,6 +20,7 @@
     "resolveJsonModule": true,
     "paths": {
       "@app/*": ["src/app/*"],
+      "@i18n/*": ["src/i18n/*"],
       "@assets/*": ["node_modules/@patternfly/react-core/dist/styles/assets/*"]
     }
   },
