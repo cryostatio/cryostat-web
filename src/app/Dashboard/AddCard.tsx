@@ -153,7 +153,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     <>
       <Card isRounded isLarge>
         {showWizard ? (
-          <Wizard onClose={handleStop} onSave={handleAdd} height={640} nav={customNav}>
+          <Wizard onClose={handleStop} onSave={handleAdd} height={'30rem'} nav={customNav}>
             <WizardStep
               id="card-type-select"
               name="Card Type"
@@ -305,9 +305,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
           );
           break;
         case 'select':
-          input = (
-            <SelectControl handleChange={handleChange(ctrl.key)} config={props.config[ctrl.key]} control={ctrl} />
-          );
+          input = <SelectControl handleChange={handleChange(ctrl.key)} config={props.config} control={ctrl} />;
           break;
         default:
           input = <Text>Bad config</Text>;

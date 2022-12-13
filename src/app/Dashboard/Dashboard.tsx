@@ -72,7 +72,15 @@ export interface DashboardCardProps {
 
 // TODO remove this
 const PlaceholderCard: React.FunctionComponent<
-  { title: string; message: string; count: number; toggleswitch: boolean; menu: string } & DashboardCardProps
+  {
+    title: string;
+    message: string;
+    count: number;
+    toggleswitch: boolean;
+    menu: string;
+    asyncmenu: string;
+    asyncmenu2: string;
+  } & DashboardCardProps
 > = (props) => {
   return (
     <Card isRounded>
@@ -85,6 +93,8 @@ const PlaceholderCard: React.FunctionComponent<
         <Text>count: {props.count}</Text>
         <Text>toggle: {String(props.toggleswitch)}</Text>
         <Text>menu: {props.menu}</Text>
+        <Text>asyncmenu: {props.asyncmenu}</Text>
+        <Text>asyncmenus: {props.asyncmenu2}</Text>
       </CardBody>
     </Card>
   );
