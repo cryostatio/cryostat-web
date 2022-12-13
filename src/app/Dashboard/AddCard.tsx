@@ -68,6 +68,8 @@ import { useDispatch } from 'react-redux';
 import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
 import { DashboardCards, getConfigByTitle, PropControl } from './Dashboard';
+import { Observable, of } from 'rxjs';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 interface AddCardProps {}
 
@@ -266,7 +268,14 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
       let input: JSX.Element;
       switch (ctrl.kind) {
         case 'boolean':
-          input = <Switch isChecked={props.config[ctrl.key]} onChange={handleChange(ctrl.key)} />;
+          input = (
+            <Switch
+              label="On"
+              labelOff="Off"
+              isChecked={props.config[ctrl.key]}
+              onChange={handleChange(ctrl.key)}
+            />
+          );
           break;
         case 'number':
           input = (
@@ -301,27 +310,8 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
           );
           break;
         case 'select':
-          const [selectOpen, setSelectOpen] = React.useState(false);
-          const handleSelect = React.useCallback(
-            (_, selection, isPlaceholder) => {
-              if (!isPlaceholder) {
-                handleChange(ctrl.key)(selection);
-              }
-              setSelectOpen(false);
-            },
-            [handleChange, setSelectOpen]
-          );
-          const options = (ctrl?.values || []).map((choice, idx) => <SelectOption key={idx} value={choice} />);
           input = (
-            <Select
-              onToggle={setSelectOpen}
-              isOpen={selectOpen}
-              onSelect={handleSelect}
-              selections={props.config[ctrl.key]}
-            >
-              <SelectOption key={0} value={'None'} isPlaceholder />
-              <>{options}</>
-            </Select>
+            <SelectControl handleChange={handleChange(ctrl.key)} config={props.config[ctrl.key]} control={ctrl} />
           );
           break;
         default:
@@ -348,5 +338,59 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         <Text>No configuration required.</Text>
       )}
     </>
+  );
+};
+
+const SelectControl = (props: { handleChange: ({}) => void; control: PropControl; config: any }) => {
+  const addSubscription = useSubscriptions();
+
+  const [selectOpen, setSelectOpen] = React.useState(false);
+  const [options, setOptions] = React.useState([] as Element[]);
+
+  const handleSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      if (!isPlaceholder) {
+        props.handleChange(selection);
+      }
+      setSelectOpen(false);
+    },
+    [props.handleChange, setSelectOpen]
+  );
+
+  React.useEffect(() => {
+    let obs;
+    if (props.control.values instanceof Observable) {
+      obs = props.control.values;
+    } else {
+      obs = of(props.control.values);
+    }
+    addSubscription(
+      obs.subscribe({
+        next: (v) =>
+          setOptions((old) => {
+            if (Array.isArray(v)) {
+              return v;
+            }
+            return [...old, v];
+          }),
+        complete: () => {},
+      })
+    );
+  }, [props.control, props.control.values, of, addSubscription, setOptions]);
+
+  return (
+    <Select
+      onToggle={setSelectOpen}
+      isOpen={selectOpen}
+      onSelect={handleSelect}
+      selections={props.config[props.control.key]}
+    >
+      <SelectOption key={0} value={'None'} isPlaceholder />
+      <>
+        {options.map((choice, idx) => (
+          <SelectOption key={idx + 1} value={choice} />
+        ))}
+      </>
+    </Select>
   );
 };

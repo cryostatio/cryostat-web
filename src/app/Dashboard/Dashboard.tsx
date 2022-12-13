@@ -44,6 +44,7 @@ import { AddCard } from './AddCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { Observable, of } from 'rxjs';
 
 export interface DashboardCardDescriptor {
   title: string;
@@ -59,7 +60,7 @@ export interface PropControl {
   key: string;
   description: string;
   kind: 'boolean' | 'number' | 'string' | 'text' | 'select';
-  values?: any[];
+  values?: any[] | Observable<any>;
   defaultValue: any;
 }
 
@@ -124,6 +125,30 @@ export const DashboardCards: DashboardCardDescriptor[] = [
         values: ['choices', 'options'],
         defaultValue: '',
         description: 'a selection menu',
+        kind: 'select',
+      },
+      {
+        name: 'menu select 2',
+        key: 'asyncmenu',
+        values: new Observable((subscriber) => {
+          let count = 0;
+          const id = setInterval(() => {
+            if (count > 5) {
+              clearInterval(id);
+            }
+            subscriber.next(`async ${count++}`);
+          }, 1000);
+        }),
+        defaultValue: '',
+        description: 'an async stream selection menu',
+        kind: 'select',
+      },
+      {
+        name: 'menu select 3',
+        key: 'asyncmenu2',
+        values: of(['arr1', 'arr2', 'arr3']),
+        defaultValue: '',
+        description: 'an async array selection menu',
         kind: 'select',
       },
       {
