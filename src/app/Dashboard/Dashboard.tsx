@@ -143,8 +143,9 @@ export const DashboardCards: DashboardCardDescriptor[] = [
         values: new Observable((subscriber) => {
           let count = 0;
           const id = setInterval(() => {
-            if (count > 5) {
+            if (count > 2) {
               clearInterval(id);
+              setTimeout(() => subscriber.error('Timed Out'), 5000);
             }
             subscriber.next(`async ${count++}`);
           }, 1000);

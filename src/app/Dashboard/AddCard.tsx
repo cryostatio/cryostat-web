@@ -339,7 +339,8 @@ const SelectControl = (props: { handleChange: ({}) => void; control: PropControl
   const addSubscription = useSubscriptions();
 
   const [selectOpen, setSelectOpen] = React.useState(false);
-  const [options, setOptions] = React.useState([] as Element[]);
+  const [options, setOptions] = React.useState([] as string[]);
+  const [errored, setErrored] = React.useState(false);
 
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
@@ -360,16 +361,22 @@ const SelectControl = (props: { handleChange: ({}) => void; control: PropControl
     }
     addSubscription(
       obs.subscribe({
-        next: (v) =>
+        next: (v) => {
+          setErrored(false);
           setOptions((old) => {
             if (Array.isArray(v)) {
               return v;
             }
             return [...old, v];
-          }),
+          });
+        },
+        error: (err) => {
+          setErrored(true);
+          setOptions([err]);
+        },
       })
     );
-  }, [props.control, props.control.values, of, addSubscription, setOptions]);
+  }, [props.control, props.control.values, of, addSubscription, setOptions, setErrored]);
 
   return (
     <Select
@@ -378,12 +385,11 @@ const SelectControl = (props: { handleChange: ({}) => void; control: PropControl
       onSelect={handleSelect}
       selections={props.config[props.control.key]}
     >
-      <SelectOption key={0} value={'None'} isPlaceholder />
-      <>
-        {options.map((choice, idx) => (
-          <SelectOption key={idx + 1} value={choice} />
-        ))}
-      </>
+      {errored
+        ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
+        : [<SelectOption key={0} value={'None'} isPlaceholder />].concat(
+            options.map((choice, idx) => <SelectOption key={idx + 1} value={choice} />)
+          )}
     </Select>
   );
 };
