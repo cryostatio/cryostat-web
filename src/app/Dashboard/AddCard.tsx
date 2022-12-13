@@ -196,7 +196,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
               {selection && (
                 <PropsConfigForm
                   cardTitle={selection}
-                  initialState={propsConfig}
+                  selectedPropConfig={propsConfig}
                   controls={getConfigByTitle(selection).propControls}
                   onChange={setPropsConfig}
                 />
@@ -237,48 +237,37 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 interface PropsConfigFormProps {
   cardTitle: string;
   controls: PropControl[];
-  initialState: any;
+  selectedPropConfig: any;
   onChange: ({}) => void;
 }
 
 const PropsConfigForm = (props: PropsConfigFormProps) => {
-  const [propsConfig, setPropsConfig] = React.useState(props.initialState);
-
   const handleChange = React.useCallback(
     (k) => (e) => {
-      setPropsConfig((old) => {
-        const copy = { ...old };
-        copy[k] = e;
-        props.onChange(copy);
-        return copy;
-      });
+      const copy = { ...props.selectedPropConfig };
+      copy[k] = e;
+      props.onChange(copy);
     },
-    [props.onChange, setPropsConfig]
+    [props.selectedPropConfig, props.onChange]
   );
 
   const handleNumeric = React.useCallback(
     (k) => (e) => {
       const value = (e.target as HTMLInputElement).value;
-      setPropsConfig((old) => {
-        const copy = { ...old };
-        copy[k] = value;
-        props.onChange(copy);
-        return copy;
-      });
+      const copy = { ...props.selectedPropConfig };
+      copy[k] = value;
+      props.onChange(copy);
     },
-    [props.onChange, setPropsConfig]
+    [props.selectedPropConfig, props.onChange]
   );
 
   const handleNumericStep = React.useCallback(
     (k, v) => (e) => {
-      setPropsConfig((old) => {
-        const copy = { ...old };
-        copy[k] = old[k] + v;
-        props.onChange(copy);
-        return copy;
-      });
+      const copy = { ...props.selectedPropConfig };
+      copy[k] = props.selectedPropConfig[k] + v;
+      props.onChange(copy);
     },
-    [props.onChange, setPropsConfig]
+    [props.selectedPropConfig, props.onChange]
   );
 
   const createControl = React.useCallback(
@@ -287,7 +276,12 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
       switch (ctrl.kind) {
         case 'boolean':
           input = (
-            <Switch label={ctrl.name} isReversed isChecked={propsConfig[ctrl.key]} onChange={handleChange(ctrl.key)} />
+            <Switch
+              label={ctrl.name}
+              isReversed
+              isChecked={props.selectedPropConfig[ctrl.key]}
+              onChange={handleChange(ctrl.key)}
+            />
           );
           break;
         case 'number':
@@ -295,7 +289,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
             <NumberInput
               inputName={ctrl.name}
               inputAriaLabel={`${ctrl.name} input`}
-              value={propsConfig[ctrl.key]}
+              value={props.selectedPropConfig[ctrl.key]}
               onChange={handleNumeric(ctrl.key)}
               onPlus={handleNumericStep(ctrl.key, 1)}
               onMinus={handleNumericStep(ctrl.key, -1)}
@@ -307,7 +301,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
             <TextInput
               type="text"
               aria-label={`${ctrl.key} input`}
-              value={propsConfig[ctrl.key]}
+              value={props.selectedPropConfig[ctrl.key]}
               onChange={handleChange(ctrl.key)}
             />
           );
@@ -317,7 +311,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
             <TextArea
               type="text"
               aria-label={`${ctrl.key} input`}
-              value={propsConfig[ctrl.key]}
+              value={props.selectedPropConfig[ctrl.key]}
               onChange={handleChange(ctrl.key)}
             />
           );
@@ -338,7 +332,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         </FormGroup>
       );
     },
-    [propsConfig, handleChange, handleNumeric, handleNumericStep]
+    [props.selectedPropConfig, handleChange, handleNumeric, handleNumericStep]
   );
 
   return (
