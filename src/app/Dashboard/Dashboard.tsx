@@ -58,7 +58,8 @@ export interface PropControl {
   name: string;
   key: string;
   description: string;
-  kind: 'boolean' | 'number' | 'string' | 'text';
+  kind: 'boolean' | 'number' | 'string' | 'text' | 'select';
+  values?: any[];
   defaultValue: any;
 }
 
@@ -70,7 +71,7 @@ export interface DashboardCardProps {
 
 // TODO remove this
 const PlaceholderCard: React.FunctionComponent<
-  { title: string; message: string; count: number; toggleswitch: boolean } & DashboardCardProps
+  { title: string; message: string; count: number; toggleswitch: boolean; menu: string } & DashboardCardProps
 > = (props) => {
   return (
     <Card isRounded>
@@ -82,6 +83,7 @@ const PlaceholderCard: React.FunctionComponent<
         <Text>message: {props.message}</Text>
         <Text>count: {props.count}</Text>
         <Text>toggle: {String(props.toggleswitch)}</Text>
+        <Text>menu: {props.menu}</Text>
       </CardBody>
     </Card>
   );
@@ -115,6 +117,14 @@ export const DashboardCards: DashboardCardDescriptor[] = [
         defaultValue: 'a long text',
         description: 'a text input',
         kind: 'text',
+      },
+      {
+        name: 'menu select',
+        key: 'menu',
+        values: ['choices', 'options'],
+        defaultValue: '',
+        description: 'a selection menu',
+        kind: 'select',
       },
       {
         name: 'a switch',

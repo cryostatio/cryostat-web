@@ -87,13 +87,6 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     ];
   }, [DashboardCards]);
 
-  const handleToggle = React.useCallback(
-    (isOpen) => {
-      setSelectOpen(isOpen);
-    },
-    [setSelectOpen]
-  );
-
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       setSelection(isPlaceholder ? '' : selection);
@@ -174,7 +167,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
             >
               <Form>
                 <FormGroup label="Select a card type" isRequired isStack>
-                  <Select onToggle={handleToggle} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
+                  <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
                     {options}
                   </Select>
                   <Text>
@@ -273,12 +266,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
       let input: JSX.Element;
       switch (ctrl.kind) {
         case 'boolean':
-          input = (
-            <Switch
-              isChecked={props.config[ctrl.key]}
-              onChange={handleChange(ctrl.key)}
-            />
-          );
+          input = <Switch isChecked={props.config[ctrl.key]} onChange={handleChange(ctrl.key)} />;
           break;
         case 'number':
           input = (
@@ -312,18 +300,36 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
             />
           );
           break;
+        case 'select':
+          const [selectOpen, setSelectOpen] = React.useState(false);
+          const handleSelect = React.useCallback(
+            (_, selection, isPlaceholder) => {
+              if (!isPlaceholder) {
+                handleChange(ctrl.key)(selection);
+              }
+              setSelectOpen(false);
+            },
+            [handleChange, setSelectOpen]
+          );
+          const options = (ctrl?.values || []).map((choice, idx) => <SelectOption key={idx} value={choice} />);
+          input = (
+            <Select
+              onToggle={setSelectOpen}
+              isOpen={selectOpen}
+              onSelect={handleSelect}
+              selections={props.config[ctrl.key]}
+            >
+              <SelectOption key={0} value={'None'} isPlaceholder />
+              <>{options}</>
+            </Select>
+          );
+          break;
         default:
           input = <Text>Bad config</Text>;
           break;
       }
       return (
-        <FormGroup
-          key={`${ctrl.key}}`}
-          label={ctrl.name}
-          helperText={ctrl.description}
-          isInline
-          isStack
-        >
+        <FormGroup key={`${ctrl.key}}`} label={ctrl.name} helperText={ctrl.description} isInline isStack>
           {input}
         </FormGroup>
       );
