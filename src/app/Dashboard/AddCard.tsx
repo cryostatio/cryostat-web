@@ -78,16 +78,6 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   const [selectOpen, setSelectOpen] = React.useState(false);
   const dispatch = useDispatch<StateDispatch>();
 
-  React.useEffect(() => {
-    const c = {};
-    if (selection) {
-      for (const ctrl of getConfigByTitle(selection).propControls) {
-        c[ctrl.key] = ctrl.defaultValue;
-      }
-    }
-    setPropsConfig(c);
-  }, [getConfigByTitle, selection, setPropsConfig]);
-
   const options = React.useMemo(() => {
     return [
       <SelectOption key={0} value={'None'} isPlaceholder />,
@@ -108,8 +98,16 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     (_, selection, isPlaceholder) => {
       setSelection(isPlaceholder ? '' : selection);
       setSelectOpen(false);
+
+      const c = {};
+      if (selection) {
+        for (const ctrl of getConfigByTitle(selection).propControls) {
+          c[ctrl.key] = ctrl.defaultValue;
+        }
+      }
+      setPropsConfig(c);
     },
-    [setSelection, setSelectOpen]
+    [setSelection, setSelectOpen, getConfigByTitle, setPropsConfig]
   );
 
   const handleAdd = React.useCallback(() => {
@@ -196,7 +194,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
               {selection && (
                 <PropsConfigForm
                   cardTitle={selection}
-                  selectedPropConfig={propsConfig}
+                  config={propsConfig}
                   controls={getConfigByTitle(selection).propControls}
                   onChange={setPropsConfig}
                 />
@@ -237,37 +235,37 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 interface PropsConfigFormProps {
   cardTitle: string;
   controls: PropControl[];
-  selectedPropConfig: any;
+  config: any;
   onChange: ({}) => void;
 }
 
 const PropsConfigForm = (props: PropsConfigFormProps) => {
   const handleChange = React.useCallback(
     (k) => (e) => {
-      const copy = { ...props.selectedPropConfig };
+      const copy = { ...props.config };
       copy[k] = e;
       props.onChange(copy);
     },
-    [props.selectedPropConfig, props.onChange]
+    [props.config, props.onChange]
   );
 
   const handleNumeric = React.useCallback(
     (k) => (e) => {
       const value = (e.target as HTMLInputElement).value;
-      const copy = { ...props.selectedPropConfig };
+      const copy = { ...props.config };
       copy[k] = value;
       props.onChange(copy);
     },
-    [props.selectedPropConfig, props.onChange]
+    [props.config, props.onChange]
   );
 
   const handleNumericStep = React.useCallback(
     (k, v) => (e) => {
-      const copy = { ...props.selectedPropConfig };
-      copy[k] = props.selectedPropConfig[k] + v;
+      const copy = { ...props.config };
+      copy[k] = props.config[k] + v;
       props.onChange(copy);
     },
-    [props.selectedPropConfig, props.onChange]
+    [props.config, props.onChange]
   );
 
   const createControl = React.useCallback(
@@ -277,9 +275,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         case 'boolean':
           input = (
             <Switch
-              label={ctrl.name}
-              isReversed
-              isChecked={props.selectedPropConfig[ctrl.key]}
+              isChecked={props.config[ctrl.key]}
               onChange={handleChange(ctrl.key)}
             />
           );
@@ -289,7 +285,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
             <NumberInput
               inputName={ctrl.name}
               inputAriaLabel={`${ctrl.name} input`}
-              value={props.selectedPropConfig[ctrl.key]}
+              value={props.config[ctrl.key]}
               onChange={handleNumeric(ctrl.key)}
               onPlus={handleNumericStep(ctrl.key, 1)}
               onMinus={handleNumericStep(ctrl.key, -1)}
@@ -301,7 +297,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
             <TextInput
               type="text"
               aria-label={`${ctrl.key} input`}
-              value={props.selectedPropConfig[ctrl.key]}
+              value={props.config[ctrl.key]}
               onChange={handleChange(ctrl.key)}
             />
           );
@@ -311,7 +307,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
             <TextArea
               type="text"
               aria-label={`${ctrl.key} input`}
-              value={props.selectedPropConfig[ctrl.key]}
+              value={props.config[ctrl.key]}
               onChange={handleChange(ctrl.key)}
             />
           );
@@ -323,7 +319,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
       return (
         <FormGroup
           key={`${ctrl.key}}`}
-          label={ctrl.kind !== 'boolean' ? ctrl.name : undefined}
+          label={ctrl.name}
           helperText={ctrl.description}
           isInline
           isStack
@@ -332,7 +328,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
         </FormGroup>
       );
     },
-    [props.selectedPropConfig, handleChange, handleNumeric, handleNumericStep]
+    [props.config, handleChange, handleNumeric, handleNumericStep]
   );
 
   return (
