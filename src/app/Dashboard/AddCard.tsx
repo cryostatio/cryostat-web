@@ -119,7 +119,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
     setShowWizard(false);
     setSelection('');
     setPropsConfig({});
-  }, [setSelection, setShowWizard]);
+  }, [setSelection, setShowWizard, setPropsConfig]);
 
   // custom nav for disabling subsequent steps (ex. configuration) if a card type hasn't been selected first
   const customNav: CustomWizardNavFunction = React.useCallback(
