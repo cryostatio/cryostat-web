@@ -53,7 +53,7 @@ const initialState = {
 export const dashboardConfigReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(addCardIntent, (state, { payload }) => {
-      state.list.splice(0, 0, payload);
+      state.list.push(payload);
     })
     .addCase(deleteCardIntent, (state, { payload }) => {
       state.list.splice(payload.idx || 0, 1);
