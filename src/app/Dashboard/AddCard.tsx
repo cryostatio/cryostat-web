@@ -269,12 +269,7 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
       switch (ctrl.kind) {
         case 'boolean':
           input = (
-            <Switch
-              label="On"
-              labelOff="Off"
-              isChecked={props.config[ctrl.key]}
-              onChange={handleChange(ctrl.key)}
-            />
+            <Switch label="On" labelOff="Off" isChecked={props.config[ctrl.key]} onChange={handleChange(ctrl.key)} />
           );
           break;
         case 'number':
