@@ -116,8 +116,9 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   }, [setShowWizard]);
 
   const handleStop = React.useCallback(() => {
-    setSelection('');
     setShowWizard(false);
+    setSelection('');
+    setPropsConfig({});
   }, [setSelection, setShowWizard]);
 
   // custom nav for disabling subsequent steps (ex. configuration) if a card type hasn't been selected first
@@ -366,7 +367,6 @@ const SelectControl = (props: { handleChange: ({}) => void; control: PropControl
             }
             return [...old, v];
           }),
-        complete: () => {},
       })
     );
   }, [props.control, props.control.values, of, addSubscription, setOptions]);
