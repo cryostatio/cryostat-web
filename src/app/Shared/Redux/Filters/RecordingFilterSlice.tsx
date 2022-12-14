@@ -42,17 +42,97 @@ import {
   RecordingFiltersCategories,
 } from '@app/Recordings/RecordingFilters';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { createReducer } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
-import {
-  addFilterIntent,
-  addTargetIntent,
-  deleteAllFiltersIntent,
-  deleteCategoryFiltersIntent,
-  deleteFilterIntent,
-  deleteTargetIntent,
-  updateCategoryIntent,
-} from './RecordingFilterActions';
+import { UpdateFilterOptions } from './Common';
+
+// Common action string format: "resource(s)/action"
+export enum RecordingFilterAction {
+  FILTER_ADD = 'recording-filter/add',
+  FILTER_DELETE = 'recording-filter/delete',
+  FILTER_DELETE_ALL = 'recording-filter/delete-all', // Delete all filters in all categories
+  CATEGORY_FILTERS_DELETE = 'recording-filter/delete-category', // Delete all filters of the same category
+  CATEGORY_UPDATE = 'recording-filter-category/update',
+  TARGET_ADD = 'recording-filter-target/add',
+  TARGET_DELETE = 'recording-filter-target/delete',
+}
+
+export const enumValues = new Set(Object.values(RecordingFilterAction));
+
+export interface RecordingFilterActionPayload {
+  target: string;
+  category?: string;
+  filter?: any;
+  isArchived?: boolean;
+}
+
+export const addFilterIntent = createAction(
+  RecordingFilterAction.FILTER_ADD,
+  (target: string, category: string, filter: any, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      category: category,
+      filter: filter,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
+
+export const deleteFilterIntent = createAction(
+  RecordingFilterAction.FILTER_DELETE,
+  (target: string, category: string, filter: any, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      category: category,
+      filter: filter,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
+
+export const deleteCategoryFiltersIntent = createAction(
+  RecordingFilterAction.CATEGORY_FILTERS_DELETE,
+  (target: string, category: string, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      category: category,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
+
+export const deleteAllFiltersIntent = createAction(
+  RecordingFilterAction.FILTER_DELETE_ALL,
+  (target: string, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
+
+export const updateCategoryIntent = createAction(
+  RecordingFilterAction.CATEGORY_UPDATE,
+  (target: string, category: string, isArchived: boolean) => ({
+    payload: {
+      target: target,
+      category: category,
+      isArchived: isArchived,
+    } as RecordingFilterActionPayload,
+  })
+);
+
+export const addTargetIntent = createAction(RecordingFilterAction.TARGET_ADD, (target: string) => ({
+  payload: {
+    target: target,
+  } as RecordingFilterActionPayload,
+}));
+
+export const deleteTargetIntent = createAction(RecordingFilterAction.TARGET_DELETE, (target: string) => ({
+  payload: {
+    target: target,
+  } as RecordingFilterActionPayload,
+}));
 
 export interface TargetRecordingFilters {
   target: string; // connectURL
@@ -65,15 +145,6 @@ export interface TargetRecordingFilters {
     // archived recordings
     selectedCategory?: string;
     filters: RecordingFiltersCategories;
-  };
-}
-
-export interface UpdateFilterOptions {
-  filterKey: string;
-  filterValue?: any;
-  deleted?: boolean;
-  deleteOptions?: {
-    all: boolean;
   };
 }
 
@@ -142,12 +213,11 @@ export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRec
   };
 };
 
-// Initial states are loaded from local storage if there are any
-const initialState = {
-  list: getFromLocalStorage('TARGET_RECORDING_FILTERS', []) as TargetRecordingFilters[],
-};
+const INITIAL_STATE = getFromLocalStorage('TARGET_RECORDING_FILTERS', {
+  list: [] as TargetRecordingFilters[],
+});
 
-export const recordingFilterReducer = createReducer(initialState, (builder) => {
+export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
     .addCase(addFilterIntent, (state, { payload }) => {
       const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
@@ -272,3 +342,5 @@ export const recordingFilterReducer = createReducer(initialState, (builder) => {
       state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
     });
 });
+
+export default recordingFilterReducer;

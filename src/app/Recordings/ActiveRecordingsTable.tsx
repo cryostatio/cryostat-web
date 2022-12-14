@@ -79,11 +79,13 @@ import {
   deleteAllFiltersIntent,
   deleteCategoryFiltersIntent,
   deleteFilterIntent,
-} from '@app/Shared/Redux/RecordingFilterActions';
-import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
+import { TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 
 export enum PanelContent {
   LABELS,

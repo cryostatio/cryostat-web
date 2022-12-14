@@ -69,17 +69,19 @@ import { emptyArchivedRecordingFilters, RecordingFiltersCategories } from './Rec
 import { filterRecordings, RecordingFilters } from './RecordingFilters';
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
+import { TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
   addFilterIntent,
   addTargetIntent,
   deleteAllFiltersIntent,
   deleteCategoryFiltersIntent,
   deleteFilterIntent,
-} from '@app/Shared/Redux/RecordingFilterActions';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
 import { formatBytes, hashCode } from '@app/utils/utils';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;

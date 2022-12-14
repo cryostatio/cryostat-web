@@ -38,13 +38,10 @@
 
 import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisScoreFilter';
 import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
-import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
-import { RootState, setupStore } from '@app/Shared/Redux/ReduxStore';
-import { CategorizedRuleEvaluations, RuleEvaluation } from '@app/Shared/Services/Report.service';
-import { cleanup, screen, within } from '@testing-library/react';
+import { TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { cleanup, screen } from '@testing-library/react';
 import React from 'react';
-import { Provider } from 'react-redux';
-import renderer, { act } from 'react-test-renderer';
 import { renderWithReduxStore } from '../../../Common';
 
 const mockTargetConnectUrl = 'service:jmx:rmi://someUrl';

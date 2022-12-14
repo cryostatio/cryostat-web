@@ -36,50 +36,26 @@
  * SOFTWARE.
  */
 
-import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlicer';
-import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
-import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
-import { persistMiddleware } from './Middlewares/PersistMiddleware';
+import { saveToLocalStorage } from '@app/utils/LocalStorage';
+import { Middleware } from '@reduxjs/toolkit';
+import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlicer';
+import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
+import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
+import { RootState } from '../ReduxStore';
 
-// Export actions
-export const { addCardIntent, deleteCardIntent } = dashboardConfigSlice;
-export const {
-  addFilterIntent,
-  deleteFilterIntent,
-  addTargetIntent,
-  deleteTargetIntent,
-  deleteCategoryFiltersIntent,
-  updateCategoryIntent,
-  deleteAllFiltersIntent,
-} = recordingFilterSlice;
-export const {
-  automatedAnalysisAddGlobalFilterIntent,
-  automatedAnalysisAddFilterIntent,
-  automatedAnalysisAddTargetIntent,
-  automatedAnalysisDeleteAllFiltersIntent,
-  automatedAnalysisDeleteCategoryFiltersIntent,
-  automatedAnalysisDeleteFilterIntent,
-  automatedAnalysisDeleteTargetIntent,
-  automatedAnalysisUpdateCategoryIntent,
-} = automatedAnalysisFilterSlice;
-
-export const rootReducer = combineReducers({
-  dashboardConfigs: dashboardConfigReducer,
-  recordingFilters: recordingFilterReducer,
-  automatedAnalysisFilters: automatedAnalysisFilterReducer,
-});
-
-export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
-  configureStore({
-    reducer: rootReducer,
-    preloadedState,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(persistMiddleware),
-  });
-
-export const store = setupStore();
-
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof rootReducer>;
-export type StateDispatch = typeof store.dispatch;
-export type Store = ReturnType<typeof setupStore>;
+export const persistMiddleware: Middleware<{}, RootState> =
+  ({ getState }) =>
+  (next) =>
+  (action) => {
+    const result = next(action);
+    // Extract new state here
+    const rootState = getState();
+    if (AutomatedAnalysisFilterActions.has(action.type)) {
+      saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', rootState.automatedAnalysisFilters);
+    } else if (RecordingFilterActions.has(action.type)) {
+      saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);
+    } else if (DashboardConfigActions.has(action.type)) {
+      saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
+    }
+    return result;
+  };

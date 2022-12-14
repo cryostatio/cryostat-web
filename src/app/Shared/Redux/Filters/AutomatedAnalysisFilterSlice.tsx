@@ -42,19 +42,108 @@ import {
   emptyAutomatedAnalysisFilters,
 } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { createReducer } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
-import {
-  automatedAnalysisAddFilterIntent,
-  automatedAnalysisAddGlobalFilterIntent,
-  automatedAnalysisAddTargetIntent,
-  automatedAnalysisDeleteAllFiltersIntent,
-  automatedAnalysisDeleteCategoryFiltersIntent,
-  automatedAnalysisDeleteFilterIntent,
-  automatedAnalysisDeleteTargetIntent,
-  automatedAnalysisUpdateCategoryIntent,
-} from './AutomatedAnalysisFilterActions';
-import { UpdateFilterOptions } from './RecordingFilterReducer';
+import { UpdateFilterOptions } from './Common';
+
+// Common action string format: "resource(s)/action"
+export enum AutomatedAnalysisFilterAction {
+  GLOBAL_FILTER_ADD = 'automated-analysis-global-filter/add',
+  FILTER_ADD = 'automated-analysis-filter/add',
+  FILTER_DELETE = 'automated-analysis-filter/delete',
+  FILTER_DELETE_ALL = 'automated-analysis-filter/delete_all', // Delete all filters in all categories
+  CATEGORY_FILTERS_DELETE = 'automated-analysis-filters/delete', // Delete all filters of the same category
+  CATEGORY_UPDATE = 'automated-analysis-category/update',
+  TARGET_ADD = 'automated-analysis-target/add',
+  TARGET_DELETE = 'automated-analysis-target/delete',
+}
+
+export const enumValues = new Set(Object.values(AutomatedAnalysisFilterAction));
+
+export interface AutomatedAnalysisFilterActionPayload {
+  target: string;
+  category?: string;
+  filter?: any;
+}
+
+export const automatedAnalysisAddGlobalFilterIntent = createAction(
+  AutomatedAnalysisFilterAction.GLOBAL_FILTER_ADD,
+  (category: string, filter: any) => ({
+    payload: {
+      category: category,
+      filter: filter,
+    },
+  })
+);
+
+export const automatedAnalysisAddFilterIntent = createAction(
+  AutomatedAnalysisFilterAction.FILTER_ADD,
+  (target: string, category: string, filter: any) => ({
+    payload: {
+      target: target,
+      category: category,
+      filter: filter,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);
+
+export const automatedAnalysisDeleteFilterIntent = createAction(
+  AutomatedAnalysisFilterAction.FILTER_DELETE,
+  (target: string, category: string, filter: any) => ({
+    payload: {
+      target: target,
+      category: category,
+      filter: filter,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);
+
+export const automatedAnalysisDeleteCategoryFiltersIntent = createAction(
+  AutomatedAnalysisFilterAction.CATEGORY_FILTERS_DELETE,
+  (target: string, category: string) => ({
+    payload: {
+      target: target,
+      category: category,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);
+
+export const automatedAnalysisDeleteAllFiltersIntent = createAction(
+  AutomatedAnalysisFilterAction.FILTER_DELETE_ALL,
+  (target: string) => ({
+    payload: {
+      target: target,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);
+
+export const automatedAnalysisUpdateCategoryIntent = createAction(
+  AutomatedAnalysisFilterAction.CATEGORY_UPDATE,
+  (target: string, category: string) => ({
+    payload: {
+      target: target,
+      category: category,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);
+
+export const automatedAnalysisAddTargetIntent = createAction(
+  AutomatedAnalysisFilterAction.TARGET_ADD,
+  (target: string) => ({
+    payload: {
+      target: target,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);
+
+export const automatedAnalysisDeleteTargetIntent = createAction(
+  AutomatedAnalysisFilterAction.TARGET_DELETE,
+  (target: string) => ({
+    payload: {
+      target: target,
+    } as AutomatedAnalysisFilterActionPayload,
+  })
+);
 
 export interface AutomatedAnalysisFilterState {
   targetFilters: TargetAutomatedAnalysisFilters[];
@@ -133,15 +222,14 @@ export const deleteAllAutomatedAnalysisFilters = (automatedAnalysisFilter: Targe
   };
 };
 
-// Initial states are loaded from local storage if there are any
-const initialState = {
-  state: getFromLocalStorage('AUTOMATED_ANALYSIS_FILTERS', {
+const INITIAL_STATE = getFromLocalStorage('AUTOMATED_ANALYSIS_FILTERS', {
+  state: {
     targetFilters: [],
     globalFilters: { filters: { Score: 0 } },
-  }) as AutomatedAnalysisFilterState,
-};
+  } as AutomatedAnalysisFilterState,
+});
 
-export const automatedAnalysisFilterReducer = createReducer(initialState, (builder) => {
+export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
     .addCase(automatedAnalysisAddGlobalFilterIntent, (state, { payload }) => {
       const oldAutomatedAnalysisGlobalFilter = getAutomatedAnalysisGlobalFilter(state.state);
@@ -234,3 +322,5 @@ export const automatedAnalysisFilterReducer = createReducer(initialState, (build
       );
     });
 });
+
+export default automatedAnalysisFilterReducer;

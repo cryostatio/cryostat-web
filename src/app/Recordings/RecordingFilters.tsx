@@ -55,9 +55,8 @@ import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { useDispatch, useSelector } from 'react-redux';
-import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
-import { updateCategoryIntent } from '@app/Shared/Redux/RecordingFilterActions';
-import { StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { updateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
 
 export interface RecordingFiltersCategories {
   Name: string[];

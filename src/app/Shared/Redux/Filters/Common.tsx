@@ -36,26 +36,11 @@
  * SOFTWARE.
  */
 
-import { getFromLocalStorage } from '@app/utils/LocalStorage';
-import { createReducer } from '@reduxjs/toolkit';
-import { addCardIntent, deleteCardIntent } from './DashboardConfigActions';
-
-export interface CardConfig {
-  name: string;
-  props: any;
+export interface UpdateFilterOptions {
+  filterKey: string;
+  filterValue?: any;
+  deleted?: boolean;
+  deleteOptions?: {
+    all: boolean;
+  };
 }
-
-// Initial states are loaded from local storage if there are any
-const initialState = {
-  list: getFromLocalStorage('DASHBOARD_CFG', []) as CardConfig[],
-};
-
-export const dashboardConfigReducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase(addCardIntent, (state, { payload }) => {
-      state.list.push(payload);
-    })
-    .addCase(deleteCardIntent, (state, { payload }) => {
-      state.list.splice(payload.idx || 0, 1);
-    });
-});

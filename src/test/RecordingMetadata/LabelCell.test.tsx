@@ -44,7 +44,7 @@ import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Target } from '@app/Shared/Services/Target.service';
 import userEvent from '@testing-library/user-event';
-import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { renderDefault } from '../Common';
 
 const mockFooTarget: Target = {

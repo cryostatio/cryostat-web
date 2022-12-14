@@ -37,16 +37,17 @@
  */
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import LoadingView from '@app/LoadingView/LoadingView';
+import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   automatedAnalysisAddFilterIntent,
   automatedAnalysisAddTargetIntent,
   automatedAnalysisDeleteAllFiltersIntent,
   automatedAnalysisDeleteCategoryFiltersIntent,
   automatedAnalysisDeleteFilterIntent,
-} from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
-import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/AutomatedAnalysisFilterReducer';
-import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
 import {
   ArchivedRecording,
   automatedAnalysisRecordingName,

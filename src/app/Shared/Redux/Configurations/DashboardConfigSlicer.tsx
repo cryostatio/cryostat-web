@@ -36,13 +36,16 @@
  * SOFTWARE.
  */
 
-import { createAction } from '@reduxjs/toolkit';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 
 // Common action string format: "resource(s)/action"
 export enum DashboardConfigAction {
-  CARD_ADD = 'card/add',
-  CARD_REMOVE = 'card/remove',
+  CARD_ADD = 'dashboard-card-config/add',
+  CARD_REMOVE = 'dashboard-card-config/remove',
 }
+
+export const enumValues = new Set(Object.values(DashboardConfigAction));
 
 export interface DashboardAddConfigActionPayload {
   name: string;
@@ -65,3 +68,24 @@ export const deleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, 
     idx,
   } as DashboardDeleteConfigActionPayload,
 }));
+
+export interface CardConfig {
+  name: string;
+  props: any;
+}
+
+const INITIAL_STATE = getFromLocalStorage('DASHBOARD_CFG', {
+  list: [] as CardConfig[],
+});
+
+export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
+  builder
+    .addCase(addCardIntent, (state, { payload }) => {
+      state.list.push(payload);
+    })
+    .addCase(deleteCardIntent, (state, { payload }) => {
+      state.list.splice(payload.idx || 0, 1);
+    });
+});
+
+export default dashboardConfigReducer;

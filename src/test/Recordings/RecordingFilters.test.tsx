@@ -46,7 +46,8 @@ import {
   RecordingFilters,
   RecordingFiltersCategories,
 } from '@app/Recordings/RecordingFilters';
-import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { Target } from '@app/Shared/Services/Target.service';

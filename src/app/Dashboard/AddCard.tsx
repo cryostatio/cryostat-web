@@ -65,8 +65,7 @@ import {
 } from '@patternfly/react-core/dist/js/next';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
-import { StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { addCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
+import { addCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { DashboardCards, getConfigByTitle, PropControl } from './Dashboard';
 import { Observable, of } from 'rxjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
