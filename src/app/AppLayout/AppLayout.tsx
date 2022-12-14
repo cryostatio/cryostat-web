@@ -112,8 +112,30 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   }, [serviceContext.target, setShowAuthModal, addSubscription]);
 
   React.useEffect(() => {
-    addSubscription(notificationsContext.notifications().subscribe(setNotifications));
+    addSubscription(notificationsContext.notifications().subscribe((n) => setNotifications([...n])));
   }, [notificationsContext.notifications, addSubscription]);
+
+  // TODO make this a configurable setting
+  const maxToasts = 4;
+
+  const notificationsToDisplay = React.useMemo(() => {
+    return notifications
+      .filter((n) => !n.read && !n.hidden)
+      .filter((n) => serviceContext.settings.notificationsEnabledFor(NotificationCategory[n.category || '']))
+      .sort((prev, curr) => {
+        if (!prev.timestamp) return -1;
+        if (!curr.timestamp) return 1;
+        return prev.timestamp - curr.timestamp;
+      });
+  }, [notifications, serviceContext.settings, serviceContext.settings.notificationsEnabledFor, maxToasts]);
+
+  const overflowMessage = React.useMemo(() => {
+    const overflow = notificationsToDisplay.length - maxToasts;
+    if (overflow > 0) {
+      return `View ${overflow} more`;
+    }
+    return '';
+  }, [notificationsToDisplay, maxToasts]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
@@ -153,8 +175,13 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   }, [serviceContext.target, dismissAuthModal]);
 
   const handleMarkNotificationRead = React.useCallback(
-    (key) => notificationsContext.setRead(key, true),
+    (key) => () => notificationsContext.setRead(key, true),
     [notificationsContext.setRead]
+  );
+
+  const handleTimeout = React.useCallback(
+    (key) => () => notificationsContext.setHidden(key),
+    [notificationsContext, notificationsContext.setHidden]
   );
 
   React.useEffect(() => {
@@ -201,6 +228,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
 
   const handleCloseNotificationCenter = React.useCallback(() => {
     setNotificationDrawerExpanded(false);
+  }, [setNotificationDrawerExpanded]);
+
+  const handleOpenNotificationCenter = React.useCallback(() => {
+    setNotificationDrawerExpanded(true);
   }, [setNotificationDrawerExpanded]);
 
   const handleAboutModalToggle = React.useCallback(() => {
@@ -328,24 +359,26 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const Sidebar = <PageSidebar theme="dark" nav={Navigation} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />;
   const PageSkipToContent = <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>;
   const NotificationDrawer = React.useMemo(() => <NotificationCenter onClose={handleCloseNotificationCenter} />, []);
+
   return (
     <>
-      <AlertGroup isToast>
-        {notifications
-          .filter((n) => !n.read)
-          .filter((n) => serviceContext.settings.notificationsEnabledFor(NotificationCategory[n.category || '']))
-          .sort((prev, curr) => {
-            if (!prev.timestamp) return -1;
-            if (!curr.timestamp) return 1;
-            return prev.timestamp - curr.timestamp;
-          })
+      <AlertGroup
+        isToast
+        isLiveRegion
+        overflowMessage={isNotificationDrawerExpanded ? '' : overflowMessage}
+        onOverflowClick={handleOpenNotificationCenter}
+      >
+        {(isNotificationDrawerExpanded ? [] : notificationsToDisplay)
+          .slice(0, maxToasts)
           .map(({ key, title, message, variant }) => (
             <Alert
+              isLiveRegion
               variant={variant}
               key={title}
               title={title}
-              actionClose={<AlertActionCloseButton onClose={() => handleMarkNotificationRead(key)} />}
+              actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
               timeout={true}
+              onTimeout={handleTimeout(key)}
             >
               {message?.toString()}
             </Alert>

@@ -43,6 +43,7 @@ import { nanoid } from 'nanoid';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface Notification {
+  hidden?: boolean;
   read?: boolean;
   key?: string;
   title: string;
@@ -113,6 +114,18 @@ export class Notifications {
 
   problemsNotifications(): Observable<Notification[]> {
     return this.notifications().pipe(map((a) => a.filter(Notifications.isProblemNotification)));
+  }
+
+  setHidden(key?: string, hidden: boolean = true): void {
+    if (!key) {
+      return;
+    }
+    for (let n of this._notifications) {
+      if (n.key === key) {
+        n.hidden = hidden;
+      }
+    }
+    this._notifications$.next(this._notifications);
   }
 
   setRead(key?: string, read: boolean = true): void {
