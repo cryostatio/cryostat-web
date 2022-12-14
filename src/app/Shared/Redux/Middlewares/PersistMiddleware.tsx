@@ -56,6 +56,8 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);
     } else if (DashboardConfigActions.has(action.type)) {
       saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
+    } else {
+      console.warn(`Action ${action.type} does not persist state.`);
     }
     return result;
   };
