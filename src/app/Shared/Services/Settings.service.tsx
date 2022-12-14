@@ -149,6 +149,14 @@ export class SettingsService {
     this.setDeletionDialogsEnabled(map);
   }
 
+  visibleNotificationsCount(): number {
+    return getFromLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', 5);
+  }
+
+  setVisibleNotificationCount(count: number): void {
+    saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count);
+  }
+
   notificationsEnabled(): Map<NotificationCategory, boolean> {
     const value = getFromLocalStorage('NOTIFICATIONS_ENABLED', undefined);
     if (typeof value === 'object') {

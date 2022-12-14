@@ -64,7 +64,7 @@ import {
   PageSidebar,
   SkipToContent,
 } from '@patternfly/react-core';
-import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
+import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, PlusCircleIcon, UserIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
@@ -115,9 +115,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     addSubscription(notificationsContext.notifications().subscribe((n) => setNotifications([...n])));
   }, [notificationsContext.notifications, addSubscription]);
 
-  // TODO make this a configurable setting
-  const maxToasts = 4;
-
   const notificationsToDisplay = React.useMemo(() => {
     return notifications
       .filter((n) => !n.read && !n.hidden)
@@ -127,15 +124,15 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
         if (!curr.timestamp) return 1;
         return prev.timestamp - curr.timestamp;
       });
-  }, [notifications, serviceContext.settings, serviceContext.settings.notificationsEnabledFor, maxToasts]);
+  }, [notifications, serviceContext.settings, serviceContext.settings.notificationsEnabledFor]);
 
   const overflowMessage = React.useMemo(() => {
-    const overflow = notificationsToDisplay.length - maxToasts;
+    const overflow = notificationsToDisplay.length - serviceContext.settings.visibleNotificationsCount();
     if (overflow > 0) {
       return `View ${overflow} more`;
     }
     return '';
-  }, [notificationsToDisplay, maxToasts]);
+  }, [notificationsToDisplay, serviceContext.settings.visibleNotificationsCount]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
@@ -273,6 +270,9 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       <PageHeaderTools>
         <PageHeaderToolsGroup>
           <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded}>
+            <Button onClick={() => notificationsContext.info(`test ${+Date.now()}`)}>
+              <PlusCircleIcon />
+            </Button>
             <NotificationBadge
               count={unreadNotificationsCount}
               variant={errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'}
@@ -356,10 +356,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       </NavList>
     </Nav>
   );
+
   const Sidebar = <PageSidebar theme="dark" nav={Navigation} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />;
   const PageSkipToContent = <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>;
   const NotificationDrawer = React.useMemo(() => <NotificationCenter onClose={handleCloseNotificationCenter} />, []);
-
   return (
     <>
       <AlertGroup
@@ -369,7 +369,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
         onOverflowClick={handleOpenNotificationCenter}
       >
         {(isNotificationDrawerExpanded ? [] : notificationsToDisplay)
-          .slice(0, maxToasts)
+          .slice(0, serviceContext.settings.visibleNotificationsCount())
           .map(({ key, title, message, variant }) => (
             <Alert
               isLiveRegion

@@ -37,7 +37,18 @@
  */
 
 import * as React from 'react';
-import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
+import {
+  Divider,
+  ExpandableSection,
+  Switch,
+  Stack,
+  StackItem,
+  SplitItem,
+  Split,
+  NumberInput,
+  LevelItem,
+  Level,
+} from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
@@ -45,6 +56,7 @@ import { UserSetting } from './Settings';
 const Component = () => {
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
+  const [visibleNotifications, setVisibleNotifications] = React.useState(context.settings.visibleNotificationsCount());
   const [expanded, setExpanded] = React.useState(false);
 
   const handleCheckboxChange = React.useCallback(
@@ -64,6 +76,17 @@ const Component = () => {
       setState(newState);
     },
     [state, setState]
+  );
+
+  const handleVisibleStep = React.useCallback(
+    (delta: number) => () => {
+      setVisibleNotifications((old) => {
+        const v = old + delta;
+        context.settings.setVisibleNotificationCount(v);
+        return v;
+      });
+    },
+    [setVisibleNotifications]
   );
 
   const allChecked = React.useMemo(() => {
@@ -92,7 +115,26 @@ const Component = () => {
     <>
       <Stack hasGutter>
         <StackItem key="all-notifications">
-          <Switch id="all-notifications" label="All Notifications" isChecked={allChecked} onChange={handleCheckAll} />
+          <Level>
+            <LevelItem>
+              <Switch
+                id="all-notifications"
+                label="All Notifications"
+                isChecked={allChecked}
+                onChange={handleCheckAll}
+              />
+            </LevelItem>
+            <LevelItem>
+              <NumberInput
+                inputName="alert count"
+                value={visibleNotifications}
+                min={1}
+                max={10}
+                onMinus={handleVisibleStep(-1)}
+                onPlus={handleVisibleStep(1)}
+              />
+            </LevelItem>
+          </Level>
         </StackItem>
         <Divider />
         <ExpandableSection
@@ -109,6 +151,6 @@ const Component = () => {
 
 export const NotificationControl: UserSetting = {
   title: 'Notifications',
-  description: 'Enable or disable notifications by category.',
+  description: 'Enable or disable notifications by category and control how many alerts appear on-screen.',
   content: Component,
 };
