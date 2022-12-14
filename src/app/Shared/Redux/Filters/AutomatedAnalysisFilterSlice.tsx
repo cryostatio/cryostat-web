@@ -39,7 +39,6 @@
 import {
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
-  emptyAutomatedAnalysisFilters,
 } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { createAction, createReducer } from '@reduxjs/toolkit';
@@ -59,6 +58,13 @@ export enum AutomatedAnalysisFilterAction {
 }
 
 export const enumValues = new Set(Object.values(AutomatedAnalysisFilterAction));
+
+export const emptyAutomatedAnalysisFilters = {
+  Name: [],
+  Topic: [],
+} as AutomatedAnalysisFiltersCategories;
+
+export const allowedAutomatedAnalysisFilters = Object.keys(emptyAutomatedAnalysisFilters);
 
 export interface AutomatedAnalysisFilterActionPayload {
   target: string;

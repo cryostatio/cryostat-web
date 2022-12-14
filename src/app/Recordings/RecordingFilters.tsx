@@ -57,6 +57,10 @@ import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { updateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
+import {
+  allowedActiveRecordingFilters,
+  allowedArchivedRecordingFilters,
+} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 
 export interface RecordingFiltersCategories {
   Name: string[];
@@ -66,24 +70,6 @@ export interface RecordingFiltersCategories {
   StartedAfterDate?: string[];
   DurationSeconds?: string[];
 }
-
-export const emptyActiveRecordingFilters = {
-  Name: [],
-  Label: [],
-  State: [],
-  StartedBeforeDate: [],
-  StartedAfterDate: [],
-  DurationSeconds: [],
-} as RecordingFiltersCategories;
-
-export const allowedActiveRecordingFilters = Object.keys(emptyActiveRecordingFilters);
-
-export const emptyArchivedRecordingFilters = {
-  Name: [],
-  Label: [],
-} as RecordingFiltersCategories;
-
-export const allowedArchivedRecordingFilters = Object.keys(emptyArchivedRecordingFilters);
 
 export interface RecordingFiltersProps {
   target: string;

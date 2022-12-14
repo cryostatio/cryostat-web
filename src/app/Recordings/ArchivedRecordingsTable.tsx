@@ -65,11 +65,11 @@ import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { emptyArchivedRecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
+import { RecordingFiltersCategories } from './RecordingFilters';
 import { filterRecordings, RecordingFilters } from './RecordingFilters';
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+import { emptyArchivedRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
   addFilterIntent,
   addTargetIntent,

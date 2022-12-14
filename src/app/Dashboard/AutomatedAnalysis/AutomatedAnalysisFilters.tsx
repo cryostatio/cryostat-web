@@ -53,6 +53,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilter';
 import { AutomatedAnalysisTopicFilter } from './Filters/AutomatedAnalysisTopicFilter';
+import { allowedAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
 
 export interface AutomatedAnalysisFiltersCategories {
   Name: string[];
@@ -62,13 +63,6 @@ export interface AutomatedAnalysisFiltersCategories {
 export interface AutomatedAnalysisGlobalFiltersCategories {
   Score: number;
 }
-
-export const emptyAutomatedAnalysisFilters = {
-  Name: [],
-  Topic: [],
-} as AutomatedAnalysisFiltersCategories;
-
-export const allowedAutomatedAnalysisFilters = Object.keys(emptyAutomatedAnalysisFilters);
 
 export interface AutomatedAnalysisFiltersProps {
   target: string;

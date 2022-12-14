@@ -62,12 +62,7 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import {
-  emptyActiveRecordingFilters,
-  filterRecordings,
-  RecordingFilters,
-  RecordingFiltersCategories,
-} from './RecordingFilters';
+import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
@@ -82,7 +77,7 @@ import {
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
-import { TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';

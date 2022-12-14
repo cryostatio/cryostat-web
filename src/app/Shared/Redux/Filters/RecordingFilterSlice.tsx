@@ -36,11 +36,7 @@
  * SOFTWARE.
  */
 
-import {
-  emptyActiveRecordingFilters,
-  emptyArchivedRecordingFilters,
-  RecordingFiltersCategories,
-} from '@app/Recordings/RecordingFilters';
+import { RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
@@ -58,6 +54,24 @@ export enum RecordingFilterAction {
 }
 
 export const enumValues = new Set(Object.values(RecordingFilterAction));
+
+export const emptyActiveRecordingFilters = {
+  Name: [],
+  Label: [],
+  State: [],
+  StartedBeforeDate: [],
+  StartedAfterDate: [],
+  DurationSeconds: [],
+} as RecordingFiltersCategories;
+
+export const allowedActiveRecordingFilters = Object.keys(emptyActiveRecordingFilters);
+
+export const emptyArchivedRecordingFilters = {
+  Name: [],
+  Label: [],
+} as RecordingFiltersCategories;
+
+export const allowedArchivedRecordingFilters = Object.keys(emptyArchivedRecordingFilters);
 
 export interface RecordingFilterActionPayload {
   target: string;

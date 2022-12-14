@@ -37,8 +37,11 @@
  */
 
 import { AutomatedAnalysisScoreFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisScoreFilter';
-import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
-import { TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+import {
+  emptyActiveRecordingFilters,
+  emptyArchivedRecordingFilters,
+  TargetRecordingFilters,
+} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { cleanup, screen } from '@testing-library/react';
 import React from 'react';

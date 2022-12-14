@@ -37,7 +37,10 @@
  */
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import LoadingView from '@app/LoadingView/LoadingView';
-import { TargetAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
+import {
+  emptyAutomatedAnalysisFilters,
+  TargetAutomatedAnalysisFilters,
+} from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   automatedAnalysisAddFilterIntent,
@@ -102,7 +105,6 @@ import {
   AutomatedAnalysisFilters,
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
-  emptyAutomatedAnalysisFilters,
   filterAutomatedAnalysis,
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
