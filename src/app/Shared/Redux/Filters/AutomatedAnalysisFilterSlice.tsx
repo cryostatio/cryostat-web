@@ -40,10 +40,12 @@ import {
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
 } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
-import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { getPersistedState } from '../utils';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
 import { UpdateFilterOptions } from './Common';
+
+const _version = '1';
 
 // Common action string format: "resource(s)/action"
 export enum AutomatedAnalysisFilterAction {
@@ -228,12 +230,13 @@ export const deleteAllAutomatedAnalysisFilters = (automatedAnalysisFilter: Targe
   };
 };
 
-const INITIAL_STATE = getFromLocalStorage('AUTOMATED_ANALYSIS_FILTERS', {
+const INITIAL_STATE = getPersistedState('AUTOMATED_ANALYSIS_FILTERS', _version) || {
+  _version,
   state: {
     targetFilters: [],
     globalFilters: { filters: { Score: 0 } },
   } as AutomatedAnalysisFilterState,
-});
+};
 
 export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder

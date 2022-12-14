@@ -37,10 +37,12 @@
  */
 
 import { RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
-import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { getPersistedState } from '../utils';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
 import { UpdateFilterOptions } from './Common';
+
+const _version = '1';
 
 // Common action string format: "resource(s)/action"
 export enum RecordingFilterAction {
@@ -227,9 +229,10 @@ export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRec
   };
 };
 
-const INITIAL_STATE = getFromLocalStorage('TARGET_RECORDING_FILTERS', {
+const INITIAL_STATE = getPersistedState('TARGET_RECORDING_FILTERS', _version) || {
+  _version,
   list: [] as TargetRecordingFilters[],
-});
+};
 
 export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder

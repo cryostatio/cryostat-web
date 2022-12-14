@@ -36,62 +36,12 @@
  * SOFTWARE.
  */
 
-import { createAction, createReducer } from '@reduxjs/toolkit';
-import { getPersistedState } from '../utils';
+import { getFromLocalStorage, LocalStorageKeyStrings } from '@app/utils/LocalStorage';
 
-const _version = '1';
-
-// Common action string format: "resource(s)/action"
-export enum DashboardConfigAction {
-  CARD_ADD = 'dashboard-card-config/add',
-  CARD_REMOVE = 'dashboard-card-config/remove',
-}
-
-export const enumValues = new Set(Object.values(DashboardConfigAction));
-
-export interface DashboardAddConfigActionPayload {
-  name: string;
-  props: any;
-}
-
-export interface DashboardDeleteConfigActionPayload {
-  idx: number;
-}
-
-export const dashboardCardConfigAddCardIntent = createAction(
-  DashboardConfigAction.CARD_ADD,
-  (name: string, props: any) => ({
-    payload: {
-      name,
-      props,
-    } as DashboardAddConfigActionPayload,
-  })
-);
-
-export const dashboardCardConfigDeleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
-  payload: {
-    idx,
-  } as DashboardDeleteConfigActionPayload,
-}));
-
-export interface CardConfig {
-  name: string;
-  props: any;
-}
-
-const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version) || {
-  _version,
-  list: [] as CardConfig[],
+export const getPersistedState = (key: LocalStorageKeyStrings, version: string): any => {
+  const persisted = getFromLocalStorage(key, undefined);
+  if (!persisted || persisted._version !== version) {
+    return undefined;
+  }
+  return persisted;
 };
-
-export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
-  builder
-    .addCase(dashboardCardConfigAddCardIntent, (state, { payload }) => {
-      state.list.push(payload);
-    })
-    .addCase(dashboardCardConfigDeleteCardIntent, (state, { payload }) => {
-      state.list.splice(payload.idx || 0, 1);
-    });
-});
-
-export default dashboardConfigReducer;
