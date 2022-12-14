@@ -80,7 +80,7 @@ export interface RecordingFilterActionPayload {
   isArchived?: boolean;
 }
 
-export const addFilterIntent = createAction(
+export const recordingAddFilterIntent = createAction(
   RecordingFilterAction.FILTER_ADD,
   (target: string, category: string, filter: any, isArchived: boolean) => ({
     payload: {
@@ -92,7 +92,7 @@ export const addFilterIntent = createAction(
   })
 );
 
-export const deleteFilterIntent = createAction(
+export const recordingDeleteFilterIntent = createAction(
   RecordingFilterAction.FILTER_DELETE,
   (target: string, category: string, filter: any, isArchived: boolean) => ({
     payload: {
@@ -104,7 +104,7 @@ export const deleteFilterIntent = createAction(
   })
 );
 
-export const deleteCategoryFiltersIntent = createAction(
+export const recordingDeleteCategoryFiltersIntent = createAction(
   RecordingFilterAction.CATEGORY_FILTERS_DELETE,
   (target: string, category: string, isArchived: boolean) => ({
     payload: {
@@ -115,7 +115,7 @@ export const deleteCategoryFiltersIntent = createAction(
   })
 );
 
-export const deleteAllFiltersIntent = createAction(
+export const recordingDeleteAllFiltersIntent = createAction(
   RecordingFilterAction.FILTER_DELETE_ALL,
   (target: string, isArchived: boolean) => ({
     payload: {
@@ -125,7 +125,7 @@ export const deleteAllFiltersIntent = createAction(
   })
 );
 
-export const updateCategoryIntent = createAction(
+export const recordingUpdateCategoryIntent = createAction(
   RecordingFilterAction.CATEGORY_UPDATE,
   (target: string, category: string, isArchived: boolean) => ({
     payload: {
@@ -136,13 +136,13 @@ export const updateCategoryIntent = createAction(
   })
 );
 
-export const addTargetIntent = createAction(RecordingFilterAction.TARGET_ADD, (target: string) => ({
+export const recordingAddTargetIntent = createAction(RecordingFilterAction.TARGET_ADD, (target: string) => ({
   payload: {
     target: target,
   } as RecordingFilterActionPayload,
 }));
 
-export const deleteTargetIntent = createAction(RecordingFilterAction.TARGET_DELETE, (target: string) => ({
+export const recordingDeleteTargetIntent = createAction(RecordingFilterAction.TARGET_DELETE, (target: string) => ({
   payload: {
     target: target,
   } as RecordingFilterActionPayload,
@@ -233,7 +233,7 @@ const INITIAL_STATE = getFromLocalStorage('TARGET_RECORDING_FILTERS', {
 
 export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
-    .addCase(addFilterIntent, (state, { payload }) => {
+    .addCase(recordingAddFilterIntent, (state, { payload }) => {
       const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
       let newTargetRecordingFilter: TargetRecordingFilters;
@@ -264,7 +264,7 @@ export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => 
       state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
       state.list.push(newTargetRecordingFilter);
     })
-    .addCase(deleteFilterIntent, (state, { payload }) => {
+    .addCase(recordingDeleteFilterIntent, (state, { payload }) => {
       const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
       let newTargetRecordingFilter: TargetRecordingFilters;
@@ -297,7 +297,7 @@ export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => 
       state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
       state.list.push(newTargetRecordingFilter);
     })
-    .addCase(deleteCategoryFiltersIntent, (state, { payload }) => {
+    .addCase(recordingDeleteCategoryFiltersIntent, (state, { payload }) => {
       const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
 
       let newTargetRecordingFilter: TargetRecordingFilters;
@@ -330,13 +330,13 @@ export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => 
       state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
       state.list.push(newTargetRecordingFilter);
     })
-    .addCase(deleteAllFiltersIntent, (state, { payload }) => {
+    .addCase(recordingDeleteAllFiltersIntent, (state, { payload }) => {
       const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
       const newTargetRecordingFilter = deleteAllTargetRecordingFilters(oldTargetRecordingFilter, payload.isArchived!);
       state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
       state.list.push(newTargetRecordingFilter);
     })
-    .addCase(updateCategoryIntent, (state, { payload }) => {
+    .addCase(recordingUpdateCategoryIntent, (state, { payload }) => {
       const oldTargetRecordingFilter = getTargetRecordingFilter(state, payload.target);
       const newTargetRecordingFilter = { ...oldTargetRecordingFilter };
       if (payload.isArchived) {
@@ -347,12 +347,12 @@ export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => 
       state.list = state.list.filter((targetFilters) => targetFilters.target !== newTargetRecordingFilter.target);
       state.list.push(newTargetRecordingFilter);
     })
-    .addCase(addTargetIntent, (state, { payload }) => {
+    .addCase(recordingAddTargetIntent, (state, { payload }) => {
       const targetRecordingFilter = getTargetRecordingFilter(state, payload.target);
       state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
       state.list.push(targetRecordingFilter);
     })
-    .addCase(deleteTargetIntent, (state, { payload }) => {
+    .addCase(recordingDeleteTargetIntent, (state, { payload }) => {
       state.list = state.list.filter((targetFilters) => targetFilters.target !== payload.target);
     });
 });

@@ -43,15 +43,15 @@ import recordingFilterReducer, * as recordingFilterSlice from './Filters/Recordi
 import { persistMiddleware } from './Middlewares/PersistMiddleware';
 
 // Export actions
-export const { addCardIntent, deleteCardIntent } = dashboardConfigSlice;
+export const { dashboardCardConfigAddCardIntent, dashboardCardConfigDeleteCardIntent } = dashboardConfigSlice;
 export const {
-  addFilterIntent,
-  deleteFilterIntent,
-  addTargetIntent,
-  deleteTargetIntent,
-  deleteCategoryFiltersIntent,
-  updateCategoryIntent,
-  deleteAllFiltersIntent,
+  recordingAddFilterIntent,
+  recordingDeleteFilterIntent,
+  recordingAddTargetIntent,
+  recordingDeleteTargetIntent,
+  recordingDeleteCategoryFiltersIntent,
+  recordingUpdateCategoryIntent,
+  recordingDeleteAllFiltersIntent,
 } = recordingFilterSlice;
 export const {
   automatedAnalysisAddGlobalFilterIntent,

@@ -71,11 +71,11 @@ import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { emptyArchivedRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
-  addFilterIntent,
-  addTargetIntent,
-  deleteAllFiltersIntent,
-  deleteCategoryFiltersIntent,
-  deleteFilterIntent,
+  recordingAddFilterIntent,
+  recordingDeleteFilterIntent,
+  recordingAddTargetIntent,
+  recordingDeleteCategoryFiltersIntent,
+  recordingDeleteAllFiltersIntent,
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
@@ -240,33 +240,33 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   ]);
 
   const handleClearFilters = React.useCallback(() => {
-    dispatch(deleteAllFiltersIntent(targetConnectURL, true));
-  }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
+    dispatch(recordingDeleteAllFiltersIntent(targetConnectURL, true));
+  }, [dispatch, recordingDeleteAllFiltersIntent, targetConnectURL]);
 
   const updateFilters = React.useCallback(
     (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
-          dispatch(deleteCategoryFiltersIntent(target, filterKey, true));
+          dispatch(recordingDeleteCategoryFiltersIntent(target, filterKey, true));
         } else {
-          dispatch(deleteFilterIntent(target, filterKey, filterValue, true));
+          dispatch(recordingDeleteFilterIntent(target, filterKey, filterValue, true));
         }
       } else {
-        dispatch(addFilterIntent(target, filterKey, filterValue, true));
+        dispatch(recordingAddFilterIntent(target, filterKey, filterValue, true));
       }
     },
-    [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]
+    [dispatch, recordingDeleteCategoryFiltersIntent, recordingDeleteFilterIntent, recordingAddFilterIntent]
   );
 
   React.useEffect(() => {
     addSubscription(
       props.target.subscribe((target) => {
         setTargetConnectURL(target.connectUrl);
-        dispatch(addTargetIntent(target.connectUrl));
+        dispatch(recordingAddTargetIntent(target.connectUrl));
         refreshRecordingList();
       })
     );
-  }, [addSubscription, refreshRecordingList, dispatch, addTargetIntent, setTargetConnectURL]);
+  }, [addSubscription, refreshRecordingList, dispatch, recordingAddTargetIntent, setTargetConnectURL]);
 
   React.useEffect(() => {
     addSubscription(

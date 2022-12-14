@@ -42,7 +42,7 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { AddCard } from './AddCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
-import { deleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { Observable, of } from 'rxjs';
 
 export interface DashboardCardDescriptor {
@@ -204,9 +204,9 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
 
   const handleRemove = React.useCallback(
     (idx: number) => {
-      dispatch(deleteCardIntent(idx));
+      dispatch(dashboardCardConfigDeleteCardIntent(idx));
     },
-    [dispatch, deleteCardIntent]
+    [dispatch, dashboardCardConfigDeleteCardIntent]
   );
 
   return (

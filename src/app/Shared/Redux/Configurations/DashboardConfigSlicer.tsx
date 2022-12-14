@@ -56,14 +56,17 @@ export interface DashboardDeleteConfigActionPayload {
   idx: number;
 }
 
-export const addCardIntent = createAction(DashboardConfigAction.CARD_ADD, (name: string, props: any) => ({
-  payload: {
-    name,
-    props,
-  } as DashboardAddConfigActionPayload,
-}));
+export const dashboardCardConfigAddCardIntent = createAction(
+  DashboardConfigAction.CARD_ADD,
+  (name: string, props: any) => ({
+    payload: {
+      name,
+      props,
+    } as DashboardAddConfigActionPayload,
+  })
+);
 
-export const deleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
+export const dashboardCardConfigDeleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
   payload: {
     idx,
   } as DashboardDeleteConfigActionPayload,
@@ -80,10 +83,10 @@ const INITIAL_STATE = getFromLocalStorage('DASHBOARD_CFG', {
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
-    .addCase(addCardIntent, (state, { payload }) => {
+    .addCase(dashboardCardConfigAddCardIntent, (state, { payload }) => {
       state.list.push(payload);
     })
-    .addCase(deleteCardIntent, (state, { payload }) => {
+    .addCase(dashboardCardConfigDeleteCardIntent, (state, { payload }) => {
       state.list.splice(payload.idx || 0, 1);
     });
 });

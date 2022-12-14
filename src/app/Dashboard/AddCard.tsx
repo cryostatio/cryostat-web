@@ -65,7 +65,7 @@ import {
 } from '@patternfly/react-core/dist/js/next';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
-import { addCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { dashboardCardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { DashboardCards, getConfigByTitle, PropControl } from './Dashboard';
 import { Observable, of } from 'rxjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -107,8 +107,8 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
     const cardTitle = getConfigByTitle(selection).component.name;
-    dispatch(addCardIntent(cardTitle, propsConfig));
-  }, [setShowWizard, dispatch, addCardIntent, selection, propsConfig]);
+    dispatch(dashboardCardConfigAddCardIntent(cardTitle, propsConfig));
+  }, [setShowWizard, dispatch, dashboardCardConfigAddCardIntent, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {
     setShowWizard(true);

@@ -56,7 +56,7 @@ import { RecordingStateFilter } from './Filters/RecordingStateFilter';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { useDispatch, useSelector } from 'react-redux';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
-import { updateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
+import { recordingUpdateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
 import {
   allowedActiveRecordingFilters,
   allowedArchivedRecordingFilters,
@@ -99,9 +99,9 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const onCategorySelect = React.useCallback(
     (category) => {
       setIsCategoryDropdownOpen(false);
-      dispatch(updateCategoryIntent(props.target, category, props.isArchived));
+      dispatch(recordingUpdateCategoryIntent(props.target, category, props.isArchived));
     },
-    [dispatch, updateCategoryIntent, setIsCategoryDropdownOpen, props.target, props.isArchived]
+    [dispatch, recordingUpdateCategoryIntent, setIsCategoryDropdownOpen, props.target, props.isArchived]
   );
 
   const onDelete = React.useCallback(
