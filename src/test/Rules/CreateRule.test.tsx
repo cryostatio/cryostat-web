@@ -103,7 +103,6 @@ const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(
 jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of(mockTargetFoundNotification));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-jest.spyOn(defaultServices.target, 'setTarget').mockReturnValue();
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
@@ -201,5 +200,29 @@ describe('<CreateRule />', () => {
 
     expect(createSpy).toHaveBeenCalledTimes(1);
     expect(createSpy).toHaveBeenCalledWith(mockRule);
+  });
+
+  it('should show error helper text if rule form inputs are invalid', async () => {
+    const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
+
+    const nameInput = screen.getByLabelText('Name *');
+    expect(nameInput).toBeInTheDocument();
+    expect(nameInput).toBeVisible();
+
+    await user.type(nameInput, 'some name with spaces');
+
+    const nameHelperText = screen.getByText('A rule name may only contain letters, numbers, and underscores.');
+    expect(nameHelperText).toBeInTheDocument();
+    expect(nameHelperText).toBeVisible();
+
+    const matchExpressionInput = screen.getByLabelText('Match Expression *');
+    expect(matchExpressionInput).toBeInTheDocument();
+    expect(matchExpressionInput).toBeVisible();
+
+    await user.type(matchExpressionInput, 'abc');
+
+    const exphelperText = screen.getByText('Invalid Match Expression.');
+    expect(exphelperText).toBeInTheDocument();
+    expect(exphelperText).toBeVisible();
   });
 });

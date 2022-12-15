@@ -102,11 +102,11 @@ const Comp: React.FunctionComponent<{}> = () => {
   const [loading, setLoading] = React.useState(false);
 
   const handleNameChange = React.useCallback(
-    (evt) => {
+    (name) => {
       setNameValid(RuleNamePattern.test(name) ? ValidatedOptions.success : ValidatedOptions.error);
-      setName(evt);
+      setName(name);
     },
-    [setNameValid, name, setName]
+    [setNameValid, setName]
   );
 
   const eventSpecifierString = React.useMemo(() => {
@@ -128,30 +128,42 @@ const Comp: React.FunctionComponent<{}> = () => {
     [setTemplateName, setTemplateType]
   );
 
-  const handleMaxAgeChange = React.useCallback((evt) => setMaxAge(Number(evt)), [setMaxAge]);
+  const handleMaxAgeChange = React.useCallback((maxAge) => setMaxAge(Number(maxAge)), [setMaxAge]);
 
-  const handleMaxAgeUnitChange = React.useCallback((evt) => setMaxAgeUnits(Number(evt)), [setMaxAgeUnits]);
+  const handleMaxAgeUnitChange = React.useCallback(
+    (maxAgeUnit) => setMaxAgeUnits(Number(maxAgeUnit)),
+    [setMaxAgeUnits]
+  );
 
-  const handleMaxSizeChange = React.useCallback((evt) => setMaxSize(Number(evt)), [setMaxSize]);
+  const handleMaxSizeChange = React.useCallback((maxSize) => setMaxSize(Number(maxSize)), [setMaxSize]);
 
-  const handleMaxSizeUnitChange = React.useCallback((evt) => setMaxSizeUnits(Number(evt)), [setMaxSizeUnits]);
+  const handleMaxSizeUnitChange = React.useCallback(
+    (maxSizeUnit) => setMaxSizeUnits(Number(maxSizeUnit)),
+    [setMaxSizeUnits]
+  );
 
-  const handleArchivalPeriodChange = React.useCallback((evt) => setArchivalPeriod(Number(evt)), [setArchivalPeriod]);
+  const handleArchivalPeriodChange = React.useCallback(
+    (archivalPeriod) => setArchivalPeriod(Number(archivalPeriod)),
+    [setArchivalPeriod]
+  );
 
   const handleArchivalPeriodUnitsChange = React.useCallback(
     (evt) => setArchivalPeriodUnits(Number(evt)),
     [setArchivalPeriodUnits]
   );
 
-  const handleInitialDelayChange = React.useCallback((evt) => setInitialDelay(Number(evt)), [setInitialDelay]);
+  const handleInitialDelayChange = React.useCallback(
+    (initialDelay) => setInitialDelay(Number(initialDelay)),
+    [setInitialDelay]
+  );
 
   const handleInitialDelayUnitsChanged = React.useCallback(
-    (evt) => setInitialDelayUnits(Number(evt)),
+    (initialDelayUnit) => setInitialDelayUnits(Number(initialDelayUnit)),
     [setInitialDelayUnits]
   );
 
-  const handleSetPreservedArchives = React.useCallback(
-    (evt) => setPreservedArchives(Number(evt)),
+  const handlePreservedArchivesChange = React.useCallback(
+    (preservedArchives) => setPreservedArchives(Number(preservedArchives)),
     [setPreservedArchives]
   );
 
@@ -212,7 +224,7 @@ const Comp: React.FunctionComponent<{}> = () => {
   ]);
 
   const handleTemplateList = React.useCallback(
-    (templates) => {
+    (templates: EventTemplate[]) => {
       setTemplates(templates);
       setErrorMessage('');
     },
@@ -309,6 +321,7 @@ const Comp: React.FunctionComponent<{}> = () => {
                     isRequired
                     fieldId="rule-name"
                     helperText="Enter a rule name."
+                    helperTextInvalid="A rule name may only contain letters, numbers, and underscores."
                     validated={nameValid}
                   >
                     <TextInput
@@ -340,14 +353,12 @@ const Comp: React.FunctionComponent<{}> = () => {
                     label="Match Expression"
                     isRequired
                     fieldId="rule-matchexpr"
-                    helperText={
-                      <Text component={TextVariants.small}>
-                        Enter a match expression. This is a Java-like code snippet that is evaluated against each target
-                        application to determine whether the rule should be applied. Select a target from the dropdown
-                        on the right to view the context object available within the match expression context and test
-                        if the expression matches.
-                      </Text>
-                    }
+                    helperText={`
+                      Enter a match expression. This is a Java-like code snippet that is evaluated against each target
+                      application to determine whether the rule should be applied. Select a target from the dropdown
+                      on the right to view the context object available within the match expression context and test
+                      if the expression matches.`}
+                    helperTextInvalid="Invalid Match Expression."
                     validated={matchExpressionValid}
                   >
                     <TextInput
@@ -534,7 +545,7 @@ const Comp: React.FunctionComponent<{}> = () => {
                       type="number"
                       id="preservedArchives"
                       aria-label="preserved archives"
-                      onChange={handleSetPreservedArchives}
+                      onChange={handlePreservedArchivesChange}
                       min="0"
                     />
                   </FormGroup>
