@@ -210,7 +210,7 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
   );
 
   return (
-    <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
+    <TargetView pageTitle="Dashboard" compactSelect={false}>
       <Stack hasGutter>
         {cardConfigs.map((cfg, idx) => (
           <StackItem key={idx}>

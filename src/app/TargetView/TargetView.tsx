@@ -47,7 +47,6 @@ import { NO_TARGET } from '@app/Shared/Services/Target.service';
 interface TargetViewProps {
   pageTitle: string;
   compactSelect?: boolean;
-  hideEmptyState?: boolean;
   breadcrumbs?: BreadcrumbTrail[];
   children: React.ReactNode;
 }
@@ -77,7 +76,7 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
           <GridItem span={compact ? 6 : 12}>
             <TargetSelect />
           </GridItem>
-          <GridItem>{hasSelection ? props.children : props.hideEmptyState ? <></> : <NoTargetSelected />}</GridItem>
+          <GridItem>{hasSelection ? props.children : <NoTargetSelected />}</GridItem>
         </Grid>
       </BreadcrumbPage>
     </>
