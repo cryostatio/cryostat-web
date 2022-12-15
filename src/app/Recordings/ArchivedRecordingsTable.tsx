@@ -65,21 +65,23 @@ import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { emptyArchivedRecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
+import { RecordingFiltersCategories } from './RecordingFilters';
 import { filterRecordings, RecordingFilters } from './RecordingFilters';
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
+import { emptyArchivedRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
-  addFilterIntent,
-  addTargetIntent,
-  deleteAllFiltersIntent,
-  deleteCategoryFiltersIntent,
-  deleteFilterIntent,
-} from '@app/Shared/Redux/RecordingFilterActions';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+  recordingAddFilterIntent,
+  recordingDeleteFilterIntent,
+  recordingAddTargetIntent,
+  recordingDeleteCategoryFiltersIntent,
+  recordingDeleteAllFiltersIntent,
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
 import { formatBytes, hashCode } from '@app/utils/utils';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
@@ -238,33 +240,33 @@ export const ArchivedRecordingsTable: React.FunctionComponent<ArchivedRecordings
   ]);
 
   const handleClearFilters = React.useCallback(() => {
-    dispatch(deleteAllFiltersIntent(targetConnectURL, true));
-  }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
+    dispatch(recordingDeleteAllFiltersIntent(targetConnectURL, true));
+  }, [dispatch, recordingDeleteAllFiltersIntent, targetConnectURL]);
 
   const updateFilters = React.useCallback(
     (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
-          dispatch(deleteCategoryFiltersIntent(target, filterKey, true));
+          dispatch(recordingDeleteCategoryFiltersIntent(target, filterKey, true));
         } else {
-          dispatch(deleteFilterIntent(target, filterKey, filterValue, true));
+          dispatch(recordingDeleteFilterIntent(target, filterKey, filterValue, true));
         }
       } else {
-        dispatch(addFilterIntent(target, filterKey, filterValue, true));
+        dispatch(recordingAddFilterIntent(target, filterKey, filterValue, true));
       }
     },
-    [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]
+    [dispatch, recordingDeleteCategoryFiltersIntent, recordingDeleteFilterIntent, recordingAddFilterIntent]
   );
 
   React.useEffect(() => {
     addSubscription(
       props.target.subscribe((target) => {
         setTargetConnectURL(target.connectUrl);
-        dispatch(addTargetIntent(target.connectUrl));
+        dispatch(recordingAddTargetIntent(target.connectUrl));
         refreshRecordingList();
       })
     );
-  }, [addSubscription, refreshRecordingList, dispatch, addTargetIntent, setTargetConnectURL]);
+  }, [addSubscription, refreshRecordingList, dispatch, recordingAddTargetIntent, setTargetConnectURL]);
 
   React.useEffect(() => {
     addSubscription(

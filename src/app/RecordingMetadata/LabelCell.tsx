@@ -37,7 +37,7 @@
  */
 
 import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
-import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { Label, Text } from '@patternfly/react-core';
 import React from 'react';
 import { ClickableLabel } from './ClickableLabel';

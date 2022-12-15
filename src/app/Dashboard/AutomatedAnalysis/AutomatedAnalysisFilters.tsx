@@ -35,6 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { automatedAnalysisUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import {
   Dropdown,
   DropdownItem,
@@ -48,13 +50,10 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { automatedAnalysisUpdateCategoryIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
-import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilter';
 import { AutomatedAnalysisTopicFilter } from './Filters/AutomatedAnalysisTopicFilter';
+import { allowedAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
 
 export interface AutomatedAnalysisFiltersCategories {
   Name: string[];
@@ -64,13 +63,6 @@ export interface AutomatedAnalysisFiltersCategories {
 export interface AutomatedAnalysisGlobalFiltersCategories {
   Score: number;
 }
-
-export const emptyAutomatedAnalysisFilters = {
-  Name: [],
-  Topic: [],
-} as AutomatedAnalysisFiltersCategories;
-
-export const allowedAutomatedAnalysisFilters = Object.keys(emptyAutomatedAnalysisFilters);
 
 export interface AutomatedAnalysisFiltersProps {
   target: string;

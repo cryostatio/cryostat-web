@@ -55,9 +55,12 @@ import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import { useDispatch, useSelector } from 'react-redux';
-import { UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
-import { updateCategoryIntent } from '@app/Shared/Redux/RecordingFilterActions';
-import { StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { recordingUpdateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
+import {
+  allowedActiveRecordingFilters,
+  allowedArchivedRecordingFilters,
+} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 
 export interface RecordingFiltersCategories {
   Name: string[];
@@ -67,24 +70,6 @@ export interface RecordingFiltersCategories {
   StartedAfterDate?: string[];
   DurationSeconds?: string[];
 }
-
-export const emptyActiveRecordingFilters = {
-  Name: [],
-  Label: [],
-  State: [],
-  StartedBeforeDate: [],
-  StartedAfterDate: [],
-  DurationSeconds: [],
-} as RecordingFiltersCategories;
-
-export const allowedActiveRecordingFilters = Object.keys(emptyActiveRecordingFilters);
-
-export const emptyArchivedRecordingFilters = {
-  Name: [],
-  Label: [],
-} as RecordingFiltersCategories;
-
-export const allowedArchivedRecordingFilters = Object.keys(emptyArchivedRecordingFilters);
 
 export interface RecordingFiltersProps {
   target: string;
@@ -114,9 +99,9 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const onCategorySelect = React.useCallback(
     (category) => {
       setIsCategoryDropdownOpen(false);
-      dispatch(updateCategoryIntent(props.target, category, props.isArchived));
+      dispatch(recordingUpdateCategoryIntent(props.target, category, props.isArchived));
     },
-    [dispatch, updateCategoryIntent, setIsCategoryDropdownOpen, props.target, props.isArchived]
+    [dispatch, recordingUpdateCategoryIntent, setIsCategoryDropdownOpen, props.target, props.isArchived]
   );
 
   const onDelete = React.useCallback(

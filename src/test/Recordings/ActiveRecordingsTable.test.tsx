@@ -97,8 +97,11 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
 import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { DeleteActiveRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
-import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
+import {
+  emptyActiveRecordingFilters,
+  emptyArchivedRecordingFilters,
+  TargetRecordingFilters,
+} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
 import { TargetService } from '@app/Shared/Services/Target.service';

@@ -47,8 +47,11 @@ import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.se
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { emptyActiveRecordingFilters, emptyArchivedRecordingFilters } from '@app/Recordings/RecordingFilters';
-import { TargetRecordingFilters } from '@app/Shared/Redux/RecordingFilterReducer';
+import {
+  emptyActiveRecordingFilters,
+  emptyArchivedRecordingFilters,
+  TargetRecordingFilters,
+} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
 

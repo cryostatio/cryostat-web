@@ -36,8 +36,7 @@
  * SOFTWARE.
  */
 
-import { automatedAnalysisAddGlobalFilterIntent } from '@app/Shared/Redux/AutomatedAnalysisFilterActions';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { automatedAnalysisAddGlobalFilterIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { AutomatedAnalysisScore } from '@app/Shared/Services/Report.service';
 import {
   Button,
@@ -57,7 +56,7 @@ export interface AutomatedAnalysisScoreFilterProps {
 }
 
 export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnalysisScoreFilterProps> = (props) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<StateDispatch>();
   const currentScore = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.state.globalFilters.filters;
     if (!filters) return 0;

@@ -36,11 +36,33 @@
  * SOFTWARE.
  */
 
-import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import { dashboardConfigReducer } from './DashboardConfigReducer';
-import { recordingFilterReducer } from './RecordingFilterReducer';
-import { automatedAnalysisFilterReducer } from './AutomatedAnalysisFilterReducer';
+import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlicer';
+import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
+import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
+import { persistMiddleware } from './Middlewares/PersistMiddleware';
+
+// Export actions
+export const { dashboardCardConfigAddCardIntent, dashboardCardConfigDeleteCardIntent } = dashboardConfigSlice;
+export const {
+  recordingAddFilterIntent,
+  recordingDeleteFilterIntent,
+  recordingAddTargetIntent,
+  recordingDeleteTargetIntent,
+  recordingDeleteCategoryFiltersIntent,
+  recordingUpdateCategoryIntent,
+  recordingDeleteAllFiltersIntent,
+} = recordingFilterSlice;
+export const {
+  automatedAnalysisAddGlobalFilterIntent,
+  automatedAnalysisAddFilterIntent,
+  automatedAnalysisAddTargetIntent,
+  automatedAnalysisDeleteAllFiltersIntent,
+  automatedAnalysisDeleteCategoryFiltersIntent,
+  automatedAnalysisDeleteFilterIntent,
+  automatedAnalysisDeleteTargetIntent,
+  automatedAnalysisUpdateCategoryIntent,
+} = automatedAnalysisFilterSlice;
 
 export const rootReducer = combineReducers({
   dashboardConfigs: dashboardConfigReducer,
@@ -52,6 +74,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) =>
   configureStore({
     reducer: rootReducer,
     preloadedState,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(persistMiddleware),
   });
 
 export const store = setupStore();
@@ -60,11 +83,3 @@ export const store = setupStore();
 export type RootState = ReturnType<typeof rootReducer>;
 export type StateDispatch = typeof store.dispatch;
 export type Store = ReturnType<typeof setupStore>;
-
-// Add a subscription to save filter states to local storage
-// if states change.
-store.subscribe(() => {
-  saveToLocalStorage('DASHBOARD_CFG', store.getState().dashboardConfigs.list);
-  saveToLocalStorage('TARGET_RECORDING_FILTERS', store.getState().recordingFilters.list);
-  saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', store.getState().automatedAnalysisFilters.state);
-});

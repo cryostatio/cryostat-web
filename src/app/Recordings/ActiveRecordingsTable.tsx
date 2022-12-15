@@ -62,28 +62,25 @@ import { concatMap, filter, first } from 'rxjs/operators';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import {
-  emptyActiveRecordingFilters,
-  filterRecordings,
-  RecordingFilters,
-  RecordingFiltersCategories,
-} from './RecordingFilters';
+import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  addFilterIntent,
-  addTargetIntent,
-  deleteAllFiltersIntent,
-  deleteCategoryFiltersIntent,
-  deleteFilterIntent,
-} from '@app/Shared/Redux/RecordingFilterActions';
-import { TargetRecordingFilters, UpdateFilterOptions } from '@app/Shared/Redux/RecordingFilterReducer';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+  recordingAddFilterIntent,
+  recordingDeleteFilterIntent,
+  recordingAddTargetIntent,
+  recordingDeleteCategoryFiltersIntent,
+  recordingDeleteAllFiltersIntent,
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
+import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 
 export enum PanelContent {
   LABELS,
@@ -194,11 +191,19 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     addSubscription(
       context.target.target().subscribe((target) => {
         setTargetConnectURL(target.connectUrl);
-        dispatch(addTargetIntent(target.connectUrl));
+        dispatch(recordingAddTargetIntent(target.connectUrl));
         refreshRecordingList();
       })
     );
-  }, [addSubscription, context, context.target, refreshRecordingList, setTargetConnectURL, dispatch, addTargetIntent]);
+  }, [
+    addSubscription,
+    context,
+    context.target,
+    refreshRecordingList,
+    setTargetConnectURL,
+    dispatch,
+    recordingAddTargetIntent,
+  ]);
 
   React.useEffect(() => {
     addSubscription(
@@ -408,22 +413,22 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   ]);
 
   const handleClearFilters = React.useCallback(() => {
-    dispatch(deleteAllFiltersIntent(targetConnectURL, false));
-  }, [dispatch, deleteAllFiltersIntent, targetConnectURL]);
+    dispatch(recordingDeleteAllFiltersIntent(targetConnectURL, false));
+  }, [dispatch, recordingDeleteAllFiltersIntent, targetConnectURL]);
 
   const updateFilters = React.useCallback(
     (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
-          dispatch(deleteCategoryFiltersIntent(target, filterKey, false));
+          dispatch(recordingDeleteCategoryFiltersIntent(target, filterKey, false));
         } else {
-          dispatch(deleteFilterIntent(target, filterKey, filterValue, false));
+          dispatch(recordingDeleteFilterIntent(target, filterKey, filterValue, false));
         }
       } else {
-        dispatch(addFilterIntent(target, filterKey, filterValue, false));
+        dispatch(recordingAddFilterIntent(target, filterKey, filterValue, false));
       }
     },
-    [dispatch, deleteCategoryFiltersIntent, deleteFilterIntent, addFilterIntent]
+    [dispatch, recordingDeleteCategoryFiltersIntent, recordingDeleteFilterIntent, recordingAddFilterIntent]
   );
 
   const RecordingRow = (props) => {

@@ -36,32 +36,28 @@
  * SOFTWARE.
  */
 
-import { createAction } from '@reduxjs/toolkit';
+import { saveToLocalStorage } from '@app/utils/LocalStorage';
+import { Middleware } from '@reduxjs/toolkit';
+import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlicer';
+import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
+import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
+import { RootState } from '../ReduxStore';
 
-// Common action string format: "resource(s)/action"
-export enum DashboardConfigAction {
-  CARD_ADD = 'card/add',
-  CARD_REMOVE = 'card/remove',
-}
-
-export interface DashboardAddConfigActionPayload {
-  name: string;
-  props: any;
-}
-
-export interface DashboardDeleteConfigActionPayload {
-  idx: number;
-}
-
-export const addCardIntent = createAction(DashboardConfigAction.CARD_ADD, (name: string, props: any) => ({
-  payload: {
-    name,
-    props,
-  } as DashboardAddConfigActionPayload,
-}));
-
-export const deleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
-  payload: {
-    idx,
-  } as DashboardDeleteConfigActionPayload,
-}));
+export const persistMiddleware: Middleware<{}, RootState> =
+  ({ getState }) =>
+  (next) =>
+  (action) => {
+    const result = next(action);
+    // Extract new state here
+    const rootState = getState();
+    if (AutomatedAnalysisFilterActions.has(action.type)) {
+      saveToLocalStorage('AUTOMATED_ANALYSIS_FILTERS', rootState.automatedAnalysisFilters);
+    } else if (RecordingFilterActions.has(action.type)) {
+      saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);
+    } else if (DashboardConfigActions.has(action.type)) {
+      saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
+    } else {
+      console.warn(`Action ${action.type} does not persist state.`);
+    }
+    return result;
+  };

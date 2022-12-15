@@ -38,12 +38,11 @@
 import * as React from 'react';
 import { Card, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteCardIntent } from '@app/Shared/Redux/DashboardConfigActions';
 import { TargetView } from '@app/TargetView/TargetView';
 import { AddCard } from './AddCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
-import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { Observable, of } from 'rxjs';
 
 export interface DashboardCardDescriptor {
@@ -205,9 +204,9 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
 
   const handleRemove = React.useCallback(
     (idx: number) => {
-      dispatch(deleteCardIntent(idx));
+      dispatch(dashboardCardConfigDeleteCardIntent(idx));
     },
-    [dispatch, deleteCardIntent]
+    [dispatch, dashboardCardConfigDeleteCardIntent]
   );
 
   return (
