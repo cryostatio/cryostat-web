@@ -48,7 +48,7 @@ import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { NO_TARGET, Target, TargetService } from './Target.service';
 
-type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
+type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'v2.3' | 'beta';
 
 export class HttpError extends Error {
   readonly httpResponse: Response;
@@ -473,7 +473,7 @@ export class ApiService {
         method: 'POST',
       }
     ).pipe(
-    map((resp) => resp.ok),
+      map((resp) => resp.ok),
       first()
     );
   }

@@ -1,1 +1,4 @@
 package.json
+.build_cache/**/*
+node_modules/**/*
+dist/**/*

@@ -94,11 +94,11 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   }, [addSubscription, notifications, props, context.api]);
 
   const handleDownloadRecording = React.useCallback(() => {
-    context.api.downloadRecording(props.sourceTarget, props.recording)
+    context.api.downloadRecording(props.sourceTarget, props.recording);
   }, [context.api, props.recording]);
 
   const handleViewReport = React.useCallback(() => {
-    context.api.downloadReport(props.sourceTarget, props.recording)
+    context.api.downloadReport(props.sourceTarget, props.recording);
   }, [context.api, props.recording]);
 
   const actionItems = React.useMemo(() => {

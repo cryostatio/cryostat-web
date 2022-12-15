@@ -57,6 +57,9 @@ import {
   FormSelectOption,
   Grid,
   GridItem,
+  Select,
+  SelectOption,
+  SelectVariant,
   Split,
   SplitItem,
   Switch,
@@ -67,8 +70,8 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
-import { iif } from 'rxjs';
-import { filter, first, mergeMap, toArray } from 'rxjs/operators';
+import { iif, of } from 'rxjs';
+import { concatMap, filter, first, map, mergeMap, toArray } from 'rxjs/operators';
 import { Rule } from './Rules';
 
 // FIXME check if this is correct/matches backend name validation
@@ -81,6 +84,9 @@ const Comp: React.FC = () => {
   const addSubscription = useSubscriptions();
 
   const [name, setName] = React.useState('');
+  const [contextSelections, setContextSelections] = React.useState([] as string[]);
+  const [contextSelectorOpen, setContextSelectorOpen] = React.useState(false);
+  const [contexts, setContexts] = React.useState([] as string[]);
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [description, setDescription] = React.useState('');
   const [enabled, setEnabled] = React.useState(true);
@@ -100,6 +106,42 @@ const Comp: React.FC = () => {
   const [preservedArchives, setPreservedArchives] = React.useState(0);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+
+  const handleContextSelect = React.useCallback(
+    (_, val) => {
+      setContextSelections((old) => {
+        if (old.includes(val)) {
+          return old.filter((v) => v !== val);
+        } else {
+          return [...old, val];
+        }
+      });
+    },
+    [setContextSelections]
+  );
+
+  const handleContextClear = React.useCallback(
+    (evt) => {
+      setContextSelections([]);
+    },
+    [setContextSelections]
+  );
+
+  const handleContextFilter = React.useCallback(
+    (_, filter: string) => {
+      return contexts
+        .filter((ctx) => ctx.toLowerCase().includes(filter.toLowerCase()))
+        .map((ctx, idx) => <SelectOption key={idx} value={ctx} />);
+    },
+    [contexts]
+  );
+
+  const contextSelectorToggle = React.useCallback(
+    (evt) => {
+      setContextSelectorOpen(evt);
+    },
+    [setContextSelectorOpen]
+  );
 
   const handleNameChange = React.useCallback(
     (name) => {
@@ -182,6 +224,7 @@ const Comp: React.FC = () => {
     }
     const rule: Rule = {
       name,
+      contexts: contextSelections,
       description,
       enabled,
       matchExpression,
@@ -203,7 +246,9 @@ const Comp: React.FC = () => {
   }, [
     setLoading,
     addSubscription,
+    context,
     context.api,
+    contextSelections,
     history,
     notifications,
     name,
@@ -258,6 +303,27 @@ const Comp: React.FC = () => {
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshTemplateList));
+  }, [addSubscription, context.target, context.api, refreshTemplateList]);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api
+        .doGet('securitycontexts', 'v2.3')
+        .pipe(
+          map((resp: any) => resp.data.result),
+          concatMap((scs: { name: string }[]) => of(scs.map((sc) => sc.name)))
+        )
+        .subscribe((scs) => {
+          setContexts(scs);
+          if (scs.length === 1) {
+            setContextSelections(scs);
+          }
+        })
+    );
+  }, [addSubscription, context, context.api, setContexts, setContextSelections]);
+
+  React.useEffect(() => {
+    addSubscription(context.target.target().subscribe(refreshTemplateList));
   }, [addSubscription, context.target, refreshTemplateList]);
 
   React.useEffect(() => {
@@ -266,7 +332,7 @@ const Comp: React.FC = () => {
         setErrorMessage(authFailMessage);
       })
     );
-  }, [addSubscription, context.target, setErrorMessage]);
+  }, [addSubscription, context.target, setErrorMessage, authFailMessage]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
@@ -294,7 +360,7 @@ const Comp: React.FC = () => {
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
-  }, [context.target]);
+  }, [context.target, context.target.setAuthRetry]);
 
   return (
     <BreadcrumbPage pageTitle="Create" breadcrumbs={breadcrumbs}>
@@ -316,6 +382,30 @@ const Comp: React.FC = () => {
                     to use, how much data should be kept in the application recording buffer, and how frequently
                     Cryostat should copy the application recording buffer into Cryostat&apos;s own archived storage.
                   </Text>
+                  <FormGroup
+                    label="Contexts"
+                    isRequired
+                    fieldId="rule-context"
+                    helperText="Select contexts for this rule to apply in."
+                  >
+                    <Select
+                      typeAheadAriaLabel="Select contexts"
+                      variant={SelectVariant.typeaheadMulti}
+                      onToggle={contextSelectorToggle}
+                      onSelect={handleContextSelect}
+                      onClear={handleContextClear}
+                      selections={contextSelections}
+                      isOpen={contextSelectorOpen}
+                      isDisabled={loading}
+                      shouldResetOnSelect={true}
+                      onFilter={handleContextFilter}
+                      validated={contextSelections.length ? 'default' : 'error'}
+                    >
+                      {contexts.map((ctx, idx) => (
+                        <SelectOption key={idx} value={ctx} />
+                      ))}
+                    </Select>
+                  </FormGroup>
                   <FormGroup
                     label="Name"
                     isRequired

@@ -78,6 +78,7 @@ import { RuleUploadModal } from './RulesUploadModal';
 
 export interface Rule {
   name: string;
+  contexts: string[];
   description: string;
   matchExpression: string;
   enabled: boolean;
@@ -97,6 +98,7 @@ export interface RuleTableHeader {
 
 export const ruleObjKeys = [
   'name',
+  'context',
   'description',
   'matchExpression',
   'enabled',
@@ -142,6 +144,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
     () =>
       [
         { title: 'Enabled' },
+        { title: 'Context', sortable: true },
         {
           title: 'Name',
           sortable: true,
@@ -363,6 +366,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
     if (typeof index === 'number') {
       const keys = [
         'enabled',
+        'context',
         'name',
         'description',
         'matchExpression',
@@ -387,31 +391,34 @@ export const Rules: React.FC<RulesProps> = (_) => {
             onChange={(state) => handleToggle(r, state)}
           />
         </Td>
-        <Td key={`automatic-rule-name-${index}`} dataLabel={tableColumns[1].title}>
+        <Td key={`automatic-rule-context-${index}`} dataLabel={tableColumns[1].title}>
+          {r.contexts?.join(',')}
+        </Td>
+        <Td key={`automatic-rule-name-${index}`} dataLabel={tableColumns[2].title}>
           {r.name}
         </Td>
-        <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[2].title}>
+        <Td key={`automatic-rule-description-${index}`} dataLabel={tableColumns[3].title}>
           {r.description}
         </Td>
-        <Td key={`automatic-rule-matchExpression-${index}`} dataLabel={tableColumns[3].title}>
+        <Td key={`automatic-rule-matchExpression-${index}`} dataLabel={tableColumns[4].title}>
           {r.matchExpression}
         </Td>
-        <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[4].title}>
+        <Td key={`automatic-rule-eventSpecifier-${index}`} dataLabel={tableColumns[5].title}>
           {r.eventSpecifier}
         </Td>
-        <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[5].title}>
+        <Td key={`automatic-rule-archivalPeriodSeconds-${index}`} dataLabel={tableColumns[6].title}>
           {r.archivalPeriodSeconds}
         </Td>
-        <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[6].title}>
+        <Td key={`automatic-rule-initialDelaySeconds-${index}`} dataLabel={tableColumns[7].title}>
           {r.initialDelaySeconds}
         </Td>
-        <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[7].title}>
+        <Td key={`automatic-rule-preservedArchives-${index}`} dataLabel={tableColumns[8].title}>
           {r.preservedArchives}
         </Td>
-        <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[8].title}>
+        <Td key={`automatic-rule-maxAgeSeconds-${index}`} dataLabel={tableColumns[9].title}>
           {r.maxAgeSeconds}
         </Td>
-        <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[9].title}>
+        <Td key={`automatic-rule-maxSizeBytes-${index}`} dataLabel={tableColumns[10].title}>
           {r.maxSizeBytes}
         </Td>
         <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
