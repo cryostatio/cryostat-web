@@ -35,57 +35,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import * as React from 'react';
+import { ServiceContext } from '../Services/Services';
 
-export enum LocalStorageKey {
-  FEATURE_LEVEL,
-  DASHBOARD_CFG,
-  AUTOMATED_ANALYSIS_FILTERS,
-  TARGET_RECORDING_FILTERS,
-  JMX_CREDENTIAL_LOCATION,
-  JMX_CREDENTIALS,
-  TARGET,
-  AUTO_REFRESH_ENABLED,
-  AUTO_REFRESH_PERIOD,
-  AUTO_REFRESH_UNITS,
-  AUTOMATED_ANALYSIS_RECORDING_CONFIG,
-  DELETION_DIALOGS_ENABLED,
-  VISIBLE_NOTIFICATIONS_COUNT,
-  NOTIFICATIONS_ENABLED,
-  WEBSOCKET_DEBOUNCE_MS,
+export enum FeatureLevel {
+  DEVELOPMENT = 0,
+  BETA = 1,
+  PRODUCTION = 2,
 }
 
-export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
+export interface FeatureFlagProps {
+  level: FeatureLevel;
+  children?: React.ReactNode | undefined;
+}
 
-export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
-  if (typeof window === 'undefined') {
-    return defaultValue;
-  }
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    return defaultValue;
-  }
-};
+export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, children }) => {
+  const context = React.useContext(ServiceContext);
 
-export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, error?: () => void) => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
+  if (level >= context.settings.featureLevel()) {
+    return <>{children}</>;
   }
-};
 
-export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): any => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(key);
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
-  }
+  return <></>;
 };

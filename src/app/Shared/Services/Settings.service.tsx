@@ -37,7 +37,8 @@
  */
 
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { getFromLocalStorage, LocalStorageKey, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { FeatureLevel } from '../FeatureFlag/FeatureFlag';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -72,6 +73,14 @@ export const automatedAnalysisConfigToRecordingAttributes = (
 };
 
 export class SettingsService {
+  featureLevel(): FeatureLevel {
+    return getFromLocalStorage('FEATURE_LEVEL', FeatureLevel.PRODUCTION);
+  }
+
+  setFeatureLevel(featureLevel: FeatureLevel): void {
+    saveToLocalStorage('FEATURE_LEVEL', featureLevel);
+  }
+
   autoRefreshEnabled(): boolean {
     return getFromLocalStorage('AUTO_REFRESH_ENABLED', 'false') === 'true';
   }

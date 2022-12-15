@@ -36,56 +36,47 @@
  * SOFTWARE.
  */
 
-export enum LocalStorageKey {
-  FEATURE_LEVEL,
-  DASHBOARD_CFG,
-  AUTOMATED_ANALYSIS_FILTERS,
-  TARGET_RECORDING_FILTERS,
-  JMX_CREDENTIAL_LOCATION,
-  JMX_CREDENTIALS,
-  TARGET,
-  AUTO_REFRESH_ENABLED,
-  AUTO_REFRESH_PERIOD,
-  AUTO_REFRESH_UNITS,
-  AUTOMATED_ANALYSIS_RECORDING_CONFIG,
-  DELETION_DIALOGS_ENABLED,
-  VISIBLE_NOTIFICATIONS_COUNT,
-  NOTIFICATIONS_ENABLED,
-  WEBSOCKET_DEBOUNCE_MS,
-}
+import * as React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { UserSetting } from './Settings';
+import { FeatureLevel } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { Select, SelectOption } from '@patternfly/react-core';
 
-export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
+const Component = () => {
+  const context = React.useContext(ServiceContext);
+  const [state, setState] = React.useState(context.settings.featureLevel());
+  const [open, setOpen] = React.useState(false);
 
-export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
-  if (typeof window === 'undefined') {
-    return defaultValue;
-  }
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    return defaultValue;
-  }
+  const handleToggle = React.useCallback(() => {
+    setOpen((v) => !v);
+  }, [setOpen]);
+
+  const handleSelect = React.useCallback(
+    (_, v) => {
+      setState(v);
+      context.settings.setFeatureLevel(v);
+      setOpen(false);
+    },
+    [setState, setOpen, context, context.settings, context.settings.setFeatureLevel]
+  );
+
+  return (
+    <>
+      <Select isOpen={open} onToggle={handleToggle} selections={FeatureLevel[state]} onSelect={handleSelect}>
+        {Object.values(FeatureLevel)
+          .filter((v) => typeof v === 'string')
+          .map((key, idx) => (
+            <SelectOption key={idx} value={idx}>
+              {key}
+            </SelectOption>
+          ))}
+      </Select>
+    </>
+  );
 };
 
-export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, error?: () => void) => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
-  }
-};
-
-export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): any => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(key);
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
-  }
+export const FeatureLevels: UserSetting = {
+  title: 'Feature Level',
+  description: 'Control which graphical features appear in the application.',
+  content: Component,
 };

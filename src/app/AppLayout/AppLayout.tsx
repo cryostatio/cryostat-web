@@ -75,6 +75,7 @@ import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { FeatureFlag, FeatureLevel } from '@app/Shared/FeatureFlag/FeatureFlag';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -270,9 +271,11 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       <PageHeaderTools>
         <PageHeaderToolsGroup>
           <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded}>
-            <Button onClick={() => notificationsContext.info(`test ${+Date.now()}`)}>
-              <PlusCircleIcon />
-            </Button>
+            <FeatureFlag level={FeatureLevel.DEVELOPMENT}>
+              <Button onClick={() => notificationsContext.info(`test ${+Date.now()}`)}>
+                <PlusCircleIcon />
+              </Button>
+            </FeatureFlag>
             <NotificationBadge
               count={unreadNotificationsCount}
               variant={errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'}
