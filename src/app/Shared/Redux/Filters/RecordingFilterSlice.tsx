@@ -229,10 +229,9 @@ export const deleteAllTargetRecordingFilters = (targetRecordingFilter: TargetRec
   };
 };
 
-const INITIAL_STATE = getPersistedState('TARGET_RECORDING_FILTERS', _version) || {
-  _version,
+const INITIAL_STATE = getPersistedState('TARGET_RECORDING_FILTERS', _version, {
   list: [] as TargetRecordingFilters[],
-};
+});
 
 export const recordingFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder

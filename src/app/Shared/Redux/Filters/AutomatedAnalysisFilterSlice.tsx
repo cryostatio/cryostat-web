@@ -230,13 +230,12 @@ export const deleteAllAutomatedAnalysisFilters = (automatedAnalysisFilter: Targe
   };
 };
 
-const INITIAL_STATE = getPersistedState('AUTOMATED_ANALYSIS_FILTERS', _version) || {
-  _version,
+const INITIAL_STATE = getPersistedState('AUTOMATED_ANALYSIS_FILTERS', _version, {
   state: {
     targetFilters: [],
     globalFilters: { filters: { Score: 0 } },
   } as AutomatedAnalysisFilterState,
-};
+});
 
 export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (builder) => {
   builder

@@ -38,10 +38,13 @@
 
 import { getFromLocalStorage, LocalStorageKeyStrings } from '@app/utils/LocalStorage';
 
-export const getPersistedState = (key: LocalStorageKeyStrings, version: string): any => {
+export const getPersistedState = (key: LocalStorageKeyStrings, _version: string, defaultConfig: any): any => {
   const persisted = getFromLocalStorage(key, undefined);
-  if (!persisted || persisted._version !== version) {
-    return undefined;
+  if (!persisted || persisted._version !== _version) {
+    return {
+      ...defaultConfig,
+      _version,
+    };
   }
   return persisted;
 };

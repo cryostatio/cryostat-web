@@ -79,10 +79,9 @@ export interface CardConfig {
   props: any;
 }
 
-const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version) || {
-  _version,
+const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
-};
+});
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
