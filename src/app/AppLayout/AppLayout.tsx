@@ -179,7 +179,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
 
   const handleTimeout = React.useCallback(
     (key) => () => notificationsContext.setHidden(key),
-    [notificationsContext, notificationsContext.setHidden]
+    [notificationsContext.setHidden]
   );
 
   React.useEffect(() => {

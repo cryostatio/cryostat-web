@@ -57,7 +57,7 @@ const Component = () => {
       context.settings.setFeatureLevel(v);
       setOpen(false);
     },
-    [setState, setOpen, context, context.settings, context.settings.setFeatureLevel]
+    [setState, setOpen, context.settings.setFeatureLevel]
   );
 
   return (

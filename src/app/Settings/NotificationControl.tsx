@@ -43,15 +43,16 @@ import {
   Switch,
   Stack,
   StackItem,
-  SplitItem,
-  Split,
   NumberInput,
-  LevelItem,
-  Level,
+  Form,
+  FormGroup,
 } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
+
+const min = 0;
+const max = 10;
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
@@ -76,6 +77,21 @@ const Component = () => {
       setState(newState);
     },
     [state, setState]
+  );
+
+  const handleChange = React.useCallback(
+    (evt) => {
+      setVisibleNotifications((prev) => {
+        let value = isNaN(evt.target.value) ? prev : Number(evt.target.value);
+        if (value < min) {
+          value = min;
+        } else if (value > max) {
+          value = max;
+        }
+        return value;
+      });
+    },
+    [setVisibleNotifications]
   );
 
   const handleVisibleStep = React.useCallback(
@@ -115,26 +131,31 @@ const Component = () => {
     <>
       <Stack hasGutter>
         <StackItem key="all-notifications">
-          <Level>
-            <LevelItem>
+          <Form>
+            <FormGroup label="Enable or disable all notifications.">
               <Switch
                 id="all-notifications"
                 label="All Notifications"
                 isChecked={allChecked}
                 onChange={handleCheckAll}
               />
-            </LevelItem>
-            <LevelItem>
+            </FormGroup>
+          </Form>
+        </StackItem>
+        <StackItem key="notifications-notification-count">
+          <Form>
+            <FormGroup label="Control the maximum number of notification alerts that appear at once.">
               <NumberInput
                 inputName="alert count"
                 value={visibleNotifications}
-                min={1}
-                max={10}
+                min={min}
+                max={max}
+                onChange={handleChange}
                 onMinus={handleVisibleStep(-1)}
                 onPlus={handleVisibleStep(1)}
               />
-            </LevelItem>
-          </Level>
+            </FormGroup>
+          </Form>
         </StackItem>
         <Divider />
         <ExpandableSection
@@ -151,6 +172,6 @@ const Component = () => {
 
 export const NotificationControl: UserSetting = {
   title: 'Notifications',
-  description: 'Enable or disable notifications by category and control how many alerts appear on-screen.',
+  description: '',
   content: Component,
 };

@@ -86,14 +86,16 @@ const Component = () => {
 
   const handleWebSocketDebounceChange = React.useCallback(
     (event) => {
-      let webSocketDebounceMs = isNaN(event.target.value) ? 0 : Number(event.target.value);
-      if (webSocketDebounceMs < debounceMin) {
-        webSocketDebounceMs = debounceMin;
-      } else if (webSocketDebounceMs > debounceMax) {
-        webSocketDebounceMs = debounceMax;
-      }
-      setState((state) => ({ ...state, webSocketDebounceMs }));
-      context.settings.setWebSocketDebounceMs(webSocketDebounceMs);
+      setState((state) => {
+        let next = isNaN(event.target.value) ? state.webSocketDebounceMs : Number(event.target.value);
+        if (state.webSocketDebounceMs < debounceMin) {
+          next = debounceMin;
+        } else if (state.webSocketDebounceMs > debounceMax) {
+          next = debounceMax;
+        }
+        context.settings.setWebSocketDebounceMs(next);
+        return { ...state, webSocketDebounceMs: next };
+      });
     },
     [setState, context.settings]
   );
