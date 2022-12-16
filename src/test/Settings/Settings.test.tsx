@@ -90,6 +90,14 @@ jest.mock('@app/Settings/AutoRefresh', () => ({
   },
 }));
 
+jest.mock('@app/Settings/FeatureLevels', () => ({
+  FeatureLevels: {
+    title: 'Feature Levels Title',
+    description: 'Feature Levels Description',
+    content: () => <Text>Feature Levels Component</Text>,
+  },
+}));
+
 describe('<Settings/>', () => {
   afterEach(cleanup);
 

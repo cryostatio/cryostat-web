@@ -37,13 +37,8 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-
-export enum FeatureLevel {
-  DEVELOPMENT = 0,
-  BETA = 1,
-  PRODUCTION = 2,
-}
 
 export interface FeatureFlagProps {
   level: FeatureLevel;

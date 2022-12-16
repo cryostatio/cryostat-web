@@ -40,7 +40,7 @@ import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { UserSetting } from './Settings';
-import { FeatureLevel } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Select, SelectOption } from '@patternfly/react-core';
 
 const Component = () => {

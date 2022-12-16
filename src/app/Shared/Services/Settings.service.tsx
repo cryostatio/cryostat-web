@@ -39,7 +39,6 @@
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { FeatureLevel } from '@app/Shared/FeatureFlag/FeatureFlag';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -47,6 +46,12 @@ import {
   RecordingAttributes,
 } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
+
+export enum FeatureLevel {
+  DEVELOPMENT = 0,
+  BETA = 1,
+  PRODUCTION = 2,
+}
 
 export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
   return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];

@@ -75,7 +75,8 @@ import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { FeatureFlag, FeatureLevel } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 
 interface IAppLayout {
   children: React.ReactNode;
