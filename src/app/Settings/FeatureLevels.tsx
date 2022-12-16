@@ -68,7 +68,14 @@ const Component = () => {
 
   return (
     <>
-      <Select isOpen={open} onToggle={handleToggle} selections={FeatureLevel[state]} onSelect={handleSelect}>
+      <Select
+        isOpen={open}
+        onToggle={handleToggle}
+        selections={FeatureLevel[state]}
+        onSelect={handleSelect}
+        isFlipEnabled={true}
+        menuAppendTo="parent"
+      >
         {Object.values(FeatureLevel)
           .filter((v) => typeof v === 'string')
           .map((v): { key: string; value: number } => ({ key: String(v), value: FeatureLevel[v] }))
