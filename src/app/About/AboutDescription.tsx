@@ -44,12 +44,12 @@ import { t as gTranslate } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const CRYOSTAT_TRADEMARK = gTranslate("title", { ns: "common" });
+export const CRYOSTAT_TRADEMARK = gTranslate("title", { ns: "translation" }) as string;
 
 export interface AboutDescriptionProps {}
 
 export const AboutDescription: React.FC<{}> = (props: AboutDescriptionProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'translation']);
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
@@ -124,7 +124,7 @@ export const AboutDescription: React.FC<{}> = (props: AboutDescriptionProps) => 
             {build.mailingListName}
           </Text>
         </TextListItem>
-        <TextListItem component="dt">{t('title', { ns: "engTranslation" })}</TextListItem>
+        <TextListItem component="dt">{t('about.', { ns: "translation" }) as string}</TextListItem>
         <TextListItem component="dd">
           <Text component={TextVariants.a} target="_blank" href={build.licenseUrl}>
             License

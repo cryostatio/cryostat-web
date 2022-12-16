@@ -37,53 +37,41 @@
  */
 
 import i18next from 'i18next';
-import Backend from 'i18next-fs-backend';
 import { initReactI18next } from 'react-i18next';
+
+import en_public from './en/public.json';
+import zh_public from './zh/public.json';
+
 
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 
-export const defaultNS = 'common';
-
-
+// TODO: .use(Backend) eventually store translations on backend?
+// Openshift console does this already: 
+// https://github.com/openshift/console/blob/master/frontend/public/i18n.js
 export const i18nResources = {
   en: {
-    engTranslation: require('./en/translation.json'),
-    engCommon: require('./en/common.json'),
+    public: en_public,
   },
-  zh: {
-    zhTranslation: require('./zh/translation.json'),
-    zhCommon: require('./zh/common.json'),
+  zh: { // TODO: add zh translation (and other languages)? 
+    public: zh_public,
   }
-};
-
-export const en = Object.keys(i18nResources.en);
-
-export const namespaceLocale = (ns: string) => {
-  return i18nResources.en.engTranslation
-}
-
+} as const;
 
 i18next
   .use(I18nextBrowserLanguageDetector)
-   // TODO: .use(Backend) eventually store translations on backend?
   .use(initReactI18next)
   .init({
     resources: i18nResources,
-    initImmediate: false,
-    defaultNS: defaultNS,
+    ns: ["common", "translation"],
+    defaultNS: 'public',
     fallbackLng: 'en',
-    debug: true,
+    debug: process.env.NODE_ENV === 'development',
     interpolation: {
       escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
     },
     react: {
       useSuspense: true,
     },
-    backend: {
-      loadPath: './{{lng}}/{{ns}}.json',
-    }
-}), () => {
-  console.log('i18next initialized');
-};
+});
 
 

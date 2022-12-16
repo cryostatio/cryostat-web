@@ -49,19 +49,17 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 const App: React.FunctionComponent = () => (
-  <React.Suspense fallback={<LoadingView />}>
-    <ServiceContext.Provider value={defaultServices}>
-      <NotificationsContext.Provider value={NotificationsInstance}>
-        <Provider store={store}>
-          <Router>
-            <AppLayout>
-              <AppRoutes />
-            </AppLayout>
-          </Router>
-        </Provider>
-      </NotificationsContext.Provider>
-    </ServiceContext.Provider>
-  </React.Suspense>
+  <ServiceContext.Provider value={defaultServices}>
+    <NotificationsContext.Provider value={NotificationsInstance}>
+      <Provider store={store}>
+        <Router>
+          <AppLayout>
+            <AppRoutes />
+          </AppLayout>
+        </Router>
+      </Provider>
+    </NotificationsContext.Provider>
+  </ServiceContext.Provider>
 );
 
 export { App };

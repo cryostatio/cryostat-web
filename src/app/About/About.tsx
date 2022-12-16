@@ -40,6 +40,7 @@ import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_default.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import build from '@app/build.json';
 import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
+import { t } from 'i18next';
 import React from 'react';
 import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
 
@@ -55,7 +56,7 @@ export const About: React.FC<AboutProps> = (_) => {
         <CardBody>
           <AboutDescription />
         </CardBody>
-        <CardFooter>{CRYOSTAT_TRADEMARK}</CardFooter>
+        <CardFooter>{t('asdf')}</CardFooter>
       </Card>
     </BreadcrumbPage>
   );
