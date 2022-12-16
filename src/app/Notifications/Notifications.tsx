@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -54,21 +54,23 @@ export interface Notification {
 }
 
 export class Notifications {
-  private readonly _notifications: Notification[] = [];
-  private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>(
-    this._notifications
-  );
+  private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>([]);
   private readonly _drawerState$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor() {
-    this._drawerState$.pipe(filter((v) => v)).subscribe(() =>
-      this._notifications$.next(
-        this._notifications.map((n) => {
-          n.hidden = true;
-          return n;
-        })
+    this._drawerState$
+      .pipe(
+        filter((v) => v),
+        concatMap(() => this._notifications$.pipe(first()))
       )
-    );
+      .subscribe((prev) =>
+        this._notifications$.next(
+          prev.map((n) => ({
+            ...n,
+            hidden: true,
+          }))
+        )
+      );
   }
 
   drawerState(): Observable<boolean> {
@@ -93,8 +95,10 @@ export class Notifications {
     } else if (typeof notification.message !== 'string') {
       notification.message = JSON.stringify(notification.message);
     }
-    this._notifications.unshift(notification);
-    this._notifications$.next(this._notifications);
+    this._notifications$.pipe(first()).subscribe((prev) => {
+      prev.push(notification);
+      this._notifications$.next(prev);
+    });
   }
 
   success(title: string, message?: string | Error, category?: string): void {
@@ -143,38 +147,41 @@ export class Notifications {
     if (!key) {
       return;
     }
-    for (let n of this._notifications) {
-      if (n.key === key) {
-        n.hidden = hidden;
+    this._notifications$.pipe(first()).subscribe((prev) => {
+      for (let n of prev) {
+        if (n.key === key) {
+          n.hidden = hidden;
+        }
       }
-    }
-    this._notifications$.next(this._notifications);
+      this._notifications$.next(prev);
+    });
   }
 
   setRead(key?: string, read: boolean = true): void {
     if (!key) {
       return;
     }
-    for (let n of this._notifications) {
-      if (n.key === key) {
-        n.read = read;
+    this._notifications$.pipe(first()).subscribe((prev) => {
+      for (let n of prev) {
+        if (n.key === key) {
+          n.read = read;
+        }
       }
-    }
-    this._notifications$.next(this._notifications);
+      this._notifications$.next(prev);
+    });
   }
 
   markAllRead(): void {
-    for (let n of this._notifications) {
-      n.read = true;
-    }
-    this._notifications$.next(this._notifications);
+    this._notifications$.pipe(first()).subscribe((prev) => {
+      for (let n of prev) {
+        n.read = true;
+      }
+      this._notifications$.next(prev);
+    });
   }
 
   clearAll(): void {
-    while (this._notifications.length > 0) {
-      this._notifications.shift();
-    }
-    this._notifications$.next(this._notifications);
+    this._notifications$.next([]);
   }
 
   private isActionNotification(n: Notification): boolean {
