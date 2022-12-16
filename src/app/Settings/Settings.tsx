@@ -52,13 +52,13 @@ export interface SettingsProps {}
 
 export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
   const settings = [
-    FeatureLevels,
     NotificationControl,
     AutomatedAnalysisConfig,
     CredentialsStorage,
     DeletionDialogControl,
     WebSocketDebounce,
     AutoRefresh,
+    FeatureLevels,
   ].map((c) => ({
     title: c.title,
     description: c.description,

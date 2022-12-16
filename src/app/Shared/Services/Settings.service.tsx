@@ -39,7 +39,7 @@
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { FeatureLevel } from '../FeatureFlag/FeatureFlag';
+import { FeatureLevel } from '@app/Shared/FeatureFlag/FeatureFlag';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,

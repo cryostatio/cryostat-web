@@ -71,9 +71,16 @@ const Component = () => {
       <Select isOpen={open} onToggle={handleToggle} selections={FeatureLevel[state]} onSelect={handleSelect}>
         {Object.values(FeatureLevel)
           .filter((v) => typeof v === 'string')
-          .map((key, idx) => (
-            <SelectOption key={idx} value={idx}>
-              {key}
+          .map((v): { key: string; value: number } => ({ key: String(v), value: FeatureLevel[v] }))
+          .filter((v) => {
+            if (!process.env.CRYOSTAT_AUTHORITY) {
+              return v.value !== FeatureLevel.DEVELOPMENT;
+            }
+            return true;
+          })
+          .map((level, idx) => (
+            <SelectOption key={idx} value={level.value}>
+              {level.key}
             </SelectOption>
           ))}
       </Select>
