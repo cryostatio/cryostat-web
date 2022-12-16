@@ -125,6 +125,7 @@ export const messageKeys = new Map([
         const status = evt.message[addr];
         return `Client at ${addr} ${status}`;
       },
+      hidden: true,
     } as NotificationMessageMapper,
   ],
   [
@@ -309,6 +310,7 @@ interface NotificationMessageMapper {
   title: string;
   body?: (evt: NotificationMessage) => string;
   variant?: AlertVariant;
+  hidden?: boolean;
 }
 
 export class NotificationChannel {
@@ -326,7 +328,13 @@ export class NotificationChannel {
           return;
         }
         const message = value.body(msg);
-        notifications.notify({ title: value.title, message, category: key, variant: value.variant });
+        notifications.notify({
+          title: value.title,
+          message,
+          category: key,
+          variant: value.variant,
+          hidden: value.hidden,
+        });
       });
     });
 

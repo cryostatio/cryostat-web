@@ -101,12 +101,12 @@ export class Notifications {
     });
   }
 
-  success(title: string, message?: string | Error, category?: string): void {
-    this.notify({ title, message, category, variant: AlertVariant.success });
+  success(title: string, message?: string | Error, category?: string, hidden?: boolean): void {
+    this.notify({ title, message, category, variant: AlertVariant.success, hidden });
   }
 
-  info(title: string, message?: string | Error, category?: string): void {
-    this.notify({ title, message, category, variant: AlertVariant.info });
+  info(title: string, message?: string | Error, category?: string, hidden?: boolean): void {
+    this.notify({ title, message, category, variant: AlertVariant.info, hidden });
   }
 
   warning(title: string, message?: string | Error, category?: string): void {
