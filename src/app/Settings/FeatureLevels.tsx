@@ -46,7 +46,7 @@ import { Select, SelectOption } from '@patternfly/react-core';
 const Component = () => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [state, setState] = React.useState(0);
+  const [state, setState] = React.useState(FeatureLevel.PRODUCTION);
   const [open, setOpen] = React.useState(false);
 
   React.useLayoutEffect(() => {
