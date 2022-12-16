@@ -282,9 +282,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
         <PageHeaderToolsGroup>
           <FeatureFlag level={FeatureLevel.DEVELOPMENT}>
             <PageHeaderToolsItem>
-              <Button onClick={() => notificationsContext.info(`test ${+Date.now()}`)}>
-                <PlusCircleIcon />
-              </Button>
+              <Button variant="link" onClick={() => notificationsContext.info(`test ${+Date.now()}`)} icon={<PlusCircleIcon color="white" size="sm"/>}/>
             </PageHeaderToolsItem>
           </FeatureFlag>
           <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded}>
