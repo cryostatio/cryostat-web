@@ -40,6 +40,7 @@ import { AboutModal } from '@patternfly/react-core';
 import React from 'react';
 import build from '@app/build.json';
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
+import bkgImg from '@app/assets/about_background.png';
 import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
 
 export const AboutCryostatModal = ({ isOpen, onClose }) => {
@@ -52,6 +53,7 @@ export const AboutCryostatModal = ({ isOpen, onClose }) => {
         isOpen={isOpen}
         onClose={onClose}
         trademark={CRYOSTAT_TRADEMARK}
+        backgroundImageSrc={bkgImg}
       >
         <AboutDescription />
       </AboutModal>
