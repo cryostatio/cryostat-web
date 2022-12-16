@@ -96,7 +96,7 @@ export class Notifications {
       notification.message = JSON.stringify(notification.message);
     }
     this._notifications$.pipe(first()).subscribe((prev) => {
-      prev.push(notification);
+      prev.unshift(notification);
       this._notifications$.next(prev);
     });
   }
