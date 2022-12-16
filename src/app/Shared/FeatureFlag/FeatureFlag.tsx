@@ -37,6 +37,7 @@
  */
 import * as React from 'react';
 import { ServiceContext } from '../Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export enum FeatureLevel {
   DEVELOPMENT = 0,
@@ -51,8 +52,14 @@ export interface FeatureFlagProps {
 
 export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, children }) => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
 
-  if (level >= context.settings.featureLevel()) {
+  React.useLayoutEffect(() => {
+    addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
+  }, [addSubscription, context.settings.featureLevel, setActiveLevel]);
+
+  if (level >= activeLevel) {
     return <>{children}</>;
   }
 
