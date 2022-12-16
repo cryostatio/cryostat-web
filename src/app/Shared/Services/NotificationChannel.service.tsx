@@ -435,7 +435,12 @@ export class NotificationChannel {
                 }
                 this._ready.next({ ready: false, code });
                 this.login.setSessionState(sessionState);
-                fn.apply(this.notifications, ['WebSocket connection lost', msg, NotificationCategory.WsClientActivity]);
+                fn.apply(this.notifications, [
+                  'WebSocket connection lost',
+                  msg,
+                  NotificationCategory.WsClientActivity,
+                  fn === this.notifications.info,
+                ]);
               },
             },
           });
