@@ -63,6 +63,7 @@ import {
   PageHeaderToolsItem,
   PageSidebar,
   SkipToContent,
+  Label,
 } from '@patternfly/react-core';
 import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, PlusCircleIcon, UserIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
@@ -274,16 +275,19 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     </DropdownToggle>
   );
 
+  // TODO refactor to use Masthead, Toolbar components: https://www.patternfly.org/v4/components/page
   const HeaderTools = (
     <>
       <PageHeaderTools>
         <PageHeaderToolsGroup>
-          <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded}>
-            <FeatureFlag level={FeatureLevel.DEVELOPMENT}>
+          <FeatureFlag level={FeatureLevel.DEVELOPMENT}>
+            <PageHeaderToolsItem>
               <Button onClick={() => notificationsContext.info(`test ${+Date.now()}`)}>
                 <PlusCircleIcon />
               </Button>
-            </FeatureFlag>
+            </PageHeaderToolsItem>
+          </FeatureFlag>
+          <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded}>
             <NotificationBadge
               count={unreadNotificationsCount}
               variant={errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'}
@@ -295,6 +299,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           </PageHeaderToolsItem>
           <PageHeaderToolsItem>
             <Button onClick={handleSettingsButtonClick} variant="link" icon={<CogIcon color="white " size="sm" />} />
+          </PageHeaderToolsItem>
+          <PageHeaderToolsItem>
             <Button onClick={handleAboutModalToggle} variant="link" icon={<HelpIcon color="white" size="sm" />} />
           </PageHeaderToolsItem>
           <PageHeaderToolsItem visibility={{ default: showUserIcon ? 'visible' : 'hidden' }}>
@@ -313,7 +319,25 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const Header = (
     <>
       <PageHeader
-        logo={<Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />}
+        logo={
+          <>
+            <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
+            <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
+              <PageHeaderToolsItem>
+                <Label isCompact color="red">
+                  Development
+                </Label>
+              </PageHeaderToolsItem>
+            </FeatureFlag>
+            <FeatureFlag strict level={FeatureLevel.BETA}>
+              <PageHeaderToolsItem>
+                <Label isCompact color="green">
+                  Beta
+                </Label>
+              </PageHeaderToolsItem>
+            </FeatureFlag>
+          </>
+        }
         logoProps={logoProps}
         showNavToggle
         isNavOpen={isNavOpen}

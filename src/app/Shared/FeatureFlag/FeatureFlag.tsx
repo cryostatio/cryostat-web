@@ -41,11 +41,12 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface FeatureFlagProps {
+  strict?: boolean;
   level: FeatureLevel;
   children?: React.ReactNode | undefined;
 }
 
-export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, children }) => {
+export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, strict, children }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
@@ -54,7 +55,8 @@ export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, 
     addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
   }, [addSubscription, context.settings.featureLevel, setActiveLevel]);
 
-  if (level >= activeLevel) {
+  const comparator = strict ? (a, b) => a === b : (a, b) => a >= b;
+  if (comparator(level, activeLevel)) {
     return <>{children}</>;
   }
 
