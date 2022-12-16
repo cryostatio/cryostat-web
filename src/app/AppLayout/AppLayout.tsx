@@ -133,12 +133,15 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   }, [notifications, serviceContext.settings, serviceContext.settings.notificationsEnabledFor]);
 
   const overflowMessage = React.useMemo(() => {
+    if (isNotificationDrawerExpanded) {
+      return '';
+    }
     const overflow = notificationsToDisplay.length - serviceContext.settings.visibleNotificationsCount();
     if (overflow > 0) {
       return `View ${overflow} more`;
     }
     return '';
-  }, [notificationsToDisplay, serviceContext.settings.visibleNotificationsCount]);
+  }, [isNotificationDrawerExpanded, notificationsToDisplay, serviceContext.settings.visibleNotificationsCount]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
@@ -370,13 +373,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const NotificationDrawer = React.useMemo(() => <NotificationCenter onClose={handleCloseNotificationCenter} />, []);
   return (
     <>
-      <AlertGroup
-        isToast
-        isLiveRegion
-        overflowMessage={isNotificationDrawerExpanded ? '' : overflowMessage}
-        onOverflowClick={handleOpenNotificationCenter}
-      >
-        {(isNotificationDrawerExpanded ? [] : notificationsToDisplay)
+      <AlertGroup isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
+        {notificationsToDisplay
           .slice(0, serviceContext.settings.visibleNotificationsCount())
           .map(({ key, title, message, variant }) => (
             <Alert

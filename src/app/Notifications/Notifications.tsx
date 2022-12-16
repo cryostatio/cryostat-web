@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 import * as React from 'react';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -60,17 +60,22 @@ export class Notifications {
   );
   private readonly _drawerState$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  constructor() {
+    this._drawerState$.pipe(filter((v) => v)).subscribe(() =>
+      this._notifications$.next(
+        this._notifications.map((n) => {
+          n.hidden = true;
+          return n;
+        })
+      )
+    );
+  }
+
   drawerState(): Observable<boolean> {
     return this._drawerState$.asObservable();
   }
 
   setDrawerState(state: boolean): void {
-    if (state) {
-      for (const notification of this._notifications) {
-        notification.hidden = true;
-      }
-      this._notifications$.next(this._notifications);
-    }
     this._drawerState$.next(state);
   }
 
@@ -79,7 +84,9 @@ export class Notifications {
       notification.key = nanoid();
     }
     notification.read = false;
-    notification.hidden = this._drawerState$.getValue();
+    if (notification.hidden === undefined) {
+      notification.hidden = this._drawerState$.getValue();
+    }
     notification.timestamp = +Date.now();
     if (notification.message instanceof Error) {
       notification.message = JSON.stringify(notification.message, Object.getOwnPropertyNames(notification.message));
