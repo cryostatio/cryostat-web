@@ -117,6 +117,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     addSubscription(notificationsContext.notifications().subscribe((n) => setNotifications([...n])));
   }, [notificationsContext.notifications, addSubscription]);
 
+  React.useEffect(() => {
+    addSubscription(notificationsContext.drawerState().subscribe(setNotificationDrawerExpanded));
+  }, [addSubscription, notificationsContext.drawerState, setNotificationDrawerExpanded]);
+
   const notificationsToDisplay = React.useMemo(() => {
     return notifications
       .filter((n) => !n.read && !n.hidden)
@@ -222,16 +226,16 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   }, [routerHistory.push]);
 
   const handleNotificationCenterToggle = React.useCallback(() => {
-    setNotificationDrawerExpanded((isNotificationDrawerExpanded) => !isNotificationDrawerExpanded);
-  }, [setNotificationDrawerExpanded]);
+    notificationsContext.setDrawerState(!isNotificationDrawerExpanded);
+  }, [isNotificationDrawerExpanded, notificationsContext.setDrawerState]);
 
   const handleCloseNotificationCenter = React.useCallback(() => {
-    setNotificationDrawerExpanded(false);
-  }, [setNotificationDrawerExpanded]);
+    notificationsContext.setDrawerState(false);
+  }, [notificationsContext.setDrawerState]);
 
   const handleOpenNotificationCenter = React.useCallback(() => {
-    setNotificationDrawerExpanded(true);
-  }, [setNotificationDrawerExpanded]);
+    notificationsContext.setDrawerState(true);
+  }, [notificationsContext.setDrawerState]);
 
   const handleAboutModalToggle = React.useCallback(() => {
     setAboutModalOpen((aboutModalOpen) => !aboutModalOpen);

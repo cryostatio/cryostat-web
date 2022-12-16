@@ -58,12 +58,28 @@ export class Notifications {
   private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>(
     this._notifications
   );
+  private readonly _drawerState$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  drawerState(): Observable<boolean> {
+    return this._drawerState$.asObservable();
+  }
+
+  setDrawerState(state: boolean): void {
+    if (state) {
+      for (const notification of this._notifications) {
+        notification.hidden = true;
+      }
+      this._notifications$.next(this._notifications);
+    }
+    this._drawerState$.next(state);
+  }
 
   notify(notification: Notification): void {
     if (!notification.key) {
       notification.key = nanoid();
     }
     notification.read = false;
+    notification.hidden = this._drawerState$.getValue();
     notification.timestamp = +Date.now();
     if (notification.message instanceof Error) {
       notification.message = JSON.stringify(notification.message, Object.getOwnPropertyNames(notification.message));

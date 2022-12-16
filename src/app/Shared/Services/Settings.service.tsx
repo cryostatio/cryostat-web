@@ -79,20 +79,20 @@ export const automatedAnalysisConfigToRecordingAttributes = (
 };
 
 export class SettingsService {
-  private readonly featureLevel$ = new BehaviorSubject<FeatureLevel>(
+  private readonly _featureLevel$ = new BehaviorSubject<FeatureLevel>(
     getFromLocalStorage('FEATURE_LEVEL', FeatureLevel.PRODUCTION)
   );
 
   constructor() {
-    this.featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
+    this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
   }
 
   featureLevel(): Observable<FeatureLevel> {
-    return this.featureLevel$.asObservable();
+    return this._featureLevel$.asObservable();
   }
 
   setFeatureLevel(featureLevel: FeatureLevel): void {
-    this.featureLevel$.next(featureLevel);
+    this._featureLevel$.next(featureLevel);
   }
 
   autoRefreshEnabled(): boolean {
