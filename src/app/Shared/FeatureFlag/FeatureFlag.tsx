@@ -71,11 +71,13 @@ export interface DynamicFeatureFlagProps {
 export const DynamicFeatureFlag: React.FunctionComponent<DynamicFeatureFlagProps> = ({ levels, component }) => {
   return (
     <>
-      {levels.map((level) => (
-        <FeatureFlag strict level={level}>
-          {component(level)}
-        </FeatureFlag>
-      ))}
+      {levels
+        .filter((level) => levels.includes(level))
+        .map((level) => (
+          <FeatureFlag strict level={level}>
+            {component(level)}
+          </FeatureFlag>
+        ))}
     </>
   );
 };

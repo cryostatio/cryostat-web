@@ -323,26 +323,27 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     </>
   );
 
+  const levelBadge = React.useCallback((level: FeatureLevel) => {
+    return (
+      <PageHeaderToolsItem>
+        <Label
+          isCompact
+          style={{ marginLeft: '2ch', textTransform: 'capitalize' }}
+          color={level === FeatureLevel.BETA ? 'green' : 'red'}
+        >
+          {FeatureLevel[level].toLowerCase()}
+        </Label>
+      </PageHeaderToolsItem>
+    );
+  }, []);
+
   const Header = (
     <>
       <PageHeader
         logo={
           <>
             <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
-            <DynamicFeatureFlag
-              levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]}
-              component={(level) => (
-                <PageHeaderToolsItem>
-                  <Label
-                    style={{ marginLeft: '2ch', textTransform: 'capitalize' }}
-                    isCompact
-                    color={level == FeatureLevel.BETA ? 'green' : 'red'}
-                  >
-                    {FeatureLevel[level].toLowerCase()}
-                  </Label>
-                </PageHeaderToolsItem>
-              )}
-            />
+            <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </>
         }
         logoProps={logoProps}
