@@ -2,6 +2,7 @@
   "productName": "Cryostat",
   "commitHashUrl": "https://github.com/cryostatio/cryostat/commits/__REPLACE_HASH__",
   "homePageUrl": "https://cryostat.io",
+  "discussionUrl": "https://github.com/cryostatio/cryostat/discussions",
   "knownIssuesUrl": "https://github.com/cryostatio/cryostat/issues",
   "fileIssueUrl": "https://github.com/cryostatio/cryostat/issues/new?labels=user+report,bug&body=Affects+__REPLACE_VERSION__",
   "mailingListName": "Google Groups",

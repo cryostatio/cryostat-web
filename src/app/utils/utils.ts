@@ -41,6 +41,16 @@ const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 const HOUR_MILLIS = 60 * MINUTE_MILLIS;
 const DAY_MILLIS = 24 * HOUR_MILLIS;
 
+export const openTabForUrl = (url: string) => {
+  const anchor = document.createElement('a') as HTMLAnchorElement;
+  anchor.setAttribute('href', url);
+  anchor.setAttribute('target', '_blank');
+  anchor.setAttribute('style', 'display: none; visibility: hidden;');
+
+  anchor.click();
+  anchor.remove();
+};
+
 export const createBlobURL = (content: any, contentType: string, timeout: number = 1000) => {
   const blob = new Blob([content], { type: contentType });
   const url = window.URL.createObjectURL(blob);
