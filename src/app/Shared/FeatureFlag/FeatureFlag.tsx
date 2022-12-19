@@ -66,18 +66,28 @@ export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, 
 export interface DynamicFeatureFlagProps {
   levels: FeatureLevel[];
   component: (level: FeatureLevel) => React.ReactNode;
+  defaultComponent?: React.ReactNode;
 }
 
-export const DynamicFeatureFlag: React.FunctionComponent<DynamicFeatureFlagProps> = ({ levels, component }) => {
-  return (
-    <>
-      {levels
-        .filter((level) => levels.includes(level))
-        .map((level) => (
-          <FeatureFlag strict level={level}>
-            {component(level)}
-          </FeatureFlag>
-        ))}
-    </>
-  );
+export const DynamicFeatureFlag: React.FunctionComponent<DynamicFeatureFlagProps> = ({
+  levels,
+  component,
+  defaultComponent,
+}) => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
+
+  React.useLayoutEffect(() => {
+    addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
+  }, [addSubscription, context.settings.featureLevel, setActiveLevel]);
+
+  const toRender = React.useMemo(() => {
+    if (levels.includes(activeLevel)) {
+      return component(activeLevel);
+    }
+    return defaultComponent;
+  }, [levels, activeLevel, component, defaultComponent]);
+
+  return <>{toRender}</>;
 };
