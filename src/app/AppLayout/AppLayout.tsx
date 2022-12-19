@@ -77,7 +77,7 @@ import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -323,26 +323,27 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     </>
   );
 
+  const levelBadge = React.useCallback((level: FeatureLevel) => {
+    return (
+      <PageHeaderToolsItem>
+        <Label
+          isCompact
+          style={{ marginLeft: '2ch', textTransform: 'capitalize' }}
+          color={level === FeatureLevel.BETA ? 'green' : 'red'}
+        >
+          {FeatureLevel[level].toLowerCase()}
+        </Label>
+      </PageHeaderToolsItem>
+    );
+  }, []);
+
   const Header = (
     <>
       <PageHeader
         logo={
           <>
             <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
-            <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
-              <PageHeaderToolsItem>
-                <Label style={{ marginLeft: '2ch' }} isCompact color="red">
-                  Development
-                </Label>
-              </PageHeaderToolsItem>
-            </FeatureFlag>
-            <FeatureFlag strict level={FeatureLevel.BETA}>
-              <PageHeaderToolsItem>
-                <Label style={{ marginLeft: '2ch' }} isCompact color="green">
-                  Beta
-                </Label>
-              </PageHeaderToolsItem>
-            </FeatureFlag>
+            <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </>
         }
         logoProps={logoProps}
