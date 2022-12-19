@@ -285,7 +285,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     <>
       <PageHeaderTools>
         <PageHeaderToolsGroup>
-          <FeatureFlag level={FeatureLevel.DEVELOPMENT}>
+          <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
             <PageHeaderToolsItem>
               <Button
                 variant="link"
@@ -331,14 +331,14 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
             <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
             <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
               <PageHeaderToolsItem>
-                <Label isCompact color="red">
+                <Label style={{ marginLeft: '2ch' }} isCompact color="red">
                   Development
                 </Label>
               </PageHeaderToolsItem>
             </FeatureFlag>
             <FeatureFlag strict level={FeatureLevel.BETA}>
               <PageHeaderToolsItem>
-                <Label isCompact color="green">
+                <Label style={{ marginLeft: '2ch' }} isCompact color="green">
                   Beta
                 </Label>
               </PageHeaderToolsItem>
