@@ -63,7 +63,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 const enum Actions {
@@ -274,7 +274,7 @@ export const StoreJmxCredentials = () => {
   }, [setShowAuthModal]);
 
   const handleDeleteButton = React.useCallback(() => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteJMXCredentials)) {
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteJMXCredentials)) {
       setWarningModalOpen(true);
     } else {
       handleDeleteCredentials();
@@ -313,7 +313,7 @@ export const StoreJmxCredentials = () => {
     const deleteCredentialModal = React.useMemo(() => {
       return (
         <DeleteWarningModal
-          warningType={DeleteWarningType.DeleteJMXCredentials}
+          warningType={DeleteOrDisableWarningType.DeleteJMXCredentials}
           visible={warningModalOpen}
           onAccept={handleDeleteCredentials}
           onClose={handleWarningModalClose}

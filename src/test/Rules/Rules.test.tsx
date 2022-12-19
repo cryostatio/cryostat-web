@@ -49,7 +49,7 @@ import {
   NotificationChannel,
   NotificationMessage,
 } from '@app/Shared/Services/NotificationChannel.service';
-import { DeleteAutomatedRules, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteAutomatedRules, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { renderWithServiceContextAndRouter } from '../Common';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
@@ -191,7 +191,7 @@ describe('<Rules />', () => {
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith(mockRule.name, true);
     expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteAutomatedRules, false);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteAutomatedRules, false);
   });
 
   it('deletes a rule when Delete is clicked w/o popup warning', async () => {

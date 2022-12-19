@@ -96,7 +96,7 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 
 import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
 import { defaultServices, Services } from '@app/Shared/Services/Services';
-import { DeleteActiveRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -398,7 +398,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(deleteRequestSpy).toBeCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someRecording');
     expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteActiveRecordings, false);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteActiveRecordings, false);
   });
 
   it('deletes the recording when Delete is clicked w/o popup warning', async () => {

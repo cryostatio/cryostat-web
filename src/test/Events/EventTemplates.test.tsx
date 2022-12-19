@@ -44,7 +44,7 @@ import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { MessageMeta, MessageType, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { EventTemplates } from '@app/Events/EventTemplates';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { TargetService } from '@app/Shared/Services/Target.service';
 import { renderWithServiceContextAndRouter } from '../Common';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
@@ -204,7 +204,7 @@ describe('<EventTemplates />', () => {
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith('someEventTemplate');
     expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteEventTemplates, false);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteEventTemplates, false);
   });
 
   it('deletes the template when Delete is clicked w/o popup warning', async () => {

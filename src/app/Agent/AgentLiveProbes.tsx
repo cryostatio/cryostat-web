@@ -69,7 +69,7 @@ import { LoadingView } from '@app/LoadingView/LoadingView';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { EventProbe } from '@app/Shared/Services/Api.service';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { SearchIcon } from '@patternfly/react-icons';
 import { AboutAgentCard } from './AboutAgentCard';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
@@ -164,7 +164,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
   }, [setWarningModalOpen]);
 
   const handleDeleteButton = React.useCallback(() => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveProbes)) {
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteActiveProbes)) {
       setWarningModalOpen(true);
     } else {
       handleDeleteAllProbes();
@@ -327,7 +327,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
                 </ToolbarGroup>
               </ToolbarContent>
               <DeleteWarningModal
-                warningType={DeleteWarningType.DeleteActiveProbes}
+                warningType={DeleteOrDisableWarningType.DeleteActiveProbes}
                 visible={warningModalOpen}
                 onAccept={handleWarningModalAccept}
                 onClose={handleWarningModalClose}

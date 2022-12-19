@@ -66,7 +66,7 @@ import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from '
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   recordingAddFilterIntent,
@@ -696,7 +696,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
   const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteActiveRecordings),
+    () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteActiveRecordings),
     [context, context.settings, context.settings.deletionDialogsEnabledFor]
   );
 
@@ -811,7 +811,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
   const deleteActiveWarningModal = React.useMemo(() => {
     return (
       <DeleteWarningModal
-        warningType={DeleteWarningType.DeleteActiveRecordings}
+        warningType={DeleteOrDisableWarningType.DeleteActiveRecordings}
         visible={warningModalOpen}
         onAccept={props.handleDeleteRecordings}
         onClose={handleWarningModalClose}

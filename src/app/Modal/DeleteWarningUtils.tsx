@@ -35,10 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-export enum DeleteWarningType {
+export enum DeleteOrDisableWarningType {
   DeleteActiveRecordings = 'DeleteActiveRecordings',
   DeleteArchivedRecordings = 'DeleteArchivedRecordings',
   DeleteAutomatedRules = 'DeleteAutomatedRules',
+  DisableAutomatedRules = 'DisableAutomatedRules',
   DeleteEventTemplates = 'DeleteEventTemplates',
   DeleteProbeTemplates = 'DeleteProbeTemplates',
   DeleteActiveProbes = 'DeleteActiveProbes',
@@ -46,82 +47,91 @@ export enum DeleteWarningType {
   DeleteCustomTargets = 'DeleteCustomTargets',
 }
 
-export interface DeleteWarning {
-  id: DeleteWarningType;
+export interface DeleteOrDisableWarning {
+  id: DeleteOrDisableWarningType;
   title: string;
   label: string;
   description: string;
   ariaLabel: string;
 }
 
-export const DeleteActiveRecordings: DeleteWarning = {
-  id: DeleteWarningType.DeleteActiveRecordings,
+export const DeleteActiveRecordings: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteActiveRecordings,
   title: 'Permanently delete Active Recording?',
   label: 'Delete Active Recording',
   description: `Recording and report data will be lost.`,
   ariaLabel: 'Recording delete warning',
 };
 
-export const DeleteArchivedRecordings: DeleteWarning = {
-  id: DeleteWarningType.DeleteArchivedRecordings,
+export const DeleteArchivedRecordings: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteArchivedRecordings,
   title: 'Permanently delete Archived Recording?',
   label: 'Delete Archived Recording',
   description: `Recording and report data will be lost.`,
   ariaLabel: 'Recording delete warning',
 };
 
-export const DeleteAutomatedRules: DeleteWarning = {
-  id: DeleteWarningType.DeleteAutomatedRules,
+export const DeleteAutomatedRules: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteAutomatedRules,
   title: 'Permanently delete Automated Rule?',
   label: 'Delete Automated Rule',
   description: `Rule data will be lost.`,
   ariaLabel: 'Automated rule delete warning',
 };
 
-export const DeleteEventTemplates: DeleteWarning = {
-  id: DeleteWarningType.DeleteEventTemplates,
+export const DisableAutomatedRules: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteAutomatedRules,
+  title: 'Disable Automated Rule?',
+  label: 'Disable Automated Rule',
+  description: `Rule will be disabled.`,
+  ariaLabel: 'Automated rule disable warning',
+};
+
+export const DeleteEventTemplates: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteEventTemplates,
   title: 'Permanently delete Event Template?',
   label: 'Delete Event Template',
   description: `Custom event template data will be lost.`,
   ariaLabel: 'Event template delete warning',
 };
 
-export const DeleteProbeTemplates: DeleteWarning = {
-  id: DeleteWarningType.DeleteProbeTemplates,
+export const DeleteProbeTemplates: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteProbeTemplates,
   title: 'Permanently delete Probe Template?',
   label: 'Delete Probe Template',
   description: `Custom probe template data will be lost.`,
   ariaLabel: 'Probe template delete warning',
 };
 
-export const DeleteActiveProbes: DeleteWarning = {
-  id: DeleteWarningType.DeleteActiveProbes,
+export const DeleteActiveProbes: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteActiveProbes,
   title: 'Permanently remove Active Probes from the target?',
   label: 'Remove Active Probes',
   description: `Active probes will be removed from the target.`,
   ariaLabel: 'Active Probes remove warning',
 };
 
-export const DeleteJMXCredentials: DeleteWarning = {
-  id: DeleteWarningType.DeleteJMXCredentials,
+export const DeleteJMXCredentials: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteJMXCredentials,
   title: 'Permanently delete JMX Credentials?',
   label: 'Delete JMX Credentials',
   description: `Credential data for this target will be lost.`,
   ariaLabel: 'JMX Credentials delete warning',
 };
 
-export const DeleteCustomTargets: DeleteWarning = {
-  id: DeleteWarningType.DeleteCustomTargets,
+export const DeleteCustomTargets: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteCustomTargets,
   title: 'Permanently delete Custom Target?',
   label: 'Delete Custom Targets',
   description: `Custom target information will be lost.`,
   ariaLabel: 'Custom Targets delete warning',
 };
 
-export const DeleteWarningKinds: DeleteWarning[] = [
+export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteActiveRecordings,
   DeleteArchivedRecordings,
   DeleteAutomatedRules,
+  DisableAutomatedRules,
   DeleteEventTemplates,
   DeleteProbeTemplates,
   DeleteActiveProbes,
@@ -129,7 +139,7 @@ export const DeleteWarningKinds: DeleteWarning[] = [
   DeleteCustomTargets,
 ];
 
-export const getFromWarningMap = (warning: DeleteWarningType): DeleteWarning | undefined => {
+export const getFromWarningMap = (warning: DeleteOrDisableWarningType): DeleteOrDisableWarning | undefined => {
   const wt = DeleteWarningKinds.find((t) => t.id === warning);
   return wt;
 };

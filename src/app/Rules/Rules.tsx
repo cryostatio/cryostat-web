@@ -75,7 +75,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RuleUploadModal } from './RulesUploadModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 
 export interface Rule {
@@ -277,7 +277,7 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
 
   const handleDeleteButton = React.useCallback(
     (rule: Rule) => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules)) {
+      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteAutomatedRules)) {
         setRuleToDelete(rule);
         setWarningModalOpen(true);
       } else {
@@ -442,7 +442,7 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
                   </ToolbarItem>
                 </ToolbarGroup>
                 <RuleDeleteWarningModal
-                  warningType={DeleteWarningType.DeleteAutomatedRules}
+                  warningType={DeleteOrDisableWarningType.DeleteAutomatedRules}
                   rule={ruleToDelete?.name}
                   visible={warningModalOpen}
                   onAccept={handleWarningModalAccept}

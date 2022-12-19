@@ -37,12 +37,12 @@
  */
 import * as React from 'react';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
-import { DeleteWarningType, getFromWarningMap } from './DeleteWarningUtils';
+import { DeleteOrDisableWarningType, getFromWarningMap } from './DeleteWarningUtils';
 import { useState } from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface DeleteWarningProps {
-  warningType: DeleteWarningType;
+  warningType: DeleteOrDisableWarningType;
   visible: boolean;
   onAccept: () => void;
   onClose: () => void;

@@ -257,10 +257,10 @@ export class ApiService {
     );
   }
 
-  updateRule(rule: Rule): Observable<boolean> {
+  updateRule(rule: Rule, clean = true): Observable<boolean> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    return this.sendRequest('v2', `rules/${rule.name}`, {
+    return this.sendRequest('v2', `rules/${rule.name}?clean=${clean}`, {
       method: 'PATCH',
       body: JSON.stringify(rule),
       headers,
