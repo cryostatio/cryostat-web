@@ -83,8 +83,15 @@ export class SettingsService {
     getFromLocalStorage('FEATURE_LEVEL', FeatureLevel.PRODUCTION)
   );
 
+  private readonly _visibleNotificationsCount$ = new BehaviorSubject<number>(
+    getFromLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', 5)
+  );
+
   constructor() {
     this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
+    this._visibleNotificationsCount$.subscribe((count: number) =>
+      saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
+    );
   }
 
   featureLevel(): Observable<FeatureLevel> {
@@ -172,12 +179,12 @@ export class SettingsService {
     this.setDeletionDialogsEnabled(map);
   }
 
-  visibleNotificationsCount(): number {
-    return getFromLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', 5);
+  visibleNotificationsCount(): Observable<number> {
+    return this._visibleNotificationsCount$.asObservable();
   }
 
   setVisibleNotificationCount(count: number): void {
-    saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count);
+    this._visibleNotificationsCount$.next(count);
   }
 
   notificationsEnabled(): Map<NotificationCategory, boolean> {

@@ -102,6 +102,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [notifications, setNotifications] = React.useState([] as Notification[]);
+  const [visibleNotificationsCount, setVisibleNotificationsCount] = React.useState(5);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const location = useLocation();
@@ -122,6 +123,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     addSubscription(notificationsContext.drawerState().subscribe(setNotificationDrawerExpanded));
   }, [addSubscription, notificationsContext.drawerState, setNotificationDrawerExpanded]);
 
+  React.useEffect(() => {
+    addSubscription(serviceContext.settings.visibleNotificationsCount().subscribe(setVisibleNotificationsCount));
+  }, [addSubscription, serviceContext.settings.visibleNotificationsCount, setVisibleNotificationsCount]);
+
   const notificationsToDisplay = React.useMemo(() => {
     return notifications
       .filter((n) => !n.read && !n.hidden)
@@ -137,12 +142,12 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     if (isNotificationDrawerExpanded) {
       return '';
     }
-    const overflow = notificationsToDisplay.length - serviceContext.settings.visibleNotificationsCount();
+    const overflow = notificationsToDisplay.length - visibleNotificationsCount;
     if (overflow > 0) {
       return `View ${overflow} more`;
     }
     return '';
-  }, [isNotificationDrawerExpanded, notificationsToDisplay, serviceContext.settings.visibleNotificationsCount]);
+  }, [isNotificationDrawerExpanded, notificationsToDisplay, visibleNotificationsCount]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
@@ -400,21 +405,19 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   return (
     <>
       <AlertGroup isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
-        {notificationsToDisplay
-          .slice(0, serviceContext.settings.visibleNotificationsCount())
-          .map(({ key, title, message, variant }) => (
-            <Alert
-              isLiveRegion
-              variant={variant}
-              key={title}
-              title={title}
-              actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
-              timeout={true}
-              onTimeout={handleTimeout(key)}
-            >
-              {message?.toString()}
-            </Alert>
-          ))}
+        {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
+          <Alert
+            isLiveRegion
+            variant={variant}
+            key={title}
+            title={title}
+            actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
+            timeout={true}
+            onTimeout={handleTimeout(key)}
+          >
+            {message?.toString()}
+          </Alert>
+        ))}
       </AlertGroup>
       <Page
         mainContainerId="primary-app-container"
