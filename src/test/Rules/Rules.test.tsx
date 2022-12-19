@@ -49,7 +49,7 @@ import {
   NotificationChannel,
   NotificationMessage,
 } from '@app/Shared/Services/NotificationChannel.service';
-import { DeleteAutomatedRules, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteAutomatedRules, DeleteOrDisableWarningType, DisableAutomatedRules } from '@app/Modal/DeleteWarningUtils';
 import { renderWithServiceContextAndRouter } from '../Common';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
@@ -91,7 +91,12 @@ jest
   .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly empty
   .mockReturnValue(of(mockRuleListResponse));
 
-jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValueOnce(true);
+jest
+  .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
+  .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the Rule after clicking confirmation Delete
+  .mockReturnValueOnce(false) // deletes a rule when Delete is clicked w/o popup warning
+  .mockReturnValueOnce(false) // updates a rule when the switch is clicked
+  .mockReturnValueOnce(true); // shows a popup when toggle disables rule and then disable the Rule after clicking confirmation Disable
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -254,10 +259,24 @@ describe('<Rules />', () => {
   it('updates a rule when the switch is clicked', async () => {
     const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
 
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
+    expect(updateSpy).toHaveBeenCalledTimes(1);
+    expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: !mockRule.enabled }, expect.any(Boolean));
+  });
+
+  it('shows a popup when toggle disables rule and then disable the Rule after clicking confirmation Disable', async () => {
+    const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
+    const { user } = renderWithServiceContextAndRouter(<Rules />, { history: history });
+
+    await user.click(screen.getByRole('checkbox', { name: `${mockRule.name} is enabled` }));
+
+    expect(screen.getByLabelText(DisableAutomatedRules.ariaLabel));
+
+    await user.click(screen.getByLabelText("Don't ask me again"));
+    await user.click(within(screen.getByLabelText(DisableAutomatedRules.ariaLabel)).getByText('Disable'));
 
     expect(updateSpy).toHaveBeenCalledTimes(1);
-    expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: !mockRule.enabled });
+    expect(updateSpy).toBeCalledWith({ ...mockRule, enabled: false }, true);
   });
 
   it('upload a rule file when Submit is clicked', async () => {

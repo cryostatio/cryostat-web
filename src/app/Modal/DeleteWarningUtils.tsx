@@ -80,7 +80,7 @@ export const DeleteAutomatedRules: DeleteOrDisableWarning = {
 };
 
 export const DisableAutomatedRules: DeleteOrDisableWarning = {
-  id: DeleteOrDisableWarningType.DeleteAutomatedRules,
+  id: DeleteOrDisableWarningType.DisableAutomatedRules,
   title: 'Disable Automated Rule?',
   label: 'Disable Automated Rule',
   description: `Rule will be disabled.`,
