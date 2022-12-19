@@ -40,29 +40,6 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 
-export interface FeatureFlagProps {
-  strict?: boolean;
-  level: FeatureLevel;
-  children?: React.ReactNode | undefined;
-}
-
-export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, strict, children }) => {
-  const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
-
-  React.useLayoutEffect(() => {
-    addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
-  }, [addSubscription, context.settings.featureLevel, setActiveLevel]);
-
-  const comparator = strict ? (a, b) => a === b : (a, b) => a >= b;
-  if (comparator(level, activeLevel)) {
-    return <>{children}</>;
-  }
-
-  return <></>;
-};
-
 export interface DynamicFeatureFlagProps {
   levels: FeatureLevel[];
   component: (level: FeatureLevel) => React.ReactNode;
@@ -90,4 +67,24 @@ export const DynamicFeatureFlag: React.FunctionComponent<DynamicFeatureFlagProps
   }, [levels, activeLevel, component, defaultComponent]);
 
   return <>{toRender}</>;
+};
+
+export interface FeatureFlagProps {
+  strict?: boolean;
+  level: FeatureLevel;
+  children?: React.ReactNode | undefined;
+}
+
+export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, strict, children }) => {
+  const levels = React.useMemo(
+    () => (strict ? [level] : [...Array.from({ length: level + 1 }, (_, i) => i)]),
+    [strict, level]
+  );
+  const component = React.useCallback((_) => <>{children}</>, [children]);
+
+  return (
+    <>
+      <DynamicFeatureFlag levels={levels} component={component} />
+    </>
+  );
 };
