@@ -63,8 +63,9 @@ import {
   PageHeaderToolsItem,
   PageSidebar,
   SkipToContent,
+  Label,
 } from '@patternfly/react-core';
-import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, UserIcon } from '@patternfly/react-icons';
+import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, PlusCircleIcon, UserIcon } from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
@@ -75,6 +76,8 @@ import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -99,6 +102,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [notifications, setNotifications] = React.useState([] as Notification[]);
+  const [visibleNotificationsCount, setVisibleNotificationsCount] = React.useState(5);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const location = useLocation();
@@ -112,8 +116,38 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   }, [serviceContext.target, setShowAuthModal, addSubscription]);
 
   React.useEffect(() => {
-    addSubscription(notificationsContext.notifications().subscribe(setNotifications));
+    addSubscription(notificationsContext.notifications().subscribe((n) => setNotifications([...n])));
   }, [notificationsContext.notifications, addSubscription]);
+
+  React.useEffect(() => {
+    addSubscription(notificationsContext.drawerState().subscribe(setNotificationDrawerExpanded));
+  }, [addSubscription, notificationsContext.drawerState, setNotificationDrawerExpanded]);
+
+  React.useEffect(() => {
+    addSubscription(serviceContext.settings.visibleNotificationsCount().subscribe(setVisibleNotificationsCount));
+  }, [addSubscription, serviceContext.settings.visibleNotificationsCount, setVisibleNotificationsCount]);
+
+  const notificationsToDisplay = React.useMemo(() => {
+    return notifications
+      .filter((n) => !n.read && !n.hidden)
+      .filter((n) => serviceContext.settings.notificationsEnabledFor(NotificationCategory[n.category || '']))
+      .sort((prev, curr) => {
+        if (!prev.timestamp) return -1;
+        if (!curr.timestamp) return 1;
+        return prev.timestamp - curr.timestamp;
+      });
+  }, [notifications, serviceContext.settings, serviceContext.settings.notificationsEnabledFor]);
+
+  const overflowMessage = React.useMemo(() => {
+    if (isNotificationDrawerExpanded) {
+      return '';
+    }
+    const overflow = notificationsToDisplay.length - visibleNotificationsCount;
+    if (overflow > 0) {
+      return `View ${overflow} more`;
+    }
+    return '';
+  }, [isNotificationDrawerExpanded, notificationsToDisplay, visibleNotificationsCount]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
@@ -153,8 +187,13 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   }, [serviceContext.target, dismissAuthModal]);
 
   const handleMarkNotificationRead = React.useCallback(
-    (key) => notificationsContext.setRead(key, true),
+    (key) => () => notificationsContext.setRead(key, true),
     [notificationsContext.setRead]
+  );
+
+  const handleTimeout = React.useCallback(
+    (key) => () => notificationsContext.setHidden(key),
+    [notificationsContext.setHidden]
   );
 
   React.useEffect(() => {
@@ -196,12 +235,16 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   }, [routerHistory.push]);
 
   const handleNotificationCenterToggle = React.useCallback(() => {
-    setNotificationDrawerExpanded((isNotificationDrawerExpanded) => !isNotificationDrawerExpanded);
-  }, [setNotificationDrawerExpanded]);
+    notificationsContext.setDrawerState(!isNotificationDrawerExpanded);
+  }, [isNotificationDrawerExpanded, notificationsContext.setDrawerState]);
 
   const handleCloseNotificationCenter = React.useCallback(() => {
-    setNotificationDrawerExpanded(false);
-  }, [setNotificationDrawerExpanded]);
+    notificationsContext.setDrawerState(false);
+  }, [notificationsContext.setDrawerState]);
+
+  const handleOpenNotificationCenter = React.useCallback(() => {
+    notificationsContext.setDrawerState(true);
+  }, [notificationsContext.setDrawerState]);
 
   const handleAboutModalToggle = React.useCallback(() => {
     setAboutModalOpen((aboutModalOpen) => !aboutModalOpen);
@@ -237,10 +280,20 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     </DropdownToggle>
   );
 
+  // TODO refactor to use Masthead, Toolbar components: https://www.patternfly.org/v4/components/page
   const HeaderTools = (
     <>
       <PageHeaderTools>
         <PageHeaderToolsGroup>
+          <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
+            <PageHeaderToolsItem>
+              <Button
+                variant="link"
+                onClick={() => notificationsContext.info(`test ${+Date.now()}`)}
+                icon={<PlusCircleIcon color="white" size="sm" />}
+              />
+            </PageHeaderToolsItem>
+          </FeatureFlag>
           <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded}>
             <NotificationBadge
               count={unreadNotificationsCount}
@@ -253,6 +306,8 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           </PageHeaderToolsItem>
           <PageHeaderToolsItem>
             <Button onClick={handleSettingsButtonClick} variant="link" icon={<CogIcon color="white " size="sm" />} />
+          </PageHeaderToolsItem>
+          <PageHeaderToolsItem>
             <Button onClick={handleAboutModalToggle} variant="link" icon={<HelpIcon color="white" size="sm" />} />
           </PageHeaderToolsItem>
           <PageHeaderToolsItem visibility={{ default: showUserIcon ? 'visible' : 'hidden' }}>
@@ -271,7 +326,25 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const Header = (
     <>
       <PageHeader
-        logo={<Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />}
+        logo={
+          <>
+            <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
+            <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
+              <PageHeaderToolsItem>
+                <Label style={{ marginLeft: '2ch' }} isCompact color="red">
+                  Development
+                </Label>
+              </PageHeaderToolsItem>
+            </FeatureFlag>
+            <FeatureFlag strict level={FeatureLevel.BETA}>
+              <PageHeaderToolsItem>
+                <Label style={{ marginLeft: '2ch' }} isCompact color="green">
+                  Beta
+                </Label>
+              </PageHeaderToolsItem>
+            </FeatureFlag>
+          </>
+        }
         logoProps={logoProps}
         showNavToggle
         isNavOpen={isNavOpen}
@@ -325,31 +398,26 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
       </NavList>
     </Nav>
   );
+
   const Sidebar = <PageSidebar theme="dark" nav={Navigation} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />;
   const PageSkipToContent = <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>;
   const NotificationDrawer = React.useMemo(() => <NotificationCenter onClose={handleCloseNotificationCenter} />, []);
   return (
     <>
-      <AlertGroup isToast>
-        {notifications
-          .filter((n) => !n.read)
-          .filter((n) => serviceContext.settings.notificationsEnabledFor(NotificationCategory[n.category || '']))
-          .sort((prev, curr) => {
-            if (!prev.timestamp) return -1;
-            if (!curr.timestamp) return 1;
-            return prev.timestamp - curr.timestamp;
-          })
-          .map(({ key, title, message, variant }) => (
-            <Alert
-              variant={variant}
-              key={title}
-              title={title}
-              actionClose={<AlertActionCloseButton onClose={() => handleMarkNotificationRead(key)} />}
-              timeout={true}
-            >
-              {message?.toString()}
-            </Alert>
-          ))}
+      <AlertGroup isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
+        {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
+          <Alert
+            isLiveRegion
+            variant={variant}
+            key={title}
+            title={title}
+            actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
+            timeout={true}
+            onTimeout={handleTimeout(key)}
+          >
+            {message?.toString()}
+          </Alert>
+        ))}
       </AlertGroup>
       <Page
         mainContainerId="primary-app-container"

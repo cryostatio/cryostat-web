@@ -40,6 +40,7 @@ import * as React from 'react';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 
+import { FeatureLevels } from './FeatureLevels';
 import { NotificationControl } from './NotificationControl';
 import { CredentialsStorage } from './CredentialsStorage';
 import { DeletionDialogControl } from './DeletionDialogControl';
@@ -57,6 +58,7 @@ export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
     DeletionDialogControl,
     WebSocketDebounce,
     AutoRefresh,
+    FeatureLevels,
   ].map((c) => ({
     title: c.title,
     description: c.description,

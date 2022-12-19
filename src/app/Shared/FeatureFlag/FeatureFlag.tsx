@@ -35,57 +35,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import * as React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 
-export enum LocalStorageKey {
-  FEATURE_LEVEL,
-  DASHBOARD_CFG,
-  AUTOMATED_ANALYSIS_FILTERS,
-  TARGET_RECORDING_FILTERS,
-  JMX_CREDENTIAL_LOCATION,
-  JMX_CREDENTIALS,
-  TARGET,
-  AUTO_REFRESH_ENABLED,
-  AUTO_REFRESH_PERIOD,
-  AUTO_REFRESH_UNITS,
-  AUTOMATED_ANALYSIS_RECORDING_CONFIG,
-  DELETION_DIALOGS_ENABLED,
-  VISIBLE_NOTIFICATIONS_COUNT,
-  NOTIFICATIONS_ENABLED,
-  WEBSOCKET_DEBOUNCE_MS,
+export interface FeatureFlagProps {
+  strict?: boolean;
+  level: FeatureLevel;
+  children?: React.ReactNode | undefined;
 }
 
-export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
+export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, strict, children }) => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
 
-export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
-  if (typeof window === 'undefined') {
-    return defaultValue;
-  }
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    return defaultValue;
-  }
-};
+  React.useLayoutEffect(() => {
+    addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
+  }, [addSubscription, context.settings.featureLevel, setActiveLevel]);
 
-export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, error?: () => void) => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
+  const comparator = strict ? (a, b) => a === b : (a, b) => a >= b;
+  if (comparator(level, activeLevel)) {
+    return <>{children}</>;
   }
-};
 
-export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): any => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(key);
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
-  }
+  return <></>;
 };

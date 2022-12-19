@@ -44,6 +44,7 @@ import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { Observable, of } from 'rxjs';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 
 export interface DashboardCardDescriptor {
   title: string;
@@ -99,89 +100,96 @@ const PlaceholderCard: React.FunctionComponent<
   );
 };
 
-export const DashboardCards: DashboardCardDescriptor[] = [
-  AutomatedAnalysisCardDescriptor,
-  {
-    title: 'None Placeholder',
-    description: 'placeholder',
-    descriptionFull: 'This is a do-nothing placeholder with no config',
-    component: PlaceholderCard,
-    propControls: [],
-  },
-  {
-    title: 'All Placeholder',
-    description: 'placeholder',
-    descriptionFull: 'This is a do-nothing placeholder with all the config',
-    component: PlaceholderCard,
-    propControls: [
+export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
+  featureLevel?: FeatureLevel
+) => {
+  let cards = [AutomatedAnalysisCardDescriptor];
+  if (featureLevel === undefined || featureLevel === FeatureLevel.DEVELOPMENT) {
+    cards = cards.concat([
       {
-        name: 'string',
-        key: 'title',
-        defaultValue: 'a short text',
-        description: 'a string input',
-        kind: 'string',
+        title: 'None Placeholder',
+        description: 'placeholder',
+        descriptionFull: 'This is a do-nothing placeholder with no config',
+        component: PlaceholderCard,
+        propControls: [],
       },
       {
-        name: 'text',
-        key: 'message',
-        defaultValue: 'a long text',
-        description: 'a text input',
-        kind: 'text',
+        title: 'All Placeholder',
+        description: 'placeholder',
+        descriptionFull: 'This is a do-nothing placeholder with all the config',
+        component: PlaceholderCard,
+        propControls: [
+          {
+            name: 'string',
+            key: 'title',
+            defaultValue: 'a short text',
+            description: 'a string input',
+            kind: 'string',
+          },
+          {
+            name: 'text',
+            key: 'message',
+            defaultValue: 'a long text',
+            description: 'a text input',
+            kind: 'text',
+          },
+          {
+            name: 'menu select',
+            key: 'menu',
+            values: ['choices', 'options'],
+            defaultValue: '',
+            description: 'a selection menu',
+            kind: 'select',
+          },
+          {
+            name: 'menu select 2',
+            key: 'asyncmenu',
+            values: new Observable((subscriber) => {
+              let count = 0;
+              const id = setInterval(() => {
+                if (count > 2) {
+                  clearInterval(id);
+                  setTimeout(() => subscriber.error('Timed Out'), 5000);
+                }
+                subscriber.next(`async ${count++}`);
+              }, 1000);
+            }),
+            defaultValue: '',
+            description: 'an async stream selection menu',
+            kind: 'select',
+          },
+          {
+            name: 'menu select 3',
+            key: 'asyncmenu2',
+            values: of(['arr1', 'arr2', 'arr3']),
+            defaultValue: '',
+            description: 'an async array selection menu',
+            kind: 'select',
+          },
+          {
+            name: 'a switch',
+            key: 'toggleswitch',
+            defaultValue: false,
+            description: 'a boolean input',
+            kind: 'boolean',
+          },
+          {
+            name: 'numeric spinner input',
+            key: 'count',
+            defaultValue: 5,
+            description: 'a number input',
+            kind: 'number',
+          },
+        ],
+        advancedConfig: <Text>This is an advanced configuration component</Text>,
       },
-      {
-        name: 'menu select',
-        key: 'menu',
-        values: ['choices', 'options'],
-        defaultValue: '',
-        description: 'a selection menu',
-        kind: 'select',
-      },
-      {
-        name: 'menu select 2',
-        key: 'asyncmenu',
-        values: new Observable((subscriber) => {
-          let count = 0;
-          const id = setInterval(() => {
-            if (count > 2) {
-              clearInterval(id);
-              setTimeout(() => subscriber.error('Timed Out'), 5000);
-            }
-            subscriber.next(`async ${count++}`);
-          }, 1000);
-        }),
-        defaultValue: '',
-        description: 'an async stream selection menu',
-        kind: 'select',
-      },
-      {
-        name: 'menu select 3',
-        key: 'asyncmenu2',
-        values: of(['arr1', 'arr2', 'arr3']),
-        defaultValue: '',
-        description: 'an async array selection menu',
-        kind: 'select',
-      },
-      {
-        name: 'a switch',
-        key: 'toggleswitch',
-        defaultValue: false,
-        description: 'a boolean input',
-        kind: 'boolean',
-      },
-      {
-        name: 'numeric spinner input',
-        key: 'count',
-        defaultValue: 5,
-        description: 'a number input',
-        kind: 'number',
-      },
-    ],
-    advancedConfig: <Text>This is an advanced configuration component</Text>,
-  },
-];
+    ]);
+  }
+  return cards;
+};
 
 export function getConfigByName(name: string): DashboardCardDescriptor {
-  for (const choice of DashboardCards) {
+  for (const choice of getDashboardCards()) {
     if (choice.component.name === name) {
       return choice;
     }
@@ -190,7 +198,7 @@ export function getConfigByName(name: string): DashboardCardDescriptor {
 }
 
 export function getConfigByTitle(title: string): DashboardCardDescriptor {
-  for (const choice of DashboardCards) {
+  for (const choice of getDashboardCards()) {
     if (choice.title === title) {
       return choice;
     }
@@ -210,7 +218,7 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
   );
 
   return (
-    <TargetView pageTitle="Dashboard" compactSelect={false} hideEmptyState>
+    <TargetView pageTitle="Dashboard" compactSelect={false}>
       <Stack hasGutter>
         {cardConfigs.map((cfg, idx) => (
           <StackItem key={idx}>

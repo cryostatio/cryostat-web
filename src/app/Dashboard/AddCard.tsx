@@ -66,27 +66,37 @@ import {
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { useDispatch } from 'react-redux';
 import { dashboardCardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { DashboardCards, getConfigByTitle, PropControl } from './Dashboard';
+import { getDashboardCards, getConfigByTitle, PropControl } from './Dashboard';
 import { Observable, of } from 'rxjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useContext } from 'react';
 
 interface AddCardProps {}
 
 export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
+  const addSubscription = useSubscriptions();
+  const settingsContext = useContext(ServiceContext);
   const [showWizard, setShowWizard] = React.useState(false);
   const [selection, setSelection] = React.useState('');
   const [propsConfig, setPropsConfig] = React.useState({});
   const [selectOpen, setSelectOpen] = React.useState(false);
+  const [featureLevel, setFeatureLevel] = React.useState(FeatureLevel.PRODUCTION);
   const dispatch = useDispatch<StateDispatch>();
+
+  React.useEffect(() => {
+    addSubscription(settingsContext.settings.featureLevel().subscribe(setFeatureLevel));
+  }, [addSubscription, settingsContext.settings.featureLevel, setFeatureLevel]);
 
   const options = React.useMemo(() => {
     return [
       <SelectOption key={0} value={'None'} isPlaceholder />,
-      ...DashboardCards.map((choice, idx) => (
+      ...getDashboardCards(featureLevel).map((choice, idx) => (
         <SelectOption key={idx + 1} value={choice.title} description={choice.description} />
       )),
     ];
-  }, [DashboardCards]);
+  }, [getDashboardCards, featureLevel]);
 
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {

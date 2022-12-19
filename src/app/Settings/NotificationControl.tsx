@@ -37,15 +37,34 @@
  */
 
 import * as React from 'react';
-import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
+import {
+  Divider,
+  ExpandableSection,
+  Switch,
+  Stack,
+  StackItem,
+  NumberInput,
+  Form,
+  FormGroup,
+} from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { UserSetting } from './Settings';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+
+const min = 0;
+const max = 10;
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
+  const [visibleNotificationsCount, setVisibleNotificationsCount] = React.useState(5);
   const [expanded, setExpanded] = React.useState(false);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.visibleNotificationsCount().subscribe(setVisibleNotificationsCount));
+  }, [addSubscription, context.settings.visibleNotificationsCount, setVisibleNotificationsCount]);
 
   const handleCheckboxChange = React.useCallback(
     (checked, element) => {
@@ -64,6 +83,27 @@ const Component = () => {
       setState(newState);
     },
     [state, setState]
+  );
+
+  const handleChange = React.useCallback(
+    (evt) => {
+      let value = isNaN(evt.target.value) ? visibleNotificationsCount : Number(evt.target.value);
+      if (value < min) {
+        value = min;
+      } else if (value > max) {
+        value = max;
+      }
+      context.settings.setVisibleNotificationCount(value);
+    },
+    [visibleNotificationsCount, context.settings.setVisibleNotificationCount]
+  );
+
+  const handleVisibleStep = React.useCallback(
+    (delta: number) => () => {
+      const v = visibleNotificationsCount + delta;
+      context.settings.setVisibleNotificationCount(v);
+    },
+    [visibleNotificationsCount, context.settings.setVisibleNotificationCount]
   );
 
   const allChecked = React.useMemo(() => {
@@ -92,7 +132,31 @@ const Component = () => {
     <>
       <Stack hasGutter>
         <StackItem key="all-notifications">
-          <Switch id="all-notifications" label="All Notifications" isChecked={allChecked} onChange={handleCheckAll} />
+          <Form>
+            <FormGroup label="Enable or disable all notifications.">
+              <Switch
+                id="all-notifications"
+                label="All Notifications"
+                isChecked={allChecked}
+                onChange={handleCheckAll}
+              />
+            </FormGroup>
+          </Form>
+        </StackItem>
+        <StackItem key="notifications-notification-count">
+          <Form>
+            <FormGroup label="Control the maximum number of notification alerts that appear at once.">
+              <NumberInput
+                inputName="alert count"
+                value={visibleNotificationsCount}
+                min={min}
+                max={max}
+                onChange={handleChange}
+                onMinus={handleVisibleStep(-1)}
+                onPlus={handleVisibleStep(1)}
+              />
+            </FormGroup>
+          </Form>
         </StackItem>
         <Divider />
         <ExpandableSection
@@ -109,6 +173,6 @@ const Component = () => {
 
 export const NotificationControl: UserSetting = {
   title: 'Notifications',
-  description: 'Enable or disable notifications by category.',
+  description: '',
   content: Component,
 };

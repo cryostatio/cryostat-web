@@ -37,12 +37,13 @@
  */
 import * as React from 'react';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 import { AlertVariant } from '@patternfly/react-core';
 import { nanoid } from 'nanoid';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface Notification {
+  hidden?: boolean;
   read?: boolean;
   key?: string;
   title: string;
@@ -53,32 +54,59 @@ export interface Notification {
 }
 
 export class Notifications {
-  private readonly _notifications: Notification[] = [];
-  private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>(
-    this._notifications
-  );
+  private readonly _notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject<Notification[]>([]);
+  private readonly _drawerState$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  constructor() {
+    this._drawerState$
+      .pipe(
+        filter((v) => v),
+        concatMap(() => this._notifications$.pipe(first()))
+      )
+      .subscribe((prev) =>
+        this._notifications$.next(
+          prev.map((n) => ({
+            ...n,
+            hidden: true,
+          }))
+        )
+      );
+  }
+
+  drawerState(): Observable<boolean> {
+    return this._drawerState$.asObservable();
+  }
+
+  setDrawerState(state: boolean): void {
+    this._drawerState$.next(state);
+  }
 
   notify(notification: Notification): void {
     if (!notification.key) {
       notification.key = nanoid();
     }
     notification.read = false;
+    if (notification.hidden === undefined) {
+      notification.hidden = this._drawerState$.getValue();
+    }
     notification.timestamp = +Date.now();
     if (notification.message instanceof Error) {
       notification.message = JSON.stringify(notification.message, Object.getOwnPropertyNames(notification.message));
     } else if (typeof notification.message !== 'string') {
       notification.message = JSON.stringify(notification.message);
     }
-    this._notifications.unshift(notification);
-    this._notifications$.next(this._notifications);
+    this._notifications$.pipe(first()).subscribe((prev) => {
+      prev.unshift(notification);
+      this._notifications$.next(prev);
+    });
   }
 
-  success(title: string, message?: string | Error, category?: string): void {
-    this.notify({ title, message, category, variant: AlertVariant.success });
+  success(title: string, message?: string | Error, category?: string, hidden?: boolean): void {
+    this.notify({ title, message, category, variant: AlertVariant.success, hidden });
   }
 
-  info(title: string, message?: string | Error, category?: string): void {
-    this.notify({ title, message, category, variant: AlertVariant.info });
+  info(title: string, message?: string | Error, category?: string, hidden?: boolean): void {
+    this.notify({ title, message, category, variant: AlertVariant.info, hidden });
   }
 
   warning(title: string, message?: string | Error, category?: string): void {
@@ -115,30 +143,45 @@ export class Notifications {
     return this.notifications().pipe(map((a) => a.filter(Notifications.isProblemNotification)));
   }
 
+  setHidden(key?: string, hidden: boolean = true): void {
+    if (!key) {
+      return;
+    }
+    this._notifications$.pipe(first()).subscribe((prev) => {
+      for (let n of prev) {
+        if (n.key === key) {
+          n.hidden = hidden;
+        }
+      }
+      this._notifications$.next(prev);
+    });
+  }
+
   setRead(key?: string, read: boolean = true): void {
     if (!key) {
       return;
     }
-    for (let n of this._notifications) {
-      if (n.key === key) {
-        n.read = read;
+    this._notifications$.pipe(first()).subscribe((prev) => {
+      for (let n of prev) {
+        if (n.key === key) {
+          n.read = read;
+        }
       }
-    }
-    this._notifications$.next(this._notifications);
+      this._notifications$.next(prev);
+    });
   }
 
   markAllRead(): void {
-    for (let n of this._notifications) {
-      n.read = true;
-    }
-    this._notifications$.next(this._notifications);
+    this._notifications$.pipe(first()).subscribe((prev) => {
+      for (let n of prev) {
+        n.read = true;
+      }
+      this._notifications$.next(prev);
+    });
   }
 
   clearAll(): void {
-    while (this._notifications.length > 0) {
-      this._notifications.shift();
-    }
-    this._notifications$.next(this._notifications);
+    this._notifications$.next([]);
   }
 
   private isActionNotification(n: Notification): boolean {

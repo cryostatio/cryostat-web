@@ -35,50 +35,68 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 import * as React from 'react';
-import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { NoTargetSelected } from './NoTargetSelected';
-import { Grid, GridItem } from '@patternfly/react-core';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { UserSetting } from './Settings';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { Select, SelectOption } from '@patternfly/react-core';
 
-interface TargetViewProps {
-  pageTitle: string;
-  compactSelect?: boolean;
-  breadcrumbs?: BreadcrumbTrail[];
-  children: React.ReactNode;
-}
-
-export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
+const Component = () => {
   const context = React.useContext(ServiceContext);
-  const [hasSelection, setHasSelection] = React.useState(false);
   const addSubscription = useSubscriptions();
+  const [state, setState] = React.useState(FeatureLevel.PRODUCTION);
+  const [open, setOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    addSubscription(
-      context.target.target().subscribe((target) => {
-        setHasSelection(target !== NO_TARGET);
-      })
-    );
-  }, [context.target, addSubscription, setHasSelection]);
+  React.useLayoutEffect(() => {
+    addSubscription(context.settings.featureLevel().subscribe((level) => setState(level)));
+  }, [addSubscription, context.settings.featureLevel, setState]);
 
-  const compact = React.useMemo(
-    () => (props.compactSelect == null ? true : props.compactSelect),
-    [props.compactSelect]
+  const handleToggle = React.useCallback(() => {
+    setOpen((v) => !v);
+  }, [setOpen]);
+
+  const handleSelect = React.useCallback(
+    (_, v) => {
+      setState(v);
+      context.settings.setFeatureLevel(v);
+      setOpen(false);
+    },
+    [setState, setOpen, context.settings.setFeatureLevel]
   );
 
   return (
     <>
-      <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
-        <Grid hasGutter>
-          <GridItem span={compact ? 6 : 12}>
-            <TargetSelect />
-          </GridItem>
-          <GridItem>{hasSelection ? props.children : <NoTargetSelected />}</GridItem>
-        </Grid>
-      </BreadcrumbPage>
+      <Select
+        isOpen={open}
+        onToggle={handleToggle}
+        selections={FeatureLevel[state]}
+        onSelect={handleSelect}
+        isFlipEnabled={true}
+        menuAppendTo="parent"
+      >
+        {Object.values(FeatureLevel)
+          .filter((v) => typeof v === 'string')
+          .map((v): { key: string; value: number } => ({ key: String(v), value: FeatureLevel[v] }))
+          .filter((v) => {
+            if (!process.env.CRYOSTAT_AUTHORITY) {
+              return v.value !== FeatureLevel.DEVELOPMENT;
+            }
+            return true;
+          })
+          .map((level, idx) => (
+            <SelectOption key={idx} value={level.value}>
+              {level.key}
+            </SelectOption>
+          ))}
+      </Select>
     </>
   );
+};
+
+export const FeatureLevels: UserSetting = {
+  title: 'Feature Level',
+  description: 'Control which graphical features appear in the application.',
+  content: Component,
 };

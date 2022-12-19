@@ -37,7 +37,8 @@
  */
 
 import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
-import { getFromLocalStorage, LocalStorageKey, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { BehaviorSubject, Observable } from 'rxjs';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -45,6 +46,12 @@ import {
   RecordingAttributes,
 } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
+
+export enum FeatureLevel {
+  DEVELOPMENT = 0,
+  BETA = 1,
+  PRODUCTION = 2,
+}
 
 export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
   return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
@@ -72,6 +79,29 @@ export const automatedAnalysisConfigToRecordingAttributes = (
 };
 
 export class SettingsService {
+  private readonly _featureLevel$ = new BehaviorSubject<FeatureLevel>(
+    getFromLocalStorage('FEATURE_LEVEL', FeatureLevel.PRODUCTION)
+  );
+
+  private readonly _visibleNotificationsCount$ = new BehaviorSubject<number>(
+    getFromLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', 5)
+  );
+
+  constructor() {
+    this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
+    this._visibleNotificationsCount$.subscribe((count: number) =>
+      saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
+    );
+  }
+
+  featureLevel(): Observable<FeatureLevel> {
+    return this._featureLevel$.asObservable();
+  }
+
+  setFeatureLevel(featureLevel: FeatureLevel): void {
+    this._featureLevel$.next(featureLevel);
+  }
+
   autoRefreshEnabled(): boolean {
     return getFromLocalStorage('AUTO_REFRESH_ENABLED', 'false') === 'true';
   }
@@ -147,6 +177,14 @@ export class SettingsService {
     const map = this.deletionDialogsEnabled();
     map.set(type, enabled);
     this.setDeletionDialogsEnabled(map);
+  }
+
+  visibleNotificationsCount(): Observable<number> {
+    return this._visibleNotificationsCount$.asObservable();
+  }
+
+  setVisibleNotificationCount(count: number): void {
+    this._visibleNotificationsCount$.next(count);
   }
 
   notificationsEnabled(): Map<NotificationCategory, boolean> {
