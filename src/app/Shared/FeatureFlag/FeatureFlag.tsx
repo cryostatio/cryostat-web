@@ -62,3 +62,20 @@ export const FeatureFlag: React.FunctionComponent<FeatureFlagProps> = ({ level, 
 
   return <></>;
 };
+
+export interface DynamicFeatureFlagProps {
+  levels: FeatureLevel[];
+  component: (level: FeatureLevel) => React.ReactNode;
+}
+
+export const DynamicFeatureFlag: React.FunctionComponent<DynamicFeatureFlagProps> = ({ levels, component }) => {
+  return (
+    <>
+      {levels.map((level) => (
+        <FeatureFlag strict level={level}>
+          {component(level)}
+        </FeatureFlag>
+      ))}
+    </>
+  );
+};
