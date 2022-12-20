@@ -70,12 +70,14 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
+  Text,
 } from '@patternfly/react-core';
 import {
   BarsIcon,
   BellIcon,
   CaretDownIcon,
   CogIcon,
+  ExternalLinkAltIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
   UserIcon,
@@ -284,7 +286,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const userInfoItems = React.useMemo(
     () => [
       <DropdownGroup key={'log-out'}>
-        <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
+        <DropdownItem onClick={handleLogout}>Log out</DropdownItem>
       </DropdownGroup>,
     ],
     [handleLogout]
@@ -320,10 +322,12 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const helpItems = React.useMemo(
     () => [
       <DropdownItem key={'documentation'} onClick={handleOpenDocumentation}>
-        Documentation
+        <span>Documentation</span>
+        <ExternalLinkAltIcon color="grey" className="xsm-icon" style={{ marginLeft: '2ch' }} />
       </DropdownItem>,
       <DropdownItem key={'Help'} onClick={handleOpenDiscussion}>
-        Help
+        <span>Help</span>
+        <ExternalLinkAltIcon color="grey" className="xsm-icon" style={{ marginLeft: '2ch' }} />
       </DropdownItem>,
       <DropdownItem key={'About'} onClick={handleOpenAboutModal}>
         About
