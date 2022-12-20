@@ -57,15 +57,31 @@ import {
   NavList,
   NotificationBadge,
   Page,
-  PageHeader,
-  PageHeaderTools,
-  PageHeaderToolsGroup,
-  PageHeaderToolsItem,
   PageSidebar,
   SkipToContent,
   Label,
+  Masthead,
+  MastheadBrand,
+  MastheadContent,
+  MastheadMain,
+  MastheadToggle,
+  PageToggleButton,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+  Text,
 } from '@patternfly/react-core';
-import { BellIcon, CaretDownIcon, CogIcon, HelpIcon, PlusCircleIcon, UserIcon } from '@patternfly/react-icons';
+import {
+  BarsIcon,
+  BellIcon,
+  CaretDownIcon,
+  CogIcon,
+  ExternalLinkAltIcon,
+  PlusCircleIcon,
+  QuestionCircleIcon,
+  UserIcon,
+} from '@patternfly/react-icons';
 import { map } from 'rxjs/operators';
 import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
@@ -78,6 +94,8 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
+import build from '@app/build.json';
+import { openTabForUrl } from '@app/utils/utils';
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -100,6 +118,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [showUserIcon, setShowUserIcon] = React.useState(false);
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
+  const [showHelpDropdown, setShowHelpDropdown] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [notifications, setNotifications] = React.useState([] as Notification[]);
   const [visibleNotificationsCount, setVisibleNotificationsCount] = React.useState(5);
@@ -246,10 +265,6 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     notificationsContext.setDrawerState(true);
   }, [notificationsContext.setDrawerState]);
 
-  const handleAboutModalToggle = React.useCallback(() => {
-    setAboutModalOpen((aboutModalOpen) => !aboutModalOpen);
-  }, [setAboutModalOpen]);
-
   React.useEffect(() => {
     addSubscription(
       serviceContext.login.getSessionState().subscribe((sessionState) => {
@@ -268,141 +283,259 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
     addSubscription(serviceContext.login.getUsername().subscribe(setUsername));
   }, [serviceContext, serviceContext.login, addSubscription, setUsername]);
 
-  const userInfoItems = [
-    <DropdownGroup key={0}>
-      <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
-    </DropdownGroup>,
-  ];
-
-  const UserInfoToggle = (
-    <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
-      {username || <UserIcon color="white" size="sm" />}
-    </DropdownToggle>
+  const userInfoItems = React.useMemo(
+    () => [
+      <DropdownGroup key={'log-out'}>
+        <DropdownItem onClick={handleLogout}>Log out</DropdownItem>
+      </DropdownGroup>,
+    ],
+    [handleLogout]
   );
 
-  // TODO refactor to use Masthead, Toolbar components: https://www.patternfly.org/v4/components/page
-  const HeaderTools = (
-    <>
-      <PageHeaderTools>
-        <PageHeaderToolsGroup>
-          <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
-            <PageHeaderToolsItem>
-              <Button
-                variant="link"
-                onClick={() => notificationsContext.info(`test ${+Date.now()}`)}
-                icon={<PlusCircleIcon color="white" size="sm" />}
-              />
-            </PageHeaderToolsItem>
-          </FeatureFlag>
-          <PageHeaderToolsItem visibility={{ default: 'visible' }} isSelected={isNotificationDrawerExpanded}>
-            <NotificationBadge
-              count={unreadNotificationsCount}
-              variant={errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'}
-              onClick={handleNotificationCenterToggle}
-              aria-label="Notifications"
-            >
-              <BellIcon />
-            </NotificationBadge>
-          </PageHeaderToolsItem>
-          <PageHeaderToolsItem>
-            <Button onClick={handleSettingsButtonClick} variant="link" icon={<CogIcon color="white " size="sm" />} />
-          </PageHeaderToolsItem>
-          <PageHeaderToolsItem>
-            <Button onClick={handleAboutModalToggle} variant="link" icon={<HelpIcon color="white" size="sm" />} />
-          </PageHeaderToolsItem>
-          <PageHeaderToolsItem visibility={{ default: showUserIcon ? 'visible' : 'hidden' }}>
-            <Dropdown
-              isPlain={true}
-              isOpen={showUserInfoDropdown}
-              toggle={UserInfoToggle}
-              dropdownItems={userInfoItems}
-            />
-          </PageHeaderToolsItem>
-        </PageHeaderToolsGroup>
-      </PageHeaderTools>
-    </>
+  const UserInfoToggle = React.useMemo(
+    () => (
+      <DropdownToggle onToggle={handleUserInfoToggle} toggleIndicator={CaretDownIcon}>
+        {username || <UserIcon color="white" size="sm" />}
+      </DropdownToggle>
+    ),
+    [username, handleUserInfoToggle]
+  );
+
+  const handleHelpToggle = React.useCallback(() => setShowHelpDropdown((v) => !v), [setShowHelpDropdown]);
+
+  const handleOpenAboutModal = React.useCallback(() => {
+    setAboutModalOpen(true);
+  }, [setAboutModalOpen]);
+
+  const handleCloseAboutModal = React.useCallback(() => {
+    setAboutModalOpen(false);
+  }, [setAboutModalOpen]);
+
+  const handleOpenDocumentation = React.useCallback(() => {
+    openTabForUrl(build.homePageUrl);
+  }, [openTabForUrl, build]);
+
+  const handleOpenDiscussion = React.useCallback(() => {
+    openTabForUrl(build.discussionUrl);
+  }, [openTabForUrl, build]);
+
+  const helpItems = React.useMemo(
+    () => [
+      <DropdownItem key={'documentation'} onClick={handleOpenDocumentation}>
+        <span>Documentation</span>
+        <ExternalLinkAltIcon color="grey" className="xsm-icon" style={{ marginLeft: '2ch' }} />
+      </DropdownItem>,
+      <DropdownItem key={'Help'} onClick={handleOpenDiscussion}>
+        <span>Help</span>
+        <ExternalLinkAltIcon color="grey" className="xsm-icon" style={{ marginLeft: '2ch' }} />
+      </DropdownItem>,
+      <DropdownItem key={'About'} onClick={handleOpenAboutModal}>
+        About
+      </DropdownItem>,
+    ],
+    [handleOpenDocumentation, handleOpenDiscussion, handleOpenAboutModal]
+  );
+
+  const HelpToggle = React.useMemo(
+    () => (
+      <DropdownToggle onToggle={handleHelpToggle} toggleIndicator={null}>
+        <QuestionCircleIcon />
+      </DropdownToggle>
+    ),
+    [handleHelpToggle]
   );
 
   const levelBadge = React.useCallback((level: FeatureLevel) => {
     return (
-      <PageHeaderToolsItem>
-        <Label
-          isCompact
-          style={{ marginLeft: '2ch', textTransform: 'capitalize' }}
-          color={level === FeatureLevel.BETA ? 'green' : 'red'}
-        >
-          {FeatureLevel[level].toLowerCase()}
-        </Label>
-      </PageHeaderToolsItem>
+      <Label
+        isCompact
+        style={{ marginLeft: '2ch', textTransform: 'capitalize', paddingTop: '0.125ch', paddingBottom: '0.125ch' }}
+        color={level === FeatureLevel.BETA ? 'green' : 'red'}
+      >
+        {FeatureLevel[level].toLowerCase()}
+      </Label>
     );
   }, []);
 
-  const Header = (
-    <>
-      <PageHeader
-        logo={
-          <>
-            <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
+  const HeaderToolbar = React.useMemo(
+    () => (
+      <>
+        <Toolbar isFullHeight isStatic>
+          <ToolbarContent>
+            <ToolbarGroup variant="icon-button-group" alignment={{ default: 'alignRight' }}>
+              <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
+                <ToolbarItem>
+                  <Button
+                    variant="link"
+                    onClick={() => notificationsContext.info(`test ${+Date.now()}`)}
+                    icon={<PlusCircleIcon color="white" size="sm" />}
+                  />
+                </ToolbarItem>
+              </FeatureFlag>
+              <ToolbarGroup variant="icon-button-group">
+                <ToolbarItem>
+                  <NotificationBadge
+                    count={unreadNotificationsCount}
+                    variant={
+                      errorNotificationsCount > 0 ? 'attention' : unreadNotificationsCount === 0 ? 'read' : 'unread'
+                    }
+                    onClick={handleNotificationCenterToggle}
+                    aria-label="Notifications"
+                  >
+                    <BellIcon />
+                  </NotificationBadge>
+                </ToolbarItem>
+                <ToolbarItem>
+                  <Button
+                    onClick={handleSettingsButtonClick}
+                    variant="link"
+                    icon={<CogIcon color="white " size="sm" />}
+                  />
+                </ToolbarItem>
+                <ToolbarItem>
+                  <Dropdown
+                    isPlain
+                    onSelect={() => setShowHelpDropdown(false)}
+                    position="right"
+                    isOpen={showHelpDropdown}
+                    toggle={HelpToggle}
+                    dropdownItems={helpItems}
+                  />
+                </ToolbarItem>
+              </ToolbarGroup>
+              <ToolbarItem visibility={{ default: showUserIcon ? 'visible' : 'hidden' }}>
+                <Dropdown
+                  isPlain
+                  onSelect={() => setShowUserInfoDropdown(false)}
+                  isOpen={showUserInfoDropdown}
+                  toggle={UserInfoToggle}
+                  dropdownItems={userInfoItems}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+      </>
+    ),
+    [
+      notificationsContext.info,
+      isNotificationDrawerExpanded,
+      unreadNotificationsCount,
+      errorNotificationsCount,
+      handleNotificationCenterToggle,
+      handleSettingsButtonClick,
+      setShowHelpDropdown,
+      setShowUserInfoDropdown,
+      showUserIcon,
+      showUserInfoDropdown,
+      showHelpDropdown,
+      UserInfoToggle,
+      userInfoItems,
+    ]
+  );
+
+  const Header = React.useMemo(
+    () => (
+      <>
+        <Masthead>
+          <MastheadToggle>
+            <PageToggleButton
+              variant="plain"
+              aria-label="Navigation"
+              isNavOpen={isNavOpen}
+              onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
+            >
+              <BarsIcon />
+            </PageToggleButton>
+          </MastheadToggle>
+          <MastheadMain>
+            <MastheadBrand href="/">
+              <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
+            </MastheadBrand>
             <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
-          </>
+          </MastheadMain>
+          <MastheadContent>{HeaderToolbar}</MastheadContent>
+        </Masthead>
+        <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleCloseAboutModal} />
+      </>
+    ),
+    [
+      isNavOpen,
+      isMobileView,
+      aboutModalOpen,
+      HeaderToolbar,
+      onNavToggleMobile,
+      handleCloseAboutModal,
+      onNavToggle,
+      levelBadge,
+    ]
+  );
+
+  const isActiveRoute = React.useCallback(
+    (route: IAppRoute): boolean => {
+      const match = matchPath(location.pathname, route.path);
+      if (match && match.isExact) {
+        return true;
+      } else if (route.children) {
+        let childMatch = false;
+        for (const r of route.children) {
+          childMatch = childMatch || isActiveRoute(r);
         }
-        logoProps={logoProps}
-        showNavToggle
-        isNavOpen={isNavOpen}
-        onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
-        headerTools={HeaderTools}
-      />
-      <AboutCryostatModal isOpen={aboutModalOpen} onClose={handleAboutModalToggle} />
-    </>
-  );
-
-  const isActiveRoute = (route: IAppRoute): boolean => {
-    const match = matchPath(location.pathname, route.path);
-    if (match && match.isExact) {
-      return true;
-    } else if (route.children) {
-      let childMatch = false;
-      for (const r of route.children) {
-        childMatch = childMatch || isActiveRoute(r);
+        return childMatch;
       }
-      return childMatch;
-    }
-    return false;
-  };
-
-  const Navigation = (
-    <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect}>
-      <NavList id="nav-list-simple">
-        {navGroups.map((title) => {
-          return (
-            <NavGroup title={title} key={title}>
-              {routes
-                .filter((route) => route.navGroup === title)
-                .map((route, idx) => {
-                  return (
-                    route.label && (
-                      <NavItem
-                        key={`${route.label}-${idx}`}
-                        id={`${route.label}-${idx}`}
-                        isActive={isActiveRoute(route)}
-                      >
-                        <NavLink exact to={route.path} activeClassName="pf-m-current">
-                          {route.label}
-                        </NavLink>
-                      </NavItem>
-                    )
-                  );
-                })}
-            </NavGroup>
-          );
-        })}
-      </NavList>
-    </Nav>
+      return false;
+    },
+    [location]
   );
 
-  const Sidebar = <PageSidebar theme="dark" nav={Navigation} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />;
-  const PageSkipToContent = <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>;
-  const NotificationDrawer = React.useMemo(() => <NotificationCenter onClose={handleCloseNotificationCenter} />, []);
+  const Navigation = React.useMemo(
+    () => (
+      <Nav id="nav-primary-simple" theme="dark" variant="default" onSelect={mobileOnSelect}>
+        <NavList id="nav-list-simple">
+          {navGroups.map((title) => {
+            return (
+              <NavGroup title={title} key={title}>
+                {routes
+                  .filter((route) => route.navGroup === title)
+                  .map((route, idx) => {
+                    return (
+                      route.label && (
+                        <NavItem
+                          key={`${route.label}-${idx}`}
+                          id={`${route.label}-${idx}`}
+                          isActive={isActiveRoute(route)}
+                        >
+                          <NavLink exact to={route.path} activeClassName="pf-m-current">
+                            {route.label}
+                          </NavLink>
+                        </NavItem>
+                      )
+                    );
+                  })}
+              </NavGroup>
+            );
+          })}
+        </NavList>
+      </Nav>
+    ),
+    [navGroups, routes, mobileOnSelect, isActiveRoute]
+  );
+
+  const Sidebar = React.useMemo(
+    () => <PageSidebar theme="dark" nav={Navigation} isNavOpen={isMobileView ? isNavOpenMobile : isNavOpen} />,
+    [Navigation, isMobileView, isNavOpenMobile, isNavOpen]
+  );
+
+  const PageSkipToContent = React.useMemo(
+    () => <SkipToContent href="#primary-app-container">Skip to Content</SkipToContent>,
+    []
+  );
+
+  const NotificationDrawer = React.useMemo(
+    () => <NotificationCenter onClose={handleCloseNotificationCenter} />,
+    [handleCloseNotificationCenter]
+  );
+
   return (
     <>
       <AlertGroup isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>

@@ -239,3 +239,8 @@ html, body, #root {
 .automated-analysis-config-save-helper p {
   margin-top: 0.5em;
 }
+
+.xsm-icon {
+  height: 0.8em;
+  width: 0.8em;
+}
