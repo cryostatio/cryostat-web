@@ -282,7 +282,15 @@ export const Rules: React.FC<RulesProps> = (_) => {
         }
       }
     },
-    [context.api, context.settings, cleanRuleEnabled, addSubscription, handleDisableRule, setRuleToWarn, setWarningModalOpen]
+    [
+      context.api,
+      context.settings,
+      cleanRuleEnabled,
+      addSubscription,
+      handleDisableRule,
+      setRuleToWarn,
+      setWarningModalOpen,
+    ]
   );
 
   const handleDelete = React.useCallback(
@@ -316,8 +324,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
       } else {
         handleDisableRule(ruleToWarn.rule, cleanRuleEnabled);
       }
-    }
-    else {
+    } else {
       console.error('ruleToWarn is undefined');
     }
   }, [handleDelete, handleDisableRule, ruleToWarn, cleanRuleEnabled]);

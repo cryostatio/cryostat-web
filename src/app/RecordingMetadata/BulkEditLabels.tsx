@@ -164,6 +164,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     [recordings, getIdxFromRecording, props.checkedIndices]
   );
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const refreshRecordingList = React.useCallback(() => {
     let observable: Observable<Recording[]>;
     if (props.directoryRecordings) {
@@ -179,7 +180,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     } else {
       observable = props.isUploadsTable
         ? context.api
-            .graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
+            .graphql<any>(
               `query GetUploadedRecordings($filter: ArchivedRecordingFilterInput) {
                 archivedRecordings(filter: $filter) {
                   data {
@@ -201,7 +202,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         : context.target.target().pipe(
             filter((target) => target !== NO_TARGET),
             concatMap((target) =>
-              context.api.graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
+              context.api.graphql<any>(
                 `query ActiveRecordingsForTarget($connectUrl: String) {
                 targetNodes(filter: { name: $connectUrl }) {
                   recordings {
@@ -236,6 +237,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     context.api,
     setRecordings,
   ]);
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   const saveButtonLoadingProps = React.useMemo(
     () =>

@@ -423,6 +423,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     [dispatch]
   );
 
+  /* eslint-enable react-hooks/exhaustive-deps */
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
       return parseLabels(props.recording.metadata.labels);
@@ -592,6 +593,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return filteredRecordings.map((r) => (
       <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Label} index={r.id} />
     ));
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [filteredRecordings, expandedRows, targetRecordingFilters, checkedIndices]);
 
   const LabelsPanel = React.useMemo(

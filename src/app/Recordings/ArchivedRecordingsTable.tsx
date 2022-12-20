@@ -165,7 +165,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   const queryTargetRecordings = React.useCallback(
     (connectUrl: string) => {
-      return context.api.graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+      return context.api.graphql<any>(
         `
       query ArchivedRecordingsForTarget($connectUrl: String) {
         archivedRecordings(filter: { sourceTarget: $connectUrl }) {
@@ -187,7 +188,8 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   );
 
   const queryUploadedRecordings = React.useCallback(() => {
-    return context.api.graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    return context.api.graphql<any>(
       `query UploadedRecordings($filter: ArchivedRecordingFilterInput){
         archivedRecordings(filter: $filter) {
           data {
@@ -572,6 +574,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         directory={propsDirectory}
       />
     ));
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [filteredRecordings, propsTarget, propsDirectory, targetRecordingFilters.Label]);
 
   const handleUploadModalClose = React.useCallback(() => {

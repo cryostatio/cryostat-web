@@ -240,6 +240,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   );
 };
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export const filterRecordings = (recordings: any[], filters: RecordingFiltersCategories) => {
   if (!recordings || !recordings.length) {
     return recordings;

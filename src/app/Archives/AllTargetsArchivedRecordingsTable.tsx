@@ -110,11 +110,12 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
     [setTargets, setCounts, setIsLoading]
   );
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const refreshTargetsAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
       context.api
-        .graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
+        .graphql<any>(
           `query AllTargetsArchives {
                targetNodes {
                  target {
@@ -135,12 +136,13 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
         .subscribe(handleTargetsAndCounts)
     );
   }, [addSubscription, context.api, setIsLoading, handleTargetsAndCounts]);
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const getCountForNewTarget = React.useCallback(
     (target: Target) => {
       addSubscription(
         context.api
-          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
           .graphql<any>(
             `
         query ArchiveCountForTarget($connectUrl: String) {
@@ -168,6 +170,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
     [addSubscription, context.api, setCounts]
   );
 
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   const handleLostTarget = React.useCallback(
     (target: Target) => {
       setTargets((old) => {

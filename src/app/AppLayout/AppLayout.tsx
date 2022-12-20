@@ -79,7 +79,16 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { BarsIcon, BellIcon, CaretDownIcon, CogIcon, ExternalLinkAltIcon, PlusCircleIcon, QuestionCircleIcon, UserIcon } from '@patternfly/react-icons';
+import {
+  BarsIcon,
+  BellIcon,
+  CaretDownIcon,
+  CogIcon,
+  ExternalLinkAltIcon,
+  PlusCircleIcon,
+  QuestionCircleIcon,
+  UserIcon,
+} from '@patternfly/react-icons';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
@@ -192,10 +201,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
     [notificationsContext]
   );
 
-  const handleTimeout = React.useCallback(
-    (key) => () => notificationsContext.setHidden(key),
-    [notificationsContext]
-  );
+  const handleTimeout = React.useCallback((key) => () => notificationsContext.setHidden(key), [notificationsContext]);
 
   React.useEffect(() => {
     addSubscription(
@@ -401,7 +407,6 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
     ),
     [
       notificationsContext,
-      isNotificationDrawerExpanded,
       unreadNotificationsCount,
       errorNotificationsCount,
       handleNotificationCenterToggle,
@@ -414,7 +419,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
       UserInfoToggle,
       userInfoItems,
       HelpToggle,
-      helpItems
+      helpItems,
     ]
   );
 
