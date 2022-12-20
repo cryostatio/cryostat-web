@@ -96,12 +96,13 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import build from '@app/build.json';
 import { openTabForUrl } from '@app/utils/utils';
+import { Link } from 'react-router-dom';
 
-interface IAppLayout {
+interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
+const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
@@ -449,8 +450,10 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
             </PageToggleButton>
           </MastheadToggle>
           <MastheadMain>
-            <MastheadBrand href="/">
-              <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
+            <MastheadBrand>
+              <Link to="/">
+                <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
+              </Link>
             </MastheadBrand>
             <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </MastheadMain>
