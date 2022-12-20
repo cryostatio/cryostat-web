@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { Notifications } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
@@ -1253,7 +1254,7 @@ interface RulesResponse extends ApiV2Response {
 }
 
 interface XMLHttpResponse {
-  body: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  body: any;
   headers: object;
   respType: XMLHttpRequestResponseType;
   status: number;

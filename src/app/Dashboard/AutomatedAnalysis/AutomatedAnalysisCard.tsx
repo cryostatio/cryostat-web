@@ -169,7 +169,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   // Query NEEDS 'state' so that isActiveRecording(result) is valid
   const queryActiveRecordings = React.useCallback(
     (connectUrl: string) => {
-      return context.api.graphql<any>(
+      return context.api.graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
         `
       query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
         targetNodes(filter: { name: $connectUrl }) {
@@ -199,7 +199,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
 
   const queryArchivedRecordings = React.useCallback(
     (connectUrl: string) => {
-      return context.api.graphql<any>(
+      return context.api.graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
         `
       query ArchivedRecordingsForAutomatedAnalysis($connectUrl: String) {
         archivedRecordings(filter: { sourceTarget: $connectUrl }) {

@@ -45,9 +45,9 @@
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "import/no-unresolved": "off",
     "import/extensions": "off",
-    // "import/first": "warn",
+    "import/no-named-as-default": "off",
+    "import/no-unresolved": "off",
     "import/order": ["warn", {
       "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
       "alphabetize": {

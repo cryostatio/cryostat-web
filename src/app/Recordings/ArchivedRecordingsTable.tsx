@@ -165,7 +165,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 
   const queryTargetRecordings = React.useCallback(
     (connectUrl: string) => {
-      return context.api.graphql<any>(
+      return context.api.graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
         `
       query ArchivedRecordingsForTarget($connectUrl: String) {
         archivedRecordings(filter: { sourceTarget: $connectUrl }) {
@@ -187,7 +187,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   );
 
   const queryUploadedRecordings = React.useCallback(() => {
-    return context.api.graphql<any>(
+    return context.api.graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
       `query UploadedRecordings($filter: ArchivedRecordingFilterInput){
         archivedRecordings(filter: $filter) {
           data {

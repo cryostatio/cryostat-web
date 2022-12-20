@@ -35,9 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-// eslint-disable-line @typescript-eslint/no-non-null-assertion
-// because the category should never be null when inside the reducer cases
-
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
@@ -73,12 +71,12 @@ export const allowedAutomatedAnalysisFilters = Object.keys(emptyAutomatedAnalysi
 export interface AutomatedAnalysisFilterActionPayload {
   target: string;
   category?: string;
-  filter?: any;
+  filter?: unknown;
 }
 
 export const automatedAnalysisAddGlobalFilterIntent = createAction(
   AutomatedAnalysisFilterAction.GLOBAL_FILTER_ADD,
-  (category: string, filter: any) => ({
+  (category: string, filter: unknown) => ({
     payload: {
       category: category,
       filter: filter,
@@ -88,7 +86,7 @@ export const automatedAnalysisAddGlobalFilterIntent = createAction(
 
 export const automatedAnalysisAddFilterIntent = createAction(
   AutomatedAnalysisFilterAction.FILTER_ADD,
-  (target: string, category: string, filter: any) => ({
+  (target: string, category: string, filter: unknown) => ({
     payload: {
       target: target,
       category: category,
@@ -99,7 +97,7 @@ export const automatedAnalysisAddFilterIntent = createAction(
 
 export const automatedAnalysisDeleteFilterIntent = createAction(
   AutomatedAnalysisFilterAction.FILTER_DELETE,
-  (target: string, category: string, filter: any) => ({
+  (target: string, category: string, filter: unknown) => ({
     payload: {
       target: target,
       category: category,
@@ -181,12 +179,12 @@ export const createOrUpdateAutomatedAnalysisFilter = (
   old: AutomatedAnalysisFiltersCategories,
   { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
 ): AutomatedAnalysisFiltersCategories => {
-  let newFilterValues: any[];
+  let newFilterValues: unknown[];
 
   if (!old[filterKey]) {
     newFilterValues = [filterValue];
   } else {
-    const oldFilterValues = old[filterKey] as any[];
+    const oldFilterValues = old[filterKey];
     if (deleted) {
       if (deleteOptions && deleteOptions.all) {
         newFilterValues = [];

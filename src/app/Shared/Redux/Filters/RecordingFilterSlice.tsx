@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
+/* eslint-disable  @typescript-eslint/no-non-null-assertion */
 import { RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';

@@ -57,7 +57,7 @@ export const DynamicFeatureFlag: React.FunctionComponent<DynamicFeatureFlagProps
 
   React.useLayoutEffect(() => {
     addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
-  }, [addSubscription, context.settings.featureLevel, setActiveLevel]);
+  }, [addSubscription, context.settings, setActiveLevel]);
 
   const toRender = React.useMemo(() => {
     if (levels.includes(activeLevel)) {

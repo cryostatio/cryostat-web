@@ -179,7 +179,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     } else {
       observable = props.isUploadsTable
         ? context.api
-            .graphql<any>(
+            .graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
               `query GetUploadedRecordings($filter: ArchivedRecordingFilterInput) {
                 archivedRecordings(filter: $filter) {
                   data {
@@ -201,7 +201,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         : context.target.target().pipe(
             filter((target) => target !== NO_TARGET),
             concatMap((target) =>
-              context.api.graphql<any>(
+              context.api.graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
                 `query ActiveRecordingsForTarget($connectUrl: String) {
                 targetNodes(filter: { name: $connectUrl }) {
                   recordings {

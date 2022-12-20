@@ -37,7 +37,6 @@
  */
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { GraphQLResponse } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Shared/Services/Target.service';
@@ -92,6 +91,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
   );
 
   const handleTargetsAndCounts = React.useCallback(
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     (targetNodes: any) => {
       const updatedTargets: Target[] = [];
       const updatedCounts = new Map<string, number>();
@@ -114,7 +114,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
     setIsLoading(true);
     addSubscription(
       context.api
-        .graphql<GraphQLResponse>(
+        .graphql<any> /* eslint-disable-line @typescript-eslint/no-explicit-any */(
           `query AllTargetsArchives {
                targetNodes {
                  target {
@@ -140,7 +140,8 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
     (target: Target) => {
       addSubscription(
         context.api
-          .graphql<GraphQLResponse>(
+          /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+          .graphql<any>(
             `
         query ArchiveCountForTarget($connectUrl: String) {
           targetNodes(filter: { name: $connectUrl }) {

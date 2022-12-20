@@ -79,19 +79,10 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import {
-  BarsIcon,
-  BellIcon,
-  CaretDownIcon,
-  CogIcon,
-  ExternalLinkAltIcon,
-  PlusCircleIcon,
-  QuestionCircleIcon,
-  UserIcon,
-} from '@patternfly/react-icons';
-import _ from 'lodash';
+import { BarsIcon, BellIcon, CaretDownIcon, CogIcon, ExternalLinkAltIcon, PlusCircleIcon, QuestionCircleIcon, UserIcon } from '@patternfly/react-icons';
+import * as _ from 'lodash';
 import * as React from 'react';
-import { matchPath, Link, NavLink, useHistory, useLocation } from 'react-router-dom';
+import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
