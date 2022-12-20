@@ -44,7 +44,7 @@ import { Modal, ModalVariant } from '@patternfly/react-core';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { StoreJmxCredentials } from '@app/SecurityPanel/Credentials/StoreJmxCredentials';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { DeleteJMXCredentials, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteJMXCredentials, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
@@ -347,7 +347,7 @@ describe('<StoreJmxCredentials />', () => {
     await user.click(within(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).getByText('Delete'));
 
     expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteJMXCredentials, false);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteJMXCredentials, false);
     expect(queryRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });

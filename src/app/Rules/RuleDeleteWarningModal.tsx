@@ -37,20 +37,21 @@
  */
 import * as React from 'react';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split, Text, TextContent } from '@patternfly/react-core';
-import { DeleteAutomatedRules } from '../Modal/DeleteWarningUtils';
+import { getFromWarningMap } from '../Modal/DeleteWarningUtils';
 import { useState } from 'react';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
 import { ServiceContext } from '@app/Shared/Services/Services';
 
 export interface RuleDeleteWarningProps extends DeleteWarningProps {
-  rule?: string;
+  ruleName?: string;
   clean: boolean;
   setClean: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const RuleDeleteWarningModal = ({
   visible,
-  rule,
+  ruleName,
+  warningType,
   onAccept,
   onClose,
   clean,
@@ -59,19 +60,21 @@ export const RuleDeleteWarningModal = ({
   const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
 
+  const warningContents = React.useMemo(() => getFromWarningMap(warningType), [warningType]);
+
   const onAcceptClose = React.useCallback(() => {
     onAccept();
     onClose();
     if (doNotAsk) {
-      context.settings.setDeletionDialogsEnabledFor(DeleteAutomatedRules.id, false);
+      context.settings.setDeletionDialogsEnabledFor(warningType, false);
     }
   }, [onAccept, onClose, doNotAsk, context, context.settings]);
 
   return (
     <Modal
-      title={DeleteAutomatedRules.title}
-      description={DeleteAutomatedRules.description}
-      aria-label={DeleteAutomatedRules.ariaLabel}
+      title={warningContents?.title}
+      description={warningContents?.description}
+      aria-label={warningContents?.ariaLabel}
       titleIconVariant="warning"
       variant={ModalVariant.small}
       isOpen={visible}
@@ -81,7 +84,7 @@ export const RuleDeleteWarningModal = ({
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
-              Delete
+              {warningType.match(/disable/i) ? 'Disable' : 'Delete'}
             </Button>
             <Button variant="link" onClick={onClose}>
               Cancel
@@ -94,7 +97,7 @@ export const RuleDeleteWarningModal = ({
         <Checkbox
           id="clean-rule-enabled"
           label="Clean"
-          description={`Clean will stop any Active Recordings that ${rule} created.`}
+          description={`Clean will stop any Active Recordings that ${ruleName} created.`}
           isChecked={clean}
           onChange={setClean}
         />

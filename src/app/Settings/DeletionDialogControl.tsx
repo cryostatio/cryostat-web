@@ -40,7 +40,7 @@ import * as React from 'react';
 import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { UserSetting } from './Settings';
-import { DeleteWarningType, getFromWarningMap } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType, getFromWarningMap } from '@app/Modal/DeleteWarningUtils';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
@@ -49,7 +49,7 @@ const Component = () => {
 
   const handleCheckboxChange = React.useCallback(
     (checked, element) => {
-      state.set(DeleteWarningType[element.target.id], checked);
+      state.set(DeleteOrDisableWarningType[element.target.id], checked);
       context.settings.setDeletionDialogsEnabled(state);
       setState(new Map(state));
     },

@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
@@ -136,31 +136,31 @@ export class SettingsService {
     saveToLocalStorage('AUTOMATED_ANALYSIS_RECORDING_CONFIG', config);
   }
 
-  deletionDialogsEnabled(): Map<DeleteWarningType, boolean> {
+  deletionDialogsEnabled(): Map<DeleteOrDisableWarningType, boolean> {
     const value = getFromLocalStorage('DELETION_DIALOGS_ENABLED', undefined);
     if (typeof value === 'object') {
       const obj = new Map(Array.from(Object.entries(value)));
-      const res = new Map<DeleteWarningType, boolean>();
+      const res = new Map<DeleteOrDisableWarningType, boolean>();
       obj.forEach((v: any) => {
-        res.set(v[0] as DeleteWarningType, v[1] as boolean);
+        res.set(v[0] as DeleteOrDisableWarningType, v[1] as boolean);
       });
-      for (const t in DeleteWarningType) {
-        if (!res.has(DeleteWarningType[t])) {
-          res.set(DeleteWarningType[t], true);
+      for (const t in DeleteOrDisableWarningType) {
+        if (!res.has(DeleteOrDisableWarningType[t])) {
+          res.set(DeleteOrDisableWarningType[t], true);
         }
       }
       return res;
     }
 
-    const map = new Map<DeleteWarningType, boolean>();
-    for (const cat in DeleteWarningType) {
-      map.set(DeleteWarningType[cat], true);
+    const map = new Map<DeleteOrDisableWarningType, boolean>();
+    for (const cat in DeleteOrDisableWarningType) {
+      map.set(DeleteOrDisableWarningType[cat], true);
     }
     this.setDeletionDialogsEnabled(map);
     return map;
   }
 
-  deletionDialogsEnabledFor(type: DeleteWarningType): boolean {
+  deletionDialogsEnabledFor(type: DeleteOrDisableWarningType): boolean {
     const res = this.deletionDialogsEnabled().get(type);
     if (typeof res != 'boolean') {
       return true;
@@ -168,12 +168,12 @@ export class SettingsService {
     return res;
   }
 
-  setDeletionDialogsEnabled(map: Map<DeleteWarningType, boolean>): void {
+  setDeletionDialogsEnabled(map: Map<DeleteOrDisableWarningType, boolean>): void {
     const value = Array.from(map.entries());
     saveToLocalStorage('DELETION_DIALOGS_ENABLED', value);
   }
 
-  setDeletionDialogsEnabledFor(type: DeleteWarningType, enabled: boolean) {
+  setDeletionDialogsEnabledFor(type: DeleteOrDisableWarningType, enabled: boolean) {
     const map = this.deletionDialogsEnabled();
     map.set(type, enabled);
     this.setDeletionDialogsEnabled(map);

@@ -38,7 +38,7 @@
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { ProbeTemplate } from '@app/Shared/Services/Api.service';
@@ -233,7 +233,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
 
   const handleDeleteAction = React.useCallback(
     (template: ProbeTemplate) => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteEventTemplates)) {
         setTemplateToDelete(template);
         setWarningModalOpen(true);
       } else {
@@ -319,7 +319,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
                   </ToolbarItem>
                 </ToolbarGroup>
                 <DeleteWarningModal
-                  warningType={DeleteWarningType.DeleteProbeTemplates}
+                  warningType={DeleteOrDisableWarningType.DeleteProbeTemplates}
                   visible={warningModalOpen}
                   onAccept={handleWarningModalAccept}
                   onClose={handleWarningModalClose}

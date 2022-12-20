@@ -46,7 +46,7 @@ import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Ap
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { DeleteArchivedRecordings, DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteArchivedRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
@@ -346,7 +346,7 @@ describe('<ArchivedRecordingsTable />', () => {
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toBeCalledWith(mockTarget.connectUrl, 'someRecording');
     expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteWarningType.DeleteArchivedRecordings, false);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteArchivedRecordings, false);
   });
 
   it('deletes the recording when Delete is clicked w/o popup warning', async () => {

@@ -64,7 +64,7 @@ import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RecordingFiltersCategories } from './RecordingFilters';
 import { filterRecordings, RecordingFilters } from './RecordingFilters';
 import { ArchiveUploadModal } from '@app/Archives/ArchiveUploadModal';
@@ -668,7 +668,7 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
   const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteArchivedRecordings),
+    () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteArchivedRecordings),
     [context, context.settings, context.settings.deletionDialogsEnabledFor]
   );
 
@@ -687,7 +687,7 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
   const deleteArchivedWarningModal = React.useMemo(() => {
     return (
       <DeleteWarningModal
-        warningType={DeleteWarningType.DeleteArchivedRecordings}
+        warningType={DeleteOrDisableWarningType.DeleteArchivedRecordings}
         visible={warningModalOpen}
         onAccept={props.handleDeleteRecordings}
         onClose={handleWarningModalClose}

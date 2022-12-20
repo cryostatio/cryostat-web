@@ -39,7 +39,7 @@ import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
@@ -237,7 +237,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
 
   const handleDeleteButton = React.useCallback(
     (t: EventTemplate) => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteEventTemplates)) {
+      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteEventTemplates)) {
         setTemplateToDelete(t);
         setWarningModalOpen(true);
       } else {
@@ -371,7 +371,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
               </ToolbarItem>
             </ToolbarGroup>
             <DeleteWarningModal
-              warningType={DeleteWarningType.DeleteEventTemplates}
+              warningType={DeleteOrDisableWarningType.DeleteEventTemplates}
               visible={warningModalOpen}
               onAccept={handleWarningModalAccept}
               onClose={handleWarningModalClose}

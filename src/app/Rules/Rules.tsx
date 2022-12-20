@@ -56,7 +56,6 @@ import {
   SortByDirection,
   TableVariant,
   ISortBy,
-  IRowData,
   IAction,
   TableComposable,
   Thead,
@@ -75,7 +74,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RuleUploadModal } from './RulesUploadModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
 
 export interface Rule {
@@ -119,9 +118,14 @@ export const isRule = (obj: Object): boolean => {
   return true;
 };
 
+export interface RuleToDeleteOrDisable {
+  rule: Rule;
+  type: 'DELETE' | 'DISABLE';
+}
+
 export interface RulesProps {}
 
-export const Rules: React.FunctionComponent<RulesProps> = (props) => {
+export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
   const addSubscription = useSubscriptions();
@@ -132,7 +136,7 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
   const [rules, setRules] = React.useState([] as Rule[]);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
-  const [ruleToDelete, setRuleToDelete] = React.useState<Rule | undefined>(undefined);
+  const [ruleToWarn, setRuleToWarn] = React.useState<RuleToDeleteOrDisable | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
 
   const tableColumns = [
@@ -226,12 +230,11 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
     addSubscription(
       context.notificationChannel.messages(NotificationCategory.RuleUpdated).subscribe((msg) => {
         setRules((old) => {
-          for (const r of old) {
-            if (r.name === msg.message.name) {
-              r.enabled = msg.message.enabled;
-            }
+          const match = old.find((r) => r.name === msg.message.name);
+          if (match) {
+            return [...old.filter((r) => r.name !== msg.message.name), { ...match, enabled: msg.message.enabled }];
           }
-          return [...old];
+          return old;
         });
       })
     );
@@ -256,11 +259,27 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
     setIsUploadModalOpen(true);
   }, [setIsUploadModalOpen]);
 
-  const handleToggle = React.useCallback(
-    (rule: Rule, enabled: boolean): void => {
-      addSubscription(context.api.updateRule({ ...rule, enabled }).subscribe());
+  const handleDisableRule = React.useCallback(
+    (rule: Rule, cleanRuleEnabled: boolean) => {
+      addSubscription(context.api.updateRule({ ...rule, enabled: false }, cleanRuleEnabled).subscribe());
     },
     [context.api, addSubscription]
+  );
+
+  const handleToggle = React.useCallback(
+    (rule: Rule, enabled: boolean): void => {
+      if (enabled) {
+        addSubscription(context.api.updateRule({ ...rule, enabled }).subscribe());
+      } else {
+        if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DisableAutomatedRules)) {
+          setRuleToWarn({ rule: rule, type: 'DISABLE' });
+          setWarningModalOpen(true);
+        } else {
+          handleDisableRule(rule, cleanRuleEnabled);
+        }
+      }
+    },
+    [context.api, cleanRuleEnabled, addSubscription, handleDisableRule, setRuleToWarn, setWarningModalOpen]
   );
 
   const handleDelete = React.useCallback(
@@ -277,15 +296,28 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
 
   const handleDeleteButton = React.useCallback(
     (rule: Rule) => {
-      if (context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteAutomatedRules)) {
-        setRuleToDelete(rule);
+      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteAutomatedRules)) {
+        setRuleToWarn({ rule: rule, type: 'DELETE' });
         setWarningModalOpen(true);
       } else {
         handleDelete(rule, cleanRuleEnabled);
       }
     },
-    [context.settings, setWarningModalOpen, handleDelete, setRuleToDelete, cleanRuleEnabled]
+    [context.settings, setWarningModalOpen, handleDelete, setRuleToWarn, cleanRuleEnabled]
   );
+
+  const handleWarningModalAccept = React.useCallback(() => {
+    if (ruleToWarn?.type === 'DELETE') {
+      handleDelete(ruleToWarn!.rule, cleanRuleEnabled);
+    } else {
+      handleDisableRule(ruleToWarn!.rule, cleanRuleEnabled);
+    }
+  }, [handleDelete, handleDisableRule, ruleToWarn, cleanRuleEnabled]);
+
+  const handleWarningModalClose = React.useCallback(() => {
+    setWarningModalOpen(false);
+    setRuleToWarn(undefined);
+  }, [setWarningModalOpen, setRuleToWarn]);
 
   const actionResolver = React.useCallback(
     (rule: Rule): IAction[] => {
@@ -416,14 +448,6 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
     }
   }, [isLoading, rules, ruleRows]);
 
-  const handleWarningModalAccept = React.useCallback(() => {
-    handleDelete(ruleToDelete!, cleanRuleEnabled);
-  }, [handleDelete, ruleToDelete, cleanRuleEnabled]);
-
-  const handleWarningModalClose = React.useCallback(() => {
-    setWarningModalOpen(false);
-  }, [setWarningModalOpen]);
-
   return (
     <>
       <BreadcrumbPage pageTitle="Automated Rules">
@@ -441,15 +465,23 @@ export const Rules: React.FunctionComponent<RulesProps> = (props) => {
                     </Button>
                   </ToolbarItem>
                 </ToolbarGroup>
-                <RuleDeleteWarningModal
-                  warningType={DeleteWarningType.DeleteAutomatedRules}
-                  rule={ruleToDelete?.name}
-                  visible={warningModalOpen}
-                  onAccept={handleWarningModalAccept}
-                  onClose={handleWarningModalClose}
-                  clean={cleanRuleEnabled}
-                  setClean={setCleanRuleEnabled}
-                />
+                {ruleToWarn ? (
+                  <RuleDeleteWarningModal
+                    warningType={
+                      ruleToWarn.type === 'DELETE'
+                        ? DeleteOrDisableWarningType.DeleteAutomatedRules
+                        : DeleteOrDisableWarningType.DisableAutomatedRules
+                    }
+                    ruleName={ruleToWarn.rule.name}
+                    visible={warningModalOpen}
+                    onAccept={handleWarningModalAccept}
+                    onClose={handleWarningModalClose}
+                    clean={cleanRuleEnabled}
+                    setClean={setCleanRuleEnabled}
+                  />
+                ) : (
+                  <></>
+                )}
               </ToolbarContent>
             </Toolbar>
             {viewContent}

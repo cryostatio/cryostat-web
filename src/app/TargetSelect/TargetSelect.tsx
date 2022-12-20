@@ -54,7 +54,7 @@ import {
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
 import { CreateTargetModal } from './CreateTargetModal';
-import { DeleteWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
 import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { SerializedTarget } from '@app/Shared/SerializedTarget';
@@ -192,7 +192,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   }, [addSubscription, context.api, notifications, selected, setLoading]);
 
   const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteWarningType.DeleteCustomTargets),
+    () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteCustomTargets),
     [context.settings]
   );
 
@@ -215,7 +215,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const deleteArchivedWarningModal = React.useMemo(() => {
     return (
       <DeleteWarningModal
-        warningType={DeleteWarningType.DeleteCustomTargets}
+        warningType={DeleteOrDisableWarningType.DeleteCustomTargets}
         visible={warningModalOpen}
         onAccept={deleteTarget}
         onClose={handleWarningModalClose}

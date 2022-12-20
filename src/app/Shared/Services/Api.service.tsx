@@ -257,23 +257,33 @@ export class ApiService {
     );
   }
 
-  updateRule(rule: Rule): Observable<boolean> {
+  updateRule(rule: Rule, clean = true): Observable<boolean> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    return this.sendRequest('v2', `rules/${rule.name}`, {
-      method: 'PATCH',
-      body: JSON.stringify(rule),
-      headers,
-    }).pipe(
+    return this.sendRequest(
+      'v2',
+      `rules/${rule.name}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(rule),
+        headers,
+      },
+      new URLSearchParams({ clean: String(clean) })
+    ).pipe(
       map((resp) => resp.ok),
       first()
     );
   }
 
   deleteRule(name: string, clean: boolean = true): Observable<boolean> {
-    return this.sendRequest('v2', `rules/${name}?clean=${clean}`, {
-      method: 'DELETE',
-    }).pipe(
+    return this.sendRequest(
+      'v2',
+      `rules/${name}`,
+      {
+        method: 'DELETE',
+      },
+      new URLSearchParams({ clean: String(clean) })
+    ).pipe(
       map((resp) => resp.ok),
       first()
     );
@@ -678,6 +688,7 @@ export class ApiService {
           {
             method: 'GET',
           },
+          undefined,
           suppressNotifications
         ).pipe(
           concatMap((resp) => resp.json()),
@@ -1000,6 +1011,7 @@ export class ApiService {
     apiVersion: ApiVersion,
     path: string,
     config?: RequestInit,
+    params?: URLSearchParams,
     suppressNotifications = false,
     skipStatusCheck = false
   ): Observable<Response> {
@@ -1020,8 +1032,7 @@ export class ApiService {
           };
 
           _.mergeWith(config, defaultReq, customizer);
-
-          return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}`, config);
+          return fromFetch(`${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, config);
         }),
         map((resp) => {
           if (resp.ok) return resp;
@@ -1067,6 +1078,7 @@ export class ApiService {
     apiVersion: ApiVersion,
     path: string,
     { method = 'GET', body, headers = {}, listeners, abortSignal }: XMLHttpRequestConfig,
+    params?: URLSearchParams,
     suppressNotifications = false,
     skipStatusCheck = false
   ): Observable<XMLHttpResponse> {
@@ -1076,7 +1088,7 @@ export class ApiService {
           return from(
             new Promise<XMLHttpResponse>((resolve, reject) => {
               const xhr = new XMLHttpRequest();
-              xhr.open(method, `${this.login.authority}/api/${apiVersion}/${path}`, true);
+              xhr.open(method, `${this.login.authority}/api/${apiVersion}/${path}${params ? '?' + params : ''}`, true);
 
               listeners?.onUploadProgress && xhr.upload.addEventListener('progress', listeners.onUploadProgress);
 
