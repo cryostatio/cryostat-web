@@ -36,9 +36,9 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { Recording } from '@app/Shared/Services/Api.service';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import React from 'react';
 
 export interface NameFilterProps {
   recordings: Recording[];
@@ -46,25 +46,25 @@ export interface NameFilterProps {
   onSubmit: (inputName: string) => void;
 }
 
-export const NameFilter: React.FunctionComponent<NameFilterProps> = (props) => {
+export const NameFilter: React.FunctionComponent<NameFilterProps> = ({ recordings, filteredNames, onSubmit }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const onSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       if (!isPlaceholder) {
         setIsExpanded(false);
-        props.onSubmit(selection);
+        onSubmit(selection);
       }
     },
-    [props.onSubmit, setIsExpanded]
+    [onSubmit, setIsExpanded]
   );
 
   const nameOptions = React.useMemo(() => {
-    return props.recordings
+    return recordings
       .map((r) => r.name)
-      .filter((n) => !props.filteredNames.includes(n))
+      .filter((n) => !filteredNames.includes(n))
       .map((option, index) => <SelectOption key={index} value={option} />);
-  }, [props.recordings, props.filteredNames]);
+  }, [recordings, filteredNames]);
 
   return (
     <Select

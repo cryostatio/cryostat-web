@@ -36,16 +36,16 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import build from '@app/build.json';
 import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_default.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
+import build from '@app/build.json';
 import { Brand, Card, CardBody, CardFooter, CardHeader } from '@patternfly/react-core';
+import React from 'react';
+import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
 
 export interface AboutProps {}
 
-export const About: React.FunctionComponent<AboutProps> = (props) => {
+export const About: React.FC<AboutProps> = (_) => {
   return (
     <BreadcrumbPage pageTitle="About">
       <Card>

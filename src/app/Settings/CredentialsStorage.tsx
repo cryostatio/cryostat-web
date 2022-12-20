@@ -36,11 +36,11 @@
  * SOFTWARE.
  */
 
+import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { Select, SelectOption, SelectVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Select, SelectOption, SelectVariant, Text } from '@patternfly/react-core';
 import { UserSetting } from './Settings';
-import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 
 export interface Location {
   key: string;
@@ -63,7 +63,7 @@ export class Locations {
 const locations = [Locations.BROWSER_SESSION, Locations.BACKEND];
 
 const getLocation = (key: string): Location => {
-  for (let l of locations) {
+  for (const l of locations) {
     if (l.key === key) {
       return l;
     }
@@ -77,17 +77,17 @@ const Component = () => {
 
   const handleSelect = React.useCallback(
     (_, selection) => {
-      let location = getLocation(selection);
+      const location = getLocation(selection);
       setSelection(location.key);
       setExpanded(false);
       saveToLocalStorage('JMX_CREDENTIAL_LOCATION', selection);
     },
-    [getLocation, setSelection, setExpanded, saveToLocalStorage]
+    [setSelection, setExpanded]
   );
 
   React.useEffect(() => {
     handleSelect(undefined, getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key));
-  }, [handleSelect, getFromLocalStorage]);
+  }, [handleSelect]);
 
   return (
     <>

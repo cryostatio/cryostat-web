@@ -35,9 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import _ from 'lodash';
-import { Link } from 'react-router-dom';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { StoredCredential } from '@app/Shared/Services/Api.service';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Badge,
   Button,
@@ -50,20 +55,14 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { SearchIcon } from '@patternfly/react-icons';
+import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import _ from 'lodash';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { concatMap, forkJoin, Observable, of } from 'rxjs';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
-import { StoredCredential } from '@app/Shared/Services/Api.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { SecurityCard } from '../SecurityPanel';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 const enum Actions {
@@ -80,7 +79,7 @@ const reducer = (state, action) => {
   switch (action.type) {
     case Actions.HANDLE_REFRESH: {
       const credentials: StoredCredential[] = action.payload.credentials;
-      let counts: number[] = [];
+      const counts: number[] = [];
       for (const c of credentials) {
         counts.push(c.numMatchingTargets);
       }
@@ -91,10 +90,9 @@ const reducer = (state, action) => {
       };
     }
     case Actions.HANDLE_TARGET_NOTIFICATION: {
-      const target: Target = action.payload.target;
-      let updated = [...state.counts];
+      const updated = [...state.counts];
       for (let i = 0; i < state.credentials.length; i++) {
-        let match: boolean = eval(state.credentials[i].matchExpression);
+        const match: boolean = eval(state.credentials[i].matchExpression);
         if (match) {
           updated[i] += action.payload.kind === 'FOUND' ? 1 : -1;
         }
@@ -187,7 +185,7 @@ export const StoreJmxCredentials = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
 
-  const tableColumns: string[] = ['Match Expression', 'Count'];
+  const tableColumns: string[] = React.useMemo(() => ['Match Expression', 'Count'], []);
   const tableTitle = 'Stored Credentials';
 
   const refreshStoredCredentialsAndCounts = React.useCallback(() => {
@@ -198,11 +196,11 @@ export const StoreJmxCredentials = () => {
         setIsLoading(false);
       })
     );
-  }, [addSubscription, context, context.api, setIsLoading]);
+  }, [addSubscription, context.api, setIsLoading]);
 
   React.useEffect(() => {
     refreshStoredCredentialsAndCounts();
-  }, []);
+  }, [refreshStoredCredentialsAndCounts]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -232,7 +230,7 @@ export const StoreJmxCredentials = () => {
             of(dispatch({ type: Actions.HANDLE_CREDENTIALS_DELETED_NOTIFICATION, payload: { credential: v.message } }))
           )
         )
-        .subscribe(() => {} /* do nothing - dispatch will have already handled updating state */)
+        .subscribe(() => undefined /* do nothing - dispatch will have already handled updating state */)
     );
   }, [addSubscription, context, context.notificationChannel]);
 
@@ -247,7 +245,7 @@ export const StoreJmxCredentials = () => {
       context.notificationChannel
         .messages(NotificationCategory.TargetJvmDiscovery)
         .pipe(concatMap((v) => of(handleTargetNotification(v.message.event))))
-        .subscribe(() => {} /* do nothing - dispatch will have already handled updating state */)
+        .subscribe(() => undefined /* do nothing - dispatch will have already handled updating state */)
     );
   }, [addSubscription, context, context.notificationChannel]);
 
@@ -256,14 +254,14 @@ export const StoreJmxCredentials = () => {
   }, []);
 
   const handleDeleteCredentials = React.useCallback(() => {
-    const tasks: Observable<any>[] = [];
+    const tasks: Observable<boolean>[] = [];
     state.credentials.forEach((credential) => {
       if (state.checkedCredentials.includes(credential)) {
         tasks.push(context.api.deleteCredentials(credential.id));
       }
     });
     addSubscription(forkJoin(tasks).subscribe());
-  }, [state.credentials, state.checkedCredentials, context, context.api, addSubscription]);
+  }, [state.credentials, state.checkedCredentials, context.api, addSubscription]);
 
   const handleAuthModalOpen = React.useCallback(() => {
     setShowAuthModal(true);
@@ -279,7 +277,7 @@ export const StoreJmxCredentials = () => {
     } else {
       handleDeleteCredentials();
     }
-  }, [context, context.settings, setWarningModalOpen, handleDeleteCredentials]);
+  }, [context.settings, setWarningModalOpen, handleDeleteCredentials]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
@@ -288,7 +286,7 @@ export const StoreJmxCredentials = () => {
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
-        <Button variant="primary" aria-label="add-jmx-credential" onClick={handleAuthModalOpen}>
+        <Button key="add" variant="primary" aria-label="add-jmx-credential" onClick={handleAuthModalOpen}>
           Add
         </Button>,
         <Button
@@ -308,7 +306,7 @@ export const StoreJmxCredentials = () => {
           ))}
         </>
       );
-    }, [state.checkedCredentials]);
+    }, []);
 
     const deleteCredentialModal = React.useMemo(() => {
       return (
@@ -319,7 +317,7 @@ export const StoreJmxCredentials = () => {
           onClose={handleWarningModalClose}
         />
       );
-    }, [state.checkedCredentials]);
+    }, []);
 
     return (
       <Toolbar id="target-credentials-toolbar">
@@ -331,8 +329,8 @@ export const StoreJmxCredentials = () => {
 
   const matchExpressionRows = React.useMemo(() => {
     return state.credentials.map((credential, idx) => {
-      let isExpanded: boolean = state.expandedCredentials.includes(credential);
-      let isChecked: boolean = state.checkedCredentials.includes(credential);
+      const isExpanded: boolean = state.expandedCredentials.includes(credential);
+      const isChecked: boolean = state.checkedCredentials.includes(credential);
 
       const handleToggleExpanded = () => {
         if (state.counts[idx] !== 0 || isExpanded) {
@@ -374,11 +372,11 @@ export const StoreJmxCredentials = () => {
         </Tr>
       );
     });
-  }, [state.credentials, state.expandedCredentials, state.checkedCredentials, state.counts]);
+  }, [state.credentials, state.expandedCredentials, state.checkedCredentials, state.counts, tableColumns]);
 
   const targetRows = React.useMemo(() => {
     return state.credentials.map((credential, idx) => {
-      let isExpanded: boolean = state.expandedCredentials.includes(credential);
+      const isExpanded: boolean = state.expandedCredentials.includes(credential);
 
       return (
         <Tr key={`${idx}_child`} isExpanded={isExpanded}>
@@ -392,10 +390,10 @@ export const StoreJmxCredentials = () => {
         </Tr>
       );
     });
-  }, [state.credentials, state.expandedCredentials]);
+  }, [state.credentials, state.expandedCredentials, tableColumns.length]);
 
   const rowPairs = React.useMemo(() => {
-    let rowPairs: JSX.Element[] = [];
+    const rowPairs: JSX.Element[] = [];
     for (let i = 0; i < matchExpressionRows.length; i++) {
       rowPairs.push(matchExpressionRows[i]);
       rowPairs.push(targetRows[i]);
@@ -435,7 +433,7 @@ export const StoreJmxCredentials = () => {
                   isSelected: state.isHeaderChecked,
                 }}
               />
-              {tableColumns.map((key, idx) => (
+              {tableColumns.map((key, _) => (
                 <Th key={`table-header-${key}`} width={key === 'Match Expression' ? 90 : 15}>
                   {key}
                 </Th>
@@ -455,7 +453,7 @@ export const StoreJmxCredentials = () => {
       <CreateJmxCredentialModal
         visible={showAuthModal}
         onDismiss={handleAuthModalClose}
-        onSave={handleAuthModalClose}
+        onPropsSave={handleAuthModalClose}
       />
     </>
   );

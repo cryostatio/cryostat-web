@@ -40,7 +40,7 @@ import * as React from 'react';
 
 export interface AboutAgentCardProps {}
 
-export const AboutAgentCard: React.FunctionComponent<AboutAgentCardProps> = (props) => {
+export const AboutAgentCard: React.FC<AboutAgentCardProps> = (_) => {
   return (
     <Card>
       <CardTitle>About the JMC Agent</CardTitle>

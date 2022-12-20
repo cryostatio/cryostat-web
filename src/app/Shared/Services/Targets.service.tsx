@@ -36,14 +36,14 @@
  * SOFTWARE.
  */
 
-import * as _ from 'lodash';
-import { ApiService } from './Api.service';
-import { Target } from './Target.service';
 import { Notifications } from '@app/Notifications/Notifications';
-import { NotificationCategory, NotificationChannel } from './NotificationChannel.service';
+import * as _ from 'lodash';
 import { Observable, BehaviorSubject, of, EMPTY } from 'rxjs';
 import { catchError, concatMap, first, map, tap } from 'rxjs/operators';
+import { ApiService } from './Api.service';
 import { LoginService, SessionState } from './Login.service';
+import { NotificationCategory, NotificationChannel } from './NotificationChannel.service';
+import { Target } from './Target.service';
 
 export interface TargetDiscoveryEvent {
   kind: 'LOST' | 'FOUND';

@@ -35,8 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { accessibleRouteChangeHandler } from '@app/utils/utils';
+import * as React from 'react';
 
 interface IDynamicImport {
   /* eslint-disable @typescript-eslint/no-explicit-any */

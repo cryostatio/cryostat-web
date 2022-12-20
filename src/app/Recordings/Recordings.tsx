@@ -35,17 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetView } from '@app/TargetView/TargetView';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
+import * as React from 'react';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 export interface RecordingsProps {}
 
-export const Recordings: React.FunctionComponent<RecordingsProps> = (props) => {
+export const Recordings: React.FunctionComponent<RecordingsProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const [activeTab, setActiveTab] = React.useState(0);
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);

@@ -35,14 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import * as tlr from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen } from '@testing-library/react';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import '@testing-library/jest-dom';
 import { RecordingLabelFields, RecordingLabelFieldsProps } from '@app/RecordingMetadata/RecordingLabelFields';
 import { ValidatedOptions } from '@patternfly/react-core';
+import '@testing-library/jest-dom';
+import * as tlr from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../Common';
 
 const mockUploadedRecordingLabels = {
@@ -276,6 +276,7 @@ describe('<RecordingLabelFields />', () => {
     });
 
     expect(labelUploadInput.files).not.toBe(null);
+    /* eslint-disable  @typescript-eslint/no-non-null-assertion */
     expect(labelUploadInput.files![0]).toStrictEqual(mockMetadataFile);
 
     expect(mockProps.setLabels).toHaveBeenCalledTimes(1);

@@ -35,12 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { Notifications } from '@app/Notifications/Notifications';
+import { Base64 } from 'js-base64';
 import { Observable, from, of, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { concatMap, first, tap } from 'rxjs/operators';
 import { isActiveRecording, RecordingState, Recording } from './Api.service';
-import { Notifications } from '@app/Notifications/Notifications';
-import { Base64 } from 'js-base64';
 import { LoginService } from './Login.service';
 
 export class ReportService {
@@ -50,8 +50,8 @@ export class ReportService {
     if (!recording.reportUrl) {
       return throwError(() => new Error('No recording report URL'));
     }
-    let stored = sessionStorage.getItem(this.key(recording));
-    if (!!stored) {
+    const stored = sessionStorage.getItem(this.key(recording));
+    if (stored) {
       return of(stored);
     }
     return this.login.getHeaders().pipe(
@@ -83,9 +83,15 @@ export class ReportService {
           if (isArchived || isActiveStopped) {
             try {
               sessionStorage.setItem(this.key(recording), report);
-            } catch (error) {
-              this.notifications.warning('Report Caching Failed', (error as any).message);
-              this.delete(recording);
+            } catch (err) {
+              if (isQuotaExceededError(err)) {
+                this.notifications.warning('Report Caching Failed', err.message);
+                this.delete(recording);
+              } else {
+                // see https://mmazzarolo.com/blog/2022-06-25-local-storage-status/
+                this.notifications.warning('Report Caching Failed', 'localStorage is not available');
+                this.delete(recording);
+              }
             }
           }
         },
@@ -141,9 +147,15 @@ export class ReportService {
             try {
               sessionStorage.setItem(this.analysisKey(connectUrl), JSON.stringify(report));
               sessionStorage.setItem(this.analysisKeyTimestamp(connectUrl), Date.now().toString());
-            } catch (error) {
-              this.notifications.warning('Report Caching Failed', (error as any).message);
-              this.deleteCachedAnalysisReport(connectUrl);
+            } catch (err) {
+              if (isQuotaExceededError(err)) {
+                this.notifications.warning('Report Caching Failed', err.message);
+                this.delete(recording);
+              } else {
+                // see https://mmazzarolo.com/blog/2022-06-25-local-storage-status/
+                this.notifications.warning('Report Caching Failed', 'localStorage is not available');
+                this.delete(recording);
+              }
             }
           }
         },
@@ -162,9 +174,9 @@ export class ReportService {
   }
 
   getCachedAnalysisReport(connectUrl: string): CachedReportValue {
-    let stored = sessionStorage.getItem(this.analysisKey(connectUrl));
-    let storedTimestamp = Number(sessionStorage.getItem(this.analysisKeyTimestamp(connectUrl)));
-    if (!!stored) {
+    const stored = sessionStorage.getItem(this.analysisKey(connectUrl));
+    const storedTimestamp = Number(sessionStorage.getItem(this.analysisKeyTimestamp(connectUrl)));
+    if (stored) {
       return {
         report: JSON.parse(stored),
         timestamp: storedTimestamp || 0,
@@ -210,20 +222,29 @@ export type GenerationError = Error & {
   messageDetail: Observable<string>;
 };
 
-export const isGenerationError = (toCheck: any): toCheck is GenerationError => {
-  if ((toCheck as GenerationError).name === undefined) {
+export const isGenerationError = (err: unknown): err is GenerationError => {
+  if ((err as GenerationError).name === undefined) {
     return false;
   }
-  if ((toCheck as GenerationError).message === undefined) {
+  if ((err as GenerationError).message === undefined) {
     return false;
   }
-  if ((toCheck as GenerationError).messageDetail === undefined) {
+  if ((err as GenerationError).messageDetail === undefined) {
     return false;
   }
-  if ((toCheck as GenerationError).status === undefined) {
+  if ((err as GenerationError).status === undefined) {
     return false;
   }
   return true;
+};
+
+export const isQuotaExceededError = (err: unknown): err is DOMException => {
+  return (
+    err instanceof DOMException &&
+    (err.name === 'QuotaExceededError' ||
+      // Firefox
+      err.name === 'NS_ERROR_DOM_QUOTA_REACHED')
+  );
 };
 
 export interface RuleEvaluation {

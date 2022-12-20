@@ -36,17 +36,16 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
-import { createMemoryHistory } from 'history';
+import { SnapshotRecordingForm } from '@app/CreateRecording/SnapshotRecordingForm';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
+import { TargetService } from '@app/Shared/Services/Target.service';
 import { screen, cleanup, act as doAct } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { ServiceContext, Services } from '@app/Shared/Services/Services';
-import { defaultServices } from '@app/Shared/Services/Services';
 import { of, Subject } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService } from '@app/Shared/Services/Target.service';
-import { SnapshotRecordingForm } from '@app/CreateRecording/SnapshotRecordingForm';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };

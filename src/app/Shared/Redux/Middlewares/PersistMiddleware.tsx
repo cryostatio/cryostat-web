@@ -43,7 +43,7 @@ import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/Automat
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
 import { RootState } from '../ReduxStore';
 
-export const persistMiddleware: Middleware<{}, RootState> =
+export const persistMiddleware: Middleware<{}, RootState> =  // FIXME: Don't use {} as a type (eslint)
   ({ getState }) =>
   (next) =>
   (action) => {

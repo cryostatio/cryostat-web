@@ -35,8 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
   Card,
@@ -66,16 +70,11 @@ import {
   Tbody,
   ActionsColumn,
 } from '@patternfly/react-table';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import * as React from 'react';
+import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import { first } from 'rxjs/operators';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { RuleUploadModal } from './RulesUploadModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { RuleDeleteWarningModal } from './RuleDeleteWarningModal';
+import { RuleUploadModal } from './RulesUploadModal';
 
 export interface Rule {
   name: string;
@@ -109,9 +108,9 @@ export const ruleObjKeys = [
   'maxSizeBytes',
 ];
 
-export const isRule = (obj: Object): boolean => {
+export const isRule = (obj: object): boolean => {
   for (const key of ruleObjKeys) {
-    if (!obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       return false;
     }
   } // Ignore unknown fields
@@ -125,7 +124,7 @@ export interface RuleToDeleteOrDisable {
 
 export interface RulesProps {}
 
-export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
+export const Rules: React.FC<RulesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const routerHistory = useHistory();
   const addSubscription = useSubscriptions();
@@ -139,48 +138,52 @@ export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
   const [ruleToWarn, setRuleToWarn] = React.useState<RuleToDeleteOrDisable | undefined>(undefined);
   const [cleanRuleEnabled, setCleanRuleEnabled] = React.useState(true);
 
-  const tableColumns = [
-    { title: 'Enabled' },
-    {
-      title: 'Name',
-      sortable: true,
-    },
-    { title: 'Description' },
-    {
-      title: 'Match Expression',
-      tooltip:
-        'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
-    },
-    {
-      title: 'Event Specifier',
-      tooltip: 'The name and location of the Event Template applied by this rule.',
-    },
-    {
-      title: 'Archival Period',
-      tooltip:
-        'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.',
-    },
-    {
-      title: 'Initial Delay',
-      tooltip:
-        'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.',
-    },
-    {
-      title: 'Preserved Archives',
-      tooltip:
-        'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.',
-    },
-    {
-      title: 'Maximum Age',
-      tooltip:
-        'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.',
-    },
-    {
-      title: 'Maximum Size',
-      tooltip:
-        'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.',
-    },
-  ] as RuleTableHeader[];
+  const tableColumns = React.useMemo(
+    () =>
+      [
+        { title: 'Enabled' },
+        {
+          title: 'Name',
+          sortable: true,
+        },
+        { title: 'Description' },
+        {
+          title: 'Match Expression',
+          tooltip:
+            'A code-snippet expression which must evaluate to a boolean when applied to a given target. If the expression evaluates to true then the rule applies to that target.',
+        },
+        {
+          title: 'Event Specifier',
+          tooltip: 'The name and location of the Event Template applied by this rule.',
+        },
+        {
+          title: 'Archival Period',
+          tooltip:
+            'Period in seconds. Cryostat will connect to matching targets at this interval and copy the relevant recording data into its archives. Values less than 1 prevent data from being repeatedly copied into archives - recordings will be started and remain only in target JVM memory.',
+        },
+        {
+          title: 'Initial Delay',
+          tooltip:
+            'Initial delay in seconds. Cryostat will wait this amount of time before first copying recording data into its archives. Values less than 0 default to equal to the Archival Period. You can set a non-zero Initial Delay with a zero Archival Period, which will start a recording and copy it into archives exactly once after a set delay.',
+        },
+        {
+          title: 'Preserved Archives',
+          tooltip:
+            'The number of recording copies to be maintained in the Cryostat archives. Cryostat will continue retrieving further archived copies and trimming the oldest copies from the archive to maintain this limit. Values less than 1 prevent data from being copied into archives - recordings will be started and remain only in target JVM memory.',
+        },
+        {
+          title: 'Maximum Age',
+          tooltip:
+            'The maximum age in seconds for data kept in the JFR recordings started by this rule. Values less than 1 indicate no limit.',
+        },
+        {
+          title: 'Maximum Size',
+          tooltip:
+            'The maximum size in bytes for JFR recordings started by this rule. Values less than 1 indicate no limit.',
+        },
+      ] as RuleTableHeader[],
+    []
+  );
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -199,16 +202,16 @@ export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
   const refreshRules = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.doGet('rules', 'v2').subscribe((v: any) => {
-        setRules(v.data.result);
+      context.api.getRules().subscribe((rules) => {
+        setRules(rules);
         setIsLoading(false);
       })
     );
-  }, [setIsLoading, addSubscription, context, context.api, setRules]);
+  }, [setIsLoading, addSubscription, context.api, setRules]);
 
   React.useEffect(() => {
     refreshRules();
-  }, [context, context.api]);
+  }, [refreshRules]);
 
   React.useEffect(() => {
     addSubscription(
@@ -249,11 +252,11 @@ export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
       context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
     );
     return () => window.clearInterval(id);
-  }, []);
+  }, [context.settings, refreshRules]);
 
   const handleCreateRule = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
-  }, [routerHistory]);
+  }, [routerHistory, url]);
 
   const handleUploadRule = React.useCallback(() => {
     setIsUploadModalOpen(true);
@@ -279,19 +282,19 @@ export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
         }
       }
     },
-    [context.api, cleanRuleEnabled, addSubscription, handleDisableRule, setRuleToWarn, setWarningModalOpen]
+    [context.api, context.settings, cleanRuleEnabled, addSubscription, handleDisableRule, setRuleToWarn, setWarningModalOpen]
   );
 
   const handleDelete = React.useCallback(
-    (rule: Rule, clean: boolean = true) => {
+    (rule: Rule, clean = true) => {
       addSubscription(
         context.api
           .deleteRule(rule.name, clean)
           .pipe(first())
-          .subscribe(() => {} /* do nothing - notification will handle updating state */)
+          .subscribe(() => undefined /* do nothing - notification will handle updating state */)
       );
     },
-    [addSubscription, context, context.api]
+    [addSubscription, context.api]
   );
 
   const handleDeleteButton = React.useCallback(
@@ -307,10 +310,15 @@ export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
-    if (ruleToWarn?.type === 'DELETE') {
-      handleDelete(ruleToWarn!.rule, cleanRuleEnabled);
-    } else {
-      handleDisableRule(ruleToWarn!.rule, cleanRuleEnabled);
+    if (ruleToWarn) {
+      if (ruleToWarn?.type === 'DELETE') {
+        handleDelete(ruleToWarn.rule, cleanRuleEnabled);
+      } else {
+        handleDisableRule(ruleToWarn.rule, cleanRuleEnabled);
+      }
+    }
+    else {
+      console.error('ruleToWarn is undefined');
     }
   }, [handleDelete, handleDisableRule, ruleToWarn, cleanRuleEnabled]);
 
@@ -404,7 +412,7 @@ export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
         </Td>
       </Tr>
     ));
-  }, [rules, sortBy, handleToggle, actionResolver]);
+  }, [rules, sortBy, tableColumns, handleToggle, actionResolver]);
 
   const viewContent = React.useMemo(() => {
     if (isLoading) {
@@ -446,7 +454,7 @@ export const Rules: React.FunctionComponent<RulesProps> = ({}) => {
         </TableComposable>
       );
     }
-  }, [isLoading, rules, ruleRows]);
+  }, [getSortParams, isLoading, rules, ruleRows, tableColumns]);
 
   return (
     <>

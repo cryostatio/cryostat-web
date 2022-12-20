@@ -35,23 +35,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
-import { of, Subject } from 'rxjs';
-import '@testing-library/jest-dom';
-import renderer, { act } from 'react-test-renderer';
-import { act as doAct, cleanup, screen, within } from '@testing-library/react';
+import { DeleteAutomatedRules, DeleteOrDisableWarningType, DisableAutomatedRules } from '@app/Modal/DeleteWarningUtils';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { Rules, Rule } from '@app/Rules/Rules';
-import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import {
   NotificationCategory,
   NotificationChannel,
   NotificationMessage,
 } from '@app/Shared/Services/NotificationChannel.service';
-import { DeleteAutomatedRules, DeleteOrDisableWarningType, DisableAutomatedRules } from '@app/Modal/DeleteWarningUtils';
+import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
+import '@testing-library/jest-dom';
+import { act as doAct, cleanup, screen, within } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import * as React from 'react';
+import { Router } from 'react-router-dom';
+import renderer, { act } from 'react-test-renderer';
+import { of, Subject } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockRule: Rule = {
   name: 'mockRule',

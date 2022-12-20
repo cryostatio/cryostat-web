@@ -36,9 +36,9 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import React from 'react';
 
 export interface AutomatedAnalysisTopicFilterProps {
   evaluations: CategorizedRuleEvaluations[];
@@ -46,17 +46,20 @@ export interface AutomatedAnalysisTopicFilterProps {
   onSubmit: (inputName: string) => void;
 }
 
-export const AutomatedAnalysisTopicFilter: React.FunctionComponent<AutomatedAnalysisTopicFilterProps> = (props) => {
+export const AutomatedAnalysisTopicFilter: React.FunctionComponent<AutomatedAnalysisTopicFilterProps> = ({
+  onSubmit,
+  ...props
+}) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const onSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       if (!isPlaceholder) {
         setIsExpanded(false);
-        props.onSubmit(selection);
+        onSubmit(selection);
       }
     },
-    [props.onSubmit, setIsExpanded]
+    [onSubmit, setIsExpanded]
   );
 
   const topicOptions = React.useMemo(() => {

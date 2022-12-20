@@ -70,8 +70,8 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
       <AutomatedAnalysisConfigDrawer
         drawerContent={drawerContent}
         isContentAbove={false}
-        onCreate={() => {}}
-        onError={() => {}}
+        onCreate={() => undefined}
+        onError={() => undefined}
       />
     );
 
@@ -91,8 +91,8 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
       <AutomatedAnalysisConfigDrawer
         drawerContent={drawerContent}
         isContentAbove={false}
-        onCreate={() => {}}
-        onError={() => {}}
+        onCreate={() => undefined}
+        onError={() => undefined}
       />
     );
 
@@ -113,7 +113,7 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
         drawerContent={drawerContent}
         isContentAbove={false}
         onCreate={onCreateFunction}
-        onError={() => {}}
+        onError={() => undefined}
       />
     );
 

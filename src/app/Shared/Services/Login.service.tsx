@@ -39,10 +39,11 @@ import { Base64 } from 'js-base64';
 import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
-import { SettingsService } from './Settings.service';
 import { ApiV2Response, HttpError } from './Api.service';
-import { TargetService } from './Target.service';
 import { Credential, JmxCredentials } from './JmxCredentials.service';
+import { isQuotaExceededError } from './Report.service';
+import { SettingsService } from './Settings.service';
+import { TargetService } from './Target.service';
 
 export enum SessionState {
   NO_USER_SESSION,
@@ -151,7 +152,7 @@ export class LoginService {
       headers.set('Authorization', AuthMethod.NONE);
     }
     if (jmxCredential) {
-      let basic = `${jmxCredential.username}:${jmxCredential.password}`;
+      const basic = `${jmxCredential.username}:${jmxCredential.password}`;
       headers.set('X-JMX-Authorization', `Basic ${Base64.encode(basic)}`);
     }
     return headers;
@@ -257,12 +258,12 @@ export class LoginService {
   }
 
   private getTokenFromUrlFragment(): string {
-    var matches = location.hash.match(new RegExp('access_token' + '=([^&]*)'));
+    const matches = location.hash.match(new RegExp('access_token' + '=([^&]*)'));
     return matches ? matches[1] : '';
   }
 
   private hasBearerTokenUrlHash(): boolean {
-    var matches = location.hash.match('token_type=Bearer');
+    const matches = location.hash.match('token_type=Bearer');
     return !!matches;
   }
 
@@ -297,15 +298,19 @@ export class LoginService {
 
   private getCacheItem(key: string): string {
     const item = sessionStorage.getItem(key);
-    return !!item ? item : '';
+    return item ? item : '';
   }
 
   private setCacheItem(key: string, token: string): void {
     try {
       sessionStorage.setItem(key, token);
-    } catch (error) {
-      console.error('Caching Failed', (error as any).message);
-      sessionStorage.clear();
+    } catch (err) {
+      if (isQuotaExceededError(err)) {
+        console.error('Caching Failed', err.message);
+        sessionStorage.clear();
+      } else {
+        console.error('Caching Failed', 'sessionStorage is not available');
+      }
     }
   }
 

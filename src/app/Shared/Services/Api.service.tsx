@@ -67,18 +67,18 @@ export class XMLHttpError extends Error {
   }
 }
 
-export const isHttpError = (toCheck: any): toCheck is HttpError => {
-  if (!(toCheck instanceof Error)) {
+export const isHttpError = (err: unknown): err is HttpError => {
+  if (!(err instanceof Error)) {
     return false;
   }
-  return (toCheck as HttpError).httpResponse !== undefined;
+  return (err as HttpError).httpResponse !== undefined;
 };
 
-export const isXMLHttpError = (toCheck: any): toCheck is XMLHttpError => {
-  if (!(toCheck instanceof Error)) {
+export const isXMLHttpError = (err: unknown): err is XMLHttpError => {
+  if (!(err instanceof Error)) {
     return false;
   }
-  return (toCheck as XMLHttpError).xmlHttpResponse !== undefined;
+  return (err as XMLHttpError).xmlHttpResponse !== undefined;
 };
 
 export const isHttpOk = (statusCode: number) => {
@@ -111,13 +111,13 @@ export class ApiService {
         },
       });
 
-    const getDatasourceURL = fromFetch(`${this.login.authority}/api/v1/grafana_datasource_url`).pipe(
-      concatMap((resp) => from(resp.json()))
-    );
-    const getDashboardURL = fromFetch(`${this.login.authority}/api/v1/grafana_dashboard_url`).pipe(
-      concatMap((resp) => from(resp.json()))
-    );
-    const health = fromFetch(`${this.login.authority}/health`).pipe(
+    const getDatasourceURL: Observable<GrafanaDatasourceUrlGetResponse> = fromFetch(
+      `${this.login.authority}/api/v1/grafana_datasource_url`
+    ).pipe(concatMap((resp) => from(resp.json())));
+    const getDashboardURL: Observable<GrafanaDashboardUrlGetResponse> = fromFetch(
+      `${this.login.authority}/api/v1/grafana_dashboard_url`
+    ).pipe(concatMap((resp) => from(resp.json())));
+    const health: Observable<HealthGetResponse> = fromFetch(`${this.login.authority}/health`).pipe(
       tap((resp: Response) => {
         if (!resp.ok) {
           window.console.error(resp);
@@ -127,13 +127,11 @@ export class ApiService {
       concatMap((resp: Response) => from(resp.json())),
       shareReplay()
     );
-    health.subscribe((jsonResp: any) => {
-      this.cryostatVersionSubject.next(jsonResp.cryostatVersion);
-    });
     health
       .pipe(
-        concatMap((jsonResp: any) => {
-          const toFetch: Observable<any>[] = [];
+        concatMap((jsonResp) => {
+          this.cryostatVersionSubject.next(jsonResp.cryostatVersion);
+          const toFetch: unknown[] = [];
           const unconfigured: string[] = [];
           const unavailable: string[] = [];
           // if datasource or dashboard are not configured, display a warning
@@ -169,11 +167,13 @@ export class ApiService {
               message: unavailable.join(', ') + ' unavailable',
             }));
           }
-          return forkJoin(toFetch);
+          return forkJoin(
+            toFetch as [Observable<GrafanaDatasourceUrlGetResponse>, Observable<GrafanaDashboardUrlGetResponse>]
+          );
         })
       )
       .subscribe({
-        next: (parts: any) => {
+        next: (parts) => {
           this.grafanaDatasourceUrlSubject.next(parts[0].grafanaDatasourceUrl);
           this.grafanaDashboardUrlSubject.next(parts[1].grafanaDashboardUrl);
         },
@@ -275,7 +275,7 @@ export class ApiService {
     );
   }
 
-  deleteRule(name: string, clean: boolean = true): Observable<boolean> {
+  deleteRule(name: string, clean = true): Observable<boolean> {
     return this.sendRequest(
       'v2',
       `rules/${name}`,
@@ -297,7 +297,7 @@ export class ApiService {
       form.append('duration', String(recordingAttributes.duration));
     }
     form.append('archiveOnStop', String(recordingAttributes.archiveOnStop));
-    if (!!recordingAttributes.options) {
+    if (recordingAttributes.options) {
       if (recordingAttributes.options.toDisk != null) {
         form.append('toDisk', String(recordingAttributes.options.toDisk));
       }
@@ -308,7 +308,7 @@ export class ApiService {
         form.append('maxSize', String(recordingAttributes.options.maxSize));
       }
     }
-    if (!!recordingAttributes.metadata) {
+    if (recordingAttributes.metadata) {
       form.append('metadata', JSON.stringify(recordingAttributes.metadata));
     }
 
@@ -699,7 +699,7 @@ export class ApiService {
     );
   }
 
-  graphql<T>(query: string, variables?: Object): Observable<T> {
+  graphql<T>(query: string, variables?: unknown): Observable<T> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
     return this.sendRequest('v2.2', 'graphql', {
@@ -790,7 +790,7 @@ export class ApiService {
   }
 
   downloadRule(name: string): void {
-    this.doGet<any>('rules/' + name, 'v2')
+    this.doGet<RuleResponse>('rules/' + name, 'v2')
       .pipe(
         first(),
         map((resp) => resp.data.result)
@@ -806,7 +806,7 @@ export class ApiService {
 
   uploadRecording(
     file: File,
-    labels: Object,
+    labels: object,
     onUploadProgress?: (progress: number) => void,
     abortSignal?: Observable<void>
   ): Observable<string> {
@@ -991,6 +991,16 @@ export class ApiService {
     );
   }
 
+  getRules(): Observable<Rule[]> {
+    return this.sendRequest('v2', 'rules', {
+      method: 'GET',
+    }).pipe(
+      concatMap((resp) => resp.json()),
+      map((response: RulesResponse) => response.data.result),
+      first()
+    );
+  }
+
   private downloadFile(url: string, filename: string, download = true): void {
     const anchor = document.createElement('a');
     anchor.setAttribute('style', 'display: none; visibility: hidden;');
@@ -1110,7 +1120,11 @@ export class ApiService {
                     const parts = line.split(': ');
                     const header = parts.shift();
                     const value = parts.join(': ');
-                    respHeaders[header!] = value;
+                    if (header) {
+                      respHeaders[header] = value;
+                    } else {
+                      reject(new Error('Invalid header'));
+                    }
                   });
 
                   resolve({
@@ -1180,14 +1194,12 @@ export class ApiService {
 
 export type SimpleResponse = Pick<Response, 'ok' | 'status'>;
 
-export interface AllArchivesResponse {}
-
 export interface ApiV2Response {
   meta: {
     status: string;
     type: string;
   };
-  data: Object;
+  data: object;
 }
 
 interface AssetJwtResponse extends ApiV2Response {
@@ -1228,9 +1240,21 @@ interface CredentialsResponse extends ApiV2Response {
   };
 }
 
+interface RuleResponse extends ApiV2Response {
+  data: {
+    result: Rule;
+  };
+}
+
+interface RulesResponse extends ApiV2Response {
+  data: {
+    result: Rule[];
+  };
+}
+
 interface XMLHttpResponse {
-  body: any;
-  headers: {};
+  body: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  headers: object;
   respType: XMLHttpRequestResponseType;
   status: number;
   statusText: string;
@@ -1240,12 +1264,31 @@ interface XMLHttpResponse {
 
 interface XMLHttpRequestConfig {
   body?: XMLHttpRequestBodyInit;
-  headers: {};
+  headers: object;
   method: string;
   listeners?: {
     onUploadProgress?: (e: ProgressEvent) => void;
   };
   abortSignal?: Observable<void>;
+}
+
+interface GrafanaDashboardUrlGetResponse {
+  grafanaDashboardUrl: string;
+}
+
+interface GrafanaDatasourceUrlGetResponse {
+  grafanaDatasourceUrl: string;
+}
+
+interface HealthGetResponse {
+  // TODO: update HTTP_API.md v1/HealthGetHandler to include cryostatVersion
+  cryostatVersion: string;
+  datasourceConfigured: boolean;
+  datasourceAvailable: boolean;
+  dashboardConfigured: boolean;
+  dashboardAvailable: boolean;
+  reportsConfigured: boolean;
+  reportsAvailable: boolean;
 }
 
 export interface RecordingDirectory {
@@ -1320,7 +1363,7 @@ export interface RecordingAttributes {
 }
 
 export interface Metadata {
-  labels: Object;
+  labels: object;
 }
 
 export interface StoredCredential {
@@ -1371,4 +1414,4 @@ export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecording
 
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
-export const UPLOADS_SUBDIRECTORY: string = 'uploads';
+export const UPLOADS_SUBDIRECTORY = 'uploads';

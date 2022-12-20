@@ -35,8 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { CloseIcon, ExclamationCircleIcon, FileIcon, PlusCircleIcon, UploadIcon } from '@patternfly/react-icons';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { parseLabelsFromFile, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
   FormHelperText,
@@ -51,9 +52,8 @@ import {
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { parseLabelsFromFile, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { LoadingView } from '@app/LoadingView/LoadingView';
+import { CloseIcon, ExclamationCircleIcon, FileIcon, PlusCircleIcon, UploadIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 import { catchError, Observable, of, zip } from 'rxjs';
 
 export interface RecordingLabelFieldsProps {
@@ -74,7 +74,11 @@ const matchesLabelSyntax = (l: RecordingLabel) => {
   return l && LabelPattern.test(l.key) && LabelPattern.test(l.value);
 };
 
-export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = (props) => {
+export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsProps> = ({
+  setLabels,
+  setValid,
+  ...props
+}) => {
   const inputRef = React.useRef<HTMLInputElement>(null); // Use ref to refer to child component
   const addSubscription = useSubscriptions();
 
@@ -85,31 +89,31 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
     (idx, key) => {
       const updatedLabels = [...props.labels];
       updatedLabels[idx].key = key;
-      props.setLabels(updatedLabels);
+      setLabels(updatedLabels);
     },
-    [props.labels, props.setLabels]
+    [props.labels, setLabels]
   );
 
   const handleValueChange = React.useCallback(
     (idx, value) => {
       const updatedLabels = [...props.labels];
       updatedLabels[idx].value = value;
-      props.setLabels(updatedLabels);
+      setLabels(updatedLabels);
     },
-    [props.labels, props.setLabels]
+    [props.labels, setLabels]
   );
 
   const handleAddLabelButtonClick = React.useCallback(() => {
-    props.setLabels([...props.labels, { key: '', value: '' } as RecordingLabel]);
-  }, [props.labels, props.setLabels]);
+    setLabels([...props.labels, { key: '', value: '' } as RecordingLabel]);
+  }, [props.labels, setLabels]);
 
   const handleDeleteLabelButtonClick = React.useCallback(
     (idx) => {
       const updated = [...props.labels];
       updated.splice(idx, 1);
-      props.setLabels(updated);
+      setLabels(updated);
     },
-    [props.labels, props.setLabels]
+    [props.labels, setLabels]
   );
 
   const isLabelValid = React.useCallback(matchesLabelSyntax, [matchesLabelSyntax]);
@@ -123,7 +127,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       return true;
     }
     return props.labels.reduce(
-      (prev, curr, idx) => isLabelValid(curr) && !isDuplicateKey(curr.key, props.labels) && prev,
+      (prev, curr) => isLabelValid(curr) && !isDuplicateKey(curr.key, props.labels) && prev,
       true
     );
   }, [props.labels, isLabelValid, isDuplicateKey]);
@@ -136,7 +140,7 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       } // Ignore initial empty key inputs
     });
     return arr;
-  }, [props.labels, LabelPattern, getValidatedOption]);
+  }, [props.labels, isDuplicateKey]);
 
   const validValues = React.useMemo(() => {
     const arr = Array(props.labels.length).fill(ValidatedOptions.default);
@@ -146,11 +150,11 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
       } // Ignore initial empty value inputs
     });
     return arr;
-  }, [props.labels, LabelPattern, getValidatedOption]);
+  }, [props.labels]);
 
   React.useEffect(() => {
-    props.setValid(getValidatedOption(allLabelsValid));
-  }, [props.setValid, allLabelsValid, getValidatedOption]);
+    setValid(getValidatedOption(allLabelsValid));
+  }, [setValid, allLabelsValid]);
 
   const handleUploadLabel = React.useCallback(
     (e) => {
@@ -172,12 +176,12 @@ export const RecordingLabelFields: React.FunctionComponent<RecordingLabelFieldsP
           zip(tasks).subscribe((labelArrays: RecordingLabel[][]) => {
             setLoading(false);
             const labels = labelArrays.reduce((acc, next) => acc.concat(next), []);
-            props.setLabels([...props.labels, ...labels]);
+            setLabels([...props.labels, ...labels]);
           })
         );
       }
     },
-    [props.setLabels, props.labels, addSubscription, setLoading]
+    [setLabels, props.labels, addSubscription, setLoading]
   );
 
   const closeWarningPopover = React.useCallback(() => setInvalidUploads([]), [setInvalidUploads]);

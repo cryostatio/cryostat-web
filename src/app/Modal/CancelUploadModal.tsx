@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
 import { Button, Modal } from '@patternfly/react-core';
+import * as React from 'react';
 
 export interface CancelUploadModalProps {
   visible: boolean;

@@ -35,7 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { EventTemplate } from '@app/CreateRecording/CreateRecording';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { TemplateType } from '@app/Shared/Services/Api.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
   Button,
@@ -55,26 +65,16 @@ import {
   TextVariants,
   ValidatedOptions,
 } from '@patternfly/react-core';
+import * as React from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
 import { iif } from 'rxjs';
 import { filter, first, mergeMap, toArray } from 'rxjs/operators';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { EventTemplate } from '@app/CreateRecording/CreateRecording';
-import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
-import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { Rule } from './Rules';
-import { TemplateType } from '@app/Shared/Services/Api.service';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
 
-const Comp: React.FunctionComponent<{}> = () => {
+const Comp: React.FC = () => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
@@ -110,7 +110,7 @@ const Comp: React.FunctionComponent<{}> = () => {
   );
 
   const eventSpecifierString = React.useMemo(() => {
-    var str = '';
+    let str = '';
     if (templateName) {
       str += `template=${templateName}`;
     }
@@ -118,7 +118,7 @@ const Comp: React.FunctionComponent<{}> = () => {
       str += `,type=${templateType}`;
     }
     return str;
-  }, [templateName]);
+  }, [templateName, templateType]);
 
   const handleTemplateChange = React.useCallback(
     (templateName?: string, templateType?: TemplateType) => {
@@ -203,9 +203,9 @@ const Comp: React.FunctionComponent<{}> = () => {
   }, [
     setLoading,
     addSubscription,
-    context,
     context.api,
     history,
+    notifications,
     name,
     nameValid,
     description,
@@ -228,7 +228,7 @@ const Comp: React.FunctionComponent<{}> = () => {
       setTemplates(templates);
       setErrorMessage('');
     },
-    [setTemplateName, setErrorMessage]
+    [setTemplates, setErrorMessage]
   );
 
   const refreshTemplateList = React.useCallback(() => {
@@ -254,7 +254,7 @@ const Comp: React.FunctionComponent<{}> = () => {
           error: handleError,
         })
     );
-  }, [addSubscription, context.api, context.target, setTemplates]);
+  }, [addSubscription, context.api, context.target, handleError, handleTemplateList]);
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(refreshTemplateList));
@@ -266,7 +266,7 @@ const Comp: React.FunctionComponent<{}> = () => {
         setErrorMessage(authFailMessage);
       })
     );
-  }, [context.target, authFailMessage, setErrorMessage, addSubscription]);
+  }, [addSubscription, context.target, setErrorMessage]);
 
   const breadcrumbs: BreadcrumbTrail[] = [
     {
@@ -294,7 +294,7 @@ const Comp: React.FunctionComponent<{}> = () => {
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
+  }, [context.target]);
 
   return (
     <BreadcrumbPage pageTitle="Create" breadcrumbs={breadcrumbs}>
@@ -314,7 +314,7 @@ const Comp: React.FunctionComponent<{}> = () => {
                     Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on
                     matching target JVM applications. Each Automated Rule specifies parameters for which Event Template
                     to use, how much data should be kept in the application recording buffer, and how frequently
-                    Cryostat should copy the application recording buffer into Cryostat's own archived storage.
+                    Cryostat should copy the application recording buffer into Cryostat&apos;s own archived storage.
                   </Text>
                   <FormGroup
                     label="Name"

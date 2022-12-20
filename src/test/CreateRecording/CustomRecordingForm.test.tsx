@@ -35,14 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import * as React from 'react';
-import { createMemoryHistory } from 'history';
-import { screen, cleanup, act as doAct } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import { ServiceContext, Services } from '@app/Shared/Services/Services';
-import { defaultServices } from '@app/Shared/Services/Services';
+import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { EventTemplate, RecordingAttributes, RecordingOptions } from '@app/Shared/Services/Api.service';
+import { ServiceContext, Services, defaultServices } from '@app/Shared/Services/Services';
+import { TargetService } from '@app/Shared/Services/Target.service';
+import { screen, cleanup, act as doAct } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
 import { of, Subject } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
 
@@ -51,10 +52,6 @@ jest.mock('@patternfly/react-core', () => ({
   ...jest.requireActual('@patternfly/react-core'),
   Tooltip: ({ children }) => <>{children}</>,
 }));
-
-import { CustomRecordingForm } from '@app/CreateRecording/CustomRecordingForm';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService } from '@app/Shared/Services/Target.service';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };

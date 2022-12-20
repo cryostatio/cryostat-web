@@ -35,10 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { hashCode } from '@app/utils/utils';
 import {
   Toolbar,
   ToolbarContent,
@@ -51,12 +53,10 @@ import {
   Title,
   Text,
 } from '@patternfly/react-core';
-import { ExpandableRowContent, TableComposable, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import { concatMap, filter, first } from 'rxjs/operators';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { SearchIcon } from '@patternfly/react-icons';
-import { hashCode } from '@app/utils/utils';
+import { ExpandableRowContent, TableComposable, TableVariant, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import * as React from 'react';
+import { concatMap, filter, first } from 'rxjs/operators';
 
 export interface EventType {
   name: string;
@@ -87,7 +87,7 @@ const includesSubstr = (a: string, b: string) => !!a && !!b && a.toLowerCase().i
 
 export interface EventTypesProps {}
 
-export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
+export const EventTypes: React.FunctionComponent<EventTypesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const prevPerPage = React.useRef(10);
@@ -100,7 +100,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
-  const tableColumns = ['', 'Name', 'Type ID', 'Description', 'Categories'];
+  const tableColumns = React.useMemo(() => ['', 'Name', 'Type ID', 'Description', 'Categories'], []);
 
   const handleTypes = React.useCallback(
     (types) => {
@@ -136,7 +136,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
           error: handleError,
         })
     );
-  }, [addSubscription, context.target, context.api]);
+  }, [addSubscription, context.target, context.api, handleTypes, handleError]);
 
   React.useEffect(() => {
     addSubscription(
@@ -149,7 +149,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
 
   React.useEffect(() => {
     addSubscription(context.target.authFailure().subscribe(() => setErrorMessage(authFailMessage)));
-  }, [context.target]);
+  }, [addSubscription, context.target]);
 
   const filterTypesByText = React.useMemo(() => {
     if (!filterText) {
@@ -169,7 +169,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
     const visibleTypes = filterTypesByText.slice(offset, offset + perPage);
 
     const rows: RowData[] = [];
-    visibleTypes.forEach((t: EventType, idx: number) => {
+    visibleTypes.forEach((t: EventType) => {
       let child = '';
       for (const opt in t.options) {
         child += `${opt}=[${t.options[opt].defaultValue}]\t`;
@@ -203,7 +203,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
   );
 
   const onToggle = React.useCallback(
-    (t: EventType, index: number) => {
+    (t: EventType, _index: number) => {
       setOpenRows((old) => {
         const typeId = hashCode(t.typeId);
         if (old.some((id) => id === typeId)) {
@@ -225,7 +225,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (props) => {
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
+  }, [context.target]);
 
   const typeRowPairs = React.useMemo(() => {
     return displayedTypeRowData.map((rowData: RowData, index) => (

@@ -35,9 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { RecordingDirectory } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Toolbar,
@@ -54,14 +56,11 @@ import {
   Split,
   SplitItem,
 } from '@patternfly/react-core';
+import { HelpIcon, SearchIcon } from '@patternfly/react-icons';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
-import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
-import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import * as React from 'react';
 import { of } from 'rxjs';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { RecordingDirectory } from '@app/Shared/Services/Api.service';
 import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './ArchiveDirectoryUtil';
-import { HelpIcon } from '@patternfly/react-icons';
 
 export interface AllArchivedRecordingsTableProps {}
 
@@ -143,7 +142,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe((v) => {
+      context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated).subscribe(() => {
         refreshDirectoriesAndCounts();
       })
     );
@@ -151,7 +150,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe((v) => {
+      context.notificationChannel.messages(NotificationCategory.ActiveRecordingSaved).subscribe(() => {
         refreshDirectoriesAndCounts();
       })
     );
@@ -159,7 +158,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe((v) => {
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingCreated).subscribe(() => {
         refreshDirectoriesAndCounts();
       })
     );
@@ -167,7 +166,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe((v) => {
+      context.notificationChannel.messages(NotificationCategory.ArchivedRecordingDeleted).subscribe(() => {
         refreshDirectoriesAndCounts();
       })
     );
@@ -196,7 +195,7 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
 
   const directoryRows = React.useMemo(() => {
     return directories.map((dir, idx) => {
-      let isExpanded: boolean = includesDirectory(expandedDirectories, dir);
+      const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
 
       const handleToggle = () => {
         if ((counts.get(dir.connectUrl) || 0) !== 0 || isExpanded) {
@@ -234,11 +233,11 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
         </Tr>
       );
     });
-  }, [directories, expandedDirectories, counts, isHidden]);
+  }, [toggleExpanded, directories, expandedDirectories, counts, isHidden, tableColumns]);
 
   const recordingRows = React.useMemo(() => {
     return directories.map((dir, idx) => {
-      let isExpanded: boolean = includesDirectory(expandedDirectories, dir);
+      const isExpanded: boolean = includesDirectory(expandedDirectories, dir);
 
       return (
         <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
@@ -258,10 +257,10 @@ export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedReco
         </Tr>
       );
     });
-  }, [directories, expandedDirectories, isHidden]);
+  }, [directories, expandedDirectories, isHidden, tableColumns.length]);
 
   const rowPairs = React.useMemo(() => {
-    let rowPairs: JSX.Element[] = [];
+    const rowPairs: JSX.Element[] = [];
     for (let i = 0; i < directoryRows.length; i++) {
       rowPairs.push(directoryRows[i]);
       rowPairs.push(recordingRows[i]);

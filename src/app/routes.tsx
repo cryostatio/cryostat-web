@@ -37,26 +37,26 @@
  */
 
 import React, { lazy, Suspense } from 'react';
+import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
+import { LoadingView } from './LoadingView/LoadingView';
+import { SessionState } from './Shared/Services/Login.service';
+import { ServiceContext } from './Shared/Services/Services';
+import { useDocumentTitle } from './utils/useDocumentTitle';
+import { useSubscriptions } from './utils/useSubscriptions';
+import { accessibleRouteChangeHandler } from './utils/utils';
+const About = lazy(() => import('@app/About/About'));
+const Archives = lazy(() => import('@app/Archives/Archives'));
 const CreateRecording = lazy(() => import('@app/CreateRecording/CreateRecording'));
 const Dashboard = lazy(() => import('@app/Dashboard/Dashboard'));
 const Events = lazy(() => import('@app/Events/Events'));
 const Login = lazy(() => import('@app/Login/Login'));
 const NotFound = lazy(() => import('@app/NotFound/NotFound'));
 const Recordings = lazy(() => import('@app/Recordings/Recordings'));
-const Archives = lazy(() => import('@app/Archives/Archives'));
-const Rules = lazy(() => import('@app/Rules/Rules'));
 const CreateRule = lazy(() => import('@app/Rules/CreateRule'));
+const Rules = lazy(() => import('@app/Rules/Rules'));
 const Settings = lazy(() => import('@app/Settings/Settings'));
 const SecurityPanel = lazy(() => import('@app/SecurityPanel/SecurityPanel'));
-const About = lazy(() => import('@app/About/About'));
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useDocumentTitle } from '@app/utils/useDocumentTitle';
-import { accessibleRouteChangeHandler } from '@app/utils/utils';
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { LastLocationProvider, useLastLocation } from 'react-router-last-location';
-import { SessionState } from './Shared/Services/Login.service';
-import { useSubscriptions } from './utils/useSubscriptions';
-import LoadingView from './LoadingView/LoadingView';
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -209,9 +209,10 @@ const PageNotFound = ({ title }: { title: string }) => {
   return <Route component={NotFound} />;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface AppRoutesProps {}
 
-const AppRoutes: React.FunctionComponent<AppRoutesProps> = (props) => {
+const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [showDashboard, setShowDashboard] = React.useState(false);

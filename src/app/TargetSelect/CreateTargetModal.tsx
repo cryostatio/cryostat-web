@@ -35,9 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
@@ -63,7 +63,11 @@ export interface CreateTargetModalProps {
 const jmxServiceUrlFormat = /service:jmx:([a-zA-Z0-9-]+)/g;
 const hostPortPairFormat = /([a-zA-Z0-9-]+):([0-9]+)/g;
 
-export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> = (props) => {
+export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> = ({
+  visible,
+  onSuccess,
+  onDismiss,
+}) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
 
@@ -85,12 +89,12 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
           setLoading(false);
           if (success) {
             resetForm();
-            props.onSuccess();
+            onSuccess();
           }
         })
       );
     },
-    [addSubscription, context.api, props.onSuccess, setLoading, resetForm]
+    [addSubscription, context.api, onSuccess, setLoading, resetForm]
   );
 
   const handleKeyDown = React.useCallback(
@@ -125,10 +129,10 @@ export const CreateTargetModal: React.FunctionComponent<CreateTargetModalProps> 
   return (
     <>
       <Modal
-        isOpen={props.visible}
+        isOpen={visible}
         variant={ModalVariant.small}
         showClose={true}
-        onClose={props.onDismiss}
+        onClose={onDismiss}
         title="Create Target"
         description="Create a custom target connection"
       >

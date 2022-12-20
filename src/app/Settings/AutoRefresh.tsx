@@ -36,10 +36,10 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
-import { Checkbox } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { DurationPicker } from '@app/DurationPicker/DurationPicker';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Checkbox } from '@patternfly/react-core';
+import * as React from 'react';
 import { UserSetting } from './Settings';
 
 const defaultPreferences = {

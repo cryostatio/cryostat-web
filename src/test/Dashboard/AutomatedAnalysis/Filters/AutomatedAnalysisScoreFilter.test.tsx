@@ -89,20 +89,8 @@ describe('<AutomatedAnalysisScoreFilter />', () => {
 
   afterEach(cleanup);
 
-  // it('renders correctly', async () => {
-  //   let tree;
-  //   await act(async () => {
-  //     tree = renderer.create(
-  //       <Provider store={setupStore(preloadedState)}>
-  //         <AutomatedAnalysisScoreFilter targetConnectUrl={mockTargetConnectUrl} />
-  //       </Provider>
-  //     );
-  //   });
-  //   expect(tree.toJSON()).toMatchSnapshot();
-  // });
-
   it('resets to 0 and 100 when clicking reset buttons', async () => {
-    const { user } = renderWithReduxStore(<AutomatedAnalysisScoreFilter targetConnectUrl={mockTargetConnectUrl} />, {
+    const { user } = renderWithReduxStore(<AutomatedAnalysisScoreFilter />, {
       preloadState: preloadedState,
     });
     const resetTo0Button = screen.getByRole('button', {
@@ -125,7 +113,7 @@ describe('<AutomatedAnalysisScoreFilter />', () => {
   });
 
   it('responds to score filter changes', async () => {
-    const { user } = renderWithReduxStore(<AutomatedAnalysisScoreFilter targetConnectUrl={mockTargetConnectUrl} />, {
+    const { user } = renderWithReduxStore(<AutomatedAnalysisScoreFilter />, {
       preloadState: preloadedState,
     });
     const sliderValue = screen.getByRole('spinbutton', {

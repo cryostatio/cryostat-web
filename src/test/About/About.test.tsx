@@ -35,12 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { About } from '@app/About/About';
+import { CRYOSTAT_TRADEMARK } from '@app/About/AboutDescription';
+import { cleanup, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { CRYOSTAT_TRADEMARK } from '@app/About/AboutDescription';
-import { About } from '@app/About/About';
 import { renderDefault } from '../Common';
 
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {

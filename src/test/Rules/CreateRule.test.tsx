@@ -117,7 +117,7 @@ describe('<CreateRule />', () => {
     const subj = new Subject<void>();
     const mockTargetSvc = {
       target: () => of(mockTarget),
-      setTarget: (target) => {},
+      setTarget: (_) => undefined,
       authFailure: () => subj.asObservable(),
     } as TargetService;
     const services: Services = {

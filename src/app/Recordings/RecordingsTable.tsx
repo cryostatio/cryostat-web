@@ -35,7 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Title,
   EmptyState,
@@ -43,13 +45,10 @@ import {
   EmptyStateBody,
   Button,
   EmptyStateSecondaryActions,
-  Text,
 } from '@patternfly/react-core';
-import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
+import { SearchIcon } from '@patternfly/react-icons';
 import { TableComposable, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer } from '@patternfly/react-table';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import * as React from 'react';
 
 export interface RecordingsTableProps {
   toolbar: React.ReactElement;
@@ -73,7 +72,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
+  }, [context.target]);
 
   const isError = React.useMemo(() => props.errorMessage != '', [props.errorMessage]);
 
@@ -139,7 +138,7 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
                 }}
               />
               <Th key="table-header-expand" />
-              {props.tableColumns.map((key, idx) => (
+              {props.tableColumns.map((key, _) => (
                 <Th key={`table-header-${key}`}>{key}</Th>
               ))}
               <Th key="table-header-actions" />

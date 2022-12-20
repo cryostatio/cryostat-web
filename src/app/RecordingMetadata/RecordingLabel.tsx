@@ -43,7 +43,7 @@ export interface RecordingLabel {
   value: string;
 }
 
-export const parseLabels = (jsonLabels: Object) => {
+export const parseLabels = (jsonLabels: object) => {
   if (!jsonLabels) return [];
 
   return Object.entries(jsonLabels).map(([k, v]) => {

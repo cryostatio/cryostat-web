@@ -36,9 +36,9 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
-import { NumberInput } from '@patternfly/react-core';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NumberInput } from '@patternfly/react-core';
+import * as React from 'react';
 import { UserSetting } from './Settings';
 
 const defaultPreferences = {

@@ -36,21 +36,20 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-
-import { FeatureLevels } from './FeatureLevels';
-import { NotificationControl } from './NotificationControl';
+import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
+import * as React from 'react';
+import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
+import { AutoRefresh } from './AutoRefresh';
 import { CredentialsStorage } from './CredentialsStorage';
 import { DeletionDialogControl } from './DeletionDialogControl';
+import { FeatureLevels } from './FeatureLevels';
+import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
-import { AutoRefresh } from './AutoRefresh';
-import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 
 export interface SettingsProps {}
 
-export const Settings: React.FunctionComponent<SettingsProps> = (props) => {
+export const Settings: React.FC<SettingsProps> = (_) => {
   const settings = [
     NotificationControl,
     AutomatedAnalysisConfig,

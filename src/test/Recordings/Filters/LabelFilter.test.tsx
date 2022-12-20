@@ -77,7 +77,7 @@ const mockRecordingWithoutLabel = {
 } as ActiveRecording;
 const mockRecordingList = [mockRecording, mockAnotherRecording, mockRecordingWithoutLabel];
 
-const onLabelInput = jest.fn((label) => {
+const onLabelInput = jest.fn((_label) => {
   /**Do nothing. Used for checking renders */
 });
 

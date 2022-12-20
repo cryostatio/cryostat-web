@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { CancelUploadModal } from '@app/Modal/CancelUploadModal';
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -65,7 +64,7 @@ export const parseRule = (file: File): Observable<Rule> => {
   );
 };
 
-export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (props) => {
+export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = ({ onClose, visible }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -85,9 +84,9 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
       abortRef.current && abortRef.current.click();
     } else {
       reset();
-      props.onClose();
+      onClose();
     }
-  }, [uploading, abortRef.current, reset, props.onClose]);
+  }, [uploading, reset, onClose]);
 
   const onFileSubmit = React.useCallback(
     (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
@@ -124,12 +123,12 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
           })
       );
     },
-    [setUploading, context.api, handleClose, addSubscription, setAllOks]
+    [setUploading, context.api, addSubscription, setAllOks]
   );
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-  }, [submitRef.current]);
+  }, []);
 
   const onFilesChange = React.useCallback(
     (fileUploads: FUpload[]) => {
@@ -152,7 +151,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
   return (
     <>
       <Modal
-        isOpen={props.visible}
+        isOpen={visible}
         variant={ModalVariant.large}
         showClose={true}
         onClose={handleClose}
@@ -160,13 +159,13 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = (p
         description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
         help={
           <Popover
-            headerContent={<div>What's this?</div>}
+            headerContent={<div>What&quot;s this?</div>}
             bodyContent={
               <div>
                 Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
                 target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
                 much data should be kept in the application recording buffer, and how frequently Cryostat should copy
-                the application recording buffer into Cryostat's own archived storage.
+                the application recording buffer into Cryostat&quot;s own archived storage.
               </div>
             }
           >

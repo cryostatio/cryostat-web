@@ -35,16 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen } from '@testing-library/react';
 
-import '@testing-library/jest-dom';
 import { LabelCell } from '@app/RecordingMetadata/LabelCell';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { Target } from '@app/Shared/Services/Target.service';
-import userEvent from '@testing-library/user-event';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { Target } from '@app/Shared/Services/Target.service';
+import '@testing-library/jest-dom';
+import { cleanup, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../Common';
 
 const mockFooTarget: Target = {
@@ -71,7 +71,7 @@ const mockLabelStringList = mockLabelStringDisplayList.map((s: string) => s.repl
 describe('<LabelCell />', () => {
   let onUpdateLabels: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
   beforeEach(() => {
-    onUpdateLabels = jest.fn((target: string, options: UpdateFilterOptions) => {});
+    onUpdateLabels = jest.fn((_target: string, _options: UpdateFilterOptions) => undefined);
   });
 
   afterEach(cleanup);

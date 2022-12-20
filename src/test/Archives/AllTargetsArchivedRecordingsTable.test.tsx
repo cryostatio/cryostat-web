@@ -35,17 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import '@testing-library/jest-dom';
+import { cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen, within } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import { of } from 'rxjs';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
-import { AllTargetsArchivedRecordingsTable } from '@app/Archives/AllTargetsArchivedRecordingsTable';
-import { Target } from '@app/Shared/Services/Target.service';
 import { renderWithServiceContext } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl1 = 'service:jmx:rmi://someUrl1';
 const mockAlias1 = 'fooTarget1';
@@ -156,7 +156,7 @@ const mockNewTargetCountResponse = {
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
-    ArchivedRecordingsTable: jest.fn((props) => {
+    ArchivedRecordingsTable: jest.fn((_) => {
       return <div>Archived Recordings Table</div>;
     }),
   };
@@ -319,7 +319,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     let rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(2);
 
-    let firstTarget = rows[0];
+    const firstTarget = rows[0];
     const expand = within(firstTarget).getByLabelText('Details');
     await user.click(expand);
 
@@ -327,7 +327,7 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(3);
 
-    let expandedTable = rows[1];
+    const expandedTable = rows[1];
     expect(within(expandedTable).getByText('Archived Recordings Table')).toBeTruthy();
 
     await user.click(expand);
@@ -377,8 +377,8 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
   it('increments the count when an archived recording is saved', async () => {
     renderWithServiceContext(<AllTargetsArchivedRecordingsTable />);
 
-    let tableBody = screen.getAllByRole('rowgroup')[1];
-    let rows = within(tableBody).getAllByRole('row');
+    const tableBody = screen.getAllByRole('rowgroup')[1];
+    const rows = within(tableBody).getAllByRole('row');
     expect(rows).toHaveLength(3);
 
     const thirdTarget = rows[2];
@@ -391,8 +391,8 @@ describe('<AllTargetsArchivedRecordingsTable />', () => {
     const checkbox = screen.getByLabelText('all-targets-hide-check');
     await user.click(checkbox);
 
-    let tableBody = screen.getAllByRole('rowgroup')[1];
-    let rows = within(tableBody).getAllByRole('row');
+    const tableBody = screen.getAllByRole('rowgroup')[1];
+    const rows = within(tableBody).getAllByRole('row');
 
     const firstTarget = rows[0];
     expect(within(firstTarget).getByText(`${mockAlias1} (${mockConnectUrl1})`)).toBeTruthy();

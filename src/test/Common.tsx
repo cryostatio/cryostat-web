@@ -36,17 +36,17 @@
  * SOFTWARE.
  */
 
-import React, { PropsWithChildren } from 'react';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { setupStore } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { Router } from 'react-router-dom';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
+import React, { PropsWithChildren } from 'react';
+import { Provider } from 'react-redux';
+import { Router } from 'react-router-dom';
 // userEvent functions are recommended to be called in tests (i.e it()).
 // See https://testing-library.com/docs/user-event/intro#writing-tests-with-userevent
-import userEvent from '@testing-library/user-event';
 
 export const renderDefault = (
   ui: React.ReactElement,
@@ -56,7 +56,7 @@ export const renderDefault = (
     ...renderOptions
   } = {}
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>;
   };
   return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
@@ -72,7 +72,7 @@ export const renderWithReduxStore = (
     ...renderOptions
   } = {}
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <NotificationsContext.Provider value={notifications}>
         <Provider store={store}>{children}</Provider>
@@ -91,7 +91,7 @@ export const renderWithServiceContext = (
     ...renderOptions
   } = {}
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>
@@ -110,7 +110,7 @@ export const renderWithRouter = (
     ...renderOptions
   } = {}
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <NotificationsContext.Provider value={notifications}>
         <Router location={history.location} history={history}>
@@ -133,7 +133,7 @@ export const renderWithServiceContextAndReduxStore = (
     ...renderOptions
   } = {}
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
@@ -155,7 +155,7 @@ export const renderWithServiceContextAndRouter = (
     ...renderOptions
   } = {}
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
@@ -181,7 +181,7 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
     ...renderOptions
   } = {}
 ) => {
-  const Wrapper = ({ children }: PropsWithChildren<{}>) => {
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>

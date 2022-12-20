@@ -35,14 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { NoTargetSelected } from './NoTargetSelected';
-import { Grid, GridItem } from '@patternfly/react-core';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Grid, GridItem } from '@patternfly/react-core';
+import * as React from 'react';
+import { NoTargetSelected } from './NoTargetSelected';
 
 interface TargetViewProps {
   pageTitle: string;

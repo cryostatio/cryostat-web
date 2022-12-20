@@ -85,7 +85,7 @@ import { catchError, concatMap, defaultIfEmpty, filter, first, tap } from 'rxjs/
 
 export interface EventTemplatesProps {}
 
-export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (props) => {
+export const EventTemplates: React.FC<EventTemplatesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const history = useHistory();
 
@@ -100,7 +100,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
   const [templateToDelete, setTemplateToDelete] = React.useState<EventTemplate | undefined>(undefined);
   const addSubscription = useSubscriptions();
 
-  const tableColumns = ['Name', 'Description', 'Provider', 'Type'];
+  const tableColumns = React.useMemo(() => ['Name', 'Description', 'Provider', 'Type'], []);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -168,12 +168,12 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
             context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`)
           )
         )
-        .subscribe(
-          (value) => handleTemplates(value),
-          (err) => handleError(err)
-        )
+        .subscribe({
+          next: handleTemplates,
+          error: handleError,
+        })
     );
-  }, [addSubscription, context, context.target, context.api, setIsLoading, handleTemplates, handleError]);
+  }, [addSubscription, context.api, context.target, setIsLoading, handleTemplates, handleError]);
 
   React.useEffect(() => {
     addSubscription(
@@ -182,7 +182,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
         refreshTemplates();
       })
     );
-  }, [context, context.target, addSubscription, refreshTemplates]);
+  }, [context.target, addSubscription, refreshTemplates]);
 
   React.useEffect(() => {
     addSubscription(
@@ -213,7 +213,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
       context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
     );
     return () => window.clearInterval(id);
-  }, []);
+  }, [context.settings, refreshTemplates]);
 
   React.useEffect(() => {
     addSubscription(
@@ -229,7 +229,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
         context.api
           .deleteCustomEventTemplate(t.name)
           .pipe(first())
-          .subscribe(() => {} /* do nothing - notification will handle updating state */)
+          .subscribe(() => undefined /* do nothing - notification will handle updating state */)
       );
     },
     [addSubscription, context.api]
@@ -244,7 +244,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
         handleDelete(t);
       }
     },
-    [context, context.settings, setWarningModalOpen, setTemplateToDelete, handleDelete]
+    [context.settings, setWarningModalOpen, setTemplateToDelete, handleDelete]
   );
 
   const actionsResolver = React.useCallback(
@@ -313,11 +313,15 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
           </Td>
         </Tr>
       )),
-    [filteredTemplates]
+    [actionsResolver, tableColumns, filteredTemplates]
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
-    handleDelete(templateToDelete!);
+    if (templateToDelete) {
+      handleDelete(templateToDelete);
+    } else {
+      console.error('No template to delete');
+    }
   }, [handleDelete, templateToDelete]);
 
   const handleWarningModalClose = React.useCallback(() => {
@@ -326,7 +330,7 @@ export const EventTemplates: React.FunctionComponent<EventTemplatesProps> = (pro
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
+  }, [context.target]);
 
   if (errorMessage != '') {
     return (
@@ -410,7 +414,10 @@ export interface EventTemplatesUploadModalProps {
   onClose: () => void;
 }
 
-export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUploadModalProps> = (props) => {
+export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUploadModalProps> = ({
+  onClose,
+  ...props
+}) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -430,9 +437,9 @@ export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUp
       abortRef.current && abortRef.current.click();
     } else {
       reset();
-      props.onClose();
+      onClose();
     }
-  }, [uploading, abortRef.current, reset, props.onClose]);
+  }, [uploading, abortRef, reset, onClose]);
 
   const onFileSubmit = React.useCallback(
     (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
@@ -471,12 +478,12 @@ export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUp
           })
       );
     },
-    [setUploading, addSubscription, context.api, handleClose, setAllOks]
+    [addSubscription, context.api, setUploading, setAllOks]
   );
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-  }, [submitRef.current]);
+  }, [submitRef]);
 
   const onFilesChange = React.useCallback(
     (fileUploads: FUpload[]) => {

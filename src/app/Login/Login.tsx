@@ -35,43 +35,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '../Notifications/Notifications';
-import { Card, CardBody, CardFooter, CardTitle, PageSection, Text } from '@patternfly/react-core';
-import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
-import { OpenShiftAuthDescriptionText, OpenShiftPlaceholderAuthForm } from './OpenShiftPlaceholderAuthForm';
-import { NoopAuthForm } from './NoopAuthForm';
-import { ConnectionError } from './ConnectionError';
 import { AuthMethod } from '@app/Shared/Services/Login.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Card, CardBody, CardFooter, CardTitle, PageSection, Text } from '@patternfly/react-core';
+import * as React from 'react';
+import { NotificationsContext } from '../Notifications/Notifications';
+import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
+import { ConnectionError } from './ConnectionError';
+import { NoopAuthForm } from './NoopAuthForm';
+import { OpenShiftAuthDescriptionText, OpenShiftPlaceholderAuthForm } from './OpenShiftPlaceholderAuthForm';
 
 export interface LoginProps {}
 
-export const Login: React.FunctionComponent<LoginProps> = (props) => {
-  const serviceContext = React.useContext(ServiceContext);
+export const Login: React.FunctionComponent<LoginProps> = (_) => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const notifications = React.useContext(NotificationsContext);
   const [authMethod, setAuthMethod] = React.useState('');
 
   const handleSubmit = React.useCallback(
     (evt, token, authMethod, rememberMe) => {
       setAuthMethod(authMethod);
-
-      const sub = serviceContext.login.checkAuth(token, authMethod, rememberMe).subscribe((authSuccess) => {
-        if (!authSuccess) {
-          notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
-        }
-      });
-      () => sub.unsubscribe();
-
+      addSubscription(
+        context.login.checkAuth(token, authMethod, rememberMe).subscribe((authSuccess) => {
+          if (!authSuccess) {
+            notifications.danger('Authentication Failure', `${authMethod} authentication failed`);
+          }
+        })
+      );
       evt.preventDefault();
     },
-    [serviceContext, serviceContext.login, setAuthMethod]
+    [addSubscription, context.login, notifications, setAuthMethod]
   );
 
   React.useEffect(() => {
-    const sub = serviceContext.login.getAuthMethod().subscribe(setAuthMethod);
-    return () => sub.unsubscribe();
-  }, [serviceContext, serviceContext.login, setAuthMethod]);
+    addSubscription(context.login.getAuthMethod().subscribe(setAuthMethod));
+  }, [addSubscription, context.login, setAuthMethod]);
 
   const loginForm = React.useMemo(() => {
     switch (authMethod) {
@@ -84,7 +84,7 @@ export const Login: React.FunctionComponent<LoginProps> = (props) => {
       default:
         return <ConnectionError />;
     }
-  }, [authMethod]);
+  }, [handleSubmit, authMethod]);
 
   const descriptionText = React.useMemo(() => {
     switch (authMethod) {

@@ -35,17 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen, waitFor, within } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { createMemoryHistory } from 'history';
-import { of } from 'rxjs';
-import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
+import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import '@testing-library/jest-dom';
+import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
@@ -170,8 +170,8 @@ describe('<TargetSelect />', () => {
     expect(codeElement).toBeTruthy();
     expect(codeElement).toBeInTheDocument();
     expect(codeElement).toBeVisible();
-    expect(codeElement!.textContent).toBeTruthy();
-    const codeContent = codeElement!.textContent!.replace(/[\s]/g, '');
+    expect(codeElement?.textContent).toBeTruthy();
+    const codeContent = codeElement?.textContent?.replace(/[\s]/g, '');
     expect(codeContent).toEqual(JSON.stringify(mockFooTarget, null, 0).replace(/[\s]/g, ''));
   });
 

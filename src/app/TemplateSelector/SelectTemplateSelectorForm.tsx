@@ -35,16 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { FormSelect, FormSelectOption, FormSelectOptionGroup, ValidatedOptions } from '@patternfly/react-core';
-import * as React from 'react';
+//
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { TemplateType } from '@app/Shared/Services/Api.service';
+import { FormSelect, FormSelectOption, FormSelectOptionGroup, ValidatedOptions } from '@patternfly/react-core';
+import * as React from 'react';
 
 export interface TemplateSelectionGroup {
   groupLabel: string;
   disabled?: boolean;
   options: {
-    value: any;
+    value: string;
     label: string;
     disabled?: boolean;
   }[];
@@ -58,13 +59,19 @@ export interface SelectTemplateSelectorFormProps {
   onSelect: (template?: string, templateType?: TemplateType) => void;
 }
 
-export const SelectTemplateSelectorForm: React.FunctionComponent<SelectTemplateSelectorFormProps> = (props) => {
+export const SelectTemplateSelectorForm: React.FunctionComponent<SelectTemplateSelectorFormProps> = ({
+  selected,
+  templates,
+  disabled,
+  validated,
+  onSelect,
+}) => {
   const groups = React.useMemo(
     () =>
       [
         {
           groupLabel: 'Target Templates',
-          options: props.templates
+          options: templates
             .filter((t) => t.type === 'TARGET')
             .map((t) => ({
               value: `${t.name},${t.type}`,
@@ -73,7 +80,7 @@ export const SelectTemplateSelectorForm: React.FunctionComponent<SelectTemplateS
         },
         {
           groupLabel: 'Custom Templates',
-          options: props.templates
+          options: templates
             .filter((t) => t.type === 'CUSTOM')
             .map((t) => ({
               value: `${t.name},${t.type}`,
@@ -81,27 +88,27 @@ export const SelectTemplateSelectorForm: React.FunctionComponent<SelectTemplateS
             })),
         },
       ] as TemplateSelectionGroup[],
-    [props.templates]
+    [templates]
   );
 
   const handleTemplateSelect = React.useCallback(
     (selected: string) => {
       if (!selected.length) {
-        props.onSelect(undefined, undefined);
+        onSelect(undefined, undefined);
       } else {
         const str = selected.split(',');
-        props.onSelect(str[0], str[1] as TemplateType);
+        onSelect(str[0], str[1] as TemplateType);
       }
     },
-    [props.onSelect]
+    [onSelect]
   );
 
   return (
     <>
       <FormSelect
-        isDisabled={props.disabled}
-        value={props.selected}
-        validated={props.validated || ValidatedOptions.default}
+        isDisabled={disabled}
+        value={selected}
+        validated={validated || ValidatedOptions.default}
         onChange={handleTemplateSelect}
         aria-label="Event Template Input"
         id="recording-template"

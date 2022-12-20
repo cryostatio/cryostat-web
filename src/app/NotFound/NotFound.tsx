@@ -35,9 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { NotFoundCard } from './NotFoundCard';
+import '@app/app.css';
+import { IAppRoute, routes, flatten } from '@app/routes';
 import {
   Button,
   EmptyState,
@@ -46,18 +45,20 @@ import {
   EmptyStateSecondaryActions,
   Title,
 } from '@patternfly/react-core';
-import '@app/app.css';
 import { MapMarkedAltIcon } from '@patternfly/react-icons';
-import { IAppRoute, routes, flatten } from '@app/routes';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { NotFoundCard } from './NotFoundCard';
 
 export interface NotFoundProps {}
 
-export const NotFound: React.FunctionComponent<NotFoundProps> = (props) => {
+export const NotFound: React.FunctionComponent<NotFoundProps> = (_) => {
   const cards = flatten(routes)
     .filter((route: IAppRoute): boolean => !!route.description)
     .sort((a: IAppRoute, b: IAppRoute): number => a.title.localeCompare(b.title))
     .map((route: IAppRoute) => (
       <NotFoundCard
+        key={route.title}
         title={route.title}
         bodyText={route.description}
         linkText={`View ${route.title.toLocaleLowerCase()}`}
@@ -70,9 +71,9 @@ export const NotFound: React.FunctionComponent<NotFoundProps> = (props) => {
       <EmptyState className="pf-c-empty-state-not-found">
         <EmptyStateIcon icon={MapMarkedAltIcon} />
         <Title headingLevel="h4" size="lg">
-          404: We couldn't find that page
+          404: We couldn&apos;t find that page
         </Title>
-        <EmptyStateBody>One of the following pages might have what you're looking for.</EmptyStateBody>
+        <EmptyStateBody>One of the following pages might have what you&apos;re looking for.</EmptyStateBody>
         <EmptyStateSecondaryActions>{cards}</EmptyStateSecondaryActions>
         <Button variant="primary" component={(props) => <Link {...props} to="/" />}>
           Take me home

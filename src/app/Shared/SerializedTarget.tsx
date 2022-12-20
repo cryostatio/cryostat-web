@@ -35,10 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { CodeBlock, CodeBlockCode } from '@patternfly/react-core';
 import { Target } from '@app/Shared/Services/Target.service';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
+import { CodeBlock, CodeBlockCode } from '@patternfly/react-core';
+import * as React from 'react';
 
 export interface SerializedTargetProps {
   target?: Target;

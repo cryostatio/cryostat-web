@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 
-import { getLabelDisplay } from '@app/Recordings/Filters/LabelFilter';
 import { Label } from '@patternfly/react-core';
 import React from 'react';
 import { RecordingLabel } from './RecordingLabel';
@@ -47,7 +46,7 @@ export interface ClickableLabelCellProps {
   onLabelClick: (label: RecordingLabel) => void;
 }
 
-export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = (props) => {
+export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = ({ onLabelClick, ...props }) => {
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const labelColor = React.useMemo(() => (props.isSelected ? 'blue' : 'grey'), [props.isSelected]);
 
@@ -65,10 +64,7 @@ export const ClickableLabel: React.FunctionComponent<ClickableLabelCellProps> = 
     return {};
   }, [props.isSelected, isHoveredOrFocused]);
 
-  const handleLabelClicked = React.useCallback(
-    () => props.onLabelClick(props.label),
-    [props.label, props.onLabelClick, getLabelDisplay]
-  );
+  const handleLabelClicked = React.useCallback(() => onLabelClick(props.label), [props.label, onLabelClick]);
 
   return (
     <>

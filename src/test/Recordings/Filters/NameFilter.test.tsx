@@ -63,7 +63,7 @@ const mockRecording: ActiveRecording = {
 const mockAnotherRecording = { ...mockRecording, name: 'anotherRecording' };
 const mockRecordingList = [mockRecording, mockAnotherRecording];
 
-const onNameInput = jest.fn((nameInput) => {
+const onNameInput = jest.fn((_nameInput) => {
   /**Do nothing. Used for checking renders */
 });
 

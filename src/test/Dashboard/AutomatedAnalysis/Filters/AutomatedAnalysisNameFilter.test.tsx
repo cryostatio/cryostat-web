@@ -82,7 +82,7 @@ const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
 
 const allMockEvaluations = mockEvaluations1.concat(mockEvaluations2);
 
-const onNameInput = jest.fn((nameInput) => {
+const onNameInput = jest.fn((_nameInput) => {
   /**Do nothing. Used for checking renders */
 });
 

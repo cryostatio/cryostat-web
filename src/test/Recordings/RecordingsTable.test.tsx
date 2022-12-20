@@ -35,12 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { cleanup, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { RecordingsTable } from '@app/Recordings/RecordingsTable';
 import { Button, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import { Tbody, Tr, Td } from '@patternfly/react-table';
-import { RecordingsTable } from '@app/Recordings/RecordingsTable';
+import '@testing-library/jest-dom';
+import { cleanup, screen } from '@testing-library/react';
+import * as React from 'react';
 import { renderDefault } from '../Common';
 
 const FakeToolbar = () => {
@@ -76,7 +76,7 @@ const fakeTableRows = (
   </Tbody>
 );
 
-const mockHeaderCheckCallback = jest.fn((event, checked) => {
+const mockHeaderCheckCallback = jest.fn((_event, _checked) => {
   /* do nothing */
 });
 
@@ -230,7 +230,7 @@ describe('<RecordingsTable />', () => {
       </RecordingsTable>
     );
 
-    let headerCheckAll = screen.getByLabelText('Select all rows');
+    const headerCheckAll = screen.getByLabelText('Select all rows');
     expect(headerCheckAll).not.toHaveAttribute('checked');
     await user.click(headerCheckAll);
     expect(mockHeaderCheckCallback).toHaveBeenCalledTimes(1);
@@ -253,7 +253,7 @@ describe('<RecordingsTable />', () => {
       </RecordingsTable>
     );
 
-    let headerCheckAll = screen.getByLabelText('Select all rows');
+    const headerCheckAll = screen.getByLabelText('Select all rows');
     expect(headerCheckAll).toHaveAttribute('checked');
   });
 });

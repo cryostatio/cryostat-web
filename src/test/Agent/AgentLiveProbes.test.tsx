@@ -35,11 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen, within } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { of } from 'rxjs';
+import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
+import { DeleteActiveProbes } from '@app/Modal/DeleteWarningUtils';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { EventProbe } from '@app/Shared/Services/Api.service';
 import {
   MessageMeta,
@@ -48,10 +46,12 @@ import {
   NotificationMessage,
 } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { DeleteActiveProbes } from '@app/Modal/DeleteWarningUtils';
-import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
+import '@testing-library/jest-dom';
+import { cleanup, screen, within } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };

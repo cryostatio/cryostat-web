@@ -35,10 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { NotificationsContext } from '@app/Notifications/Notifications';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { SerializedTarget } from '@app/Shared/SerializedTarget';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { isEqualTarget, NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
+import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -53,14 +58,8 @@ import {
   SelectVariant,
 } from '@patternfly/react-core';
 import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 import { CreateTargetModal } from './CreateTargetModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { SerializedTarget } from '@app/Shared/SerializedTarget';
-import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
-import { first } from 'rxjs';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 

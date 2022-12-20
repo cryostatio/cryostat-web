@@ -35,12 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import * as React from 'react';
-import { Modal, ModalVariant, Button, Checkbox, Stack, Split, Text, TextContent } from '@patternfly/react-core';
-import { getFromWarningMap } from '../Modal/DeleteWarningUtils';
 import { useState } from 'react';
 import { DeleteWarningProps } from '../Modal/DeleteWarningModal';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { getFromWarningMap } from '../Modal/DeleteWarningUtils';
 
 export interface RuleDeleteWarningProps extends DeleteWarningProps {
   ruleName?: string;
@@ -68,7 +68,7 @@ export const RuleDeleteWarningModal = ({
     if (doNotAsk) {
       context.settings.setDeletionDialogsEnabledFor(warningType, false);
     }
-  }, [onAccept, onClose, doNotAsk, context, context.settings]);
+  }, [onAccept, onClose, doNotAsk, context.settings, warningType]);
 
   return (
     <Modal

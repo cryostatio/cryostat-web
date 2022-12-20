@@ -40,13 +40,13 @@
 const mockCurrentDate = new Date('14 Sep 2022 00:00:00 UTC');
 jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
 
-import React from 'react';
-import { cleanup, screen, waitFor, within } from '@testing-library/react';
-import { renderDefault } from '../../Common';
-import userEvent from '@testing-library/user-event';
 import { DateTimePicker } from '@app/Recordings/Filters/DateTimePicker';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { renderDefault } from '../../Common';
 
-const onDateTimeSelect = jest.fn((date) => {});
+const onDateTimeSelect = jest.fn((_date) => undefined);
 
 describe('<DateTimePicker />', () => {
   afterEach(cleanup);
@@ -300,7 +300,7 @@ describe('<DateTimePicker />', () => {
   });
 
   it('should disable search icon when no date is selected', async () => {
-    const { user } = renderDefault(<DateTimePicker onSubmit={onDateTimeSelect} />, {
+    renderDefault(<DateTimePicker onSubmit={onDateTimeSelect} />, {
       user: userEvent.setup({ advanceTimers: jest.advanceTimersByTime }),
     });
 

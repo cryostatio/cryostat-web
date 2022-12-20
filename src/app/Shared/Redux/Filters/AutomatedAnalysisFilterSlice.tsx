@@ -35,14 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+// eslint-disable-line @typescript-eslint/no-non-null-assertion
+// because the category should never be null when inside the reducer cases
 
 import {
   AutomatedAnalysisFiltersCategories,
   AutomatedAnalysisGlobalFiltersCategories,
 } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisFilters';
-import { getPersistedState } from '../utils';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
+import { getPersistedState } from '../utils';
 import { UpdateFilterOptions } from './Common';
 
 const _version = '1';
@@ -250,7 +252,7 @@ export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (buil
     })
     .addCase(automatedAnalysisAddFilterIntent, (state, { payload }) => {
       const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
-      let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
+      const newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
         ...oldAutomatedAnalysisFilter,
         selectedCategory: payload.category,
         filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
@@ -266,7 +268,7 @@ export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (buil
     .addCase(automatedAnalysisDeleteFilterIntent, (state, { payload }) => {
       const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
 
-      let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
+      const newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
         ...oldAutomatedAnalysisFilter,
         selectedCategory: payload.category,
         filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {
@@ -284,7 +286,7 @@ export const automatedAnalysisFilterReducer = createReducer(INITIAL_STATE, (buil
     .addCase(automatedAnalysisDeleteCategoryFiltersIntent, (state, { payload }) => {
       const oldAutomatedAnalysisFilter = getAutomatedAnalysisFilter(state.state, payload.target);
 
-      let newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
+      const newAutomatedAnalysisFilter: TargetAutomatedAnalysisFilters = {
         ...oldAutomatedAnalysisFilter,
         selectedCategory: payload.category,
         filters: createOrUpdateAutomatedAnalysisFilter(oldAutomatedAnalysisFilter.filters, {

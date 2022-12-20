@@ -35,10 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
+import { ArchivedRecording } from '@app/Shared/Services/Api.service';
+import { Drawer, DrawerContent } from '@patternfly/react-core';
+import { screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { renderDefault } from '../Common';
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
@@ -52,11 +56,6 @@ jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
     }),
   };
 });
-
-import { RecordingLabelsPanel } from '@app/Recordings/RecordingLabelsPanel';
-import { ArchivedRecording } from '@app/Shared/Services/Api.service';
-import { Drawer, DrawerContent } from '@patternfly/react-core';
-import { renderDefault } from '../Common';
 
 const mockRecordingLabels = {
   someLabel: 'someValue',
@@ -72,12 +71,12 @@ const mockRecording: ArchivedRecording = {
 };
 
 describe('<RecordingLabelsPanel />', () => {
-  let isTargetRecording = true;
-  let checkedIndices = [];
-  let recordings = [mockRecording];
+  const isTargetRecording = true;
+  const checkedIndices = [];
+  const recordings = [mockRecording];
 
   const props = {
-    setShowPanel: jest.fn(() => (showPanel: boolean) => {}),
+    setShowPanel: jest.fn(() => (_showPanel: boolean) => undefined),
     isTargetRecording: isTargetRecording,
     checkedIndices: checkedIndices,
     recordings: recordings,

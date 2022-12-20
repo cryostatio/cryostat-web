@@ -35,15 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
+import * as React from 'react';
 import { StoreJmxCredentialsCard } from './Credentials/StoreJmxCredentials';
 import { ImportCertificate } from './ImportCertificate';
 
 export interface SecurityPanelProps {}
 
-export const SecurityPanel: React.FunctionComponent<SecurityPanelProps> = (props) => {
+export const SecurityPanel: React.FunctionComponent<SecurityPanelProps> = (_) => {
   const securityCards = [ImportCertificate, StoreJmxCredentialsCard].map((c) => ({
     title: c.title,
     description: c.description,

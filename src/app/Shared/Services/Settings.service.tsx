@@ -53,7 +53,7 @@ export enum FeatureLevel {
   PRODUCTION = 2,
 }
 
-export function enumKeys<O extends Object, K extends keyof O = keyof O>(obj: O): K[] {
+export function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
   return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
 }
 
@@ -139,9 +139,9 @@ export class SettingsService {
   deletionDialogsEnabled(): Map<DeleteOrDisableWarningType, boolean> {
     const value = getFromLocalStorage('DELETION_DIALOGS_ENABLED', undefined);
     if (typeof value === 'object') {
-      const obj = new Map(Array.from(Object.entries(value)));
+      const obj = new Map<string, AutomatedAnalysisRecordingConfig>(Array.from(Object.entries(value)));
       const res = new Map<DeleteOrDisableWarningType, boolean>();
-      obj.forEach((v: any) => {
+      obj.forEach((v) => {
         res.set(v[0] as DeleteOrDisableWarningType, v[1] as boolean);
       });
       for (const t in DeleteOrDisableWarningType) {
@@ -190,10 +190,9 @@ export class SettingsService {
   notificationsEnabled(): Map<NotificationCategory, boolean> {
     const value = getFromLocalStorage('NOTIFICATIONS_ENABLED', undefined);
     if (typeof value === 'object') {
-      const obj = new Map(Array.from(Object.entries(value)));
       const res = new Map<NotificationCategory, boolean>();
-      obj.forEach((v: any) => {
-        res.set(v[0] as NotificationCategory, v[1] as boolean);
+      value.forEach((v: [NotificationCategory, boolean]) => {
+        res.set(v[0], v[1]);
       });
       for (const t in NotificationCategory) {
         if (!res.has(NotificationCategory[t])) {

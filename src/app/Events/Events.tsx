@@ -35,21 +35,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
-import { EventTemplates } from './EventTemplates';
-import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
 import { AgentLiveProbes } from '@app/Agent/AgentLiveProbes';
-import { EventTypes } from './EventTypes';
-import { concatMap, filter } from 'rxjs';
+import { AgentProbeTemplates } from '@app/Agent/AgentProbeTemplates';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { TargetView } from '@app/TargetView/TargetView';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
+import * as React from 'react';
+import { concatMap, filter } from 'rxjs';
+import { EventTemplates } from './EventTemplates';
+import { EventTypes } from './EventTypes';
 
 export interface EventsProps {}
 
-export const Events: React.FunctionComponent<EventsProps> = (props) => {
+export const Events: React.FunctionComponent<EventsProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [eventActiveTab, setEventActiveTab] = React.useState(0);

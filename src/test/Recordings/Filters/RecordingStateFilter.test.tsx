@@ -66,7 +66,7 @@ const mockAnotherRecording = {
   state: RecordingState.STOPPED,
 } as ActiveRecording;
 
-const onStateSelectToggle = jest.fn((state) => {
+const onStateSelectToggle = jest.fn((_state) => {
   /**Do nothing. Used for checking renders */
 });
 

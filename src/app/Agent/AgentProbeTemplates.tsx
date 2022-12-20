@@ -89,7 +89,7 @@ export interface AgentProbeTemplatesProps {
   agentDetected: boolean;
 }
 
-export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesProps> = (props) => {
+export const AgentProbeTemplates: React.FC<AgentProbeTemplatesProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -103,7 +103,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   const [templateToDelete, setTemplateToDelete] = React.useState(undefined as ProbeTemplate | undefined);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
-  const tableColumns: string[] = ['Name', 'XML'];
+  const tableColumns: string[] = React.useMemo(() => ['Name', 'XML'], []);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -157,7 +157,11 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
   );
 
   const handleWarningModalAccept = React.useCallback(() => {
-    handleDelete(templateToDelete!);
+    if (templateToDelete) {
+      handleDelete(templateToDelete);
+    } else {
+      console.error('No template to delete');
+    }
   }, [handleDelete, templateToDelete]);
 
   const handleWarningModalClose = React.useCallback(() => {
@@ -249,7 +253,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
         context.api
           .insertProbes(template.name)
           .pipe(first())
-          .subscribe(() => {})
+          .subscribe(() => undefined)
       );
     },
     [addSubscription, context.api]
@@ -276,7 +280,7 @@ export const AgentProbeTemplates: React.FunctionComponent<AgentProbeTemplatesPro
           </Tr>
         );
       }),
-    [filteredTemplates, props.agentDetected, handleInsertAction, handleDeleteAction]
+    [filteredTemplates, props.agentDetected, handleInsertAction, handleDeleteAction, tableColumns]
   );
 
   if (errorMessage != '') {
@@ -360,7 +364,7 @@ export interface AgentProbeTemplateUploadModalProps {
   onClose: () => void;
 }
 
-export const AgentProbeTemplateUploadModal: React.FunctionComponent<AgentProbeTemplateUploadModalProps> = (props) => {
+export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -380,9 +384,9 @@ export const AgentProbeTemplateUploadModal: React.FunctionComponent<AgentProbeTe
       abortRef.current && abortRef.current.click();
     } else {
       reset();
-      props.onClose();
+      onClose();
     }
-  }, [uploading, abortRef.current, reset, props.onClose]);
+  }, [uploading, abortRef, reset, onClose]);
 
   const onFileSubmit = React.useCallback(
     (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
@@ -421,12 +425,12 @@ export const AgentProbeTemplateUploadModal: React.FunctionComponent<AgentProbeTe
           })
       );
     },
-    [setUploading, addSubscription, context.api, handleClose, setAllOks]
+    [addSubscription, context.api, setAllOks, setUploading]
   );
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-  }, [submitRef.current]);
+  }, [submitRef]);
 
   const onFilesChange = React.useCallback(
     (fileUploads: FUpload[]) => {
@@ -498,7 +502,7 @@ export interface AgentTemplateActionProps {
   onDelete: (template: ProbeTemplate) => void;
 }
 
-export const AgentTemplateAction: React.FunctionComponent<AgentTemplateActionProps> = (props) => {
+export const AgentTemplateAction: React.FC<AgentTemplateActionProps> = ({ onInsert, onDelete, ...props }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const actionItems = React.useMemo(() => {
@@ -506,16 +510,16 @@ export const AgentTemplateAction: React.FunctionComponent<AgentTemplateActionPro
       {
         key: 'insert-template',
         title: 'Insert Probes...',
-        onClick: () => props.onInsert && props.onInsert(props.template),
-        isDisabled: !props.onInsert,
+        onClick: () => onInsert && onInsert(props.template),
+        isDisabled: !onInsert,
       },
       {
         key: 'delete-template',
         title: 'Delete',
-        onClick: () => props.onDelete(props.template),
+        onClick: () => onDelete(props.template),
       },
     ];
-  }, [props.onInsert, props.onDelete, props.template]);
+  }, [onInsert, onDelete, props.template]);
 
   return (
     <Dropdown

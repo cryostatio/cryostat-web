@@ -35,20 +35,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { Recordings } from '@app/Recordings/Recordings';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
 import { cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { Recordings } from '@app/Recordings/Recordings';
-import { Target } from '@app/Shared/Services/Target.service';
 import { renderWithServiceContext } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
   return {
-    ActiveRecordingsTable: jest.fn((props) => {
+    ActiveRecordingsTable: jest.fn((_) => {
       return <div>Active Recordings Table</div>;
     }),
   };
@@ -56,7 +56,7 @@ jest.mock('@app/Recordings/ActiveRecordingsTable', () => {
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {
-    ArchivedRecordingsTable: jest.fn((props) => {
+    ArchivedRecordingsTable: jest.fn((_) => {
       return <div>Archived Recordings Table</div>;
     }),
   };

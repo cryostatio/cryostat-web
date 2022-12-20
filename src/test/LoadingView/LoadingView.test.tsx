@@ -36,10 +36,10 @@
  * SOFTWARE.
  */
 
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { cleanup, render, screen } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, render, screen } from '@testing-library/react';
-import LoadingView from '@app/LoadingView/LoadingView';
 
 describe('<LoadingView />', () => {
   afterEach(cleanup);

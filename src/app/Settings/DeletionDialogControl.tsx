@@ -36,11 +36,11 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
-import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { UserSetting } from './Settings';
 import { DeleteOrDisableWarningType, getFromWarningMap } from '@app/Modal/DeleteWarningUtils';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
+import * as React from 'react';
+import { UserSetting } from './Settings';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
@@ -63,7 +63,7 @@ const Component = () => {
       context.settings.setDeletionDialogsEnabled(newState);
       setState(newState);
     },
-    [state, setState]
+    [context.settings, setState, state]
   );
 
   const allChecked = React.useMemo(() => {
@@ -83,7 +83,7 @@ const Component = () => {
         />
       </StackItem>
     ));
-  }, [state]);
+  }, [handleCheckboxChange, state]);
 
   return (
     <>

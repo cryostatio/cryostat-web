@@ -51,7 +51,7 @@ export const openTabForUrl = (url: string) => {
   anchor.remove();
 };
 
-export const createBlobURL = (content: any, contentType: string, timeout: number = 1000) => {
+export const createBlobURL = (content: string, contentType: string, timeout = 1000) => {
   const blob = new Blob([content], { type: contentType });
   const url = window.URL.createObjectURL(blob);
   setTimeout(() => window.URL.revokeObjectURL(url), timeout);
@@ -97,7 +97,7 @@ export interface AutomatedAnalysisTimerObject {
 
 export const calculateAnalysisTimer = (reportTime: number): AutomatedAnalysisTimerObject => {
   let interval, timerQuantity, timerUnits;
-  let now = Date.now();
+  const now = Date.now();
   const reportMillis = now - reportTime;
   if (reportMillis < MINUTE_MILLIS) {
     timerQuantity = Math.round(reportMillis / SECOND_MILLIS);

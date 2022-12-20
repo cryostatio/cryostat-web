@@ -37,9 +37,9 @@
  */
 
 import { RecordingFiltersCategories } from '@app/Recordings/RecordingFilters';
-import { getPersistedState } from '../utils';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
+import { getPersistedState } from '../utils';
 import { UpdateFilterOptions } from './Common';
 
 const _version = '1';
@@ -78,13 +78,13 @@ export const allowedArchivedRecordingFilters = Object.keys(emptyArchivedRecordin
 export interface RecordingFilterActionPayload {
   target: string;
   category?: string;
-  filter?: any;
+  filter?: unknown;
   isArchived?: boolean;
 }
 
 export const recordingAddFilterIntent = createAction(
   RecordingFilterAction.FILTER_ADD,
-  (target: string, category: string, filter: any, isArchived: boolean) => ({
+  (target: string, category: string, filter: unknown, isArchived: boolean) => ({
     payload: {
       target: target,
       category: category,
@@ -96,7 +96,7 @@ export const recordingAddFilterIntent = createAction(
 
 export const recordingDeleteFilterIntent = createAction(
   RecordingFilterAction.FILTER_DELETE,
-  (target: string, category: string, filter: any, isArchived: boolean) => ({
+  (target: string, category: string, filter: unknown, isArchived: boolean) => ({
     payload: {
       target: target,
       category: category,
@@ -168,11 +168,11 @@ export const createOrUpdateRecordingFilter = (
   old: RecordingFiltersCategories,
   { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions
 ): RecordingFiltersCategories => {
-  let newFilterValues: any[];
+  let newFilterValues: unknown[];
   if (!old[filterKey]) {
     newFilterValues = [filterValue];
   } else {
-    const oldFilterValues = old[filterKey] as any[];
+    const oldFilterValues = old[filterKey] as unknown[];
     if (deleted) {
       if (deleteOptions && deleteOptions.all) {
         newFilterValues = [];

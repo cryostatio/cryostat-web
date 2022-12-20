@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import LoadingView from '@app/LoadingView/LoadingView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { RECORDING_FAILURE_MESSAGE, TEMPLATE_UNSUPPORTED_MESSAGE } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -70,7 +70,11 @@ interface AutomatedAnalysisConfigDrawerProps {
   onError: (error: Error) => void;
 }
 
-export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAnalysisConfigDrawerProps> = (props) => {
+export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDrawerProps> = ({
+  onCreate,
+  onError,
+  ...props
+}) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -94,21 +98,21 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
           next: (resp) => {
             setIsLoading(false);
             if (resp && resp.ok) {
-              props.onCreate();
+              onCreate();
             } else if (resp?.status === 500) {
-              props.onError(new Error(TEMPLATE_UNSUPPORTED_MESSAGE));
+              onError(new Error(TEMPLATE_UNSUPPORTED_MESSAGE));
             } else {
-              props.onError(new Error(RECORDING_FAILURE_MESSAGE));
+              onError(new Error(RECORDING_FAILURE_MESSAGE));
             }
           },
           error: (err) => {
             setIsLoading(false);
-            props.onError(err);
+            onError(err);
           },
         })
       );
     },
-    [addSubscription, context.api, props.onCreate, props.onError, setIsLoading]
+    [addSubscription, context.api, setIsLoading, onCreate, onError]
   );
 
   const onDefaultRecordingStart = React.useCallback(() => {
@@ -140,11 +144,11 @@ export const AutomatedAnalysisConfigDrawer: React.FunctionComponent<AutomatedAna
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-          <AutomatedAnalysisConfigForm onCreate={props.onCreate} isSettingsForm={false} />
+          <AutomatedAnalysisConfigForm onCreate={onCreate} isSettingsForm={false} />
         </DrawerPanelBody>
       </DrawerPanelContent>
     );
-  }, [props.onCreate, onDrawerClose]);
+  }, [isExpanded, onDrawerClose, onCreate]);
 
   const dropdownItems = React.useMemo(
     () => [

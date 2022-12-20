@@ -63,7 +63,7 @@ export interface ArchiveUploadModalProps {
   onClose: () => void;
 }
 
-export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps> = (props) => {
+export const ArchiveUploadModal: React.FC<ArchiveUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscriptions = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -97,9 +97,9 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
       abortRef.current && abortRef.current.click();
     } else {
       reset();
-      props.onClose();
+      onClose();
     }
-  }, [uploading, abortRef.current, reset, props.onClose]);
+  }, [uploading, abortRef, reset, onClose]);
 
   const onFileSubmit = React.useCallback(
     (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
@@ -139,12 +139,12 @@ export const ArchiveUploadModal: React.FunctionComponent<ArchiveUploadModalProps
           })
       );
     },
-    [addSubscriptions, context.api, setUploading, handleClose, getFormattedLabels, setAllOks]
+    [addSubscriptions, context.api, setUploading, getFormattedLabels, setAllOks]
   );
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-  }, [submitRef.current]);
+  }, [submitRef]);
 
   const onFilesChange = React.useCallback(
     (fileUploads: FUpload[]) => {

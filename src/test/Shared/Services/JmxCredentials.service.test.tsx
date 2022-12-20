@@ -35,10 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { JmxCredentials } from '@app/Shared/Services/JmxCredentials.service';
+/* eslint @typescript-eslint/no-explicit-any: 0 */
 import { ApiService } from '@app/Shared/Services/Api.service';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { JmxCredentials } from '@app/Shared/Services/JmxCredentials.service';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { firstValueFrom, Observable, of } from 'rxjs';
 
 jest.mock('@app/utils/LocalStorage', () => {
   const map = new Map<any, any>();
@@ -57,7 +58,7 @@ jest.mock('@app/utils/LocalStorage', () => {
 });
 
 const mockApi = {
-  postCredentials: (expr: string, user: string, pass: string): Observable<boolean> => of(true),
+  postCredentials: (_expr: string, _user: string, _pass: string): Observable<boolean> => of(true),
 } as ApiService;
 const postCredentialsSpy = jest.spyOn(mockApi, 'postCredentials');
 

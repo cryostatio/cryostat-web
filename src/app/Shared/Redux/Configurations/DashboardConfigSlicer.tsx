@@ -51,7 +51,7 @@ export const enumValues = new Set(Object.values(DashboardConfigAction));
 
 export interface DashboardAddConfigActionPayload {
   name: string;
-  props: any;
+  props: object;
 }
 
 export interface DashboardDeleteConfigActionPayload {
@@ -60,7 +60,7 @@ export interface DashboardDeleteConfigActionPayload {
 
 export const dashboardCardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
-  (name: string, props: any) => ({
+  (name: string, props: object) => ({
     payload: {
       name,
       props,
@@ -76,7 +76,7 @@ export const dashboardCardConfigDeleteCardIntent = createAction(DashboardConfigA
 
 export interface CardConfig {
   name: string;
-  props: any;
+  props: object;
 }
 
 const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {

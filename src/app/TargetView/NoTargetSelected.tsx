@@ -35,9 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import { DisconnectedIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 
 export const NoTargetSelected: React.FunctionComponent = () => {
   return (

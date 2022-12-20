@@ -35,9 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { EventProbe } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -52,6 +57,7 @@ import {
   EmptyStateIcon,
   Title,
 } from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
 import {
   TableVariant,
   ISortBy,
@@ -64,21 +70,14 @@ import {
   Tr,
   Td,
 } from '@patternfly/react-table';
-import { first } from 'rxjs/operators';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { EventProbe } from '@app/Shared/Services/Api.service';
-import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { SearchIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 import { AboutAgentCard } from './AboutAgentCard';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 
 export type LiveProbeActions = 'REMOVE';
 
 export interface AgentLiveProbesProps {}
 
-export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (props) => {
+export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -91,7 +90,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionLoadings, setActionLoadings] = React.useState<Record<LiveProbeActions, boolean>>({ REMOVE: false });
 
-  const tableColumns = ['ID', 'Name', 'Class', 'Description', 'Method'];
+  const tableColumns = React.useMemo(() => ['ID', 'Name', 'Class', 'Description', 'Method'], []);
 
   const getSortParams = React.useCallback(
     (columnIndex: number): ThProps['sort'] => ({
@@ -136,7 +135,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
-  }, [context.target, context.target.setAuthRetry]);
+  }, [context.target]);
 
   const handleDeleteAllProbes = React.useCallback(() => {
     setActionLoadings((old) => {
@@ -266,7 +265,7 @@ export const AgentLiveProbes: React.FunctionComponent<AgentLiveProbesProps> = (p
           </Td>
         </Tr>
       )),
-    [filteredProbes]
+    [filteredProbes, tableColumns]
   );
 
   const actionLoadingProps = React.useMemo<Record<LiveProbeActions, LoadingPropsType>>(

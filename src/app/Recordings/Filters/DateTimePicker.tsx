@@ -50,17 +50,17 @@ import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export interface DateTimePickerProps {
-  onSubmit: (date: any) => void;
+  onSubmit: (date: string) => void;
 }
 
-export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (props) => {
+export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = ({ onSubmit }) => {
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
   const [selectedHour, setSelectedHour] = React.useState(0);
   const [selectedMinute, setSelectedMinute] = React.useState(0);
   const [isTimeOpen, setIsTimeOpen] = React.useState(false);
 
   const onDateChange = React.useCallback(
-    (inputDateValue: string, newDate: Date | undefined) => {
+    (_inputDateValue: string, newDate: Date | undefined) => {
       setSelectedDate(newDate);
     },
     [setSelectedDate]
@@ -82,9 +82,13 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = (pro
   );
 
   const handleSubmit = React.useCallback(() => {
-    selectedDate!.setUTCHours(selectedHour, selectedMinute);
-    props.onSubmit(selectedDate!.toISOString());
-  }, [selectedDate, selectedHour, selectedMinute, props.onSubmit]);
+    if (selectedDate) {
+      selectedDate.setUTCHours(selectedHour, selectedMinute);
+      onSubmit(selectedDate.toISOString());
+    } else {
+      console.error('Date is undefined');
+    }
+  }, [selectedDate, selectedHour, selectedMinute, onSubmit]);
 
   return (
     <Flex>

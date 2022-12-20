@@ -35,12 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { AlertVariant } from '@patternfly/react-core';
+import { nanoid } from 'nanoid';
 import * as React from 'react';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { concatMap, filter, first, map } from 'rxjs/operators';
-import { AlertVariant } from '@patternfly/react-core';
-import { nanoid } from 'nanoid';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 
 export interface Notification {
   hidden?: boolean;
@@ -143,12 +143,12 @@ export class Notifications {
     return this.notifications().pipe(map((a) => a.filter(Notifications.isProblemNotification)));
   }
 
-  setHidden(key?: string, hidden: boolean = true): void {
+  setHidden(key?: string, hidden = true): void {
     if (!key) {
       return;
     }
     this._notifications$.pipe(first()).subscribe((prev) => {
-      for (let n of prev) {
+      for (const n of prev) {
         if (n.key === key) {
           n.hidden = hidden;
         }
@@ -157,12 +157,12 @@ export class Notifications {
     });
   }
 
-  setRead(key?: string, read: boolean = true): void {
+  setRead(key?: string, read = true): void {
     if (!key) {
       return;
     }
     this._notifications$.pipe(first()).subscribe((prev) => {
-      for (let n of prev) {
+      for (const n of prev) {
         if (n.key === key) {
           n.read = read;
         }
@@ -173,7 +173,7 @@ export class Notifications {
 
   markAllRead(): void {
     this._notifications$.pipe(first()).subscribe((prev) => {
-      for (let n of prev) {
+      for (const n of prev) {
         n.read = true;
       }
       this._notifications$.next(prev);

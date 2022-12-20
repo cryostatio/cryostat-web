@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import LoadingView from '@app/LoadingView/LoadingView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import {
   emptyAutomatedAnalysisFilters,
   TargetAutomatedAnalysisFilters,
@@ -100,7 +100,9 @@ import { InfoCircleIcon, OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } f
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
+import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
+import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 import {
   AutomatedAnalysisFilters,
   AutomatedAnalysisFiltersCategories,
@@ -109,12 +111,10 @@ import {
 } from './AutomatedAnalysisFilters';
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
-import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
-import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
-interface AutomatedAnalysisCardProps extends DashboardCardProps {}
+type AutomatedAnalysisCardProps = DashboardCardProps;
 
-export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCardProps> = (props) => {
+export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
@@ -194,7 +194,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         { connectUrl }
       );
     },
-    [context.api, context.api.graphql]
+    [context.api]
   );
 
   const queryArchivedRecordings = React.useCallback(
@@ -218,7 +218,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         { connectUrl }
       );
     },
-    [context.api, context.api.graphql]
+    [context.api]
   );
 
   const handleStateErrors = React.useCallback(
@@ -388,10 +388,8 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     );
   }, [
     addSubscription,
-    context.api,
     context.target,
     context.reports,
-    automatedAnalysisAddTargetIntent,
     setIsLoading,
     setReport,
     categorizeEvaluation,
@@ -411,7 +409,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
           if (resp.ok || resp.status === 400) {
             // in-case the recording already exists
             generateReport();
-          } else if (resp?.status === 500) {
+          } else if (resp.status === 500) {
             handleStateErrors(TEMPLATE_UNSUPPORTED_MESSAGE);
           }
         } else {
@@ -419,14 +417,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         }
       })
     );
-  }, [
-    addSubscription,
-    context.api,
-    context.settings,
-    context.settings.automatedAnalysisRecordingConfig,
-    generateReport,
-    handleStateErrors,
-  ]);
+  }, [addSubscription, context.api, context.settings, generateReport, handleStateErrors]);
 
   const getMessageAndRetry = React.useCallback(
     (errorMessage: string | undefined): [string | undefined, undefined | (() => void)] => {
@@ -452,7 +443,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
 
   React.useEffect(() => {
     addSubscription(context.target.authRetry().subscribe(generateReport));
-  }, [addSubscription, context.target]);
+  }, [addSubscription, context.target, generateReport]);
 
   React.useEffect(() => {
     context.target.target().subscribe((target) => {
@@ -496,7 +487,6 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     targetAutomatedAnalysisFilters,
     targetAutomatedAnalysisGlobalFilters,
     showNAScores,
-    filterAutomatedAnalysis,
     setFilteredCategorizedEvaluation,
   ]);
 
@@ -582,17 +572,12 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         dispatch(automatedAnalysisAddFilterIntent(target, filterKey, filterValue));
       }
     },
-    [
-      dispatch,
-      automatedAnalysisDeleteCategoryFiltersIntent,
-      automatedAnalysisDeleteFilterIntent,
-      automatedAnalysisAddFilterIntent,
-    ]
+    [dispatch]
   );
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(automatedAnalysisDeleteAllFiltersIntent(targetConnectURL));
-  }, [dispatch, automatedAnalysisDeleteAllFiltersIntent, targetConnectURL]);
+  }, [dispatch, targetConnectURL]);
 
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
@@ -675,6 +660,9 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
     targetConnectURL,
     categorizedEvaluation,
     targetAutomatedAnalysisFilters,
+    usingArchivedReport,
+    usingCachedReport,
+    clearAnalysis,
     generateReport,
     handleClearFilters,
     handleNAScoreChange,
@@ -777,7 +765,7 @@ export const AutomatedAnalysisCard: React.FunctionComponent<AutomatedAnalysisCar
         <Stack hasGutter>
           <StackItem>{errorMessage ? null : toolbar}</StackItem>
           <StackItem className="automated-analysis-score-filter-stack-item">
-            {errorMessage ? null : <AutomatedAnalysisScoreFilter targetConnectUrl={targetConnectURL} />}
+            {errorMessage ? null : <AutomatedAnalysisScoreFilter />}
           </StackItem>
           <StackItem>
             <CardBody isFilled={true}>

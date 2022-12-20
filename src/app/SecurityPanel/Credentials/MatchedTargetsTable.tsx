@@ -35,24 +35,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Target } from '@app/Shared/Services/Target.service';
-import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { LoadingView } from '@app/LoadingView/LoadingView';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import _ from 'lodash';
+import * as React from 'react';
 
 export interface MatchedTargetsTableProps {
   id: number;
   matchExpression: string;
 }
 
-export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTableProps> = (props) => {
+export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTableProps> = ({ id, matchExpression }) => {
   const context = React.useContext(ServiceContext);
 
   const [targets, setTargets] = React.useState([] as Target[]);
@@ -64,16 +64,16 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
   const refreshTargetsList = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.api.getCredential(props.id).subscribe((v) => {
+      context.api.getCredential(id).subscribe((v) => {
         setTargets(v.targets);
         setIsLoading(false);
       })
     );
-  }, [setIsLoading, addSubscription, context, context.api, setTargets]);
+  }, [addSubscription, setIsLoading, context.api, setTargets, id]);
 
   React.useEffect(() => {
     refreshTargetsList();
-  }, []);
+  }, [refreshTargetsList]);
 
   React.useEffect(() => {
     addSubscription(
@@ -81,7 +81,7 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
         const evt: TargetDiscoveryEvent = v.message.event;
         const target: Target = evt.serviceRef;
         if (evt.kind === 'FOUND') {
-          const match: boolean = eval(props.matchExpression);
+          const match: boolean = eval(matchExpression);
           if (match) {
             setTargets((old) => old.concat(target));
           }
@@ -90,7 +90,7 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
         }
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setTargets]);
+  }, [addSubscription, context, context.notificationChannel, setTargets, matchExpression]);
 
   const targetRows = React.useMemo(() => {
     return targets.map((target, idx) => {

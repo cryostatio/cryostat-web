@@ -35,7 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { dashboardCardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Bullseye,
   Button,
@@ -49,6 +52,7 @@ import {
   NumberInput,
   Select,
   SelectOption,
+  SelectOptionObject,
   Switch,
   Text,
   TextArea,
@@ -64,20 +68,18 @@ import {
   WizardStep,
 } from '@patternfly/react-core/dist/js/next';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { useDispatch } from 'react-redux';
-import { dashboardCardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { getDashboardCards, getConfigByTitle, PropControl } from './Dashboard';
-import { Observable, of } from 'rxjs';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import * as React from 'react';
 import { useContext } from 'react';
+import { useDispatch } from 'react-redux';
+import { Observable, of } from 'rxjs';
+import { getDashboardCards, getConfigByTitle, PropControl } from './Dashboard';
 
 interface AddCardProps {}
 
-export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardProps) => {
+export const AddCard: React.FunctionComponent<AddCardProps> = (_: AddCardProps) => {
   const addSubscription = useSubscriptions();
   const settingsContext = useContext(ServiceContext);
+
   const [showWizard, setShowWizard] = React.useState(false);
   const [selection, setSelection] = React.useState('');
   const [propsConfig, setPropsConfig] = React.useState({});
@@ -87,7 +89,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 
   React.useEffect(() => {
     addSubscription(settingsContext.settings.featureLevel().subscribe(setFeatureLevel));
-  }, [addSubscription, settingsContext.settings.featureLevel, setFeatureLevel]);
+  }, [addSubscription, settingsContext.settings, setFeatureLevel]);
 
   const options = React.useMemo(() => {
     return [
@@ -96,7 +98,7 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
         <SelectOption key={idx + 1} value={choice.title} description={choice.description} />
       )),
     ];
-  }, [getDashboardCards, featureLevel]);
+  }, [featureLevel]);
 
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
@@ -111,14 +113,14 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
       }
       setPropsConfig(c);
     },
-    [setSelection, setSelectOpen, getConfigByTitle, setPropsConfig]
+    [setSelection, setSelectOpen, setPropsConfig]
   );
 
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
     const cardTitle = getConfigByTitle(selection).component.name;
     dispatch(dashboardCardConfigAddCardIntent(cardTitle, propsConfig));
-  }, [setShowWizard, dispatch, dashboardCardConfigAddCardIntent, selection, propsConfig]);
+  }, [dispatch, setShowWizard, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {
     setShowWizard(true);
@@ -240,18 +242,18 @@ export const AddCard: React.FunctionComponent<AddCardProps> = (props: AddCardPro
 interface PropsConfigFormProps {
   cardTitle: string;
   controls: PropControl[];
-  config: any;
-  onChange: ({}) => void;
+  config: object;
+  onChange: (config: object) => void;
 }
 
-const PropsConfigForm = (props: PropsConfigFormProps) => {
+const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
   const handleChange = React.useCallback(
     (k) => (e) => {
       const copy = { ...props.config };
       copy[k] = e;
-      props.onChange(copy);
+      onChange(copy);
     },
-    [props.config, props.onChange]
+    [onChange, props.config]
   );
 
   const handleNumeric = React.useCallback(
@@ -259,18 +261,18 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
       const value = (e.target as HTMLInputElement).value;
       const copy = { ...props.config };
       copy[k] = value;
-      props.onChange(copy);
+      onChange(copy);
     },
-    [props.config, props.onChange]
+    [onChange, props.config]
   );
 
   const handleNumericStep = React.useCallback(
-    (k, v) => (e) => {
+    (k, v) => (_) => {
       const copy = { ...props.config };
       copy[k] = props.config[k] + v;
-      props.onChange(copy);
+      onChange(copy);
     },
-    [props.config, props.onChange]
+    [onChange, props.config]
   );
 
   const createControl = React.useCallback(
@@ -350,7 +352,13 @@ const PropsConfigForm = (props: PropsConfigFormProps) => {
   );
 };
 
-const SelectControl = (props: { handleChange: ({}) => void; control: PropControl; selectedConfig: any }) => {
+interface SelectControlProps {
+  handleChange: (selection: string) => void;
+  control: PropControl;
+  selectedConfig: string | SelectOptionObject;
+}
+
+const SelectControl = ({ handleChange, control, selectedConfig }: SelectControlProps) => {
   const addSubscription = useSubscriptions();
 
   const [selectOpen, setSelectOpen] = React.useState(false);
@@ -360,19 +368,19 @@ const SelectControl = (props: { handleChange: ({}) => void; control: PropControl
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       if (!isPlaceholder) {
-        props.handleChange(selection);
+        handleChange(selection);
       }
       setSelectOpen(false);
     },
-    [props.handleChange, setSelectOpen]
+    [handleChange, setSelectOpen]
   );
 
   React.useEffect(() => {
     let obs;
-    if (props.control.values instanceof Observable) {
-      obs = props.control.values;
+    if (control.values instanceof Observable) {
+      obs = control.values;
     } else {
-      obs = of(props.control.values);
+      obs = of(control.values);
     }
     addSubscription(
       obs.subscribe({
@@ -391,10 +399,10 @@ const SelectControl = (props: { handleChange: ({}) => void; control: PropControl
         },
       })
     );
-  }, [props.control, props.control.values, of, addSubscription, setOptions, setErrored]);
+  }, [addSubscription, setOptions, setErrored, control, control.values]);
 
   return (
-    <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={props.selectedConfig}>
+    <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={selectedConfig}>
       {errored
         ? [<SelectOption key={0} value={`Load Error: ${options[0]}`} isPlaceholder isDisabled />]
         : [<SelectOption key={0} value={'None'} isPlaceholder />].concat(
