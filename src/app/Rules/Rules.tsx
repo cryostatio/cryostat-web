@@ -110,7 +110,7 @@ export const ruleObjKeys = [
 
 export const isRule = (obj: object): boolean => {
   for (const key of ruleObjKeys) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    if (!Object.prototype.hasOwnProperty.call(obj, key)) {
       return false;
     }
   } // Ignore unknown fields

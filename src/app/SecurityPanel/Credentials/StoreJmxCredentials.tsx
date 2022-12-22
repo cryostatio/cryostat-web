@@ -41,6 +41,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { StoredCredential } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -90,6 +91,8 @@ const reducer = (state, action) => {
       };
     }
     case Actions.HANDLE_TARGET_NOTIFICATION: {
+      /* eslint-disable-next-line unused-imports/no-unused-vars */
+      const target: Target = action.payload.target;
       const updated = [...state.counts];
       for (let i = 0; i < state.credentials.length; i++) {
         const match: boolean = eval(state.credentials[i].matchExpression);

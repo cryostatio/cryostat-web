@@ -65,8 +65,8 @@ const mockRule: Rule = {
   maxAgeSeconds: 0,
   maxSizeBytes: 0,
 };
-const mockRuleListResponse = { data: { result: [mockRule] as Rule[] } };
-const mockRuleListEmptyResponse = { data: { result: [] as Rule[] } };
+const mockRuleListResponse = [mockRule] as Rule[];
+const mockRuleListEmptyResponse = [] as Rule[];
 
 const mockFileUpload = new File([JSON.stringify(mockRule)], `${mockRule.name}.json`, { type: 'application/json' });
 mockFileUpload.text = jest.fn(() => Promise.resolve(JSON.stringify(mockRule)));
@@ -86,8 +86,9 @@ jest.mock('react-router-dom', () => ({
 const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
 const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRule').mockReturnValue(of(true));
 const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
+
 jest
-  .spyOn(defaultServices.api, 'doGet')
+  .spyOn(defaultServices.api, 'getRules')
   .mockReturnValueOnce(of(mockRuleListEmptyResponse)) // renders correctly empty
   .mockReturnValue(of(mockRuleListResponse));
 
