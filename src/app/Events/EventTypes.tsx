@@ -237,7 +237,7 @@ export const EventTypes: React.FC<EventTypesProps> = (_) => {
               rowIndex: index,
               isExpanded: rowData.isExpanded,
               expandId: `expandable-event-type-row-${index}`,
-              onToggle: () => onToggle(rowData.eventType, index),
+              onToggle: () => onToggle(rowData.eventType),
             }}
           />
           {rowData.cellContents.map((content, idx) => (
