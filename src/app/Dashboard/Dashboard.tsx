@@ -51,7 +51,7 @@ export interface DashboardCardDescriptor {
   title: string;
   description: string;
   descriptionFull: JSX.Element | string;
-  component: React.FunctionComponent<any>;
+  component: React.FC<any>;
   propControls: PropControl[];
   advancedConfig?: JSX.Element;
 }

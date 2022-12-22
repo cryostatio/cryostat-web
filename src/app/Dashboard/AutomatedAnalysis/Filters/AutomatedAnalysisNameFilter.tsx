@@ -46,10 +46,7 @@ export interface AutomatedAnalysisNameFilterProps {
   onSubmit: (inputName: string) => void;
 }
 
-export const AutomatedAnalysisNameFilter: React.FunctionComponent<AutomatedAnalysisNameFilterProps> = ({
-  onSubmit,
-  ...props
-}) => {
+export const AutomatedAnalysisNameFilter: React.FC<AutomatedAnalysisNameFilterProps> = ({ onSubmit, ...props }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const onSelect = React.useCallback(

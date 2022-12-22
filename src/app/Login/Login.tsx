@@ -48,7 +48,7 @@ import { OpenShiftAuthDescriptionText, OpenShiftPlaceholderAuthForm } from './Op
 
 export interface LoginProps {}
 
-export const Login: React.FunctionComponent<LoginProps> = (_) => {
+export const Login: React.FC<LoginProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const notifications = React.useContext(NotificationsContext);

@@ -44,7 +44,7 @@ export interface SslErrorModalProps {
   onDismiss: () => void;
 }
 
-export const SslErrorModal: React.FunctionComponent<SslErrorModalProps> = (props) => {
+export const SslErrorModal: React.FC<SslErrorModalProps> = (props) => {
   const routerHistory = useHistory();
 
   const handleClick = () => {

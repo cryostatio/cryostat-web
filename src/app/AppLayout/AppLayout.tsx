@@ -100,7 +100,7 @@ interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
+const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
@@ -229,7 +229,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
   );
 
   const mobileOnSelect = React.useCallback(
-    (_selected) => {
+    (_) => {
       if (isMobileView) {
         setIsNavOpenMobile(false);
       }

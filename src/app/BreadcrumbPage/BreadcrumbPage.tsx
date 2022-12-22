@@ -50,7 +50,7 @@ export interface BreadcrumbTrail {
   path: string;
 }
 
-export const BreadcrumbPage: React.FunctionComponent<BreadcrumbPageProps> = (props) => {
+export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = (props) => {
   return (
     <>
       <PageSection>

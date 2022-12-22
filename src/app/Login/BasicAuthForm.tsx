@@ -43,7 +43,7 @@ import * as React from 'react';
 import { map } from 'rxjs/operators';
 import { FormProps } from './FormProps';
 
-export const BasicAuthForm: React.FunctionComponent<FormProps> = ({ onSubmit }) => {
+export const BasicAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
   const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');

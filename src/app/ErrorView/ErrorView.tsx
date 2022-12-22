@@ -51,7 +51,7 @@ export interface ErrorViewProps {
   retry?: () => void;
 }
 
-export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
+export const ErrorView: React.FC<ErrorViewProps> = (props) => {
   return (
     <>
       <EmptyState>

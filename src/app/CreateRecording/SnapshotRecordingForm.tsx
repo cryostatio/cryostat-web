@@ -46,7 +46,7 @@ import { first } from 'rxjs';
 
 export interface SnapshotRecordingFormProps {}
 
-export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFormProps> = (_) => {
+export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) => {
   const history = useHistory();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);

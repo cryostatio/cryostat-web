@@ -47,7 +47,7 @@ export interface JmxAuthFormProps {
   children?: React.ReactNode;
 }
 
-export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = ({ onDismiss, onSave, ...props }) => {
+export const JmxAuthForm: React.FC<JmxAuthFormProps> = ({ onDismiss, onSave, ...props }) => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 

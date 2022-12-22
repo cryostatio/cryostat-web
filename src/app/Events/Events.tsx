@@ -49,7 +49,7 @@ import { EventTypes } from './EventTypes';
 
 export interface EventsProps {}
 
-export const Events: React.FunctionComponent<EventsProps> = (_) => {
+export const Events: React.FC<EventsProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [eventActiveTab, setEventActiveTab] = React.useState(0);

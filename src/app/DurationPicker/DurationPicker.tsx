@@ -46,7 +46,7 @@ export interface DurationPickerProps {
   enabled: boolean;
 }
 
-export const DurationPicker: React.FunctionComponent<DurationPickerProps> = (props) => {
+export const DurationPicker: React.FC<DurationPickerProps> = (props) => {
   return (
     <>
       <Split hasGutter={true}>

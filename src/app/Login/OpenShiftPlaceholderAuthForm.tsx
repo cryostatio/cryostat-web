@@ -38,6 +38,7 @@
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthMethod, SessionState } from '@app/Shared/Services/Login.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Text, TextVariants, Title } from '@patternfly/react-core';
 import { LockIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -48,19 +49,18 @@ export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = 
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [showPermissionDenied, setShowPermissionDenied] = React.useState(false);
+  const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = combineLatest([context.login.getSessionState(), notifications.problemsNotifications()]).subscribe(
-      (parts) => {
+    addSubscription(
+      combineLatest([context.login.getSessionState(), notifications.problemsNotifications()]).subscribe((parts) => {
         const sessionState = parts[0];
         const errors = parts[1];
         const missingCryostatPermissions = errors.find((error) => error.title.includes('401')) !== undefined;
-
         setShowPermissionDenied(sessionState === SessionState.NO_USER_SESSION && missingCryostatPermissions);
-      }
+      })
     );
-    return () => sub.unsubscribe();
-  }, [notifications, context.login, setShowPermissionDenied]);
+  }, [addSubscription, notifications, context.login, setShowPermissionDenied]);
 
   const handleSubmit = React.useCallback(
     (evt) => {

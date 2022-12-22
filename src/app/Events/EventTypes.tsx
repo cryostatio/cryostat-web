@@ -87,7 +87,7 @@ const includesSubstr = (a: string, b: string) => !!a && !!b && a.toLowerCase().i
 
 export interface EventTypesProps {}
 
-export const EventTypes: React.FunctionComponent<EventTypesProps> = (_) => {
+export const EventTypes: React.FC<EventTypesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const prevPerPage = React.useRef(10);
@@ -203,7 +203,7 @@ export const EventTypes: React.FunctionComponent<EventTypesProps> = (_) => {
   );
 
   const onToggle = React.useCallback(
-    (t: EventType, _index: number) => {
+    (t: EventType) => {
       setOpenRows((old) => {
         const typeId = hashCode(t.typeId);
         if (old.some((id) => id === typeId)) {

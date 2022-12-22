@@ -76,7 +76,7 @@ import { getDashboardCards, getConfigByTitle, PropControl } from './Dashboard';
 
 interface AddCardProps {}
 
-export const AddCard: React.FunctionComponent<AddCardProps> = (_: AddCardProps) => {
+export const AddCard: React.FC<AddCardProps> = (_) => {
   const addSubscription = useSubscriptions();
   const settingsContext = useContext(ServiceContext);
 

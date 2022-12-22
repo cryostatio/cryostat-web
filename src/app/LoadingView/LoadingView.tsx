@@ -42,7 +42,7 @@ export interface LoadingViewProps {
   title?: string;
 }
 
-export const LoadingView: React.FunctionComponent<LoadingViewProps> = (props) => {
+export const LoadingView: React.FC<LoadingViewProps> = (props) => {
   return (
     <>
       <Bullseye>

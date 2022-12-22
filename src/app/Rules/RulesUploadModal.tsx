@@ -64,7 +64,7 @@ export const parseRule = (file: File): Observable<Rule> => {
   );
 };
 
-export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = ({ onClose, visible }) => {
+export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -151,7 +151,7 @@ export const RuleUploadModal: React.FunctionComponent<RuleUploadModalProps> = ({
   return (
     <>
       <Modal
-        isOpen={visible}
+        isOpen={props.visible}
         variant={ModalVariant.large}
         showClose={true}
         onClose={handleClose}

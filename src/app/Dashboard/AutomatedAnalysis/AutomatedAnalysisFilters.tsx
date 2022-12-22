@@ -72,10 +72,7 @@ export interface AutomatedAnalysisFiltersProps {
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }
 
-export const AutomatedAnalysisFilters: React.FunctionComponent<AutomatedAnalysisFiltersProps> = ({
-  updateFilters,
-  ...props
-}) => {
+export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> = ({ updateFilters, ...props }) => {
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
@@ -199,7 +196,7 @@ export const filterAutomatedAnalysis = (
 
   let filtered = topicEvalTuple;
 
-  if (filters.Name.length) {
+  if (filters.Name != null && !!filters.Name.length) {
     filtered = filtered.map(([topic, evaluations]) => {
       return [topic, evaluations.filter((evaluation) => filters.Name.includes(evaluation.name))] as [
         string,

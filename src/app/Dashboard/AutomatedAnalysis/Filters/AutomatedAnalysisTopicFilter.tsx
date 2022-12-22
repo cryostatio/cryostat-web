@@ -46,10 +46,7 @@ export interface AutomatedAnalysisTopicFilterProps {
   onSubmit: (inputName: string) => void;
 }
 
-export const AutomatedAnalysisTopicFilter: React.FunctionComponent<AutomatedAnalysisTopicFilterProps> = ({
-  onSubmit,
-  ...props
-}) => {
+export const AutomatedAnalysisTopicFilter: React.FC<AutomatedAnalysisTopicFilterProps> = ({ onSubmit, ...props }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const onSelect = React.useCallback(

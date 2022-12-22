@@ -75,7 +75,7 @@ interface AutomatedAnalysisConfigFormProps {
   isSettingsForm: boolean;
 }
 
-export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnalysisConfigFormProps> = ({
+export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({
   onCreate,
   onSave,
   ...props
@@ -216,8 +216,8 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     addSubscription(
       context.api.createRecording(recordingAttributes).subscribe({
         next: (resp) => {
-          if (resp && resp.ok && onCreate) {
-            onCreate();
+          if (resp && resp.ok) {
+            onCreate && onCreate();
           }
           setIsLoading(false);
         },

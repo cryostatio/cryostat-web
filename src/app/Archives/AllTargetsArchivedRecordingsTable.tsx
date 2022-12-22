@@ -62,9 +62,7 @@ import { map } from 'rxjs/operators';
 
 export interface AllTargetsArchivedRecordingsTableProps {}
 
-export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
-  AllTargetsArchivedRecordingsTableProps
-> = () => {
+export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
   const [targets, setTargets] = React.useState([] as Target[]);

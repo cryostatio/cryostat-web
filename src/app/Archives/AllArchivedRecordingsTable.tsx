@@ -64,7 +64,7 @@ import { getTargetFromDirectory, includesDirectory, indexOfDirectory } from './A
 
 export interface AllArchivedRecordingsTableProps {}
 
-export const AllArchivedRecordingsTable: React.FunctionComponent<AllArchivedRecordingsTableProps> = () => {
+export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
   const [directories, setDirectories] = React.useState([] as RecordingDirectory[]);

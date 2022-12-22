@@ -39,7 +39,7 @@ import { AuthMethod } from '@app/Shared/Services/Login.service';
 import * as React from 'react';
 import { FormProps } from './FormProps';
 
-export const NoopAuthForm: React.FunctionComponent<FormProps> = ({ onSubmit }) => {
+export const NoopAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
   React.useEffect(() => {
     const noopEvt = {
       preventDefault: () => undefined,
