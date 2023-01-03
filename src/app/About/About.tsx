@@ -56,7 +56,7 @@ export const About: React.FC<AboutProps> = (_) => {
         <CardBody>
           <AboutDescription />
         </CardBody>
-        <CardFooter>{t('asdf')}</CardFooter>
+        <CardFooter>{CRYOSTAT_TRADEMARK}</CardFooter>
       </Card>
     </BreadcrumbPage>
   );

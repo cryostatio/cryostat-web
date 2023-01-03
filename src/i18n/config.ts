@@ -39,8 +39,8 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import en_public from './en/public.json';
-import zh_public from './zh/public.json';
+import en_public from '../../locales/en/public.json';
+import zh_public from '../../locales/zh/public.json';
 
 
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';

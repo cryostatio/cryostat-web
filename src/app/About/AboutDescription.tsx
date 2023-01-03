@@ -44,12 +44,9 @@ import { t as gTranslate } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const CRYOSTAT_TRADEMARK = gTranslate("title", { ns: "translation" }) as string;
+export const CRYOSTAT_TRADEMARK = 'Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0';
 
-export interface AboutDescriptionProps {}
-
-export const AboutDescription: React.FC<{}> = (props: AboutDescriptionProps) => {
-  const { t } = useTranslation(['common', 'translation']);
+export const AboutDescription = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
@@ -92,45 +89,47 @@ export const AboutDescription: React.FC<{}> = (props: AboutDescriptionProps) => 
   }, [cryostatVersion, cryostatCommitHash]);
 
   return (
-    <TextContent>
-      <TextList component="dl">
-        <TextListItem component="dt">Version</TextListItem>
-        <TextListItem component="dd">{versionComponent}</TextListItem>
-        <TextListItem component="dt">Homepage</TextListItem>
-        <TextListItem component="dd">
-          <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>
-            cryostat.io
-          </Text>
-        </TextListItem>
-        <TextListItem component="dt">Bugs</TextListItem>
-        <TextListItem component="dd">
-          <Text>
-            <Text component={TextVariants.a} target="_blank" href={build.knownIssuesUrl}>
-              Known Issues
+    <>
+      <TextContent>
+        <TextList component="dl">
+          <TextListItem component="dt">Version</TextListItem>
+          <TextListItem component="dd">{versionComponent}</TextListItem>
+          <TextListItem component="dt">Homepage</TextListItem>
+          <TextListItem component="dd">
+            <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>
+              cryostat.io
             </Text>
-            &nbsp;|&nbsp;
-            <Text
-              component={TextVariants.a}
-              target="_blank"
-              href={build.fileIssueUrl.replace('__REPLACE_VERSION__', cryostatVersion || 'unknown')}
-            >
-              File a Report
+          </TextListItem>
+          <TextListItem component="dt">Bugs</TextListItem>
+          <TextListItem component="dd">
+            <Text>
+              <Text component={TextVariants.a} target="_blank" href={build.knownIssuesUrl}>
+                Known Issues
+              </Text>
+              &nbsp;|&nbsp;
+              <Text
+                component={TextVariants.a}
+                target="_blank"
+                href={build.fileIssueUrl.replace('__REPLACE_VERSION__', cryostatVersion || 'unknown')}
+              >
+                File a Report
+              </Text>
             </Text>
-          </Text>
-        </TextListItem>
-        <TextListItem component="dt">Mailing List</TextListItem>
-        <TextListItem component="dd">
-          <Text component={TextVariants.a} target="_blank" href={build.mailingListUrl}>
-            {build.mailingListName}
-          </Text>
-        </TextListItem>
-        <TextListItem component="dt">{t('about.', { ns: "translation" }) as string}</TextListItem>
-        <TextListItem component="dd">
-          <Text component={TextVariants.a} target="_blank" href={build.licenseUrl}>
-            License
-          </Text>
-        </TextListItem>
-      </TextList>
-    </TextContent>
+          </TextListItem>
+          <TextListItem component="dt">Mailing List</TextListItem>
+          <TextListItem component="dd">
+            <Text component={TextVariants.a} target="_blank" href={build.mailingListUrl}>
+              {build.mailingListName}
+            </Text>
+          </TextListItem>
+          <TextListItem component="dt">Open Source License</TextListItem>
+          <TextListItem component="dd">
+            <Text component={TextVariants.a} target="_blank" href={build.licenseUrl}>
+              License
+            </Text>
+          </TextListItem>
+        </TextList>
+      </TextContent>
+    </>
   );
 };
