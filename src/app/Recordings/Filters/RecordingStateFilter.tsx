@@ -36,24 +36,27 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { RecordingState } from '@app/Shared/Services/Api.service';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import React from 'react';
 
 export interface RecordingStateFilterProps {
   filteredStates: RecordingState[] | undefined;
-  onSelectToggle: (state: any) => void;
+  onSelectToggle: (state: RecordingState) => void;
 }
 
-export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterProps> = (props) => {
+export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterProps> = ({
+  filteredStates,
+  onSelectToggle,
+}) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const onSelect = React.useCallback(
     (_, selection) => {
       setIsOpen(false);
-      props.onSelectToggle(selection);
+      onSelectToggle(selection);
     },
-    [setIsOpen, props.onSelectToggle]
+    [setIsOpen, onSelectToggle]
   );
 
   return (
@@ -61,7 +64,7 @@ export const RecordingStateFilter: React.FunctionComponent<RecordingStateFilterP
       variant={SelectVariant.checkbox}
       onToggle={setIsOpen}
       onSelect={onSelect}
-      selections={props.filteredStates}
+      selections={filteredStates}
       isOpen={isOpen}
       aria-label="Filter by state"
       placeholderText="Filter by state"

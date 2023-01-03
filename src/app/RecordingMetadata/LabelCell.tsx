@@ -62,7 +62,7 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
       }
       return false;
     },
-    [getLabelDisplay, props.clickableOptions]
+    [props.clickableOptions]
   );
 
   const getLabelColor = React.useCallback(
@@ -79,7 +79,7 @@ export const LabelCell: React.FunctionComponent<LabelCellProps> = (props) => {
         });
       }
     },
-    [props.clickableOptions, props.target, getLabelDisplay]
+    [isLabelSelected, props.clickableOptions, props.target]
   );
 
   return (

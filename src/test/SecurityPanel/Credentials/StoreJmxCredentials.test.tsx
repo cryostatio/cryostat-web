@@ -35,22 +35,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { DeleteJMXCredentials, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { CreateJmxCredentialModalProps } from '@app/SecurityPanel/Credentials/CreateJmxCredentialModal';
+import { StoreJmxCredentials } from '@app/SecurityPanel/Credentials/StoreJmxCredentials';
+import { MatchedCredential, StoredCredential } from '@app/Shared/Services/Api.service';
+import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import { Modal, ModalVariant } from '@patternfly/react-core';
+import { cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen, within } from '@testing-library/react';
 import { of, throwError } from 'rxjs';
-import { MatchedCredential, StoredCredential } from '@app/Shared/Services/Api.service';
-import { Modal, ModalVariant } from '@patternfly/react-core';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
-import { StoreJmxCredentials } from '@app/SecurityPanel/Credentials/StoreJmxCredentials';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { DeleteJMXCredentials, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { Target } from '@app/Shared/Services/Target.service';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 
 import { renderWithServiceContext } from '../../Common';
-import { CreateJmxCredentialModalProps } from '@app/SecurityPanel/Credentials/CreateJmxCredentialModal';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockCredential: StoredCredential = {
   id: 0,
@@ -85,7 +84,6 @@ const mockAnotherMatchedCredentialResponse: MatchedCredential = {
 };
 
 const mockCredentialNotification = { message: mockCredential } as NotificationMessage;
-const evt = { kind: 'LOST', serviceRef: mockTarget } as TargetDiscoveryEvent;
 
 const mockLostTargetNotification = {
   message: { event: { kind: 'LOST', serviceRef: mockAnotherTarget } },

@@ -35,14 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Modal, ModalVariant, Text } from '@patternfly/react-core';
-import { Link } from 'react-router-dom';
-import { JmxAuthForm } from './JmxAuthForm';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { filter, first, map, mergeMap } from 'rxjs';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Modal, ModalVariant, Text } from '@patternfly/react-core';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { filter, first, map, mergeMap } from 'rxjs';
+import { JmxAuthForm } from './JmxAuthForm';
 
 export interface AuthModalProps {
   visible: boolean;
@@ -50,7 +50,7 @@ export interface AuthModalProps {
   onSave: () => void;
 }
 
-export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onPropsSave, ...props }) => {
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
@@ -70,12 +70,12 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
           .subscribe((ok) => {
             setLoading(false);
             if (ok) {
-              props.onSave();
+              onPropsSave();
             }
           })
       );
     },
-    [context.target, context.api, props.onSave, setLoading]
+    [addSubscription, context.jmxCredentials, context.target, setLoading, onPropsSave]
   );
 
   return (
@@ -83,17 +83,17 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={!loading}
-      onClose={props.onDismiss}
+      onClose={onDismiss}
       title="Authentication Required"
       description={
         <Text>
           This target JVM requires authentication. The credentials you provide here will be passed from Cryostat to the
           target when establishing JMX connections. Enter credentials specific to this target, or go to{' '}
-          <Link onClick={props.onDismiss} to="/security">
+          <Link onClick={onDismiss} to="/security">
             Security
           </Link>{' '}
           to add a credential matching multiple targets. Visit{' '}
-          <Link onClick={props.onDismiss} to="/settings">
+          <Link onClick={onDismiss} to="/settings">
             Settings
           </Link>{' '}
           to confirm and configure whether these credentials will be held only for this browser session or stored
@@ -101,7 +101,7 @@ export const AuthModal: React.FunctionComponent<AuthModalProps> = (props) => {
         </Text>
       }
     >
-      <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} focus={true} loading={loading} />
+      <JmxAuthForm onSave={onSave} onDismiss={onDismiss} focus={true} loading={loading} />
     </Modal>
   );
 };

@@ -61,10 +61,10 @@ export interface Target {
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   connectUrl: string;
   alias: string;
-  labels?: {};
+  labels?: object;
   annotations?: {
-    cryostat: {};
-    platform: {};
+    cryostat: object;
+    platform: object;
   };
 }
 

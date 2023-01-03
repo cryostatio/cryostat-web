@@ -72,8 +72,8 @@ export interface MultiFileUploadProps {
   submitRef?: React.RefObject<HTMLDivElement>;
   abortRef?: React.RefObject<HTMLDivElement>;
   uploading: boolean;
-  displayAccepts: String[];
-  dropZoneAccepts?: String[]; // Infer from displayAccepts, if not specified
+  displayAccepts: string[];
+  dropZoneAccepts?: string[]; // Infer from displayAccepts, if not specified
   onFilesChange?: (files: FUpload[]) => void;
   onFileSubmit: (fileUploads: FUpload[], uploadCallbacks: UploadCallbacks) => void;
   titleIcon?: React.ReactNode;
@@ -210,7 +210,7 @@ export const MultiFileUpload: React.FunctionComponent<MultiFileUploadProps> = ({
   );
 
   const onSingleSuccess = React.useCallback(
-    (filename: String) => {
+    (filename: string) => {
       setFileUploads((old) => {
         const match = old.find((f) => f.file.name === filename);
         if (match) {
@@ -311,7 +311,7 @@ export const MultiFileUpload: React.FunctionComponent<MultiFileUploadProps> = ({
                 file={fileUpload.file}
                 key={fileUpload.file.name}
                 onClearClick={() => handleFileRemove(fileUpload.file.name, uploading)}
-                customFileHandler={(_) => {}} // To disable built-in file reader and default styling
+                customFileHandler={(_) => undefined} // To disable built-in file reader and default styling
                 progressValue={fileUpload.progress?.progressValue}
                 progressVariant={fileUpload.progress?.progressVariant}
                 progressHelperText={fileUpload.error?.message || fileUpload.helperText}

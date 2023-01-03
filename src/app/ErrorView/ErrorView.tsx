@@ -35,18 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import {
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  Title,
-  Text,
-  StackItem,
-  Stack,
-} from '@patternfly/react-core';
+import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title, StackItem, Stack } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 
 export const authFailMessage = 'Auth failure';
 
@@ -60,7 +51,7 @@ export interface ErrorViewProps {
   retry?: () => void;
 }
 
-export const ErrorView: React.FunctionComponent<ErrorViewProps> = (props) => {
+export const ErrorView: React.FC<ErrorViewProps> = (props) => {
   return (
     <>
       <EmptyState>

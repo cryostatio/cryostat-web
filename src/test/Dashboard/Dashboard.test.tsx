@@ -36,15 +36,14 @@
  * SOFTWARE.
  */
 import { Dashboard } from '@app/Dashboard/Dashboard';
-import { act } from 'react-test-renderer';
-import renderer from 'react-test-renderer';
-import React from 'react';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { of } from 'rxjs';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import React from 'react';
 import { Provider } from 'react-redux';
-import { store } from '@app/Shared/Redux/ReduxStore';
+import renderer, { act } from 'react-test-renderer';
+import { of } from 'rxjs';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 
@@ -58,11 +57,11 @@ const mockFooTarget: Target = {
 };
 
 jest.mock('@app/TargetSelect/TargetSelect', () => ({
-  TargetSelect: (props) => <div>Target Select</div>,
+  TargetSelect: (_) => <div>Target Select</div>,
 }));
 
 jest.mock('@app/Dashboard/AddCard', () => ({
-  AddCard: (props) => <div>Add Card</div>,
+  AddCard: (_) => <div>Add Card</div>,
 }));
 
 jest

@@ -35,24 +35,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { createMemoryHistory } from 'history';
-import { of, Subject } from 'rxjs';
-import { Text } from '@patternfly/react-core';
-import { screen, within, waitFor, cleanup } from '@testing-library/react';
-import * as tlr from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
-import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { defaultServices } from '@app/Shared/Services/Services';
 import { DeleteArchivedRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
 import {
   emptyActiveRecordingFilters,
   emptyArchivedRecordingFilters,
   TargetRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { ArchivedRecording, UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { defaultServices } from '@app/Shared/Services/Services';
+import { Text } from '@patternfly/react-core';
+import '@testing-library/jest-dom';
+import * as tlr from '@testing-library/react';
+import { screen, within, cleanup } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import * as React from 'react';
+import { of, Subject } from 'rxjs';
 import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
@@ -109,7 +109,7 @@ const history = createMemoryHistory({ initialEntries: ['/archives'] });
 
 jest.mock('@app/RecordingMetadata/BulkEditLabels', () => {
   return {
-    BulkEditLabels: (props: any) => <Text>Edit Recording Labels</Text>,
+    BulkEditLabels: (_) => <Text>Edit Recording Labels</Text>,
   };
 });
 
@@ -659,6 +659,7 @@ describe('<ArchivedRecordingsTable />', () => {
     await user.upload(labelUploadInput, mockMetadataFile);
 
     expect(labelUploadInput.files).not.toBe(null);
+    /* eslint-disable  @typescript-eslint/no-non-null-assertion */
     expect(labelUploadInput.files![0]).toStrictEqual(mockMetadataFile);
 
     const submitButton = within(modal).getByText('Submit');
@@ -741,6 +742,7 @@ describe('<ArchivedRecordingsTable />', () => {
     });
 
     expect(labelUploadInput.files).not.toBe(null);
+    /* eslint-disable  @typescript-eslint/no-non-null-assertion */
     expect(labelUploadInput.files![0]).toStrictEqual(invalidMetadataFile);
 
     const warningTitle = screen.getByText('Invalid Selection');
@@ -753,7 +755,7 @@ describe('<ArchivedRecordingsTable />', () => {
   });
 
   it('should show error view if failing to retrieve recordings', async () => {
-    jest.spyOn(defaultServices.api, 'graphql').mockImplementationOnce((query) => {
+    jest.spyOn(defaultServices.api, 'graphql').mockImplementationOnce((_query) => {
       throw new Error('Something wrong');
     });
 

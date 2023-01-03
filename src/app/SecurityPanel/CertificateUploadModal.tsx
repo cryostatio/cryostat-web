@@ -49,7 +49,7 @@ export interface CertificateUploadModalProps {
   onClose: () => void;
 }
 
-export const CertificateUploadModal: React.FunctionComponent<CertificateUploadModalProps> = (props) => {
+export const CertificateUploadModal: React.FunctionComponent<CertificateUploadModalProps> = ({ visible, onClose }) => {
   const addSubscriptions = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
@@ -77,13 +77,13 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
       abortRef.current && abortRef.current.click();
     } else {
       reset();
-      props.onClose();
+      onClose();
     }
-  }, [uploading, abortRef.current, reset, props.onClose]);
+  }, [uploading, reset, onClose]);
 
   const handleSubmit = React.useCallback(() => {
     submitRef.current && submitRef.current.click();
-  }, [submitRef.current]);
+  }, []);
 
   const onFileSubmit = React.useCallback(
     (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
@@ -121,14 +121,14 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
           })
       );
     },
-    [setUploading, context.api, addSubscriptions, handleClose, setAllOks]
+    [setUploading, context.api, addSubscriptions, setAllOks]
   );
 
   const submitButtonLoadingProps = React.useMemo(
     () =>
       ({
         spinnerAriaValueText: 'Submitting',
-        spinnerAriaLabel: 'submitting-ssl-certitficates',
+        spinnerAriaLabel: 'submitting-ssl-certificates',
         isLoading: uploading,
       } as LoadingPropsType),
     [uploading]
@@ -136,7 +136,7 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
 
   return (
     <Modal
-      isOpen={props.visible}
+      isOpen={visible}
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}

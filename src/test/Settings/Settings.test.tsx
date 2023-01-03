@@ -35,12 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import '@testing-library/jest-dom';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup } from '@testing-library/react';
-import { Text } from '@patternfly/react-core';
 import { Settings } from '@app/Settings/Settings';
+import { Text } from '@patternfly/react-core';
+import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
 
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {

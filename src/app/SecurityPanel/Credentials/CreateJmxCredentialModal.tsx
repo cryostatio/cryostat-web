@@ -35,7 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
+import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   FormGroup,
   Modal,
@@ -45,18 +48,19 @@ import {
   TextVariants,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import * as React from 'react';
 
 export interface CreateJmxCredentialModalProps {
   visible: boolean;
   onDismiss: () => void;
-  onSave: () => void;
+  onPropsSave: () => void;
 }
 
-export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredentialModalProps> = (props) => {
+export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredentialModalProps> = ({
+  visible,
+  onDismiss,
+  onPropsSave,
+}) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [matchExpression, setMatchExpression] = React.useState('');
@@ -70,26 +74,26 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
         context.api.postCredentials(matchExpression, username, password).subscribe((ok) => {
           setLoading(false);
           if (ok) {
-            props.onSave();
+            onPropsSave();
           }
         })
       );
     },
-    [props.onSave, context.target, context.api, matchExpression, setLoading]
+    [addSubscription, onPropsSave, context.api, matchExpression, setLoading]
   );
 
   return (
     <Modal
-      isOpen={props.visible}
+      isOpen={visible}
       variant={ModalVariant.large}
       showClose={!loading}
-      onClose={props.onDismiss}
+      onClose={onDismiss}
       title="Store JMX Credentials"
       description="Creates stored credentials for target JVMs according to various properties.
         If a Target JVM requires JMX authentication, Cryostat will use stored credentials
         when attempting to open JMX connections to the target."
     >
-      <JmxAuthForm onSave={onSave} onDismiss={props.onDismiss} focus={false} loading={loading}>
+      <JmxAuthForm onSave={onSave} onDismiss={onDismiss} focus={false} loading={loading}>
         <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
         <FormGroup
           label="Match Expression"

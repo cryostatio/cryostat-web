@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { UserSetting } from './Settings';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Select, SelectOption } from '@patternfly/react-core';
+import * as React from 'react';
+import { UserSetting } from './Settings';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
@@ -51,7 +51,7 @@ const Component = () => {
 
   React.useLayoutEffect(() => {
     addSubscription(context.settings.featureLevel().subscribe((level) => setState(level)));
-  }, [addSubscription, context.settings.featureLevel, setState]);
+  }, [addSubscription, context.settings, setState]);
 
   const handleToggle = React.useCallback(() => {
     setOpen((v) => !v);
@@ -63,7 +63,7 @@ const Component = () => {
       context.settings.setFeatureLevel(v);
       setOpen(false);
     },
-    [setState, setOpen, context.settings.setFeatureLevel]
+    [setState, setOpen, context.settings]
   );
 
   return (

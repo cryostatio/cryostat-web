@@ -35,15 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { AuthMethod } from '@app/Shared/Services/Login.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionGroup, Button, Checkbox, Form, FormGroup, Text, TextInput, TextVariants } from '@patternfly/react-core';
+import { Base64 } from 'js-base64';
+import * as React from 'react';
 import { map } from 'rxjs/operators';
 import { FormProps } from './FormProps';
-import { Base64 } from 'js-base64';
-import { AuthMethod } from '@app/Shared/Services/Login.service';
 
-export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
+export const BasicAuthForm: React.FC<FormProps> = ({ onSubmit }) => {
   const context = React.useContext(ServiceContext);
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -58,7 +58,7 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
           setUsername(creds);
           return;
         }
-        let parts: string[] = creds.split(':');
+        const parts: string[] = creds.split(':');
         setUsername(parts[0]);
         setPassword(parts[1]);
       });
@@ -88,9 +88,9 @@ export const BasicAuthForm: React.FunctionComponent<FormProps> = (props) => {
 
   const handleSubmit = React.useCallback(
     (evt) => {
-      props.onSubmit(evt, `${username}:${password}`, AuthMethod.BASIC, rememberMe);
+      onSubmit(evt, `${username}:${password}`, AuthMethod.BASIC, rememberMe);
     },
-    [props, props.onSubmit, username, password, context.login, rememberMe]
+    [onSubmit, username, password, rememberMe]
   );
 
   // FIXME Patternfly Form component onSubmit is not triggered by Enter keydown when the Form contains

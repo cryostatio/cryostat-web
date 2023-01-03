@@ -35,10 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import * as React from 'react';
 
 export interface DynamicFeatureFlagProps {
   levels: FeatureLevel[];
@@ -57,7 +57,7 @@ export const DynamicFeatureFlag: React.FunctionComponent<DynamicFeatureFlagProps
 
   React.useLayoutEffect(() => {
     addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
-  }, [addSubscription, context.settings.featureLevel, setActiveLevel]);
+  }, [addSubscription, context.settings, setActiveLevel]);
 
   const toRender = React.useMemo(() => {
     if (levels.includes(activeLevel)) {

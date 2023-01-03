@@ -35,11 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
-import { DeleteOrDisableWarningType, getFromWarningMap } from './DeleteWarningUtils';
-import { useState } from 'react';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
+import * as React from 'react';
+import { useState } from 'react';
+import { DeleteOrDisableWarningType, getFromWarningMap } from './DeleteWarningUtils';
 
 export interface DeleteWarningProps {
   warningType: DeleteOrDisableWarningType;
@@ -48,11 +48,11 @@ export interface DeleteWarningProps {
   onClose: () => void;
 }
 
-export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose }: DeleteWarningProps): JSX.Element => {
+export const DeleteWarningModal = ({ onAccept, onClose, ...props }: DeleteWarningProps): JSX.Element => {
   const context = React.useContext(ServiceContext);
   const [doNotAsk, setDoNotAsk] = useState(false);
 
-  const realWarningType = getFromWarningMap(warningType);
+  const realWarningType = getFromWarningMap(props.warningType);
 
   const onAcceptClose = React.useCallback(() => {
     onAccept();
@@ -60,7 +60,7 @@ export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose }: 
     if (doNotAsk && !!realWarningType) {
       context.settings.setDeletionDialogsEnabledFor(realWarningType.id, false);
     }
-  }, [onAccept, onClose, doNotAsk, context, context.settings]);
+  }, [context.settings, onAccept, onClose, doNotAsk, realWarningType]);
 
   return (
     <Modal
@@ -69,7 +69,7 @@ export const DeleteWarningModal = ({ warningType, visible, onAccept, onClose }: 
       aria-label={realWarningType?.ariaLabel}
       titleIconVariant="warning"
       variant={ModalVariant.medium}
-      isOpen={visible}
+      isOpen={props.visible}
       showClose
       onClose={onClose}
       actions={[

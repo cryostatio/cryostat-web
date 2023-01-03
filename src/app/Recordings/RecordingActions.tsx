@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { ActiveRecording, Recording } from '@app/Shared/Services/Api.service';
+import { Recording } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -92,7 +92,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
           }
         })
     );
-  }, [addSubscription, notifications, props.uploadFn, context.api]);
+  }, [addSubscription, notifications, props, context.api]);
 
   const handleDownloadRecording = React.useCallback(() => {
     context.api.downloadRecording(props.recording);

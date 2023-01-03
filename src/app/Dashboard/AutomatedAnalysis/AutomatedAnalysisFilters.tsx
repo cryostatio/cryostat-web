@@ -35,13 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { allowedAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { automatedAnalysisUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { RuleEvaluation } from '@app/Shared/Services/Report.service';
 import {
   Dropdown,
   DropdownItem,
   DropdownPosition,
   DropdownToggle,
+  ToolbarChipGroup,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
@@ -50,10 +53,8 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { AutomatedAnalysisNameFilter } from './Filters/AutomatedAnalysisNameFilter';
 import { AutomatedAnalysisTopicFilter } from './Filters/AutomatedAnalysisTopicFilter';
-import { allowedAutomatedAnalysisFilters } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
 
 export interface AutomatedAnalysisFiltersCategories {
   Name: string[];
@@ -71,7 +72,7 @@ export interface AutomatedAnalysisFiltersProps {
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }
 
-export const AutomatedAnalysisFilters: React.FunctionComponent<AutomatedAnalysisFiltersProps> = (props) => {
+export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> = ({ updateFilters, ...props }) => {
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
@@ -93,30 +94,31 @@ export const AutomatedAnalysisFilters: React.FunctionComponent<AutomatedAnalysis
       setIsCategoryDropdownOpen(false);
       dispatch(automatedAnalysisUpdateCategoryIntent(props.target, category));
     },
-    [dispatch, automatedAnalysisUpdateCategoryIntent, setIsCategoryDropdownOpen, props.target]
+    [dispatch, setIsCategoryDropdownOpen, props.target]
   );
 
   const onDelete = React.useCallback(
-    (category, value) => props.updateFilters(props.target, { filterKey: category, filterValue: value, deleted: true }),
-    [props.updateFilters, props.target]
+    (category: string | ToolbarChipGroup, value) =>
+      updateFilters(props.target, { filterKey: category as string, filterValue: value, deleted: true }),
+    [updateFilters, props.target]
   );
 
   const onDeleteGroup = React.useCallback(
-    (category) =>
-      props.updateFilters(props.target, { filterKey: category, deleted: true, deleteOptions: { all: true } }),
-    [props.updateFilters, props.target]
+    (category: string | ToolbarChipGroup) =>
+      updateFilters(props.target, { filterKey: category as string, deleted: true, deleteOptions: { all: true } }),
+    [updateFilters, props.target]
   );
 
   const onNameInput = React.useCallback(
-    (inputName) => props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: inputName }),
-    [props.updateFilters, currentCategory, props.target]
+    (inputName: string) => updateFilters(props.target, { filterKey: currentCategory, filterValue: inputName }),
+    [updateFilters, currentCategory, props.target]
   );
 
   const onTopicInput = React.useCallback(
-    (inputTopic) => {
-      props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: inputTopic });
+    (inputTopic: string) => {
+      updateFilters(props.target, { filterKey: currentCategory, filterValue: inputTopic });
     },
-    [props.updateFilters, currentCategory, props.target]
+    [updateFilters, currentCategory, props.target]
   );
 
   const categoryDropdown = React.useMemo(() => {
@@ -137,16 +139,18 @@ export const AutomatedAnalysisFilters: React.FunctionComponent<AutomatedAnalysis
         ))}
       />
     );
-  }, [allowedAutomatedAnalysisFilters, isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
+  }, [isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
 
   const filterDropdownItems = React.useMemo(
     () => [
       <AutomatedAnalysisNameFilter
+        key={'name'}
         evaluations={props.evaluations}
         filteredNames={props.filters.Name}
         onSubmit={onNameInput}
       />,
       <AutomatedAnalysisTopicFilter
+        key={'topic'}
         evaluations={props.evaluations}
         filteredTopics={props.filters.Topic}
         onSubmit={onTopicInput}
@@ -192,7 +196,7 @@ export const filterAutomatedAnalysis = (
 
   let filtered = topicEvalTuple;
 
-  if (!!filters.Name.length) {
+  if (filters.Name != null && !!filters.Name.length) {
     filtered = filtered.map(([topic, evaluations]) => {
       return [topic, evaluations.filter((evaluation) => filters.Name.includes(evaluation.name))] as [
         string,

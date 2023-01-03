@@ -36,10 +36,10 @@
  * SOFTWARE.
  */
 
-import React from 'react';
-import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import { Recording } from '@app/Shared/Services/Api.service';
 import { parseLabels, RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { Recording } from '@app/Shared/Services/Api.service';
+import { Label, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
+import React from 'react';
 
 export interface LabelFilterProps {
   recordings: Recording[];
@@ -49,29 +49,29 @@ export interface LabelFilterProps {
 
 export const getLabelDisplay = (label: RecordingLabel) => `${label.key}:${label.value}`;
 
-export const LabelFilter: React.FunctionComponent<LabelFilterProps> = (props) => {
+export const LabelFilter: React.FunctionComponent<LabelFilterProps> = ({ recordings, filteredLabels, onSubmit }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const onSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
       if (!isPlaceholder) {
         setIsExpanded(false);
-        props.onSubmit(selection);
+        onSubmit(selection);
       }
     },
-    [props.onSubmit, setIsExpanded]
+    [onSubmit, setIsExpanded]
   );
 
   const labels = React.useMemo(() => {
     const labels = new Set<string>();
-    props.recordings.forEach((r) => {
+    recordings.forEach((r) => {
       if (!r || !r.metadata || !r.metadata.labels) return;
       parseLabels(r.metadata.labels).map((label) => labels.add(getLabelDisplay(label)));
     });
     return Array.from(labels)
-      .filter((l) => !props.filteredLabels.includes(l))
+      .filter((l) => !filteredLabels.includes(l))
       .sort();
-  }, [props.recordings, parseLabels, getLabelDisplay]);
+  }, [recordings, filteredLabels]);
 
   return (
     <Select

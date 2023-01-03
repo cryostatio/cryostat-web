@@ -35,16 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import * as React from 'react';
-import { cleanup, screen, within } from '@testing-library/react';
-import renderer, { act } from 'react-test-renderer';
-import '@testing-library/jest-dom';
-import { of } from 'rxjs';
 import { Archives } from '@app/Archives/Archives';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import { renderWithServiceContext } from '../Common';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { cleanup, screen, within } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { of } from 'rxjs';
+import { renderWithServiceContext } from '../Common';
 
 jest.mock('@app/Recordings/ArchivedRecordingsTable', () => {
   return {

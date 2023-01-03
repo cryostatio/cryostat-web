@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export enum LocalStorageKey {
   FEATURE_LEVEL,
   DASHBOARD_CFG,

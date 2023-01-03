@@ -35,9 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Observable, of } from 'rxjs';
-import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { Locations } from '@app/Settings/CredentialsStorage';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
+import { Observable, of } from 'rxjs';
 import { ApiService } from './Api.service';
 
 export interface Credential {
@@ -52,7 +52,7 @@ export class JmxCredentials {
   constructor(private readonly api: () => ApiService) {}
 
   setCredential(targetId: string, username: string, password: string): Observable<boolean> {
-    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
+    const location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
     switch (location) {
       case Locations.BACKEND.key:
         return this.api().postCredentials(`target.connectUrl == "${targetId}"`, username, password);
@@ -66,7 +66,7 @@ export class JmxCredentials {
   }
 
   getCredential(targetId: string): Observable<Credential | undefined> {
-    let location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
+    const location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
     switch (location) {
       case Locations.BACKEND.key:
         // if this is stored on the backend then Cryostat should be using those and not prompting us to request from the user

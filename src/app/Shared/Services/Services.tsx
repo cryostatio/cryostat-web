@@ -35,16 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { NotificationsInstance } from '@app/Notifications/Notifications';
-import { TargetService, TargetInstance } from './Target.service';
-import { TargetsService } from './Targets.service';
+import * as React from 'react';
 import { ApiService } from './Api.service';
+import { JmxCredentials } from './JmxCredentials.service';
+import { LoginService } from './Login.service';
 import { NotificationChannel } from './NotificationChannel.service';
 import { ReportService } from './Report.service';
 import { SettingsService } from './Settings.service';
-import { LoginService } from './Login.service';
-import { JmxCredentials } from './JmxCredentials.service';
+import { TargetService, TargetInstance } from './Target.service';
+import { TargetsService } from './Targets.service';
 
 export interface Services {
   target: TargetService;

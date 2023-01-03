@@ -61,8 +61,8 @@ const mockRecording: ActiveRecording = {
   maxAge: 0,
 };
 
-const onDurationInput = jest.fn((durationInput) => {});
-const onContinuousSelect = jest.fn((continuous) => {});
+const onDurationInput = jest.fn((_durationInput) => undefined);
+const onContinuousSelect = jest.fn((_continuous) => undefined);
 
 describe('<DurationFilter />', () => {
   let emptyFilteredDuration: string[];
@@ -122,14 +122,14 @@ describe('<DurationFilter />', () => {
   });
 
   it('should select continous when clicking unchecked continuous box', async () => {
-    const submitContinous = jest.fn((continous) => {
+    const submitContinuous = jest.fn((_continous) => {
       filteredDurationsWithoutCont.push('continuous');
     });
 
     const { user } = renderDefault(
       <DurationFilter
         durations={filteredDurationsWithoutCont}
-        onContinuousDurationSelect={submitContinous}
+        onContinuousDurationSelect={submitContinuous}
         onDurationInput={onDurationInput}
       />
     );
@@ -141,21 +141,21 @@ describe('<DurationFilter />', () => {
 
     await user.click(checkBox);
 
-    expect(submitContinous).toHaveBeenCalledTimes(1);
-    expect(submitContinous).toHaveBeenCalledWith(true);
+    expect(submitContinuous).toHaveBeenCalledTimes(1);
+    expect(submitContinuous).toHaveBeenCalledWith(true);
 
     expect(filteredDurationsWithoutCont).toStrictEqual([`${mockRecording.duration}`, 'continuous']);
   });
 
   it('should unselect continous when clicking checked continuous box', async () => {
-    const submitContinous = jest.fn((continous) => {
+    const submitContinuous = jest.fn((_continous) => {
       filteredDurationsWithCont = filteredDurationsWithCont.filter((v) => v !== 'continuous');
     });
 
     const { user } = renderDefault(
       <DurationFilter
         durations={filteredDurationsWithCont}
-        onContinuousDurationSelect={submitContinous}
+        onContinuousDurationSelect={submitContinuous}
         onDurationInput={onDurationInput}
       />
     );
@@ -167,8 +167,8 @@ describe('<DurationFilter />', () => {
 
     await user.click(checkBox);
 
-    expect(submitContinous).toHaveBeenCalledTimes(1);
-    expect(submitContinous).toHaveBeenCalledWith(false);
+    expect(submitContinuous).toHaveBeenCalledTimes(1);
+    expect(submitContinuous).toHaveBeenCalledWith(false);
     expect(filteredDurationsWithCont).toStrictEqual([`${mockRecording.duration}`]);
   });
 

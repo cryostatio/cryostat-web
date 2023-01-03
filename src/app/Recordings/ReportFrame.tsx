@@ -35,20 +35,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { Recording, isHttpError } from '@app/Shared/Services/Api.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { Spinner } from '@patternfly/react-core';
-import { first } from 'rxjs/operators';
 import { isGenerationError } from '@app/Shared/Services/Report.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Spinner } from '@patternfly/react-core';
+import * as React from 'react';
+import { first } from 'rxjs/operators';
 
 export interface ReportFrameProps extends React.HTMLProps<HTMLIFrameElement> {
   isExpanded: boolean;
   recording: Recording;
 }
 
-export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo((props) => {
+export const ReportFrame: React.FunctionComponent<ReportFrameProps> = (props) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [report, setReport] = React.useState(undefined as string | undefined);
@@ -63,9 +63,9 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
       context.reports
         .report(recording)
         .pipe(first())
-        .subscribe(
-          (report) => setReport(report),
-          (err) => {
+        .subscribe({
+          next: setReport,
+          error: (err) => {
             if (isGenerationError(err)) {
               err.messageDetail.pipe(first()).subscribe((detail) => setReport(detail));
             } else if (isHttpError(err)) {
@@ -73,8 +73,8 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
             } else {
               setReport(JSON.stringify(err));
             }
-          }
-        )
+          },
+        })
     );
   }, [addSubscription, context.reports, recording, isExpanded, setReport, props]);
 
@@ -86,4 +86,4 @@ export const ReportFrame: React.FunctionComponent<ReportFrameProps> = React.memo
       <iframe title="Automated Analysis" srcDoc={report} {...rest} onLoad={onLoad} hidden={!(loaded && isExpanded)} />
     </>
   );
-});
+};

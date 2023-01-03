@@ -38,7 +38,7 @@
 
 export interface UpdateFilterOptions {
   filterKey: string;
-  filterValue?: any;
+  filterValue?: unknown;
   deleted?: boolean;
   deleteOptions?: {
     all: boolean;

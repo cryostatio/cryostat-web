@@ -35,8 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import * as React from 'react';
+import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Divider,
   ExpandableSection,
@@ -47,10 +48,8 @@ import {
   Form,
   FormGroup,
 } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
+import * as React from 'react';
 import { UserSetting } from './Settings';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 
 const min = 0;
 const max = 10;
@@ -64,7 +63,7 @@ const Component = () => {
 
   React.useEffect(() => {
     addSubscription(context.settings.visibleNotificationsCount().subscribe(setVisibleNotificationsCount));
-  }, [addSubscription, context.settings.visibleNotificationsCount, setVisibleNotificationsCount]);
+  }, [addSubscription, context.settings, setVisibleNotificationsCount]);
 
   const handleCheckboxChange = React.useCallback(
     (checked, element) => {
@@ -82,7 +81,7 @@ const Component = () => {
       context.settings.setNotificationsEnabled(newState);
       setState(newState);
     },
-    [state, setState]
+    [context.settings, setState, state]
   );
 
   const handleChange = React.useCallback(
@@ -95,7 +94,7 @@ const Component = () => {
       }
       context.settings.setVisibleNotificationCount(value);
     },
-    [visibleNotificationsCount, context.settings.setVisibleNotificationCount]
+    [visibleNotificationsCount, context.settings]
   );
 
   const handleVisibleStep = React.useCallback(
@@ -103,7 +102,7 @@ const Component = () => {
       const v = visibleNotificationsCount + delta;
       context.settings.setVisibleNotificationCount(v);
     },
-    [visibleNotificationsCount, context.settings.setVisibleNotificationCount]
+    [visibleNotificationsCount, context.settings]
   );
 
   const allChecked = React.useMemo(() => {
@@ -118,7 +117,7 @@ const Component = () => {
       result.set(k, v?.title || k);
     });
     return result;
-  }, [messageKeys]);
+  }, []);
 
   const switches = React.useMemo(() => {
     return Array.from(state.entries(), ([key, value]) => (
@@ -126,7 +125,7 @@ const Component = () => {
         <Switch id={key} label={labels.get(key)} isChecked={value} onChange={handleCheckboxChange} />
       </StackItem>
     ));
-  }, [state, labels]);
+  }, [handleCheckboxChange, state, labels]);
 
   return (
     <>

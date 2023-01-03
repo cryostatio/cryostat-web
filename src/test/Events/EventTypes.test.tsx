@@ -35,16 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { act as doAct, cleanup, render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { of, Subject } from 'rxjs';
+import { EventType, EventTypes } from '@app/Events/EventTypes';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
-import { EventType, EventTypes } from '@app/Events/EventTypes';
+import { act as doAct, cleanup, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { of, Subject } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };

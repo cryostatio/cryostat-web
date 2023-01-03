@@ -35,14 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { TemplateType } from '@app/Shared/Services/Api.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
+import * as React from 'react';
 import { StaticContext } from 'react-router';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
-import { TemplateType } from '@app/Shared/Services/Api.service';
 
 export interface CreateRecordingProps {
   templateName?: string;
@@ -56,7 +56,7 @@ export interface EventTemplate {
   type: TemplateType;
 }
 
-const Comp: React.FunctionComponent<RouteComponentProps<{}, StaticContext, CreateRecordingProps>> = (props) => {
+const Comp: React.FC<RouteComponentProps<Record<string, never>, StaticContext, CreateRecordingProps>> = (props) => {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const onTabSelect = React.useCallback((evt, idx) => setActiveTab(Number(idx)), [setActiveTab]);

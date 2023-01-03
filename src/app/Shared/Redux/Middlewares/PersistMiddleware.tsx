@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Middleware } from '@reduxjs/toolkit';
 import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlicer';
@@ -43,6 +42,7 @@ import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/Automat
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
 import { RootState } from '../ReduxStore';
 
+/* eslint-disable-next-line  @typescript-eslint/ban-types*/
 export const persistMiddleware: Middleware<{}, RootState> =
   ({ getState }) =>
   (next) =>

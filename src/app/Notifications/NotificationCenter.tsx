@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import {
   Dropdown,
   DropdownItem,
@@ -53,8 +52,9 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
-import { Notification, NotificationsContext } from './Notifications';
+import * as React from 'react';
 import { combineLatest } from 'rxjs';
+import { Notification, NotificationsContext } from './Notifications';
 
 export interface NotificationCenterProps {
   onClose: () => void;
@@ -134,21 +134,21 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
         return category;
       });
     });
-  }, [setDrawerCategories, drawerCategories[PROBLEMS_CATEGORY_IDX].unreadCount]);
+  }, [setDrawerCategories, drawerCategories]);
 
   const handleMarkAllRead = React.useCallback(() => {
     context.markAllRead();
-  }, [context, context.markAllRead]);
+  }, [context]);
 
   const handleClearAll = React.useCallback(() => {
     context.clearAll();
-  }, [context, context.clearAll]);
+  }, [context]);
 
   const markRead = React.useCallback(
     (key?: string) => {
       context.setRead(key);
     },
-    [context, context.setRead]
+    [context]
   );
 
   const timestampToDateTimeString = (timestamp?: number): string => {

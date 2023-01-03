@@ -51,11 +51,9 @@ import {
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-export interface AutomatedAnalysisScoreFilterProps {
-  targetConnectUrl: string;
-}
+export interface AutomatedAnalysisScoreFilterProps {}
 
-export const AutomatedAnalysisScoreFilter: React.FunctionComponent<AutomatedAnalysisScoreFilterProps> = (props) => {
+export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilterProps> = (_) => {
   const dispatch = useDispatch<StateDispatch>();
   const currentScore = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.state.globalFilters.filters;

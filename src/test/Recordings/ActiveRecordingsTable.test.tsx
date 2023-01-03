@@ -35,13 +35,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { createMemoryHistory } from 'history';
-import { act, cleanup, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { of, Subject } from 'rxjs';
+import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
+import {
+  emptyActiveRecordingFilters,
+  emptyArchivedRecordingFilters,
+  TargetRecordingFilters,
+} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { defaultServices, Services } from '@app/Shared/Services/Services';
+import { TargetService } from '@app/Shared/Services/Target.service';
+import { act, cleanup, screen, within } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import * as React from 'react';
+import { of, Subject } from 'rxjs';
+import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -93,18 +104,6 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
     }),
   };
 });
-
-import { ActiveRecordingsTable } from '@app/Recordings/ActiveRecordingsTable';
-import { defaultServices, Services } from '@app/Shared/Services/Services';
-import { DeleteActiveRecordings, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import {
-  emptyActiveRecordingFilters,
-  emptyArchivedRecordingFilters,
-  TargetRecordingFilters,
-} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
-import { TargetService } from '@app/Shared/Services/Target.service';
 
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));

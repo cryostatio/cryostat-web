@@ -35,17 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen } from '@testing-library/react';
-import { of } from 'rxjs';
-import '@testing-library/jest-dom';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { BulkEditLabels } from '@app/RecordingMetadata/BulkEditLabels';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import '@testing-library/jest-dom';
+import { cleanup, screen } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 jest.mock('@patternfly/react-core', () => ({
   ...jest.requireActual('@patternfly/react-core'),
@@ -254,7 +254,7 @@ describe('<BulkEditLabels />', () => {
 
     await user.click(editButton);
 
-    let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
+    const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
@@ -294,13 +294,13 @@ describe('<BulkEditLabels />', () => {
       <BulkEditLabels checkedIndices={activeCheckedIndices} isTargetRecording={true} />
     );
 
-    let editButton = screen.getByRole('button', { name: 'Edit Labels' });
+    const editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
     await user.click(editButton);
 
-    let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
+    const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 
@@ -337,13 +337,13 @@ describe('<BulkEditLabels />', () => {
       <BulkEditLabels checkedIndices={archivedCheckedIndices} isTargetRecording={false} />
     );
 
-    let editButton = screen.getByRole('button', { name: 'Edit Labels' });
+    const editButton = screen.getByRole('button', { name: 'Edit Labels' });
     expect(editButton).toBeInTheDocument();
     expect(editButton).toBeVisible();
 
     await user.click(editButton);
 
-    let addLabelButton = screen.getByRole('button', { name: 'Add Label' });
+    const addLabelButton = screen.getByRole('button', { name: 'Add Label' });
     expect(addLabelButton).toBeInTheDocument();
     expect(addLabelButton).toBeVisible();
 

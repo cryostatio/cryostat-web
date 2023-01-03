@@ -35,22 +35,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Card, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
-import { useDispatch, useSelector } from 'react-redux';
-import { TargetView } from '@app/TargetView/TargetView';
-import { AddCard } from './AddCard';
-import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
-import { Observable, of } from 'rxjs';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { TargetView } from '@app/TargetView/TargetView';
+import { Card, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
+import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Observable, of } from 'rxjs';
+import { AddCard } from './AddCard';
+import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 
 export interface DashboardCardDescriptor {
   title: string;
   description: string;
   descriptionFull: JSX.Element | string;
-  component: React.FunctionComponent<any>;
+  component: React.FC<any>;
   propControls: PropControl[];
   advancedConfig?: JSX.Element;
 }
@@ -206,7 +207,7 @@ export function getConfigByTitle(title: string): DashboardCardDescriptor {
   throw new Error(`Unknown card type selection: ${title}`);
 }
 
-export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
+export const Dashboard: React.FC<DashboardProps> = (_) => {
   const dispatch = useDispatch<StateDispatch>();
   const cardConfigs = useSelector((state: RootState) => state.dashboardConfigs.list);
 
@@ -214,7 +215,7 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
     (idx: number) => {
       dispatch(dashboardCardConfigDeleteCardIntent(idx));
     },
-    [dispatch, dashboardCardConfigDeleteCardIntent]
+    [dispatch]
   );
 
   return (
@@ -224,7 +225,7 @@ export const Dashboard: React.FunctionComponent<DashboardProps> = (props) => {
           <StackItem key={idx}>
             {React.createElement(getConfigByName(cfg.name).component, {
               ...cfg.props,
-              actions: [<DashboardCardActionMenu onRemove={() => handleRemove(idx)} />],
+              actions: [<DashboardCardActionMenu key={`${cfg.name}-remove`} onRemove={() => handleRemove(idx)} />],
             })}
           </StackItem>
         ))}

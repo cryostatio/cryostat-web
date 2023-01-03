@@ -36,11 +36,11 @@
  * SOFTWARE.
  */
 
+import build from '@app/build.json';
+import { NotificationsContext } from '@app/Notifications/Notifications';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
 import React from 'react';
-import build from '@app/build.json';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { NotificationsContext } from '@app/Notifications/Notifications';
 
 export const CRYOSTAT_TRADEMARK = 'Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0';
 
@@ -84,7 +84,7 @@ export const AboutDescription = () => {
     } else {
       return <Text component={TextVariants.p}>{cryostatVersion}</Text>;
     }
-  }, [build.commitHashUrl, cryostatCommitHash]);
+  }, [cryostatVersion, cryostatCommitHash]);
 
   return (
     <>

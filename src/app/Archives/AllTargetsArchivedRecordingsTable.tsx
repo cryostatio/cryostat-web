@@ -35,10 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { includesTarget, indexOfTarget, isEqualTarget, Target } from '@app/Shared/Services/Target.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Toolbar,
@@ -52,19 +54,15 @@ import {
   EmptyStateIcon,
   Title,
 } from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
 import { TableComposable, Th, Thead, Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
-import SearchIcon from '@patternfly/react-icons/dist/esm/icons/search-icon';
-import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
+import * as React from 'react';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
-import { LoadingView } from '@app/LoadingView/LoadingView';
 
 export interface AllTargetsArchivedRecordingsTableProps {}
 
-export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
-  AllTargetsArchivedRecordingsTableProps
-> = () => {
+export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecordingsTableProps> = () => {
   const context = React.useContext(ServiceContext);
 
   const [targets, setTargets] = React.useState([] as Target[]);
@@ -91,6 +89,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
   );
 
   const handleTargetsAndCounts = React.useCallback(
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     (targetNodes: any) => {
       const updatedTargets: Target[] = [];
       const updatedCounts = new Map<string, number>();
@@ -109,6 +108,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
     [setTargets, setCounts, setIsLoading]
   );
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const refreshTargetsAndCounts = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
@@ -133,8 +133,10 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
         .pipe(map((v) => v.data.targetNodes))
         .subscribe(handleTargetsAndCounts)
     );
-  }, [addSubscription, context, context.api, setIsLoading, handleTargetsAndCounts]);
+  }, [addSubscription, context.api, setIsLoading, handleTargetsAndCounts]);
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const getCountForNewTarget = React.useCallback(
     (target: Target) => {
       addSubscription(
@@ -163,9 +165,10 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
           )
       );
     },
-    [addSubscription, context, context.api, setCounts]
+    [addSubscription, context.api, setCounts]
   );
 
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   const handleLostTarget = React.useCallback(
     (target: Target) => {
       setTargets((old) => {
@@ -284,7 +287,7 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
 
   const targetRows = React.useMemo(() => {
     return targets.map((target, idx) => {
-      let isExpanded: boolean = includesTarget(expandedTargets, target);
+      const isExpanded: boolean = includesTarget(expandedTargets, target);
 
       const handleToggle = () => {
         if ((counts.get(target.connectUrl) || 0) !== 0 || isExpanded) {
@@ -315,11 +318,11 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
         </Tr>
       );
     });
-  }, [targets, expandedTargets, counts, isHidden]);
+  }, [toggleExpanded, targets, expandedTargets, counts, isHidden, tableColumns]);
 
   const recordingRows = React.useMemo(() => {
     return targets.map((target, idx) => {
-      let isExpanded: boolean = includesTarget(expandedTargets, target);
+      const isExpanded: boolean = includesTarget(expandedTargets, target);
 
       return (
         <Tr key={`${idx}_child`} isExpanded={isExpanded} isHidden={isHidden[idx]}>
@@ -333,10 +336,10 @@ export const AllTargetsArchivedRecordingsTable: React.FunctionComponent<
         </Tr>
       );
     });
-  }, [targets, expandedTargets, isHidden]);
+  }, [targets, expandedTargets, isHidden, tableColumns.length]);
 
   const rowPairs = React.useMemo(() => {
-    let rowPairs: JSX.Element[] = [];
+    const rowPairs: JSX.Element[] = [];
     for (let i = 0; i < targetRows.length; i++) {
       rowPairs.push(targetRows[i]);
       rowPairs.push(recordingRows[i]);

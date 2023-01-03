@@ -104,7 +104,7 @@ const mockArchivedRecordingList = [
 const activeCategoryOptions = Object.keys({} as RecordingFiltersCategories);
 const archivedCategoryOptions = ['Name', 'Label'];
 
-const updateFilters = jest.fn((target: string, options: UpdateFilterOptions) => {});
+const updateFilters = jest.fn((_target: string, _options: UpdateFilterOptions) => undefined);
 
 describe('<RecordingFilters />', () => {
   let preloadedState: RootState;
@@ -334,7 +334,7 @@ describe('<RecordingFilters />', () => {
 
     await user.click(selectedItem);
 
-    let categoryMenu = await screen.findByRole('menu');
+    const categoryMenu = await screen.findByRole('menu');
     expect(categoryMenu).toBeInTheDocument();
     expect(categoryMenu).toBeVisible();
 
@@ -479,7 +479,7 @@ describe('<RecordingFilters />', () => {
     );
 
     activeCategoryOptions.forEach((category) => {
-      let chipGroup = screen.queryByRole('group', { name: category });
+      const chipGroup = screen.queryByRole('group', { name: category });
       expect(chipGroup).not.toBeInTheDocument();
     });
   });

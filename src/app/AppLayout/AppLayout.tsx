@@ -35,11 +35,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import * as _ from 'lodash';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
+import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
+import build from '@app/build.json';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
+import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
+import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { SessionState } from '@app/Shared/Services/Login.service';
+import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { openTabForUrl } from '@app/utils/utils';
 import {
   Alert,
   AlertGroup,
@@ -70,7 +78,6 @@ import {
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
-  Text,
 } from '@patternfly/react-core';
 import {
   BarsIcon,
@@ -82,34 +89,22 @@ import {
   QuestionCircleIcon,
   UserIcon,
 } from '@patternfly/react-icons';
+import * as _ from 'lodash';
+import * as React from 'react';
+import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { map } from 'rxjs/operators';
-import { matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
-import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
-import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
-import { SessionState } from '@app/Shared/Services/Login.service';
-import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import build from '@app/build.json';
-import { openTabForUrl } from '@app/utils/utils';
-import { Link } from 'react-router-dom';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
-const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
+const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
-  const logoProps = {
-    href: '/',
-  };
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
@@ -137,15 +132,15 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
 
   React.useEffect(() => {
     addSubscription(notificationsContext.notifications().subscribe((n) => setNotifications([...n])));
-  }, [notificationsContext.notifications, addSubscription]);
+  }, [notificationsContext, addSubscription]);
 
   React.useEffect(() => {
     addSubscription(notificationsContext.drawerState().subscribe(setNotificationDrawerExpanded));
-  }, [addSubscription, notificationsContext.drawerState, setNotificationDrawerExpanded]);
+  }, [addSubscription, notificationsContext, setNotificationDrawerExpanded]);
 
   React.useEffect(() => {
     addSubscription(serviceContext.settings.visibleNotificationsCount().subscribe(setVisibleNotificationsCount));
-  }, [addSubscription, serviceContext.settings.visibleNotificationsCount, setVisibleNotificationsCount]);
+  }, [addSubscription, serviceContext.settings, setVisibleNotificationsCount]);
 
   const notificationsToDisplay = React.useMemo(() => {
     return notifications
@@ -156,7 +151,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
         if (!curr.timestamp) return 1;
         return prev.timestamp - curr.timestamp;
       });
-  }, [notifications, serviceContext.settings, serviceContext.settings.notificationsEnabledFor]);
+  }, [notifications, serviceContext.settings]);
 
   const overflowMessage = React.useMemo(() => {
     if (isNotificationDrawerExpanded) {
@@ -171,12 +166,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
 
   React.useEffect(() => {
     addSubscription(notificationsContext.unreadNotifications().subscribe((s) => setUnreadNotificationsCount(s.length)));
-  }, [
-    notificationsContext.unreadNotifications,
-    unreadNotificationsCount,
-    setUnreadNotificationsCount,
-    addSubscription,
-  ]);
+  }, [notificationsContext, unreadNotificationsCount, setUnreadNotificationsCount, addSubscription]);
 
   React.useEffect(() => {
     addSubscription(
@@ -208,13 +198,10 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
 
   const handleMarkNotificationRead = React.useCallback(
     (key) => () => notificationsContext.setRead(key, true),
-    [notificationsContext.setRead]
+    [notificationsContext]
   );
 
-  const handleTimeout = React.useCallback(
-    (key) => () => notificationsContext.setHidden(key),
-    [notificationsContext.setHidden]
-  );
+  const handleTimeout = React.useCallback((key) => () => notificationsContext.setHidden(key), [notificationsContext]);
 
   React.useEffect(() => {
     addSubscription(
@@ -242,7 +229,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
   );
 
   const mobileOnSelect = React.useCallback(
-    (selected) => {
+    (_) => {
       if (isMobileView) {
         setIsNavOpenMobile(false);
       }
@@ -252,19 +239,19 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
 
   const handleSettingsButtonClick = React.useCallback(() => {
     routerHistory.push('/settings');
-  }, [routerHistory.push]);
+  }, [routerHistory]);
 
   const handleNotificationCenterToggle = React.useCallback(() => {
     notificationsContext.setDrawerState(!isNotificationDrawerExpanded);
-  }, [isNotificationDrawerExpanded, notificationsContext.setDrawerState]);
+  }, [isNotificationDrawerExpanded, notificationsContext]);
 
   const handleCloseNotificationCenter = React.useCallback(() => {
     notificationsContext.setDrawerState(false);
-  }, [notificationsContext.setDrawerState]);
+  }, [notificationsContext]);
 
   const handleOpenNotificationCenter = React.useCallback(() => {
     notificationsContext.setDrawerState(true);
-  }, [notificationsContext.setDrawerState]);
+  }, [notificationsContext]);
 
   React.useEffect(() => {
     addSubscription(
@@ -276,7 +263,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
 
   const handleLogout = React.useCallback(() => {
     addSubscription(serviceContext.login.setLoggedOut().subscribe());
-  }, [serviceContext.login, serviceContext.login.setLoggedOut, addSubscription]);
+  }, [serviceContext.login, addSubscription]);
 
   const handleUserInfoToggle = React.useCallback(() => setShowUserInfoDropdown((v) => !v), [setShowUserInfoDropdown]);
 
@@ -314,11 +301,11 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
 
   const handleOpenDocumentation = React.useCallback(() => {
     openTabForUrl(build.homePageUrl);
-  }, [openTabForUrl, build]);
+  }, []);
 
   const handleOpenDiscussion = React.useCallback(() => {
     openTabForUrl(build.discussionUrl);
-  }, [openTabForUrl, build]);
+  }, []);
 
   const helpItems = React.useMemo(
     () => [
@@ -419,8 +406,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
       </>
     ),
     [
-      notificationsContext.info,
-      isNotificationDrawerExpanded,
+      notificationsContext,
       unreadNotificationsCount,
       errorNotificationsCount,
       handleNotificationCenterToggle,
@@ -432,6 +418,8 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
       showHelpDropdown,
       UserInfoToggle,
       userInfoItems,
+      HelpToggle,
+      helpItems,
     ]
   );
 
@@ -521,7 +509,7 @@ const AppLayout: React.FunctionComponent<AppLayoutProps> = ({ children }) => {
         </NavList>
       </Nav>
     ),
-    [navGroups, routes, mobileOnSelect, isActiveRoute]
+    [mobileOnSelect, isActiveRoute]
   );
 
   const Sidebar = React.useMemo(

@@ -73,13 +73,12 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen } from '@testing-library/react';
-
-import '@testing-library/jest-dom';
 import { ClickableLabel } from '@app/RecordingMetadata/ClickableLabel';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import '@testing-library/jest-dom';
+import { cleanup, screen } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../Common';
 
 const mockLabel = {
@@ -88,7 +87,7 @@ const mockLabel = {
 } as RecordingLabel;
 const mockLabelAsString = 'someLabel: someValue';
 
-const onLabelClick = jest.fn((label: RecordingLabel) => {
+const onLabelClick = jest.fn((_label: RecordingLabel) => {
   /**Do nothing. Used for checking renders */
 });
 

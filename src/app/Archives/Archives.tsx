@@ -35,18 +35,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, TabTitleText, Title } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
-import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
-import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ArchivedRecordingsTable } from '@app/Recordings/ArchivedRecordingsTable';
-import { Target } from '@app/Shared/Services/Target.service';
-import { of } from 'rxjs';
 import { UPLOADS_SUBDIRECTORY } from '@app/Shared/Services/Api.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, TabTitleText, Title } from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
+import * as React from 'react';
+import { of } from 'rxjs';
+import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
+import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
 
 /*
   This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
@@ -62,7 +62,7 @@ export const uploadAsTarget: Target = {
 
 export interface ArchivesProps {}
 
-export const Archives: React.FunctionComponent<ArchivesProps> = (props) => {
+export const Archives: React.FC<ArchivesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeTab, setActiveTab] = React.useState(0);

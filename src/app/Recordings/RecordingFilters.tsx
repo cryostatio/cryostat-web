@@ -35,6 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import {
+  allowedActiveRecordingFilters,
+  allowedArchivedRecordingFilters,
+} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+import { recordingUpdateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import {
   Dropdown,
   DropdownItem,
@@ -48,19 +55,12 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { DateTimePicker } from './Filters/DateTimePicker';
 import { DurationFilter } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
-import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
-import { useDispatch, useSelector } from 'react-redux';
-import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
-import { recordingUpdateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
-import {
-  allowedActiveRecordingFilters,
-  allowedArchivedRecordingFilters,
-} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 
 export interface RecordingFiltersCategories {
   Name: string[];
@@ -79,15 +79,19 @@ export interface RecordingFiltersProps {
   updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
 }
 
-export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = (props) => {
+export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
+  target,
+  isArchived,
+  recordings,
+  filters,
+  updateFilters,
+}) => {
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
-    const targetRecordingFilters = state.recordingFilters.list.filter(
-      (targetFilter) => targetFilter.target === props.target
-    );
+    const targetRecordingFilters = state.recordingFilters.list.filter((targetFilter) => targetFilter.target === target);
     if (!targetRecordingFilters.length) return 'Name'; // Target is not yet loaded
-    return (props.isArchived ? targetRecordingFilters[0].archived : targetRecordingFilters[0].active).selectedCategory;
+    return (isArchived ? targetRecordingFilters[0].archived : targetRecordingFilters[0].active).selectedCategory;
   });
 
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = React.useState(false);
@@ -99,60 +103,57 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   const onCategorySelect = React.useCallback(
     (category) => {
       setIsCategoryDropdownOpen(false);
-      dispatch(recordingUpdateCategoryIntent(props.target, category, props.isArchived));
+      dispatch(recordingUpdateCategoryIntent(target, category, isArchived));
     },
-    [dispatch, recordingUpdateCategoryIntent, setIsCategoryDropdownOpen, props.target, props.isArchived]
+    [dispatch, setIsCategoryDropdownOpen, target, isArchived]
   );
 
   const onDelete = React.useCallback(
-    (category, value) => props.updateFilters(props.target, { filterKey: category, filterValue: value, deleted: true }),
-    [props.updateFilters, props.target]
+    (category, value) => updateFilters(target, { filterKey: category, filterValue: value, deleted: true }),
+    [updateFilters, target]
   );
 
   const onDeleteGroup = React.useCallback(
-    (category) =>
-      props.updateFilters(props.target, { filterKey: category, deleted: true, deleteOptions: { all: true } }),
-    [props.updateFilters, props.target]
+    (category) => updateFilters(target, { filterKey: category, deleted: true, deleteOptions: { all: true } }),
+    [updateFilters, target]
   );
 
   const onNameInput = React.useCallback(
-    (inputName) => props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: inputName }),
-    [props.updateFilters, currentCategory, props.target]
+    (inputName) => updateFilters(target, { filterKey: currentCategory, filterValue: inputName }),
+    [updateFilters, currentCategory, target]
   );
 
   const onLabelInput = React.useCallback(
-    (inputLabel) => props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: inputLabel }),
-    [props.updateFilters, currentCategory, props.target]
+    (inputLabel) => updateFilters(target, { filterKey: currentCategory, filterValue: inputLabel }),
+    [updateFilters, currentCategory, target]
   );
 
   const onStartedBeforeInput = React.useCallback(
-    (searchDate) => props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: searchDate }),
-    [props.updateFilters, currentCategory, props.target]
+    (searchDate) => updateFilters(target, { filterKey: currentCategory, filterValue: searchDate }),
+    [updateFilters, currentCategory, target]
   );
 
   const onStartedAfterInput = React.useCallback(
-    (searchDate) => props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: searchDate }),
-    [props.updateFilters, currentCategory, props.target]
+    (searchDate) => updateFilters(target, { filterKey: currentCategory, filterValue: searchDate }),
+    [updateFilters, currentCategory, target]
   );
 
   const onDurationInput = React.useCallback(
-    (duration) =>
-      props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: `${duration.toString()} s` }),
-    [props.updateFilters, currentCategory, props.target]
+    (duration) => updateFilters(target, { filterKey: currentCategory, filterValue: `${duration.toString()} s` }),
+    [updateFilters, currentCategory, target]
   );
 
   const onRecordingStateSelectToggle = React.useCallback(
     (searchState) => {
-      const deleted = props.filters.State && props.filters.State.includes(searchState);
-      props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: searchState, deleted: deleted });
+      const deleted = filters.State && filters.State.includes(searchState);
+      updateFilters(target, { filterKey: currentCategory, filterValue: searchState, deleted: deleted });
     },
-    [props.updateFilters, currentCategory, props.target]
+    [updateFilters, currentCategory, target, filters.State]
   );
 
   const onContinuousDurationSelect = React.useCallback(
-    (cont) =>
-      props.updateFilters(props.target, { filterKey: currentCategory!, filterValue: 'continuous', deleted: !cont }),
-    [props.updateFilters, currentCategory, props.target]
+    (cont) => updateFilters(target, { filterKey: currentCategory, filterValue: 'continuous', deleted: !cont }),
+    [updateFilters, currentCategory, target]
   );
 
   const categoryDropdown = React.useMemo(() => {
@@ -166,49 +167,44 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
           </DropdownToggle>
         }
         isOpen={isCategoryDropdownOpen}
-        dropdownItems={(!props.isArchived ? allowedActiveRecordingFilters : allowedArchivedRecordingFilters).map(
-          (cat) => (
-            <DropdownItem aria-label={cat} key={cat} onClick={() => onCategorySelect(cat)}>
-              {cat}
-            </DropdownItem>
-          )
-        )}
+        dropdownItems={(!isArchived ? allowedActiveRecordingFilters : allowedArchivedRecordingFilters).map((cat) => (
+          <DropdownItem aria-label={cat} key={cat} onClick={() => onCategorySelect(cat)}>
+            {cat}
+          </DropdownItem>
+        ))}
       />
     );
-  }, [
-    props.isArchived,
-    allowedActiveRecordingFilters,
-    allowedArchivedRecordingFilters,
-    isCategoryDropdownOpen,
-    currentCategory,
-    onCategoryToggle,
-    onCategorySelect,
-  ]);
+  }, [isArchived, isCategoryDropdownOpen, currentCategory, onCategoryToggle, onCategorySelect]);
 
   const filterDropdownItems = React.useMemo(
     () => [
-      <NameFilter recordings={props.recordings} onSubmit={onNameInput} filteredNames={props.filters.Name} />,
-      <LabelFilter recordings={props.recordings} onSubmit={onLabelInput} filteredLabels={props.filters.Label} />,
-      ...(!props.isArchived
+      <NameFilter key={'name'} recordings={recordings} onSubmit={onNameInput} filteredNames={filters.Name} />,
+      <LabelFilter key={'label'} recordings={recordings} onSubmit={onLabelInput} filteredLabels={filters.Label} />,
+      ...(!isArchived
         ? [
-            <RecordingStateFilter filteredStates={props.filters.State} onSelectToggle={onRecordingStateSelectToggle} />,
-            <DateTimePicker onSubmit={onStartedBeforeInput} />,
-            <DateTimePicker onSubmit={onStartedAfterInput} />,
+            <RecordingStateFilter
+              key={'recording-state'}
+              filteredStates={filters.State}
+              onSelectToggle={onRecordingStateSelectToggle}
+            />,
+            <DateTimePicker key={'datetime-before'} onSubmit={onStartedBeforeInput} />,
+            <DateTimePicker key={'datetime-after'} onSubmit={onStartedAfterInput} />,
             <DurationFilter
-              durations={props.filters.DurationSeconds}
+              key={'duration'}
+              durations={filters.DurationSeconds}
               onContinuousDurationSelect={onContinuousDurationSelect}
               onDurationInput={onDurationInput}
-            ></DurationFilter>,
+            />,
           ]
         : []),
     ],
     [
-      props.isArchived,
-      props.recordings,
-      props.filters.Name,
-      props.filters.Label,
-      props.filters.State,
-      props.filters.DurationSeconds,
+      isArchived,
+      recordings,
+      filters.Name,
+      filters.Label,
+      filters.State,
+      filters.DurationSeconds,
       onNameInput,
       onLabelInput,
       onRecordingStateSelectToggle,
@@ -225,10 +221,10 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
         <ToolbarItem>
           <InputGroup>
             {categoryDropdown}
-            {Object.keys(props.filters).map((filterKey, i) => (
+            {Object.keys(filters).map((filterKey, i) => (
               <ToolbarFilter
                 key={filterKey}
-                chips={props.filters[filterKey]}
+                chips={filters[filterKey]}
                 deleteChip={onDelete}
                 deleteChipGroup={onDeleteGroup}
                 categoryName={filterKey}
@@ -244,6 +240,7 @@ export const RecordingFilters: React.FunctionComponent<RecordingFiltersProps> = 
   );
 };
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export const filterRecordings = (recordings: any[], filters: RecordingFiltersCategories) => {
   if (!recordings || !recordings.length) {
     return recordings;
@@ -251,7 +248,7 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
 
   let filtered = recordings;
 
-  if (!!filters.Name.length) {
+  if (filters.Name.length) {
     filtered = filtered.filter((r) => filters.Name.includes(r.name));
   }
   if (!!filters.State && !!filters.State.length) {
@@ -286,7 +283,7 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
       }).length;
     });
   }
-  if (!!filters.Label.length) {
+  if (filters.Label.length) {
     filtered = filtered.filter(
       (r) => Object.entries(r.metadata.labels).filter(([k, v]) => filters.Label.includes(`${k}:${v}`)).length
     );

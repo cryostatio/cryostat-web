@@ -35,10 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { uploadAsTarget } from '@app/Archives/Archives';
+import { LabelCell } from '@app/RecordingMetadata/LabelCell';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import {
   ActiveRecording,
   ArchivedRecording,
@@ -46,16 +45,17 @@ import {
   RecordingDirectory,
   UPLOADS_SUBDIRECTORY,
 } from '@app/Shared/Services/Api.service';
-import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
-import { combineLatest, concatMap, filter, first, forkJoin, map, merge, Observable, of } from 'rxjs';
-import { LabelCell } from '@app/RecordingMetadata/LabelCell';
-import { RecordingLabelFields } from './RecordingLabelFields';
-import { HelpIcon } from '@patternfly/react-icons';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { hashCode } from '@app/utils/utils';
-import { uploadAsTarget } from '@app/Archives/Archives';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { Button, Split, SplitItem, Stack, StackItem, Text, Tooltip, ValidatedOptions } from '@patternfly/react-core';
+import { HelpIcon } from '@patternfly/react-icons';
+import * as React from 'react';
+import { combineLatest, concatMap, filter, first, forkJoin, map, Observable, of } from 'rxjs';
+import { includesLabel, parseLabels, RecordingLabel } from './RecordingLabel';
+import { RecordingLabelFields } from './RecordingLabelFields';
 
 export interface BulkEditLabelsProps {
   isTargetRecording: boolean;
@@ -77,7 +77,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
 
   const getIdxFromRecording = React.useCallback(
     (r: Recording): number => (props.isTargetRecording ? (r as ActiveRecording).id : hashCode(r.name)),
-    [hashCode, props.isTargetRecording]
+    [props.isTargetRecording]
   );
 
   const handlePostUpdate = React.useCallback(() => {
@@ -87,7 +87,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
 
   const handleUpdateLabels = React.useCallback(() => {
     setLoading(true);
-    const tasks: Observable<any>[] = [];
+    const tasks: Observable<unknown>[] = [];
     const toDelete = savedCommonLabels.filter((label) => !includesLabel(commonLabels, label));
 
     recordings.forEach((r: Recording) => {
@@ -119,18 +119,16 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     );
   }, [
     addSubscription,
+    context.api,
+    getIdxFromRecording,
+    handlePostUpdate,
+    commonLabels,
+    savedCommonLabels,
     recordings,
     props.checkedIndices,
     props.isTargetRecording,
     props.isUploadsTable,
     props.directory,
-    props.directoryRecordings,
-    editing,
-    commonLabels,
-    savedCommonLabels,
-    parseLabels,
-    context.api,
-    handlePostUpdate,
   ]);
 
   const handleEditLabels = React.useCallback(() => {
@@ -144,7 +142,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
 
   const updateCommonLabels = React.useCallback(
     (setLabels: (l: RecordingLabel[]) => void) => {
-      let allRecordingLabels = [] as RecordingLabel[][];
+      const allRecordingLabels = [] as RecordingLabel[][];
 
       recordings.forEach((r: Recording) => {
         const idx = getIdxFromRecording(r);
@@ -163,9 +161,10 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
 
       setLabels(updatedCommonLabels);
     },
-    [recordings, props.checkedIndices]
+    [recordings, getIdxFromRecording, props.checkedIndices]
   );
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const refreshRecordingList = React.useCallback(() => {
     let observable: Observable<Recording[]>;
     if (props.directoryRecordings) {
@@ -234,11 +233,11 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     props.isTargetRecording,
     props.isUploadsTable,
     props.directoryRecordings,
-    context,
     context.target,
     context.api,
     setRecordings,
   ]);
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   const saveButtonLoadingProps = React.useMemo(
     () =>
@@ -274,7 +273,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
         );
       })
     );
-  }, [addSubscription, context.notificationChannel, setRecordings]);
+  }, [addSubscription, context.target, context.notificationChannel, setRecordings, props.isUploadsTable]);
 
   React.useEffect(() => {
     updateCommonLabels(setCommonLabels);
@@ -283,7 +282,7 @@ export const BulkEditLabels: React.FunctionComponent<BulkEditLabelsProps> = (pro
     if (!recordings.length && editing) {
       setEditing(false);
     }
-  }, [recordings, setCommonLabels, setSavedCommonLabels, updateCommonLabels, setEditing]);
+  }, [editing, recordings, setCommonLabels, setSavedCommonLabels, updateCommonLabels, setEditing]);
 
   React.useEffect(() => {
     if (!props.checkedIndices.length) {

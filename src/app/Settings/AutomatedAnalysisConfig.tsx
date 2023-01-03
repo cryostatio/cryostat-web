@@ -37,15 +37,9 @@
  */
 
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import {
-  AutomatedAnalysisRecordingConfig,
-  defaultAutomatedAnalysisRecordingConfig,
-} from '@app/Shared/Services/Api.service';
+import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { TargetView } from '@app/TargetView/TargetView';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   DescriptionList,
   DescriptionListDescription,
@@ -70,7 +64,7 @@ const Component = () => {
   const onSave = React.useCallback(() => {
     const newConfig = context.settings.automatedAnalysisRecordingConfig();
     setConfig(newConfig);
-  }, [context.settings, context.settings.automatedAnalysisRecordingConfig, setConfig]);
+  }, [context.settings, setConfig]);
 
   return (
     <Stack hasGutter>

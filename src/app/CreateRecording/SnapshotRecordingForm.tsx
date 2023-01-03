@@ -35,18 +35,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
-import { useHistory } from 'react-router-dom';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { first } from 'rxjs';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { authFailMessage, ErrorView, isAuthFail, missingSSLMessage } from '@app/ErrorView/ErrorView';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { ActionGroup, Button, Form, Text, TextVariants } from '@patternfly/react-core';
+import * as React from 'react';
+import { useHistory } from 'react-router-dom';
+import { first } from 'rxjs';
 
 export interface SnapshotRecordingFormProps {}
 
-export const SnapshotRecordingForm: React.FunctionComponent<SnapshotRecordingFormProps> = (props) => {
+export const SnapshotRecordingForm: React.FC<SnapshotRecordingFormProps> = (_) => {
   const history = useHistory();
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);

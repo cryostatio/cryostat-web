@@ -35,9 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
+import { DurationPicker } from '@app/DurationPicker/DurationPicker';
+import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { NotificationsContext } from '@app/Notifications/Notifications';
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
+import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { RecordingOptions, RecordingAttributes, TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
   Button,
@@ -59,20 +67,11 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 import { useHistory } from 'react-router-dom';
+import { forkJoin } from 'rxjs';
 import { concatMap, first, filter } from 'rxjs/operators';
 import { EventTemplate } from './CreateRecording';
-import { RecordingOptions, RecordingAttributes } from '@app/Shared/Services/Api.service';
-import { DurationPicker } from '@app/DurationPicker/DurationPicker';
-import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
-import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
-import { RecordingLabelFields } from '@app/RecordingMetadata/RecordingLabelFields';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { TemplateType } from '@app/Shared/Services/Api.service';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { forkJoin } from 'rxjs';
 
 export interface CustomRecordingFormProps {
   prefilled?: {
@@ -84,7 +83,7 @@ export interface CustomRecordingFormProps {
 export const RecordingNamePattern = /^[\w_]+$/;
 export const DurationPattern = /^[1-9][0-9]*$/;
 
-export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormProps> = ({ prefilled }) => {
+export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefilled }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
@@ -161,18 +160,18 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
   );
 
   const getEventString = React.useCallback(() => {
-    var str = '';
-    if (!!templateName) {
+    let str = '';
+    if (templateName) {
       str += `template=${templateName}`;
     }
-    if (!!templateType) {
+    if (templateType) {
       str += `,type=${templateType}`;
     }
     return str;
   }, [templateName, templateType]);
 
   const getFormattedLabels = React.useCallback(() => {
-    let obj = {};
+    const obj = {};
 
     labels.forEach((l) => {
       if (!!l.key && !!l.value) {
@@ -266,6 +265,7 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
   }, [
     getEventString,
     getFormattedLabels,
+    archiveOnStop,
     continuous,
     duration,
     durationUnit,
@@ -275,13 +275,12 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
     maxSizeUnits,
     nameValid,
     notifications,
-    notifications.warning,
     recordingName,
     toDisk,
     handleCreateRecording,
   ]);
 
-  const refeshFormOptions = React.useCallback(() => {
+  const refreshFormOptions = React.useCallback(() => {
     addSubscription(
       context.target
         .target()
@@ -325,8 +324,8 @@ export const CustomRecordingForm: React.FunctionComponent<CustomRecordingFormPro
   }, [context.target, setErrorMessage, addSubscription, setTemplates, setRecordingOptions]);
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refeshFormOptions));
-  }, [addSubscription, context.target, refeshFormOptions]);
+    addSubscription(context.target.target().subscribe(refreshFormOptions));
+  }, [addSubscription, context.target, refreshFormOptions]);
 
   const isFormInvalid: boolean = React.useMemo(() => {
     return (

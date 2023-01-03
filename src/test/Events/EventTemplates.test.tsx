@@ -35,19 +35,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { act as doAct, cleanup, screen, within } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import { of, Subject } from 'rxjs';
+import { EventTemplates } from '@app/Events/EventTemplates';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { EventTemplate } from '@app/Shared/Services/Api.service';
 import { MessageMeta, MessageType, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices, Services } from '@app/Shared/Services/Services';
-import { EventTemplates } from '@app/Events/EventTemplates';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { TargetService } from '@app/Shared/Services/Target.service';
+import '@testing-library/jest-dom';
+import { act as doAct, cleanup, screen, within } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { of, Subject } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };

@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 import { Notifications } from '@app/Notifications/Notifications';
+import { AlertVariant } from '@patternfly/react-core';
 import _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subject, timer } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { AlertVariant } from '@patternfly/react-core';
 import { concatMap, distinctUntilChanged, filter } from 'rxjs/operators';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { Target } from './Target.service';
 import { TargetDiscoveryEvent } from './Targets.service';
@@ -314,7 +314,7 @@ interface NotificationMessageMapper {
 }
 
 export class NotificationChannel {
-  private ws: WebSocketSubject<any> | null = null;
+  private ws: WebSocketSubject<NotificationMessage> | null = null;
   private readonly _messages = new Subject<NotificationMessage>();
   private readonly _ready = new BehaviorSubject<ReadyState>({ ready: false });
 
@@ -354,10 +354,10 @@ export class NotificationChannel {
     const notificationsUrl = fromFetch(`${this.login.authority}/api/v1/notifications_url`).pipe(
       concatMap(async (resp) => {
         if (resp.ok) {
-          let body: any = await resp.json();
+          const body: NotificationsUrlGetResponse = await resp.json();
           return body.notificationsUrl;
         } else {
-          let body: string = await resp.text();
+          const body: string = await resp.text();
           throw new Error(resp.status + ' ' + body);
         }
       })
@@ -389,7 +389,7 @@ export class NotificationChannel {
             subprotocol = `basic.authorization.cryostat.${token}`;
           }
 
-          if (!!this.ws) {
+          if (this.ws) {
             this.ws.complete();
           }
 
@@ -406,7 +406,7 @@ export class NotificationChannel {
               next: (evt) => {
                 let code: CloseStatus;
                 let msg: string | undefined = undefined;
-                let fn: Function;
+                let fn: typeof this.notifications.info;
                 let sessionState: SessionState;
                 switch (evt.code) {
                   case CloseStatus.LOGGED_OUT:
@@ -447,20 +447,20 @@ export class NotificationChannel {
 
           this.ws.subscribe({
             next: (v) => this._messages.next(v),
-            error: (err) => this.logError('WebSocket error', err),
+            error: (err: Error) => this.logError('WebSocket error', err),
           });
 
           // message doesn't matter, we just need to send something to the server so that our SubProtocol token can be authenticated
-          this.ws.next('connect');
+          this.ws.next({ message: 'connect' } as NotificationMessage);
         },
-        error: (err: any) => this.logError('Notifications URL configuration', err),
+        error: (err: Error) => this.logError('Notifications URL configuration', err),
       });
 
     this.login.loggedOut().subscribe({
       next: () => {
         this.ws?.complete();
       },
-      error: (err: any) => this.logError('Notifications URL configuration', err),
+      error: (err: Error) => this.logError('Notifications URL configuration', err),
     });
   }
 
@@ -472,19 +472,24 @@ export class NotificationChannel {
     return this._messages.asObservable().pipe(filter((msg) => msg.meta.category === category));
   }
 
-  private logError(title: string, err: any): void {
+  private logError(title: string, err: Error): void {
     window.console.error(err?.message);
     window.console.error(err?.stack);
 
-    if (!!err?.message) {
+    if (err?.message) {
       this.notifications.danger(title, JSON.stringify(err?.message));
     }
   }
 }
 
+interface NotificationsUrlGetResponse {
+  notificationsUrl: string;
+}
+
 export interface NotificationMessage {
   meta: MessageMeta;
-  message: any;
+  // Should a message be any type? Try T?
+  message: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   serverTime: number;
 }
 

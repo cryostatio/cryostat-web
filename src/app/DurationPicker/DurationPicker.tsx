@@ -35,8 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { FormSelect, FormSelectOption, Split, SplitItem, TextInput } from '@patternfly/react-core';
+import * as React from 'react';
 
 export interface DurationPickerProps {
   onPeriodChange: (period: number) => void;
@@ -46,7 +46,7 @@ export interface DurationPickerProps {
   enabled: boolean;
 }
 
-export const DurationPicker: React.FunctionComponent<DurationPickerProps> = (props) => {
+export const DurationPicker: React.FC<DurationPickerProps> = (props) => {
   return (
     <>
       <Split hasGutter={true}>

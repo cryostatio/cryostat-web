@@ -36,27 +36,28 @@
  * SOFTWARE.
  */
 
-import React from 'react';
 import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
+import React from 'react';
 
 export interface DurationFilterProps {
   durations: string[] | undefined;
-  onDurationInput: (e: any) => void;
+  onDurationInput: (e: number) => void;
   onContinuousDurationSelect: (checked: boolean) => void;
 }
 
-export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (props) => {
+export const DurationFilter: React.FC<DurationFilterProps> = ({
+  durations,
+  onDurationInput,
+  onContinuousDurationSelect,
+}) => {
   const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(
-    () => props.durations && props.durations.includes('continuous'),
-    [props.durations]
-  );
+  const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
 
-  const handleContinousCheckBoxChange = React.useCallback(
-    (checked, evt) => {
-      props.onContinuousDurationSelect(checked);
+  const handleContinuousCheckBoxChange = React.useCallback(
+    (checked) => {
+      onContinuousDurationSelect(checked);
     },
-    [props.onContinuousDurationSelect]
+    [onContinuousDurationSelect]
   );
 
   const handleEnterKey = React.useCallback(
@@ -64,9 +65,9 @@ export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (pro
       if (e.key && e.key !== 'Enter') {
         return;
       }
-      props.onDurationInput(duration);
+      onDurationInput(duration);
     },
-    [props.onDurationInput, duration]
+    [onDurationInput, duration]
   );
 
   return (
@@ -87,7 +88,7 @@ export const DurationFilter: React.FunctionComponent<DurationFilterProps> = (pro
           label="Continuous"
           id="continuous-checkbox"
           isChecked={isContinuous}
-          onChange={handleContinousCheckBoxChange}
+          onChange={handleContinuousCheckBoxChange}
         />
       </FlexItem>
     </Flex>

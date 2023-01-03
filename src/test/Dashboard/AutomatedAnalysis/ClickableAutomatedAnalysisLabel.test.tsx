@@ -37,11 +37,9 @@
  */
 
 import { ClickableAutomatedAnalysisLabel } from '@app/Dashboard/AutomatedAnalysis/ClickableAutomatedAnalysisLabel';
-import { AutomatedAnalysisNameFilter } from '@app/Dashboard/AutomatedAnalysis/Filters/AutomatedAnalysisNameFilter';
-import { CategorizedRuleEvaluations, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { RuleEvaluation } from '@app/Shared/Services/Report.service';
 import { cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
-import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../../Common';
 
 const mockRuleEvaluation1: RuleEvaluation = {
@@ -72,15 +70,6 @@ const mockNaRuleEvaluation: RuleEvaluation = {
   topic: 'fakeTopic',
 };
 
-const mockEvaluations1: RuleEvaluation[] = [mockRuleEvaluation1];
-
-const mockEvaluations2: RuleEvaluation[] = [mockRuleEvaluation2, mockRuleEvaluation3, mockNaRuleEvaluation];
-
-const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
-  [mockRuleEvaluation1.topic, mockEvaluations1],
-  [mockRuleEvaluation2.topic, mockEvaluations2],
-];
-
 describe('<ClickableAutomatedAnalysisLabel />', () => {
   afterEach(cleanup);
 
@@ -95,7 +84,6 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
 
-    await user.hover(screen.getByText(mockRuleEvaluation1.name));
     await user.click(screen.getByText(mockRuleEvaluation1.name));
 
     const closeButton = screen.getByRole('button', {
@@ -124,7 +112,6 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(screen.getByText(mockRuleEvaluation2.name)).toBeInTheDocument();
 
-    await user.hover(screen.getByText(mockRuleEvaluation2.name));
     await user.click(screen.getByText(mockRuleEvaluation2.name));
 
     const closeButton = screen.getByRole('button', {
@@ -153,7 +140,6 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(screen.getByText(mockRuleEvaluation3.name)).toBeInTheDocument();
 
-    await user.hover(screen.getByText(mockRuleEvaluation3.name));
     await user.click(screen.getByText(mockRuleEvaluation3.name));
 
     const closeButton = screen.getByRole('button', {
@@ -182,7 +168,6 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
 
     expect(screen.getByText(mockNaRuleEvaluation.name)).toBeInTheDocument();
 
-    await user.hover(screen.getByText(mockNaRuleEvaluation.name));
     await user.click(screen.getByText(mockNaRuleEvaluation.name));
 
     const closeButton = screen.getByRole('button', {

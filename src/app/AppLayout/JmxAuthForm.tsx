@@ -35,9 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
+import * as React from 'react';
 
 export interface JmxAuthFormProps {
   onDismiss: () => void;
@@ -47,18 +47,18 @@ export interface JmxAuthFormProps {
   children?: React.ReactNode;
 }
 
-export const JmxAuthForm: React.FunctionComponent<JmxAuthFormProps> = (props) => {
+export const JmxAuthForm: React.FC<JmxAuthFormProps> = ({ onDismiss, onSave, ...props }) => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
   const handleSave = React.useCallback(() => {
-    props.onSave(username, password);
-  }, [props.onSave, username, password]);
+    onSave(username, password);
+  }, [onSave, username, password]);
 
   const handleDismiss = React.useCallback(() => {
     // Do not set state as form is unmounted after cancel
-    props.onDismiss();
-  }, [props.onDismiss]);
+    onDismiss();
+  }, [onDismiss]);
 
   const handleKeyUp = React.useCallback(
     (event: React.KeyboardEvent): void => {

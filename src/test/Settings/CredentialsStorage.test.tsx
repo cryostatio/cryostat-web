@@ -35,12 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import { cleanup, screen, waitFor, within } from '@testing-library/react';
-import { renderDefault } from '../Common';
+/* eslint @typescript-eslint/no-explicit-any: 0 */
 import { CredentialsStorage } from '@app/Settings/CredentialsStorage';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { renderDefault } from '../Common';
 
 jest.mock('@app/utils/LocalStorage', () => {
   const map = new Map<any, any>();

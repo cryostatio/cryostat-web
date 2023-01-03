@@ -36,8 +36,8 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
 import { Button } from '@patternfly/react-core';
+import * as React from 'react';
 import { CertificateUploadModal } from './CertificateUploadModal';
 import { SecurityCard } from './SecurityPanel';
 

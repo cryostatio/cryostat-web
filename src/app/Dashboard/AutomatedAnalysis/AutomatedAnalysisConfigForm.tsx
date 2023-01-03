@@ -75,7 +75,11 @@ interface AutomatedAnalysisConfigFormProps {
   isSettingsForm: boolean;
 }
 
-export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnalysisConfigFormProps> = (props) => {
+export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({
+  onCreate,
+  onSave,
+  ...props
+}) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
@@ -191,11 +195,11 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
   );
 
   const getEventString = React.useCallback(() => {
-    var str = '';
-    if (!!templateName) {
+    let str = '';
+    if (templateName) {
       str += `template=${templateName}`;
     }
-    if (!!templateType) {
+    if (templateType) {
       str += `,type=${templateType}`;
     }
     return str;
@@ -212,12 +216,12 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     addSubscription(
       context.api.createRecording(recordingAttributes).subscribe({
         next: (resp) => {
-          if (resp && resp.ok && props.onCreate) {
-            props.onCreate();
+          if (resp && resp.ok) {
+            onCreate && onCreate();
           }
           setIsLoading(false);
         },
-        error: (err) => {
+        error: () => {
           setIsLoading(false);
         },
       })
@@ -227,7 +231,7 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     context.api,
     setIsLoading,
     getEventString,
-    props.onCreate,
+    onCreate,
     maxAge,
     maxAgeUnits,
     maxSize,
@@ -244,8 +248,8 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     setIsSaveLoading(true);
     const timer = setTimeout(() => {
       setShowHelperMessage(true);
-      if (props.onSave) {
-        props.onSave();
+      if (onSave) {
+        onSave();
       }
       setIsSaveLoading(false);
     }, 500);
@@ -254,13 +258,12 @@ export const AutomatedAnalysisConfigForm: React.FunctionComponent<AutomatedAnaly
     getEventString,
     setIsSaveLoading,
     setShowHelperMessage,
-    props.onSave,
+    onSave,
     maxAge,
     maxAgeUnits,
     maxSize,
     maxSizeUnits,
     context.settings,
-    context.settings.setAutomatedAnalysisRecordingConfig,
   ]);
 
   const authRetry = React.useCallback(() => {

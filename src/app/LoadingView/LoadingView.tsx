@@ -35,14 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
 import { Bullseye, EmptyState, EmptyStateIcon, Spinner, Title } from '@patternfly/react-core';
+import * as React from 'react';
 
 export interface LoadingViewProps {
   title?: string;
 }
 
-export const LoadingView: React.FunctionComponent<LoadingViewProps> = (props) => {
+export const LoadingView: React.FC<LoadingViewProps> = (props) => {
   return (
     <>
       <Bullseye>
@@ -56,5 +56,3 @@ export const LoadingView: React.FunctionComponent<LoadingViewProps> = (props) =>
     </>
   );
 };
-
-export default LoadingView;

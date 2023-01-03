@@ -35,40 +35,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as React from 'react';
-import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Text, TextVariants, Title } from '@patternfly/react-core';
-import { FormProps } from './FormProps';
-import { LockIcon } from '@patternfly/react-icons';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { AuthMethod, SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationsContext } from '@app/Notifications/Notifications';
+import { AuthMethod, SessionState } from '@app/Shared/Services/Login.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { Button, EmptyState, EmptyStateBody, EmptyStateIcon, Text, TextVariants, Title } from '@patternfly/react-core';
+import { LockIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 import { combineLatest } from 'rxjs';
+import { FormProps } from './FormProps';
 
-export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = (props) => {
-  const serviceContext = React.useContext(ServiceContext);
+export const OpenShiftPlaceholderAuthForm: React.FunctionComponent<FormProps> = ({ onSubmit }) => {
+  const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const [showPermissionDenied, setShowPermissionDenied] = React.useState(false);
+  const addSubscription = useSubscriptions();
 
   React.useEffect(() => {
-    const sub = combineLatest([
-      serviceContext.login.getSessionState(),
-      notifications.problemsNotifications(),
-    ]).subscribe((parts) => {
-      const sessionState = parts[0];
-      const errors = parts[1];
-      const missingCryostatPermissions = errors.find((error) => error.title.includes('401')) !== undefined;
-
-      setShowPermissionDenied(sessionState === SessionState.NO_USER_SESSION && missingCryostatPermissions);
-    });
-    return () => sub.unsubscribe();
-  }, [setShowPermissionDenied]);
+    addSubscription(
+      combineLatest([context.login.getSessionState(), notifications.problemsNotifications()]).subscribe((parts) => {
+        const sessionState = parts[0];
+        const errors = parts[1];
+        const missingCryostatPermissions = errors.find((error) => error.title.includes('401')) !== undefined;
+        setShowPermissionDenied(sessionState === SessionState.NO_USER_SESSION && missingCryostatPermissions);
+      })
+    );
+  }, [addSubscription, notifications, context.login, setShowPermissionDenied]);
 
   const handleSubmit = React.useCallback(
     (evt) => {
       // Triggers a redirect to OpenShift Container Platform login page
-      props.onSubmit(evt, 'anInvalidToken', AuthMethod.BEARER, true);
+      onSubmit(evt, 'anInvalidToken', AuthMethod.BEARER, true);
     },
-    [props, props.onSubmit, serviceContext.login]
+    [onSubmit]
   );
 
   const permissionDenied = (

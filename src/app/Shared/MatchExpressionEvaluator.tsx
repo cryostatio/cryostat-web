@@ -69,7 +69,11 @@ export interface MatchExpressionEvaluatorProps {
   onChange?: (validated: ValidatedOptions) => void;
 }
 
-export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEvaluatorProps> = (props) => {
+export const MatchExpressionEvaluator: React.FC<MatchExpressionEvaluatorProps> = ({
+  inlineHint,
+  matchExpression,
+  onChange,
+}) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [target, setTarget] = React.useState(undefined as Target | undefined);
@@ -81,12 +85,12 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   }, [addSubscription, context.target, setTarget]);
 
   React.useEffect(() => {
-    if (!props.matchExpression || !target?.connectUrl) {
+    if (!matchExpression || !target?.connectUrl) {
       setValid(ValidatedOptions.default);
       return;
     }
     try {
-      const f = new Function('target', `return ${props.matchExpression}`);
+      const f = new Function('target', `return ${matchExpression}`);
       const res = f(target);
       if (typeof res === 'boolean') {
         setValid(res ? ValidatedOptions.success : ValidatedOptions.warning);
@@ -98,13 +102,13 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
       setValid(ValidatedOptions.error);
       return;
     }
-  }, [target, props.matchExpression, setValid]);
+  }, [target, matchExpression, setValid]);
 
   React.useEffect(() => {
-    if (!!props.onChange) {
-      props.onChange(valid);
+    if (onChange) {
+      onChange(valid);
     }
-  }, [props.onChange, valid]);
+  }, [onChange, valid]);
 
   const statusLabel = React.useMemo(() => {
     switch (valid) {
@@ -157,7 +161,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
   const onSaveToClipboard = React.useCallback(() => {
     setCopied(true);
     navigator.clipboard.writeText(exampleExpression);
-  }, [setCopied, navigator.clipboard, exampleExpression]);
+  }, [setCopied, exampleExpression]);
 
   const actions = React.useMemo(() => {
     return (
@@ -178,7 +182,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
         </CodeBlockAction>
       </>
     );
-  }, [exampleExpression, copied, onSaveToClipboard, setCopied]);
+  }, [copied, onSaveToClipboard, setCopied]);
 
   return (
     <>
@@ -190,7 +194,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
           <Split hasGutter isWrappable>
             <SplitItem>{statusLabel}</SplitItem>
             <SplitItem>
-              {!props.inlineHint ? (
+              {inlineHint ? (
                 <Tooltip
                   content={
                     <div>
@@ -207,7 +211,7 @@ export const MatchExpressionEvaluator: React.FunctionComponent<MatchExpressionEv
             </SplitItem>
           </Split>
         </StackItem>
-        {props.inlineHint ? (
+        {inlineHint ? (
           <StackItem>
             <Text>Hint: try an expression like</Text>
             <CodeBlock actions={actions}>

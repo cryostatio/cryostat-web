@@ -36,7 +36,21 @@
  * SOFTWARE.
  */
 
+import { authFailMessage } from '@app/ErrorView/ErrorView';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
+import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
+import {
+  recordingAddFilterIntent,
+  recordingDeleteFilterIntent,
+  recordingAddTargetIntent,
+  recordingDeleteCategoryFiltersIntent,
+  recordingDeleteAllFiltersIntent,
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -56,31 +70,17 @@ import {
 } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
+import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
-import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
+import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  recordingAddFilterIntent,
-  recordingDeleteFilterIntent,
-  recordingAddTargetIntent,
-  recordingDeleteCategoryFiltersIntent,
-  recordingDeleteAllFiltersIntent,
-  RootState,
-  StateDispatch,
-} from '@app/Shared/Redux/ReduxStore';
-import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
-import { authFailMessage } from '@app/ErrorView/ErrorView';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 
 export enum PanelContent {
   LABELS,
@@ -143,7 +143,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleCreateRecording = React.useCallback(() => {
     routerHistory.push(`${url}/create`);
-  }, [routerHistory]);
+  }, [routerHistory, url]);
 
   const handleEditLabels = React.useCallback(() => {
     setShowDetailsPanel(true);
@@ -185,7 +185,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           error: handleError,
         })
     );
-  }, [addSubscription, context, context.target, context.api, setIsLoading, handleRecordings, handleError]);
+  }, [addSubscription, context.target, context.api, setIsLoading, handleRecordings, handleError]);
 
   React.useEffect(() => {
     addSubscription(
@@ -195,15 +195,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         refreshRecordingList();
       })
     );
-  }, [
-    addSubscription,
-    context,
-    context.target,
-    refreshRecordingList,
-    setTargetConnectURL,
-    dispatch,
-    recordingAddTargetIntent,
-  ]);
+  }, [addSubscription, context, context.target, refreshRecordingList, setTargetConnectURL, dispatch]);
 
   React.useEffect(() => {
     addSubscription(
@@ -300,7 +292,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
-  }, [recordings, targetRecordingFilters, setFilteredRecordings, filterRecordings]);
+  }, [recordings, targetRecordingFilters, setFilteredRecordings]);
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
@@ -311,7 +303,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   React.useEffect(() => {
     setHeaderChecked(checkedIndices.length === filteredRecordings.length);
-  }, [setHeaderChecked, checkedIndices]);
+  }, [setHeaderChecked, checkedIndices, filteredRecordings.length]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
@@ -389,7 +381,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleDeleteRecordings = React.useCallback(() => {
     setActionLoadings((old) => ({ ...old, DELETE: true }));
-    const tasks: Observable<{}>[] = [];
+    const tasks: Observable<boolean>[] = [];
     filteredRecordings.forEach((r: ActiveRecording) => {
       if (checkedIndices.includes(r.id)) {
         context.reports.delete(r);
@@ -414,7 +406,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
 
   const handleClearFilters = React.useCallback(() => {
     dispatch(recordingDeleteAllFiltersIntent(targetConnectURL, false));
-  }, [dispatch, recordingDeleteAllFiltersIntent, targetConnectURL]);
+  }, [dispatch, targetConnectURL]);
 
   const updateFilters = React.useCallback(
     (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
@@ -428,9 +420,10 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         dispatch(recordingAddFilterIntent(target, filterKey, filterValue, false));
       }
     },
-    [dispatch, recordingDeleteCategoryFiltersIntent, recordingDeleteFilterIntent, recordingAddFilterIntent]
+    [dispatch]
   );
 
+  /* eslint-enable react-hooks/exhaustive-deps */
   const RecordingRow = (props) => {
     const parsedLabels = React.useMemo(() => {
       return parseLabels(props.recording.metadata.labels);
@@ -441,17 +434,17 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       [props.recording.name, props.recording.startTime]
     );
 
-    const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [toggleExpanded]);
+    const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId]);
 
     const isExpanded = React.useMemo(() => {
       return expandedRows.includes(expandedRowId);
-    }, [expandedRows, expandedRowId]);
+    }, [expandedRowId]);
 
     const handleCheck = React.useCallback(
       (checked) => {
         handleRowCheck(checked, props.index);
       },
-      [handleRowCheck, props.index]
+      [props.index]
     );
 
     const parentRow = React.useMemo(() => {
@@ -517,28 +510,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           />
         </Tr>
       );
-    }, [
-      props.duration,
-      props.index,
-      props.recording,
-      props.recording.duration,
-      props.recording.name,
-      props.recording.startTime,
-      props.recording.state,
-      props.timeStr,
-      props.recording.metadata.labels,
-      props.labelFilters,
-      context.api,
-      context.api.uploadActiveRecordingToGrafana,
-      checkedIndices,
-      handleCheck,
-      handleToggle,
-      updateFilters,
-      isExpanded,
-      tableColumns,
-      parsedLabels,
-      targetConnectURL,
-    ]);
+    }, [props.index, props.recording, props.labelFilters, handleCheck, handleToggle, isExpanded, parsedLabels]);
 
     const childRow = React.useMemo(() => {
       return (
@@ -559,17 +531,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           </Td>
         </Tr>
       );
-    }, [
-      props.recording,
-      props.recording.name,
-      props.duration,
-      props.index,
-      isExpanded,
-      tableColumns,
-      props.recording.toDisk,
-      props.recording.maxAge,
-      props.recording.maxSize,
-    ]);
+    }, [props.recording, props.index, isExpanded]);
     return (
       <Tbody key={props.index} isExpanded={isExpanded}>
         {parentRow}
@@ -587,7 +549,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           : [...expandedRows, id];
       });
     },
-    [expandedRows, setExpandedRows]
+    [setExpandedRows]
   );
 
   const RecordingsToolbar = React.useMemo(
@@ -631,6 +593,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return filteredRecordings.map((r) => (
       <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Label} index={r.id} />
     ));
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [filteredRecordings, expandedRows, targetRecordingFilters, checkedIndices]);
 
   const LabelsPanel = React.useMemo(
@@ -697,7 +660,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
 
   const deletionDialogsEnabled = React.useMemo(
     () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteActiveRecordings),
-    [context, context.settings, context.settings.deletionDialogsEnabledFor]
+    [context.settings]
   );
 
   const handleWarningModalClose = React.useCallback(() => {
@@ -710,7 +673,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
     } else {
       props.handleDeleteRecordings();
     }
-  }, [deletionDialogsEnabled, setWarningModalOpen, props.handleDeleteRecordings]);
+  }, [deletionDialogsEnabled, setWarningModalOpen, props]);
 
   const isStopDisabled = React.useMemo(() => {
     if (!props.checkedIndices.length || props.actionLoadings['STOP']) {
@@ -719,7 +682,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
     const filtered = props.filteredRecordings.filter((r) => props.checkedIndices.includes(r.id));
     const anyRunning = filtered.some((r) => r.state === RecordingState.RUNNING || r.state == RecordingState.STARTING);
     return !anyRunning;
-  }, [props.checkedIndices, props.filteredRecordings]);
+  }, [props.actionLoadings, props.checkedIndices, props.filteredRecordings]);
 
   const actionLoadingProps = React.useMemo<Record<ActiveActions, LoadingPropsType>>(
     () => ({
@@ -798,14 +761,16 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
       </>
     );
   }, [
-    props.checkedIndices,
+    handleDeleteButton,
+    isStopDisabled,
+    actionLoadingProps,
     props.handleCreateRecording,
     props.handleArchiveRecordings,
     props.handleEditLabels,
     props.handleStopRecordings,
     props.actionLoadings,
-    handleDeleteButton,
-    actionLoadingProps,
+    props.archiveEnabled,
+    props.checkedIndices,
   ]);
 
   const deleteActiveWarningModal = React.useMemo(() => {

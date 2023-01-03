@@ -35,9 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { App } from '@app/index';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { App } from '@app/index';
 
 if (process.env.NODE_ENV !== 'production') {
   const config = {
