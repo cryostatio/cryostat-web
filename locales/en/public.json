@@ -1,3 +1,12 @@
 {
-  "asdf": ""
+  "About": "About",
+  "Bugs": "Bugs",
+  "CRYOSTAT_TRADEMARK": "Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0",
+  "File a Report": "File a Report",
+  "Homepage": "Homepage",
+  "Known Issues": "Known Issues",
+  "License": "License",
+  "Mailing List": "Mailing List",
+  "Open Source License": "Open Source License",
+  "version": "version"
 }

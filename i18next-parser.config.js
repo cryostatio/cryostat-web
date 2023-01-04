@@ -13,13 +13,13 @@ module.exports = {
     defaultNamespace: 'public',
     // Default namespace used in your i18next config
   
-    defaultValue: '',
+    defaultValue: 'temp',
     // Default value to give to empty keys
   
     indentation: 2,
     // Indentation of the catalog files
   
-    keepRemoved: false,
+    keepRemoved: true,
     // Keep keys from the catalog that are no longer in code
   
     keySeparator: false,
@@ -66,7 +66,7 @@ module.exports = {
     // For react file, extract the defaultNamespace - https://react.i18next.com/components/translate-hoc.html
     // Ignored when parsing a `.jsx` file and namespace is extracted from that file.
   
-    sort: false,
+    sort: true,
     // Whether or not to sort the catalog
   
     useKeysAsDefaultValue: false,

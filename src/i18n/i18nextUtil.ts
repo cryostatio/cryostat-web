@@ -35,29 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import bkgImg from '@app/assets/about_background.png';
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
-import build from '@app/build.json';
-import { AboutModal } from '@patternfly/react-core';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { AboutDescription } from './AboutDescription';
-
-export const AboutCryostatModal = ({ isOpen, onClose }) => {
-  const { t } = useTranslation();
-  return (
-    <>
-      <AboutModal
-        productName={build.productName}
-        brandImageSrc={cryostatLogo}
-        brandImageAlt="Cryostat Logo"
-        isOpen={isOpen}
-        onClose={onClose}
-        trademark={t('CRYOSTAT_TRADEMARK') as string}
-        backgroundImageSrc={bkgImg}
-      >
-        <AboutDescription />
-      </AboutModal>
-    </>
-  );
-};
+export function localeReadable(locale: string): string {
+  switch (locale) {
+    case 'en':
+      return 'English';
+    case 'zh':
+      return '中文';
+    default:
+      return locale;
+  }
+}

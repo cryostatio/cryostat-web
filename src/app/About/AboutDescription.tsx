@@ -40,16 +40,14 @@ import build from '@app/build.json';
 import { NotificationsContext } from '@app/Notifications/Notifications';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Text, TextContent, TextList, TextListItem, TextVariants } from '@patternfly/react-core';
-import { t as gTranslate } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
-export const CRYOSTAT_TRADEMARK = 'Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0';
 
 export const AboutDescription = () => {
   const serviceContext = React.useContext(ServiceContext);
   const notificationsContext = React.useContext(NotificationsContext);
   const [cryostatVersion, setCryostatVersion] = React.useState(undefined as string | undefined);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     const sub = serviceContext.api.cryostatVersion().subscribe(setCryostatVersion);
@@ -92,19 +90,19 @@ export const AboutDescription = () => {
     <>
       <TextContent>
         <TextList component="dl">
-          <TextListItem component="dt">Version</TextListItem>
+          <TextListItem component="dt">{t('version')}</TextListItem>
           <TextListItem component="dd">{versionComponent}</TextListItem>
-          <TextListItem component="dt">Homepage</TextListItem>
+          <TextListItem component="dt">{t('Homepage')}</TextListItem>
           <TextListItem component="dd">
             <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>
               cryostat.io
             </Text>
           </TextListItem>
-          <TextListItem component="dt">Bugs</TextListItem>
+          <TextListItem component="dt">{t('Bugs')}</TextListItem>
           <TextListItem component="dd">
             <Text>
               <Text component={TextVariants.a} target="_blank" href={build.knownIssuesUrl}>
-                Known Issues
+                {t('Known Issues')}
               </Text>
               &nbsp;|&nbsp;
               <Text
@@ -112,20 +110,20 @@ export const AboutDescription = () => {
                 target="_blank"
                 href={build.fileIssueUrl.replace('__REPLACE_VERSION__', cryostatVersion || 'unknown')}
               >
-                File a Report
+                {t('File a Report')}
               </Text>
             </Text>
           </TextListItem>
-          <TextListItem component="dt">Mailing List</TextListItem>
+          <TextListItem component="dt">{t('Mailing List')}</TextListItem>
           <TextListItem component="dd">
             <Text component={TextVariants.a} target="_blank" href={build.mailingListUrl}>
               {build.mailingListName}
             </Text>
           </TextListItem>
-          <TextListItem component="dt">Open Source License</TextListItem>
+          <TextListItem component="dt">{t('Open Source License')}</TextListItem>
           <TextListItem component="dd">
             <Text component={TextVariants.a} target="_blank" href={build.licenseUrl}>
-              License
+              {t('License')}
             </Text>
           </TextListItem>
         </TextList>
