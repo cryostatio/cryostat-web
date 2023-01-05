@@ -3295,15 +3295,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:3.1.5":
-  version: 3.1.5
-  resolution: "cross-fetch@npm:3.1.5"
-  dependencies:
-    node-fetch: 2.6.7
-  checksum: f6b8c6ee3ef993ace6277fd789c71b6acf1b504fd5f5c7128df4ef2f125a429e29cd62dc8c127523f04a5f2fa4771ed80e3f3d9695617f441425045f505cf3bb
-  languageName: node
-  linkType: hard
-
 "cross-spawn@npm:^6.0.5":
   version: 6.0.5
   resolution: "cross-spawn@npm:6.0.5"
@@ -3365,10 +3356,7 @@ __metadata:
     html-webpack-plugin: ^5.5.0
     i18next: ^22.4.3
     i18next-browser-languagedetector: ^7.0.1
-    i18next-fs-backend: ^2.1.0
-    i18next-http-backend: ^2.1.0
     i18next-parser: ^7.1.0
-    i18next-resources-to-backend: ^1.1.1
     imagemin: ^8.0.1
     jest: ^27.2.4
     js-base64: 3.7.3
@@ -5907,22 +5895,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-fs-backend@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "i18next-fs-backend@npm:2.1.0"
-  checksum: 314fab11c843d865483fc5ece6f89495cea40df46e56d55ccfe6bde97b1703c9601a45950738c18413bfa2c45819b8db6733fc367d9cae89e524c7fb9199d955
-  languageName: node
-  linkType: hard
-
-"i18next-http-backend@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "i18next-http-backend@npm:2.1.0"
-  dependencies:
-    cross-fetch: 3.1.5
-  checksum: 6cc31203c06beede328347e426cd69d450faa8cc403ac54b748bfddcd5f40ffacb65bd824815c4813d259556d0eee08887d92f11151512a74db3223a2b398a2f
-  languageName: node
-  linkType: hard
-
 "i18next-parser@npm:^7.1.0":
   version: 7.1.0
   resolution: "i18next-parser@npm:7.1.0"
@@ -5950,15 +5922,6 @@ __metadata:
   bin:
     i18next: bin/cli.js
   checksum: f13c863affdb57d557b7ae871e722c8091cc47d83158dc0e9f5b3e6ef4d9a41a537a226ccb4c7789e2a46ba5403284968863c050d368e314bda4bd76dd6bd9e4
-  languageName: node
-  linkType: hard
-
-"i18next-resources-to-backend@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "i18next-resources-to-backend@npm:1.1.1"
-  dependencies:
-    "@babel/runtime": ^7.20.6
-  checksum: d842ed0bef35b9460d0cbea254e0f918f74d496d9db161f071b4b682cf77ef9ded507a1c47aa48b9dd6d8db29bff94eb099005abe3dceec6a203d78182b2f153
   languageName: node
   linkType: hard
 
@@ -8067,20 +8030,6 @@ __metadata:
   version: 3.0.1
   resolution: "node-abort-controller@npm:3.0.1"
   checksum: 2b3d75c65249fea99e8ba22da3a8bc553f034f44dd12f5f4b38b520f718b01c88718c978f0c24c2a460fc01de9a80b567028f547b94440cb47adeacfeb82c2ee
-  languageName: node
-  linkType: hard
-
-"node-fetch@npm:2.6.7":
-  version: 2.6.7
-  resolution: "node-fetch@npm:2.6.7"
-  dependencies:
-    whatwg-url: ^5.0.0
-  peerDependencies:
-    encoding: ^0.1.0
-  peerDependenciesMeta:
-    encoding:
-      optional: true
-  checksum: 8d816ffd1ee22cab8301c7756ef04f3437f18dace86a1dae22cf81db8ef29c0bf6655f3215cb0cdb22b420b6fe141e64b26905e7f33f9377a7fa59135ea3e10b
   languageName: node
   linkType: hard
 
@@ -11089,13 +11038,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tr46@npm:~0.0.3":
-  version: 0.0.3
-  resolution: "tr46@npm:0.0.3"
-  checksum: 726321c5eaf41b5002e17ffbd1fb7245999a073e8979085dacd47c4b4e8068ff5777142fc6726d6ca1fd2ff16921b48788b87225cbc57c72636f6efa8efbffe3
-  languageName: node
-  linkType: hard
-
 "ts-jest@npm:^27.0.5":
   version: 27.1.5
   resolution: "ts-jest@npm:27.1.5"
@@ -11678,13 +11620,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webidl-conversions@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "webidl-conversions@npm:3.0.1"
-  checksum: c92a0a6ab95314bde9c32e1d0a6dfac83b578f8fa5f21e675bc2706ed6981bc26b7eb7e6a1fab158e5ce4adf9caa4a0aee49a52505d4d13c7be545f15021b17c
-  languageName: node
-  linkType: hard
-
 "webidl-conversions@npm:^5.0.0":
   version: 5.0.0
   resolution: "webidl-conversions@npm:5.0.0"
@@ -11906,16 +11841,6 @@ __metadata:
   version: 2.3.0
   resolution: "whatwg-mimetype@npm:2.3.0"
   checksum: 23eb885940bcbcca4ff841c40a78e9cbb893ec42743993a42bf7aed16085b048b44b06f3402018931687153550f9a32d259dfa524e4f03577ab898b6965e5383
-  languageName: node
-  linkType: hard
-
-"whatwg-url@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "whatwg-url@npm:5.0.0"
-  dependencies:
-    tr46: ~0.0.3
-    webidl-conversions: ^3.0.0
-  checksum: b8daed4ad3356cc4899048a15b2c143a9aed0dfae1f611ebd55073310c7b910f522ad75d727346ad64203d7e6c79ef25eafd465f4d12775ca44b90fa82ed9e2c
   languageName: node
   linkType: hard
 
