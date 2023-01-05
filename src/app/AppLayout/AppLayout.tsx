@@ -378,7 +378,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <Toolbar isFullHeight isStatic>
           <ToolbarContent>
             <ToolbarGroup variant="icon-button-group" alignment={{ default: 'alignRight' }}>
-              <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
+              <FeatureFlag level={FeatureLevel.BETA}>
                 <ToolbarItem>
                   <Dropdown
                     isPlain

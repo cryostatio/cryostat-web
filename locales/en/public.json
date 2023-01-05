@@ -1,12 +1,15 @@
 {
-  "About": "About",
-  "Bugs": "Bugs",
-  "CRYOSTAT_TRADEMARK": "Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0",
-  "File a Report": "File a Report",
-  "Homepage": "Homepage",
-  "Known Issues": "Known Issues",
-  "License": "License",
-  "Mailing List": "Mailing List",
-  "Open Source License": "Open Source License",
-  "version": "version"
+  "About": {
+    "ABOUT": "About"
+  },
+  "AboutDescription": {
+    "BUGS": "Bugs",
+    "FILE_A_REPORT": "File a Report",
+    "HOMEPAGE": "Homepage",
+    "KNOWN_ISSUES": "Known Issues",
+    "LICENSE": "License",
+    "MAILING_LIST": "Mailing List",
+    "OPEN_SOURCE_LICENSE": "Open Source License",
+    "VERSION": "version"
+  }
 }

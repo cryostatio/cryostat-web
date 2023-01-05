@@ -198,7 +198,7 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
   return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
 
-export const testTranslate = (key: string): string => {
+export const testTranslate = (key: string, ns = 'public'): string => {
   // if no translation is found, return the "test value" for debugging
-  return t(key, 'i18next test value') as string;
+  return t(key, 'i18next test value', { ns: ns });
 };

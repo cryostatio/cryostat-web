@@ -40,7 +40,9 @@ import i18next from 'i18next';
 import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 
+import en_common from '../../locales/en/common.json';
 import en_public from '../../locales/en/public.json';
+import zh_common from '../../locales/zh/common.json';
 import zh_public from '../../locales/zh/public.json';
 
 // TODO: .use(Backend) eventually store translations on backend?
@@ -49,12 +51,16 @@ import zh_public from '../../locales/zh/public.json';
 export const i18nResources = {
   en: {
     public: en_public,
+    common: en_common,
   },
   zh: {
     // TODO: add zh translation (and other languages)?
     public: zh_public,
+    common: zh_common,
   },
 } as const;
+
+export const i18nNamespaces = ['public', 'common'];
 
 // eslint-disable-next-line import/no-named-as-default-member
 i18next
@@ -62,10 +68,11 @@ i18next
   .use(initReactI18next)
   .init({
     resources: i18nResources,
-    ns: ['public'],
+    ns: i18nNamespaces,
     defaultNS: 'public',
     fallbackLng: 'en',
     debug: process.env.NODE_ENV === 'development',
+    returnNull: false,
     interpolation: {
       escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
     },

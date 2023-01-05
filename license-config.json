@@ -22,6 +22,7 @@
     "yarn.lock",
     ".yarn/**/*",
     ".github/**/*",
+    "build-i18n.bash",
     "src/app/assets/*",
     "src/test/**/*.snap"
   ]

@@ -49,7 +49,7 @@ export interface AboutProps {}
 export const About: React.FC<AboutProps> = (_) => {
   const { t } = useTranslation();
   return (
-    <BreadcrumbPage pageTitle={t('About')}>
+    <BreadcrumbPage pageTitle={t('About.ABOUT')}>
       <Card>
         <CardHeader>
           <Brand alt={build.productName} src={cryostatLogo} className="cryostat-logo" />
@@ -57,7 +57,7 @@ export const About: React.FC<AboutProps> = (_) => {
         <CardBody>
           <AboutDescription />
         </CardBody>
-        <CardFooter>{t('CRYOSTAT_TRADEMARK')}</CardFooter>
+        <CardFooter>{t('CRYOSTAT_TRADEMARK', { ns: 'common' })}</CardFooter>
       </Card>
     </BreadcrumbPage>
   );

@@ -35,11 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-// import { i18nResources, defaultNS } from "./config";
+import '18next';
 
-// declare module "i18next" {
-//   interface CustomTypeOptions {
-//     defaultNS: typeof defaultNS;
-//     resources: typeof i18nResources.en;
-//   }
-// }
+declare module 'i18next' {
+  interface CustomTypeOptions {
+    returnNull: false;
+  }
+}

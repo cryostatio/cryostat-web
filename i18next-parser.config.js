@@ -19,10 +19,10 @@ module.exports = {
     indentation: 2,
     // Indentation of the catalog files
   
-    keepRemoved: true,
+    keepRemoved: false,
     // Keep keys from the catalog that are no longer in code
   
-    keySeparator: false,
+    keySeparator: '.',
     // Key separator used in your translation keys
     // If you want to use plain english keys, separators such as `.` and `:` will conflict. You might want to set `keySeparator: false` and `namespaceSeparator: false`. That way, `t('Status: Loading...')` will not think that there are a namespace and three separator dots for instance.
   
@@ -53,7 +53,7 @@ module.exports = {
     // Namespace separator used in your translation keys
     // If you want to use plain english keys, separators such as `.` and `:` will conflict. You might want to set `keySeparator: false` and `namespaceSeparator: false`. That way, `t('Status: Loading...')` will not think that there are a namespace and three separator dots for instance.
   
-    output: 'src/i18n/$LOCALE/$NAMESPACE.json',
+    output: 'locales/\$LOCALE/\$NAMESPACE.json',
     // Supports $LOCALE and $NAMESPACE injection
     // Supports JSON (.json) and YAML (.yml) file formats
     // Where to write the locale files relative to process.cwd()

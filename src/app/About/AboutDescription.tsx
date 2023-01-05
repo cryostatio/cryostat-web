@@ -90,19 +90,19 @@ export const AboutDescription = () => {
     <>
       <TextContent>
         <TextList component="dl">
-          <TextListItem component="dt">{t('version')}</TextListItem>
+          <TextListItem component="dt">{t('AboutDescription.VERSION')}</TextListItem>
           <TextListItem component="dd">{versionComponent}</TextListItem>
-          <TextListItem component="dt">{t('Homepage')}</TextListItem>
+          <TextListItem component="dt">{t('AboutDescription.HOMEPAGE')}</TextListItem>
           <TextListItem component="dd">
             <Text component={TextVariants.a} target="_blank" href={build.homePageUrl}>
               cryostat.io
             </Text>
           </TextListItem>
-          <TextListItem component="dt">{t('Bugs')}</TextListItem>
+          <TextListItem component="dt">{t('AboutDescription.BUGS')}</TextListItem>
           <TextListItem component="dd">
             <Text>
               <Text component={TextVariants.a} target="_blank" href={build.knownIssuesUrl}>
-                {t('Known Issues')}
+                {t('AboutDescription.KNOWN_ISSUES')}
               </Text>
               &nbsp;|&nbsp;
               <Text
@@ -110,20 +110,20 @@ export const AboutDescription = () => {
                 target="_blank"
                 href={build.fileIssueUrl.replace('__REPLACE_VERSION__', cryostatVersion || 'unknown')}
               >
-                {t('File a Report')}
+                {t('AboutDescription.FILE_A_REPORT')}
               </Text>
             </Text>
           </TextListItem>
-          <TextListItem component="dt">{t('Mailing List')}</TextListItem>
+          <TextListItem component="dt">{t('AboutDescription.MAILING_LIST')}</TextListItem>
           <TextListItem component="dd">
             <Text component={TextVariants.a} target="_blank" href={build.mailingListUrl}>
               {build.mailingListName}
             </Text>
           </TextListItem>
-          <TextListItem component="dt">{t('Open Source License')}</TextListItem>
+          <TextListItem component="dt">{t('AboutDescription.OPEN_SOURCE_LICENSE')}</TextListItem>
           <TextListItem component="dd">
             <Text component={TextVariants.a} target="_blank" href={build.licenseUrl}>
-              {t('License')}
+              {t('AboutDescription.LICENSE')}
             </Text>
           </TextListItem>
         </TextList>
