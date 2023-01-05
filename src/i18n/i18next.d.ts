@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '18next';
+import 'i18next';
 
 declare module 'i18next' {
   interface CustomTypeOptions {

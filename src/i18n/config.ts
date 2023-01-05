@@ -70,7 +70,8 @@ i18next
     resources: i18nResources,
     ns: i18nNamespaces,
     defaultNS: 'public',
-    fallbackLng: 'en',
+    fallbackNS: ['common'],
+    fallbackLng: ['en'],
     debug: process.env.NODE_ENV === 'development',
     returnNull: false,
     interpolation: {
