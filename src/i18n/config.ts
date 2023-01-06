@@ -35,59 +35,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import i18n from '@app/../i18n/config';
-import { About } from '@app/About/About';
-import { cleanup, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import * as React from 'react';
-import { I18nextProvider } from 'react-i18next';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault, testTranslate } from '../Common';
-jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
-  return {
-    BreadcrumbPage: jest.fn((props) => {
-      return (
-        <div>
-          {props.pageTitle}
-          {props.children}
-        </div>
-      );
-    }),
-  };
-});
 
-jest.mock('@app/About/AboutDescription', () => {
-  return {
-    ...jest.requireActual('@app/About/AboutDescription'),
-    AboutDescription: jest.fn(() => {
-      return <div>AboutDescription</div>;
-    }),
-  };
-});
+import i18next from 'i18next';
+import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
 
-describe('<About />', () => {
-  afterEach(cleanup);
+import en_common from '../../locales/en/common.json';
+import en_public from '../../locales/en/public.json';
+// import zh_common from '../../locales/zh/common.json';
+// import zh_public from '../../locales/zh/public.json';
 
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(<About />);
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
+// TODO: .use(Backend) eventually store translations on backend?
+// Openshift console does this already:
+// https://github.com/openshift/console/blob/master/frontend/public/i18n.js
+export const i18nResources = {
+  en: {
+    public: en_public,
+    common: en_common,
+  },
+  zh: {
+    // TODO: add zh translation (and other languages)?
+    // public: zh_public,
+    // common: zh_common,
+  },
+} as const;
+
+export const i18nNamespaces = ['public', 'common'];
+
+// eslint-disable-next-line import/no-named-as-default-member
+i18next
+  .use(I18nextBrowserLanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: i18nResources,
+    ns: i18nNamespaces,
+    defaultNS: 'public',
+    fallbackNS: ['common'],
+    fallbackLng: ['en'],
+    debug: process.env.NODE_ENV === 'development',
+    returnNull: false,
+    interpolation: {
+      escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+    },
+    react: {
+      useSuspense: true,
+    },
   });
 
-  it('contains the correct information', async () => {
-    renderDefault(
-      <I18nextProvider i18n={i18n}>
-        <About />
-      </I18nextProvider>
-    );
-
-    expect(screen.getByText('About')).toBeInTheDocument();
-    const logo = screen.getByRole('img');
-    expect(logo).toHaveClass('pf-c-brand cryostat-logo');
-    expect(logo).toHaveAttribute('alt', 'Cryostat');
-    expect(logo).toHaveAttribute('src', 'test-file-stub');
-    expect(screen.getByText(testTranslate('CRYOSTAT_TRADEMARK', 'common'))).toBeInTheDocument();
-  });
-});
+export default i18next;

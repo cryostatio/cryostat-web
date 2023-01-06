@@ -42,6 +42,7 @@ import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
+import { t } from 'i18next';
 import React, { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
@@ -195,4 +196,9 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
     );
   };
   return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};
+
+export const testTranslate = (key: string, ns = 'public'): string => {
+  // if no translation is found, return the "test value" for debugging
+  return t(key, 'i18next test value', { ns: ns });
 };

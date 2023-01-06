@@ -1,0 +1,15 @@
+{
+  "About": {
+    "ABOUT": "About"
+  },
+  "AboutDescription": {
+    "BUGS": "Bugs",
+    "FILE_A_REPORT": "File a Report",
+    "HOMEPAGE": "Homepage",
+    "KNOWN_ISSUES": "Known Issues",
+    "LICENSE": "License",
+    "MAILING_LIST": "Mailing List",
+    "OPEN_SOURCE_LICENSE": "Open Source License",
+    "VERSION": "version"
+  }
+}

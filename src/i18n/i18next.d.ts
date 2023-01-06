@@ -35,59 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import i18n from '@app/../i18n/config';
-import { About } from '@app/About/About';
-import { cleanup, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import * as React from 'react';
-import { I18nextProvider } from 'react-i18next';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault, testTranslate } from '../Common';
-jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
-  return {
-    BreadcrumbPage: jest.fn((props) => {
-      return (
-        <div>
-          {props.pageTitle}
-          {props.children}
-        </div>
-      );
-    }),
-  };
-});
+import 'i18next';
 
-jest.mock('@app/About/AboutDescription', () => {
-  return {
-    ...jest.requireActual('@app/About/AboutDescription'),
-    AboutDescription: jest.fn(() => {
-      return <div>AboutDescription</div>;
-    }),
-  };
-});
-
-describe('<About />', () => {
-  afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(<About />);
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
-
-  it('contains the correct information', async () => {
-    renderDefault(
-      <I18nextProvider i18n={i18n}>
-        <About />
-      </I18nextProvider>
-    );
-
-    expect(screen.getByText('About')).toBeInTheDocument();
-    const logo = screen.getByRole('img');
-    expect(logo).toHaveClass('pf-c-brand cryostat-logo');
-    expect(logo).toHaveAttribute('alt', 'Cryostat');
-    expect(logo).toHaveAttribute('src', 'test-file-stub');
-    expect(screen.getByText(testTranslate('CRYOSTAT_TRADEMARK', 'common'))).toBeInTheDocument();
-  });
-});
+declare module 'i18next' {
+  interface CustomTypeOptions {
+    returnNull: false;
+  }
+}

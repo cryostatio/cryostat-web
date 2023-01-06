@@ -40,9 +40,11 @@ import cryostatLogo from '@app/assets/cryostat_icon_rgb_reverse.svg';
 import build from '@app/build.json';
 import { AboutModal } from '@patternfly/react-core';
 import React from 'react';
-import { AboutDescription, CRYOSTAT_TRADEMARK } from './AboutDescription';
+import { useTranslation } from 'react-i18next';
+import { AboutDescription } from './AboutDescription';
 
 export const AboutCryostatModal = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   return (
     <>
       <AboutModal
@@ -51,7 +53,7 @@ export const AboutCryostatModal = ({ isOpen, onClose }) => {
         brandImageAlt="Cryostat Logo"
         isOpen={isOpen}
         onClose={onClose}
-        trademark={CRYOSTAT_TRADEMARK}
+        trademark={t('CRYOSTAT_TRADEMARK', { ns: 'common' })}
         backgroundImageSrc={bkgImg}
       >
         <AboutDescription />
