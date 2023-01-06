@@ -35,15 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
+import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
 
