@@ -480,11 +480,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             </PageToggleButton>
           </MastheadToggle>
           <MastheadMain>
-            <MastheadBrand>
+            <MastheadBrand component={'div'}>
               <Link to="/">
                 <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
               </Link>
             </MastheadBrand>
+
             <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </MastheadMain>
           <MastheadContent>{HeaderToolbar}</MastheadContent>
