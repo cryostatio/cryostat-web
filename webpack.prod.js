@@ -9,6 +9,11 @@ const DotenvPlugin = require('dotenv-webpack');
 module.exports = merge(common('production'), {
   mode: 'production',
   devtool: 'eval-source-map',
+  cache: {
+    type: 'filesystem',
+    compression: 'gzip',
+    cacheDirectory: path.resolve(__dirname, '.build_cache'),
+  },
   optimization: {
     minimizer: [
       new TerserJSPlugin({}),

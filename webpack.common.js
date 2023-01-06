@@ -1,7 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
 
 const BG_IMAGES_DIRNAME = 'bgimages';
@@ -14,7 +13,6 @@ module.exports = (env) => {
       app: path.resolve(__dirname, 'src', 'index.tsx')
     },
     plugins: [
-      new ForkTsCheckerPlugin(),
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'index.html'),
         favicon: './src/app/assets/favicon.ico',
