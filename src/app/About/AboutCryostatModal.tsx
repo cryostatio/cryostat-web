@@ -53,7 +53,7 @@ export const AboutCryostatModal = ({ isOpen, onClose }) => {
         brandImageAlt="Cryostat Logo"
         isOpen={isOpen}
         onClose={onClose}
-        trademark={t('CRYOSTAT_TRADEMARK', {ns: 'common'})}
+        trademark={t('CRYOSTAT_TRADEMARK', { ns: 'common' })}
         backgroundImageSrc={bkgImg}
       >
         <AboutDescription />
