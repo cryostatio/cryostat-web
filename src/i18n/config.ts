@@ -42,8 +42,8 @@ import { initReactI18next } from 'react-i18next';
 
 import en_common from '../../locales/en/common.json';
 import en_public from '../../locales/en/public.json';
-import zh_common from '../../locales/zh/common.json';
-import zh_public from '../../locales/zh/public.json';
+// import zh_common from '../../locales/zh/common.json';
+// import zh_public from '../../locales/zh/public.json';
 
 // TODO: .use(Backend) eventually store translations on backend?
 // Openshift console does this already:
@@ -55,8 +55,8 @@ export const i18nResources = {
   },
   zh: {
     // TODO: add zh translation (and other languages)?
-    public: zh_public,
-    common: zh_common,
+    // public: zh_public,
+    // common: zh_common,
   },
 } as const;
 
