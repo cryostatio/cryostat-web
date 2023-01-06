@@ -277,18 +277,9 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     return '';
   }, [templateName, templateType]);
 
-  if (errorMessage != '') {
-    return (
-      <ErrorView
-        title={'Error displaying recording configuration settings'}
-        message={errorMessage}
-        retry={isAuthFail(errorMessage) ? authRetry : undefined}
-      />
-    );
-  }
-  return (
-    <Form isHorizontal={props.isSettingsForm}>
-      <FormSection title={props.isSettingsForm ? undefined : 'Profiling Recording Configuration'}>
+  const formContent = React.useMemo(
+    () => (
+      <>
         <FormGroup
           label="Template"
           isRequired
@@ -407,7 +398,52 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             </HelperText>
           )}
         </ActionGroup>
-      </FormSection>
-    </Form>
+      </>
+    ),
+    [
+      templateName,
+      templateType,
+      templates,
+      isLoading,
+      isSaveLoading,
+      selectedSpecifier,
+      maxSize,
+      maxSizeUnits,
+      maxAge,
+      maxAgeUnits,
+      isFormInvalid,
+      showHelperMessage,
+      createButtonLoadingProps,
+      handleMaxSizeChange,
+      handleMaxAgeChange,
+      handleMaxSizeUnitChange,
+      handleMaxAgeUnitChange,
+      handleSaveConfig,
+      handleSubmit,
+      handleTemplateChange,
+      props.isSettingsForm,
+      saveButtonLoadingProps,
+    ]
+  );
+
+  if (errorMessage != '') {
+    return (
+      <ErrorView
+        title={'Error displaying recording configuration settings'}
+        message={errorMessage}
+        retry={isAuthFail(errorMessage) ? authRetry : undefined}
+      />
+    );
+  }
+  return (
+    <>
+      {props.isSettingsForm ? (
+        formContent
+      ) : (
+        <Form>
+          <FormSection title={'Profiling Recording Configuration'}>{formContent}</FormSection>
+        </Form>
+      )}
+    </>
   );
 };

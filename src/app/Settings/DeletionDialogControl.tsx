@@ -38,7 +38,7 @@
 
 import { DeleteOrDisableWarningType, getFromWarningMap } from '@app/Modal/DeleteWarningUtils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Divider, ExpandableSection, Switch, Stack, StackItem } from '@patternfly/react-core';
+import { ExpandableSection, Switch, Stack, StackItem, FormGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { UserSetting } from './Settings';
 
@@ -89,14 +89,15 @@ const Component = () => {
     <>
       <Stack hasGutter>
         <StackItem key="all-deletion-warnings">
-          <Switch
-            id="all-deletion-warnings"
-            label="All Deletion Warnings"
-            isChecked={allChecked}
-            onChange={handleCheckAll}
-          />
+          <FormGroup label={'Enable or disable deletion dialogs by deletion type.'}>
+            <Switch
+              id="all-deletion-warnings"
+              label="All Deletion Warnings"
+              isChecked={allChecked}
+              onChange={handleCheckAll}
+            />
+          </FormGroup>
         </StackItem>
-        <Divider />
         <ExpandableSection
           toggleText={expanded ? 'Show less' : 'Show more'}
           onToggle={setExpanded}
@@ -111,6 +112,7 @@ const Component = () => {
 
 export const DeletionDialogControl: UserSetting = {
   title: 'Show Deletion Dialogs',
-  description: 'Enable or disable deletion dialogs by deletion type.',
+  description: '',
   content: Component,
+  category: 'Notifications & Messages',
 };

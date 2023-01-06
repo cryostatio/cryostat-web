@@ -244,3 +244,11 @@ html, body, #root {
   height: 0.8em;
   width: 0.8em;
 }
+
+.setting-content {
+  padding: 2ch !important;
+}
+
+.setting-tabs {
+  width:fit-content
+}

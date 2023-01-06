@@ -295,6 +295,9 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
             onToggle={setDropdownOpen}
             selections={selected.alias || selected.connectUrl}
             isDisabled={isLoading}
+            isFlipEnabled={true}
+            menuAppendTo="parent"
+            maxHeight="16em"
             isOpen={isDropdownOpen}
             aria-label="Select Target"
           >

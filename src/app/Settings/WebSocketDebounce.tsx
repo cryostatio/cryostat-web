@@ -121,4 +121,5 @@ export const WebSocketDebounce: UserSetting = {
     Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages.
     Decrease this time if the web-interface takes a long time to populate on startup.`,
   content: Component,
+  category: 'General',
 };

@@ -72,7 +72,7 @@ const Component = () => {
         <TargetSelect simple />
       </StackItem>
       <StackItem>
-        <Title headingLevel="h2" size="lg">
+        <Title headingLevel="h3" size="md">
           Current configuration
         </Title>
       </StackItem>
@@ -108,4 +108,5 @@ export const AutomatedAnalysisConfig: UserSetting = {
   description:
     'Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.',
   content: Component,
+  category: 'Dashboard',
 };

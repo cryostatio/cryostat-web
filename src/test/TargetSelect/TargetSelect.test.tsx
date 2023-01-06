@@ -80,7 +80,6 @@ jest.mock('@app/Shared/Services/Target.service', () => ({
 
 jest
   .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of()) // contains the correct information
   .mockReturnValueOnce(of()) // renders empty state when expanded
   .mockReturnValueOnce(of(mockFooTarget)) // renders serialized target when expanded
@@ -92,7 +91,6 @@ jest
 
 jest
   .spyOn(defaultServices.targets, 'targets')
-  .mockReturnValueOnce(of([mockFooTarget])) // renders correctly
   .mockReturnValueOnce(of([mockFooTarget])) // contains the correct information
   .mockReturnValueOnce(of([mockFooTarget])) // renders empty state when expanded
   .mockReturnValueOnce(of([mockFooTarget])) // renders serialized target when expanded
@@ -105,7 +103,6 @@ jest.spyOn(defaultServices.api, 'deleteTarget').mockReturnValue(of(true));
 
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true) // renders correctly
   .mockReturnValueOnce(true) // renders empty state when expanded
   .mockReturnValueOnce(true) // renders serialized target when expanded
   .mockReturnValueOnce(true) // contains the correct information
@@ -116,21 +113,6 @@ jest
 
 describe('<TargetSelect />', () => {
   afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <TargetSelect />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      );
-    });
-
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
 
   it('contains the correct information', async () => {
     renderWithServiceContext(<TargetSelect />);

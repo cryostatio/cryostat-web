@@ -37,7 +37,7 @@
  */
 
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { Select, SelectOption, SelectVariant, Text } from '@patternfly/react-core';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { UserSetting } from './Settings';
@@ -93,6 +93,8 @@ const Component = () => {
     <>
       <Select
         variant={SelectVariant.single}
+        isFlipEnabled={true}
+        menuAppendTo="parent"
         onToggle={setExpanded}
         onSelect={handleSelect}
         isOpen={isExpanded}
@@ -109,12 +111,13 @@ const Component = () => {
 export const CredentialsStorage: UserSetting = {
   title: 'JMX Credentials Storage',
   description: (
-    <Text>
+    <>
       When you attempt to connect to a target application which requires authentication, you will see a prompt for
       credentials to present to the application and complete the connection. You can choose where to persist these
       credentials. Any credentials added through the <Link to="/security">Security</Link> panel will always be stored in
       Cryostat backend encrypted storage.
-    </Text>
+    </>
   ),
   content: Component,
+  category: 'Advanced',
 };

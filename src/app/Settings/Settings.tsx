@@ -37,7 +37,20 @@
  */
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
+import {
+  Card,
+  Form,
+  FormGroup,
+  HelperText,
+  HelperTextItem,
+  Sidebar,
+  SidebarContent,
+  SidebarPanel,
+  Tab,
+  Tabs,
+  TabTitleText,
+  Title,
+} from '@patternfly/react-core';
 import * as React from 'react';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
@@ -46,6 +59,36 @@ import { DeletionDialogControl } from './DeletionDialogControl';
 import { FeatureLevels } from './FeatureLevels';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
+
+export interface SettingGroup {
+  groupLabel: SettingCategory;
+  disabled?: boolean;
+  settings: _TransformedUserSetting[];
+}
+
+const _SettingCategories = [
+  'General',
+  'Language & Region',
+  'Notifications & Messages',
+  'Dashboard',
+  'Advanced',
+] as const;
+
+export type SettingCategory = typeof _SettingCategories[number];
+
+export interface UserSetting {
+  title: string;
+  disabled?: boolean;
+  description: JSX.Element | string;
+  content: React.FunctionComponent;
+  category: SettingCategory;
+  orderInGroup?: number; // default -1
+}
+
+interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
+  element: React.FunctionComponentElement<Record<string, never>>;
+  orderInGroup: number;
+}
 
 export interface SettingsProps {}
 
@@ -58,32 +101,88 @@ export const Settings: React.FC<SettingsProps> = (_) => {
     WebSocketDebounce,
     AutoRefresh,
     FeatureLevels,
-  ].map((c) => ({
-    title: c.title,
-    description: c.description,
-    element: React.createElement(c.content, null),
-  }));
+  ].map(
+    (c) =>
+      ({
+        title: c.title,
+        description: c.description,
+        element: React.createElement(c.content, null),
+        category: c.category,
+        disabled: c.disabled,
+        orderInGroup: c.orderInGroup || -1,
+      } as _TransformedUserSetting)
+  );
+
+  const [activeTab, setActiveTab] = React.useState<SettingCategory>('General');
+
+  const onTabSelect = React.useCallback(
+    (_: React.MouseEvent<HTMLElement, MouseEvent>, eventKey: string | number) =>
+      setActiveTab(eventKey as SettingCategory),
+    [setActiveTab]
+  );
+
+  const settingGroups = React.useMemo(() => {
+    return _SettingCategories.map((cat) => ({
+      groupLabel: cat,
+      settings: settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup),
+    })) as SettingGroup[];
+  }, [settings]);
+
   return (
     <>
       <BreadcrumbPage pageTitle="Settings">
-        {settings.map((s) => (
-          <Card key={s.title}>
-            <CardTitle>
-              <Text>{s.title}</Text>
-              <Text component={TextVariants.small}>{s.description}</Text>
-            </CardTitle>
-            <CardBody>{s.element}</CardBody>
-          </Card>
-        ))}
+        <Card isFullHeight>
+          <Sidebar tabIndex={0}>
+            <SidebarPanel>
+              <Tabs
+                isVertical
+                isExpanded
+                aria-label="Select setting category"
+                activeKey={activeTab}
+                onSelect={onTabSelect}
+              >
+                {settingGroups
+                  .filter((grp) => grp.settings.length) // Hide groups with empty settings
+                  .map((grp) => (
+                    <Tab
+                      key={`${grp.groupLabel}-tab`}
+                      eventKey={grp.groupLabel}
+                      title={<TabTitleText>{grp.groupLabel}</TabTitleText>}
+                    />
+                  ))}
+              </Tabs>
+            </SidebarPanel>
+            <SidebarContent>
+              {settingGroups
+                .filter((g) => g.groupLabel === activeTab)
+                .map((grp) => (
+                  <Form key={`${grp.groupLabel}-setting`} className="setting-content">
+                    {grp.settings.map((s, index) => (
+                      <FormGroup
+                        label={
+                          <Title headingLevel={'h2'} size={'lg'}>
+                            {s.title}
+                          </Title>
+                        }
+                        helperText={
+                          <HelperText>
+                            <HelperTextItem>{s.description}</HelperTextItem>
+                          </HelperText>
+                        }
+                        isHelperTextBeforeField
+                        key={`${grp.groupLabel}-${s.title}-${index}`}
+                      >
+                        {s.element}
+                      </FormGroup>
+                    ))}
+                  </Form>
+                ))}
+            </SidebarContent>
+          </Sidebar>
+        </Card>
       </BreadcrumbPage>
     </>
   );
 };
 
 export default Settings;
-
-export interface UserSetting {
-  title: string;
-  description: JSX.Element | string;
-  content: React.FunctionComponent;
-}

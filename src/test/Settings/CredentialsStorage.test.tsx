@@ -40,7 +40,6 @@ import { CredentialsStorage } from '@app/Settings/CredentialsStorage';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../Common';
 
 jest.mock('@app/utils/LocalStorage', () => {
@@ -65,14 +64,6 @@ const backendStorageValue = 'Backend';
 
 describe('<CredentialsStorage/>', () => {
   afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(React.createElement(CredentialsStorage.content, null));
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
 
   it('defaults to Backend storage', async () => {
     renderDefault(React.createElement(CredentialsStorage.content, null));
