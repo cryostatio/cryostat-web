@@ -3354,7 +3354,7 @@ __metadata:
     file-loader: ^6.2.0
     fork-ts-checker-webpack-plugin: ^7.2.14
     html-webpack-plugin: ^5.5.0
-    i18next: ^22.4.3
+    i18next: ^22.4.8
     i18next-browser-languagedetector: ^7.0.1
     i18next-parser: ^7.1.0
     imagemin: ^8.0.1
@@ -5934,12 +5934,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^22.4.3":
-  version: 22.4.3
-  resolution: "i18next@npm:22.4.3"
+"i18next@npm:^22.4.8":
+  version: 22.4.8
+  resolution: "i18next@npm:22.4.8"
   dependencies:
     "@babel/runtime": ^7.20.6
-  checksum: 600e13b14df293ce31a617f3ee75d8f44f24e206eb2e11d355eb902388807d424e9dd7de15e4453f30bd36c7d33beb1d5d9638642decbd4c2adc386732232bf3
+  checksum: bac5eb763ba6e2e34ff58d52da2ad8ef506d42d0be9efb4abb116d649fef4d6af097a8be1bade3439ff1a1c66c207e661212a1c7caefd405f02a738e37e7bc37
   languageName: node
   linkType: hard
 
