@@ -36,7 +36,10 @@
  * SOFTWARE.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CardConfig, dashboardCardConfigResizeCardIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import {
+  CardConfig,
+  dashboardCardConfigResizeCardIntent,
+} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
@@ -222,25 +225,36 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch]
   );
 
-  const handleResize = React.useCallback((idx: number) => {
-    dispatch(dashboardCardConfigResizeCardIntent(idx, cardConfigs[idx].span === 12 ? 6 : 12));
-  }, [dispatch, cardConfigs])
+  const handleResize = React.useCallback(
+    (idx: number) => {
+      dispatch(dashboardCardConfigResizeCardIntent(idx, cardConfigs[idx].span === 12 ? 6 : 12));
+    },
+    [dispatch, cardConfigs]
+  );
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-        <Grid hasGutter>
-          {cardConfigs.map((cfg, idx) => (
-            <GridItem span={cfg.span as gridSpans} key={idx}>
-              {React.createElement(getConfigByName(cfg.name).component, {
-                ...cfg.props,
-                actions: [<DashboardCardActionMenu key={`${cfg.name}-actions`} idx={idx} defaultSpan={getConfigByName(cfg.name).defaultSpan} onRemove={() => handleRemove(idx)} onResize={() => handleResize(idx)} />],
-              })}
-            </GridItem>
-          ))}
-          <GridItem key={cardConfigs.length}>
-            <AddCard />
+      <Grid hasGutter>
+        {cardConfigs.map((cfg, idx) => (
+          <GridItem span={cfg.span as gridSpans} key={idx}>
+            {React.createElement(getConfigByName(cfg.name).component, {
+              ...cfg.props,
+              actions: [
+                <DashboardCardActionMenu
+                  key={`${cfg.name}-actions`}
+                  idx={idx}
+                  defaultSpan={getConfigByName(cfg.name).defaultSpan}
+                  onRemove={() => handleRemove(idx)}
+                  onResize={() => handleResize(idx)}
+                />,
+              ],
+            })}
           </GridItem>
-        </Grid>
+        ))}
+        <GridItem key={cardConfigs.length}>
+          <AddCard />
+        </GridItem>
+      </Grid>
     </TargetView>
   );
 };

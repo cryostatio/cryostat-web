@@ -82,12 +82,15 @@ export const dashboardCardConfigDeleteCardIntent = createAction(DashboardConfigA
   } as DashboardDeleteConfigActionPayload,
 }));
 
-export const dashboardCardConfigResizeCardIntent = createAction(DashboardConfigAction.CARD_RESIZE, (idx: number, span: gridSpans) => ({
-  payload: {
-    idx,
-    span,
-  } as DashboardResizeConfigActionPayload,
-}));
+export const dashboardCardConfigResizeCardIntent = createAction(
+  DashboardConfigAction.CARD_RESIZE,
+  (idx: number, span: gridSpans) => ({
+    payload: {
+      idx,
+      span,
+    } as DashboardResizeConfigActionPayload,
+  })
+);
 
 export interface CardConfig {
   name: string;

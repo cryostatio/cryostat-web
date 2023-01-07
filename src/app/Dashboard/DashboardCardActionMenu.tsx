@@ -74,12 +74,15 @@ export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActio
         onSelect={onSelect}
         dropdownItems={[
           <DropdownItem key="Remove" onClick={props.onRemove}>
-            {t('REMOVE', {ns: 'common'})}
+            {t('REMOVE', { ns: 'common' })}
           </DropdownItem>,
-          props.defaultSpan == 12 ? null :
-          <DropdownItem key="Resize" onClick={props.onResize}>
-            {cardConfigs[props.idx].span === props.defaultSpan ? t('EXPAND', {ns: 'common'}) : t('DashboardCardActionMenu.SHRINK', { val: props.defaultSpan })}
-          </DropdownItem>,
+          props.defaultSpan == 12 ? null : (
+            <DropdownItem key="Resize" onClick={props.onResize}>
+              {cardConfigs[props.idx].span === props.defaultSpan
+                ? t('EXPAND', { ns: 'common' })
+                : t('DashboardCardActionMenu.SHRINK', { val: props.defaultSpan })}
+            </DropdownItem>
+          ),
         ].filter((item) => item !== null)}
       />
     </>
