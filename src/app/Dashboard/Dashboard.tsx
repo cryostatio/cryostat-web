@@ -36,10 +36,11 @@
  * SOFTWARE.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { CardConfig, dashboardCardConfigResizeCardIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
+import { Card, CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
@@ -49,6 +50,7 @@ import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 
 export interface DashboardCardDescriptor {
   title: string;
+  defaultSpan: gridSpans;
   description: string;
   descriptionFull: JSX.Element | string;
   component: React.FC<any>;
@@ -109,6 +111,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
     cards = cards.concat([
       {
         title: 'None Placeholder',
+        defaultSpan: 6,
         description: 'placeholder',
         descriptionFull: 'This is a do-nothing placeholder with no config',
         component: PlaceholderCard,
@@ -116,6 +119,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
       },
       {
         title: 'All Placeholder',
+        defaultSpan: 6,
         description: 'placeholder',
         descriptionFull: 'This is a do-nothing placeholder with all the config',
         component: PlaceholderCard,
@@ -209,7 +213,7 @@ export function getConfigByTitle(title: string): DashboardCardDescriptor {
 
 export const Dashboard: React.FC<DashboardProps> = (_) => {
   const dispatch = useDispatch<StateDispatch>();
-  const cardConfigs = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
 
   const handleRemove = React.useCallback(
     (idx: number) => {
@@ -218,21 +222,25 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch]
   );
 
+  const handleResize = React.useCallback((idx: number) => {
+    dispatch(dashboardCardConfigResizeCardIntent(idx, cardConfigs[idx].span === 12 ? 6 : 12));
+  }, [dispatch, cardConfigs])
+
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <Stack hasGutter>
-        {cardConfigs.map((cfg, idx) => (
-          <StackItem key={idx}>
-            {React.createElement(getConfigByName(cfg.name).component, {
-              ...cfg.props,
-              actions: [<DashboardCardActionMenu key={`${cfg.name}-remove`} onRemove={() => handleRemove(idx)} />],
-            })}
-          </StackItem>
-        ))}
-        <StackItem key={cardConfigs.length}>
-          <AddCard />
-        </StackItem>
-      </Stack>
+        <Grid hasGutter>
+          {cardConfigs.map((cfg, idx) => (
+            <GridItem span={cfg.span as gridSpans} key={idx}>
+              {React.createElement(getConfigByName(cfg.name).component, {
+                ...cfg.props,
+                actions: [<DashboardCardActionMenu key={`${cfg.name}-actions`} idx={idx} defaultSpan={getConfigByName(cfg.name).defaultSpan} onRemove={() => handleRemove(idx)} onResize={() => handleResize(idx)} />],
+              })}
+            </GridItem>
+          ))}
+          <GridItem key={cardConfigs.length}>
+            <AddCard />
+          </GridItem>
+        </Grid>
     </TargetView>
   );
 };

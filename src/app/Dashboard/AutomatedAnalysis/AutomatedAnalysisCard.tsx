@@ -782,6 +782,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
 
 export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
   title: 'Automated Analysis',
+  defaultSpan: 12,
   description: `
 Assess common application performance and configuration issues.
     `,

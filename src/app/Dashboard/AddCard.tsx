@@ -118,8 +118,8 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
 
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
-    const cardTitle = getConfigByTitle(selection).component.name;
-    dispatch(dashboardCardConfigAddCardIntent(cardTitle, propsConfig));
+    const config = getConfigByTitle(selection);
+    dispatch(dashboardCardConfigAddCardIntent(config.component.name, config.defaultSpan, propsConfig));
   }, [dispatch, setShowWizard, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {

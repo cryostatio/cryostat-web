@@ -35,15 +35,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { Dropdown, DropdownItem, gridSpans, KebabToggle } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 export interface DashboardCardActionProps {
+  idx: number;
+  defaultSpan: gridSpans;
   onRemove: () => void;
+  onResize: () => void;
 }
 
 export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = (props) => {
+  const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
   const [isOpen, setOpen] = React.useState(false);
+
+  const [t] = useTranslation();
 
   const onSelect = React.useCallback(
     (_) => {
@@ -64,9 +74,13 @@ export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActio
         onSelect={onSelect}
         dropdownItems={[
           <DropdownItem key="Remove" onClick={props.onRemove}>
-            Remove
+            {t('REMOVE', {ns: 'common'})}
           </DropdownItem>,
-        ]}
+          props.defaultSpan == 12 ? null :
+          <DropdownItem key="Resize" onClick={props.onResize}>
+            {cardConfigs[props.idx].span === props.defaultSpan ? t('EXPAND', {ns: 'common'}) : t('DashboardCardActionMenu.SHRINK', { val: props.defaultSpan })}
+          </DropdownItem>,
+        ].filter((item) => item !== null)}
       />
     </>
   );
