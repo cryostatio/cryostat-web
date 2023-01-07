@@ -236,7 +236,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     <TargetView pageTitle="Dashboard" compactSelect={false}>
       <Grid hasGutter>
         {cardConfigs.map((cfg, idx) => (
-          <GridItem span={cfg.span as gridSpans} key={idx}>
+          <GridItem span={cfg.span} key={idx}>
             {React.createElement(getConfigByName(cfg.name).component, {
               ...cfg.props,
               actions: [
