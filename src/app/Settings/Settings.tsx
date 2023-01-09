@@ -37,16 +37,20 @@
  */
 
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import {
   Card,
   Form,
   FormGroup,
   HelperText,
   HelperTextItem,
+  Label,
   Sidebar,
   SidebarContent,
   SidebarPanel,
   Tab,
+  TabProps,
   Tabs,
   TabTitleText,
   Title,
@@ -57,14 +61,23 @@ import { AutoRefresh } from './AutoRefresh';
 import { CredentialsStorage } from './CredentialsStorage';
 import { DeletionDialogControl } from './DeletionDialogControl';
 import { FeatureLevels } from './FeatureLevels';
+import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
 
 export interface SettingGroup {
   groupLabel: SettingCategory;
+  featureLevel: FeatureLevel;
   disabled?: boolean;
   settings: _TransformedUserSetting[];
 }
+
+const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLevel => {
+  if (!settings.length) {
+    return FeatureLevel.DEVELOPMENT;
+  }
+  return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
+};
 
 const _SettingCategories = [
   'General',
@@ -83,11 +96,13 @@ export interface UserSetting {
   content: React.FunctionComponent;
   category: SettingCategory;
   orderInGroup?: number; // default -1
+  featureLevel?: FeatureLevel; // default PRODUCTION
 }
 
 interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   element: React.FunctionComponentElement<Record<string, never>>;
   orderInGroup: number;
+  featureLevel: FeatureLevel;
 }
 
 export interface SettingsProps {}
@@ -101,6 +116,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
     WebSocketDebounce,
     AutoRefresh,
     FeatureLevels,
+    Language,
   ].map(
     (c) =>
       ({
@@ -110,6 +126,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         category: c.category,
         disabled: c.disabled,
         orderInGroup: c.orderInGroup || -1,
+        featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
       } as _TransformedUserSetting)
   );
 
@@ -122,16 +139,20 @@ export const Settings: React.FC<SettingsProps> = (_) => {
   );
 
   const settingGroups = React.useMemo(() => {
-    return _SettingCategories.map((cat) => ({
-      groupLabel: cat,
-      settings: settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup),
-    })) as SettingGroup[];
+    return _SettingCategories.map((cat) => {
+      const panels = settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup);
+      return {
+        groupLabel: cat,
+        settings: panels,
+        featureLevel: _getGroupFeatureLevel(panels),
+      };
+    }) as SettingGroup[];
   }, [settings]);
 
   return (
     <>
       <BreadcrumbPage pageTitle="Settings">
-        <Card isFullHeight>
+        <Card isFullHeight className="setting-card">
           <Sidebar tabIndex={0}>
             <SidebarPanel>
               <Tabs
@@ -141,15 +162,16 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                 activeKey={activeTab}
                 onSelect={onTabSelect}
               >
-                {settingGroups
-                  .filter((grp) => grp.settings.length) // Hide groups with empty settings
-                  .map((grp) => (
-                    <Tab
-                      key={`${grp.groupLabel}-tab`}
-                      eventKey={grp.groupLabel}
-                      title={<TabTitleText>{grp.groupLabel}</TabTitleText>}
-                    />
-                  ))}
+                {settingGroups.map((grp) => (
+                  <SettingTab
+                    key={`${grp.groupLabel}-tab`}
+                    eventKey={grp.groupLabel}
+                    title={<TabTitleText>{grp.groupLabel}</TabTitleText>}
+                    featureLevelConfig={{
+                      level: grp.featureLevel,
+                    }}
+                  />
+                ))}
               </Tabs>
             </SidebarPanel>
             <SidebarContent>
@@ -158,30 +180,67 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                 .map((grp) => (
                   <Form key={`${grp.groupLabel}-setting`} className="setting-content">
                     {grp.settings.map((s, index) => (
-                      <FormGroup
-                        label={
-                          <Title headingLevel={'h2'} size={'lg'}>
-                            {s.title}
-                          </Title>
-                        }
-                        helperText={
-                          <HelperText>
-                            <HelperTextItem>{s.description}</HelperTextItem>
-                          </HelperText>
-                        }
-                        isHelperTextBeforeField
-                        key={`${grp.groupLabel}-${s.title}-${index}`}
-                      >
-                        {s.element}
-                      </FormGroup>
+                      <FeatureFlag level={s.featureLevel} key={`${grp.groupLabel}-${s.title}-${index}-flag`}>
+                        <FormGroup
+                          label={
+                            <Title headingLevel={'h2'} size={'lg'}>
+                              {s.title}
+                              {s.featureLevel !== FeatureLevel.PRODUCTION && (
+                                <Label
+                                  isCompact
+                                  style={{
+                                    marginLeft: '1ch',
+                                    textTransform: 'capitalize',
+                                  }}
+                                  color={s.featureLevel === FeatureLevel.BETA ? 'green' : 'red'}
+                                >
+                                  {FeatureLevel[s.featureLevel].toLowerCase()}
+                                </Label>
+                              )}
+                            </Title>
+                          }
+                          helperText={
+                            <HelperText>
+                              <HelperTextItem>{s.description}</HelperTextItem>
+                            </HelperText>
+                          }
+                          isHelperTextBeforeField
+                          key={`${grp.groupLabel}-${s.title}-${index}`}
+                        >
+                          {s.element}
+                        </FormGroup>
+                      </FeatureFlag>
                     ))}
                   </Form>
                 ))}
             </SidebarContent>
           </Sidebar>
         </Card>
+        <>
+          {
+            // Need this fragment to correct bottom margin.
+          }
+        </>
       </BreadcrumbPage>
     </>
+  );
+};
+
+interface SettingTabProps extends TabProps {
+  featureLevelConfig: {
+    level: FeatureLevel;
+    strict?: boolean;
+  };
+}
+
+// Workaround to the Tabs component requiring children to be React.FC<TabProps>
+const SettingTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, title, children }) => {
+  return (
+    <FeatureFlag level={featureLevelConfig.level} strict={featureLevelConfig.strict}>
+      <Tab eventKey={eventKey} title={title}>
+        {children}
+      </Tab>
+    </FeatureFlag>
   );
 };
 

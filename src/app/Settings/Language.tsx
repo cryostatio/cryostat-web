@@ -35,51 +35,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { i18nResources } from '@i18n/config';
+import { localeReadable } from '@i18n/i18nextUtil';
+import { Select, SelectOption } from '@patternfly/react-core';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { UserSetting } from './Settings';
 
-import i18next from 'i18next';
-import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
+const Component = () => {
+  const [_t, i18n] = useTranslation();
+  const [open, setOpen] = React.useState(false);
 
-import en_common from '../../locales/en/common.json';
-import en_public from '../../locales/en/public.json';
-// import zh_common from '../../locales/zh/common.json';
-// import zh_public from '../../locales/zh/public.json';
+  const handleLanguageToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
 
-// TODO: .use(Backend) eventually store translations on backend?
-// Openshift console does this already:
-// https://github.com/openshift/console/blob/master/frontend/public/i18n.js
-export const i18nResources = {
-  en: {
-    public: en_public,
-    common: en_common,
-  },
-  // zh: {
-  //   // TODO: add zh translation (and other languages)?
-  //   // public: zh_public,
-  //   // common: zh_common,
-  // },
-} as const;
-
-export const i18nNamespaces = ['public', 'common'];
-
-// eslint-disable-next-line import/no-named-as-default-member
-i18next
-  .use(I18nextBrowserLanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: i18nResources,
-    ns: i18nNamespaces,
-    defaultNS: 'public',
-    fallbackNS: ['common'],
-    fallbackLng: ['en'],
-    debug: process.env.NODE_ENV === 'development',
-    returnNull: false,
-    interpolation: {
-      escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+  const handleLanguageSelect = React.useCallback(
+    (_, v) => {
+      i18n.changeLanguage(v);
+      setOpen(false);
     },
-    react: {
-      useSuspense: true,
-    },
-  });
+    [i18n, setOpen]
+  );
 
-export default i18next;
+  return (
+    <Select
+      isOpen={open}
+      onToggle={handleLanguageToggle}
+      onSelect={handleLanguageSelect}
+      selections={localeReadable(i18n.language)}
+      isFlipEnabled
+      menuAppendTo="parent"
+    >
+      {Object.keys(i18nResources).map((l) => (
+        <SelectOption key={l} value={l}>
+          {localeReadable(l)}
+        </SelectOption>
+      ))}
+    </Select>
+  );
+};
+
+export const Language: UserSetting = {
+  title: 'Language',
+  description: 'Set the current language for web console.',
+  content: Component,
+  category: 'Language & Region',
+  orderInGroup: 1,
+  featureLevel: FeatureLevel.BETA,
+};
