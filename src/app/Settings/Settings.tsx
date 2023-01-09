@@ -237,7 +237,7 @@ interface SettingTabProps extends TabProps {
 const SettingTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, title, children }) => {
   return (
     <FeatureFlag level={featureLevelConfig.level} strict={featureLevelConfig.strict}>
-      <Tab eventKey={eventKey} title={title}>
+      <Tab eventKey={eventKey} title={title} id={`${eventKey}-tab`}>
         {children}
       </Tab>
     </FeatureFlag>

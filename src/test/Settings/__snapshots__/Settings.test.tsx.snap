@@ -29,10 +29,10 @@ exports[`<Settings/> renders correctly 1`] = `
     className="pf-l-stack pf-m-gutter"
   >
     <div
-      className="pf-l-stack__item"
+      className="pf-l-stack__item pf-m-fill"
     >
       <article
-        className="pf-c-card pf-m-full-height"
+        className="pf-c-card pf-m-full-height setting-card"
         data-ouia-component-id="OUIA-Generated-Card-1"
         data-ouia-component-type="PF4/Card"
         data-ouia-safe={true}
@@ -60,7 +60,96 @@ exports[`<Settings/> renders correctly 1`] = `
                   className="pf-c-tabs__list"
                   onScroll={[Function]}
                   role="tablist"
-                />
+                >
+                  <li
+                    className="pf-c-tabs__item pf-m-current"
+                    role="presentation"
+                  >
+                    <button
+                      aria-controls="pf-tab-section-General-General-tab"
+                      aria-selected={true}
+                      className="pf-c-tabs__link"
+                      data-ouia-component-type="PF4/TabButton"
+                      data-ouia-safe={true}
+                      id="pf-tab-General-General-tab"
+                      onClick={[Function]}
+                      role="tab"
+                      type="button"
+                    >
+                      <span
+                        className="pf-c-tabs__item-text"
+                      >
+                        General
+                      </span>
+                    </button>
+                  </li>
+                  <li
+                    className="pf-c-tabs__item"
+                    role="presentation"
+                  >
+                    <button
+                      aria-controls="pf-tab-section-Notifications & Messages-Notifications & Messages-tab"
+                      aria-selected={false}
+                      className="pf-c-tabs__link"
+                      data-ouia-component-type="PF4/TabButton"
+                      data-ouia-safe={true}
+                      id="pf-tab-Notifications & Messages-Notifications & Messages-tab"
+                      onClick={[Function]}
+                      role="tab"
+                      type="button"
+                    >
+                      <span
+                        className="pf-c-tabs__item-text"
+                      >
+                        Notifications & Messages
+                      </span>
+                    </button>
+                  </li>
+                  <li
+                    className="pf-c-tabs__item"
+                    role="presentation"
+                  >
+                    <button
+                      aria-controls="pf-tab-section-Dashboard-Dashboard-tab"
+                      aria-selected={false}
+                      className="pf-c-tabs__link"
+                      data-ouia-component-type="PF4/TabButton"
+                      data-ouia-safe={true}
+                      id="pf-tab-Dashboard-Dashboard-tab"
+                      onClick={[Function]}
+                      role="tab"
+                      type="button"
+                    >
+                      <span
+                        className="pf-c-tabs__item-text"
+                      >
+                        Dashboard
+                      </span>
+                    </button>
+                  </li>
+                  <li
+                    className="pf-c-tabs__item"
+                    role="presentation"
+                  >
+                    <button
+                      aria-controls="pf-tab-section-Advanced-Advanced-tab"
+                      aria-selected={false}
+                      className="pf-c-tabs__link"
+                      data-ouia-component-type="PF4/TabButton"
+                      data-ouia-safe={true}
+                      id="pf-tab-Advanced-Advanced-tab"
+                      onClick={[Function]}
+                      role="tab"
+                      type="button"
+                    >
+                      <span
+                        className="pf-c-tabs__item-text"
+                      >
+                        Advanced
+                      </span>
+                    </button>
+                  </li>
+                </ul>
               </div>
             </div>
             <div
@@ -69,12 +158,169 @@ exports[`<Settings/> renders correctly 1`] = `
               <form
                 className="pf-c-form setting-content"
                 noValidate={true}
-              />
+              >
+                <div
+                  className="pf-c-form__group"
+                >
+                  <div
+                    className="pf-c-form__group-label"
+                  >
+                    <label
+                      className="pf-c-form__label"
+                    >
+                      <span
+                        className="pf-c-form__label-text"
+                      >
+                        <h2
+                          className="pf-c-title pf-m-lg"
+                          data-ouia-component-id="OUIA-Generated-Title-1"
+                          data-ouia-component-type="PF4/Title"
+                          data-ouia-safe={true}
+                        >
+                          WebSocket Debounce Title
+                        </h2>
+                      </span>
+                    </label>
+                     
+                  </div>
+                  <div
+                    className="pf-c-form__group-control"
+                  >
+                    <div
+                      className="pf-c-helper-text"
+                    >
+                      <div
+                        className="pf-c-helper-text__item"
+                      >
+                        <span
+                          className="pf-c-helper-text__item-text"
+                        >
+                          WebSocket Debounce Description
+                        </span>
+                      </div>
+                    </div>
+                    <p
+                      className=""
+                      data-ouia-component-id="OUIA-Generated-Text-1"
+                      data-ouia-component-type="PF4/Text"
+                      data-ouia-safe={true}
+                      data-pf-content={true}
+                    >
+                      WebSocket Debounce Component
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className="pf-c-form__group"
+                >
+                  <div
+                    className="pf-c-form__group-label"
+                  >
+                    <label
+                      className="pf-c-form__label"
+                    >
+                      <span
+                        className="pf-c-form__label-text"
+                      >
+                        <h2
+                          className="pf-c-title pf-m-lg"
+                          data-ouia-component-id="OUIA-Generated-Title-2"
+                          data-ouia-component-type="PF4/Title"
+                          data-ouia-safe={true}
+                        >
+                          AutoRefresh Title
+                        </h2>
+                      </span>
+                    </label>
+                     
+                  </div>
+                  <div
+                    className="pf-c-form__group-control"
+                  >
+                    <div
+                      className="pf-c-helper-text"
+                    >
+                      <div
+                        className="pf-c-helper-text__item"
+                      >
+                        <span
+                          className="pf-c-helper-text__item-text"
+                        >
+                          AutoRefresh Description
+                        </span>
+                      </div>
+                    </div>
+                    <p
+                      className=""
+                      data-ouia-component-id="OUIA-Generated-Text-2"
+                      data-ouia-component-type="PF4/Text"
+                      data-ouia-safe={true}
+                      data-pf-content={true}
+                    >
+                      AutoRefresh Component
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className="pf-c-form__group"
+                >
+                  <div
+                    className="pf-c-form__group-label"
+                  >
+                    <label
+                      className="pf-c-form__label"
+                    >
+                      <span
+                        className="pf-c-form__label-text"
+                      >
+                        <h2
+                          className="pf-c-title pf-m-lg"
+                          data-ouia-component-id="OUIA-Generated-Title-3"
+                          data-ouia-component-type="PF4/Title"
+                          data-ouia-safe={true}
+                        >
+                          Feature Levels Title
+                        </h2>
+                      </span>
+                    </label>
+                     
+                  </div>
+                  <div
+                    className="pf-c-form__group-control"
+                  >
+                    <div
+                      className="pf-c-helper-text"
+                    >
+                      <div
+                        className="pf-c-helper-text__item"
+                      >
+                        <span
+                          className="pf-c-helper-text__item-text"
+                        >
+                          Feature Levels Description
+                        </span>
+                      </div>
+                    </div>
+                    <p
+                      className=""
+                      data-ouia-component-id="OUIA-Generated-Text-3"
+                      data-ouia-component-type="PF4/Text"
+                      data-ouia-safe={true}
+                      data-pf-content={true}
+                    >
+                      Feature Levels Component
+                    </p>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </article>
     </div>
+    <div
+      className="pf-l-stack__item"
+    />
   </div>
 </section>
 `;
