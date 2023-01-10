@@ -65,6 +65,18 @@ import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
 import { useLocation } from 'react-router-dom';
+import { hashCode } from '@app/utils/utils';
+
+const _SettingCategories = [
+  'General',
+  'Language & Region',
+  'Notifications & Messages',
+  'Dashboard',
+  'Advanced',
+] as const;
+
+export type SettingCategory = typeof _SettingCategories[number];
+
 export interface SettingGroup {
   groupLabel: SettingCategory;
   featureLevel: FeatureLevel;
@@ -79,15 +91,10 @@ const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLeve
   return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
 };
 
-const _SettingCategories = [
-  'General',
-  'Language & Region',
-  'Notifications & Messages',
-  'Dashboard',
-  'Advanced',
-] as const;
-
-export type SettingCategory = typeof _SettingCategories[number];
+export const selectTab = (tabName: SettingCategory) => {
+  const tab = document.getElementById(`pf-tab-${tabName}-${hashCode(tabName)}`);
+  tab && tab.click();
+};
 
 export interface UserSetting {
   title: string;
@@ -240,7 +247,7 @@ interface SettingTabProps extends TabProps {
 const SettingTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, title, children }) => {
   return (
     <FeatureFlag level={featureLevelConfig.level} strict={featureLevelConfig.strict}>
-      <Tab eventKey={eventKey} title={title} id={`${eventKey}-tab`}>
+      <Tab eventKey={eventKey} title={title} id={`${hashCode(`${eventKey}`)}`}>
         {children}
       </Tab>
     </FeatureFlag>

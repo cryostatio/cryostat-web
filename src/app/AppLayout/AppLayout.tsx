@@ -41,6 +41,7 @@ import build from '@app/build.json';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
+import { selectTab } from '@app/Settings/Settings';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -266,7 +267,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   }, [serviceContext.login, addSubscription]);
 
   const handleLanguagePref = React.useCallback(() => {
-    routerHistory.push('/settings', { preSelectedTab: 'Language & Region' });
+    if (routerHistory.location.pathname === '/settings') {
+      selectTab('Language & Region');
+    } else {
+      routerHistory.push('/settings', { preSelectedTab: 'Language & Region' });
+    }
   }, [routerHistory]);
 
   const handleUserInfoToggle = React.useCallback(() => setShowUserInfoDropdown((v) => !v), [setShowUserInfoDropdown]);

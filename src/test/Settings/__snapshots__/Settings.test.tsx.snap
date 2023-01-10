@@ -66,12 +66,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-General-General-tab"
+                      aria-controls="pf-tab-section-General-1584505032"
                       aria-selected={true}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-General-General-tab"
+                      id="pf-tab-General-1584505032"
                       onClick={[Function]}
                       role="tab"
                       type="button"
@@ -88,12 +88,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-Notifications & Messages-Notifications & Messages-tab"
+                      aria-controls="pf-tab-section-Notifications & Messages--1892985218"
                       aria-selected={false}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-Notifications & Messages-Notifications & Messages-tab"
+                      id="pf-tab-Notifications & Messages--1892985218"
                       onClick={[Function]}
                       role="tab"
                       type="button"
@@ -110,12 +110,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-Dashboard-Dashboard-tab"
+                      aria-controls="pf-tab-section-Dashboard-956107380"
                       aria-selected={false}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-Dashboard-Dashboard-tab"
+                      id="pf-tab-Dashboard-956107380"
                       onClick={[Function]}
                       role="tab"
                       type="button"
@@ -132,12 +132,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-Advanced-Advanced-tab"
+                      aria-controls="pf-tab-section-Advanced--654193598"
                       aria-selected={false}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-Advanced-Advanced-tab"
+                      id="pf-tab-Advanced--654193598"
                       onClick={[Function]}
                       role="tab"
                       type="button"
