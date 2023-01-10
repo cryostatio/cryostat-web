@@ -47,7 +47,9 @@ import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { renderWithServiceContextAndRouter } from '../Common';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router-dom';
 
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {
@@ -124,6 +126,8 @@ jest.mock('@app/Settings/Language', () => ({
 
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
+const history = createMemoryHistory({ initialEntries: ['/settings'] });
+
 describe('<Settings/>', () => {
   afterEach(cleanup);
 
@@ -132,7 +136,9 @@ describe('<Settings/>', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <Settings />
+          <Router location={history.location} history={history}>
+            <Settings />
+          </Router>
         </ServiceContext.Provider>
       );
     });
@@ -142,14 +148,14 @@ describe('<Settings/>', () => {
   // This test will check if language setting (BETA) is being hidden.
   // Update this test when language setting is in PRODUCTION.
   it('should not show tabs with featureLevel lower than current', async () => {
-    renderWithServiceContext(<Settings />);
+    renderWithServiceContextAndRouter(<Settings />);
 
     const hiddenTab = screen.queryByText('Language & Region');
     expect(hiddenTab).not.toBeInTheDocument();
   });
 
   it('should select General tab as default', async () => {
-    renderWithServiceContext(<Settings />);
+    renderWithServiceContextAndRouter(<Settings />);
 
     const generalTab = screen.getByRole('tab', { name: 'General' });
     expect(generalTab).toBeInTheDocument();
@@ -158,7 +164,7 @@ describe('<Settings/>', () => {
   });
 
   it('should update setting content when a tab is selected', async () => {
-    const { user } = renderWithServiceContext(<Settings />);
+    const { user } = renderWithServiceContextAndRouter(<Settings />);
 
     const dashboardTab = screen.getByRole('tab', { name: 'Dashboard' });
     expect(dashboardTab).toBeInTheDocument();

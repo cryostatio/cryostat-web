@@ -83,7 +83,7 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
-const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule').mockReturnValue();
+const downloadSpy = jest.spyOn(defaultServices.api, 'downloadRule');
 const uploadSpy = jest.spyOn(defaultServices.api, 'uploadRule').mockReturnValue(of(true));
 const updateSpy = jest.spyOn(defaultServices.api, 'updateRule').mockReturnValue(of(true));
 
