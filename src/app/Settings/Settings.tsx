@@ -64,7 +64,7 @@ import { FeatureLevels } from './FeatureLevels';
 import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
-
+import { useLocation } from 'react-router-dom';
 export interface SettingGroup {
   groupLabel: SettingCategory;
   featureLevel: FeatureLevel;
@@ -130,7 +130,10 @@ export const Settings: React.FC<SettingsProps> = (_) => {
       } as _TransformedUserSetting)
   );
 
-  const [activeTab, setActiveTab] = React.useState<SettingCategory>('General');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = React.useState<SettingCategory>(
+    (location.state?.preSelectedTab as SettingCategory) || 'General'
+  );
 
   const onTabSelect = React.useCallback(
     (_: React.MouseEvent<HTMLElement, MouseEvent>, eventKey: string | number) =>

@@ -265,6 +265,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     addSubscription(serviceContext.login.setLoggedOut().subscribe());
   }, [serviceContext.login, addSubscription]);
 
+  const handleLanguagePref = React.useCallback(() => {
+    routerHistory.push('/settings', { preSelectedTab: 'Language & Region' });
+  }, [routerHistory]);
+
   const handleUserInfoToggle = React.useCallback(() => setShowUserInfoDropdown((v) => !v), [setShowUserInfoDropdown]);
 
   React.useEffect(() => {
@@ -273,11 +277,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const userInfoItems = React.useMemo(
     () => [
+      <FeatureFlag level={FeatureLevel.BETA}>
+        <DropdownGroup key={'language-preferences'}>
+          <DropdownItem onClick={handleLanguagePref}>Language preference</DropdownItem>
+        </DropdownGroup>
+      </FeatureFlag>,
       <DropdownGroup key={'log-out'}>
         <DropdownItem onClick={handleLogout}>Log out</DropdownItem>
       </DropdownGroup>,
     ],
-    [handleLogout]
+    [handleLogout, handleLanguagePref]
   );
 
   const UserInfoToggle = React.useMemo(
@@ -397,6 +406,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   onSelect={() => setShowUserInfoDropdown(false)}
                   isOpen={showUserInfoDropdown}
                   toggle={UserInfoToggle}
+                  position="right"
                   dropdownItems={userInfoItems}
                 />
               </ToolbarItem>
