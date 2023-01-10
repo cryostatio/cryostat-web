@@ -64,6 +64,7 @@ const CONSOLE = 'Console';
 const navGroups = [OVERVIEW, CONSOLE];
 
 export interface IAppRoute {
+  anonymous?: boolean;
   label?: string;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
@@ -159,11 +160,21 @@ const routes: IAppRoute[] = [
     navGroup: CONSOLE,
   },
   {
+    anonymous: true,
     component: Settings,
     exact: true,
     path: '/settings',
     title: 'Settings',
     description: 'View or modify Cryostat web-client application settings.',
+  },
+  {
+    anonymous: true,
+    component: Login,
+    // this is only displayed if the user is not logged in and is the last route matched against the current path, so it will always match
+    exact: false,
+    path: '/',
+    title: 'Cryostat',
+    description: 'Log in to Cryostat',
   },
 ];
 
@@ -215,22 +226,23 @@ export interface AppRoutesProps {}
 const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [showDashboard, setShowDashboard] = React.useState(false);
+  const [loggedIn, setLoggedIn] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(
       context.login
         .getSessionState()
-        .subscribe((sessionState) => setShowDashboard(sessionState === SessionState.USER_SESSION))
+        .subscribe((sessionState) => setLoggedIn(sessionState === SessionState.USER_SESSION))
     );
-  }, [addSubscription, context.login, setShowDashboard]);
+  }, [addSubscription, context.login, setLoggedIn]);
 
   return (
     <LastLocationProvider>
       <Suspense fallback={<LoadingView />}>
         <Switch>
-          {showDashboard ? (
-            flatten(routes).map(({ path, exact, component, title, isAsync }, idx) => (
+          {flatten(routes)
+            .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
+            .map(({ path, exact, component, title, isAsync }, idx) => (
               <RouteWithTitleUpdates
                 path={path}
                 exact={exact}
@@ -239,10 +251,7 @@ const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
                 title={title}
                 isAsync={isAsync}
               />
-            ))
-          ) : (
-            <Login />
-          )}
+            ))}
           <PageNotFound title="404 Page Not Found" />
         </Switch>
       </Suspense>
