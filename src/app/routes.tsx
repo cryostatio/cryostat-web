@@ -240,31 +240,18 @@ const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
     <LastLocationProvider>
       <Suspense fallback={<LoadingView />}>
         <Switch>
-          {loggedIn
-            ? flatten(routes)
-                .filter((r) => r.component !== Login)
-                .map(({ path, exact, component, title, isAsync }, idx) => (
-                  <RouteWithTitleUpdates
-                    path={path}
-                    exact={exact}
-                    component={component}
-                    key={idx}
-                    title={title}
-                    isAsync={isAsync}
-                  />
-                ))
-            : flatten(routes)
-                .filter((r) => r.anonymous)
-                .map(({ path, exact, component, title, isAsync }, idx) => (
-                  <RouteWithTitleUpdates
-                    path={path}
-                    exact={exact}
-                    component={component}
-                    key={idx}
-                    title={title}
-                    isAsync={isAsync}
-                  />
-                ))}
+          {flatten(routes)
+            .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
+            .map(({ path, exact, component, title, isAsync }, idx) => (
+              <RouteWithTitleUpdates
+                path={path}
+                exact={exact}
+                component={component}
+                key={idx}
+                title={title}
+                isAsync={isAsync}
+              />
+            ))}
           <PageNotFound title="404 Page Not Found" />
         </Switch>
       </Suspense>
