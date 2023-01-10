@@ -35,8 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { Language } from '@app/Settings/Language';
+import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { AuthMethod } from '@app/Shared/Services/Login.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Card,
@@ -54,9 +57,6 @@ import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
 import { ConnectionError } from './ConnectionError';
 import { NoopAuthForm } from './NoopAuthForm';
 import { OpenShiftAuthDescriptionText, OpenShiftPlaceholderAuthForm } from './OpenShiftPlaceholderAuthForm';
-import { Language } from '@app/Settings/Language';
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 
 export interface LoginProps {}
 

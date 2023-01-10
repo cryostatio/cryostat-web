@@ -91,7 +91,7 @@ jest.mock('@app/Settings/WebSocketDebounce', () => ({
   WebSocketDebounce: {
     title: 'WebSocket Debounce Title',
     description: 'WebSocket Debounce Description',
-    category: 'General',
+    category: 'Connectivity',
     content: () => <Text>WebSocket Debounce Component</Text>,
   },
 }));
@@ -100,7 +100,7 @@ jest.mock('@app/Settings/AutoRefresh', () => ({
   AutoRefresh: {
     title: 'AutoRefresh Title',
     description: 'AutoRefresh Description',
-    category: 'General',
+    category: 'Connectivity',
     content: () => <Text>AutoRefresh Component</Text>,
   },
 }));
@@ -109,7 +109,7 @@ jest.mock('@app/Settings/FeatureLevels', () => ({
   FeatureLevels: {
     title: 'Feature Levels Title',
     description: 'Feature Levels Description',
-    category: 'General',
+    category: 'Advanced',
     content: () => <Text>Feature Levels Component</Text>,
   },
 }));
@@ -136,7 +136,7 @@ describe('<Settings/>', () => {
     await act(async () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
-          <Router location={history.location} history={history}>
+          <Router history={history}>
             <Settings />
           </Router>
         </ServiceContext.Provider>
@@ -154,10 +154,10 @@ describe('<Settings/>', () => {
     expect(hiddenTab).not.toBeInTheDocument();
   });
 
-  it('should select General tab as default', async () => {
+  it('should select Connectivity tab as default', async () => {
     renderWithServiceContextAndRouter(<Settings />);
 
-    const generalTab = screen.getByRole('tab', { name: 'General' });
+    const generalTab = screen.getByRole('tab', { name: 'Connectivity' });
     expect(generalTab).toBeInTheDocument();
     expect(generalTab).toBeVisible();
     expect(generalTab.getAttribute('aria-selected')).toBe('true');

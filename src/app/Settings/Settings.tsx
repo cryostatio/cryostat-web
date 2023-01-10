@@ -39,6 +39,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { hashCode } from '@app/utils/utils';
 import {
   Card,
   Form,
@@ -56,6 +57,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import { useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
 import { CredentialsStorage } from './CredentialsStorage';
@@ -64,11 +66,9 @@ import { FeatureLevels } from './FeatureLevels';
 import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
-import { useLocation } from 'react-router-dom';
-import { hashCode } from '@app/utils/utils';
 
 const _SettingCategories = [
-  'General',
+  'Connectivity',
   'Language & Region',
   'Notifications & Messages',
   'Dashboard',
@@ -139,7 +139,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
 
   const location = useLocation();
   const [activeTab, setActiveTab] = React.useState<SettingCategory>(
-    (location.state?.preSelectedTab as SettingCategory) || 'General'
+    ((location.state && location.state['preSelectedTab']) as SettingCategory) || 'Connectivity'
   );
 
   const onTabSelect = React.useCallback(
