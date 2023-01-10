@@ -47,7 +47,6 @@ import {
   CardTitle,
   PageSection,
   Text,
-  Title,
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { NotificationsContext } from '../Notifications/Notifications';
