@@ -48,7 +48,7 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => [
     jest.fn((str: string) => str),
     {
-      changeLanguage: () => new Promise(() => {}),
+      changeLanguage: () => new Promise(() => undefined),
       language: mockDetectedLocale,
     },
   ],

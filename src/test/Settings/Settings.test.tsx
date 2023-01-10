@@ -37,6 +37,7 @@
  */
 
 // Must import before @app/Settings/Settings (circular deps)
+/* eslint import/order: 0*/
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Settings } from '@app/Settings/Settings';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';

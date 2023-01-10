@@ -36,11 +36,11 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import renderer, { act } from 'react-test-renderer';
 import { WebSocketDebounce } from '@app/Settings/WebSocketDebounce';
+import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
 import { renderDefault } from '../Common';
 
 const defaultValue = 100;
@@ -69,19 +69,19 @@ describe('<WebSocketDebounce/>', () => {
   it('should set correct default period', async () => {
     renderDefault(React.createElement(WebSocketDebounce.content, null));
 
-    const defaultInput = document.querySelector("input[type='number']") as HTMLInputElement;
-    expect(defaultInput).toBeInTheDocument();
-    expect(defaultInput).toBeVisible();
-    expect(defaultInput.getAttribute('value')).toBe(`${defaultValue}`);
+    const webSocketDebounceInput = document.querySelector("input[type='number']") as HTMLInputElement;
+    expect(webSocketDebounceInput).toBeInTheDocument();
+    expect(webSocketDebounceInput).toBeVisible();
+    expect(webSocketDebounceInput.getAttribute('value')).toBe(`${defaultValue}`);
   });
 
   it('should save to local storage when config is changed', async () => {
     const { user } = renderDefault(React.createElement(WebSocketDebounce.content, null));
 
-    const defaultInput = document.querySelector("input[type='number']") as HTMLInputElement;
-    expect(defaultInput).toBeInTheDocument();
-    expect(defaultInput).toBeVisible();
-    expect(defaultInput.getAttribute('value')).toBe(`${defaultValue}`);
+    const webSocketDebounceInput = document.querySelector("input[type='number']") as HTMLInputElement;
+    expect(webSocketDebounceInput).toBeInTheDocument();
+    expect(webSocketDebounceInput).toBeVisible();
+    expect(webSocketDebounceInput.getAttribute('value')).toBe(`${defaultValue}`);
 
     const plusButton = screen.getByLabelText('Plus');
     expect(plusButton).toBeInTheDocument();
@@ -89,9 +89,6 @@ describe('<WebSocketDebounce/>', () => {
 
     await user.click(plusButton);
 
-    const newInput = document.querySelector("input[type='number']") as HTMLInputElement;
-    expect(newInput).toBeInTheDocument();
-    expect(newInput).toBeVisible();
-    expect(defaultInput.getAttribute('value')).toBe(`${defaultValue + 1}`);
+    expect(webSocketDebounceInput.getAttribute('value')).toBe(`${defaultValue + 1}`);
   });
 });
