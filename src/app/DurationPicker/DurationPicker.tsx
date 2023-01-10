@@ -56,7 +56,7 @@ export const DurationPicker: React.FC<DurationPickerProps> = (props) => {
             isRequired
             type="number"
             id="duration-picker-period"
-            aria-describedby="recording-duration-helper"
+            aria-label="Duration Picker Period Input"
             onChange={(v) => props.onPeriodChange(Number(v))}
             isDisabled={!props.enabled}
             min="0"
