@@ -152,7 +152,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
   return (
     <>
       <BreadcrumbPage pageTitle="Settings">
-        <Card isFullHeight className="setting-card">
+        <Card isFullHeight>
           <Sidebar tabIndex={0}>
             <SidebarPanel>
               <Tabs
