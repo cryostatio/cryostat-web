@@ -75,7 +75,7 @@ const _SettingCategories = [
   'Advanced',
 ] as const;
 
-export type SettingCategory = typeof _SettingCategories[number];
+export type SettingCategory = (typeof _SettingCategories)[number];
 
 export interface SettingGroup {
   groupLabel: SettingCategory;
