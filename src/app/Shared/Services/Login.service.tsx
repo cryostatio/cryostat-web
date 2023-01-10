@@ -254,7 +254,8 @@ export class LoginService {
   private navigateToLoginPage(): void {
     this.authMethod.next(AuthMethod.UNKNOWN);
     this.removeCacheItem(this.AUTH_METHOD_KEY);
-    window.location.href = window.location.href.split('#')[0];
+    const url = new URL(window.location.href.split('#')[0]);
+    window.location.href = url.pathname.match(/\/settings/i) ? '/' : url.pathname;
   }
 
   private getTokenFromUrlFragment(): string {
