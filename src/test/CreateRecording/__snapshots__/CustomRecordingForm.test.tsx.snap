@@ -166,9 +166,8 @@ Array [
             className="pf-l-split__item pf-m-fill"
           >
             <input
-              aria-describedby="recording-duration-helper"
               aria-invalid={false}
-              aria-label={null}
+              aria-label="Duration Picker Period Input"
               className="pf-c-form-control"
               data-ouia-component-id="OUIA-Generated-TextInputBase-2"
               data-ouia-component-type="PF4/TextInput"
