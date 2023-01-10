@@ -36,6 +36,9 @@
  * SOFTWARE.
  */
 
+import { FeatureLevel } from '@app/Shared/Services/Settings.service'; // Must import before @app/Settings/Settings
+import { Settings } from '@app/Settings/Settings';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
@@ -43,9 +46,6 @@ import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { Settings } from '@app/Settings/Settings';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {

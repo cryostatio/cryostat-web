@@ -36,11 +36,11 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
+import { AutoRefresh } from '@app/Settings/AutoRefresh';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
+import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { AutoRefresh } from '@app/Settings/AutoRefresh';
 import { renderWithServiceContext } from '../Common';
 
 jest.spyOn(defaultServices.settings, 'autoRefreshEnabled').mockReturnValue(false);
