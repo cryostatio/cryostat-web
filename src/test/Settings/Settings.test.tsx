@@ -36,7 +36,8 @@
  * SOFTWARE.
  */
 
-import { FeatureLevel } from '@app/Shared/Services/Settings.service'; // Must import before @app/Settings/Settings
+// Must import before @app/Settings/Settings (circular deps)
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Settings } from '@app/Settings/Settings';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';

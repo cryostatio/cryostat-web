@@ -38,7 +38,7 @@
 
 import { DeleteOrDisableWarningType, getFromWarningMap } from '@app/Modal/DeleteWarningUtils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ExpandableSection, Switch, Stack, StackItem, FormGroup } from '@patternfly/react-core';
+import { ExpandableSection, FormGroup, Stack, StackItem, Switch } from '@patternfly/react-core';
 import * as React from 'react';
 import { UserSetting } from './Settings';
 
