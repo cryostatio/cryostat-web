@@ -44,12 +44,17 @@ import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
+import { css } from '@patternfly/react-styles';
+import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
+import { DraggableRef } from './DraggableRef';
+import { DraggableWrapper } from './DraggableWrapper';
+import { ResizableCard } from './ResizableCard';
 
 export interface DashboardCardDescriptor {
   title: string;
@@ -73,6 +78,7 @@ export interface PropControl {
 export interface DashboardProps {}
 
 export interface DashboardCardProps {
+  dashboardIdx: number;
   actions?: JSX.Element[];
 }
 
@@ -89,20 +95,25 @@ const PlaceholderCard: React.FunctionComponent<
   } & DashboardCardProps
 > = (props) => {
   return (
-    <Card isRounded>
-      <CardHeader>
-        <CardActions>{...props.actions || []}</CardActions>
-      </CardHeader>
-      <CardBody>
-        <Text>title: {props.title}</Text>
-        <Text>message: {props.message}</Text>
-        <Text>count: {props.count}</Text>
-        <Text>toggle: {String(props.toggleswitch)}</Text>
-        <Text>menu: {props.menu}</Text>
-        <Text>asyncmenu: {props.asyncmenu}</Text>
-        <Text>asyncmenus: {props.asyncmenu2}</Text>
-      </CardBody>
-    </Card>
+    <ResizableCard>
+      <Card isRounded>
+        <CardHeader>
+          <CardActions>{...props.actions || []}</CardActions>
+        </CardHeader>
+        <DraggableWrapper>
+          <CardBody>
+            <Text>title: {props.title}</Text>
+            <Text>message: {props.message}</Text>
+            <Text>count: {props.count}</Text>
+            <Text>toggle: {String(props.toggleswitch)}</Text>
+            <Text>menu: {props.menu}</Text>
+            <Text>asyncmenu: {props.asyncmenu}</Text>
+            <Text>asyncmenus: {props.asyncmenu2}</Text>
+          </CardBody>
+          <DraggableRef dashboardIdx={props.dashboardIdx} />
+        </DraggableWrapper>
+      </Card>
+    </ResizableCard>
   );
 };
 
@@ -226,10 +237,10 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   );
 
   const handleResize = React.useCallback(
-    (idx: number) => {
-      dispatch(dashboardCardConfigResizeCardIntent(idx, cardConfigs[idx].span === 12 ? 6 : 12));
+    (idx: number, span: gridSpans) => {
+      dispatch(dashboardCardConfigResizeCardIntent(idx, span));
     },
-    [dispatch, cardConfigs]
+    [dispatch]
   );
 
   return (
@@ -239,20 +250,16 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
           <GridItem span={cfg.span} key={idx}>
             {React.createElement(getConfigByName(cfg.name).component, {
               ...cfg.props,
-              actions: [
-                <DashboardCardActionMenu
-                  key={`${cfg.name}-actions`}
-                  idx={idx}
-                  defaultSpan={getConfigByName(cfg.name).defaultSpan}
-                  onRemove={() => handleRemove(idx)}
-                  onResize={() => handleResize(idx)}
-                />,
-              ],
+              dashboardIdx: idx,
+              actions: [<DashboardCardActionMenu key={`${cfg.name}-actions`} onRemove={() => handleRemove(idx)} />],
             })}
           </GridItem>
         ))}
         <GridItem key={cardConfigs.length}>
           <AddCard />
+        </GridItem>
+        <GridItem span={6}>
+          <ResizableCard></ResizableCard>
         </GridItem>
       </Grid>
     </TargetView>

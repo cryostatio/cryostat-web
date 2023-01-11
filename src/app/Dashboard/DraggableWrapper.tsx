@@ -35,45 +35,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { Dropdown, DropdownItem, gridSpans, KebabToggle, Slider, Text, TextVariants } from '@patternfly/react-core';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import React from 'react';
 
-export interface DashboardCardActionProps {
-  onRemove: () => void;
+export interface DraggableWrapperProps extends React.HTMLProps<HTMLDivElement> {
+  children?: React.ReactNode;
 }
 
-export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = (props) => {
-  const [isOpen, setOpen] = React.useState(false);
-
-  const [t] = useTranslation();
-
-  const onSelect = React.useCallback(
-    (_) => {
-      setOpen(false);
-    },
-    [setOpen]
-  );
-
-  return (
-    <>
-      <Dropdown
-        isPlain
-        isFlipEnabled
-        menuAppendTo={'parent'}
-        position={'right'}
-        isOpen={isOpen}
-        toggle={<KebabToggle onToggle={setOpen} />}
-        onSelect={onSelect}
-        dropdownItems={[
-          <DropdownItem key="Remove" onClick={props.onRemove}>
-            {t('REMOVE', { ns: 'common' })}
-          </DropdownItem>,
-        ].filter((item) => item !== null)}
-      />
-    </>
-  );
-};
+export const DraggableWrapper: React.FC<DraggableWrapperProps> = ({ children }) => (
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+    }}
+  >
+    {children}
+  </div>
+);
