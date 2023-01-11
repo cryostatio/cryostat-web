@@ -36,50 +36,47 @@
  * SOFTWARE.
  */
 
-import i18next from 'i18next';
-import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
+/* eslint @typescript-eslint/no-explicit-any: 0 */
+import { AutomatedAnalysisConfig } from '@app/Settings/AutomatedAnalysisConfig';
+import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Api.service';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { screen } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { renderWithServiceContext } from '../Common';
 
-import en_common from '../../locales/en/common.json';
-import en_public from '../../locales/en/public.json';
-// import zh_common from '../../locales/zh/common.json';
-// import zh_public from '../../locales/zh/public.json';
+jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm', () => ({
+  AutomatedAnalysisConfigForm: (_: any) => <>Automated Analysis Configuration Form</>,
+}));
 
-// TODO: .use(Backend) eventually store translations on backend?
-// Openshift console does this already:
-// https://github.com/openshift/console/blob/master/frontend/public/i18n.js
-export const i18nResources = {
-  en: {
-    public: en_public,
-    common: en_common,
-  },
-  // zh: {
-  //   // TODO: add zh translation (and other languages)?
-  //   // public: zh_public,
-  //   // common: zh_common,
-  // },
-} as const;
+jest.mock('@app/TargetSelect/TargetSelect', () => ({
+  TargetSelect: (_: any) => <>Target Select</>,
+}));
 
-export const i18nNamespaces = ['public', 'common'];
+jest
+  .spyOn(defaultServices.settings, 'automatedAnalysisRecordingConfig')
+  .mockReturnValue(defaultAutomatedAnalysisRecordingConfig);
 
-// eslint-disable-next-line import/no-named-as-default-member
-i18next
-  .use(I18nextBrowserLanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: i18nResources,
-    ns: i18nNamespaces,
-    defaultNS: 'public',
-    fallbackNS: ['common'],
-    fallbackLng: ['en'],
-    debug: process.env.NODE_ENV === 'development',
-    returnNull: false,
-    interpolation: {
-      escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
-    },
-    react: {
-      useSuspense: true,
-    },
+describe('<AutomatedAnalysisConfig/>', () => {
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          {React.createElement(AutomatedAnalysisConfig.content, null)}
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
   });
 
-export default i18next;
+  it('should display current configurations', async () => {
+    renderWithServiceContext(React.createElement(AutomatedAnalysisConfig.content, null));
+
+    Object.values(defaultAutomatedAnalysisRecordingConfig).forEach((v) => {
+      const currentConfig = screen.getByText(v);
+      expect(currentConfig).toBeInTheDocument();
+      expect(currentConfig).toBeVisible();
+    });
+  });
+});

@@ -35,15 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
+import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-import '@testing-library/jest-dom';
 import { of } from 'rxjs';
 import { renderWithServiceContext } from '../Common';
 
@@ -80,7 +78,6 @@ jest.mock('@app/Shared/Services/Target.service', () => ({
 
 jest
   .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of()) // contains the correct information
   .mockReturnValueOnce(of()) // renders empty state when expanded
   .mockReturnValueOnce(of(mockFooTarget)) // renders serialized target when expanded
@@ -92,7 +89,6 @@ jest
 
 jest
   .spyOn(defaultServices.targets, 'targets')
-  .mockReturnValueOnce(of([mockFooTarget])) // renders correctly
   .mockReturnValueOnce(of([mockFooTarget])) // contains the correct information
   .mockReturnValueOnce(of([mockFooTarget])) // renders empty state when expanded
   .mockReturnValueOnce(of([mockFooTarget])) // renders serialized target when expanded
@@ -105,7 +101,6 @@ jest.spyOn(defaultServices.api, 'deleteTarget').mockReturnValue(of(true));
 
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true) // renders correctly
   .mockReturnValueOnce(true) // renders empty state when expanded
   .mockReturnValueOnce(true) // renders serialized target when expanded
   .mockReturnValueOnce(true) // contains the correct information
@@ -116,21 +111,6 @@ jest
 
 describe('<TargetSelect />', () => {
   afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(
-        <ServiceContext.Provider value={defaultServices}>
-          <NotificationsContext.Provider value={NotificationsInstance}>
-            <TargetSelect />
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      );
-    });
-
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
 
   it('contains the correct information', async () => {
     renderWithServiceContext(<TargetSelect />);

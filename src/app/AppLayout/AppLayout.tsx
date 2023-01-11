@@ -41,6 +41,7 @@ import build from '@app/build.json';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
+import { selectTab } from '@app/Settings/Settings';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -48,18 +49,23 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { openTabForUrl } from '@app/utils/utils';
-import { localeReadable } from '@i18n/i18nextUtil';
 import {
   Alert,
+  AlertActionCloseButton,
   AlertGroup,
   AlertVariant,
-  AlertActionCloseButton,
   Brand,
   Button,
   Dropdown,
   DropdownGroup,
   DropdownItem,
   DropdownToggle,
+  Label,
+  Masthead,
+  MastheadBrand,
+  MastheadContent,
+  MastheadMain,
+  MastheadToggle,
   Nav,
   NavGroup,
   NavItem,
@@ -67,14 +73,8 @@ import {
   NotificationBadge,
   Page,
   PageSidebar,
-  SkipToContent,
-  Label,
-  Masthead,
-  MastheadBrand,
-  MastheadContent,
-  MastheadMain,
-  MastheadToggle,
   PageToggleButton,
+  SkipToContent,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -92,7 +92,6 @@ import {
 } from '@patternfly/react-icons';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
@@ -116,7 +115,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [isNotificationDrawerExpanded, setNotificationDrawerExpanded] = React.useState(false);
   const [showUserIcon, setShowUserIcon] = React.useState(false);
   const [showUserInfoDropdown, setShowUserInfoDropdown] = React.useState(false);
-  const [showLanguageDropdown, setShowLanguageDropdown] = React.useState(false);
   const [showHelpDropdown, setShowHelpDropdown] = React.useState(false);
   const [username, setUsername] = React.useState('');
   const [notifications, setNotifications] = React.useState([] as Notification[]);
@@ -124,8 +122,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const location = useLocation();
-
-  const [_t, i18n] = useTranslation();
 
   React.useEffect(() => {
     addSubscription(
@@ -270,6 +266,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     addSubscription(serviceContext.login.setLoggedOut().subscribe());
   }, [serviceContext.login, addSubscription]);
 
+  const handleLanguagePref = React.useCallback(() => {
+    if (routerHistory.location.pathname === '/settings') {
+      selectTab('Language & Region');
+    } else {
+      routerHistory.push('/settings', { preSelectedTab: 'Language & Region' });
+    }
+  }, [routerHistory]);
+
   const handleUserInfoToggle = React.useCallback(() => setShowUserInfoDropdown((v) => !v), [setShowUserInfoDropdown]);
 
   React.useEffect(() => {
@@ -278,11 +282,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const userInfoItems = React.useMemo(
     () => [
+      <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
+        <DropdownGroup key={'language-preferences'}>
+          <DropdownItem onClick={handleLanguagePref}>Language preference</DropdownItem>
+        </DropdownGroup>
+      </FeatureFlag>,
       <DropdownGroup key={'log-out'}>
         <DropdownItem onClick={handleLogout}>Log out</DropdownItem>
       </DropdownGroup>,
     ],
-    [handleLogout]
+    [handleLogout, handleLanguagePref]
   );
 
   const UserInfoToggle = React.useMemo(
@@ -337,28 +346,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     ),
     [handleHelpToggle]
   );
-  const handleLanguageToggle = React.useCallback(() => setShowLanguageDropdown((v) => !v), [setShowLanguageDropdown]);
-
-  const languageItems = React.useMemo(
-    () => [
-      <DropdownGroup key={'dropdown-en'}>
-        <DropdownItem onClick={() => i18n.changeLanguage('en')}>English</DropdownItem>
-      </DropdownGroup>,
-      <DropdownGroup key={'dropdown-zh'}>
-        <DropdownItem onClick={() => i18n.changeLanguage('zh')}>中文</DropdownItem>
-      </DropdownGroup>,
-    ],
-    [i18n]
-  );
-
-  const LanguageToggle = React.useMemo(
-    () => (
-      <DropdownToggle onToggle={handleLanguageToggle} toggleIndicator={CaretDownIcon}>
-        {localeReadable(i18n.language)}
-      </DropdownToggle>
-    ),
-    [i18n.language, handleLanguageToggle]
-  );
 
   const levelBadge = React.useCallback((level: FeatureLevel) => {
     return (
@@ -378,17 +365,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         <Toolbar isFullHeight isStatic>
           <ToolbarContent>
             <ToolbarGroup variant="icon-button-group" alignment={{ default: 'alignRight' }}>
-              <FeatureFlag level={FeatureLevel.BETA}>
-                <ToolbarItem>
-                  <Dropdown
-                    isPlain
-                    onSelect={() => setShowLanguageDropdown(false)}
-                    isOpen={showLanguageDropdown}
-                    toggle={LanguageToggle}
-                    dropdownItems={languageItems}
-                  />
-                </ToolbarItem>
-              </FeatureFlag>
               <FeatureFlag strict level={FeatureLevel.DEVELOPMENT}>
                 <ToolbarItem>
                   <Button
@@ -435,6 +411,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   onSelect={() => setShowUserInfoDropdown(false)}
                   isOpen={showUserInfoDropdown}
                   toggle={UserInfoToggle}
+                  position="right"
                   dropdownItems={userInfoItems}
                 />
               </ToolbarItem>
@@ -451,17 +428,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       handleSettingsButtonClick,
       setShowHelpDropdown,
       setShowUserInfoDropdown,
-      setShowLanguageDropdown,
       showUserIcon,
       showUserInfoDropdown,
       showHelpDropdown,
-      showLanguageDropdown,
       UserInfoToggle,
       userInfoItems,
       HelpToggle,
       helpItems,
-      LanguageToggle,
-      languageItems,
     ]
   );
 
@@ -480,11 +453,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             </PageToggleButton>
           </MastheadToggle>
           <MastheadMain>
-            <MastheadBrand>
+            <MastheadBrand component={'div'}>
               <Link to="/">
                 <Brand alt="Cryostat" src={cryostatLogo} className="cryostat-logo" />
               </Link>
             </MastheadBrand>
+
             <DynamicFeatureFlag levels={[FeatureLevel.DEVELOPMENT, FeatureLevel.BETA]} component={levelBadge} />
           </MastheadMain>
           <MastheadContent>{HeaderToolbar}</MastheadContent>

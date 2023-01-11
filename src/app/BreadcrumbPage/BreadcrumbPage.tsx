@@ -69,10 +69,16 @@ export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = (props) => {
         </Breadcrumb>
         <Stack hasGutter={true}>
           {React.Children.map(props.children, (child) => (
-            <StackItem isFilled={child && child['isFilled']}>{child}</StackItem>
+            <StackItem isFilled={isItemFilled(child)}>{child}</StackItem>
           ))}
         </Stack>
       </PageSection>
     </>
   );
+};
+
+export const isItemFilled = (item: React.ReactNode): boolean => {
+  if (!item) return false;
+  const toCheck = item['props'] ? item['props'] : item;
+  return toCheck['isFilled'] || toCheck['isFullHeight'];
 };

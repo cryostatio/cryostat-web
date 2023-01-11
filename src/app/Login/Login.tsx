@@ -35,10 +35,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { Language } from '@app/Settings/Language';
+import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { AuthMethod } from '@app/Shared/Services/Login.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Card, CardBody, CardFooter, CardTitle, PageSection, Text } from '@patternfly/react-core';
+import {
+  Card,
+  CardActions,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  PageSection,
+  Text,
+} from '@patternfly/react-core';
 import * as React from 'react';
 import { NotificationsContext } from '../Notifications/Notifications';
 import { BasicAuthDescriptionText, BasicAuthForm } from './BasicAuthForm';
@@ -100,7 +112,12 @@ export const Login: React.FC<LoginProps> = (_) => {
   return (
     <PageSection>
       <Card>
-        <CardTitle>Login</CardTitle>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+          <CardActions>
+            <FeatureFlag level={FeatureLevel.BETA}>{React.createElement(Language.content, null)}</FeatureFlag>
+          </CardActions>
+        </CardHeader>
         <CardBody>{loginForm}</CardBody>
         <CardFooter>{descriptionText}</CardFooter>
       </Card>

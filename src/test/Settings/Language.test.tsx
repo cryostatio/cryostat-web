@@ -36,50 +36,41 @@
  * SOFTWARE.
  */
 
-import i18next from 'i18next';
-import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
+import { cleanup, screen } from '@testing-library/react';
+import * as React from 'react';
+import { Language } from '../../app/Settings/Language';
+import { renderDefault } from '../Common';
 
-import en_common from '../../locales/en/common.json';
-import en_public from '../../locales/en/public.json';
-// import zh_common from '../../locales/zh/common.json';
-// import zh_public from '../../locales/zh/public.json';
+const mockDetectedLocale = 'en';
+const mockDetectedLocaleAsReadable = 'English';
 
-// TODO: .use(Backend) eventually store translations on backend?
-// Openshift console does this already:
-// https://github.com/openshift/console/blob/master/frontend/public/i18n.js
-export const i18nResources = {
-  en: {
-    public: en_public,
-    common: en_common,
+jest.mock('react-i18next', () => ({
+  useTranslation: () => [
+    jest.fn((str: string) => str),
+    {
+      changeLanguage: () => new Promise(() => undefined),
+      language: mockDetectedLocale,
+    },
+  ],
+}));
+
+jest.mock('@i18n/config', () => ({
+  i18nResources: {
+    en: {
+      public: {},
+      common: {},
+    },
   },
-  // zh: {
-  //   // TODO: add zh translation (and other languages)?
-  //   // public: zh_public,
-  //   // common: zh_common,
-  // },
-} as const;
+}));
 
-export const i18nNamespaces = ['public', 'common'];
+describe('<Language/>', () => {
+  afterEach(cleanup);
 
-// eslint-disable-next-line import/no-named-as-default-member
-i18next
-  .use(I18nextBrowserLanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: i18nResources,
-    ns: i18nNamespaces,
-    defaultNS: 'public',
-    fallbackNS: ['common'],
-    fallbackLng: ['en'],
-    debug: process.env.NODE_ENV === 'development',
-    returnNull: false,
-    interpolation: {
-      escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
-    },
-    react: {
-      useSuspense: true,
-    },
+  it('should default to detected language', async () => {
+    renderDefault(React.createElement(Language.content, null));
+
+    const defaultLocale = screen.getByText(mockDetectedLocaleAsReadable);
+    expect(defaultLocale).toBeInTheDocument();
+    expect(defaultLocale).toBeVisible();
   });
-
-export default i18next;
+});

@@ -35,51 +35,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { FeatureLevels } from '@app/Settings/FeatureLevels';
+import { defaultServices } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { cleanup, screen, act } from '@testing-library/react';
+import * as React from 'react';
+import { of } from 'rxjs';
+import { renderWithServiceContext } from '../Common';
 
-import i18next from 'i18next';
-import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
-import { initReactI18next } from 'react-i18next';
+jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
-import en_common from '../../locales/en/common.json';
-import en_public from '../../locales/en/public.json';
-// import zh_common from '../../locales/zh/common.json';
-// import zh_public from '../../locales/zh/public.json';
-
-// TODO: .use(Backend) eventually store translations on backend?
-// Openshift console does this already:
-// https://github.com/openshift/console/blob/master/frontend/public/i18n.js
-export const i18nResources = {
-  en: {
-    public: en_public,
-    common: en_common,
-  },
-  // zh: {
-  //   // TODO: add zh translation (and other languages)?
-  //   // public: zh_public,
-  //   // common: zh_common,
-  // },
-} as const;
-
-export const i18nNamespaces = ['public', 'common'];
-
-// eslint-disable-next-line import/no-named-as-default-member
-i18next
-  .use(I18nextBrowserLanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: i18nResources,
-    ns: i18nNamespaces,
-    defaultNS: 'public',
-    fallbackNS: ['common'],
-    fallbackLng: ['en'],
-    debug: process.env.NODE_ENV === 'development',
-    returnNull: false,
-    interpolation: {
-      escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
-    },
-    react: {
-      useSuspense: true,
-    },
+describe('<FeatureLevels/>', () => {
+  beforeEach(() => {
+    jest.mocked(defaultServices.settings.setFeatureLevel).mockClear();
   });
 
-export default i18next;
+  afterEach(cleanup);
+
+  it('should show PRODUCTION as default', async () => {
+    renderWithServiceContext(React.createElement(FeatureLevels.content, null));
+
+    const productionOption = screen.getByText(FeatureLevel[FeatureLevel.PRODUCTION]);
+    expect(productionOption).toBeInTheDocument();
+    expect(productionOption).toBeVisible();
+  });
+
+  it('should set value to local storage when congfigured', async () => {
+    const { user } = renderWithServiceContext(React.createElement(FeatureLevels.content, null));
+
+    const featureLevelSelect = screen.getByLabelText('Options menu');
+    expect(featureLevelSelect).toBeInTheDocument();
+    expect(featureLevelSelect).toBeVisible();
+
+    await act(async () => {
+      await user.click(featureLevelSelect);
+    });
+
+    const ul = screen.getByRole('listbox');
+    expect(ul).toBeInTheDocument();
+    expect(ul).toBeVisible();
+
+    await user.selectOptions(ul, FeatureLevel[FeatureLevel.BETA]);
+
+    expect(ul).not.toBeInTheDocument(); // Should close menu
+
+    const betaOption = screen.getByText(FeatureLevel[FeatureLevel.BETA]);
+    expect(betaOption).toBeInTheDocument();
+    expect(betaOption).toBeVisible();
+
+    const productionOption = screen.queryByText(FeatureLevel[FeatureLevel.PRODUCTION]);
+    expect(productionOption).not.toBeInTheDocument();
+  });
+});

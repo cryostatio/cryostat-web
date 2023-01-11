@@ -114,9 +114,7 @@ export const renderWithRouter = (
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <NotificationsContext.Provider value={notifications}>
-        <Router location={history.location} history={history}>
-          {children}
-        </Router>
+        <Router history={history}>{children}</Router>
       </NotificationsContext.Provider>
     );
   };
@@ -160,9 +158,7 @@ export const renderWithServiceContextAndRouter = (
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
-          <Router location={history.location} history={history}>
-            {children}
-          </Router>
+          <Router history={history}>{children}</Router>
         </NotificationsContext.Provider>
       </ServiceContext.Provider>
     );
@@ -187,9 +183,7 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
           <Provider store={store}>
-            <Router location={history.location} history={history}>
-              {children}
-            </Router>
+            <Router history={history}>{children}</Router>
           </Provider>
         </NotificationsContext.Provider>
       </ServiceContext.Provider>
