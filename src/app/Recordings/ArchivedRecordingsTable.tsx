@@ -82,6 +82,8 @@ import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 
+const tableColumns: string[] = ['Name', 'Labels', 'Size'];
+
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
   isUploadsTable: boolean;
@@ -119,8 +121,6 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     );
     return filters.length > 0 ? filters[0].archived.filters : emptyArchivedRecordingFilters;
   }) as RecordingFiltersCategories;
-
-  const tableColumns: string[] = ['Name', 'Labels', 'Size'];
 
   const handleHeaderCheck = React.useCallback(
     (event, checked) => {
@@ -424,112 +424,6 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
     [setExpandedRows]
   );
 
-  const RecordingRow = (props: RecordingRowProps) => {
-    const parsedLabels = React.useMemo(() => {
-      return parseLabels(props.recording.metadata.labels);
-    }, [props.recording.metadata.labels]);
-
-    const expandedRowId = React.useMemo(() => `archived-table-row-${props.index}-exp`, [props.index]);
-    const handleToggle = React.useCallback(() => {
-      toggleExpanded(expandedRowId);
-    }, [expandedRowId]);
-
-    const isExpanded = React.useMemo(() => {
-      return expandedRows.includes(expandedRowId);
-    }, [expandedRowId]);
-
-    const handleCheck = React.useCallback(
-      (checked) => {
-        handleRowCheck(checked, props.index);
-      },
-      [props.index]
-    );
-
-    const parentRow = React.useMemo(() => {
-      return (
-        <Tr key={`${props.index}_parent`}>
-          <Td key={`archived-table-row-${props.index}_0`}>
-            <Checkbox
-              name={`archived-table-row-${props.index}-check`}
-              onChange={handleCheck}
-              isChecked={checkedIndices.includes(props.index)}
-              id={`archived-table-row-${props.index}-check`}
-            />
-          </Td>
-          <Td
-            key={`archived-table-row-${props.index}_1`}
-            id={`archived-ex-toggle-${props.index}`}
-            aria-controls={`archived-ex-expand-${props.index}`}
-            expand={{
-              rowIndex: props.index,
-              isExpanded: isExpanded,
-              onToggle: handleToggle,
-            }}
-          />
-          <Td key={`archived-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
-            {props.recording.name}
-          </Td>
-          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[2]}>
-            <LabelCell
-              target={targetConnectURL}
-              clickableOptions={{
-                updateFilters: updateFilters,
-                labelFilters: props.labelFilters,
-              }}
-              labels={parsedLabels}
-            />
-          </Td>
-          <Td key={`archived-table-row-${props.index}_4`} dataLabel={tableColumns[1]}>
-            {formatBytes(props.recording.size)}
-          </Td>
-          {propsDirectory ? (
-            <RecordingActions
-              recording={props.recording}
-              index={props.index}
-              uploadFn={() =>
-                context.api.uploadArchivedRecordingToGrafanaFromPath(propsDirectory.jvmId, props.recording.name)
-              }
-            />
-          ) : (
-            <RecordingActions
-              recording={props.recording}
-              index={props.index}
-              uploadFn={() => context.api.uploadArchivedRecordingToGrafana(props.sourceTarget, props.recording.name)}
-            />
-          )}
-        </Tr>
-      );
-    }, [
-      props.recording,
-      props.sourceTarget,
-      props.index,
-      props.labelFilters,
-      isExpanded,
-      handleCheck,
-      handleToggle,
-      parsedLabels,
-    ]);
-
-    const childRow = React.useMemo(() => {
-      return (
-        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
-          <Td key={`archived-ex-expand-${props.index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
-            <ExpandableRowContent>
-              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-            </ExpandableRowContent>
-          </Td>
-        </Tr>
-      );
-    }, [props.recording, props.index, isExpanded]);
-
-    return (
-      <Tbody key={props.index} isExpanded={isExpanded}>
-        {parentRow}
-        {childRow}
-      </Tbody>
-    );
-  };
-
   const RecordingsToolbar = React.useMemo(
     () => (
       <ArchivedRecordingsToolbar
@@ -562,20 +456,6 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       actionLoadings,
     ]
   );
-
-  const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => (
-      <RecordingRow
-        key={r.name}
-        recording={r}
-        labelFilters={targetRecordingFilters.Label}
-        index={hashCode(r.name)}
-        sourceTarget={propsTarget}
-        directory={propsDirectory}
-      />
-    ));
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [filteredRecordings, propsTarget, propsDirectory, targetRecordingFilters.Label]);
 
   const handleUploadModalClose = React.useCallback(() => {
     setShowUploadModal(false); // Do nothing else as notifications will handle update
@@ -632,7 +512,22 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
             isNestedTable={isNestedTable}
             errorMessage={errorMessage}
           >
-            {recordingRows}
+            {filteredRecordings.map((r) => (
+              <ArchivedRecordingRow
+                key={r.name}
+                recording={r}
+                labelFilters={targetRecordingFilters.Label}
+                index={hashCode(r.name)}
+                sourceTarget={propsTarget}
+                propsDirectory={propsDirectory}
+                currentSelectedTargetURL={targetConnectURL}
+                expandedRows={expandedRows}
+                checkedIndices={checkedIndices}
+                toggleExpanded={toggleExpanded}
+                handleRowCheck={handleRowCheck}
+                updateFilters={updateFilters}
+              />
+            ))}
           </RecordingsTable>
 
           {isUploadsTable ? <ArchiveUploadModal visible={showUploadModal} onClose={handleUploadModalClose} /> : null}
@@ -643,15 +538,6 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
 };
 
 export type ArchiveActions = 'DELETE';
-
-interface RecordingRowProps {
-  key: string;
-  recording: ArchivedRecording;
-  labelFilters: string[];
-  index: number;
-  sourceTarget: Observable<Target>;
-  directory?: RecordingDirectory;
-}
 
 export interface ArchivedRecordingsToolbarProps {
   target: string;
@@ -668,7 +554,7 @@ export interface ArchivedRecordingsToolbarProps {
   actionLoadings: Record<ArchiveActions, boolean>;
 }
 
-const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolbarProps> = (props) => {
+const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
@@ -759,5 +645,143 @@ const ArchivedRecordingsToolbar: React.FunctionComponent<ArchivedRecordingsToolb
         ) : null}
       </ToolbarContent>
     </Toolbar>
+  );
+};
+
+export interface ArchivedRecordingRowProps {
+  recording: ArchivedRecording;
+  index: number;
+  propsDirectory?: RecordingDirectory;
+  currentSelectedTargetURL: string;
+  sourceTarget: Observable<Target>;
+  expandedRows: string[];
+  checkedIndices: number[];
+  labelFilters: string[];
+  toggleExpanded: (rowId: string) => void;
+  handleRowCheck: (checked: boolean, rowIdx: string | number) => void;
+  updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
+}
+
+export const ArchivedRecordingRow: React.FC<ArchivedRecordingRowProps> = ({
+  recording,
+  index,
+  propsDirectory,
+  currentSelectedTargetURL,
+  sourceTarget,
+  expandedRows,
+  checkedIndices,
+  labelFilters,
+  toggleExpanded,
+  handleRowCheck,
+  updateFilters,
+}) => {
+  const context = React.useContext(ServiceContext);
+
+  const parsedLabels = React.useMemo(() => {
+    return parseLabels(recording.metadata.labels);
+  }, [recording]);
+
+  const expandedRowId = React.useMemo(() => `archived-table-row-${index}-exp`, [index]);
+
+  const handleToggle = React.useCallback(() => {
+    toggleExpanded(expandedRowId);
+  }, [expandedRowId, toggleExpanded]);
+
+  const isExpanded = React.useMemo(() => {
+    return expandedRows.includes(expandedRowId);
+  }, [expandedRowId, expandedRows]);
+
+  const handleCheck = React.useCallback(
+    (checked: boolean) => {
+      handleRowCheck(checked, index);
+    },
+    [index, handleRowCheck]
+  );
+
+  const parentRow = React.useMemo(() => {
+    return (
+      <Tr key={`${index}_parent`}>
+        <Td key={`archived-table-row-${index}_0`}>
+          <Checkbox
+            name={`archived-table-row-${index}-check`}
+            onChange={handleCheck}
+            isChecked={checkedIndices.includes(index)}
+            id={`archived-table-row-${index}-check`}
+          />
+        </Td>
+        <Td
+          key={`archived-table-row-${index}_1`}
+          id={`archived-ex-toggle-${index}`}
+          aria-controls={`archived-ex-expand-${index}`}
+          expand={{
+            rowIndex: index,
+            isExpanded: isExpanded,
+            onToggle: handleToggle,
+          }}
+        />
+        <Td key={`archived-table-row-${index}_2`} dataLabel={tableColumns[0]}>
+          {recording.name}
+        </Td>
+        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[2]}>
+          <LabelCell
+            target={currentSelectedTargetURL}
+            clickableOptions={{
+              updateFilters: updateFilters,
+              labelFilters: labelFilters,
+            }}
+            labels={parsedLabels}
+          />
+        </Td>
+        <Td key={`archived-table-row-${index}_4`} dataLabel={tableColumns[1]}>
+          {formatBytes(recording.size)}
+        </Td>
+        {propsDirectory ? (
+          <RecordingActions
+            recording={recording}
+            index={index}
+            uploadFn={() => context.api.uploadArchivedRecordingToGrafanaFromPath(propsDirectory.jvmId, recording.name)}
+          />
+        ) : (
+          <RecordingActions
+            recording={recording}
+            index={index}
+            uploadFn={() => context.api.uploadArchivedRecordingToGrafana(sourceTarget, recording.name)}
+          />
+        )}
+      </Tr>
+    );
+  }, [
+    index,
+    checkedIndices,
+    isExpanded,
+    parsedLabels,
+    labelFilters,
+    currentSelectedTargetURL,
+    sourceTarget,
+    propsDirectory,
+    recording,
+    context.api,
+    updateFilters,
+    handleCheck,
+    handleToggle,
+  ]);
+
+  const childRow = React.useMemo(() => {
+    return (
+      <Tr key={`${index}_child`} isExpanded={isExpanded}>
+        <Td key={`archived-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
+          <ExpandableRowContent>
+            <ReportFrame isExpanded={isExpanded} recording={recording} width="100%" height="640" />
+          </ExpandableRowContent>
+        </Td>
+      </Tr>
+    );
+  }, [recording, index, isExpanded]);
+
+  return (
+    <Tbody key={index} isExpanded={isExpanded}>
+      {parentRow}
+      {childRow}
+    </Tbody>
   );
 };
