@@ -85,6 +85,9 @@ import { ReportFrame } from './ReportFrame';
 export enum PanelContent {
   LABELS,
 }
+
+const tableColumns: string[] = ['Name', 'Start Time', 'Duration', 'State', 'Labels'];
+
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
 }
@@ -119,10 +122,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     return filters.length > 0 ? filters[0].active.filters : emptyActiveRecordingFilters;
   }) as RecordingFiltersCategories;
 
-  const tableColumns: string[] = ['Name', 'Start Time', 'Duration', 'State', 'Labels'];
-
   const handleRowCheck = React.useCallback(
-    (checked, index) => {
+    (checked: boolean, index: number) => {
       if (checked) {
         setCheckedIndices((ci) => [...ci, index]);
       } else {
@@ -134,7 +135,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   );
 
   const handleHeaderCheck = React.useCallback(
-    (event, checked) => {
+    (_, checked: boolean | ((prevState: boolean) => boolean)) => {
       setHeaderChecked(checked);
       setCheckedIndices(checked ? filteredRecordings.map((r) => r.id) : []);
     },
@@ -151,7 +152,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [setShowDetailsPanel, setPanelContent]);
 
   const handleRecordings = React.useCallback(
-    (recordings) => {
+    (recordings: React.SetStateAction<ActiveRecording[]>) => {
       setRecordings(recordings);
       setIsLoading(false);
       setErrorMessage('');
@@ -160,7 +161,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   );
 
   const handleError = React.useCallback(
-    (error) => {
+    (error: { message: React.SetStateAction<string> }) => {
       setIsLoading(false);
       setErrorMessage(error.message);
       setRecordings([]);
@@ -409,7 +410,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [dispatch, targetConnectURL]);
 
   const updateFilters = React.useCallback(
-    (target, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
+    (target: string, { filterValue, filterKey, deleted = false, deleteOptions }: UpdateFilterOptions) => {
       if (deleted) {
         if (deleteOptions && deleteOptions.all) {
           dispatch(recordingDeleteCategoryFiltersIntent(target, filterKey, false));
@@ -422,123 +423,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     },
     [dispatch]
   );
-
-  /* eslint-enable react-hooks/exhaustive-deps */
-  const RecordingRow = (props) => {
-    const parsedLabels = React.useMemo(() => {
-      return parseLabels(props.recording.metadata.labels);
-    }, [props.recording.metadata.labels]);
-
-    const expandedRowId = React.useMemo(
-      () => `active-table-row-${props.recording.name}-${props.recording.startTime}-exp`,
-      [props.recording.name, props.recording.startTime]
-    );
-
-    const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId]);
-
-    const isExpanded = React.useMemo(() => {
-      return expandedRows.includes(expandedRowId);
-    }, [expandedRowId]);
-
-    const handleCheck = React.useCallback(
-      (checked) => {
-        handleRowCheck(checked, props.index);
-      },
-      [props.index]
-    );
-
-    const parentRow = React.useMemo(() => {
-      const ISOTime = (props) => {
-        const fmt = React.useMemo(() => new Date(props.timeStr).toISOString(), [props.timeStr]);
-        return <span>{fmt}</span>;
-      };
-
-      const RecordingDuration = (props) => {
-        const str = React.useMemo(
-          () => (props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`),
-          [props.duration]
-        );
-        return <span>{str}</span>;
-      };
-
-      return (
-        <Tr key={`${props.index}_parent`}>
-          <Td key={`active-table-row-${props.index}_0`}>
-            <Checkbox
-              name={`active-table-row-${props.index}-check`}
-              onChange={handleCheck}
-              isChecked={checkedIndices.includes(props.index)}
-              id={`active-table-row-${props.index}-check`}
-            />
-          </Td>
-          <Td
-            key={`active-table-row-${props.index}_1`}
-            id={`active-ex-toggle-${props.index}`}
-            aria-controls={`active-ex-expand-${props.index}`}
-            expand={{
-              rowIndex: props.index,
-              isExpanded: isExpanded,
-              onToggle: handleToggle,
-            }}
-          />
-          <Td key={`active-table-row-${props.index}_2`} dataLabel={tableColumns[0]}>
-            {props.recording.name}
-          </Td>
-          <Td key={`active-table-row-${props.index}_3`} dataLabel={tableColumns[1]}>
-            <ISOTime timeStr={props.recording.startTime} />
-          </Td>
-          <Td key={`active-table-row-${props.index}_4`} dataLabel={tableColumns[2]}>
-            <RecordingDuration duration={props.recording.duration} />
-          </Td>
-          <Td key={`active-table-row-${props.index}_5`} dataLabel={tableColumns[3]}>
-            {props.recording.state}
-          </Td>
-          <Td key={`active-table-row-${props.index}_6`} dataLabel={tableColumns[4]}>
-            <LabelCell
-              target={targetConnectURL}
-              clickableOptions={{
-                updateFilters: updateFilters,
-                labelFilters: props.labelFilters,
-              }}
-              labels={parsedLabels}
-            />
-          </Td>
-          <RecordingActions
-            index={props.index}
-            recording={props.recording}
-            uploadFn={() => context.api.uploadActiveRecordingToGrafana(props.recording.name)}
-          />
-        </Tr>
-      );
-    }, [props.index, props.recording, props.labelFilters, handleCheck, handleToggle, isExpanded, parsedLabels]);
-
-    const childRow = React.useMemo(() => {
-      return (
-        <Tr key={`${props.index}_child`} isExpanded={isExpanded}>
-          <Td key={`active-ex-expand-${props.index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
-            <ExpandableRowContent>
-              <Text>Recording Options:</Text>
-              <Text>
-                toDisk = {String(props.recording.toDisk)} &emsp; maxAge = {props.recording.maxAge / 1000}s &emsp;
-                maxSize = {props.recording.maxSize}B
-              </Text>
-              <br></br>
-              <hr></hr>
-              <br></br>
-              <Text>Automated Analysis:</Text>
-              <ReportFrame isExpanded={isExpanded} recording={props.recording} width="100%" height="640" />
-            </ExpandableRowContent>
-          </Td>
-        </Tr>
-      );
-    }, [props.recording, props.index, isExpanded]);
-    return (
-      <Tbody key={props.index} isExpanded={isExpanded}>
-        {parentRow}
-        {childRow}
-      </Tbody>
-    );
-  };
 
   const toggleExpanded = React.useCallback(
     (id: string) => {
@@ -589,13 +473,6 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     ]
   );
 
-  const recordingRows = React.useMemo(() => {
-    return filteredRecordings.map((r) => (
-      <RecordingRow key={r.id} recording={r} labelFilters={targetRecordingFilters.Label} index={r.id} />
-    ));
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [filteredRecordings, expandedRows, targetRecordingFilters, checkedIndices]);
-
   const LabelsPanel = React.useMemo(
     () => (
       <RecordingLabelsPanel
@@ -627,7 +504,20 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
             isNestedTable={false}
             errorMessage={errorMessage}
           >
-            {recordingRows}
+            {filteredRecordings.map((r) => (
+              <ActiveRecordingRow
+                key={r.name}
+                recording={r}
+                labelFilters={targetRecordingFilters.Label}
+                index={r.id}
+                currentSelectedTargetURL={targetConnectURL}
+                expandedRows={expandedRows}
+                checkedIndices={checkedIndices}
+                toggleExpanded={toggleExpanded}
+                handleRowCheck={handleRowCheck}
+                updateFilters={updateFilters}
+              />
+            ))}
           </RecordingsTable>
         </DrawerContentBody>
       </DrawerContent>
@@ -804,5 +694,158 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
         {deleteActiveWarningModal}
       </ToolbarContent>
     </Toolbar>
+  );
+};
+
+export interface ActiveRecordingRowProps {
+  recording: ActiveRecording;
+  index: number;
+  currentSelectedTargetURL: string;
+  expandedRows: string[];
+  checkedIndices: number[];
+  labelFilters: string[];
+  toggleExpanded: (rowId: string) => void;
+  handleRowCheck: (checked: boolean, rowIdx: number) => void;
+  updateFilters: (target: string, updateFilterOptions: UpdateFilterOptions) => void;
+}
+
+export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
+  recording,
+  index,
+  currentSelectedTargetURL,
+  expandedRows,
+  checkedIndices,
+  labelFilters,
+  toggleExpanded,
+  handleRowCheck,
+  updateFilters,
+}) => {
+  const context = React.useContext(ServiceContext);
+
+  const parsedLabels = React.useMemo(() => {
+    return parseLabels(recording.metadata.labels);
+  }, [recording]);
+
+  const expandedRowId = React.useMemo(
+    () => `active-table-row-${recording.name}-${recording.startTime}-exp`,
+    [recording]
+  );
+
+  const handleToggle = React.useCallback(() => toggleExpanded(expandedRowId), [expandedRowId, toggleExpanded]);
+
+  const isExpanded = React.useMemo(() => {
+    return expandedRows.includes(expandedRowId);
+  }, [expandedRowId, expandedRows]);
+
+  const handleCheck = React.useCallback(
+    (checked: boolean) => {
+      handleRowCheck(checked, index);
+    },
+    [index, handleRowCheck]
+  );
+
+  const parentRow = React.useMemo(() => {
+    const ISOTime = (props: { timeStmp: number }) => {
+      const fmt = React.useMemo(() => new Date(props.timeStmp).toISOString(), [props.timeStmp]);
+      return <span>{fmt}</span>;
+    };
+
+    const RecordingDuration = (props: { duration: number }) => {
+      const str = React.useMemo(
+        () => (props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`),
+        [props.duration]
+      );
+      return <span>{str}</span>;
+    };
+
+    return (
+      <Tr key={`${index}_parent`}>
+        <Td key={`active-table-row-${index}_0`}>
+          <Checkbox
+            name={`active-table-row-${index}-check`}
+            onChange={handleCheck}
+            isChecked={checkedIndices.includes(index)}
+            id={`active-table-row-${index}-check`}
+          />
+        </Td>
+        <Td
+          key={`active-table-row-${index}_1`}
+          id={`active-ex-toggle-${index}`}
+          aria-controls={`active-ex-expand-${index}`}
+          expand={{
+            rowIndex: index,
+            isExpanded: isExpanded,
+            onToggle: handleToggle,
+          }}
+        />
+        <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[0]}>
+          {recording.name}
+        </Td>
+        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[1]}>
+          <ISOTime timeStmp={recording.startTime} />
+        </Td>
+        <Td key={`active-table-row-${index}_4`} dataLabel={tableColumns[2]}>
+          <RecordingDuration duration={recording.duration} />
+        </Td>
+        <Td key={`active-table-row-${index}_5`} dataLabel={tableColumns[3]}>
+          {recording.state}
+        </Td>
+        <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4]}>
+          <LabelCell
+            target={currentSelectedTargetURL}
+            clickableOptions={{
+              updateFilters: updateFilters,
+              labelFilters: labelFilters,
+            }}
+            labels={parsedLabels}
+          />
+        </Td>
+        <RecordingActions
+          index={index}
+          recording={recording}
+          uploadFn={() => context.api.uploadActiveRecordingToGrafana(recording.name)}
+        />
+      </Tr>
+    );
+  }, [
+    index,
+    checkedIndices,
+    isExpanded,
+    recording,
+    labelFilters,
+    currentSelectedTargetURL,
+    parsedLabels,
+    context.api,
+    handleCheck,
+    handleToggle,
+    updateFilters,
+  ]);
+
+  const childRow = React.useMemo(() => {
+    return (
+      <Tr key={`${index}_child`} isExpanded={isExpanded}>
+        <Td key={`active-ex-expand-${index}`} dataLabel={'Content Details'} colSpan={tableColumns.length + 3}>
+          <ExpandableRowContent>
+            <Text>Recording Options:</Text>
+            <Text>
+              toDisk = {String(recording.toDisk)} &emsp; maxAge = {recording.maxAge / 1000}s &emsp; maxSize ={' '}
+              {recording.maxSize}B
+            </Text>
+            <br></br>
+            <hr></hr>
+            <br></br>
+            <Text>Automated Analysis:</Text>
+            <ReportFrame isExpanded={isExpanded} recording={recording} width="100%" height="640" />
+          </ExpandableRowContent>
+        </Td>
+      </Tr>
+    );
+  }, [recording, index, isExpanded]);
+
+  return (
+    <Tbody key={index} isExpanded={isExpanded}>
+      {parentRow}
+      {childRow}
+    </Tbody>
   );
 };
