@@ -44,7 +44,15 @@ import { DashboardCardContext } from './ResizableCard';
 
 export interface DraggableRefProps {
   dashboardIdx: number;
+  minimumSpan: gridSpans;
 }
+
+function normalizeAsGridSpans(val: number, min: number, max: number, a: number, b: number): gridSpans {
+    if (val < min) val = min;
+    else if (val > max) val = max;
+    let ans = Math.round((b - a)*((val - min) / (max - min)) + a);
+    return _.clamp(ans, a, b) as gridSpans;
+  }
 
 export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) => {
   const dispatch = useDispatch();
@@ -54,24 +62,15 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) 
   const isResizing = React.useRef<boolean>(false);
   const setInitialVals = React.useRef<boolean>(true);
 
-  const SMALLEST_CARD_WIDTH = 120;
+  const SMALLEST_CARD_WIDTH = 110;
 
   let cardLeft: number;
-
-  function normalize(val, min, max) {
-    if (val < 0) val = 0;
-    else if (val > max) val = max;
-    let ans = Math.round(((val - min) / (max - min)) * 11) + 1;
-
-    return _.clamp(ans, 1, 12) as gridSpans;
-  }
 
   const handleResize = (span: gridSpans) => {
     dispatch(dashboardCardConfigResizeCardIntent(props.dashboardIdx, span));
   };
 
   const handleOnMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    console.log(cardRef.current);
     e.stopPropagation();
     e.preventDefault();
     document.body.style.setProperty('cursor', 'col-resize');
@@ -87,17 +86,21 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) 
     if (!isResizing.current) {
       return;
     }
-    if (cardRef.current) {
+    if (cardRef.current && window.visualViewport) {
       const cardRect = cardRef.current.getBoundingClientRect();
-      cardLeft = cardRect.left + SMALLEST_CARD_WIDTH;
-
+      cardLeft = cardRect.left + SMALLEST_CARD_WIDTH * props.minimumSpan;
+      
       if (setInitialVals.current) {
         setInitialVals.current = false;
       }
       const newSize = mousePos;
-      let gridSpan = normalize(newSize, cardLeft, window.visualViewport?.width) as gridSpans;
+      
+      let gridSpan = normalizeAsGridSpans(newSize, cardLeft, window.visualViewport.width, props.minimumSpan, 12) as gridSpans;
 
       handleResize(gridSpan);
+    }
+    else {
+        console.error("cardRef.current or window.visualViewport is undefined");
     }
   };
 

@@ -102,7 +102,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
 import { DraggableRef } from '../DraggableRef';
-import { DraggableWrapper } from '../DraggableWrapper';
 import { DashboardCardContext, ResizableCard } from '../ResizableCard';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
@@ -750,7 +749,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
 
   return (
     <ResizableCard>
-      <Card id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
+      <Card className='dashboard-card' id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
         <CardHeader
           onExpand={onCardExpand}
           toggleButtonProps={{
@@ -768,7 +767,6 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             <LevelItem>{reportSource}</LevelItem>
           </Level>
         </CardHeader>
-        <DraggableWrapper>
           <CardExpandableContent>
             <Stack hasGutter>
               <StackItem>{errorMessage ? null : toolbar}</StackItem>
@@ -783,15 +781,15 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
               </StackItem>
             </Stack>
           </CardExpandableContent>
-          <DraggableRef dashboardIdx={props.dashboardIdx} />
-        </DraggableWrapper>
       </Card>
+      <DraggableRef dashboardIdx={props.dashboardIdx} minimumSpan={AutomatedAnalysisCardDescriptor.minimumSpan} />
     </ResizableCard>
   );
 };
 
 export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
   title: 'Automated Analysis',
+  minimumSpan: 4,
   defaultSpan: 6,
   description: `
 Assess common application performance and configuration issues.

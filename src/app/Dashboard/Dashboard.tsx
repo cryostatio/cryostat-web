@@ -53,11 +53,11 @@ import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { DraggableRef } from './DraggableRef';
-import { DraggableWrapper } from './DraggableWrapper';
 import { ResizableCard } from './ResizableCard';
 
 export interface DashboardCardDescriptor {
   title: string;
+  minimumSpan: gridSpans;
   defaultSpan: gridSpans;
   description: string;
   descriptionFull: JSX.Element | string;
@@ -96,11 +96,10 @@ const PlaceholderCard: React.FunctionComponent<
 > = (props) => {
   return (
     <ResizableCard>
-      <Card isRounded>
+      <Card className='dashboard-card' isRounded>
         <CardHeader>
           <CardActions>{...props.actions || []}</CardActions>
         </CardHeader>
-        <DraggableWrapper>
           <CardBody>
             <Text>title: {props.title}</Text>
             <Text>message: {props.message}</Text>
@@ -110,9 +109,8 @@ const PlaceholderCard: React.FunctionComponent<
             <Text>asyncmenu: {props.asyncmenu}</Text>
             <Text>asyncmenus: {props.asyncmenu2}</Text>
           </CardBody>
-          <DraggableRef dashboardIdx={props.dashboardIdx} />
-        </DraggableWrapper>
       </Card>
+      <DraggableRef dashboardIdx={props.dashboardIdx} minimumSpan={1} />
     </ResizableCard>
   );
 };
@@ -125,6 +123,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
     cards = cards.concat([
       {
         title: 'None Placeholder',
+        minimumSpan: 1,
         defaultSpan: 6,
         description: 'placeholder',
         descriptionFull: 'This is a do-nothing placeholder with no config',
@@ -133,6 +132,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
       },
       {
         title: 'All Placeholder',
+        minimumSpan: 1,
         defaultSpan: 6,
         description: 'placeholder',
         descriptionFull: 'This is a do-nothing placeholder with all the config',
@@ -236,13 +236,6 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch]
   );
 
-  const handleResize = React.useCallback(
-    (idx: number, span: gridSpans) => {
-      dispatch(dashboardCardConfigResizeCardIntent(idx, span));
-    },
-    [dispatch]
-  );
-
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
       <Grid hasGutter>
@@ -257,9 +250,6 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
         ))}
         <GridItem key={cardConfigs.length}>
           <AddCard />
-        </GridItem>
-        <GridItem span={6}>
-          <ResizableCard></ResizableCard>
         </GridItem>
       </Grid>
     </TargetView>

@@ -70,7 +70,9 @@ export const ResizableCard: React.FC<ResizableCardProps> = (props) => {
 
   return (
     <DashboardCardContext.Provider value={cardRef}>
-      <div className="resizable-card" ref={cardRef}>
+      <div className="resizable-card" ref={cardRef} style={{display: 'flex',
+        justifyContent: 'space-between',
+      }}>
         {props.children}
       </div>
     </DashboardCardContext.Provider>

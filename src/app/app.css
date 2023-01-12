@@ -240,6 +240,11 @@ html, body, #root {
   margin-top: 0.5em;
 }
 
+.dashboard-card {
+  width: 100%;
+  overflow: auto;
+}
+
 .xsm-icon {
   height: 0.8em;
   width: 0.8em;
