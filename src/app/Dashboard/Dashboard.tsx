@@ -36,9 +36,7 @@
  * SOFTWARE.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  CardConfig,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';

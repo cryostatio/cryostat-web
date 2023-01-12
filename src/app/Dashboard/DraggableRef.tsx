@@ -115,7 +115,12 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) 
     document.removeEventListener('mouseup', callbackMouseUp);
   };
 
-  const callbackMouseMove = React.useCallback(handleMouseMove, [cardRef, props.minimumSpan, props.dashboardIdx, dispatch]);
+  const callbackMouseMove = React.useCallback(handleMouseMove, [
+    cardRef,
+    props.minimumSpan,
+    props.dashboardIdx,
+    dispatch,
+  ]);
   const callbackMouseUp = React.useCallback(handleOnMouseUp, [handleOnMouseUp]);
 
   return (
