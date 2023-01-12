@@ -35,27 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {
-  CardConfig,
-  dashboardCardConfigResizeCardIntent,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
-import {
-  Card,
-  Dropdown,
-  DropdownItem,
-  gridSpans,
-  KebabToggle,
-  Slider,
-  Text,
-  TextVariants,
-} from '@patternfly/react-core';
-import { css } from '@patternfly/react-styles';
-import styles from '@patternfly/react-styles/css/components/Drawer/drawer';
-import _ from 'lodash';
+
+
+
+
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
 
 export interface DashboardContextProps {}
 
@@ -70,9 +54,7 @@ export const ResizableCard: React.FC<ResizableCardProps> = (props) => {
 
   return (
     <DashboardCardContext.Provider value={cardRef}>
-      <div className="resizable-card" ref={cardRef} style={{display: 'flex',
-        justifyContent: 'space-between',
-      }}>
+      <div className="resizable-card" ref={cardRef} style={{ display: 'flex', justifyContent: 'space-between' }}>
         {props.children}
       </div>
     </DashboardCardContext.Provider>

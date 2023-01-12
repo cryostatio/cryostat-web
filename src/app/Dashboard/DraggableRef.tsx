@@ -48,11 +48,11 @@ export interface DraggableRefProps {
 }
 
 function normalizeAsGridSpans(val: number, min: number, max: number, a: number, b: number): gridSpans {
-    if (val < min) val = min;
-    else if (val > max) val = max;
-    let ans = Math.round((b - a)*((val - min) / (max - min)) + a);
-    return _.clamp(ans, a, b) as gridSpans;
-  }
+  if (val < min) val = min;
+  else if (val > max) val = max;
+  const ans = Math.round((b - a) * ((val - min) / (max - min)) + a);
+  return _.clamp(ans, a, b) as gridSpans;
+}
 
 export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) => {
   const dispatch = useDispatch();
@@ -62,13 +62,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) 
   const isResizing = React.useRef<boolean>(false);
   const setInitialVals = React.useRef<boolean>(true);
 
-  const SMALLEST_CARD_WIDTH = 110;
-
-  let cardLeft: number;
-
-  const handleResize = (span: gridSpans) => {
-    dispatch(dashboardCardConfigResizeCardIntent(props.dashboardIdx, span));
-  };
+  const SMALLEST_CARD_WIDTH = 126;
 
   const handleOnMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.stopPropagation();
@@ -87,20 +81,26 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) 
       return;
     }
     if (cardRef.current && window.visualViewport) {
+      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' });
       const cardRect = cardRef.current.getBoundingClientRect();
-      cardLeft = cardRect.left + SMALLEST_CARD_WIDTH * props.minimumSpan;
-      
+      const cardLeft = cardRect.left + SMALLEST_CARD_WIDTH * props.minimumSpan;
+
       if (setInitialVals.current) {
         setInitialVals.current = false;
       }
       const newSize = mousePos;
-      
-      let gridSpan = normalizeAsGridSpans(newSize, cardLeft, window.visualViewport.width, props.minimumSpan, 12) as gridSpans;
 
-      handleResize(gridSpan);
-    }
-    else {
-        console.error("cardRef.current or window.visualViewport is undefined");
+      const gridSpan = normalizeAsGridSpans(
+        newSize,
+        cardLeft,
+        window.visualViewport.width,
+        props.minimumSpan,
+        12
+      ) as gridSpans;
+
+      dispatch(dashboardCardConfigResizeCardIntent(props.dashboardIdx, gridSpan));
+    } else {
+      console.error('cardRef.current or window.visualViewport is undefined');
     }
   };
 
@@ -115,8 +115,8 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) 
     document.removeEventListener('mouseup', callbackMouseUp);
   };
 
-  const callbackMouseMove = React.useCallback(handleMouseMove, []);
-  const callbackMouseUp = React.useCallback(handleOnMouseUp, []);
+  const callbackMouseMove = React.useCallback(handleMouseMove, [cardRef, props.minimumSpan, props.dashboardIdx, dispatch]);
+  const callbackMouseUp = React.useCallback(handleOnMouseUp, [handleOnMouseUp]);
 
   return (
     <div

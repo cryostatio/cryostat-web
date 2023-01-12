@@ -35,12 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { Dropdown, DropdownItem, gridSpans, KebabToggle, Slider, Text, TextVariants } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 
 export interface DashboardCardActionProps {
   onRemove: () => void;

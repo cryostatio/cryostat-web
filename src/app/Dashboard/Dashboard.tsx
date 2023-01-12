@@ -38,14 +38,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   CardConfig,
-  dashboardCardConfigResizeCardIntent,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
-import { css } from '@patternfly/react-styles';
-import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
@@ -96,19 +93,19 @@ const PlaceholderCard: React.FunctionComponent<
 > = (props) => {
   return (
     <ResizableCard>
-      <Card className='dashboard-card' isRounded>
+      <Card className="dashboard-card" isRounded>
         <CardHeader>
           <CardActions>{...props.actions || []}</CardActions>
         </CardHeader>
-          <CardBody>
-            <Text>title: {props.title}</Text>
-            <Text>message: {props.message}</Text>
-            <Text>count: {props.count}</Text>
-            <Text>toggle: {String(props.toggleswitch)}</Text>
-            <Text>menu: {props.menu}</Text>
-            <Text>asyncmenu: {props.asyncmenu}</Text>
-            <Text>asyncmenus: {props.asyncmenu2}</Text>
-          </CardBody>
+        <CardBody>
+          <Text>title: {props.title}</Text>
+          <Text>message: {props.message}</Text>
+          <Text>count: {props.count}</Text>
+          <Text>toggle: {String(props.toggleswitch)}</Text>
+          <Text>menu: {props.menu}</Text>
+          <Text>asyncmenu: {props.asyncmenu}</Text>
+          <Text>asyncmenus: {props.asyncmenu2}</Text>
+        </CardBody>
       </Card>
       <DraggableRef dashboardIdx={props.dashboardIdx} minimumSpan={1} />
     </ResizableCard>

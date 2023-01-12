@@ -102,7 +102,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
 import { DraggableRef } from '../DraggableRef';
-import { DashboardCardContext, ResizableCard } from '../ResizableCard';
+import { ResizableCard } from '../ResizableCard';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 import {
@@ -118,7 +118,6 @@ export interface AutomatedAnalysisCardProps extends DashboardCardProps {}
 
 export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
-  const cardContext = React.useContext(DashboardCardContext);
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
 
@@ -495,7 +494,6 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   ]);
 
   const onCardExpand = React.useCallback(() => {
-    console.log(cardContext);
     setIsCardExpanded((isCardExpanded) => !isCardExpanded);
   }, [setIsCardExpanded]);
 
@@ -749,7 +747,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
 
   return (
     <ResizableCard>
-      <Card className='dashboard-card' id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
+      <Card className="dashboard-card" id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
         <CardHeader
           onExpand={onCardExpand}
           toggleButtonProps={{
@@ -767,20 +765,20 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             <LevelItem>{reportSource}</LevelItem>
           </Level>
         </CardHeader>
-          <CardExpandableContent>
-            <Stack hasGutter>
-              <StackItem>{errorMessage ? null : toolbar}</StackItem>
-              <StackItem className="automated-analysis-score-filter-stack-item">
-                {errorMessage ? null : <AutomatedAnalysisScoreFilter />}
-              </StackItem>
-              <StackItem>
-                <CardBody isFilled={true}>
-                  {reportStalenessText}
-                  {view}
-                </CardBody>
-              </StackItem>
-            </Stack>
-          </CardExpandableContent>
+        <CardExpandableContent>
+          <Stack hasGutter>
+            <StackItem>{errorMessage ? null : toolbar}</StackItem>
+            <StackItem className="automated-analysis-score-filter-stack-item">
+              {errorMessage ? null : <AutomatedAnalysisScoreFilter />}
+            </StackItem>
+            <StackItem>
+              <CardBody isFilled={true}>
+                {reportStalenessText}
+                {view}
+              </CardBody>
+            </StackItem>
+          </Stack>
+        </CardExpandableContent>
       </Card>
       <DraggableRef dashboardIdx={props.dashboardIdx} minimumSpan={AutomatedAnalysisCardDescriptor.minimumSpan} />
     </ResizableCard>
