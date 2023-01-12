@@ -73,7 +73,7 @@ export interface PropControl {
 export interface DashboardProps {}
 
 export interface DashboardCardProps {
-  dashboardIdx: number;
+  dashboardId: number;
   actions?: JSX.Element[];
 }
 
@@ -90,114 +90,117 @@ const PlaceholderCard: React.FunctionComponent<
   } & DashboardCardProps
 > = (props) => {
   return (
-    <ResizableCard>
-      <Card className="dashboard-card" isRounded>
-        <CardHeader>
-          <CardActions>{...props.actions || []}</CardActions>
-        </CardHeader>
-        <CardBody>
-          <Text>title: {props.title}</Text>
-          <Text>message: {props.message}</Text>
-          <Text>count: {props.count}</Text>
-          <Text>toggle: {String(props.toggleswitch)}</Text>
-          <Text>menu: {props.menu}</Text>
-          <Text>asyncmenu: {props.asyncmenu}</Text>
-          <Text>asyncmenus: {props.asyncmenu2}</Text>
-        </CardBody>
-      </Card>
-      <DraggableRef dashboardIdx={props.dashboardIdx} minimumSpan={1} />
+    <ResizableCard
+      dashboardId={props.dashboardId}
+      minimumSpan={AllPlaceholderCardDescriptor.minimumSpan}
+      className="dashboard-card"
+      isRounded
+    >
+      <CardHeader>
+        <CardActions>{...props.actions || []}</CardActions>
+      </CardHeader>
+      <CardBody>
+        <Text>title: {props.title}</Text>
+        <Text>message: {props.message}</Text>
+        <Text>count: {props.count}</Text>
+        <Text>toggle: {String(props.toggleswitch)}</Text>
+        <Text>menu: {props.menu}</Text>
+        <Text>asyncmenu: {props.asyncmenu}</Text>
+        <Text>asyncmenus: {props.asyncmenu2}</Text>
+      </CardBody>
     </ResizableCard>
   );
 };
+
+export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
+  title: 'None Placeholder',
+  minimumSpan: 1,
+  defaultSpan: 6,
+  description: 'placeholder',
+  descriptionFull: 'This is a do-nothing placeholder with no config',
+  component: PlaceholderCard,
+  propControls: [],
+} as DashboardCardDescriptor;
+
+export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
+  title: 'All Placeholder',
+  minimumSpan: 1,
+  defaultSpan: 6,
+  description: 'placeholder',
+  descriptionFull: 'This is a do-nothing placeholder with all the config',
+  component: PlaceholderCard,
+  propControls: [
+    {
+      name: 'string',
+      key: 'title',
+      defaultValue: 'a short text',
+      description: 'a string input',
+      kind: 'string',
+    },
+    {
+      name: 'text',
+      key: 'message',
+      defaultValue: 'a long text',
+      description: 'a text input',
+      kind: 'text',
+    },
+    {
+      name: 'menu select',
+      key: 'menu',
+      values: ['choices', 'options'],
+      defaultValue: '',
+      description: 'a selection menu',
+      kind: 'select',
+    },
+    {
+      name: 'menu select 2',
+      key: 'asyncmenu',
+      values: new Observable((subscriber) => {
+        let count = 0;
+        const id = setInterval(() => {
+          if (count > 2) {
+            clearInterval(id);
+            setTimeout(() => subscriber.error('Timed Out'), 5000);
+          }
+          subscriber.next(`async ${count++}`);
+        }, 1000);
+      }),
+      defaultValue: '',
+      description: 'an async stream selection menu',
+      kind: 'select',
+    },
+    {
+      name: 'menu select 3',
+      key: 'asyncmenu2',
+      values: of(['arr1', 'arr2', 'arr3']),
+      defaultValue: '',
+      description: 'an async array selection menu',
+      kind: 'select',
+    },
+    {
+      name: 'a switch',
+      key: 'toggleswitch',
+      defaultValue: false,
+      description: 'a boolean input',
+      kind: 'boolean',
+    },
+    {
+      name: 'numeric spinner input',
+      key: 'count',
+      defaultValue: 5,
+      description: 'a number input',
+      kind: 'number',
+    },
+  ],
+  advancedConfig: <Text>This is an advanced configuration component</Text>,
+} as DashboardCardDescriptor;
 
 export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
   featureLevel?: FeatureLevel
 ) => {
   let cards = [AutomatedAnalysisCardDescriptor];
   if (featureLevel === undefined || featureLevel === FeatureLevel.DEVELOPMENT) {
-    cards = cards.concat([
-      {
-        title: 'None Placeholder',
-        minimumSpan: 1,
-        defaultSpan: 6,
-        description: 'placeholder',
-        descriptionFull: 'This is a do-nothing placeholder with no config',
-        component: PlaceholderCard,
-        propControls: [],
-      },
-      {
-        title: 'All Placeholder',
-        minimumSpan: 1,
-        defaultSpan: 6,
-        description: 'placeholder',
-        descriptionFull: 'This is a do-nothing placeholder with all the config',
-        component: PlaceholderCard,
-        propControls: [
-          {
-            name: 'string',
-            key: 'title',
-            defaultValue: 'a short text',
-            description: 'a string input',
-            kind: 'string',
-          },
-          {
-            name: 'text',
-            key: 'message',
-            defaultValue: 'a long text',
-            description: 'a text input',
-            kind: 'text',
-          },
-          {
-            name: 'menu select',
-            key: 'menu',
-            values: ['choices', 'options'],
-            defaultValue: '',
-            description: 'a selection menu',
-            kind: 'select',
-          },
-          {
-            name: 'menu select 2',
-            key: 'asyncmenu',
-            values: new Observable((subscriber) => {
-              let count = 0;
-              const id = setInterval(() => {
-                if (count > 2) {
-                  clearInterval(id);
-                  setTimeout(() => subscriber.error('Timed Out'), 5000);
-                }
-                subscriber.next(`async ${count++}`);
-              }, 1000);
-            }),
-            defaultValue: '',
-            description: 'an async stream selection menu',
-            kind: 'select',
-          },
-          {
-            name: 'menu select 3',
-            key: 'asyncmenu2',
-            values: of(['arr1', 'arr2', 'arr3']),
-            defaultValue: '',
-            description: 'an async array selection menu',
-            kind: 'select',
-          },
-          {
-            name: 'a switch',
-            key: 'toggleswitch',
-            defaultValue: false,
-            description: 'a boolean input',
-            kind: 'boolean',
-          },
-          {
-            name: 'numeric spinner input',
-            key: 'count',
-            defaultValue: 5,
-            description: 'a number input',
-            kind: 'number',
-          },
-        ],
-        advancedConfig: <Text>This is an advanced configuration component</Text>,
-      },
-    ]);
+    cards = cards.concat([NonePlaceholderCardDescriptor, AllPlaceholderCardDescriptor]);
   }
   return cards;
 };
@@ -238,7 +241,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
           <GridItem span={cfg.span} key={idx}>
             {React.createElement(getConfigByName(cfg.name).component, {
               ...cfg.props,
-              dashboardIdx: idx,
+              dashboardId: idx,
               actions: [<DashboardCardActionMenu key={`${cfg.name}-actions`} onRemove={() => handleRemove(idx)} />],
             })}
           </GridItem>

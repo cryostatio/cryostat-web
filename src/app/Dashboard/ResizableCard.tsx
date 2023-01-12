@@ -36,24 +36,33 @@
  * SOFTWARE.
  */
 
+import { Card, CardProps, gridSpans } from '@patternfly/react-core';
 import * as React from 'react';
-
-export interface DashboardContextProps {}
+import { DraggableRef } from './DraggableRef';
 
 export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
 
-export interface ResizableCardProps {
+export interface ResizableCardProps extends CardProps {
+  dashboardId: number;
+  minimumSpan?: gridSpans;
   children?: React.ReactNode;
 }
 
-export const ResizableCard: React.FC<ResizableCardProps> = (props) => {
+export const ResizableCard: React.FC<ResizableCardProps> = ({
+  children = null,
+  dashboardId,
+  minimumSpan = 1,
+  ...props
+}: ResizableCardProps) => {
   const cardRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <DashboardCardContext.Provider value={cardRef}>
       <div className="resizable-card" ref={cardRef} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        {props.children}
+        <Card {...props}>{children}</Card>
+        <DraggableRef dashboardId={dashboardId} minimumSpan={minimumSpan} />
       </div>
     </DashboardCardContext.Provider>
   );
 };
+ResizableCard.displayName = 'ResizableCard';

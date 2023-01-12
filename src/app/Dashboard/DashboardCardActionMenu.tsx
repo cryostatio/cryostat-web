@@ -69,7 +69,7 @@ export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActio
           <DropdownItem key="Remove" onClick={props.onRemove}>
             {t('REMOVE', { ns: 'common' })}
           </DropdownItem>,
-        ].filter((item) => item !== null)}
+        ]}
       />
     </>
   );

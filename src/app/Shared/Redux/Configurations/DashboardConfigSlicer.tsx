@@ -40,7 +40,7 @@ import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
-const _version = '1';
+const _version = '2';
 
 // Common action string format: "resource(s)/action"
 export enum DashboardConfigAction {

@@ -746,41 +746,46 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
   return (
-    <ResizableCard>
-      <Card className="dashboard-card" id="automated-analysis-card" isRounded isCompact isExpanded={isCardExpanded}>
-        <CardHeader
-          onExpand={onCardExpand}
-          toggleButtonProps={{
-            id: 'automated-analysis-toggle-details',
-            'aria-label': 'Details',
-            'aria-labelledby': 'automated-analysis-card-title toggle-details',
-            'aria-expanded': isCardExpanded,
-          }}
-        >
-          <CardActions>{...props.actions || []}</CardActions>
-          <Level hasGutter>
-            <LevelItem>
-              <CardTitle component="h4">Automated Analysis</CardTitle>
-            </LevelItem>
-            <LevelItem>{reportSource}</LevelItem>
-          </Level>
-        </CardHeader>
-        <CardExpandableContent>
-          <Stack hasGutter>
-            <StackItem>{errorMessage ? null : toolbar}</StackItem>
-            <StackItem className="automated-analysis-score-filter-stack-item">
-              {errorMessage ? null : <AutomatedAnalysisScoreFilter />}
-            </StackItem>
-            <StackItem>
-              <CardBody isFilled={true}>
-                {reportStalenessText}
-                {view}
-              </CardBody>
-            </StackItem>
-          </Stack>
-        </CardExpandableContent>
-      </Card>
-      <DraggableRef dashboardIdx={props.dashboardIdx} minimumSpan={AutomatedAnalysisCardDescriptor.minimumSpan} />
+    <ResizableCard
+      dashboardId={props.dashboardId}
+      minimumSpan={AutomatedAnalysisCardDescriptor.minimumSpan}
+      className="dashboard-card"
+      id="automated-analysis-card"
+      isRounded
+      isCompact
+      isExpanded={isCardExpanded}
+    >
+      <CardHeader
+        onExpand={onCardExpand}
+        toggleButtonProps={{
+          id: 'automated-analysis-toggle-details',
+          'aria-label': 'Details',
+          'aria-labelledby': 'automated-analysis-card-title toggle-details',
+          'aria-expanded': isCardExpanded,
+        }}
+      >
+        <CardActions>{...props.actions || []}</CardActions>
+        <Level hasGutter>
+          <LevelItem>
+            <CardTitle component="h4">Automated Analysis</CardTitle>
+          </LevelItem>
+          <LevelItem>{reportSource}</LevelItem>
+        </Level>
+      </CardHeader>
+      <CardExpandableContent>
+        <Stack hasGutter>
+          <StackItem>{errorMessage ? null : toolbar}</StackItem>
+          <StackItem className="automated-analysis-score-filter-stack-item">
+            {errorMessage ? null : <AutomatedAnalysisScoreFilter />}
+          </StackItem>
+          <StackItem>
+            <CardBody isFilled={true}>
+              {reportStalenessText}
+              {view}
+            </CardBody>
+          </StackItem>
+        </Stack>
+      </CardExpandableContent>
     </ResizableCard>
   );
 };
