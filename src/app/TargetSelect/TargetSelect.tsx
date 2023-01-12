@@ -83,13 +83,14 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
 
   const setCachedTargetSelection = React.useCallback(
-    (target, errorCallback?) => saveToLocalStorage('TARGET', target, errorCallback),
+    (targetConnectUrl: string, errorCallback?: () => void) =>
+      saveToLocalStorage('TARGET', targetConnectUrl, errorCallback),
     []
   );
 
   const removeCachedTargetSelection = React.useCallback(() => removeFromLocalStorage('TARGET'), []);
 
-  const getCachedTargetSelection = React.useCallback(() => getFromLocalStorage('TARGET', NO_TARGET), []);
+  const getCachedTargetSelection = React.useCallback(() => getFromLocalStorage('TARGET', NO_TARGET.connectUrl), []);
 
   const resetTargetSelection = React.useCallback(() => {
     context.target.setTarget(NO_TARGET);
@@ -102,13 +103,13 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
 
   const onSelect = React.useCallback(
     // ATTENTION: do not add onSelect as deps for effect hook as it updates with selected states
-    (evt, selection, isPlaceholder) => {
+    (_, selection, isPlaceholder) => {
       if (isPlaceholder) {
         resetTargetSelection();
       } else {
-        if (!isEqualTarget(selection, selected)) {
+        if (!isEqualTarget(selection as Target, selected)) {
           context.target.setTarget(selection);
-          setCachedTargetSelection(selection, () => {
+          setCachedTargetSelection((selection as Target).connectUrl, () => {
             notifications.danger('Cannot set target');
             context.target.setTarget(NO_TARGET);
           });
@@ -120,15 +121,15 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
   );
 
   const selectTargetFromCache = React.useCallback(
-    (targets) => {
+    (targets: Target[]) => {
       if (!targets.length) {
         // Ignore first emitted value
         return;
       }
-      const cachedTarget = getCachedTargetSelection();
-      const cachedTargetExists = targets.some((target: Target) => isEqualTarget(cachedTarget, target));
-      if (cachedTargetExists) {
-        context.target.setTarget(cachedTarget);
+      const cachedTargetConnectUrl = getCachedTargetSelection();
+      const matchedTarget = targets.find((t) => t.connectUrl === cachedTargetConnectUrl);
+      if (matchedTarget) {
+        context.target.setTarget(matchedTarget);
       } else {
         resetTargetSelection();
       }
