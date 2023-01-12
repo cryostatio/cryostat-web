@@ -206,9 +206,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
           context.notificationChannel.messages(NotificationCategory.SnapshotCreated)
         ),
-      ]).subscribe((parts) => {
-        const currentTarget = parts[0];
-        const event = parts[1];
+      ]).subscribe(([currentTarget, event]) => {
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
@@ -225,9 +223,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
           context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
         ),
-      ]).subscribe((parts) => {
-        const currentTarget = parts[0];
-        const event = parts[1];
+      ]).subscribe(([currentTarget, event]) => {
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
@@ -243,9 +239,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       combineLatest([
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
-      ]).subscribe((parts) => {
-        const currentTarget = parts[0];
-        const event = parts[1];
+      ]).subscribe(([currentTarget, event]) => {
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
@@ -276,9 +270,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       combineLatest([
         context.target.target(),
         context.notificationChannel.messages(NotificationCategory.RecordingMetadataUpdated),
-      ]).subscribe((parts) => {
-        const currentTarget = parts[0];
-        const event = parts[1];
+      ]).subscribe(([currentTarget, event]) => {
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
