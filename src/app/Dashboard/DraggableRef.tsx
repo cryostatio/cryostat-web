@@ -58,7 +58,6 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) 
   const dispatch = useDispatch();
 
   const cardRef = React.useContext(DashboardCardContext);
-  const draggableRef = React.useRef<HTMLDivElement>(null);
   const isResizing = React.useRef<boolean>(false);
 
   const SMALLEST_CARD_WIDTH = 126;
@@ -114,7 +113,6 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (props) 
 
   return (
     <div
-      ref={draggableRef}
       onMouseDown={handleOnMouseDown}
       style={{
         cursor: 'col-resize',
