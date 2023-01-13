@@ -41,6 +41,7 @@ import { useTranslation } from 'react-i18next';
 
 export interface DashboardCardActionProps {
   onRemove: () => void;
+  onResetSize: () => void;
 }
 
 export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = (props) => {
@@ -68,6 +69,9 @@ export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActio
         dropdownItems={[
           <DropdownItem key="Remove" onClick={props.onRemove}>
             {t('REMOVE', { ns: 'common' })}
+          </DropdownItem>,
+          <DropdownItem key="Reset Size" onClick={props.onResetSize}>
+            {t('DashboardCardActionMenu.RESET_SIZE')}
           </DropdownItem>,
         ]}
       />

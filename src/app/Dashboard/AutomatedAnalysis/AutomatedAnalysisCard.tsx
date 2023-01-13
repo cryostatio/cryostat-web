@@ -99,7 +99,7 @@ import { InfoCircleIcon, OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } f
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
+import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { ResizableCard } from '../ResizableCard';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
@@ -746,7 +746,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   return (
     <ResizableCard
       dashboardId={props.dashboardId}
-      minimumSpan={AutomatedAnalysisCardDescriptor.minimumSpan}
+      cardSizes={AutomatedAnalysisCardSizes}
       className="dashboard-card"
       id="automated-analysis-card"
       isRounded
@@ -788,10 +788,23 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   );
 };
 
+export const AutomatedAnalysisCardSizes: DashboardCardSizes = {
+  span: {
+    minimum: 4,
+    default: 6,
+    maximum: 12,
+  },
+  height: {
+    // TODO: implement height resizing
+    minimum: Number.NaN,
+    default: Number.NaN,
+    maximum: Number.NaN,
+  },
+};
+
 export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
   title: 'Automated Analysis',
-  minimumSpan: 4,
-  defaultSpan: 6,
+  cardSizes: AutomatedAnalysisCardSizes,
   description: `
 Assess common application performance and configuration issues.
     `,

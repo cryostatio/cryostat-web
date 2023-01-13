@@ -36,7 +36,10 @@
  * SOFTWARE.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import {
+  CardConfig,
+  dashboardCardConfigResizeCardIntent,
+} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
@@ -49,10 +52,20 @@ import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAn
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { ResizableCard } from './ResizableCard';
 
+export interface Sized<T> {
+  minimum: T;
+  default: T;
+  maximum: T;
+}
+
+export interface DashboardCardSizes {
+  span: Sized<gridSpans>;
+  height: Sized<number>;
+}
+
 export interface DashboardCardDescriptor {
   title: string;
-  minimumSpan: gridSpans;
-  defaultSpan: gridSpans;
+  cardSizes: DashboardCardSizes;
   description: string;
   descriptionFull: JSX.Element | string;
   component: React.FC<any>;
@@ -77,7 +90,19 @@ export interface DashboardCardProps {
 }
 
 // TODO remove this
-const PLACEHOLDER_CARD_MINIMUM_SPAN = 1;
+const PLACEHOLDER_CARD_SIZE = {
+  span: {
+    minimum: 1,
+    default: 6,
+    maximum: 10,
+  },
+  height: {
+    minimum: Number.NaN,
+    default: Number.NaN,
+    maximum: Number.NaN,
+  },
+} as DashboardCardSizes;
+
 const PlaceholderCard: React.FunctionComponent<
   {
     title: string;
@@ -92,7 +117,7 @@ const PlaceholderCard: React.FunctionComponent<
   return (
     <ResizableCard
       dashboardId={props.dashboardId}
-      minimumSpan={PLACEHOLDER_CARD_MINIMUM_SPAN}
+      cardSizes={PLACEHOLDER_CARD_SIZE}
       className="dashboard-card"
       isRounded
     >
@@ -114,8 +139,7 @@ const PlaceholderCard: React.FunctionComponent<
 
 export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
   title: 'None Placeholder',
-  minimumSpan: PLACEHOLDER_CARD_MINIMUM_SPAN,
-  defaultSpan: 6,
+  cardSizes: PLACEHOLDER_CARD_SIZE,
   description: 'placeholder',
   descriptionFull: 'This is a do-nothing placeholder with no config',
   component: PlaceholderCard,
@@ -124,8 +148,7 @@ export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
 
 export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
   title: 'All Placeholder',
-  minimumSpan: PLACEHOLDER_CARD_MINIMUM_SPAN,
-  defaultSpan: 6,
+  cardSizes: PLACEHOLDER_CARD_SIZE,
   description: 'placeholder',
   descriptionFull: 'This is a do-nothing placeholder with all the config',
   component: PlaceholderCard,
@@ -234,6 +257,17 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch]
   );
 
+  const handleResetSize = React.useCallback(
+    (idx: number) => {
+      const defaultSpan = getConfigByName(cardConfigs[idx].name).cardSizes.span.default;
+      if (defaultSpan == cardConfigs[idx].span) {
+        return;
+      }
+      dispatch(dashboardCardConfigResizeCardIntent(idx, defaultSpan));
+    },
+    [dispatch, cardConfigs]
+  );
+
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
       <Grid hasGutter>
@@ -242,7 +276,13 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
             {React.createElement(getConfigByName(cfg.name).component, {
               ...cfg.props,
               dashboardId: idx,
-              actions: [<DashboardCardActionMenu key={`${cfg.name}-actions`} onRemove={() => handleRemove(idx)} />],
+              actions: [
+                <DashboardCardActionMenu
+                  key={`${cfg.name}-actions`}
+                  onRemove={() => handleRemove(idx)}
+                  onResetSize={() => handleResetSize(idx)}
+                />,
+              ],
             })}
           </GridItem>
         ))}
