@@ -77,6 +77,7 @@ export interface DashboardCardProps {
 }
 
 // TODO remove this
+const PLACEHOLDER_CARD_MINIMUM_SPAN = 1;
 const PlaceholderCard: React.FunctionComponent<
   {
     title: string;
@@ -91,7 +92,7 @@ const PlaceholderCard: React.FunctionComponent<
   return (
     <ResizableCard
       dashboardId={props.dashboardId}
-      minimumSpan={AllPlaceholderCardDescriptor.minimumSpan}
+      minimumSpan={PLACEHOLDER_CARD_MINIMUM_SPAN}
       className="dashboard-card"
       isRounded
     >
@@ -113,7 +114,7 @@ const PlaceholderCard: React.FunctionComponent<
 
 export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
   title: 'None Placeholder',
-  minimumSpan: 1,
+  minimumSpan: PLACEHOLDER_CARD_MINIMUM_SPAN,
   defaultSpan: 6,
   description: 'placeholder',
   descriptionFull: 'This is a do-nothing placeholder with no config',
@@ -123,7 +124,7 @@ export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
 
 export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
   title: 'All Placeholder',
-  minimumSpan: 1,
+  minimumSpan: PLACEHOLDER_CARD_MINIMUM_SPAN,
   defaultSpan: 6,
   description: 'placeholder',
   descriptionFull: 'This is a do-nothing placeholder with all the config',
