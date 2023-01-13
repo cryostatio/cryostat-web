@@ -3406,7 +3406,7 @@ __metadata:
     react-router-dom: ^5.3.4
     react-router-last-location: ^2.0.1
     regenerator-runtime: ^0.13.11
-    rimraf: ^3.0.2
+    rimraf: ^4.0.4
     rxjs: ^7.8.0
     style-loader: ^3.3.1
     svg-url-loader: ^8.0.0
@@ -9980,6 +9980,15 @@ __metadata:
   bin:
     rimraf: bin.js
   checksum: 87f4164e396f0171b0a3386cc1877a817f572148ee13a7e113b238e48e8a9f2f31d009a92ec38a591ff1567d9662c6b67fd8818a2dbbaed74bc26a87a2a4a9a0
+  languageName: node
+  linkType: hard
+
+"rimraf@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "rimraf@npm:4.0.4"
+  bin:
+    rimraf: dist/cjs/src/bin.js
+  checksum: a3296ea15c79fe3da0bae06a484dd8b8ec1e6d3044b02f05ce27575ef23c856e37eef6e71a668ce0e263da594a05ace1e88be6f42200f1fbbf433b57121bae32
   languageName: node
   linkType: hard
 
