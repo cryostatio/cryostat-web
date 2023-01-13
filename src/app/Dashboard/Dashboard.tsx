@@ -40,14 +40,13 @@ import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlic
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { DraggableRef } from './DraggableRef';
 import { ResizableCard } from './ResizableCard';
 
 export interface DashboardCardDescriptor {

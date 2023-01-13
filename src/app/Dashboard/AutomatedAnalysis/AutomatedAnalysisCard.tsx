@@ -72,7 +72,6 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { calculateAnalysisTimer } from '@app/utils/utils';
 import {
   Button,
-  Card,
   CardActions,
   CardBody,
   CardExpandableContent,
@@ -101,7 +100,6 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
-import { DraggableRef } from '../DraggableRef';
 import { ResizableCard } from '../ResizableCard';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
