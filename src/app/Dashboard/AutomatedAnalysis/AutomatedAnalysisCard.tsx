@@ -72,7 +72,6 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { calculateAnalysisTimer } from '@app/utils/utils';
 import {
   Button,
-  Card,
   CardActions,
   CardBody,
   CardExpandableContent,
@@ -100,7 +99,8 @@ import { InfoCircleIcon, OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } f
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps } from '../Dashboard';
+import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
+import { ResizableCard } from '../ResizableCard';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 import {
@@ -112,7 +112,7 @@ import {
 import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
 import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 
-type AutomatedAnalysisCardProps = DashboardCardProps;
+export interface AutomatedAnalysisCardProps extends DashboardCardProps {}
 
 export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
@@ -744,7 +744,15 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
   return (
-    <Card id="automated-analysis-card" isRounded isCompact {...props} isExpanded={isCardExpanded}>
+    <ResizableCard
+      dashboardId={props.dashboardId}
+      cardSizes={AutomatedAnalysisCardSizes}
+      className="dashboard-card"
+      id="automated-analysis-card"
+      isRounded
+      isCompact
+      isExpanded={isCardExpanded}
+    >
       <CardHeader
         onExpand={onCardExpand}
         toggleButtonProps={{
@@ -776,12 +784,27 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
           </StackItem>
         </Stack>
       </CardExpandableContent>
-    </Card>
+    </ResizableCard>
   );
+};
+
+export const AutomatedAnalysisCardSizes: DashboardCardSizes = {
+  span: {
+    minimum: 4,
+    default: 6,
+    maximum: 12,
+  },
+  height: {
+    // TODO: implement height resizing
+    minimum: Number.NaN,
+    default: Number.NaN,
+    maximum: Number.NaN,
+  },
 };
 
 export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
   title: 'Automated Analysis',
+  cardSizes: AutomatedAnalysisCardSizes,
   description: `
 Assess common application performance and configuration issues.
     `,

@@ -11,5 +11,8 @@
     "MAILING_LIST": "Mailing List",
     "OPEN_SOURCE_LICENSE": "Open Source License",
     "VERSION": "version"
+  },
+  "DashboardCardActionMenu": {
+    "RESET_SIZE": "Reset Size"
   }
 }

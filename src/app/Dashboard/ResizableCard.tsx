@@ -35,46 +35,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
-export interface DashboardCardActionProps {
-  onRemove: () => void;
-  onResetSize: () => void;
+import { Card, CardProps } from '@patternfly/react-core';
+import * as React from 'react';
+import { DashboardCardSizes } from './Dashboard';
+import { DraggableRef } from './DraggableRef';
+
+export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
+
+export interface ResizableCardProps extends CardProps {
+  dashboardId: number;
+  cardSizes: DashboardCardSizes;
+  children?: React.ReactNode;
 }
 
-export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = (props) => {
-  const [isOpen, setOpen] = React.useState(false);
-
-  const [t] = useTranslation();
-
-  const onSelect = React.useCallback(
-    (_) => {
-      setOpen(false);
-    },
-    [setOpen]
-  );
+export const ResizableCard: React.FC<ResizableCardProps> = ({
+  children = null,
+  dashboardId,
+  cardSizes,
+  ...props
+}: ResizableCardProps) => {
+  const cardRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <>
-      <Dropdown
-        isPlain
-        isFlipEnabled
-        menuAppendTo={'parent'}
-        position={'right'}
-        isOpen={isOpen}
-        toggle={<KebabToggle onToggle={setOpen} />}
-        onSelect={onSelect}
-        dropdownItems={[
-          <DropdownItem key="Remove" onClick={props.onRemove}>
-            {t('REMOVE', { ns: 'common' })}
-          </DropdownItem>,
-          <DropdownItem key="Reset Size" onClick={props.onResetSize}>
-            {t('DashboardCardActionMenu.RESET_SIZE')}
-          </DropdownItem>,
-        ]}
-      />
-    </>
+    <DashboardCardContext.Provider value={cardRef}>
+      <div className="resizable-card" ref={cardRef} style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Card {...props}>{children}</Card>
+        <DraggableRef dashboardId={dashboardId} cardSizes={cardSizes} />
+      </div>
+    </DashboardCardContext.Provider>
   );
 };
+ResizableCard.displayName = 'ResizableCard';

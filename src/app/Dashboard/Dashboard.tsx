@@ -36,19 +36,36 @@
  * SOFTWARE.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  CardConfig,
+  dashboardCardConfigResizeCardIntent,
+} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
-import { Card, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
+import { ResizableCard } from './ResizableCard';
+
+export interface Sized<T> {
+  minimum: T;
+  default: T;
+  maximum: T;
+}
+
+export interface DashboardCardSizes {
+  span: Sized<gridSpans>;
+  height: Sized<number>;
+}
 
 export interface DashboardCardDescriptor {
   title: string;
+  cardSizes: DashboardCardSizes;
   description: string;
   descriptionFull: JSX.Element | string;
   component: React.FC<any>;
@@ -68,10 +85,24 @@ export interface PropControl {
 export interface DashboardProps {}
 
 export interface DashboardCardProps {
+  dashboardId: number;
   actions?: JSX.Element[];
 }
 
 // TODO remove this
+const PLACEHOLDER_CARD_SIZE = {
+  span: {
+    minimum: 1,
+    default: 6,
+    maximum: 10,
+  },
+  height: {
+    minimum: Number.NaN,
+    default: Number.NaN,
+    maximum: Number.NaN,
+  },
+} as DashboardCardSizes;
+
 const PlaceholderCard: React.FunctionComponent<
   {
     title: string;
@@ -84,7 +115,12 @@ const PlaceholderCard: React.FunctionComponent<
   } & DashboardCardProps
 > = (props) => {
   return (
-    <Card isRounded>
+    <ResizableCard
+      dashboardId={props.dashboardId}
+      cardSizes={PLACEHOLDER_CARD_SIZE}
+      className="dashboard-card"
+      isRounded
+    >
       <CardHeader>
         <CardActions>{...props.actions || []}</CardActions>
       </CardHeader>
@@ -97,94 +133,97 @@ const PlaceholderCard: React.FunctionComponent<
         <Text>asyncmenu: {props.asyncmenu}</Text>
         <Text>asyncmenus: {props.asyncmenu2}</Text>
       </CardBody>
-    </Card>
+    </ResizableCard>
   );
 };
+
+export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
+  title: 'None Placeholder',
+  cardSizes: PLACEHOLDER_CARD_SIZE,
+  description: 'placeholder',
+  descriptionFull: 'This is a do-nothing placeholder with no config',
+  component: PlaceholderCard,
+  propControls: [],
+} as DashboardCardDescriptor;
+
+export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
+  title: 'All Placeholder',
+  cardSizes: PLACEHOLDER_CARD_SIZE,
+  description: 'placeholder',
+  descriptionFull: 'This is a do-nothing placeholder with all the config',
+  component: PlaceholderCard,
+  propControls: [
+    {
+      name: 'string',
+      key: 'title',
+      defaultValue: 'a short text',
+      description: 'a string input',
+      kind: 'string',
+    },
+    {
+      name: 'text',
+      key: 'message',
+      defaultValue: 'a long text',
+      description: 'a text input',
+      kind: 'text',
+    },
+    {
+      name: 'menu select',
+      key: 'menu',
+      values: ['choices', 'options'],
+      defaultValue: '',
+      description: 'a selection menu',
+      kind: 'select',
+    },
+    {
+      name: 'menu select 2',
+      key: 'asyncmenu',
+      values: new Observable((subscriber) => {
+        let count = 0;
+        const id = setInterval(() => {
+          if (count > 2) {
+            clearInterval(id);
+            setTimeout(() => subscriber.error('Timed Out'), 5000);
+          }
+          subscriber.next(`async ${count++}`);
+        }, 1000);
+      }),
+      defaultValue: '',
+      description: 'an async stream selection menu',
+      kind: 'select',
+    },
+    {
+      name: 'menu select 3',
+      key: 'asyncmenu2',
+      values: of(['arr1', 'arr2', 'arr3']),
+      defaultValue: '',
+      description: 'an async array selection menu',
+      kind: 'select',
+    },
+    {
+      name: 'a switch',
+      key: 'toggleswitch',
+      defaultValue: false,
+      description: 'a boolean input',
+      kind: 'boolean',
+    },
+    {
+      name: 'numeric spinner input',
+      key: 'count',
+      defaultValue: 5,
+      description: 'a number input',
+      kind: 'number',
+    },
+  ],
+  advancedConfig: <Text>This is an advanced configuration component</Text>,
+} as DashboardCardDescriptor;
 
 export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
   featureLevel?: FeatureLevel
 ) => {
   let cards = [AutomatedAnalysisCardDescriptor];
   if (featureLevel === undefined || featureLevel === FeatureLevel.DEVELOPMENT) {
-    cards = cards.concat([
-      {
-        title: 'None Placeholder',
-        description: 'placeholder',
-        descriptionFull: 'This is a do-nothing placeholder with no config',
-        component: PlaceholderCard,
-        propControls: [],
-      },
-      {
-        title: 'All Placeholder',
-        description: 'placeholder',
-        descriptionFull: 'This is a do-nothing placeholder with all the config',
-        component: PlaceholderCard,
-        propControls: [
-          {
-            name: 'string',
-            key: 'title',
-            defaultValue: 'a short text',
-            description: 'a string input',
-            kind: 'string',
-          },
-          {
-            name: 'text',
-            key: 'message',
-            defaultValue: 'a long text',
-            description: 'a text input',
-            kind: 'text',
-          },
-          {
-            name: 'menu select',
-            key: 'menu',
-            values: ['choices', 'options'],
-            defaultValue: '',
-            description: 'a selection menu',
-            kind: 'select',
-          },
-          {
-            name: 'menu select 2',
-            key: 'asyncmenu',
-            values: new Observable((subscriber) => {
-              let count = 0;
-              const id = setInterval(() => {
-                if (count > 2) {
-                  clearInterval(id);
-                  setTimeout(() => subscriber.error('Timed Out'), 5000);
-                }
-                subscriber.next(`async ${count++}`);
-              }, 1000);
-            }),
-            defaultValue: '',
-            description: 'an async stream selection menu',
-            kind: 'select',
-          },
-          {
-            name: 'menu select 3',
-            key: 'asyncmenu2',
-            values: of(['arr1', 'arr2', 'arr3']),
-            defaultValue: '',
-            description: 'an async array selection menu',
-            kind: 'select',
-          },
-          {
-            name: 'a switch',
-            key: 'toggleswitch',
-            defaultValue: false,
-            description: 'a boolean input',
-            kind: 'boolean',
-          },
-          {
-            name: 'numeric spinner input',
-            key: 'count',
-            defaultValue: 5,
-            description: 'a number input',
-            kind: 'number',
-          },
-        ],
-        advancedConfig: <Text>This is an advanced configuration component</Text>,
-      },
-    ]);
+    cards = cards.concat([NonePlaceholderCardDescriptor, AllPlaceholderCardDescriptor]);
   }
   return cards;
 };
@@ -209,7 +248,7 @@ export function getConfigByTitle(title: string): DashboardCardDescriptor {
 
 export const Dashboard: React.FC<DashboardProps> = (_) => {
   const dispatch = useDispatch<StateDispatch>();
-  const cardConfigs = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
 
   const handleRemove = React.useCallback(
     (idx: number) => {
@@ -218,21 +257,39 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch]
   );
 
+  const handleResetSize = React.useCallback(
+    (idx: number) => {
+      const defaultSpan = getConfigByName(cardConfigs[idx].name).cardSizes.span.default;
+      if (defaultSpan == cardConfigs[idx].span) {
+        return;
+      }
+      dispatch(dashboardCardConfigResizeCardIntent(idx, defaultSpan));
+    },
+    [dispatch, cardConfigs]
+  );
+
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <Stack hasGutter>
+      <Grid hasGutter>
         {cardConfigs.map((cfg, idx) => (
-          <StackItem key={idx}>
+          <GridItem span={cfg.span} key={idx}>
             {React.createElement(getConfigByName(cfg.name).component, {
               ...cfg.props,
-              actions: [<DashboardCardActionMenu key={`${cfg.name}-remove`} onRemove={() => handleRemove(idx)} />],
+              dashboardId: idx,
+              actions: [
+                <DashboardCardActionMenu
+                  key={`${cfg.name}-actions`}
+                  onRemove={() => handleRemove(idx)}
+                  onResetSize={() => handleResetSize(idx)}
+                />,
+              ],
             })}
-          </StackItem>
+          </GridItem>
         ))}
-        <StackItem key={cardConfigs.length}>
+        <GridItem key={cardConfigs.length}>
           <AddCard />
-        </StackItem>
-      </Stack>
+        </GridItem>
+      </Grid>
     </TargetView>
   );
 };

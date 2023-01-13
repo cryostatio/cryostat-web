@@ -36,15 +36,17 @@
  * SOFTWARE.
  */
 
+import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
-const _version = '1';
+const _version = '2';
 
 // Common action string format: "resource(s)/action"
 export enum DashboardConfigAction {
   CARD_ADD = 'dashboard-card-config/add',
   CARD_REMOVE = 'dashboard-card-config/remove',
+  CARD_RESIZE = 'dashboard-card-config/resize',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -58,11 +60,17 @@ export interface DashboardDeleteConfigActionPayload {
   idx: number;
 }
 
+export interface DashboardResizeConfigActionPayload {
+  idx: number;
+  span: number;
+}
+
 export const dashboardCardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
-  (name: string, props: object) => ({
+  (name: string, span: gridSpans, props: object) => ({
     payload: {
       name,
+      span,
       props,
     } as DashboardAddConfigActionPayload,
   })
@@ -74,8 +82,19 @@ export const dashboardCardConfigDeleteCardIntent = createAction(DashboardConfigA
   } as DashboardDeleteConfigActionPayload,
 }));
 
+export const dashboardCardConfigResizeCardIntent = createAction(
+  DashboardConfigAction.CARD_RESIZE,
+  (idx: number, span: gridSpans) => ({
+    payload: {
+      idx,
+      span,
+    } as DashboardResizeConfigActionPayload,
+  })
+);
+
 export interface CardConfig {
   name: string;
+  span: gridSpans;
   props: object;
 }
 
@@ -90,6 +109,9 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardCardConfigDeleteCardIntent, (state, { payload }) => {
       state.list.splice(payload.idx || 0, 1);
+    })
+    .addCase(dashboardCardConfigResizeCardIntent, (state, { payload }) => {
+      state.list[payload.idx].span = payload.span;
     });
 });
 
