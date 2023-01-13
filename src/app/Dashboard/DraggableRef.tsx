@@ -54,12 +54,11 @@ function normalizeAsGridSpans(val: number, min: number, max: number, a: gridSpan
   return _.clamp(ans, a, b) as gridSpans;
 }
 
-export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (
-  {
-    dashboardId,
-    minimumSpan, 
-    ..._props
-  }: DraggableRefProps) => {
+export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
+  dashboardId,
+  minimumSpan,
+  ..._props
+}: DraggableRefProps) => {
   const dispatch = useDispatch();
 
   const cardRef = React.useContext(DashboardCardContext);
@@ -67,43 +66,38 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (
 
   const SMALLEST_CARD_WIDTH = 126;
 
-  const handleOnMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.stopPropagation();
-    e.preventDefault();
-    document.body.style.setProperty('cursor', 'col-resize');
-    document.addEventListener('mousemove', callbackMouseMove);
-    document.addEventListener('mouseup', callbackMouseUp);
-    isResizing.current = true;
-  };
+  const handleMouseMove = React.useCallback(
+    (e: MouseEvent) => {
+      const mousePos = e.clientX;
+      e.stopPropagation();
+      if (!isResizing.current) {
+        return;
+      }
+      if (cardRef.current && window.visualViewport) {
+        cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' });
+        const cardRect = cardRef.current.getBoundingClientRect();
+        const minimumCardRight = cardRect.left + SMALLEST_CARD_WIDTH * minimumSpan;
 
-  const handleMouseMove = React.useCallback((e: MouseEvent) => {
-    const mousePos = e.clientX;
-    e.stopPropagation();
-    if (!isResizing.current) {
-      return;
-    }
-    if (cardRef.current && window.visualViewport) {
-      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' });
-      const cardRect = cardRef.current.getBoundingClientRect();
-      const minimumCardRight = cardRect.left + SMALLEST_CARD_WIDTH * minimumSpan;
+        const newSize = mousePos;
 
-      const newSize = mousePos;
+        const gridSpan = normalizeAsGridSpans(
+          newSize,
+          minimumCardRight,
+          window.visualViewport.width,
+          minimumSpan,
+          12
+        ) as gridSpans;
 
-      const gridSpan = normalizeAsGridSpans(
-        newSize,
-        minimumCardRight,
-        window.visualViewport.width,
-        minimumSpan,
-        12
-      ) as gridSpans;
+        dispatch(dashboardCardConfigResizeCardIntent(dashboardId, gridSpan));
+      } else {
+        console.error('cardRef.current or window.visualViewport is undefined');
+      }
+    },
+    [dispatch, cardRef, dashboardId, minimumSpan]
+  );
 
-      dispatch(dashboardCardConfigResizeCardIntent(dashboardId, gridSpan));
-    } else {
-      console.error('cardRef.current or window.visualViewport is undefined');
-    }
-  }, [dispatch, cardRef, dashboardId, minimumSpan]);
-
-  const handleOnMouseUp = () => {
+  const callbackMouseMove = React.useCallback(handleMouseMove, [handleMouseMove]);
+  const callbackMouseUp = React.useCallback(() => {
     if (!isResizing.current) {
       return;
     }
@@ -111,10 +105,19 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = (
     document.body.style.removeProperty('cursor');
     document.removeEventListener('mousemove', callbackMouseMove);
     document.removeEventListener('mouseup', callbackMouseUp);
-  };
+  }, [callbackMouseMove]);
 
-  const callbackMouseMove = React.useCallback(handleMouseMove, [handleMouseMove]);
-  const callbackMouseUp = React.useCallback(handleOnMouseUp, [handleOnMouseUp]);
+  const handleOnMouseDown = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.stopPropagation();
+      e.preventDefault();
+      document.body.style.setProperty('cursor', 'col-resize');
+      document.addEventListener('mousemove', callbackMouseMove);
+      document.addEventListener('mouseup', callbackMouseUp);
+      isResizing.current = true;
+    },
+    [callbackMouseMove, callbackMouseUp]
+  );
 
   return (
     <div
