@@ -72,6 +72,8 @@ export const Archives: React.FC<ArchivesProps> = (_) => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
   }, [context.api, addSubscription, setArchiveEnabled]);
 
+  const uploadTargetAsObs = React.useMemo(() => of(uploadAsTarget), []);
+
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
       <Tabs id="archives" activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
@@ -82,7 +84,7 @@ export const Archives: React.FC<ArchivesProps> = (_) => {
           <AllArchivedRecordingsTable />
         </Tab>
         <Tab id="uploads" eventKey={2} title={<TabTitleText>Uploads</TabTitleText>}>
-          <ArchivedRecordingsTable target={of(uploadAsTarget)} isUploadsTable={true} isNestedTable={false} />
+          <ArchivedRecordingsTable target={uploadTargetAsObs} isUploadsTable={true} isNestedTable={false} />
         </Tab>
       </Tabs>
     ) : (
@@ -93,7 +95,7 @@ export const Archives: React.FC<ArchivesProps> = (_) => {
         </Title>
       </EmptyState>
     );
-  }, [archiveEnabled, activeTab]);
+  }, [archiveEnabled, activeTab, uploadTargetAsObs]);
 
   return (
     <BreadcrumbPage pageTitle="Archives">
