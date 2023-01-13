@@ -72,6 +72,16 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   const minWidth = React.useRef<number | undefined>(undefined);
   const maxWidth = React.useRef<number | undefined>(undefined);
 
+  const nearEdgeMultiplier = React.useCallback((mousePos: number): number => {
+    const CLOSE_TO_EDGE = 0.995;
+    const EDGE_MULTIPLIER = 0.9;
+    if (mousePos > window.innerWidth * CLOSE_TO_EDGE) {
+      return EDGE_MULTIPLIER;
+    } else {
+      return 1;
+    }
+  }, []);
+
   const callbackMouseMove = React.useCallback(
     (e: MouseEvent) => {
       const mousePos = e.clientX;
@@ -91,7 +101,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         }
 
         const minCardRight = cardRect.left + minWidth.current;
-        const maxCardRight = cardRect.left + maxWidth.current;
+        const maxCardRight = cardRect.left + maxWidth.current * nearEdgeMultiplier(mousePos);
 
         const newSize = mousePos;
 
@@ -108,7 +118,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         console.error('cardRef.current is undefined');
       }
     },
-    [dispatch, cardRef, cardConfigs, dashboardId, cardSizes]
+    [dispatch, cardRef, cardConfigs, nearEdgeMultiplier, dashboardId, cardSizes]
   );
 
   const callbackMouseUp = React.useCallback(() => {

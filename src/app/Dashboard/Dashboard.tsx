@@ -93,8 +93,8 @@ export interface DashboardCardProps {
 const PLACEHOLDER_CARD_SIZE = {
   span: {
     minimum: 1,
-    default: 6,
-    maximum: 10,
+    default: 3,
+    maximum: 6,
   },
   height: {
     minimum: Number.NaN,
