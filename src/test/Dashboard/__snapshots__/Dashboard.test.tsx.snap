@@ -45,10 +45,10 @@ exports[`<Dashboard /> renders correctly 1`] = `
           className="pf-l-grid__item"
         >
           <div
-            className="pf-l-stack pf-m-gutter"
+            className="pf-l-grid pf-m-gutter"
           >
             <div
-              className="pf-l-stack__item"
+              className="pf-l-grid__item"
             >
               <div>
                 Add Card

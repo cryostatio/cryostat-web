@@ -35,11 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { dashboardCardConfigResizeCardIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import {
+  CardConfig,
+  dashboardCardConfigResizeCardIntent,
+} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { gridSpans } from '@patternfly/react-core';
 import _ from 'lodash';
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DashboardCardContext } from './ResizableCard';
 
 export interface DraggableRefProps {
@@ -59,14 +63,15 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   minimumSpan,
   ..._props
 }: DraggableRefProps) => {
+  const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
   const dispatch = useDispatch();
 
   const cardRef = React.useContext(DashboardCardContext);
   const isResizing = React.useRef<boolean>(false);
+  const setInitialVals = React.useRef<boolean>(true);
+  const minWidth = React.useRef<number>(0);
 
-  const SMALLEST_CARD_WIDTH = 126;
-
-  const handleMouseMove = React.useCallback(
+  const callbackMouseMove = React.useCallback(
     (e: MouseEvent) => {
       const mousePos = e.clientX;
       e.stopPropagation();
@@ -76,13 +81,19 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       if (cardRef.current && window.visualViewport) {
         cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'end' });
         const cardRect = cardRef.current.getBoundingClientRect();
-        const minimumCardRight = cardRect.left + SMALLEST_CARD_WIDTH * minimumSpan;
+
+        if (setInitialVals.current) {
+          minWidth.current = minimumSpan * (cardRect.width / cardConfigs[dashboardId].span);
+          setInitialVals.current = false;
+        }
+
+        const minCardRight = cardRect.left + minWidth.current;
 
         const newSize = mousePos;
 
         const gridSpan = normalizeAsGridSpans(
           newSize,
-          minimumCardRight,
+          minCardRight,
           window.visualViewport.width,
           minimumSpan,
           12
@@ -93,15 +104,15 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         console.error('cardRef.current or window.visualViewport is undefined');
       }
     },
-    [dispatch, cardRef, dashboardId, minimumSpan]
+    [dispatch, cardRef, cardConfigs, dashboardId, minimumSpan]
   );
 
-  const callbackMouseMove = React.useCallback(handleMouseMove, [handleMouseMove]);
   const callbackMouseUp = React.useCallback(() => {
     if (!isResizing.current) {
       return;
     }
     isResizing.current = false;
+    setInitialVals.current = true;
     document.body.style.removeProperty('cursor');
     document.removeEventListener('mousemove', callbackMouseMove);
     document.removeEventListener('mouseup', callbackMouseUp);
@@ -115,6 +126,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       document.addEventListener('mousemove', callbackMouseMove);
       document.addEventListener('mouseup', callbackMouseUp);
       isResizing.current = true;
+      setInitialVals.current = true;
     },
     [callbackMouseMove, callbackMouseUp]
   );
