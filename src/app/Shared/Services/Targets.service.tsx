@@ -75,10 +75,12 @@ export class TargetsService {
           this._targets$.next(_.filter(this._targets$.getValue(), (t) => t.connectUrl !== evt.serviceRef.connectUrl));
           break;
         case 'MODIFIED':
-          const idx = _.findIndex(this._targets$.getValue(), (t) => t.connectUrl === evt.serviceRef.connectUrl);
-          if (idx >= 0) {
-            const tList = this._targets$.getValue().splice(idx, 1, evt.serviceRef);
-            this._targets$.next(tList);
+          {
+            const idx = _.findIndex(this._targets$.getValue(), (t) => t.connectUrl === evt.serviceRef.connectUrl);
+            if (idx >= 0) {
+              const tList = this._targets$.getValue().splice(idx, 1, evt.serviceRef);
+              this._targets$.next(tList);
+            }
           }
           break;
         default:
