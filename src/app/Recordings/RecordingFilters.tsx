@@ -56,7 +56,7 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DateTimeFilter } from './Filters/DateTimePickerBeta';
+import { DateTimeFilter } from '@app/DateTimePicker/DateTimePicker';
 import { DurationFilter } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';

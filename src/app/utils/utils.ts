@@ -37,10 +37,6 @@
  */
 
 import { range } from 'lodash';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-import advanced from 'dayjs/plugin/advancedFormat';
 
 const SECOND_MILLIS = 1000;
 const MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -164,24 +160,3 @@ export const format2Digit = (value: number, locale = 'en-US'): string => {
     minimumIntegerDigits: 2,
   });
 };
-
-dayjs.extend(timezone);
-dayjs.extend(utc);
-dayjs.extend(advanced);
-
-export interface Timezone {
-  full: string;
-  short: string;
-}
-
-export const localTimezone = {
-  full: dayjs.tz.guess(),
-  short: dayjs().tz(dayjs.tz.guess()).format('z'),
-} as Timezone;
-
-export const UTCTimezone = {
-  full: 'Coordinated Universal Time',
-  short: 'UTC',
-} as Timezone;
-
-export const supportedTimezones = [localTimezone, UTCTimezone] as Timezone[];

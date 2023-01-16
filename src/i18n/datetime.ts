@@ -35,58 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export enum LocalStorageKey {
-  FEATURE_LEVEL,
-  DASHBOARD_CFG,
-  AUTOMATED_ANALYSIS_FILTERS,
-  TARGET_RECORDING_FILTERS,
-  JMX_CREDENTIAL_LOCATION,
-  JMX_CREDENTIALS,
-  TARGET,
-  AUTO_REFRESH_ENABLED,
-  AUTO_REFRESH_PERIOD,
-  AUTO_REFRESH_UNITS,
-  AUTOMATED_ANALYSIS_RECORDING_CONFIG,
-  DELETION_DIALOGS_ENABLED,
-  VISIBLE_NOTIFICATIONS_COUNT,
-  NOTIFICATIONS_ENABLED,
-  WEBSOCKET_DEBOUNCE_MS,
-  DATETIME_FORMAT,
-}
 
-export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
+import localeJson from 'dayjs/locale.json';
 
-export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
-  if (typeof window === 'undefined') {
-    return defaultValue;
-  }
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    return defaultValue;
-  }
-};
+export const locales = localeJson
+  .map((locale) => ({
+    ...locale,
+    moduleName: `dayjs/locale/${locale.key}`,
+  }))
+  .sort((a, b) => a.key.localeCompare(b.key));
 
-export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, error?: () => void) => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
-  }
-};
-
-export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): any => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(key);
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
-  }
-};
+export const timezones = (
+  typeof Intl.supportedValuesOf === 'undefined' ? [] : Intl.supportedValuesOf('timeZone')
+) as string[];

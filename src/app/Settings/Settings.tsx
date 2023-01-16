@@ -66,6 +66,7 @@ import { FeatureLevels } from './FeatureLevels';
 import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
+import { DatetimeControl } from './DatetimeControl';
 
 const _SettingCategories = [
   'Connectivity',
@@ -124,6 +125,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
     AutoRefresh,
     FeatureLevels,
     Language,
+    DatetimeControl,
   ].map(
     (c) =>
       ({

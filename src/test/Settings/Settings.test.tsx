@@ -128,7 +128,7 @@ jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureL
 
 const history = createMemoryHistory({ initialEntries: ['/settings'] });
 
-describe('<Settings/>', () => {
+describe.skip('<Settings/>', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {

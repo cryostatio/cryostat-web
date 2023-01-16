@@ -40,11 +40,11 @@
 const mockCurrentDate = new Date('14 Sep 2022 00:00:00 UTC');
 jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
 
-import { DateTimePicker } from '@app/Recordings/Filters/DateTimePicker';
+import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { renderDefault } from '../../Common';
+import { renderDefault } from '../Common';
 
 const onDateTimeSelect = jest.fn((_date) => undefined);
 
