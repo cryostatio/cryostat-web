@@ -35,13 +35,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { DateTimeFilter } from '@app/DateTimePicker/DateTimePicker';
+import { UpdateFilterOptions, UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   allowedActiveRecordingFilters,
   allowedArchivedRecordingFilters,
+  allowedActiveRecordingFilters,
+  allowedArchivedRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
-import { recordingUpdateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
-import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
+import {
+  recordingUpdateCategoryIntent,
+  StateDispatch,
+  RootState,
+  recordingUpdateCategoryIntent,
+  StateDispatch,
+  RootState,
+} from '@app/Shared/Redux/ReduxStore';
+import { Recording, RecordingState, Recording, RecordingState } from '@app/Shared/Services/Api.service';
 import {
   Dropdown,
   DropdownItem,
@@ -54,22 +64,13 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
+import dayjs from 'dayjs';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { DateTimeFilter } from '@app/DateTimePicker/DateTimePicker';
+import { useDispatch, useSelector, useDispatch, useSelector } from 'react-redux';
 import { DurationFilter } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
-import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
-import { useDispatch, useSelector } from 'react-redux';
-import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
-import { recordingUpdateCategoryIntent, StateDispatch, RootState } from '@app/Shared/Redux/ReduxStore';
-import {
-  allowedActiveRecordingFilters,
-  allowedArchivedRecordingFilters,
-} from '@app/Shared/Redux/Filters/RecordingFilterSlice';
-import dayjs from 'dayjs';
 
 export interface RecordingFiltersCategories {
   Name: string[];

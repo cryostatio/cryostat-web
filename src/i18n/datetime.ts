@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
+/// <reference path="datetime.typings.d.ts" />
 import localeJson from 'dayjs/locale.json';
 
 export const locales = localeJson

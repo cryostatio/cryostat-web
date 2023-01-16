@@ -35,6 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { supportedTimezones, localTimezone } from '@app/Settings/DatetimeControl';
+import { Timezone } from '@app/Shared/Services/Settings.service';
 import {
   Button,
   ButtonVariant,
@@ -56,12 +58,9 @@ import {
   LevelItem,
 } from '@patternfly/react-core';
 import { GlobeIcon, OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
-import { format2Digit } from '@app/utils/utils';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import React from 'react';
-import { Timezone } from '@app/Shared/Services/Settings.service';
-import { supportedTimezones, localTimezone } from '@app/Settings/DatetimeControl';
 
 dayjs.extend(customParseFormat);
 
@@ -79,27 +78,27 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
   const [timezone, setTimezone] = React.useState(localTimezone);
   const [validation, setValidation] = React.useState(ValidatedOptions.default);
 
-  const handleDateSelect = React.useCallback(
-    (date: Date) => {
-      const formattedDateStr = `${date.getFullYear()}-${format2Digit(date.getMonth() + 1)}-${format2Digit(
-        date.getDate()
-      )}`;
-      if (validation === ValidatedOptions.success) {
-        setDatetimeInput((old) => {
-          const dateParts = old.split(/\s+/);
-          return `${formattedDateStr} ${dateParts[1]}`.trim(); // Extract hh:mm
-        });
-      } else {
-        setDatetimeInput(formattedDateStr);
-      }
-      setValidation(ValidatedOptions.success);
-      setIsCalendarOpen(false);
-    },
-    [setDatetimeInput, setValidation, setIsCalendarOpen, validation]
-  );
+  // const handleDateSelect = React.useCallback(
+  //   (date: Date) => {
+  //     const formattedDateStr = `${date.getFullYear()}-${format2Digit(date.getMonth() + 1)}-${format2Digit(
+  //       date.getDate()
+  //     )}`;
+  //     if (validation === ValidatedOptions.success) {
+  //       setDatetimeInput((old) => {
+  //         const dateParts = old.split(/\s+/);
+  //         return `${formattedDateStr} ${dateParts[1]}`.trim(); // Extract hh:mm
+  //       });
+  //     } else {
+  //       setDatetimeInput(formattedDateStr);
+  //     }
+  //     setValidation(ValidatedOptions.success);
+  //     setIsCalendarOpen(false);
+  //   },
+  //   [setDatetimeInput, setValidation, setIsCalendarOpen, validation]
+  // );
 
   const handleDateTimeInputChange = React.useCallback(
-    (value: string, _: any) => {
+    (value: string, _) => {
       setValidation(
         value === ''
           ? ValidatedOptions.default
@@ -112,25 +111,25 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
     [setValidation, setDatetimeInput]
   );
 
-  const handleTimeSelect = React.useCallback(
-    (hour: number, minute: number) => {
-      if (validation === ValidatedOptions.success) {
-        setDatetimeInput((old) => {
-          const dateParts = old.split(/\s+/);
-          return `${dateParts[0]} ${format2Digit(hour)}:${format2Digit(minute)}`;
-        });
-      } else {
-        const now = new Date(); // default to now
-        setDatetimeInput(
-          `${now.getFullYear()}-${format2Digit(now.getMonth() + 1)}-${format2Digit(now.getDate())} ${format2Digit(
-            hour
-          )}:${format2Digit(minute)}`
-        );
-      }
-      setValidation(ValidatedOptions.success);
-    },
-    [validation, setDatetimeInput, setValidation]
-  );
+  // const handleTimeSelect = React.useCallback(
+  //   (hour: number, minute: number) => {
+  //     if (validation === ValidatedOptions.success) {
+  //       setDatetimeInput((old) => {
+  //         const dateParts = old.split(/\s+/);
+  //         return `${dateParts[0]} ${format2Digit(hour)}:${format2Digit(minute)}`;
+  //       });
+  //     } else {
+  //       const now = new Date(); // default to now
+  //       setDatetimeInput(
+  //         `${now.getFullYear()}-${format2Digit(now.getMonth() + 1)}-${format2Digit(now.getDate())} ${format2Digit(
+  //           hour
+  //         )}:${format2Digit(minute)}`
+  //       );
+  //     }
+  //     setValidation(ValidatedOptions.success);
+  //   },
+  //   [validation, setDatetimeInput, setValidation]
+  // );
 
   const onToggleCalendar = React.useCallback(() => {
     setIsCalendarOpen((open) => !open);
@@ -144,12 +143,12 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
       setDatetimeInput('');
       setValidation(ValidatedOptions.default);
     }
-  }, [onSubmit, datetimeInput, timezone, setDatetimeInput, setValidation]);
+  }, [onSubmit, datetimeInput, timezone, setDatetimeInput, setValidation, validation]);
 
-  const selectedDate = React.useMemo(
-    () => (validation === ValidatedOptions.success ? new Date(Date.parse(datetimeInput)) : undefined),
-    [validation, datetimeInput]
-  );
+  // const selectedDate = React.useMemo(
+  //   () => (validation === ValidatedOptions.success ? new Date(Date.parse(datetimeInput)) : undefined),
+  //   [validation, datetimeInput]
+  // );
 
   return (
     <Flex>
@@ -252,7 +251,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
         {isCompact ? timezone.short : timezone.full}
       </SelectOption>
     ));
-  }, []);
+  }, [isCompact]);
 
   const onFilter = React.useCallback(
     (_, value: string) => {
@@ -293,7 +292,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
 
 export interface DateTimePickerProps {}
 
-export const DateTimePicker: React.FC<DateTimePickerProps> = ({}) => {
+export const DateTimePicker: React.FC<DateTimePickerProps> = ({ ..._ }) => {
   return (
     <InputGroup>
       <Level hasGutter>
@@ -310,7 +309,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({}) => {
 
 export interface TimePickerProps {}
 
-export const TimePicker: React.FC<TimePickerProps> = ({}) => {
+export const TimePicker: React.FC<TimePickerProps> = ({ ..._ }) => {
   return (
     <>
       <Stack>

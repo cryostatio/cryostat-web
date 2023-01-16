@@ -61,12 +61,12 @@ import { useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
 import { CredentialsStorage } from './CredentialsStorage';
+import { DatetimeControl } from './DatetimeControl';
 import { DeletionDialogControl } from './DeletionDialogControl';
 import { FeatureLevels } from './FeatureLevels';
 import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
-import { DatetimeControl } from './DatetimeControl';
 
 const _SettingCategories = [
   'Connectivity',

@@ -35,9 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { TimezonePicker } from '@app/DateTimePicker/DateTimePicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { DatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { locales, timezones } from '@i18n/datetime';
 import {
   FormGroup,
   HelperText,
@@ -48,14 +50,12 @@ import {
   StackItem,
   Switch,
 } from '@patternfly/react-core';
-import { TimezonePicker } from '@app/DateTimePicker/DateTimePicker';
+import dayjs from 'dayjs';
+import advanced from 'dayjs/plugin/advancedFormat';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
 import { UserSetting } from './Settings';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-import advanced from 'dayjs/plugin/advancedFormat';
-import { locales, timezones } from '@i18n/datetime';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -97,7 +97,7 @@ const Component = () => {
 
   React.useLayoutEffect(() => {
     context.settings.datetimeFormat().subscribe(setState);
-  }, [addSubscription, setState]);
+  }, [addSubscription, setState, context.settings]);
 
   const handleDateToggle = React.useCallback((expanded: boolean) => setDateLocaleOpen(expanded), [setDateLocaleOpen]);
 
