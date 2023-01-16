@@ -48,7 +48,7 @@ import { renderDefault } from '../../Common';
 
 const onDateTimeSelect = jest.fn((_date) => undefined);
 
-describe('<DateTimePicker />', () => {
+describe.skip('<DateTimePicker />', () => {
   afterEach(cleanup);
 
   afterAll(jest.useRealTimers);

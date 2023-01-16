@@ -253,3 +253,8 @@ html, body, #root {
 .setting-content {
   padding: 2ch !important;
 }
+
+.time-picker-dropdown .pf-c-dropdown__menu {
+  max-height: 16em;
+  overflow: scroll;
+}

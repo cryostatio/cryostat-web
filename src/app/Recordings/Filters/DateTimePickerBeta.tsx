@@ -53,6 +53,23 @@ import {
   Select,
   SelectVariant,
   SelectOption,
+  Drawer,
+  DrawerContent,
+  DrawerContentBody,
+  Bullseye,
+  EmptyState,
+  EmptyStateIcon,
+  Spinner,
+  Title,
+  DrawerPanelContent,
+  Stack,
+  StackItem,
+  DrawerPanelBody,
+  Split,
+  SplitItem,
+  Level,
+  LevelItem,
+  Divider,
 } from '@patternfly/react-core';
 import { GlobeIcon, OutlinedCalendarAltIcon, OutlinedClockIcon, SearchIcon } from '@patternfly/react-icons';
 import {
@@ -73,11 +90,11 @@ dayjs.extend(customParseFormat);
 const datetimeFormat = 'YYYY-MM-DD HH:mm';
 const shortDatetimeFormat = 'YYYY-MM-DD';
 
-export interface DateTimePickerProps {
+export interface DateTimeFilterProps {
   onSubmit: (date: string) => void;
 }
 
-export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = ({ onSubmit }) => {
+export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ onSubmit }) => {
   const [datetimeInput, setDatetimeInput] = React.useState('');
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
   const [timezone, setTimezone] = React.useState(localTimezone);
@@ -160,9 +177,9 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = ({ o
       <FlexItem>
         <Popover
           enableFlip={true}
-          bodyContent={<CalendarMonth onChange={handleDateSelect} date={selectedDate} isDateFocused />}
-          showClose={false}
+          bodyContent={<DateTimePicker />}
           isVisible={isCalendarOpen}
+          showClose={false}
           hasNoPadding
           hasAutoWidth
         >
@@ -187,7 +204,6 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = ({ o
                 <Button variant="control" aria-label="Toggle the calendar" onClick={onToggleCalendar}>
                   <OutlinedCalendarAltIcon />
                 </Button>
-                <CompactTimePicker onTimeChange={handleTimeSelect} menuAppendTo={document.body} />
               </>
             </InputGroup>
             {validation === ValidatedOptions.error ? (
@@ -211,99 +227,6 @@ export const DateTimePicker: React.FunctionComponent<DateTimePickerProps> = ({ o
         </Button>
       </FlexItem>
     </Flex>
-  );
-};
-
-export interface CompactTimePickerProps {
-  is24h?: boolean;
-  stepInMinute?: 1 | 2 | 5 | 10 | 15 | 20 | 30;
-  isFlipEnabled?: boolean;
-  onTimeChange?: (hour: number, minute: number) => void;
-  menuAppendTo?: HTMLElement | (() => HTMLElement) | 'inline' | 'parent' | undefined;
-}
-
-export const CompactTimePicker: React.FunctionComponent<CompactTimePickerProps> = ({
-  is24h = true,
-  stepInMinute = 30,
-  menuAppendTo = 'parent',
-  isFlipEnabled = true,
-  onTimeChange = () => undefined,
-}) => {
-  const [isTimeOpen, setIsTimeOpen] = React.useState(false);
-
-  const onTimeSelect = React.useCallback(
-    (timeAsString: string) => {
-      setIsTimeOpen(false);
-      let convertedTimeAsString: string | undefined = timeAsString;
-      const suffix = timeAsString.substring(timeAsString.length - 2, timeAsString.length);
-      if (suffix === 'AM' || suffix === 'PM') {
-        convertedTimeAsString = convert12HrTo24Hr(timeAsString);
-      }
-      if (convertedTimeAsString) {
-        const str = convertedTimeAsString.split(':');
-        onTimeChange(Number(str[0]), Number(str[1]));
-      }
-    },
-    [setIsTimeOpen, onTimeChange]
-  );
-
-  const onTimeToggle = React.useCallback(() => {
-    setIsTimeOpen((open) => !open);
-  }, [setIsTimeOpen]);
-
-  const timeOptions = React.useMemo(() => {
-    if (is24h) {
-      return generateTimeArray(0, 24, stepInMinute).map((timeValue) => (
-        <DropdownItem key={timeValue} component="button" value={timeValue} onClick={() => onTimeSelect(timeValue)}>
-          {timeValue}
-        </DropdownItem>
-      ));
-    }
-    return [
-      ...generateTimeArray(0, 12, stepInMinute)
-        .map((tv) => {
-          return `${tv.replace('00', '12')} AM`; // Replace hours 00:mm -> 12:mm
-        })
-        .map((timeValue) => {
-          return (
-            <DropdownItem key={timeValue} component="button" value={timeValue} onClick={() => onTimeSelect(timeValue)}>
-              {timeValue}
-            </DropdownItem>
-          );
-        }),
-      ...generateTimeArray(0, 12, stepInMinute)
-        .map((tv) => {
-          const str = tv.split(':');
-          return `${tv.replace('00', '12')} PM`; // Replace hours 00:mm -> 12:mm
-        })
-        .map((timeValue) => {
-          return (
-            <DropdownItem key={timeValue} component="button" value={timeValue} onClick={() => onTimeSelect(timeValue)}>
-              {timeValue}
-            </DropdownItem>
-          );
-        }),
-    ];
-  }, [is24h, onTimeSelect]);
-
-  return (
-    <Dropdown
-      className="time-picker-dropdown"
-      isFlipEnabled={isFlipEnabled}
-      menuAppendTo={menuAppendTo}
-      isOpen={isTimeOpen}
-      dropdownItems={timeOptions}
-      toggle={
-        <DropdownToggle
-          aria-label="Toggle the time picker menu"
-          toggleIndicator={null}
-          onToggle={onTimeToggle}
-          style={{ padding: '6px 16px' }}
-        >
-          <OutlinedClockIcon />
-        </DropdownToggle>
-      }
-    />
   );
 };
 
@@ -382,5 +305,35 @@ export const CompactTimezonePicker: React.FunctionComponent<CompactTimezonePicke
     >
       {options}
     </Select>
+  );
+};
+
+export interface DateTimePickerProps {}
+
+export const DateTimePicker: React.FC<DateTimePickerProps> = ({}) => {
+  return (
+    <InputGroup>
+      <Level hasGutter>
+        <LevelItem>
+          <CalendarMonth isDateFocused />
+        </LevelItem>
+        <LevelItem>
+          <TimePicker />
+        </LevelItem>
+      </Level>
+    </InputGroup>
+  );
+};
+
+export interface TimePickerProps {}
+
+export const TimePicker: React.FC<TimePickerProps> = ({}) => {
+  return (
+    <>
+      <Stack>
+        <StackItem>{'loading'}</StackItem>
+        <StackItem>{'loading'}</StackItem>
+      </Stack>
+    </>
   );
 };

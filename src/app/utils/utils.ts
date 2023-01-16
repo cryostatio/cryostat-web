@@ -36,6 +36,12 @@
  * SOFTWARE.
  */
 
+import { range } from 'lodash';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import advanced from 'dayjs/plugin/advancedFormat';
+
 const SECOND_MILLIS = 1000;
 const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 const HOUR_MILLIS = 60 * MINUTE_MILLIS;
@@ -122,3 +128,60 @@ export const calculateAnalysisTimer = (reportTime: number): AutomatedAnalysisTim
     interval: interval,
   } as AutomatedAnalysisTimerObject;
 };
+
+export const generateTimeArray = (start: number, stop: number, stepInMinute: 1 | 2 | 5 | 10 | 15 | 20 | 30) => {
+  const slicePerHour = Math.floor(60 / stepInMinute);
+  return range(start, stop * slicePerHour).map((time, i) => {
+    const minute = (i % slicePerHour) * stepInMinute;
+    time = Math.floor(time / slicePerHour);
+    return `${time <= 9 ? '0' + time : time}:${minute <= 9 ? '0' + minute : minute}`;
+  });
+};
+
+export const isValidTimeStr = (timeValue: string) =>
+  new Date('2022-01-01T' + timeValue + 'Z').toString() !== 'Invalid Date';
+
+export const convert12HrTo24Hr = (timeIn12H: string): string | undefined => {
+  const suffix = timeIn12H.substring(timeIn12H.length - 2, timeIn12H.length);
+  const timeValue = (
+    suffix === 'AM' || suffix === 'PM' ? timeIn12H.substring(0, timeIn12H.length - 2) : timeIn12H
+  ).trim();
+  if (!isValidTimeStr(timeValue)) {
+    return undefined;
+  }
+  const str = timeValue.split(':');
+  if (suffix === 'PM') {
+    return `${Number(str[0]) + 12}:${str[1]}`;
+  } else if (suffix === 'AM' && Number(str[0]) == 12) {
+    // From 12:00AM - 12:59AM
+    return `${Number(str[0]) - 12}:${str[1]}`;
+  }
+  return timeValue; // >= 1AM or not specified
+};
+
+export const format2Digit = (value: number, locale = 'en-US'): string => {
+  return value.toLocaleString(locale, {
+    minimumIntegerDigits: 2,
+  });
+};
+
+dayjs.extend(timezone);
+dayjs.extend(utc);
+dayjs.extend(advanced);
+
+export interface Timezone {
+  full: string;
+  short: string;
+}
+
+export const localTimezone = {
+  full: dayjs.tz.guess(),
+  short: dayjs().tz(dayjs.tz.guess()).format('z'),
+} as Timezone;
+
+export const UTCTimezone = {
+  full: 'Coordinated Universal Time',
+  short: 'UTC',
+} as Timezone;
+
+export const supportedTimezones = [localTimezone, UTCTimezone] as Timezone[];
