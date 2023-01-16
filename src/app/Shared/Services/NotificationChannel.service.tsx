@@ -109,6 +109,8 @@ export const messageKeys = new Map([
             return `Target "${target.alias}" appeared (${target.connectUrl})"`;
           case 'LOST':
             return `Target "${target.alias}" disappeared (${target.connectUrl})"`;
+          case 'MODIFIED':
+            return `Target "${target.alias}" was modified (${target.connectUrl})"`;
           default:
             return `Received a notification with category ${NotificationCategory.TargetJvmDiscovery} and unrecognized kind ${evt.kind}`;
         }

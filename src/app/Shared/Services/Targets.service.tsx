@@ -46,7 +46,7 @@ import { NotificationCategory, NotificationChannel } from './NotificationChannel
 import { Target } from './Target.service';
 
 export interface TargetDiscoveryEvent {
-  kind: 'LOST' | 'FOUND';
+  kind: 'LOST' | 'FOUND' | 'MODIFIED';
   serviceRef: Target;
 }
 
@@ -73,6 +73,15 @@ export class TargetsService {
           break;
         case 'LOST':
           this._targets$.next(_.filter(this._targets$.getValue(), (t) => t.connectUrl !== evt.serviceRef.connectUrl));
+          break;
+        case 'MODIFIED':
+          {
+            const idx = _.findIndex(this._targets$.getValue(), (t) => t.connectUrl === evt.serviceRef.connectUrl);
+            if (idx >= 0) {
+              this._targets$.getValue().splice(idx, 1, evt.serviceRef);
+              this._targets$.next(this._targets$.getValue());
+            }
+          }
           break;
         default:
           break;
