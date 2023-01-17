@@ -289,7 +289,9 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         if (currentTarget.connectUrl != event.message.target) {
           return;
         }
-        setRecordings((old) => old.concat(event.message.recording));
+        setRecordings((old) =>
+          old.filter((r) => r.name !== event.message.recording.name).concat(event.message.recording)
+        );
       })
     );
   }, [addSubscription, context.notificationChannel, setRecordings, propsTarget]);

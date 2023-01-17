@@ -190,40 +190,50 @@ jest
   .mockReturnValueOnce(of()) // renders correctly
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // has the correct table elements
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // hides targets with zero recordings
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // correctly handles the search function
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // expands targets to show their <ArchivedRecordingsTable />
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // does not expand targets with zero recordings
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockTargetFoundNotification)) // adds a target upon receiving a notification
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of(mockTargetLostNotification)) // removes a target upon receiving a notification
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // increments the count when an archived recording is saved
   .mockReturnValueOnce(of(mockRecordingSavedNotification))
   .mockReturnValueOnce(of())
+  .mockReturnValueOnce(of())
 
   .mockReturnValueOnce(of()) // decrements the count when an archived recording is deleted
+  .mockReturnValueOnce(of())
   .mockReturnValueOnce(of())
   .mockReturnValueOnce(of(mockRecordingDeletedNotification));
 
