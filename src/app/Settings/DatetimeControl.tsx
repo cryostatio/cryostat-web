@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { TimezonePicker } from '@app/DateTimePicker/DateTimePicker';
+import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { DatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';

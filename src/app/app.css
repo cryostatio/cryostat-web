@@ -254,7 +254,15 @@ html, body, #root {
   padding: 2ch !important;
 }
 
-.time-picker-dropdown .pf-c-dropdown__menu {
-  max-height: 16em;
-  overflow: scroll;
+/* Firefox */
+input[type=number].datetime-picker__number-input {
+  -moz-appearance: textfield;
+  max-width: 2.5em;
+}
+
+input::-webkit-outer-spin-button.datetime-picker__number-input,
+input::-webkit-inner-spin-button.datetime-picker__number-input {
+  -webkit-appearance: none;
+  margin: 0;
+  max-width: 2.5em;
 }

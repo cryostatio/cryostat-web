@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { DateTimeFilter } from '@app/DateTimePicker/DateTimePicker';
+
 import { UpdateFilterOptions, UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   allowedActiveRecordingFilters,
@@ -70,6 +70,7 @@ import { useDispatch, useSelector, useDispatch, useSelector } from 'react-redux'
 import { DurationFilter } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
+import { DateTimeFilter } from './Filters/DatetimeFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
 
 export interface RecordingFiltersCategories {
@@ -85,8 +86,8 @@ export const categoriesToDisplayNames = {
   Name: 'Name',
   Label: 'Label',
   State: 'Recording State',
-  StartedBeforeDate: 'Before Date',
-  StartedAfterDate: 'After Date',
+  StartedBeforeDate: 'Started Before Date',
+  StartedAfterDate: 'Started After Date',
   DurationSeconds: ' Duration (s)',
 };
 
