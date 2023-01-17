@@ -57,10 +57,13 @@ export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () =>
   }, [setIsAM, onSelect]);
 
   return (
-    // TODO: Resyle this
     <div role={'listbox'} aria-label="Select AM or PM">
-      <Tile title="AM" id="time-picker-AM" isSelected={isAM} onClick={handleSelectAM} />
-      <Tile title="PM" id="time-picker-PM" isSelected={!isAM} onClick={handleSelectPM} />
+      <div className={`datetime-picker__meridiem-tile ${isAM ? '' : 'un'}selected`} onClick={handleSelectAM}>
+        AM
+      </div>
+      <div className={`datetime-picker__meridiem-tile ${isAM ? 'un' : ''}selected`} onClick={handleSelectPM}>
+        PM
+      </div>
     </div>
   );
 };

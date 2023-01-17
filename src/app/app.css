@@ -260,9 +260,41 @@ input[type=number].datetime-picker__number-input {
   max-width: 2.5em;
 }
 
+/* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button.datetime-picker__number-input,
 input::-webkit-inner-spin-button.datetime-picker__number-input {
   -webkit-appearance: none;
   margin: 0;
   max-width: 2.5em;
+}
+
+.datetime-picker__meridiem-tile {
+  font-size: 1.5em;
+  font-weight: 600;
+  padding: var(--pf-global--spacer--xs) var(--pf-global--spacer--sm);
+  border: solid;
+  border-color: var(--pf-global--BorderColor--100);
+  border-width: 0 0.13rem 0.13rem 0.13rem;
+}
+
+.datetime-picker__meridiem-tile:first-child {
+  border-top-width: 0.13rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.datetime-picker__meridiem-tile:last-child {
+  border-radius: 0 0 0.5rem 0.5rem ;
+}
+
+.datetime-picker__meridiem-tile.selected {
+  background-color: var(--pf-global--palette--blue-100);
+  color: var(--pf-global--palette--blue-500);
+}
+
+.datetime-picker__meridiem-tile.unselected {
+  color: var(--pf-global--palette--black-500);
+}
+
+.datetime-picker__meridiem-tile:hover {
+  cursor: pointer;
 }
