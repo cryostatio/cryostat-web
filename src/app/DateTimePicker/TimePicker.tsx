@@ -46,10 +46,22 @@ import _ from 'lodash';
 import * as React from 'react';
 
 export interface TimePickerProps {
-  onSelect?: (hour: number, minute: number, second: number) => void;
+  selected?: {
+    hour?: number;
+    minute?: number;
+    second?: number;
+  };
+  onHourSelect?: (hour: number) => void;
+  onMinuteSelect?: (minute: number) => void;
+  onSecondSelect?: (second: number) => void;
 }
 
-export const TimePicker: React.FC<TimePickerProps> = ({ onSelect }) => {
+export const TimePicker: React.FC<TimePickerProps> = ({
+  onHourSelect,
+  onMinuteSelect,
+  onSecondSelect,
+  selected = {},
+}) => {
   const context = React.useContext(ServiceContext);
   const addSubcription = useSubscriptions();
   const [is24h, setIs24h] = React.useState(true);
@@ -58,29 +70,27 @@ export const TimePicker: React.FC<TimePickerProps> = ({ onSelect }) => {
     addSubcription(context.settings.datetimeFormat().subscribe((f) => setIs24h(f.timeFormat === '24h')));
   }, [addSubcription, context.settings, setIs24h]);
 
-  const handleHourChange = React.useCallback((hour: number) => {}, []);
-
-  const handleMinuteChange = React.useCallback((minute: number) => {}, []);
-
-  const handleSecondChange = React.useCallback((second: number) => {}, []);
-
   return (
-    // TODO: Handle change
     <Level hasGutter>
       <LevelItem key={'hour'}>
-        <TimeSpinner variant={is24h ? 'hour24' : 'hour12'} label={'Hour'} />
+        <TimeSpinner
+          variant={is24h ? 'hour24' : 'hour12'}
+          label={'Hour'}
+          selected={selected.hour}
+          onChange={onHourSelect}
+        />
       </LevelItem>
       <LevelItem key={'splitter-1'}>
         <div className="datetime-picker__colon-divider">:</div>
       </LevelItem>
       <LevelItem key={'minute'}>
-        <TimeSpinner variant={'minute'} label={'Minute'} />
+        <TimeSpinner variant={'minute'} label={'Minute'} selected={selected.minute} onChange={onMinuteSelect} />
       </LevelItem>
       <LevelItem key={'splitter-2'}>
         <div className="datetime-picker__colon-divider">:</div>
       </LevelItem>
       <LevelItem key={'second'}>
-        <TimeSpinner variant={'second'} label="Second" />
+        <TimeSpinner variant={'second'} label="Second" selected={selected.second} onChange={onSecondSelect} />
       </LevelItem>
       {is24h ? (
         <></>
