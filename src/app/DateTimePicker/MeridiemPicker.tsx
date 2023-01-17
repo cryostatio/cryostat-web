@@ -37,6 +37,7 @@
  */
 import { Tile } from '@patternfly/react-core';
 import * as React from 'react';
+import { css } from '@patternfly/react-styles';
 
 export interface MeridiemPickerProps {
   onSelect?: (isAM: boolean) => void;
@@ -57,11 +58,11 @@ export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () =>
   }, [setIsAM, onSelect]);
 
   return (
-    <div role={'listbox'} aria-label="Select AM or PM">
-      <div className={`datetime-picker__meridiem-tile ${isAM ? '' : 'un'}selected`} onClick={handleSelectAM}>
+    <div role={'listbox'} aria-label="Select AM or PM" className="datetime-picker__meridiem-title-stack">
+      <div className={css('datetime-picker__meridiem-tile', `${isAM ? '' : 'un'}selected`)} onClick={handleSelectAM}>
         AM
       </div>
-      <div className={`datetime-picker__meridiem-tile ${isAM ? 'un' : ''}selected`} onClick={handleSelectPM}>
+      <div className={css('datetime-picker__meridiem-tile', `${isAM ? 'un' : ''}selected`)} onClick={handleSelectPM}>
         PM
       </div>
     </div>

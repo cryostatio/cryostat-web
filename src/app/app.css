@@ -254,20 +254,6 @@ html, body, #root {
   padding: 2ch !important;
 }
 
-/* Firefox */
-input[type=number].datetime-picker__number-input {
-  -moz-appearance: textfield;
-  max-width: 2.5em;
-}
-
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button.datetime-picker__number-input,
-input::-webkit-inner-spin-button.datetime-picker__number-input {
-  -webkit-appearance: none;
-  margin: 0;
-  max-width: 2.5em;
-}
-
 .datetime-picker__meridiem-tile {
   font-size: 1.5em;
   font-weight: 600;
@@ -297,4 +283,49 @@ input::-webkit-inner-spin-button.datetime-picker__number-input {
 
 .datetime-picker__meridiem-tile:hover {
   cursor: pointer;
+}
+
+.datetime-picker__meridiem-title-stack {
+  margin-top: 2.5em;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input.datetime-picker__number-input::-webkit-outer-spin-button,
+input.datetime-picker__number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number].datetime-picker__number-input {
+  -moz-appearance: textfield; /* Firefox */
+  width: 3.6rem;
+  height: 3.6em;
+  background-color: var(--pf-global--palette--black-100);
+  text-align: center;
+  font-weight: 600;
+}
+
+.datetime-picker__time-spin-box {
+  width: 3.6rem;
+  height: 2.2rem;
+}
+
+.datetime-picker__time-spin-box.up {
+  background-color: var(--pf-global--palette--black-100);
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.datetime-picker__time-spin-box.down {
+  border-radius: 0 0 0.5rem 0.5rem ;
+}
+
+.datetime-picker__colon-divider {
+  margin-top: 0.8em;
+  font-size: 2.25em;
+}
+
+.datetime-picker__time-text-top-label {
+  text-align: center;
+  color: var(--pf-global--palette--black-600);
+  margin: 0 0 0.5em 0 !important;
 }

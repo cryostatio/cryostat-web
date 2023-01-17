@@ -35,12 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Level, LevelItem, Stack, StackItem, TextInput } from '@patternfly/react-core';
+import { format2Digit } from '@app/utils/utils';
+import { Button, Level, LevelItem, Stack, StackItem, TextInput, Title } from '@patternfly/react-core';
 import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
+import { css } from '@patternfly/react-styles';
+import _ from 'lodash';
 import * as React from 'react';
-import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 
 export interface TimePickerProps {
   onSelect?: (hour: number, minute: number, second: number) => void;
@@ -65,21 +68,27 @@ export const TimePicker: React.FC<TimePickerProps> = ({ onSelect }) => {
     // TODO: Handle change
     <Level hasGutter>
       <LevelItem key={'hour'}>
-        <TimeSpinner variant={is24h ? 'hour24' : 'hour12'} />
+        <TimeSpinner variant={is24h ? 'hour24' : 'hour12'} label={'Hour'} />
       </LevelItem>
       <LevelItem key={'splitter-1'}>
-        <div style={{ fontSize: '2em' }}>:</div>
+        <div className="datetime-picker__colon-divider">:</div>
       </LevelItem>
       <LevelItem key={'minute'}>
-        <TimeSpinner variant={'minute'} />
+        <TimeSpinner variant={'minute'} label={'Minute'} />
       </LevelItem>
       <LevelItem key={'splitter-2'}>
-        <div style={{ fontSize: '2em' }}>:</div>
+        <div className="datetime-picker__colon-divider">:</div>
       </LevelItem>
       <LevelItem key={'second'}>
-        <TimeSpinner variant={'second'} />
+        <TimeSpinner variant={'second'} label="Second" />
       </LevelItem>
-      {is24h ? <></> : <MeridiemPicker />}
+      {is24h ? (
+        <></>
+      ) : (
+        <LevelItem key={'meridiem'}>
+          <MeridiemPicker />
+        </LevelItem>
+      )}
     </Level>
   );
 };
@@ -87,40 +96,99 @@ export const TimePicker: React.FC<TimePickerProps> = ({ onSelect }) => {
 export interface TimeSpinnerProps {
   variant: 'hour12' | 'hour24' | 'minute' | 'second';
   onChange?: (value: number) => void;
-  selected?: {
-    hour: number;
-    minute: number;
-    second: number;
-  };
+  selected?: number;
+  label?: string;
 }
 
-export const TimeSpinner: React.FC<TimeSpinnerProps> = ({
-  variant,
-  onChange,
-  selected = { hour: 0, minute: 0, second: 0 },
-}) => {
-  const [hovered, setHovered] = React.useState<{ up: boolean; down: boolean }>({ up: false, down: false });
+export const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
+  const [value, setValue] = React.useState(1);
 
-  const handleHover = React.useCallback((direction: 'up' | 'down', hovered: boolean) => {}, []);
+  const computedMax = React.useMemo(() => {
+    switch (variant) {
+      case 'hour12':
+        return 12;
+      case 'hour24':
+        return 23;
+      default: // minute, second
+        return 59;
+    }
+  }, [variant]);
+
+  const computedMin = React.useMemo(() => {
+    switch (variant) {
+      case 'hour12':
+        return 1;
+      default:
+        return 0; // hour24, minute, second
+    }
+  }, [variant]);
+
+  const handleValueChange = React.useCallback(
+    (value: string) => {
+      if (isNaN(Number(value))) {
+        return;
+      }
+      const newVal = _.clamp(Number(value), computedMin, computedMax);
+      onChange && onChange(newVal);
+      setValue(newVal);
+    },
+    [onChange, setValue, computedMax, computedMin]
+  );
+
+  const handleIncrement = React.useCallback(() => {
+    setValue((old) => {
+      const newVal = _.clamp(old + 1, computedMin, computedMax);
+      onChange && onChange(newVal);
+      return newVal;
+    });
+  }, [setValue, computedMax, computedMin]);
+
+  const handleDecrement = React.useCallback(() => {
+    setValue((old) => {
+      const newVal = _.clamp(old - 1, computedMin, computedMax);
+      onChange && onChange(newVal);
+      return newVal;
+    });
+  }, [setValue, computedMax, computedMin]);
+
+  React.useEffect(() => {
+    if (selected !== undefined) {
+      setValue(_.clamp(selected, computedMin, computedMax));
+    }
+  }, [selected, setValue, computedMax, computedMin]);
 
   return (
-    <Stack hasGutter>
+    <Stack>
+      {label ? (
+        <StackItem>
+          <Title className="datetime-picker__time-text-top-label" headingLevel={'h4'}>
+            {label}
+          </Title>
+        </StackItem>
+      ) : (
+        <></>
+      )}
       <StackItem key={`${variant}-increment`}>
-        <AngleUpIcon
-          size="lg"
-          onMouseEnter={() => handleHover('up', true)}
-          onMouseLeave={() => handleHover('up', false)}
-        />
+        <Button className={css('datetime-picker__time-spin-box', 'up')} onClick={handleIncrement}>
+          <AngleUpIcon size="md" />
+        </Button>
       </StackItem>
       <StackItem key={`${variant}-input`}>
-        <TextInput className="datetime-picker__number-input" type="number" min={0} max={24} />
+        <TextInput
+          id={`${variant}-input`}
+          aria-label={`Select ${variant} value`}
+          className="datetime-picker__number-input"
+          type="number"
+          min={computedMin}
+          max={computedMax}
+          value={format2Digit(value)}
+          onChange={handleValueChange}
+        />
       </StackItem>
       <StackItem key={`${variant}-decrement`}>
-        <AngleDownIcon
-          size="lg"
-          onMouseEnter={() => handleHover('down', true)}
-          onMouseLeave={() => handleHover('down', false)}
-        />
+        <Button className={css('datetime-picker__time-spin-box', 'down')} onClick={handleDecrement}>
+          <AngleDownIcon size="md" />
+        </Button>
       </StackItem>
     </Stack>
   );
