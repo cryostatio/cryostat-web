@@ -37,7 +37,7 @@
  */
 import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { DatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
+import { DatetimeFormat, defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { locales, timezones } from '@i18n/datetime';
 import {
@@ -86,14 +86,7 @@ const Component = () => {
   const addSubscription = useSubscriptions();
 
   const [dateLocaleOpen, setDateLocaleOpen] = React.useState(false);
-  const [state, setState] = React.useState<DatetimeFormat>({
-    dateLocale: {
-      name: 'English',
-      key: 'en',
-    },
-    timeFormat: '24h',
-    timeZone: localTimezone,
-  });
+  const [state, setState] = React.useState<DatetimeFormat>(defaultDatetimeFormat);
 
   React.useLayoutEffect(() => {
     context.settings.datetimeFormat().subscribe(setState);

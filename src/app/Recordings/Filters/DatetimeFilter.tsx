@@ -72,7 +72,6 @@
  * SOFTWARE.
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
-import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { localTimezone } from '@app/Settings/DatetimeControl';
 import {
   Button,
@@ -199,12 +198,6 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
                 value={datetimeInput}
                 validated={validation}
                 onChange={handleDateTimeInputChange}
-              />
-              <TimezonePicker
-                menuAppendTo={document.body}
-                onTimezoneChange={setTimezone}
-                selected={timezone}
-                isCompact
               />
               <Button variant="control" aria-label="Toggle the calendar" onClick={onToggleCalendar}>
                 <OutlinedCalendarAltIcon />

@@ -70,6 +70,19 @@ export interface DatetimeFormat {
   timeZone: Timezone;
 }
 
+export const defaultDatetimeFormat: DatetimeFormat = {
+  timeFormat: '24h',
+  dateLocale: {
+    key: 'en',
+    name: 'English',
+  }, // default en
+  timeZone: {
+    // guess current timezone
+    full: dayjs.tz.guess(),
+    short: dayjs().tz(dayjs.tz.guess()).format('z'),
+  } as Timezone,
+};
+
 export interface Timezone {
   full: string;
   short: string;
@@ -110,18 +123,7 @@ export class SettingsService {
   );
 
   private readonly _datetimeFormat$ = new BehaviorSubject<DatetimeFormat>(
-    getFromLocalStorage('DATETIME_FORMAT', {
-      timeFormat: '24h',
-      dateLocale: {
-        key: 'en',
-        name: 'English',
-      }, // default en
-      timeZone: {
-        // guess current timezone
-        full: dayjs.tz.guess(),
-        short: dayjs().tz(dayjs.tz.guess()).format('z'),
-      } as Timezone,
-    } as DatetimeFormat)
+    getFromLocalStorage('DATETIME_FORMAT', defaultDatetimeFormat)
   );
 
   constructor() {

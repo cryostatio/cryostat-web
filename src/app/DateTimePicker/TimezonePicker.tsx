@@ -98,12 +98,12 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
 
   return (
     <Select
-      variant={isCompact ? SelectVariant.typeahead : SelectVariant.single}
+      variant={SelectVariant.single}
       onToggle={setIsTimezoneOpen}
       isFlipEnabled={isFlipEnabled}
       menuAppendTo={menuAppendTo}
       maxHeight="16em"
-      width={isCompact ? '6em' : undefined}
+      width={isCompact ? '8em' : undefined}
       selections={{
         ...selected,
         toString: () => selected.full,
@@ -111,7 +111,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
       }}
       onSelect={onSelect}
       onFilter={onFilter}
-      hasInlineFilter={!isCompact}
+      hasInlineFilter
       aria-label="Select a timezone"
       typeAheadAriaLabel="Search a timezone"
       isOpen={isTimezoneOpen}
