@@ -43,13 +43,13 @@ export const locales = localeJson
     ...locale,
     // Dynamic locale loading
     // Need to include .js to skip parsing .d.ts
-    load: () => import(`dayjs/locale/${locale.key}.js`), 
+    load: () => import(`dayjs/locale/${locale.key}.js`),
   }))
   .sort((a, b) => a.key.localeCompare(b.key));
 
 export const getLocale = (key: string) => {
   return locales.find((l) => l.key === key);
-}
+};
 
 export const timezones = (
   typeof Intl.supportedValuesOf === 'undefined' ? [] : Intl.supportedValuesOf('timeZone')

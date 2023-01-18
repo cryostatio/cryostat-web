@@ -35,28 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+import dayjs from 'dayjs';
 import { clamp } from 'lodash';
-
-export const isValidTimeStr = (timeValue: string) =>
-  new Date('2022-01-01T' + timeValue + 'Z').toString() !== 'Invalid Date';
-
-export const convert12HrTo24Hr = (timeIn12H: string): string | undefined => {
-  const suffix = timeIn12H.substring(timeIn12H.length - 2, timeIn12H.length);
-  const timeValue = (
-    suffix === 'AM' || suffix === 'PM' ? timeIn12H.substring(0, timeIn12H.length - 2) : timeIn12H
-  ).trim();
-  if (!isValidTimeStr(timeValue)) {
-    return undefined;
-  }
-  const str = timeValue.split(':');
-  if (suffix === 'PM') {
-    return `${Number(str[0]) + 12}:${str[1]}`;
-  } else if (suffix === 'AM' && Number(str[0]) == 12) {
-    // From 12:00AM - 12:59AM
-    return `${Number(str[0]) - 12}:${str[1]}`;
-  }
-  return timeValue; // >= 1AM or not specified
-};
 
 export const hourIn12HrFormat = (hourIn24h: number): number => {
   hourIn24h = clamp(hourIn24h, 0, 23);
@@ -67,6 +48,12 @@ export const hourIn12HrFormat = (hourIn24h: number): number => {
   } else {
     return hourIn24h;
   }
+};
+
+export const isHourIn24hAM = (hourIn24h: number): boolean => {
+  hourIn24h = clamp(hourIn24h, 0, 23);
+  const marker = dayjs(`2023-01-01 12:00`);
+  return dayjs(`2023-01-01 ${hourIn24h}:00`).isBefore(marker);
 };
 
 export const format2Digit = (value: number): string => {

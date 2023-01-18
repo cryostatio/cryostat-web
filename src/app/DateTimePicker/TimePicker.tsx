@@ -38,7 +38,7 @@
 import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { format2Digit, hourIn12HrFormat } from '@i18n/datetimeUtils';
+import { format2Digit, hourIn12HrFormat, isHourIn24hAM } from '@i18n/datetimeUtils';
 import { Button, Level, LevelItem, Stack, StackItem, TextInput, Title } from '@patternfly/react-core';
 import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -54,12 +54,14 @@ export interface TimePickerProps {
   onHourSelect?: (hour: number) => void;
   onMinuteSelect?: (minute: number) => void;
   onSecondSelect?: (second: number) => void;
+  onMeridiemSelect?: (isAM: boolean) => void;
 }
 
 export const TimePicker: React.FC<TimePickerProps> = ({
   onHourSelect,
   onMinuteSelect,
   onSecondSelect,
+  onMeridiemSelect,
   selected = {},
 }) => {
   const context = React.useContext(ServiceContext);
@@ -96,7 +98,10 @@ export const TimePicker: React.FC<TimePickerProps> = ({
         <></>
       ) : (
         <LevelItem key={'meridiem'}>
-          <MeridiemPicker />
+          <MeridiemPicker
+            isAM={selected.hour24 ? isHourIn24hAM(selected.hour24) : undefined}
+            onSelect={onMeridiemSelect}
+          />
         </LevelItem>
       )}
     </Level>

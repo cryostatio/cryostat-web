@@ -41,21 +41,17 @@ import { css } from '@patternfly/react-styles';
 
 export interface MeridiemPickerProps {
   onSelect?: (isAM: boolean) => void;
-  isDefaultAM?: boolean;
+  isAM?: boolean;
 }
 
-export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () => undefined, isDefaultAM = true }) => {
-  const [isAM, setIsAM] = React.useState(isDefaultAM);
-
+export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () => undefined, isAM = true }) => {
   const handleSelectAM = React.useCallback(() => {
-    setIsAM(true);
     onSelect(true);
-  }, [setIsAM, onSelect]);
+  }, [onSelect]);
 
   const handleSelectPM = React.useCallback(() => {
-    setIsAM(false);
     onSelect(false);
-  }, [setIsAM, onSelect]);
+  }, [onSelect]);
 
   return (
     <div role={'listbox'} aria-label="Select AM or PM" className="datetime-picker__meridiem-title-stack">
