@@ -100,7 +100,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
-import { ResizableCard } from '../ResizableCard';
+import { DashboardCard } from '../DashboardCard';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 import {
@@ -744,12 +744,10 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
   return (
-    <ResizableCard
+    <DashboardCard
       dashboardId={props.dashboardId}
       cardSizes={AutomatedAnalysisCardSizes}
-      className="dashboard-card"
       id="automated-analysis-card"
-      isRounded
       isCompact
       isExpanded={isCardExpanded}
     >
@@ -784,7 +782,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
           </StackItem>
         </Stack>
       </CardExpandableContent>
-    </ResizableCard>
+    </DashboardCard>
   );
 };
 

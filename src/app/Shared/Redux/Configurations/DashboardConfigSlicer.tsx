@@ -46,6 +46,7 @@ const _version = '2';
 export enum DashboardConfigAction {
   CARD_ADD = 'dashboard-card-config/add',
   CARD_REMOVE = 'dashboard-card-config/remove',
+  CARD_REORDER = 'dashboard-card-config/reorder',
   CARD_RESIZE = 'dashboard-card-config/resize',
 }
 
@@ -63,6 +64,11 @@ export interface DashboardDeleteConfigActionPayload {
 export interface DashboardResizeConfigActionPayload {
   idx: number;
   span: number;
+}
+
+export interface DashboardOrderConfigActionPayload {
+  idx: number;
+  order: number;
 }
 
 export const dashboardCardConfigAddCardIntent = createAction(
@@ -92,6 +98,16 @@ export const dashboardCardConfigResizeCardIntent = createAction(
   })
 );
 
+export const dashboardCardConfigReorderCardIntent = createAction(
+  DashboardConfigAction.CARD_REORDER,
+  (idx: number, order: number) => ({
+    payload: {
+      idx,
+      order,
+    } as DashboardOrderConfigActionPayload,
+  })
+);
+
 export interface CardConfig {
   name: string;
   span: gridSpans;
@@ -101,6 +117,11 @@ export interface CardConfig {
 const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
 });
+
+function move(arr: any[], from: number, to: number) {
+  arr.splice(to, 0, arr.splice(from, 1)[0]);
+  return arr;
+};
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
@@ -112,6 +133,9 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardCardConfigResizeCardIntent, (state, { payload }) => {
       state.list[payload.idx].span = payload.span;
+    })
+    .addCase(dashboardCardConfigReorderCardIntent, (state, { payload }) => {
+      state.list = move(state.list, payload.idx, payload.order);
     });
 });
 

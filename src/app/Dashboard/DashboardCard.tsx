@@ -40,30 +40,37 @@ import { Card, CardProps } from '@patternfly/react-core';
 import * as React from 'react';
 import { DashboardCardSizes } from './Dashboard';
 import { DraggableRef } from './DraggableRef';
+import { ResizableRef } from './ResizableRef';
+
+export const initCardRefStyle = { display: 'flex', justifyContent: 'space-between' };
 
 export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
 
-export interface ResizableCardProps extends CardProps {
+export interface DashboardCardProps extends CardProps {
   dashboardId: number;
   cardSizes: DashboardCardSizes;
   children?: React.ReactNode;
 }
 
-export const ResizableCard: React.FC<ResizableCardProps> = ({
+export const DashboardCard: React.FC<DashboardCardProps> = ({
   children = null,
   dashboardId,
   cardSizes,
   ...props
-}: ResizableCardProps) => {
+}: DashboardCardProps) => {
   const cardRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <DashboardCardContext.Provider value={cardRef}>
-      <div className="resizable-card" ref={cardRef} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Card {...props}>{children}</Card>
-        <DraggableRef dashboardId={dashboardId} cardSizes={cardSizes} />
+      <div className="resizable-card" ref={cardRef} style={initCardRefStyle}>
+        <DraggableRef dashboardId={dashboardId}>
+          <Card className="dashboard-card" isRounded {...props} >
+            {children}
+          </Card>
+        </DraggableRef>
+        <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} />
       </div>
     </DashboardCardContext.Provider>
   );
 };
-ResizableCard.displayName = 'ResizableCard';
+DashboardCard.displayName = 'DashboardCard';

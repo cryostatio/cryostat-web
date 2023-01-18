@@ -38,19 +38,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   CardConfig,
+  dashboardCardConfigReorderCardIntent,
   dashboardCardConfigResizeCardIntent,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
-import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader, DragDrop, Draggable, DraggableItemPosition, Droppable, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { ResizableCard } from './ResizableCard';
+import { DashboardCard } from './DashboardCard';
 
 export interface Sized<T> {
   minimum: T;
@@ -115,11 +116,9 @@ const PlaceholderCard: React.FunctionComponent<
   } & DashboardCardProps
 > = (props) => {
   return (
-    <ResizableCard
+    <DashboardCard
       dashboardId={props.dashboardId}
       cardSizes={PLACEHOLDER_CARD_SIZE}
-      className="dashboard-card"
-      isRounded
     >
       <CardHeader>
         <CardActions>{...props.actions || []}</CardActions>
@@ -133,7 +132,7 @@ const PlaceholderCard: React.FunctionComponent<
         <Text>asyncmenu: {props.asyncmenu}</Text>
         <Text>asyncmenus: {props.asyncmenu2}</Text>
       </CardBody>
-    </ResizableCard>
+    </DashboardCard>
   );
 };
 
@@ -268,26 +267,47 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch, cardConfigs]
   );
 
+  const handleDrop = React.useCallback((source, dest) => {
+    console.log('dropping', source, dest);
+    if (dest) {
+      dispatch(dashboardCardConfigReorderCardIntent(source.index, dest.index));
+      return true;
+    }
+    return false;
+  }, [dispatch]);
+
+  const handleDragMove = React.useCallback((source, dest) => {
+    console.log('dragging', source,
+    dest);
+    return true;
+  }, []);
+
+
+  const onDrag = (source: DraggableItemPosition): boolean => {
+    console.log('dragging', source);
+    return true;
+  }
+
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <Grid hasGutter>
-        {cardConfigs.map((cfg, idx) => (
-          <GridItem span={cfg.span} key={idx}>
-            {React.createElement(getConfigByName(cfg.name).component, {
-              ...cfg.props,
-              dashboardId: idx,
-              actions: [
-                <DashboardCardActionMenu
-                  key={`${cfg.name}-actions`}
-                  onRemove={() => handleRemove(idx)}
-                  onResetSize={() => handleResetSize(idx)}
-                />,
-              ],
-            })}
-          </GridItem>
-        ))}
-        <GridItem key={cardConfigs.length}>
-          <AddCard />
+        <Grid hasGutter>
+          {cardConfigs.map((cfg, idx) => (
+              <GridItem span={cfg.span} key={idx} order={{default: idx.toString()}}>
+                  {React.createElement(getConfigByName(cfg.name).component, {
+                    ...cfg.props,
+                    dashboardId: idx,
+                    actions: [
+                      <DashboardCardActionMenu
+                        key={`${cfg.name}-actions`}
+                        onRemove={() => handleRemove(idx)}
+                        onResetSize={() => handleResetSize(idx)}
+                      />,
+                    ],
+                  })}
+              </GridItem>
+            ))}
+        <GridItem key={cardConfigs.length} order={{default: cardConfigs.length.toString()}}>
+            <AddCard />
         </GridItem>
       </Grid>
     </TargetView>
