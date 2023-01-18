@@ -260,11 +260,11 @@ html, body, #root {
   padding: var(--pf-global--spacer--xs) var(--pf-global--spacer--sm);
   border: solid;
   border-color: var(--pf-global--BorderColor--100);
-  border-width: 0 0.13rem 0.13rem 0.13rem;
+  border-width: 0 0.10rem 0.10rem 0.10rem;
 }
 
 .datetime-picker__meridiem-tile:first-child {
-  border-top-width: 0.13rem;
+  border-top-width: 0.10rem;
   border-radius: 0.5rem 0.5rem 0 0;
 }
 

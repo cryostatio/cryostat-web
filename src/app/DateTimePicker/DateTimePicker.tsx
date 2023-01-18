@@ -76,6 +76,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { DatetimeFormat, defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { getLocale } from '@i18n/datetime';
+import { isHourIn24hAM } from '@i18n/datetimeUtils';
 import {
   ActionGroup,
   Bullseye,
@@ -88,39 +89,32 @@ import {
   Tab,
   Tabs,
   TabTitleText,
-  TextInput
+  TextInput,
 } from '@patternfly/react-core';
 import dayjs from 'dayjs';
-import advanced from 'dayjs/plugin/advancedFormat';
 import localeData from 'dayjs/plugin/localeData';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import utc from 'dayjs/plugin/utc';
 import React from 'react';
 import { concatMap, from, of } from 'rxjs';
 import { TimezonePicker } from './TimezonePicker';
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(advanced);
 dayjs.extend(localizedFormat);
 dayjs.extend(localeData);
 
 export interface DateTimePickerProps {
   onSelect?: (date: Date, timezone: Timezone) => void;
-  prefilledDate?: Date;
+  prefilledDate?: Date; // timezone is ignored
   onDismiss: () => void;
 }
 
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+
   const [format, setFormat] = React.useState<DatetimeFormat>(defaultDatetimeFormat);
-
   const [activeTab, setActiveTab] = React.useState('date');
-
   const [datetime, setDatetime] = React.useState<Date>(new Date());
-  const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone);
+  const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone); // Not affected by user preferences
 
   const handleTabSelect = React.useCallback((_, key: string | number) => setActiveTab(`${key}`), [setActiveTab]);
 
@@ -140,8 +134,8 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
   );
 
   const handleHourChange = React.useCallback(
-    (h: number) => {
-      setDatetime((old) => dayjs(old).hour(h).toDate());
+    (hrIn24h: number) => {
+      setDatetime((old) => dayjs(old).hour(hrIn24h).toDate());
     },
     [setDatetime]
   );
@@ -160,17 +154,40 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
     [setDatetime]
   );
 
-  const selectedDatetimeDisplay = React.useMemo(() => dayjs(datetime).locale(format.dateLocale.key).format('L LTS'), [datetime, format]);
+  const handleMeridiemChange = React.useCallback(
+    (isAM: boolean) => {
+      setDatetime((old) => {
+        const oldDayjs = dayjs(old);
+        if (isAM !== isHourIn24hAM(oldDayjs.hour())) {
+          return (isAM ? oldDayjs.subtract(12, 'hour') : oldDayjs.add(12, 'hour')).toDate();
+        }
+        return old;
+      });
+    },
+    [setDatetime]
+  );
+
+  const selectedDatetimeDisplay = React.useMemo(() => dayjs(datetime).format('L LTS'), [datetime, format]);
 
   React.useEffect(() => {
-    addSubscription(context.settings.datetimeFormat()
-    .pipe(
-      concatMap((f) => {
-        const locale = getLocale(f.dateLocale.key);
-        return locale? from(locale.load().then(() => f)): of(f);
-      })
-    )
-    .subscribe(setFormat));
+    addSubscription(
+      context.settings
+        .datetimeFormat()
+        .pipe(
+          concatMap((f) => {
+            const locale = getLocale(f.dateLocale.key);
+            return locale
+              ? from(
+                  locale.load().then(() => {
+                    dayjs.locale(f.dateLocale.key); // locally in this dayjs instance
+                    return f;
+                  })
+                )
+              : of(f);
+          })
+        )
+        .subscribe(setFormat)
+    );
   }, [addSubscription, context.settings, setFormat]);
 
   React.useEffect(() => {
@@ -216,6 +233,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
                 onHourSelect={handleHourChange}
                 onMinuteSelect={handleMinuteChange}
                 onSecondSelect={handleSecondChange}
+                onMeridiemSelect={handleMeridiemChange}
               />
             </Bullseye>
           </FormGroup>

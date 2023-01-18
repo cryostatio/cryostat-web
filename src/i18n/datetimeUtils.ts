@@ -37,17 +37,26 @@
  */
 
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { clamp } from 'lodash';
 
-export const hourIn12HrFormat = (hourIn24h: number): number => {
+dayjs.extend(customParseFormat);
+
+export const hourIn12HrFormat = (hourIn24h: number): [number, boolean] => {
+  // return [hour, isAM]
   hourIn24h = clamp(hourIn24h, 0, 23);
   if (hourIn24h > 12) {
-    return hourIn24h - 12;
+    return [hourIn24h - 12, false];
   } else if (hourIn24h === 0) {
-    return 12; // 12AM
+    return [12, true]; // 12AM
   } else {
-    return hourIn24h;
+    return [hourIn24h, true];
   }
+};
+
+export const hourIn24HrFormat = (hourIn12h: number, isAM: boolean): number => {
+  hourIn12h = clamp(hourIn12h, 0, 12);
+  return dayjs(`2023-01-01 ${hourIn12h}:00:00 ${isAM ? 'AM' : 'PM'}`, 'YY-MM-DD H:mm:ss A').hour();
 };
 
 export const isHourIn24hAM = (hourIn24h: number): boolean => {
