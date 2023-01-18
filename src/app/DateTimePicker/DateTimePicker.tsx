@@ -72,27 +72,52 @@
  * SOFTWARE.
  */
 import { TimePicker } from '@app/DateTimePicker/TimePicker';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { DatetimeFormat, defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ActionGroup,
   Bullseye,
   Button,
   CalendarMonth,
   CalendarMonthInlineProps,
+  Flex,
+  FlexItem,
   Form,
   FormGroup,
   Tab,
   Tabs,
   TabTitleText,
+  TextInput,
 } from '@patternfly/react-core';
+import dayjs from 'dayjs';
+import advanced from 'dayjs/plugin/advancedFormat';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
+import utc from 'dayjs/plugin/utc';
 import React from 'react';
+import { TimezonePicker } from './TimezonePicker';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advanced);
+dayjs.extend(localizedFormat);
 
 export interface DateTimePickerProps {
-  onSelect: (date: Date) => void;
+  onSelect?: (date: Date, timezone: Timezone) => void;
+  prefilledDate?: Date;
   onDismiss: () => void;
 }
 
-export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss }) => {
+export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [format, setFormat] = React.useState<DatetimeFormat>(defaultDatetimeFormat);
+
   const [activeTab, setActiveTab] = React.useState('date');
+
+  const [datetime, setDatetime] = React.useState<Date>(new Date());
+  const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone);
 
   const inlineProps: CalendarMonthInlineProps = React.useMemo(
     () => ({
@@ -104,11 +129,60 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
 
   const handleTabSelect = React.useCallback((_, key: string | number) => setActiveTab(`${key}`), [setActiveTab]);
 
-  const handleSelect = React.useCallback(() => {}, []); // TODO: Handle select
+  const handleSubmit = React.useCallback(() => {
+    onSelect && onSelect(datetime, timezone);
+  }, [datetime, timezone]);
+
+  const handleCaledarSelect = React.useCallback(
+    (date: Date) => {
+      setDatetime((old) => {
+        const wrappedOld = dayjs(old);
+        return dayjs(date).hour(wrappedOld.hour()).minute(wrappedOld.minute()).second(wrappedOld.second()).toDate();
+      });
+      setActiveTab('time'); // Switch to time
+    },
+    [setDatetime, setActiveTab]
+  );
+
+  const handleHourChange = React.useCallback(
+    (h: number) => {
+      setDatetime((old) => dayjs(old).hour(h).toDate());
+    },
+    [setDatetime]
+  );
+
+  const handleMinuteChange = React.useCallback(
+    (m: number) => {
+      setDatetime((old) => dayjs(old).minute(m).toDate());
+    },
+    [setDatetime]
+  );
+
+  const handleSecondChange = React.useCallback(
+    (s: number) => {
+      setDatetime((old) => dayjs(old).second(s).toDate());
+    },
+    [setDatetime]
+  );
+
+  const selectedDatetimeDisplay = React.useMemo(() => {
+    // TODO: Dynamic load locale
+    return dayjs(datetime).locale(format.dateLocale.key).format('L LTS');
+  }, [datetime, format]);
+
+  React.useEffect(() => {
+    addSubscription(context.settings.datetimeFormat().subscribe(setFormat));
+  }, [addSubscription, context.settings, setFormat]);
+
+  React.useEffect(() => {
+    if (prefilledDate) {
+      setDatetime(prefilledDate);
+    }
+  }, [setDatetime]);
 
   return (
     <Form>
-      <Tabs // TODO: Show currently selected datetime in form
+      <Tabs
         aria-label="Select a date or time tab"
         onSelect={handleTabSelect}
         activeKey={activeTab}
@@ -118,20 +192,51 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
         <Tab key={'date'} eventKey={'date'} title={<TabTitleText>Date</TabTitleText>}>
           <FormGroup key={'calendar'}>
             <Bullseye>
-              <CalendarMonth isDateFocused inlineProps={inlineProps} style={{ padding: 0 }} />
+              <CalendarMonth
+                isDateFocused
+                inlineProps={inlineProps}
+                style={{ padding: 0 }}
+                date={datetime}
+                onChange={handleCaledarSelect}
+              />
             </Bullseye>
           </FormGroup>
         </Tab>
         <Tab key={'time'} eventKey={'time'} title={<TabTitleText>Time</TabTitleText>}>
           <FormGroup key={'time'}>
             <Bullseye>
-              <TimePicker />
+              <TimePicker
+                selected={{
+                  hour24: dayjs(datetime).hour(), // 24hr format
+                  minute: dayjs(datetime).minute(),
+                  second: dayjs(datetime).second(),
+                }}
+                onHourSelect={handleHourChange}
+                onMinuteSelect={handleMinuteChange}
+                onSecondSelect={handleSecondChange}
+              />
             </Bullseye>
           </FormGroup>
         </Tab>
       </Tabs>
-      <ActionGroup>
-        <Button variant="primary" onClick={handleSelect}>
+      <FormGroup label={'Selected DateTime'}>
+        <Flex>
+          <FlexItem>
+            <TextInput
+              id="selected-datetime"
+              aria-label="Displayed selected datetime"
+              className="datetime-picker__datetime-selected-display"
+              isDisabled
+              value={selectedDatetimeDisplay}
+            />
+          </FlexItem>
+          <FlexItem>
+            <TimezonePicker menuAppendTo={document.body} onTimezoneChange={setTimezone} selected={timezone} isCompact />
+          </FlexItem>
+        </Flex>
+      </FormGroup>
+      <ActionGroup style={{ marginTop: 0 }}>
+        <Button variant="primary" onClick={handleSubmit}>
           Select
         </Button>
         <Button variant="link" onClick={onDismiss}>

@@ -329,3 +329,7 @@ input[type=number].datetime-picker__number-input {
   color: var(--pf-global--palette--black-600);
   margin: 0 0 0.5em 0 !important;
 }
+
+.datetime-picker__datetime-selected-display {
+  max-width: 14em !important;
+}

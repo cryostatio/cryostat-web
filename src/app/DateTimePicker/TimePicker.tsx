@@ -38,7 +38,7 @@
 import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { format2Digit } from '@app/utils/utils';
+import { format2Digit, hourIn12HrFormat } from '@i18n/datetimeUtils';
 import { Button, Level, LevelItem, Stack, StackItem, TextInput, Title } from '@patternfly/react-core';
 import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -47,7 +47,7 @@ import * as React from 'react';
 
 export interface TimePickerProps {
   selected?: {
-    hour?: number;
+    hour24?: number; // In 24h format
     minute?: number;
     second?: number;
   };
@@ -76,7 +76,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
         <TimeSpinner
           variant={is24h ? 'hour24' : 'hour12'}
           label={'Hour'}
-          selected={selected.hour}
+          selected={is24h ? selected.hour24 : selected.hour24 ? hourIn12HrFormat(selected.hour24) : undefined}
           onChange={onHourSelect}
         />
       </LevelItem>
@@ -103,14 +103,14 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   );
 };
 
-export interface TimeSpinnerProps {
+interface TimeSpinnerProps {
   variant: 'hour12' | 'hour24' | 'minute' | 'second';
   onChange?: (value: number) => void;
   selected?: number;
   label?: string;
 }
 
-export const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
+const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
   const [value, setValue] = React.useState(1);
 
   const computedMax = React.useMemo(() => {
@@ -165,7 +165,7 @@ export const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, sel
     if (selected !== undefined) {
       setValue(_.clamp(selected, computedMin, computedMax));
     }
-  }, [selected, setValue, computedMax, computedMin]);
+  }, [selected, setValue, computedMax, computedMin, variant]);
 
   return (
     <Stack>
