@@ -241,27 +241,25 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
     <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
       <ToolbarGroup variant="filter-group">
         <ToolbarItem>
-          <InputGroup>
-            {categoryDropdown}
-            {Object.keys(filters).map((filterKey, i) => (
-              <ToolbarFilter
-                key={filterKey}
-                chips={
-                  categoryIsDate(filterKey)
-                    ? filters[filterKey].map((isoStr: string) => {
-                        return dayjs(isoStr).format('YYYY-MM-DD, HH:mm:ss z'); // FIXME: Use localization
-                      })
-                    : filters[filterKey]
-                }
-                deleteChip={onDelete}
-                deleteChipGroup={onDeleteGroup}
-                categoryName={categoriesToDisplayNames[filterKey]}
-                showToolbarItem={filterKey === currentCategory}
-              >
-                {filterDropdownItems[i]}
-              </ToolbarFilter>
-            ))}
-          </InputGroup>
+          {categoryDropdown}
+          {Object.keys(filters).map((filterKey, i) => (
+            <ToolbarFilter
+              key={filterKey}
+              chips={
+                categoryIsDate(filterKey)
+                  ? filters[filterKey].map((isoStr: string) => {
+                      return dayjs(isoStr).format('YYYY-MM-DD, HH:mm:ss z'); // FIXME: Use localization
+                    })
+                  : filters[filterKey]
+              }
+              deleteChip={onDelete}
+              deleteChipGroup={onDeleteGroup}
+              categoryName={categoriesToDisplayNames[filterKey]}
+              showToolbarItem={filterKey === currentCategory}
+            >
+              {filterDropdownItems[i]}
+            </ToolbarFilter>
+          ))}
         </ToolbarItem>
       </ToolbarGroup>
     </ToolbarToggleGroup>
