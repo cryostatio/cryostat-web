@@ -75,12 +75,12 @@ import { TimePicker } from '@app/DateTimePicker/TimePicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { DatetimeFormat, defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { getLocale } from '@i18n/datetime';
 import {
   ActionGroup,
   Bullseye,
   Button,
   CalendarMonth,
-  CalendarMonthInlineProps,
   Flex,
   FlexItem,
   Form,
@@ -88,20 +88,23 @@ import {
   Tab,
   Tabs,
   TabTitleText,
-  TextInput,
+  TextInput
 } from '@patternfly/react-core';
 import dayjs from 'dayjs';
 import advanced from 'dayjs/plugin/advancedFormat';
+import localeData from 'dayjs/plugin/localeData';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc';
 import React from 'react';
+import { concatMap, from, of } from 'rxjs';
 import { TimezonePicker } from './TimezonePicker';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(advanced);
 dayjs.extend(localizedFormat);
+dayjs.extend(localeData);
 
 export interface DateTimePickerProps {
   onSelect?: (date: Date, timezone: Timezone) => void;
@@ -118,14 +121,6 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
 
   const [datetime, setDatetime] = React.useState<Date>(new Date());
   const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone);
-
-  const inlineProps: CalendarMonthInlineProps = React.useMemo(
-    () => ({
-      component: 'article',
-      ariaLabelledby: 'start-date',
-    }),
-    []
-  );
 
   const handleTabSelect = React.useCallback((_, key: string | number) => setActiveTab(`${key}`), [setActiveTab]);
 
@@ -165,13 +160,17 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
     [setDatetime]
   );
 
-  const selectedDatetimeDisplay = React.useMemo(() => {
-    // TODO: Dynamic load locale
-    return dayjs(datetime).locale(format.dateLocale.key).format('L LTS');
-  }, [datetime, format]);
+  const selectedDatetimeDisplay = React.useMemo(() => dayjs(datetime).locale(format.dateLocale.key).format('L LTS'), [datetime, format]);
 
   React.useEffect(() => {
-    addSubscription(context.settings.datetimeFormat().subscribe(setFormat));
+    addSubscription(context.settings.datetimeFormat()
+    .pipe(
+      concatMap((f) => {
+        const locale = getLocale(f.dateLocale.key);
+        return locale? from(locale.load().then(() => f)): of(f);
+      })
+    )
+    .subscribe(setFormat));
   }, [addSubscription, context.settings, setFormat]);
 
   React.useEffect(() => {
@@ -194,7 +193,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
             <Bullseye>
               <CalendarMonth
                 isDateFocused
-                inlineProps={inlineProps}
+                inlineProps={{
+                  component: 'article',
+                  ariaLabelledby: 'start-date',
+                }}
                 style={{ padding: 0 }}
                 date={datetime}
                 onChange={handleCaledarSelect}
