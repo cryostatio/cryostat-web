@@ -167,7 +167,9 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
     [setDatetime]
   );
 
-  const selectedDatetimeDisplay = React.useMemo(() => dayjs(datetime).format('L LTS'), [datetime, format]);
+  const selectedDatetimeDisplay = React.useMemo(() => {
+    return dayjs(datetime).format('L LTS');
+  }, [datetime, format]);
 
   React.useEffect(() => {
     addSubscription(
@@ -246,7 +248,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
               id="selected-datetime"
               aria-label="Displayed selected datetime"
               className="datetime-picker__datetime-selected-display"
-              isDisabled
+              readOnly
               value={selectedDatetimeDisplay}
             />
           </FlexItem>
