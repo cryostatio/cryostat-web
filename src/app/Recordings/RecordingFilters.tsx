@@ -242,9 +242,10 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   return (
     <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
       <ToolbarGroup variant="filter-group">
-        <ToolbarItem>{categoryDropdown}</ToolbarItem>
+        <ToolbarItem key={'category-select'}>{categoryDropdown}</ToolbarItem>
         {Object.keys(filters).map((filterKey, i) => (
           <ToolbarFilter
+            key={`${filterKey}-filter`}
             className="recording-filter__toolbar-filter"
             chips={
               categoryIsDate(filterKey)

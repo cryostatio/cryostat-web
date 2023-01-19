@@ -335,5 +335,5 @@ input[type=number].datetime-picker__number-input {
 }
 
 .recording-filter__toolbar-filter {
-  z-index: 201;  /* Fix input border overlap */
+  z-index: 199;  /* Fix input border overlap */
 }

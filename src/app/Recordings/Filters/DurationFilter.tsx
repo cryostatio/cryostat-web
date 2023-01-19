@@ -72,7 +72,7 @@ export const DurationFilter: React.FC<DurationFilterProps> = ({
 
   return (
     <Flex>
-      <FlexItem>
+      <FlexItem flex={{ default: 'flex_1' }}>
         <TextInput
           type="number"
           value={duration}

@@ -81,14 +81,11 @@ import {
   ButtonVariant,
   Flex,
   FlexItem,
-  HelperText,
-  HelperTextItem,
-  InputGroup,
   Popover,
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
+import { SearchIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
 import localeData from 'dayjs/plugin/localeData';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -174,7 +171,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
 
   return (
     <Flex>
-      <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
+      <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }} flex={{ default: 'flex_1' }}>
         <Popover
           bodyContent={
             <DateTimePicker
