@@ -333,3 +333,7 @@ input[type=number].datetime-picker__number-input {
 .datetime-picker__datetime-selected-display {
   max-width: 14em !important;
 }
+
+.recording-filter__filter-item {
+  z-index: 201;
+}

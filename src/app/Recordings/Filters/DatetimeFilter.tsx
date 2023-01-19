@@ -190,7 +190,6 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
         >
           <TextInput
             type="text"
-            // className="datetime-picker__datetime-text-input"
             id="date-time"
             placeholder={'Click to select a datetime'}
             onClick={onToggleCalendar}

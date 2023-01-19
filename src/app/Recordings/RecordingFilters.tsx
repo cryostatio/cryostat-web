@@ -57,6 +57,8 @@ import {
   DropdownItem,
   DropdownPosition,
   DropdownToggle,
+  Flex,
+  FlexItem,
   InputGroup,
   ToolbarFilter,
   ToolbarGroup,
@@ -241,25 +243,39 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
     <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
       <ToolbarGroup variant="filter-group">
         <ToolbarItem>
-          {categoryDropdown}
-          {Object.keys(filters).map((filterKey, i) => (
-            <ToolbarFilter
-              key={filterKey}
-              chips={
-                categoryIsDate(filterKey)
-                  ? filters[filterKey].map((isoStr: string) => {
-                      return dayjs(isoStr).format('YYYY-MM-DD, HH:mm:ss z'); // FIXME: Use localization
-                    })
-                  : filters[filterKey]
-              }
-              deleteChip={onDelete}
-              deleteChipGroup={onDeleteGroup}
-              categoryName={categoriesToDisplayNames[filterKey]}
-              showToolbarItem={filterKey === currentCategory}
+          <Flex>
+            <FlexItem
+              key={'category-flex'}
+              spacer={{ default: 'spacerNone' }}
+              alignSelf={{ default: 'alignSelfFlexStart' }}
             >
-              {filterDropdownItems[i]}
-            </ToolbarFilter>
-          ))}
+              {categoryDropdown}
+            </FlexItem>
+            {Object.keys(filters).map((filterKey, i) => (
+              <FlexItem
+                key={`${filterKey}-flex`}
+                spacer={{ default: 'spacerNone' }}
+                alignSelf={{ default: 'alignSelfFlexStart' }}
+                className="recording-filter__filter-item"
+              >
+                <ToolbarFilter
+                  chips={
+                    categoryIsDate(filterKey)
+                      ? filters[filterKey].map((isoStr: string) => {
+                          return dayjs(isoStr).format('YYYY-MM-DD, HH:mm:ss z'); // FIXME: Use localization
+                        })
+                      : filters[filterKey]
+                  }
+                  deleteChip={onDelete}
+                  deleteChipGroup={onDeleteGroup}
+                  categoryName={categoriesToDisplayNames[filterKey]}
+                  showToolbarItem={filterKey === currentCategory}
+                >
+                  {filterDropdownItems[i]}
+                </ToolbarFilter>
+              </FlexItem>
+            ))}
+          </Flex>
         </ToolbarItem>
       </ToolbarGroup>
     </ToolbarToggleGroup>
