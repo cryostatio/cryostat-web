@@ -140,12 +140,16 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   );
 
   const onDelete = React.useCallback(
-    (category, value) => updateFilters(target, { filterKey: category, filterValue: value, deleted: true }),
+    (category, { key: value }) => {
+      updateFilters(target, { filterKey: category, filterValue: value, deleted: true });
+    },
     [updateFilters, target]
   );
 
   const onDeleteGroup = React.useCallback(
-    (category) => updateFilters(target, { filterKey: category, deleted: true, deleteOptions: { all: true } }),
+    ({ key: category }) => {
+      updateFilters(target, { filterKey: category, deleted: true, deleteOptions: { all: true } });
+    },
     [updateFilters, target]
   );
 
@@ -269,13 +273,19 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
             chips={
               categoryIsDate(filterKey)
                 ? filters[filterKey].map((ISOStr: string) => {
-                    return dayjs(ISOStr).format('L LTS z');
+                    return {
+                      node: dayjs(ISOStr).format('L LTS z'),
+                      key: ISOStr,
+                    };
                   })
-                : filters[filterKey]
+                : filters[filterKey].map((v) => ({ node: v, key: v }))
             }
             deleteChip={onDelete}
             deleteChipGroup={onDeleteGroup}
-            categoryName={categoriesToDisplayNames[filterKey]}
+            categoryName={{
+              key: filterKey,
+              name: categoriesToDisplayNames[filterKey],
+            }}
             showToolbarItem={filterKey === currentCategory}
           >
             {filterDropdownItems[i]}

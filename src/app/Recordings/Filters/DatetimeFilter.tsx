@@ -82,24 +82,34 @@ import {
   ButtonVariant,
   Flex,
   FlexItem,
+  HelperText,
+  HelperTextItem,
+  InputGroup,
   Popover,
   PopoverPosition,
+  Stack,
+  StackItem,
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
+import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import localeData from 'dayjs/plugin/localeData';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 import * as React from 'react';
 import { from } from 'rxjs';
+import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(localeData);
 dayjs.extend(localizedFormat);
+dayjs.extend(customParseFormat);
+dayjs.extend(advancedFormat);
 
 export interface DateTimeFilterProps {
   onSubmit: (dateISO: string) => void;
@@ -119,7 +129,6 @@ const _emptyDatetimeInput: {
 
 export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ onSubmit }) => {
   const datetimeContext = React.useContext(DateTimeContext);
-
   const addSubscription = useSubscriptions();
   const forceUpdate = useForceUpdate();
 
@@ -151,6 +160,37 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
     [setDatetimeInput, onPopoverDismiss]
   );
 
+  const handleTextInput = React.useCallback(
+    (value: string) => {
+      setDatetimeInput((old) => {
+        if (value === '') {
+          return _emptyDatetimeInput;
+        }
+        const d = dayjs(
+          value,
+          `${dayjs.Ls[dayjs.locale()].formats.L} ${dayjs.Ls[dayjs.locale()].formats.LTS}`,
+          dayjs.locale()
+        );
+        if (d.isValid()) {
+          return {
+            ...old,
+            text: value,
+            date: d.toDate(),
+            validation: ValidatedOptions.success,
+          };
+        } else {
+          return {
+            ...old,
+            text: value,
+            date: undefined,
+            validation: ValidatedOptions.error,
+          };
+        }
+      });
+    },
+    [setDatetimeInput]
+  );
+
   React.useEffect(() => {
     const locale = getLocale(datetimeContext.dateLocale.key);
     if (locale) {
@@ -165,34 +205,62 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
 
   return (
     <Flex>
-      <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }} flex={{ default: 'flex_1' }}>
-        <Popover
-          bodyContent={
-            <DateTimePicker
-              onSelect={handleDatetimeSelect}
-              onDismiss={onPopoverDismiss}
-              prefilledDate={datetimeInput.date}
-            />
-          }
-          isVisible={isCalendarOpen}
-          showClose={false}
-          minWidth={'28em'}
-          position={PopoverPosition.bottom}
-          flipBehavior={['bottom', 'right', 'left']}
-        >
-          <TextInput
-            type="text"
-            id="date-time"
-            placeholder={'Click to select a datetime'}
-            onClick={onToggleCalendar}
-            aria-label="Datetime Picker"
-            value={datetimeInput.text}
-            validated={datetimeInput.validation}
-            readOnly
-            iconVariant="calendar"
+      <Flex alignSelf={{ default: 'alignSelfFlexStart' }} flex={{ default: 'flex_1' }}>
+        <FlexItem spacer={{ default: 'spacerNone' }}>
+          <Popover
+            bodyContent={
+              <DateTimePicker
+                onSelect={handleDatetimeSelect}
+                onDismiss={onPopoverDismiss}
+                prefilledDate={datetimeInput.date}
+              />
+            }
+            isVisible={isCalendarOpen}
+            showClose={false}
+            minWidth={'28em'}
+            position={PopoverPosition.bottom}
+            flipBehavior={['bottom', 'right', 'left']}
+          >
+            <Stack>
+              <StackItem>
+                <TextInput
+                  type="text"
+                  id="date-time"
+                  placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).format('L LTS')}
+                  aria-label="Datetime Picker"
+                  value={datetimeInput.text}
+                  validated={datetimeInput.validation}
+                  onClick={onToggleCalendar}
+                  onChange={handleTextInput}
+                />
+              </StackItem>
+              {datetimeInput.validation !== ValidatedOptions.error ? (
+                <StackItem>
+                  <HelperText>
+                    <HelperTextItem variant="error">Invalid date time</HelperTextItem>
+                  </HelperText>
+                </StackItem>
+              ) : (
+                <></>
+              )}
+            </Stack>
+          </Popover>
+        </FlexItem>
+        <FlexItem spacer={{ default: 'spacerNone' }}>
+          <TimezonePicker
+            selected={datetimeInput.timezone}
+            menuAppendTo="parent"
+            isFlipEnabled
+            isCompact
+            onTimezoneChange={() => {}}
           />
-        </Popover>
-      </FlexItem>
+        </FlexItem>
+        <FlexItem>
+          <Button variant="control" aria-label="Toggle the calendar" onClick={onToggleCalendar}>
+            <OutlinedCalendarAltIcon />
+          </Button>
+        </FlexItem>
+      </Flex>
       <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
         <Button
           variant={ButtonVariant.control}
