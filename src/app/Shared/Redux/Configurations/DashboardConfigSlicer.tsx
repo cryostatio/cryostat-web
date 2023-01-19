@@ -121,7 +121,7 @@ const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
 function move(arr: any[], from: number, to: number) {
   arr.splice(to, 0, arr.splice(from, 1)[0]);
   return arr;
-};
+}
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder

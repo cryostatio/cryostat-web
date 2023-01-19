@@ -42,8 +42,6 @@ import { DashboardCardSizes } from './Dashboard';
 import { DraggableRef } from './DraggableRef';
 import { ResizableRef } from './ResizableRef';
 
-export const initCardRefStyle = { display: 'flex', justifyContent: 'space-between' };
-
 export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
 
 export interface DashboardCardProps extends CardProps {
@@ -62,14 +60,14 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
   return (
     <DashboardCardContext.Provider value={cardRef}>
-      <div className="resizable-card" ref={cardRef} style={initCardRefStyle}>
-        <DraggableRef dashboardId={dashboardId}>
-          <Card className="dashboard-card" isRounded {...props} >
+      <DraggableRef dashboardId={dashboardId}>
+        <div className={'resizable-ref'} ref={cardRef}>
+          <Card className="dashboard-card" {...props}>
             {children}
           </Card>
-        </DraggableRef>
-        <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} />
-      </div>
+          <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} />
+        </div>
+      </DraggableRef>
     </DashboardCardContext.Provider>
   );
 };

@@ -245,6 +245,31 @@ html, body, #root {
   overflow: auto;
 }
 
+.resizable-ref { 
+  display: flex;
+  justify-content: space-between 
+}
+
+.draggable-ref {
+  border-radius: 'var(--pf-global--BorderRadius--sm)'; /* 3px */
+  border-width: 'var(--pf-global--BorderWidth--sm)'; /* 1px */
+  border-top-style: 'solid';
+}
+
+.draggable-ref__dragging {
+  border-left: 2px solid var(--pf-global--palette--blue-300);
+  border-right: 2px solid var(--pf-global--palette--blue-300);
+  border-bottom: 2px solid var(--pf-global--palette--blue-300);
+}
+
+.draggable-ref__grip:hover {
+  background-color: var(--pf-global--palette--blue-300);
+}
+
+.draggable-ref__grip {
+  cursor: grab;
+}
+
 .xsm-icon {
   height: 0.8em;
   width: 0.8em;
