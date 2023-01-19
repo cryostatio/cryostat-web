@@ -36,30 +36,22 @@
  * SOFTWARE.
  */
 
-import { UpdateFilterOptions, UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
+import { DateTimeContext } from '@app/Shared/DateTimeContext';
+import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
-  allowedActiveRecordingFilters,
-  allowedArchivedRecordingFilters,
   allowedActiveRecordingFilters,
   allowedArchivedRecordingFilters,
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
-import {
-  recordingUpdateCategoryIntent,
-  StateDispatch,
-  RootState,
-  recordingUpdateCategoryIntent,
-  StateDispatch,
-  RootState,
-} from '@app/Shared/Redux/ReduxStore';
-import { Recording, RecordingState, Recording, RecordingState } from '@app/Shared/Services/Api.service';
+import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
+import { useForceUpdate } from '@app/utils/useForceUpdate';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { getLocale } from '@i18n/datetime';
 import {
   Dropdown,
   DropdownItem,
   DropdownPosition,
   DropdownToggle,
-  Flex,
-  FlexItem,
-  InputGroup,
   ToolbarFilter,
   ToolbarGroup,
   ToolbarItem,
@@ -67,13 +59,23 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
+import localeData from 'dayjs/plugin/localeData';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
+import utc from 'dayjs/plugin/utc';
 import React from 'react';
-import { useDispatch, useSelector, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { from } from 'rxjs';
+import { DateTimeFilter } from './Filters/DatetimeFilter';
 import { DurationFilter } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
-import { DateTimeFilter } from './Filters/DatetimeFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(localeData);
+dayjs.extend(localizedFormat);
 
 export interface RecordingFiltersCategories {
   Name: string[];
@@ -110,6 +112,11 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   filters,
   updateFilters,
 }) => {
+  const datetimeContext = React.useContext(DateTimeContext);
+
+  const addSubscription = useSubscriptions();
+  const forceUpdate = useForceUpdate();
+
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
@@ -180,6 +187,18 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
     [updateFilters, currentCategory, target]
   );
 
+  React.useEffect(() => {
+    const locale = getLocale(datetimeContext.dateLocale.key);
+    if (locale) {
+      addSubscription(
+        from(locale.load()).subscribe(() => {
+          dayjs.locale(locale.key);
+          forceUpdate();
+        })
+      );
+    }
+  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
+
   const categoryDropdown = React.useMemo(() => {
     return (
       <Dropdown
@@ -249,8 +268,8 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
             className="recording-filter__toolbar-filter"
             chips={
               categoryIsDate(filterKey)
-                ? filters[filterKey].map((isoStr: string) => {
-                    return dayjs(isoStr).format('YYYY-MM-DD, HH:mm:ss z'); // FIXME: Use localization
+                ? filters[filterKey].map((ISOStr: string) => {
+                    return dayjs(ISOStr).format('L LTS z');
                   })
                 : filters[filterKey]
             }
@@ -295,8 +314,8 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
       if (!filters.StartedBeforeDate) return true;
 
       return filters.StartedBeforeDate.filter((startedBefore) => {
-        const beforeDate = new Date(startedBefore);
-        return rec.startTime < beforeDate.getTime();
+        const beforeDate = dayjs(startedBefore);
+        return dayjs(rec.startTime).isBefore(beforeDate);
       }).length;
     });
   }
@@ -304,9 +323,8 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
     filtered = filtered.filter((rec) => {
       if (!filters.StartedAfterDate) return true;
       return filters.StartedAfterDate.filter((startedAfter) => {
-        const afterDate = new Date(startedAfter);
-
-        return rec.startTime > afterDate.getTime();
+        const afterDate = dayjs(startedAfter);
+        return dayjs(rec.startTime).isAfter(afterDate);
       }).length;
     });
   }
