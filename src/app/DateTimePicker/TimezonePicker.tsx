@@ -98,7 +98,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
       if (!value) {
         return options;
       }
-      const matchExp = new RegExp(value, 'i');
+      const matchExp = new RegExp(value.replace(/([\+])/gi, `\\$1`), 'i');
       return options.filter((op) => matchExp.test(op.props.value.full) || matchExp.test(op.props.description));
     },
     [options]
