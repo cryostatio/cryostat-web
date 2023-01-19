@@ -147,13 +147,8 @@ export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
 
   return (
     <div
+      className="resizable-ref"
       onMouseDown={handleOnMouseDown}
-      style={{
-        cursor: 'col-resize',
-        position: 'relative',
-        borderRight: '4px outset black',
-        borderRadius: '16px',
-      }}
     />
   );
 };

@@ -58,15 +58,26 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 }: DashboardCardProps) => {
   const cardRef = React.useRef<HTMLDivElement>(null);
 
+  const memoizedResizableRef = React.useMemo(() => {
+    return <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} />
+  }, [dashboardId, cardSizes]);
+
+    
+
+  const memoized = React.useMemo(() => {
+    return (<div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
+    <Card className="dashboard-card" {...props}>
+      {children}
+    </Card>
+    {memoizedResizableRef}
+  </div>);
+  }, [children]);
+
+
   return (
     <DashboardCardContext.Provider value={cardRef}>
       <DraggableRef dashboardId={dashboardId}>
-        <div className={'resizable-ref'} ref={cardRef}>
-          <Card className="dashboard-card" {...props}>
-            {children}
-          </Card>
-          <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} />
-        </div>
+        {memoized}
       </DraggableRef>
     </DashboardCardContext.Provider>
   );

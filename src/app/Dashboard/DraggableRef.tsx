@@ -36,15 +36,12 @@
  * SOFTWARE.
  */
 import {
-  CardConfig,
   dashboardCardConfigReorderCardIntent,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { GripVerticalIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
-import _ from 'lodash';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 function overlaps(ev: MouseEvent, rect: DOMRect) {
   return (
@@ -64,7 +61,6 @@ interface DroppableItem {
   isDraggingHost: boolean;
 }
 
-// Reset per-element state
 function resetDroppableItem(droppableItem: DroppableItem) {
   droppableItem.node.style.backgroundColor = initStyle.backgroundColor;
   droppableItem.node.style.borderTopColor = 'var(--pf-global--BorderColor--100)';
@@ -81,18 +77,18 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   ..._props
 }: DraggableRefProps) => {
   const dispatch = useDispatch();
-  const ref = React.useRef<HTMLDivElement>(null);
+  const draggableRef = React.useRef<HTMLDivElement>(null);
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
 
-  let [refStyle, setRefStyle] = React.useState<{}>(initStyle);
-  /* eslint-enable prefer-const */
+  const startCoords = React.useRef<[number, number]>([0, 0]);
+  const hoveringDroppable = React.useRef<HTMLElement | null>(null) ;
+  const hoveringIndex = React.useRef<number | null>(null);
+  const mouseMoveListener = React.useRef<EventListener>();
+  const mouseUpListener = React.useRef<EventListener>();
+
+  const [refStyle, setRefStyle] = React.useState<object>(initStyle);
   const [isDragging, setIsDragging] = React.useState(false);
   const [selected, setSelected] = React.useState(false);
-  let startX = 0;
-  let startY = 0;
-  let hoveringDroppable: HTMLElement | null;
-  let hoveringIndex: number | null;
-  let mouseMoveListener: EventListener;
-  let mouseUpListener: EventListener;
 
   const onTransitionEnd = React.useCallback((_ev: React.TransitionEvent<HTMLElement>) => {
     if (isDragging) {
@@ -104,39 +100,47 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   const onMouseUpWhileDragging = React.useCallback(
     (droppableItems) => {
       droppableItems.forEach(resetDroppableItem);
-      document.removeEventListener('mousemove', mouseMoveListener);
-      document.removeEventListener('mouseup', mouseUpListener);
-      if (hoveringDroppable && hoveringIndex !== null) {
+      if (mouseMoveListener.current && mouseUpListener.current) {
+        document.removeEventListener('mousemove', mouseMoveListener.current);
+        document.removeEventListener('mouseup', mouseUpListener.current);
+      }
+      if (hoveringDroppable.current && hoveringIndex.current !== null) {
         setIsDragging(false);
-        setRefStyle(initStyle);
-        dispatch(dashboardCardConfigReorderCardIntent(dashboardId, hoveringIndex));
+        setSelected(false);
+        setRefStyle({...initStyle,
+          transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
+          transform: '',});
+        dispatch(dashboardCardConfigReorderCardIntent(dashboardId, hoveringIndex.current));
       } else {
+        setSelected(false);
         setRefStyle({
           ...refStyle,
           transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
           transform: '',
         });
       }
-      setSelected(false);
+
     },
-    [dispatch, setIsDragging, setRefStyle, refStyle, dashboardId]
+    [dispatch, setIsDragging, setSelected, setRefStyle, refStyle, dashboardId]
   );
 
   const onMouseMoveWhileDragging = React.useCallback((ev: MouseEvent, draggableItems: DroppableItem[]) => {
-    hoveringDroppable = null;
-    hoveringIndex = null;
+    hoveringDroppable.current = null;
+    hoveringIndex.current = null;
     draggableItems.forEach((draggableItem) => {
       if (overlaps(ev, draggableItem.rect) && !draggableItem.isDraggingHost) {        
         draggableItem.node.style.backgroundColor = 'var(--pf-global--palette--green-100)';
-        hoveringDroppable = draggableItem.node;
-        hoveringIndex = parseInt(draggableItem.node.getAttribute('dashboard-card-order') as string);
+        hoveringDroppable.current = draggableItem.node;
+        hoveringIndex.current = parseInt(draggableItem.node.getAttribute('dashboard-card-order') as string);
       } else {
         resetDroppableItem(draggableItem);
       }
     });
     setRefStyle({
       ...refStyle,
-      transform: `translate(${ev.pageX - startX}px, ${ev.pageY - startY}px)`,
+      position: 'relative',
+      zIndex: 5000,
+      transform: `translate(${ev.pageX - startCoords.current[0]}px, ${ev.pageY - startCoords.current[1]}px)`,
     });
   }, [setRefStyle, refStyle]);
 
@@ -148,10 +152,11 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       }
       const dragging = ev.target as HTMLElement;
       const rect = dragging.getBoundingClientRect();
-      const draggableNodes = Array.from(document.querySelectorAll('div.draggable-ref'));
-      const draggableItems = draggableNodes.reduce((acc: any[], cur) => {
+
+      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll('div.draggable-ref'));
+      const draggableItems: DroppableItem[] = draggableNodes.reduce((acc: DroppableItem[], cur) => {
         const isDraggingHost = cur.contains(dragging);
-        const droppableItem = {
+        const droppableItem: DroppableItem = {
           node: cur,
           rect: cur.getBoundingClientRect(),
           isDraggingHost,
@@ -160,26 +165,26 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         return acc;
       }, []);
 
-      refStyle = {
+      const initStyle = {
         ...refStyle,
+        position: 'relative',
         top: rect.y,
         left: rect.x,
         width: rect.width,
         height: rect.height,
-        position: 'fixed',
         zIndex: 5000,
-      } as any;
-      startX = ev.pageX;
-      startY = ev.pageY;
-      setRefStyle(refStyle);
+      };
+
+      startCoords.current = [ev.pageX, ev.pageY];
+      setRefStyle(initStyle);
       setIsDragging(true);
       setSelected(true);
-      mouseMoveListener = (ev) => onMouseMoveWhileDragging(ev as MouseEvent, draggableItems);
-      mouseUpListener = () => onMouseUpWhileDragging(draggableItems);
-      document.addEventListener('mousemove', mouseMoveListener);
-      document.addEventListener('mouseup', mouseUpListener);
+      mouseMoveListener.current = (ev) => onMouseMoveWhileDragging(ev as MouseEvent, draggableItems);
+      mouseUpListener.current = () => onMouseUpWhileDragging(draggableItems);
+      document.addEventListener('mousemove', mouseMoveListener.current);
+      document.addEventListener('mouseup', mouseUpListener.current);
     },
-    [setRefStyle, setIsDragging, setSelected, onMouseMoveWhileDragging, onMouseUpWhileDragging, isDragging]
+    [setRefStyle, setIsDragging, setSelected, onMouseMoveWhileDragging, onMouseUpWhileDragging, refStyle, isDragging]
   );
 
   const variableAttribute = React.useMemo(() => {
@@ -188,6 +193,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
 
   return (
     <div
+      ref={wrapperRef}
       className={css(
         `draggable-ref`
       )}
@@ -196,7 +202,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       onTransitionEnd={onTransitionEnd}
       style={{ ...refStyle }}
     >
-      <div ref={ref} draggable className={css('draggable-ref__grip')}>
+      <div ref={draggableRef} draggable className={css('draggable-ref__grip')}>
         <GripVerticalIcon />
       </div>
       <div className={css("draggable-ref__content", selected && 'draggable-ref__dragging')}>{children}</div>

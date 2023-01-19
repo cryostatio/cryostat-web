@@ -118,7 +118,7 @@ const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
 });
 
-function move(arr: any[], from: number, to: number) {
+function move(arr: [], from: number, to: number) {
   arr.splice(to, 0, arr.splice(from, 1)[0]);
   return arr;
 }

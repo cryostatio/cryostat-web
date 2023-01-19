@@ -38,7 +38,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   CardConfig,
-  dashboardCardConfigReorderCardIntent,
   dashboardCardConfigResizeCardIntent,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
@@ -48,10 +47,6 @@ import {
   CardActions,
   CardBody,
   CardHeader,
-  DragDrop,
-  Draggable,
-  DraggableItemPosition,
-  Droppable,
   Grid,
   GridItem,
   gridSpans,
@@ -62,8 +57,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
-import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { DashboardCard } from './DashboardCard';
+import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 
 export interface Sized<T> {
   minimum: T;
@@ -278,7 +273,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <Grid hasGutter>
+      <Grid id={"dashboard-grid"} hasGutter>
         {cardConfigs.map((cfg, idx) => (
           <GridItem span={cfg.span} key={idx} order={{ default: idx.toString() }}>
             {React.createElement(getConfigByName(cfg.name).component, {
