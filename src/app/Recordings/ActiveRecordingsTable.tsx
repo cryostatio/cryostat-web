@@ -39,6 +39,7 @@
 import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
+import { DateTimeContext } from '@app/Shared/DateTimeContext';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
@@ -55,7 +56,9 @@ import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.servic
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { useForceUpdate } from '@app/utils/useForceUpdate';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { getLocale } from '@i18n/datetime';
 import {
   Button,
   Checkbox,
@@ -78,7 +81,7 @@ import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
+import { combineLatest, forkJoin, from, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
@@ -104,6 +107,7 @@ export interface ActiveRecordingsTableProps {
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
+
   const routerHistory = useHistory();
   const { url } = useRouteMatch();
   const addSubscription = useSubscriptions();
@@ -722,7 +726,22 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   handleRowCheck,
   updateFilters,
 }) => {
+  const datetimeContext = React.useContext(DateTimeContext);
+  const forceUpdate = useForceUpdate();
+  const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
+
+  React.useEffect(() => {
+    const locale = getLocale(datetimeContext.dateLocale.key);
+    if (locale) {
+      addSubscription(
+        from(locale.load()).subscribe(() => {
+          dayjs.locale(locale.key);
+          forceUpdate();
+        })
+      );
+    }
+  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
 
   const parsedLabels = React.useMemo(() => {
     return parseLabels(recording.metadata.labels);
@@ -747,11 +766,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   );
 
   const parentRow = React.useMemo(() => {
-    const ISOTime = (props: { timeStmp: number }) => {
-      const fmt = React.useMemo(() => new Date(props.timeStmp).toISOString(), [props.timeStmp]);
-      return <span>{fmt}</span>;
-    };
-
     const RecordingDuration = (props: { duration: number }) => {
       const str = React.useMemo(
         () => (props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`),
@@ -789,7 +803,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             tooltip={{ variant: TimestampTooltipVariant.default }}
             date={new Date(recording.startTime)}
           >
-            {dayjs(recording.startTime).tz('America/Toronto', true).format('L LTS z')}
+            {dayjs(recording.startTime).tz(datetimeContext.timeZone.full).format('L LTS z')}
           </Timestamp>
         </Td>
         <Td key={`active-table-row-${index}_4`} dataLabel={tableColumns[2]}>
