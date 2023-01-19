@@ -77,7 +77,16 @@ import { defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.s
 import { useForceUpdate } from '@app/utils/useForceUpdate';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { getLocale } from '@i18n/datetime';
-import { Button, ButtonVariant, Flex, FlexItem, Popover, TextInput, ValidatedOptions } from '@patternfly/react-core';
+import {
+  Button,
+  ButtonVariant,
+  Flex,
+  FlexItem,
+  Popover,
+  PopoverPosition,
+  TextInput,
+  ValidatedOptions,
+} from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
 import localeData from 'dayjs/plugin/localeData';
@@ -168,7 +177,8 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
           isVisible={isCalendarOpen}
           showClose={false}
           minWidth={'28em'}
-          position="bottom"
+          position={PopoverPosition.bottom}
+          flipBehavior={['bottom', 'right', 'left']}
         >
           <TextInput
             type="text"
