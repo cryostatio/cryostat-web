@@ -47,6 +47,8 @@ import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
+import { DateTimeContext } from '@app/Shared/DateTimeContext';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { openTabForUrl } from '@app/utils/utils';
 import {
@@ -96,7 +98,6 @@ import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-
 import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -106,6 +107,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
+  const [datetimeFormat, setDatetimeFormat] = React.useState(defaultDatetimeFormat);
+
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
@@ -122,6 +125,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const location = useLocation();
+
+  React.useEffect(() => {
+    addSubscription(serviceContext.settings.datetimeFormat().subscribe(setDatetimeFormat));
+  }, [addSubscription, serviceContext.settings, setDatetimeFormat]);
 
   React.useEffect(() => {
     addSubscription(
@@ -545,34 +552,41 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   return (
     <>
-      <AlertGroup isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
-        {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
-          <Alert
-            isLiveRegion
-            variant={variant}
-            key={title}
-            title={title}
-            actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
-            timeout={true}
-            onTimeout={handleTimeout(key)}
-          >
-            {message?.toString()}
-          </Alert>
-        ))}
-      </AlertGroup>
-      <Page
-        mainContainerId="primary-app-container"
-        header={Header}
-        sidebar={Sidebar}
-        notificationDrawer={NotificationDrawer}
-        isNotificationDrawerExpanded={isNotificationDrawerExpanded}
-        onPageResize={onPageResize}
-        skipToContent={PageSkipToContent}
-      >
-        {children}
-      </Page>
-      <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
-      <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
+      <DateTimeContext.Provider value={datetimeFormat}>
+        <AlertGroup
+          isToast
+          isLiveRegion
+          overflowMessage={overflowMessage}
+          onOverflowClick={handleOpenNotificationCenter}
+        >
+          {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
+            <Alert
+              isLiveRegion
+              variant={variant}
+              key={title}
+              title={title}
+              actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
+              timeout={true}
+              onTimeout={handleTimeout(key)}
+            >
+              {message?.toString()}
+            </Alert>
+          ))}
+        </AlertGroup>
+        <Page
+          mainContainerId="primary-app-container"
+          header={Header}
+          sidebar={Sidebar}
+          notificationDrawer={NotificationDrawer}
+          isNotificationDrawerExpanded={isNotificationDrawerExpanded}
+          onPageResize={onPageResize}
+          skipToContent={PageSkipToContent}
+        >
+          {children}
+        </Page>
+        <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
+        <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
+      </DateTimeContext.Provider>
     </>
   );
 };

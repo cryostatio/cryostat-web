@@ -72,19 +72,12 @@
  * SOFTWARE.
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
-import { ServiceContext } from '@app/Shared/Services/Services';
+import { DateTimeContext } from '@app/Shared/DateTimeContext';
 import { defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
+import { useForceUpdate } from '@app/utils/useForceUpdate';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { getLocale } from '@i18n/datetime';
-import {
-  Button,
-  ButtonVariant,
-  Flex,
-  FlexItem,
-  Popover,
-  TextInput,
-  ValidatedOptions,
-} from '@patternfly/react-core';
+import { Button, ButtonVariant, Flex, FlexItem, Popover, TextInput, ValidatedOptions } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
 import localeData from 'dayjs/plugin/localeData';
@@ -92,7 +85,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
-import { concatMap, from, of } from 'rxjs';
+import { from } from 'rxjs';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -115,14 +108,14 @@ const _emptyDatetimeInput: {
   validation: ValidatedOptions.default,
 };
 
-// FIXME: Use Context to provide currently selected format down the tree
 export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ onSubmit }) => {
-  const context = React.useContext(ServiceContext);
+  const datetimeContext = React.useContext(DateTimeContext);
+
   const addSubscription = useSubscriptions();
+  const forceUpdate = useForceUpdate();
 
   const [datetimeInput, setDatetimeInput] = React.useState(_emptyDatetimeInput);
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
-  const [_, setFormat] = React.useState(defaultDatetimeFormat);
 
   const onToggleCalendar = React.useCallback(() => setIsCalendarOpen((open) => !open), [setIsCalendarOpen]);
 
@@ -149,25 +142,16 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
   );
 
   React.useEffect(() => {
-    addSubscription(
-      context.settings
-        .datetimeFormat()
-        .pipe(
-          concatMap((f) => {
-            const locale = getLocale(f.dateLocale.key);
-            return locale
-              ? from(
-                  locale.load().then(() => {
-                    dayjs.locale(f.dateLocale.key); // locally in this dayjs instance
-                    return f;
-                  })
-                )
-              : of(f);
-          })
-        )
-        .subscribe(setFormat)
-    );
-  }, [addSubscription, context.settings, setFormat]);
+    const locale = getLocale(datetimeContext.dateLocale.key);
+    if (locale) {
+      addSubscription(
+        from(locale.load()).subscribe(() => {
+          dayjs.locale(locale.key);
+          forceUpdate();
+        })
+      );
+    }
+  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
 
   return (
     <Flex>

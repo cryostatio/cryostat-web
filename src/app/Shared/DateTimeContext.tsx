@@ -35,31 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { css } from '@patternfly/react-styles';
+
 import * as React from 'react';
+import { defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
 
-export interface MeridiemPickerProps {
-  onSelect?: (isAM: boolean) => void;
-  isAM?: boolean;
-}
-
-export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () => undefined, isAM = true }) => {
-  const handleSelectAM = React.useCallback(() => {
-    onSelect(true);
-  }, [onSelect]);
-
-  const handleSelectPM = React.useCallback(() => {
-    onSelect(false);
-  }, [onSelect]);
-
-  return (
-    <div role={'listbox'} aria-label="Select AM or PM" className="datetime-picker__meridiem-title-stack">
-      <div className={css('datetime-picker__meridiem-tile', `${isAM ? '' : 'un'}selected`)} onClick={handleSelectAM}>
-        AM
-      </div>
-      <div className={css('datetime-picker__meridiem-tile', `${isAM ? 'un' : ''}selected`)} onClick={handleSelectPM}>
-        PM
-      </div>
-    </div>
-  );
-};
+export const DateTimeContext = React.createContext(defaultDatetimeFormat);

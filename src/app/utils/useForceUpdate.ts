@@ -38,6 +38,6 @@
 import * as React from 'react';
 
 export function useForceUpdate() {
-    const [_, set_] = React.useState(true);
-    return React.useCallback(() => set_((old) => !old), [set_]);
+  const [_, set_] = React.useState(true);
+  return React.useCallback(() => set_((old) => !old), [set_]);
 }

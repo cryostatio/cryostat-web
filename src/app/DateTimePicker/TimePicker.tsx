@@ -36,21 +36,16 @@
  * SOFTWARE.
  */
 import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { format2Digit, hourIn12HrFormat, hourIn24HrFormat, isHourIn24hAM } from '@i18n/datetimeUtils';
 import {
   Button,
   Divider,
-  Flex,
-  FlexItem,
   HelperText,
   HelperTextItem,
   Level,
   LevelItem,
   Panel,
   PanelFooter,
-  PanelHeader,
   PanelMain,
   PanelMainBody,
   Stack,
@@ -140,14 +135,6 @@ export const TimePicker: React.FC<TimePickerProps> = ({
           </PanelFooter>
         </PanelMain>
       </Panel>
-      {/* <Stack hasGutter>
-      <StackItem>
-        
-      </StackItem>
-      <StackItem>
-        
-      </StackItem>
-    </Stack> */}
     </>
   );
 };

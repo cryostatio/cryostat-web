@@ -63,12 +63,18 @@ import {
   DrawerContent,
   DrawerContentBody,
   Text,
+  Timestamp,
+  TimestampTooltipVariant,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
+import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -81,6 +87,10 @@ import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from '
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(localizedFormat);
 
 export enum PanelContent {
   LABELS,
@@ -774,7 +784,13 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           {recording.name}
         </Td>
         <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[1]}>
-          <ISOTime timeStmp={recording.startTime} />
+          <Timestamp
+            className="recording-table__timestamp"
+            tooltip={{ variant: TimestampTooltipVariant.default }}
+            date={new Date(recording.startTime)}
+          >
+            {dayjs(recording.startTime).tz('America/Toronto', true).format('L LTS z')}
+          </Timestamp>
         </Td>
         <Td key={`active-table-row-${index}_4`} dataLabel={tableColumns[2]}>
           <RecordingDuration duration={recording.duration} />
