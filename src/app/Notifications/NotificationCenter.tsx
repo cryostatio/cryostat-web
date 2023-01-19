@@ -35,6 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { DateTimeContext } from '@app/Shared/DateTimeContext';
+import { useForceUpdate } from '@app/utils/useForceUpdate';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { getLocale } from '@i18n/datetime';
 import {
   Dropdown,
   DropdownItem,
@@ -52,9 +56,17 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
+import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
-import { combineLatest } from 'rxjs';
+import { combineLatest, from } from 'rxjs';
 import { Notification, NotificationsContext } from './Notifications';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(localizedFormat);
 
 export interface NotificationCenterProps {
   onClose: () => void;
@@ -69,6 +81,10 @@ export interface NotificationDrawerCategory {
 
 export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = (props) => {
   const context = React.useContext(NotificationsContext);
+  const datetimeContext = React.useContext(DateTimeContext);
+  const addSubscription = useSubscriptions();
+  const forceUpdate = useForceUpdate();
+
   const [totalUnreadNotificationsCount, setTotalUnreadNotificationsCount] = React.useState(0);
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
   const PROBLEMS_CATEGORY_IDX = 2;
@@ -83,28 +99,42 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   };
 
   React.useEffect(() => {
-    const sub = combineLatest([
-      context.actionsNotifications(),
-      context.cryostatStatusNotifications(),
-      context.problemsNotifications(),
-    ]).subscribe((notificationLists) => {
-      setDrawerCategories((drawerCategories) => {
-        return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
-          category.notifications = notificationLists[idx];
-          category.unreadCount = countUnreadNotifications(notificationLists[idx]);
-          return category;
+    addSubscription(
+      combineLatest([
+        context.actionsNotifications(),
+        context.cryostatStatusNotifications(),
+        context.problemsNotifications(),
+      ]).subscribe((notificationLists) => {
+        setDrawerCategories((drawerCategories) => {
+          return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
+            category.notifications = notificationLists[idx];
+            category.unreadCount = countUnreadNotifications(notificationLists[idx]);
+            return category;
+          });
         });
-      });
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.notifications, setDrawerCategories]);
+      })
+    );
+  }, [addSubscription, context.notifications, setDrawerCategories]);
 
   React.useEffect(() => {
-    const sub = context.unreadNotifications().subscribe((s) => {
-      setTotalUnreadNotificationsCount(s.length);
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.unreadNotifications, setTotalUnreadNotificationsCount]);
+    addSubscription(
+      context.unreadNotifications().subscribe((s) => {
+        setTotalUnreadNotificationsCount(s.length);
+      })
+    );
+  }, [addSubscription, context.unreadNotifications, setTotalUnreadNotificationsCount]);
+
+  React.useEffect(() => {
+    const locale = getLocale(datetimeContext.dateLocale.key);
+    if (locale) {
+      addSubscription(
+        from(locale.load()).subscribe(() => {
+          dayjs.locale(locale.key);
+          forceUpdate();
+        })
+      );
+    }
+  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
 
   const handleToggleDropdown = React.useCallback(() => {
     setHeaderDropdownOpen((v) => !v);
@@ -155,8 +185,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     if (!timestamp) {
       return '';
     }
-    const date = new Date(timestamp);
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    return dayjs(timestamp).tz(datetimeContext.timeZone.full).format('L LTS z');
   };
 
   const drawerDropdownItems = [
