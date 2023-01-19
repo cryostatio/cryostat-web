@@ -111,7 +111,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
       isFlipEnabled={isFlipEnabled}
       menuAppendTo={menuAppendTo}
       maxHeight="16em"
-      width={isCompact ? '8em' : undefined}
+      width={isCompact ? '8.5em' : undefined}
       selections={{
         ...selected,
         toString: () => selected.full,

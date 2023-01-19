@@ -72,7 +72,10 @@
  * SOFTWARE.
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
-import { localTimezone } from '@app/Settings/DatetimeControl';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { getLocale } from '@i18n/datetime';
 import {
   Button,
   ButtonVariant,
@@ -87,137 +90,123 @@ import {
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import React from 'react';
+import localeData from 'dayjs/plugin/localeData';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
+import utc from 'dayjs/plugin/utc';
+import * as React from 'react';
+import { concatMap, from, of } from 'rxjs';
 
-dayjs.extend(customParseFormat);
-
-const datetimeFormat = 'YYYY-MM-DD HH:mm';
-const shortDatetimeFormat = 'YYYY-MM-DD';
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(localeData);
+dayjs.extend(localizedFormat);
 
 export interface DateTimeFilterProps {
-  onSubmit: (date: string) => void;
+  onSubmit: (dateISO: string) => void;
 }
 
+const _emptyDatetimeInput: {
+  text: string;
+  date: Date | undefined; // Ignore timezone
+  timezone: Timezone; // default to local
+  validation: ValidatedOptions;
+} = {
+  text: '',
+  date: undefined,
+  timezone: defaultDatetimeFormat.timeZone,
+  validation: ValidatedOptions.default,
+};
+
+// FIXME: Use Context to provide currently selected format down the tree
 export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ onSubmit }) => {
-  const [datetimeInput, setDatetimeInput] = React.useState('');
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+
+  const [datetimeInput, setDatetimeInput] = React.useState(_emptyDatetimeInput);
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
-  const [timezone, setTimezone] = React.useState(localTimezone);
-  const [validation, setValidation] = React.useState(ValidatedOptions.default); // TODO: Use composite state
+  const [_, setFormat] = React.useState(defaultDatetimeFormat);
 
-  // const handleDateSelect = React.useCallback(
-  //   (date: Date) => {
-  //     const formattedDateStr = `${date.getFullYear()}-${format2Digit(date.getMonth() + 1)}-${format2Digit(
-  //       date.getDate()
-  //     )}`;
-  //     if (validation === ValidatedOptions.success) {
-  //       setDatetimeInput((old) => {
-  //         const dateParts = old.split(/\s+/);
-  //         return `${formattedDateStr} ${dateParts[1]}`.trim(); // Extract hh:mm
-  //       });
-  //     } else {
-  //       setDatetimeInput(formattedDateStr);
-  //     }
-  //     setValidation(ValidatedOptions.success);
-  //     setIsCalendarOpen(false);
-  //   },
-  //   [setDatetimeInput, setValidation, setIsCalendarOpen, validation]
-  // );
+  const onToggleCalendar = React.useCallback(() => setIsCalendarOpen((open) => !open), [setIsCalendarOpen]);
 
-  const handleDateTimeInputChange = React.useCallback(
-    (value: string, _) => {
-      setValidation(
-        value === ''
-          ? ValidatedOptions.default
-          : dayjs(value, datetimeFormat, true).isValid() || dayjs(value, shortDatetimeFormat, true).isValid()
-          ? ValidatedOptions.success
-          : ValidatedOptions.error
-      );
-      setDatetimeInput(value);
-    },
-    [setValidation, setDatetimeInput]
-  );
-
-  // const handleTimeSelect = React.useCallback(
-  //   (hour: number, minute: number) => {
-  //     if (validation === ValidatedOptions.success) {
-  //       setDatetimeInput((old) => {
-  //         const dateParts = old.split(/\s+/);
-  //         return `${dateParts[0]} ${format2Digit(hour)}:${format2Digit(minute)}`;
-  //       });
-  //     } else {
-  //       const now = new Date(); // default to now
-  //       setDatetimeInput(
-  //         `${now.getFullYear()}-${format2Digit(now.getMonth() + 1)}-${format2Digit(now.getDate())} ${format2Digit(
-  //           hour
-  //         )}:${format2Digit(minute)}`
-  //       );
-  //     }
-  //     setValidation(ValidatedOptions.success);
-  //   },
-  //   [validation, setDatetimeInput, setValidation]
-  // );
-
-  const onToggleCalendar = React.useCallback(() => {
-    setIsCalendarOpen((open) => !open);
-  }, [setIsCalendarOpen]);
+  const onPopoverDismiss = React.useCallback(() => setIsCalendarOpen(false), [setIsCalendarOpen]);
 
   const handleSubmit = React.useCallback(() => {
-    if (validation === ValidatedOptions.success) {
-      // Replace "-" with " " for browser compatibilities
-      const selectedDate = new Date(Date.parse(`${datetimeInput.replace(/[-]/g, ' ')} ${timezone.short}`));
-      onSubmit(selectedDate.toISOString());
-      setDatetimeInput('');
-      setValidation(ValidatedOptions.default);
+    if (datetimeInput.validation === ValidatedOptions.success) {
+      onSubmit(dayjs(datetimeInput.date!).tz(datetimeInput.timezone.full, true).toISOString());
+      setDatetimeInput(_emptyDatetimeInput);
     }
-  }, [onSubmit, datetimeInput, timezone, setDatetimeInput, setValidation, validation]);
+  }, [onSubmit, datetimeInput, setDatetimeInput]);
 
-  // const selectedDate = React.useMemo(
-  //   () => (validation === ValidatedOptions.success ? new Date(Date.parse(datetimeInput)) : undefined),
-  //   [validation, datetimeInput]
-  // );
+  const handleDatetimeSelect = React.useCallback(
+    (date: Date, timezone: Timezone) => {
+      setDatetimeInput({
+        text: dayjs(date).tz(timezone.full, true).format('L LTS z'),
+        date: date,
+        timezone: timezone,
+        validation: ValidatedOptions.success,
+      });
+      onPopoverDismiss();
+    },
+    [setDatetimeInput, onPopoverDismiss]
+  );
+
+  React.useEffect(() => {
+    addSubscription(
+      context.settings
+        .datetimeFormat()
+        .pipe(
+          concatMap((f) => {
+            const locale = getLocale(f.dateLocale.key);
+            return locale
+              ? from(
+                  locale.load().then(() => {
+                    dayjs.locale(f.dateLocale.key); // locally in this dayjs instance
+                    return f;
+                  })
+                )
+              : of(f);
+          })
+        )
+        .subscribe(setFormat)
+    );
+  }, [addSubscription, context.settings, setFormat]);
 
   return (
     <Flex>
-      <FlexItem>
+      <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
         <Popover
-          bodyContent={<DateTimePicker onSelect={(_) => undefined} onDismiss={() => setIsCalendarOpen(false)} />}
+          bodyContent={
+            <DateTimePicker
+              onSelect={handleDatetimeSelect}
+              onDismiss={onPopoverDismiss}
+              prefilledDate={datetimeInput.date}
+            />
+          }
           isVisible={isCalendarOpen}
           showClose={false}
           minWidth={'28em'}
           position="bottom"
         >
-          <>
-            <InputGroup>
-              <TextInput
-                style={{ width: '12.5em' }}
-                type="text"
-                id="date-time"
-                placeholder={datetimeFormat}
-                aria-label="Datetime Picker"
-                value={datetimeInput}
-                validated={validation}
-                onChange={handleDateTimeInputChange}
-              />
-              <Button variant="control" aria-label="Toggle the calendar" onClick={onToggleCalendar}>
-                <OutlinedCalendarAltIcon />
-              </Button>
-            </InputGroup>
-            {validation === ValidatedOptions.error ? (
-              <HelperText>
-                <HelperTextItem variant="error">Invalid date time</HelperTextItem>
-              </HelperText>
-            ) : (
-              <></>
-            )}
-          </>
+          <TextInput
+            type="text"
+            // className="datetime-picker__datetime-text-input"
+            id="date-time"
+            placeholder={'Click to select a datetime'}
+            onClick={onToggleCalendar}
+            aria-label="Datetime Picker"
+            value={datetimeInput.text}
+            validated={datetimeInput.validation}
+            readOnly
+            iconVariant="calendar"
+          />
         </Popover>
       </FlexItem>
-      <FlexItem>
+      <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
         <Button
           variant={ButtonVariant.control}
           aria-label="Search For Date"
-          isDisabled={validation !== ValidatedOptions.success || !timezone}
+          isDisabled={datetimeInput.validation !== ValidatedOptions.success}
           onClick={handleSubmit}
         >
           <SearchIcon />
