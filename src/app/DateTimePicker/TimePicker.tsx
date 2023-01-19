@@ -39,7 +39,26 @@ import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { format2Digit, hourIn12HrFormat, hourIn24HrFormat, isHourIn24hAM } from '@i18n/datetimeUtils';
-import { Button, Level, LevelItem, Stack, StackItem, TextInput, Title } from '@patternfly/react-core';
+import {
+  Button,
+  Divider,
+  Flex,
+  FlexItem,
+  HelperText,
+  HelperTextItem,
+  Level,
+  LevelItem,
+  Panel,
+  PanelFooter,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
+  Stack,
+  StackItem,
+  Switch,
+  TextInput,
+  Title,
+} from '@patternfly/react-core';
 import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import _ from 'lodash';
@@ -65,13 +84,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   onMeridiemSelect,
   selected,
 }) => {
-  const context = React.useContext(ServiceContext);
-  const addSubcription = useSubscriptions();
   const [is24h, setIs24h] = React.useState(true);
-
-  React.useEffect(() => {
-    addSubcription(context.settings.datetimeFormat().subscribe((f) => setIs24h(f.timeFormat === '24h')));
-  }, [addSubcription, context.settings, setIs24h]);
 
   const meridiemAM = React.useMemo(() => isHourIn24hAM(selected.hour24), [selected.hour24]);
 
@@ -84,35 +97,58 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   );
 
   return (
-    <Level hasGutter>
-      <LevelItem key={'hour'}>
-        <TimeSpinner
-          variant={is24h ? 'hour24' : 'hour12'}
-          label={'Hour'}
-          selected={is24h ? selected.hour24 : hourIn12HrFormat(selected.hour24)[0]}
-          onChange={handleHourSelect}
-        />
-      </LevelItem>
-      <LevelItem key={'splitter-1'}>
-        <div className="datetime-picker__colon-divider">:</div>
-      </LevelItem>
-      <LevelItem key={'minute'}>
-        <TimeSpinner variant={'minute'} label={'Minute'} selected={selected.minute} onChange={onMinuteSelect} />
-      </LevelItem>
-      <LevelItem key={'splitter-2'}>
-        <div className="datetime-picker__colon-divider">:</div>
-      </LevelItem>
-      <LevelItem key={'second'}>
-        <TimeSpinner variant={'second'} label="Second" selected={selected.second} onChange={onSecondSelect} />
-      </LevelItem>
-      {is24h ? (
-        <></>
-      ) : (
-        <LevelItem key={'meridiem'}>
-          <MeridiemPicker isAM={meridiemAM} onSelect={onMeridiemSelect} />
-        </LevelItem>
-      )}
-    </Level>
+    <>
+      <Panel>
+        <PanelMain>
+          <PanelMainBody>
+            <Level hasGutter>
+              <LevelItem key={'hour'}>
+                <TimeSpinner
+                  variant={is24h ? 'hour24' : 'hour12'}
+                  label={'Hour'}
+                  selected={is24h ? selected.hour24 : hourIn12HrFormat(selected.hour24)[0]}
+                  onChange={handleHourSelect}
+                />
+              </LevelItem>
+              <LevelItem key={'splitter-1'}>
+                <div className="datetime-picker__colon-divider">:</div>
+              </LevelItem>
+              <LevelItem key={'minute'}>
+                <TimeSpinner variant={'minute'} label={'Minute'} selected={selected.minute} onChange={onMinuteSelect} />
+              </LevelItem>
+              <LevelItem key={'splitter-2'}>
+                <div className="datetime-picker__colon-divider">:</div>
+              </LevelItem>
+              <LevelItem key={'second'}>
+                <TimeSpinner variant={'second'} label="Second" selected={selected.second} onChange={onSecondSelect} />
+              </LevelItem>
+              {is24h ? (
+                <></>
+              ) : (
+                <LevelItem key={'meridiem'}>
+                  <MeridiemPicker isAM={meridiemAM} onSelect={onMeridiemSelect} />
+                </LevelItem>
+              )}
+            </Level>
+          </PanelMainBody>
+          <Divider />
+          <PanelFooter>
+            <HelperText>
+              <HelperTextItem>{'Use 24-hour time.'}</HelperTextItem>
+            </HelperText>
+            <Switch label="24-hour" isChecked={is24h} onChange={setIs24h} />
+          </PanelFooter>
+        </PanelMain>
+      </Panel>
+      {/* <Stack hasGutter>
+      <StackItem>
+        
+      </StackItem>
+      <StackItem>
+        
+      </StackItem>
+    </Stack> */}
+    </>
   );
 };
 

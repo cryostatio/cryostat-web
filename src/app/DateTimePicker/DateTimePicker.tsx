@@ -167,9 +167,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
     [setDatetime]
   );
 
-  const selectedDatetimeDisplay = React.useMemo(() => {
-    return dayjs(datetime).format('L LTS');
-  }, [datetime, format]);
+  const selectedDatetimeDisplay = React.useMemo(() => dayjs(datetime).format('L LTS'), [datetime, format]);
 
   React.useEffect(() => {
     addSubscription(

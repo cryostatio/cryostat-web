@@ -62,7 +62,6 @@ export enum FeatureLevel {
 }
 
 export interface DatetimeFormat {
-  timeFormat: '12h' | '24h';
   dateLocale: {
     name: string;
     key: string;
@@ -71,7 +70,6 @@ export interface DatetimeFormat {
 }
 
 export const defaultDatetimeFormat: DatetimeFormat = {
-  timeFormat: '24h',
   dateLocale: {
     key: 'en',
     name: 'English',

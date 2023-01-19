@@ -40,16 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { DatetimeFormat, defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { locales, timezones } from '@i18n/datetime';
-import {
-  FormGroup,
-  HelperText,
-  HelperTextItem,
-  Select,
-  SelectOption,
-  Stack,
-  StackItem,
-  Switch,
-} from '@patternfly/react-core';
+import { FormGroup, HelperText, HelperTextItem, Select, SelectOption, Stack, StackItem } from '@patternfly/react-core';
 import dayjs from 'dayjs';
 import advanced from 'dayjs/plugin/advancedFormat';
 import timezone from 'dayjs/plugin/timezone';
@@ -106,16 +97,6 @@ const Component = () => {
       });
     },
     [context.settings, state, setDateLocaleOpen]
-  );
-
-  const handleTimeFormatSelect = React.useCallback(
-    (checked: boolean) => {
-      context.settings.setDatetimeFormat({
-        ...state,
-        timeFormat: checked ? '24h' : '12h',
-      });
-    },
-    [context.settings, state]
   );
 
   const handleTimezoneSelect = React.useCallback(
@@ -186,14 +167,6 @@ const Component = () => {
           >
             {dateLocaleOptions}
           </Select>
-        </FormGroup>
-      </StackItem>
-      <StackItem key={'time-format-select'}>
-        <FormGroup>
-          <HelperText>
-            <HelperTextItem>{'Use 24-hour time.'}</HelperTextItem>
-          </HelperText>
-          <Switch label="24-hour" isChecked={state.timeFormat === '24h'} onChange={handleTimeFormatSelect} />
         </FormGroup>
       </StackItem>
       <StackItem key={'timezone-select'}>

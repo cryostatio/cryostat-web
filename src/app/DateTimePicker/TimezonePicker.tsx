@@ -54,7 +54,7 @@ export interface TimezonePickerProps {
   isCompact?: boolean;
   menuAppendTo?: HTMLElement | (() => HTMLElement) | 'inline' | 'parent' | undefined;
   onTimezoneChange?: (timezone: Timezone) => void;
-  selected: Timezone; // TODO: Un-require this
+  selected: Timezone;
 }
 
 export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
