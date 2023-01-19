@@ -831,6 +831,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     );
   }, [
     index,
+    datetimeContext.timeZone.full,
     checkedIndices,
     isExpanded,
     recording,

@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import * as React from 'react';
 import { defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
+import * as React from 'react';
 
 export const DateTimeContext = React.createContext(defaultDatetimeFormat);

@@ -121,7 +121,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
 
   const handleSubmit = React.useCallback(() => {
     onSelect && onSelect(datetime, timezone);
-  }, [datetime, timezone]);
+  }, [datetime, timezone, onSelect]);
 
   const handleCaledarSelect = React.useCallback(
     (date: Date) => {
@@ -186,7 +186,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
     if (prefilledDate) {
       setDatetime(prefilledDate);
     }
-  }, [setDatetime]);
+  }, [setDatetime, prefilledDate]);
 
   return (
     <Form>

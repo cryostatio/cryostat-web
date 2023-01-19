@@ -182,7 +182,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
       const newVal = _sanitizeValue(Number(value));
       onChange && onChange(newVal);
     },
-    [onChange, _sanitizeValue, onChange]
+    [onChange, _sanitizeValue]
   );
 
   const handleIncrement = React.useCallback(() => {

@@ -114,7 +114,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
         });
       })
     );
-  }, [addSubscription, context.notifications, setDrawerCategories]);
+  }, [addSubscription, context, context.notifications, setDrawerCategories]);
 
   React.useEffect(() => {
     addSubscription(
@@ -122,7 +122,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
         setTotalUnreadNotificationsCount(s.length);
       })
     );
-  }, [addSubscription, context.unreadNotifications, setTotalUnreadNotificationsCount]);
+  }, [addSubscription, context, context.unreadNotifications, setTotalUnreadNotificationsCount]);
 
   React.useEffect(() => {
     const locale = getLocale(datetimeContext.dateLocale.key);

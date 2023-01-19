@@ -42,13 +42,12 @@ import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { selectTab } from '@app/Settings/Settings';
+import { DateTimeContext } from '@app/Shared/DateTimeContext';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
-import { DateTimeContext } from '@app/Shared/DateTimeContext';
+import { FeatureLevel, defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { openTabForUrl } from '@app/utils/utils';
 import {

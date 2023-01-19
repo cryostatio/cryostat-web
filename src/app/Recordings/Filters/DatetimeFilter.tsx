@@ -124,7 +124,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
   const handleSubmit = React.useCallback(() => {
     if (datetimeInput.validation === ValidatedOptions.success) {
       // internally uses ISOString but display will be localized.
-      onSubmit(dayjs(datetimeInput.date!).tz(datetimeInput.timezone.full, true).toISOString());
+      onSubmit(dayjs(datetimeInput.date).tz(datetimeInput.timezone.full, true).toISOString());
       setDatetimeInput(_emptyDatetimeInput);
     }
   }, [onSubmit, datetimeInput, setDatetimeInput]);

@@ -40,9 +40,9 @@ import { Timezone } from '@app/Shared/Services/Settings.service';
 import { SelectOption, Select, SelectVariant } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
 import * as React from 'react';
 
 dayjs.extend(utc);
@@ -98,7 +98,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
       if (!value) {
         return options;
       }
-      const matchExp = new RegExp(value.replace(/([\+])/gi, `\\$1`), 'i');
+      const matchExp = new RegExp(value.replace(/([+])/gi, `\\$1`), 'i');
       return options.filter((op) => matchExp.test(op.props.value.full) || matchExp.test(op.props.description));
     },
     [options]
