@@ -36,18 +36,11 @@
  * SOFTWARE.
  */
 
-import { Timezone, supportedTimezones } from '@i18n/datetime';
-import { SelectOption, Select, SelectVariant } from '@patternfly/react-core';
+import { useDayjs } from '@app/utils/useDayjs';
+import { supportedTimezones, Timezone } from '@i18n/datetime';
+import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
-import dayjs from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(advancedFormat);
 
 export interface TimezonePickerProps {
   isFlipEnabled?: boolean;
@@ -64,6 +57,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
   selected,
   onTimezoneChange = (_) => undefined,
 }) => {
+  const [dayjs, datetimeContext] = useDayjs();
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
 
   const onSelect = React.useCallback(

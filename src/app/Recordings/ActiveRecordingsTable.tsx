@@ -39,16 +39,15 @@
 import { authFailMessage } from '@app/ErrorView/ErrorView';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { parseLabels } from '@app/RecordingMetadata/RecordingLabel';
-import { DateTimeContext } from '@app/Shared/DateTimeContext';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
   recordingAddFilterIntent,
-  recordingDeleteFilterIntent,
   recordingAddTargetIntent,
-  recordingDeleteCategoryFiltersIntent,
   recordingDeleteAllFiltersIntent,
+  recordingDeleteCategoryFiltersIntent,
+  recordingDeleteFilterIntent,
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
@@ -56,9 +55,8 @@ import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.servic
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useForceUpdate } from '@app/utils/useForceUpdate';
+import { useDayjs } from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { getLocale } from '@i18n/datetime';
 import {
   Button,
   Checkbox,
@@ -73,16 +71,11 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
-import dayjs from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import utc from 'dayjs/plugin/utc';
+import { ExpandableRowContent, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { combineLatest, forkJoin, from, merge, Observable } from 'rxjs';
+import { combineLatest, forkJoin, merge, Observable } from 'rxjs';
 import { concatMap, filter, first } from 'rxjs/operators';
 import { DeleteWarningModal } from '../Modal/DeleteWarningModal';
 import { LabelCell } from '../RecordingMetadata/LabelCell';
@@ -91,11 +84,6 @@ import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from '
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
 import { RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(localizedFormat);
-dayjs.extend(advancedFormat);
 
 export enum PanelContent {
   LABELS,
@@ -728,22 +716,8 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   handleRowCheck,
   updateFilters,
 }) => {
-  const datetimeContext = React.useContext(DateTimeContext);
-  const forceUpdate = useForceUpdate();
-  const addSubscription = useSubscriptions();
+  const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
-
-  React.useEffect(() => {
-    const locale = getLocale(datetimeContext.dateLocale.key);
-    if (locale) {
-      addSubscription(
-        from(locale.load()).subscribe(() => {
-          dayjs.locale(locale.key);
-          forceUpdate();
-        })
-      );
-    }
-  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
 
   const parsedLabels = React.useMemo(() => {
     return parseLabels(recording.metadata.labels);

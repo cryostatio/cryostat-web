@@ -35,10 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { DateTimeContext } from '@app/Shared/DateTimeContext';
-import { useForceUpdate } from '@app/utils/useForceUpdate';
+import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { getLocale } from '@i18n/datetime';
 import {
   Dropdown,
   DropdownItem,
@@ -56,17 +54,10 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
-import dayjs from 'dayjs';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import utc from 'dayjs/plugin/utc';
-import * as React from 'react';
-import { combineLatest, from } from 'rxjs';
-import { Notification, NotificationsContext } from './Notifications';
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(localizedFormat);
+import * as React from 'react';
+import { combineLatest } from 'rxjs';
+import { Notification, NotificationsContext } from './Notifications';
 
 export interface NotificationCenterProps {
   onClose: () => void;
@@ -80,10 +71,9 @@ export interface NotificationDrawerCategory {
 }
 
 export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = (props) => {
+  const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(NotificationsContext);
-  const datetimeContext = React.useContext(DateTimeContext);
   const addSubscription = useSubscriptions();
-  const forceUpdate = useForceUpdate();
 
   const [totalUnreadNotificationsCount, setTotalUnreadNotificationsCount] = React.useState(0);
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
@@ -123,18 +113,6 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
       })
     );
   }, [addSubscription, context, context.unreadNotifications, setTotalUnreadNotificationsCount]);
-
-  React.useEffect(() => {
-    const locale = getLocale(datetimeContext.dateLocale.key);
-    if (locale) {
-      addSubscription(
-        from(locale.load()).subscribe(() => {
-          dayjs.locale(locale.key);
-          forceUpdate();
-        })
-      );
-    }
-  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
 
   const handleToggleDropdown = React.useCallback(() => {
     setHeaderDropdownOpen((v) => !v);

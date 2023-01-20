@@ -72,11 +72,9 @@
  * SOFTWARE.
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
-import { DateTimeContext } from '@app/Shared/DateTimeContext';
 import { defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
-import { useForceUpdate } from '@app/utils/useForceUpdate';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { getLocale, getTimezone, Timezone } from '@i18n/datetime';
+import { useDayjs } from '@app/utils/useDayjs';
+import { getTimezone, Timezone } from '@i18n/datetime';
 import {
   Button,
   ButtonVariant,
@@ -93,22 +91,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
-import dayjs from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import localeData from 'dayjs/plugin/localeData';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
-import { from } from 'rxjs';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(localeData);
-dayjs.extend(localizedFormat);
-dayjs.extend(customParseFormat);
-dayjs.extend(advancedFormat);
 
 export interface DateTimeFilterProps {
   onSubmit: (dateISO: string) => void;
@@ -127,10 +110,7 @@ const _emptyDatetimeInput: {
 };
 
 export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ onSubmit }) => {
-  const datetimeContext = React.useContext(DateTimeContext);
-  const addSubscription = useSubscriptions();
-  const forceUpdate = useForceUpdate();
-
+  const [dayjs, datetimeContext] = useDayjs();
   const [datetimeInput, setDatetimeInput] = React.useState(_emptyDatetimeInput);
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
 
@@ -203,18 +183,6 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
     },
     [setDatetimeInput]
   );
-
-  React.useEffect(() => {
-    const locale = getLocale(datetimeContext.dateLocale.key);
-    if (locale) {
-      addSubscription(
-        from(locale.load()).subscribe(() => {
-          dayjs.locale(locale.key);
-          forceUpdate();
-        })
-      );
-    }
-  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
 
   return (
     <Flex>

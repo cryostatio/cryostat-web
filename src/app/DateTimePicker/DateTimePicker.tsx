@@ -72,11 +72,9 @@
  * SOFTWARE.
  */
 import { TimePicker } from '@app/DateTimePicker/TimePicker';
-import { DateTimeContext } from '@app/Shared/DateTimeContext';
 import { defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
-import { useForceUpdate } from '@app/utils/useForceUpdate';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { getLocale, Timezone } from '@i18n/datetime';
+import { useDayjs } from '@app/utils/useDayjs';
+import { Timezone } from '@i18n/datetime';
 import { isHourIn24hAM } from '@i18n/datetimeUtils';
 import {
   ActionGroup,
@@ -92,15 +90,8 @@ import {
   TabTitleText,
   TextInput,
 } from '@patternfly/react-core';
-import dayjs from 'dayjs';
-import localeData from 'dayjs/plugin/localeData';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
 import React from 'react';
-import { from } from 'rxjs';
 import { TimezonePicker } from './TimezonePicker';
-
-dayjs.extend(localizedFormat);
-dayjs.extend(localeData);
 
 export interface DateTimePickerProps {
   onSelect?: (date: Date, timezone: Timezone) => void;
@@ -109,10 +100,7 @@ export interface DateTimePickerProps {
 }
 
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
-  const datetimeContext = React.useContext(DateTimeContext);
-  const addSubscription = useSubscriptions();
-  const forceUpdate = useForceUpdate();
-
+  const [dayjs, datetimeContext] = useDayjs();
   const [activeTab, setActiveTab] = React.useState('date');
   const [datetime, setDatetime] = React.useState<Date>(new Date());
   const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone); // Not affected by user preferences
@@ -123,7 +111,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
     onSelect && onSelect(datetime, timezone);
   }, [datetime, timezone, onSelect]);
 
-  const handleCaledarSelect = React.useCallback(
+  const handleCalendarSelect = React.useCallback(
     (date: Date) => {
       setDatetime((old) => {
         const wrappedOld = dayjs(old);
@@ -171,18 +159,6 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
   const selectedDatetimeDisplay = React.useMemo(() => dayjs(datetime).format('L LTS'), [datetime]);
 
   React.useEffect(() => {
-    const locale = getLocale(datetimeContext.dateLocale.key);
-    if (locale) {
-      addSubscription(
-        from(locale.load()).subscribe(() => {
-          dayjs.locale(locale.key);
-          forceUpdate();
-        })
-      );
-    }
-  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
-
-  React.useEffect(() => {
     if (prefilledDate) {
       setDatetime(prefilledDate);
     }
@@ -208,7 +184,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
                 }}
                 style={{ padding: 0 }}
                 date={datetime}
-                onChange={handleCaledarSelect}
+                onChange={handleCalendarSelect}
               />
             </Bullseye>
           </FormGroup>
