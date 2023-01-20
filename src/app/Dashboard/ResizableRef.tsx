@@ -145,10 +145,5 @@ export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
     [callbackMouseMove, callbackMouseUp]
   );
 
-  return (
-    <div
-      className="resizable-ref"
-      onMouseDown={handleOnMouseDown}
-    />
-  );
+  return <div className="resizable-ref" onMouseDown={handleOnMouseDown} />;
 };

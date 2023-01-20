@@ -43,15 +43,7 @@ import {
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
-import {
-  CardActions,
-  CardBody,
-  CardHeader,
-  Grid,
-  GridItem,
-  gridSpans,
-  Text,
-} from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
@@ -273,7 +265,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <Grid id={"dashboard-grid"} hasGutter>
+      <Grid id={'dashboard-grid'} hasGutter>
         {cardConfigs.map((cfg, idx) => (
           <GridItem span={cfg.span} key={idx} order={{ default: idx.toString() }}>
             {React.createElement(getConfigByName(cfg.name).component, {
@@ -290,7 +282,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
           </GridItem>
         ))}
         <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
-          <AddCard/>
+          <AddCard />
         </GridItem>
       </Grid>
     </TargetView>

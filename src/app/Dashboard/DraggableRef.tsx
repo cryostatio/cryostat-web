@@ -35,9 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {
-  dashboardCardConfigReorderCardIntent,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { dashboardCardConfigReorderCardIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { GripVerticalIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import React from 'react';
@@ -73,6 +71,8 @@ export interface DraggableRefProps {
   dashboardId: number;
 }
 
+const className = `draggable-ref`;
+
 export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   children,
   dashboardId,
@@ -83,7 +83,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   const wrapperRef = React.useRef<HTMLDivElement>(null);
 
   const startCoords = React.useRef<[number, number]>([0, 0]);
-  const hoveringDroppable = React.useRef<HTMLElement | null>(null) ;
+  const hoveringDroppable = React.useRef<HTMLElement | null>(null);
   const hoveringIndex = React.useRef<number | null>(null);
   const mouseMoveListener = React.useRef<EventListener>();
   const mouseUpListener = React.useRef<EventListener>();
@@ -92,57 +92,64 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   const [isDragging, setIsDragging] = React.useState(false);
   const [selected, setSelected] = React.useState(false);
 
-  const className = `draggable-ref`;
-
-  const onTransitionEnd = React.useCallback((_ev: React.TransitionEvent<HTMLElement>) => {
+  const onTransitionEnd = React.useCallback(
+    (_ev: React.TransitionEvent<HTMLElement>) => {
       setIsDragging(false);
       setRefStyle(initStyle);
-  }, [setIsDragging, setRefStyle]);
+    },
+    [setIsDragging, setRefStyle]
+  );
 
-  const onMouseUpWhileDragging = React.useCallback((droppableItems: DroppableItem[]) => {
-    droppableItems.forEach(resetDroppableItem);
-    if (mouseMoveListener.current && mouseUpListener.current) {
-      document.removeEventListener('mousemove', mouseMoveListener.current);
-      document.removeEventListener('mouseup', mouseUpListener.current);
-    }
-    if (hoveringDroppable.current && hoveringIndex.current !== null) {
-      setIsDragging(false);
-      setSelected(false);
-      setRefStyle({
-        ...initStyle,
-        transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
-        transform: '',
+  const onMouseUpWhileDragging = React.useCallback(
+    (droppableItems: DroppableItem[]) => {
+      droppableItems.forEach(resetDroppableItem);
+      if (mouseMoveListener.current && mouseUpListener.current) {
+        document.removeEventListener('mousemove', mouseMoveListener.current);
+        document.removeEventListener('mouseup', mouseUpListener.current);
+      }
+      if (hoveringDroppable.current && hoveringIndex.current !== null) {
+        setIsDragging(false);
+        setSelected(false);
+        setRefStyle({
+          ...initStyle,
+          transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
+          transform: '',
+        });
+        dispatch(dashboardCardConfigReorderCardIntent(dashboardId, hoveringIndex.current));
+      } else {
+        setSelected(false);
+        setRefStyle({
+          ...refStyle,
+          transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
+          transform: '',
+        });
+      }
+    },
+    [dispatch, setIsDragging, setSelected, setRefStyle, refStyle, dashboardId]
+  );
+
+  const onMouseMoveWhileDragging = React.useCallback(
+    (ev: MouseEvent, draggableItems: DroppableItem[]) => {
+      hoveringDroppable.current = null;
+      hoveringIndex.current = null;
+      draggableItems.forEach((draggableItem) => {
+        if (overlaps(ev, draggableItem.rect) && !draggableItem.isDraggingHost) {
+          draggableItem.node.style.backgroundColor = overlapColor;
+          hoveringDroppable.current = draggableItem.node;
+          hoveringIndex.current = parseInt(draggableItem.node.getAttribute(dashboardCardOrderAttribute) as string);
+        } else {
+          resetDroppableItem(draggableItem);
+        }
       });
-      dispatch(dashboardCardConfigReorderCardIntent(dashboardId, hoveringIndex.current));
-    } else {
-      setSelected(false);
       setRefStyle({
         ...refStyle,
-        transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
-        transform: '',
+        position: 'relative',
+        zIndex: 5000,
+        transform: `translate(${ev.pageX - startCoords.current[0]}px, ${ev.pageY - startCoords.current[1]}px)`,
       });
-    }
-  }, [dispatch, setIsDragging, setSelected, setRefStyle, refStyle, dashboardId]);
-
-  const onMouseMoveWhileDragging = React.useCallback((ev: MouseEvent, draggableItems: DroppableItem[]) => {
-    hoveringDroppable.current = null;
-    hoveringIndex.current = null;
-    draggableItems.forEach((draggableItem) => {
-      if (overlaps(ev, draggableItem.rect) && !draggableItem.isDraggingHost) {        
-        draggableItem.node.style.backgroundColor = overlapColor;
-        hoveringDroppable.current = draggableItem.node;
-        hoveringIndex.current = parseInt(draggableItem.node.getAttribute(dashboardCardOrderAttribute) as string);
-      } else {
-        resetDroppableItem(draggableItem);
-      }
-    });
-    setRefStyle({
-      ...refStyle,
-      position: 'relative',
-      zIndex: 5000,
-      transform: `translate(${ev.pageX - startCoords.current[0]}px, ${ev.pageY - startCoords.current[1]}px)`,
-    });
-  }, [setRefStyle, refStyle]);
+    },
+    [setRefStyle, refStyle]
+  );
 
   const onDragStart = React.useCallback(
     (ev: React.DragEvent<HTMLDivElement>) => {
