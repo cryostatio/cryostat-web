@@ -243,7 +243,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(name).toBeInTheDocument();
     expect(name).toBeVisible();
 
-    const startTime = screen.getByText(dayjs.utc(mockRecording.startTime).format('L LTS [UTC]'));
+    const startTime = screen.getByText(dayjs(mockRecording.startTime).tz('UTC').format('L LTS z'));
     expect(startTime).toBeInTheDocument();
     expect(startTime).toBeVisible();
 
