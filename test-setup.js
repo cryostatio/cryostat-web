@@ -8,3 +8,17 @@ jest.mock('@app/Shared/Services/Report.service');
 jest.mock('@app/Shared/Services/Settings.service');
 jest.mock('@app/Shared/Services/Target.service');
 jest.mock('@app/Shared/Services/Targets.service');
+jest.mock('@app/Shared/DateTimeContext', () => ({
+    ...jest.requireActual('@app/Shared/DateTimeContext'),
+    defaultDatetimeFormat: 
+    {
+        dateLocale: {
+          key: 'en',
+          name: 'English',
+        },
+        timeZone: {
+          full: 'UTC',
+          short: 'UTC',
+        },
+    }
+}));

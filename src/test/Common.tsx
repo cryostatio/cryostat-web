@@ -37,6 +37,7 @@
  */
 
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { DateTimeContext, defaultDatetimeFormat } from '@app/Shared/DateTimeContext';
 import { setupStore } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { render } from '@testing-library/react';
@@ -58,7 +59,11 @@ export const renderDefault = (
   } = {}
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
-    return <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>;
+    return (
+      <NotificationsContext.Provider value={notifications}>
+        <DateTimeContext.Provider value={defaultDatetimeFormat}>{children}</DateTimeContext.Provider>
+      </NotificationsContext.Provider>
+    );
   };
   return { user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
@@ -76,7 +81,9 @@ export const renderWithReduxStore = (
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <NotificationsContext.Provider value={notifications}>
-        <Provider store={store}>{children}</Provider>
+        <DateTimeContext.Provider value={defaultDatetimeFormat}>
+          <Provider store={store}>{children}</Provider>
+        </DateTimeContext.Provider>
       </NotificationsContext.Provider>
     );
   };
@@ -95,7 +102,9 @@ export const renderWithServiceContext = (
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <ServiceContext.Provider value={services}>
-        <NotificationsContext.Provider value={notifications}>{children}</NotificationsContext.Provider>
+        <NotificationsContext.Provider value={notifications}>
+          <DateTimeContext.Provider value={defaultDatetimeFormat}>{children}</DateTimeContext.Provider>
+        </NotificationsContext.Provider>
       </ServiceContext.Provider>
     );
   };
@@ -114,7 +123,9 @@ export const renderWithRouter = (
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
       <NotificationsContext.Provider value={notifications}>
-        <Router history={history}>{children}</Router>
+        <Router history={history}>
+          <DateTimeContext.Provider value={defaultDatetimeFormat}>{children}</DateTimeContext.Provider>
+        </Router>
       </NotificationsContext.Provider>
     );
   };
@@ -136,7 +147,9 @@ export const renderWithServiceContextAndReduxStore = (
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
-          <Provider store={store}>{children}</Provider>
+          <Provider store={store}>
+            <DateTimeContext.Provider value={defaultDatetimeFormat}>{children}</DateTimeContext.Provider>
+          </Provider>
         </NotificationsContext.Provider>
       </ServiceContext.Provider>
     );
@@ -158,7 +171,9 @@ export const renderWithServiceContextAndRouter = (
     return (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
-          <Router history={history}>{children}</Router>
+          <Router history={history}>
+            <DateTimeContext.Provider value={defaultDatetimeFormat}>{children}</DateTimeContext.Provider>
+          </Router>
         </NotificationsContext.Provider>
       </ServiceContext.Provider>
     );
@@ -183,7 +198,9 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
       <ServiceContext.Provider value={services}>
         <NotificationsContext.Provider value={notifications}>
           <Provider store={store}>
-            <Router history={history}>{children}</Router>
+            <Router history={history}>
+              <DateTimeContext.Provider value={defaultDatetimeFormat}>{children}</DateTimeContext.Provider>
+            </Router>
           </Provider>
         </NotificationsContext.Provider>
       </ServiceContext.Provider>
