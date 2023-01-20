@@ -14,5 +14,11 @@
   },
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
+  },
+  "DateTimePicker": {
+    "SELECTED_DATETIME": "Selected DateTime"
+  },
+  "TimePicker": {
+    "USE_24HR_TIME": "Use 24-hour time"
   }
 }

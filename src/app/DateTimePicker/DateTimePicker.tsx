@@ -91,6 +91,7 @@ import {
   TextInput,
 } from '@patternfly/react-core';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { TimezonePicker } from './TimezonePicker';
 
 export interface DateTimePickerProps {
@@ -100,6 +101,7 @@ export interface DateTimePickerProps {
 }
 
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
+  const [t] = useTranslation();
   const [dayjs, _] = useDayjs();
   const [activeTab, setActiveTab] = React.useState('date');
   const [datetime, setDatetime] = React.useState<Date>(new Date());
@@ -207,7 +209,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
           </FormGroup>
         </Tab>
       </Tabs>
-      <FormGroup label={'Selected DateTime'}>
+      <FormGroup label={t('DateTimePicker.SELECTED_DATETIME')}>
         <Flex>
           <FlexItem>
             <TextInput
@@ -225,10 +227,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
       </FormGroup>
       <ActionGroup style={{ marginTop: 0 }}>
         <Button variant="primary" onClick={handleSubmit}>
-          Select
+          {t('SELECT', { ns: 'common' })}
         </Button>
         <Button variant="link" onClick={onDismiss}>
-          Cancel
+          {t('CANCEL', { ns: 'common' })}
         </Button>
       </ActionGroup>
     </Form>

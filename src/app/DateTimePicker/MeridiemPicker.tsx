@@ -37,6 +37,7 @@
  */
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface MeridiemPickerProps {
   onSelect?: (isAM: boolean) => void;
@@ -44,6 +45,7 @@ export interface MeridiemPickerProps {
 }
 
 export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () => undefined, isAM = true }) => {
+  const [t] = useTranslation();
   const handleSelectAM = React.useCallback(() => {
     onSelect(true);
   }, [onSelect]);
@@ -55,10 +57,10 @@ export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () =>
   return (
     <div role={'listbox'} aria-label="Select AM or PM" className="datetime-picker__meridiem-title-stack">
       <div className={css('datetime-picker__meridiem-tile', `${isAM ? '' : 'un'}selected`)} onClick={handleSelectAM}>
-        AM
+        {t('MERIDIEM_AM', { ns: 'common' })}
       </div>
       <div className={css('datetime-picker__meridiem-tile', `${isAM ? 'un' : ''}selected`)} onClick={handleSelectPM}>
-        PM
+        {t('MERIDIEM_PM', { ns: 'common' })}
       </div>
     </div>
   );

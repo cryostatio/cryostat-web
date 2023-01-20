@@ -58,6 +58,7 @@ import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface TimePickerProps {
   selected: {
@@ -79,6 +80,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   onMeridiemSelect,
   selected,
 }) => {
+  const [t] = useTranslation();
   const [is24h, setIs24h] = React.useState(true);
 
   const meridiemAM = React.useMemo(() => isHourIn24hAM(selected.hour24), [selected.hour24]);
@@ -100,7 +102,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
               <LevelItem key={'hour'}>
                 <TimeSpinner
                   variant={is24h ? 'hour24' : 'hour12'}
-                  label={'Hour'}
+                  label={t('HOUR', { ns: 'common' })}
                   selected={is24h ? selected.hour24 : hourIn12HrFormat(selected.hour24)[0]}
                   onChange={handleHourSelect}
                 />
@@ -109,13 +111,23 @@ export const TimePicker: React.FC<TimePickerProps> = ({
                 <div className="datetime-picker__colon-divider">:</div>
               </LevelItem>
               <LevelItem key={'minute'}>
-                <TimeSpinner variant={'minute'} label={'Minute'} selected={selected.minute} onChange={onMinuteSelect} />
+                <TimeSpinner
+                  variant={'minute'}
+                  label={t('MINUTE', { ns: 'common' })}
+                  selected={selected.minute}
+                  onChange={onMinuteSelect}
+                />
               </LevelItem>
               <LevelItem key={'splitter-2'}>
                 <div className="datetime-picker__colon-divider">:</div>
               </LevelItem>
               <LevelItem key={'second'}>
-                <TimeSpinner variant={'second'} label="Second" selected={selected.second} onChange={onSecondSelect} />
+                <TimeSpinner
+                  variant={'second'}
+                  label={t('SECOND', { ns: 'common' })}
+                  selected={selected.second}
+                  onChange={onSecondSelect}
+                />
               </LevelItem>
               {is24h ? (
                 <></>
@@ -129,7 +141,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
           <Divider />
           <PanelFooter>
             <HelperText>
-              <HelperTextItem>{'Use 24-hour time.'}</HelperTextItem>
+              <HelperTextItem>{t('TimePicker.USE_24HR_TIME')}</HelperTextItem>
             </HelperText>
             <Switch label="24-hour" isChecked={is24h} onChange={setIs24h} />
           </PanelFooter>
@@ -143,7 +155,7 @@ interface TimeSpinnerProps {
   variant: 'hour12' | 'hour24' | 'minute' | 'second';
   onChange?: (value: number) => void;
   selected: number; // controlled, must be corresponding to variant
-  label?: string;
+  label?: string | null;
 }
 
 const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
