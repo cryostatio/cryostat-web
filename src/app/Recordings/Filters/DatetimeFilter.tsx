@@ -72,7 +72,7 @@
  * SOFTWARE.
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
-import { defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
+import { defaultDatetimeFormat } from '@app/Shared/DateTimeContext';
 import { useDayjs } from '@app/utils/useDayjs';
 import { getTimezone, Timezone } from '@i18n/datetime';
 import {

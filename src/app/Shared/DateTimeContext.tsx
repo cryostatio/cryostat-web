@@ -35,8 +35,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import { defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
+import dayjs, { Timezone } from '@i18n/datetime';
 import * as React from 'react';
+
+export interface DatetimeFormat {
+  dateLocale: {
+    name: string;
+    key: string;
+  };
+  timeZone: Timezone;
+}
+
+export const defaultDatetimeFormat: DatetimeFormat = {
+  dateLocale: {
+    key: 'en',
+    name: 'English',
+  }, // default en
+  timeZone: {
+    // guess current timezone
+    full: dayjs.tz.guess(),
+    short: dayjs().tz(dayjs.tz.guess()).format('z'),
+  } as Timezone,
+};
 
 export const DateTimeContext = React.createContext(defaultDatetimeFormat);

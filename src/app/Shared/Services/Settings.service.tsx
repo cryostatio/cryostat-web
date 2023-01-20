@@ -38,8 +38,8 @@
 
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import dayjs, { Timezone } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { DatetimeFormat, defaultDatetimeFormat } from '../DateTimeContext';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -53,26 +53,6 @@ export enum FeatureLevel {
   BETA = 1,
   PRODUCTION = 2,
 }
-
-export interface DatetimeFormat {
-  dateLocale: {
-    name: string;
-    key: string;
-  };
-  timeZone: Timezone;
-}
-
-export const defaultDatetimeFormat: DatetimeFormat = {
-  dateLocale: {
-    key: 'en',
-    name: 'English',
-  }, // default en
-  timeZone: {
-    // guess current timezone
-    full: dayjs.tz.guess(),
-    short: dayjs().tz(dayjs.tz.guess()).format('z'),
-  } as Timezone,
-};
 
 export const automatedAnalysisConfigToRecordingAttributes = (
   config: AutomatedAnalysisRecordingConfig

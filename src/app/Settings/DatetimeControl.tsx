@@ -37,8 +37,7 @@
  */
 import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { DatetimeFormat, defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
+import useDayjs from '@app/utils/useDayjs';
 import { locales, Timezone } from '@i18n/datetime';
 import { FormGroup, HelperText, HelperTextItem, Select, SelectOption, Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
@@ -46,14 +45,8 @@ import { UserSetting } from './Settings';
 
 const Component = () => {
   const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-
   const [dateLocaleOpen, setDateLocaleOpen] = React.useState(false);
-  const [state, setState] = React.useState<DatetimeFormat>(defaultDatetimeFormat);
-
-  React.useLayoutEffect(() => {
-    context.settings.datetimeFormat().subscribe(setState);
-  }, [addSubscription, setState, context.settings]);
+  const [_, datetimeFormat] = useDayjs();
 
   const handleDateToggle = React.useCallback((expanded: boolean) => setDateLocaleOpen(expanded), [setDateLocaleOpen]);
 
@@ -61,27 +54,27 @@ const Component = () => {
     (_, locale) => {
       setDateLocaleOpen(false);
       context.settings.setDatetimeFormat({
-        ...state,
+        ...datetimeFormat,
         dateLocale: {
           name: locale.name,
           key: locale.key,
         },
       });
     },
-    [context.settings, state, setDateLocaleOpen]
+    [context.settings, datetimeFormat, setDateLocaleOpen]
   );
 
   const handleTimezoneSelect = React.useCallback(
     (timezone: Timezone) => {
       context.settings.setDatetimeFormat({
-        ...state,
+        ...datetimeFormat,
         timeZone: {
           short: timezone.short,
           full: timezone.full,
         },
       });
     },
-    [context.settings, state]
+    [context.settings, datetimeFormat]
   );
 
   const dateLocaleOptions = React.useMemo(
@@ -128,9 +121,9 @@ const Component = () => {
             isFlipEnabled
             menuAppendTo="parent"
             selections={{
-              ...state.dateLocale,
-              toString: () => state.dateLocale.name,
-              compareTo: (val) => state.dateLocale.name === val.name,
+              ...datetimeFormat.dateLocale,
+              toString: () => datetimeFormat.dateLocale.name,
+              compareTo: (val) => datetimeFormat.dateLocale.name === val.name,
             }}
             hasInlineFilter
             maxHeight={'16em'}
@@ -147,7 +140,7 @@ const Component = () => {
             <HelperTextItem>{'Select current timezone.'}</HelperTextItem>
           </HelperText>
           <TimezonePicker
-            selected={state.timeZone}
+            selected={datetimeFormat.timeZone}
             menuAppendTo="parent"
             isFlipEnabled
             onTimezoneChange={handleTimezoneSelect}
