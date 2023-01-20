@@ -38,11 +38,7 @@
 
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
-import { Timezone } from '@i18n/datetime';
-import dayjs from 'dayjs';
-import advanced from 'dayjs/plugin/advancedFormat';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import utc from 'dayjs/plugin/utc';
+import dayjs, { Timezone } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   AutomatedAnalysisRecordingConfig,
@@ -51,10 +47,6 @@ import {
   RecordingAttributes,
 } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(advanced);
 
 export enum FeatureLevel {
   DEVELOPMENT = 0,

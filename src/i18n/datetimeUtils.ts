@@ -36,11 +36,8 @@
  * SOFTWARE.
  */
 
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
+import dayjs from '@i18n/datetime';
 import { clamp } from 'lodash';
-
-dayjs.extend(customParseFormat);
 
 export const hourIn12HrFormat = (hourIn24h: number): [number, boolean] => {
   // return [hour, isAM]

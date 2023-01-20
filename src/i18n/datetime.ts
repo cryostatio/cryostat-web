@@ -38,14 +38,21 @@
 /// <reference path="datetime.typings.d.ts" />
 import dayjs from 'dayjs';
 import localeJson from 'dayjs/locale.json';
-
-import advanced from 'dayjs/plugin/advancedFormat';
-import timezone from 'dayjs/plugin/timezone';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import localeData from 'dayjs/plugin/localeData';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.extend(advanced);
+dayjs.extend(localeData);
+dayjs.extend(localizedFormat);
+dayjs.extend(customParseFormat);
+dayjs.extend(advancedFormat);
+
+export default dayjs;
 
 export const locales = localeJson
   .map((locale) => ({

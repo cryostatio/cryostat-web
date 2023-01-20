@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 
-import { DateTimeContext } from '@app/Shared/DateTimeContext';
 import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import {
   allowedActiveRecordingFilters,
@@ -44,9 +43,8 @@ import {
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { recordingUpdateCategoryIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { Recording, RecordingState } from '@app/Shared/Services/Api.service';
-import { useForceUpdate } from '@app/utils/useForceUpdate';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { getLocale } from '@i18n/datetime';
+import { useDayjs } from '@app/utils/useDayjs';
+import dayjs from '@i18n/datetime';
 import {
   Dropdown,
   DropdownItem,
@@ -58,24 +56,13 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
-import dayjs from 'dayjs';
-import localeData from 'dayjs/plugin/localeData';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import utc from 'dayjs/plugin/utc';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { from } from 'rxjs';
 import { DateTimeFilter } from './Filters/DatetimeFilter';
 import { DurationFilter } from './Filters/DurationFilter';
 import { LabelFilter } from './Filters/LabelFilter';
 import { NameFilter } from './Filters/NameFilter';
 import { RecordingStateFilter } from './Filters/RecordingStateFilter';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(localeData);
-dayjs.extend(localizedFormat);
 
 export interface RecordingFiltersCategories {
   Name: string[];
@@ -112,11 +99,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   filters,
   updateFilters,
 }) => {
-  const datetimeContext = React.useContext(DateTimeContext);
-
-  const addSubscription = useSubscriptions();
-  const forceUpdate = useForceUpdate();
-
+  const [formatter, _] = useDayjs();
   const dispatch = useDispatch<StateDispatch>();
 
   const currentCategory = useSelector((state: RootState) => {
@@ -193,18 +176,6 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
     [updateFilters, currentCategory, target]
   );
 
-  React.useEffect(() => {
-    const locale = getLocale(datetimeContext.dateLocale.key);
-    if (locale) {
-      addSubscription(
-        from(locale.load()).subscribe(() => {
-          dayjs.locale(locale.key);
-          forceUpdate();
-        })
-      );
-    }
-  }, [addSubscription, datetimeContext.dateLocale, forceUpdate]);
-
   const categoryDropdown = React.useMemo(() => {
     return (
       <Dropdown
@@ -278,7 +249,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
               categoryIsDate(filterKey)
                 ? filters[filterKey].map((ISOStr: string) => {
                     return {
-                      node: dayjs(ISOStr).format('L LTS z'),
+                      node: formatter(ISOStr).format('L LTS z'),
                       key: ISOStr,
                     };
                   })

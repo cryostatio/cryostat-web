@@ -36,27 +36,14 @@
  * SOFTWARE.
  */
 
-import { getLocale } from '@i18n/datetime';
-import dayjs from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import localeData from 'dayjs/plugin/localeData';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
-import utc from 'dayjs/plugin/utc';
+import { DatetimeFormat } from '@app/Shared/Services/Settings.service';
+import dayjs, { getLocale } from '@i18n/datetime';
 import React, { useContext } from 'react';
 import { from, Subscription } from 'rxjs';
 import { DateTimeContext } from '../Shared/DateTimeContext';
 import { useForceUpdate } from './useForceUpdate';
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(localeData);
-dayjs.extend(localizedFormat);
-dayjs.extend(customParseFormat);
-dayjs.extend(advancedFormat);
-
-export function useDayjs() {
+export function useDayjs(): [typeof dayjs, DatetimeFormat] {
   const _localeSubRef = React.useRef([] as Subscription[]);
   const datetimeContext = useContext(DateTimeContext); // Expecting an available DateTimeContext
   const forceUpdate = useForceUpdate();
