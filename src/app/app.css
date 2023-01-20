@@ -253,23 +253,25 @@ html, body, #root {
 .resizable-ref {
   cursor: col-resize;
   position: relative;
-  border-right: 4px outset var(--pf-global--BackgroundColor--dark-400);
-  border-bottom-right-radius: 16px;
+  border-right: var(--pf-global--BorderWidth--xl) outset var(--pf-global--BackgroundColor--dark-400);
+  border-bottom-right-radius: 3px;
 }
 
 .draggable-ref {
   border-radius: var(--pf-global--BorderRadius--sm); /* 3px */
-  border-width: var(--pf-global--BorderWidth--sm); /* 1px */
-  border-top-style: 'solid';
 }
 
 .draggable-ref__dragging {
-  border-left: 2px solid var(--pf-global--palette--blue-300);
-  border-right: 2px solid var(--pf-global--palette--blue-300);
-  border-bottom: 2px solid var(--pf-global--palette--blue-300);
+  border-bottom-left-radius: var(--pf-global--BorderRadius--sm);
+  border-bottom-right-radius: var(--pf-global--BorderRadius--sm);
+  border-left: var(--pf-global--BorderWidth--lg) solid var(--pf-global--palette--blue-300);
+  border-right: var(--pf-global--BorderWidth--lg) solid var(--pf-global--palette--blue-300);
+  border-bottom: var(--pf-global--BorderWidth--lg) solid var(--pf-global--palette--blue-300);
 }
 
 .draggable-ref__grip:hover {
+  border-top-left-radius: var(--pf-global--BorderRadius--sm);
+  border-top-right-radius: var(--pf-global--BorderRadius--sm);
   background-color: var(--pf-global--palette--blue-300);
 }
 

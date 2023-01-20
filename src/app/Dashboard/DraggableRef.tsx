@@ -52,8 +52,11 @@ function overlaps(ev: MouseEvent, rect: DOMRect) {
 const initStyle = {
   // per card color? users can label their cards too?
   backgroundColor: 'var(--pf-global--palette--blue-200)',
-  borderTopColor: 'var(--pf-global--BorderColor--100)'
 };
+
+const overlapColor = 'var(--pf-global--palette--green-100)';
+
+export const dashboardCardOrderAttribute = 'dashboard-card-order';
 
 interface DroppableItem {
   node: HTMLElement;
@@ -63,7 +66,6 @@ interface DroppableItem {
 
 function resetDroppableItem(droppableItem: DroppableItem) {
   droppableItem.node.style.backgroundColor = initStyle.backgroundColor;
-  droppableItem.node.style.borderTopColor = 'var(--pf-global--BorderColor--100)';
 }
 
 export interface DraggableRefProps {
@@ -90,48 +92,46 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   const [isDragging, setIsDragging] = React.useState(false);
   const [selected, setSelected] = React.useState(false);
 
+  const className = `draggable-ref`;
+
   const onTransitionEnd = React.useCallback((_ev: React.TransitionEvent<HTMLElement>) => {
-    if (isDragging) {
       setIsDragging(false);
       setRefStyle(initStyle);
+  }, [setIsDragging, setRefStyle]);
+
+  const onMouseUpWhileDragging = React.useCallback((droppableItems: DroppableItem[]) => {
+    droppableItems.forEach(resetDroppableItem);
+    if (mouseMoveListener.current && mouseUpListener.current) {
+      document.removeEventListener('mousemove', mouseMoveListener.current);
+      document.removeEventListener('mouseup', mouseUpListener.current);
     }
-  }, [setIsDragging, setRefStyle, isDragging]);
-
-  const onMouseUpWhileDragging = React.useCallback(
-    (droppableItems) => {
-      droppableItems.forEach(resetDroppableItem);
-      if (mouseMoveListener.current && mouseUpListener.current) {
-        document.removeEventListener('mousemove', mouseMoveListener.current);
-        document.removeEventListener('mouseup', mouseUpListener.current);
-      }
-      if (hoveringDroppable.current && hoveringIndex.current !== null) {
-        setIsDragging(false);
-        setSelected(false);
-        setRefStyle({...initStyle,
-          transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
-          transform: '',});
-        dispatch(dashboardCardConfigReorderCardIntent(dashboardId, hoveringIndex.current));
-      } else {
-        setSelected(false);
-        setRefStyle({
-          ...refStyle,
-          transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
-          transform: '',
-        });
-      }
-
-    },
-    [dispatch, setIsDragging, setSelected, setRefStyle, refStyle, dashboardId]
-  );
+    if (hoveringDroppable.current && hoveringIndex.current !== null) {
+      setIsDragging(false);
+      setSelected(false);
+      setRefStyle({
+        ...initStyle,
+        transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
+        transform: '',
+      });
+      dispatch(dashboardCardConfigReorderCardIntent(dashboardId, hoveringIndex.current));
+    } else {
+      setSelected(false);
+      setRefStyle({
+        ...refStyle,
+        transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
+        transform: '',
+      });
+    }
+  }, [dispatch, setIsDragging, setSelected, setRefStyle, refStyle, dashboardId]);
 
   const onMouseMoveWhileDragging = React.useCallback((ev: MouseEvent, draggableItems: DroppableItem[]) => {
     hoveringDroppable.current = null;
     hoveringIndex.current = null;
     draggableItems.forEach((draggableItem) => {
       if (overlaps(ev, draggableItem.rect) && !draggableItem.isDraggingHost) {        
-        draggableItem.node.style.backgroundColor = 'var(--pf-global--palette--green-100)';
+        draggableItem.node.style.backgroundColor = overlapColor;
         hoveringDroppable.current = draggableItem.node;
-        hoveringIndex.current = parseInt(draggableItem.node.getAttribute('dashboard-card-order') as string);
+        hoveringIndex.current = parseInt(draggableItem.node.getAttribute(dashboardCardOrderAttribute) as string);
       } else {
         resetDroppableItem(draggableItem);
       }
@@ -153,7 +153,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       const dragging = ev.target as HTMLElement;
       const rect = dragging.getBoundingClientRect();
 
-      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll('div.draggable-ref'));
+      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${className}`));
       const draggableItems: DroppableItem[] = draggableNodes.reduce((acc: DroppableItem[], cur) => {
         const isDraggingHost = cur.contains(dragging);
         const droppableItem: DroppableItem = {
@@ -188,24 +188,22 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   );
 
   const variableAttribute = React.useMemo(() => {
-    return { ['dashboard-card-order']: dashboardId };
+    return { [dashboardCardOrderAttribute]: dashboardId };
   }, [dashboardId]);
 
   return (
     <div
       ref={wrapperRef}
-      className={css(
-        `draggable-ref`
-      )}
+      className={css(className)}
       {...variableAttribute}
       onDragStart={onDragStart}
       onTransitionEnd={onTransitionEnd}
       style={{ ...refStyle }}
     >
-      <div ref={draggableRef} draggable className={css('draggable-ref__grip')}>
+      <div ref={draggableRef} draggable className={css(`${className}__grip`)}>
         <GripVerticalIcon />
       </div>
-      <div className={css("draggable-ref__content", selected && 'draggable-ref__dragging')}>{children}</div>
+      <div className={css(`${className}__content`, selected && `${className}__dragging`)}>{children}</div>
     </div>
   );
 };
