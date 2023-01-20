@@ -36,9 +36,9 @@
  * SOFTWARE.
  */
 /// <reference path="datetime.typings.d.ts" />
+import dayjs from 'dayjs';
 import localeJson from 'dayjs/locale.json';
 
-import dayjs from 'dayjs';
 import advanced from 'dayjs/plugin/advancedFormat';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';

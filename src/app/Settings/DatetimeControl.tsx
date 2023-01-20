@@ -39,7 +39,7 @@ import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { DatetimeFormat, defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { locales, Timezone, timezones } from '@i18n/datetime';
+import { locales, Timezone } from '@i18n/datetime';
 import { FormGroup, HelperText, HelperTextItem, Select, SelectOption, Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
 import { UserSetting } from './Settings';
