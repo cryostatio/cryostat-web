@@ -5,7 +5,7 @@ exports[`<DurationFilter /> renders correctly 1`] = `
   className="pf-l-flex"
 >
   <div
-    className=""
+    className="pf-m-flex-1"
   >
     <input
       aria-invalid={false}

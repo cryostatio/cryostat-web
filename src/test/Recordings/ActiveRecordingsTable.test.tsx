@@ -53,6 +53,7 @@ import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of, Subject } from 'rxjs';
 import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
+import dayjs from '@i18n/datetime';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -242,7 +243,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(name).toBeInTheDocument();
     expect(name).toBeVisible();
 
-    const startTime = screen.getByText(new Date(mockRecording.startTime).toISOString());
+    const startTime = screen.getByText(dayjs.utc(mockRecording.startTime).format('L LTS [UTC]'));
     expect(startTime).toBeInTheDocument();
     expect(startTime).toBeVisible();
 
