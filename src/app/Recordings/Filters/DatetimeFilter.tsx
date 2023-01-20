@@ -124,7 +124,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
       onSubmit(dayjs(datetimeInput.date).tz(datetimeInput.timezone.full, true).toISOString());
       setDatetimeInput(_emptyDatetimeInput);
     }
-  }, [onSubmit, datetimeInput, setDatetimeInput]);
+  }, [onSubmit, datetimeInput, setDatetimeInput, dayjs]);
 
   const handleDatetimeSelect = React.useCallback(
     (date: Date, timezone: Timezone) => {
@@ -136,7 +136,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
       });
       onPopoverDismiss();
     },
-    [setDatetimeInput, onPopoverDismiss]
+    [setDatetimeInput, onPopoverDismiss, dayjs]
   );
 
   const handleTextInput = React.useCallback(
@@ -181,7 +181,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
         }
       });
     },
-    [setDatetimeInput]
+    [setDatetimeInput, dayjs]
   );
 
   return (

@@ -57,7 +57,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
   selected,
   onTimezoneChange = (_) => undefined,
 }) => {
-  const [dayjs, datetimeContext] = useDayjs();
+  const [dayjs, _] = useDayjs();
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
 
   const onSelect = React.useCallback(
@@ -85,7 +85,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
         {isCompact ? timezone.short : `(UTC${dayjs().tz(timezone.full).format('Z')}) ${timezone.full}`}
       </SelectOption>
     ));
-  }, [isCompact]);
+  }, [isCompact, dayjs]);
 
   const onFilter = React.useCallback(
     (_, value: string) => {

@@ -807,6 +807,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     );
   }, [
     index,
+    dayjs,
     datetimeContext.timeZone.full,
     checkedIndices,
     isExpanded,

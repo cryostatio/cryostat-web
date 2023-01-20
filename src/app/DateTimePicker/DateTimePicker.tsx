@@ -100,7 +100,7 @@ export interface DateTimePickerProps {
 }
 
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
-  const [dayjs, datetimeContext] = useDayjs();
+  const [dayjs, _] = useDayjs();
   const [activeTab, setActiveTab] = React.useState('date');
   const [datetime, setDatetime] = React.useState<Date>(new Date());
   const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone); // Not affected by user preferences
@@ -119,28 +119,28 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
       });
       setActiveTab('time'); // Switch to time
     },
-    [setDatetime, setActiveTab]
+    [setDatetime, setActiveTab, dayjs]
   );
 
   const handleHourChange = React.useCallback(
     (hrIn24h: number) => {
       setDatetime((old) => dayjs(old).hour(hrIn24h).toDate());
     },
-    [setDatetime]
+    [setDatetime, dayjs]
   );
 
   const handleMinuteChange = React.useCallback(
     (m: number) => {
       setDatetime((old) => dayjs(old).minute(m).toDate());
     },
-    [setDatetime]
+    [setDatetime, dayjs]
   );
 
   const handleSecondChange = React.useCallback(
     (s: number) => {
       setDatetime((old) => dayjs(old).second(s).toDate());
     },
-    [setDatetime]
+    [setDatetime, dayjs]
   );
 
   const handleMeridiemChange = React.useCallback(
@@ -153,10 +153,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
         return old;
       });
     },
-    [setDatetime]
+    [setDatetime, dayjs]
   );
 
-  const selectedDatetimeDisplay = React.useMemo(() => dayjs(datetime).format('L LTS'), [datetime]);
+  const selectedDatetimeDisplay = React.useMemo(() => dayjs(datetime).format('L LTS'), [datetime, dayjs]);
 
   React.useEffect(() => {
     if (prefilledDate) {
