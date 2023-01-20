@@ -35,8 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { supportedTimezones } from '@app/Settings/DatetimeControl';
-import { Timezone } from '@app/Shared/Services/Settings.service';
+
+import { Timezone, supportedTimezones } from '@i18n/datetime';
 import { SelectOption, Select, SelectVariant } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';

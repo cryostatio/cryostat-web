@@ -73,10 +73,10 @@
  */
 import { TimePicker } from '@app/DateTimePicker/TimePicker';
 import { DateTimeContext } from '@app/Shared/DateTimeContext';
-import { defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
+import { defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
 import { useForceUpdate } from '@app/utils/useForceUpdate';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { getLocale } from '@i18n/datetime';
+import { getLocale, Timezone } from '@i18n/datetime';
 import { isHourIn24hAM } from '@i18n/datetimeUtils';
 import {
   ActionGroup,

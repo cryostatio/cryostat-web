@@ -38,6 +38,15 @@
 /// <reference path="datetime.typings.d.ts" />
 import localeJson from 'dayjs/locale.json';
 
+import dayjs from 'dayjs';
+import advanced from 'dayjs/plugin/advancedFormat';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advanced);
+
 export const locales = localeJson
   .map((locale) => ({
     ...locale,
@@ -54,3 +63,32 @@ export const getLocale = (key: string) => {
 export const timezones = (
   typeof Intl.supportedValuesOf === 'undefined' ? [] : Intl.supportedValuesOf('timeZone')
 ) as string[];
+
+export interface Timezone {
+  full: string;
+  short: string;
+}
+
+export const localTimezone = {
+  full: dayjs.tz.guess(),
+  short: dayjs().tz(dayjs.tz.guess()).format('z'),
+} as Timezone;
+
+export const UTCTimezone = {
+  full: 'UTC',
+  short: 'UTC',
+} as Timezone;
+
+export const supportedTimezones = !timezones.length
+  ? [localTimezone, UTCTimezone]
+  : timezones.map(
+      (tname) =>
+        ({
+          full: tname,
+          short: dayjs().tz(tname).format('z'), // Get abbreviation
+        } as Timezone)
+    );
+
+export const getTimezone = (short: string): Timezone | undefined => {
+  return supportedTimezones.find((t) => t.short === short);
+};

@@ -37,40 +37,12 @@
  */
 import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { DatetimeFormat, defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
+import { DatetimeFormat, defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { locales, timezones } from '@i18n/datetime';
+import { locales, Timezone, timezones } from '@i18n/datetime';
 import { FormGroup, HelperText, HelperTextItem, Select, SelectOption, Stack, StackItem } from '@patternfly/react-core';
-import dayjs from 'dayjs';
-import advanced from 'dayjs/plugin/advancedFormat';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
 import { UserSetting } from './Settings';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.extend(advanced);
-
-export const localTimezone = {
-  full: dayjs.tz.guess(),
-  short: dayjs().tz(dayjs.tz.guess()).format('z'),
-} as Timezone;
-
-export const UTCTimezone = {
-  full: 'UTC',
-  short: 'UTC',
-} as Timezone;
-
-export const supportedTimezones = !timezones.length
-  ? [localTimezone, UTCTimezone]
-  : timezones.map(
-      (tname) =>
-        ({
-          full: tname,
-          short: dayjs().tz(tname).format('z'), // Get abbreviation
-        } as Timezone)
-    );
 
 const Component = () => {
   const context = React.useContext(ServiceContext);

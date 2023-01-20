@@ -76,6 +76,7 @@ import {
 import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc';
 import * as React from 'react';
@@ -94,6 +95,7 @@ import { ReportFrame } from './ReportFrame';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(localizedFormat);
+dayjs.extend(advancedFormat);
 
 export enum PanelContent {
   LABELS,

@@ -73,10 +73,10 @@
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 import { DateTimeContext } from '@app/Shared/DateTimeContext';
-import { defaultDatetimeFormat, Timezone } from '@app/Shared/Services/Settings.service';
+import { defaultDatetimeFormat } from '@app/Shared/Services/Settings.service';
 import { useForceUpdate } from '@app/utils/useForceUpdate';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { getLocale } from '@i18n/datetime';
+import { getLocale, getTimezone, Timezone } from '@i18n/datetime';
 import {
   Button,
   ButtonVariant,
@@ -94,15 +94,14 @@ import {
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
 import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import localeData from 'dayjs/plugin/localeData';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
 import utc from 'dayjs/plugin/utc';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
 import * as React from 'react';
 import { from } from 'rxjs';
-import { TimezonePicker } from '@app/DateTimePicker/TimezonePicker';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -166,17 +165,31 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
         if (value === '') {
           return _emptyDatetimeInput;
         }
+
         const d = dayjs(
           value,
           `${dayjs.Ls[dayjs.locale()].formats.L} ${dayjs.Ls[dayjs.locale()].formats.LTS}`,
           dayjs.locale()
         );
+
         if (d.isValid()) {
+          // Expecting timezone comes last, else default to user preferences
+          const parts = value.split(/\s/);
+          const shortName = parts.length ? parts[parts.length - 1] : 'Invalid';
+          const tz = getTimezone(shortName);
+          if (!tz) {
+            return {
+              ...old,
+              text: value,
+              date: undefined,
+              validation: ValidatedOptions.error,
+            };
+          }
           return {
-            ...old,
             text: value,
             date: d.toDate(),
             validation: ValidatedOptions.success,
+            timezone: { short: shortName, full: tz.full },
           };
         } else {
           return {
@@ -223,18 +236,22 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
           >
             <Stack>
               <StackItem>
-                <TextInput
-                  type="text"
-                  id="date-time"
-                  placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).format('L LTS')}
-                  aria-label="Datetime Picker"
-                  value={datetimeInput.text}
-                  validated={datetimeInput.validation}
-                  onClick={onToggleCalendar}
-                  onChange={handleTextInput}
-                />
+                <InputGroup>
+                  <TextInput
+                    type="text"
+                    id="date-time"
+                    placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).format('L LTS z')}
+                    aria-label="Datetime Picker"
+                    value={datetimeInput.text}
+                    validated={datetimeInput.validation}
+                    onChange={handleTextInput}
+                  />
+                  <Button variant="control" aria-label="Toggle the calendar" onClick={onToggleCalendar}>
+                    <OutlinedCalendarAltIcon />
+                  </Button>
+                </InputGroup>
               </StackItem>
-              {datetimeInput.validation !== ValidatedOptions.error ? (
+              {datetimeInput.validation === ValidatedOptions.error ? (
                 <StackItem>
                   <HelperText>
                     <HelperTextItem variant="error">Invalid date time</HelperTextItem>
@@ -245,20 +262,6 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
               )}
             </Stack>
           </Popover>
-        </FlexItem>
-        <FlexItem spacer={{ default: 'spacerNone' }}>
-          <TimezonePicker
-            selected={datetimeInput.timezone}
-            menuAppendTo="parent"
-            isFlipEnabled
-            isCompact
-            onTimezoneChange={() => {}}
-          />
-        </FlexItem>
-        <FlexItem>
-          <Button variant="control" aria-label="Toggle the calendar" onClick={onToggleCalendar}>
-            <OutlinedCalendarAltIcon />
-          </Button>
         </FlexItem>
       </Flex>
       <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>

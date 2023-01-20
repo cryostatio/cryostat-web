@@ -140,14 +140,16 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   );
 
   const onDelete = React.useCallback(
-    (category, { key: value }) => {
+    (category, chip) => {
+      const value = typeof chip === 'string' ? chip : chip.key;
       updateFilters(target, { filterKey: category, filterValue: value, deleted: true });
     },
     [updateFilters, target]
   );
 
   const onDeleteGroup = React.useCallback(
-    ({ key: category }) => {
+    (chip) => {
+      const category = typeof chip === 'string' ? chip : chip.key;
       updateFilters(target, { filterKey: category, deleted: true, deleteOptions: { all: true } });
     },
     [updateFilters, target]
@@ -265,7 +267,9 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   return (
     <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
       <ToolbarGroup variant="filter-group">
-        <ToolbarItem key={'category-select'}>{categoryDropdown}</ToolbarItem>
+        <ToolbarItem style={{ alignSelf: 'start' }} key={'category-select'}>
+          {categoryDropdown}
+        </ToolbarItem>
         {Object.keys(filters).map((filterKey, i) => (
           <ToolbarFilter
             key={`${filterKey}-filter`}

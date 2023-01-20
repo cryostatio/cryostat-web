@@ -38,6 +38,7 @@
 
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { Timezone } from '@i18n/datetime';
 import dayjs from 'dayjs';
 import advanced from 'dayjs/plugin/advancedFormat';
 import timezone from 'dayjs/plugin/timezone'; // dependent on utc plugin
@@ -80,11 +81,6 @@ export const defaultDatetimeFormat: DatetimeFormat = {
     short: dayjs().tz(dayjs.tz.guess()).format('z'),
   } as Timezone,
 };
-
-export interface Timezone {
-  full: string;
-  short: string;
-}
 
 export const automatedAnalysisConfigToRecordingAttributes = (
   config: AutomatedAnalysisRecordingConfig
