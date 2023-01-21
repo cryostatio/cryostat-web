@@ -36,11 +36,10 @@
  * SOFTWARE.
  */
 
-import { DatetimeFormat } from '@app/Shared/Services/Settings.service';
 import dayjs, { getLocale } from '@i18n/datetime';
 import React, { useContext } from 'react';
 import { from, Subscription } from 'rxjs';
-import { DateTimeContext } from '../Shared/DateTimeContext';
+import { DateTimeContext, DatetimeFormat } from '@app/Shared/DateTimeContext';
 import { useForceUpdate } from './useForceUpdate';
 
 export function useDayjs(): [typeof dayjs, DatetimeFormat] {

@@ -72,7 +72,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
   );
 
   const options = React.useMemo(() => {
-    return supportedTimezones.map((timezone) => (
+    return supportedTimezones().map((timezone) => (
       <SelectOption
         key={timezone.full}
         value={{

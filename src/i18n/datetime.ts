@@ -86,16 +86,17 @@ export const UTCTimezone = {
   short: 'UTC',
 } as Timezone;
 
-export const supportedTimezones = !timezones.length
-  ? [localTimezone, UTCTimezone]
-  : timezones.map(
-      (tname) =>
-        ({
-          full: tname,
-          short: dayjs().tz(tname).format('z'), // Get abbreviation
-        } as Timezone)
-    );
+export const supportedTimezones = () =>
+  !timezones.length
+    ? [localTimezone, UTCTimezone]
+    : timezones.map(
+        (tname) =>
+          ({
+            full: tname,
+            short: dayjs().tz(tname).format('z'), // Get abbreviation
+          } as Timezone)
+      );
 
 export const getTimezone = (short: string): Timezone | undefined => {
-  return supportedTimezones.find((t) => t.short === short);
+  return supportedTimezones().find((t) => t.short === short);
 };
