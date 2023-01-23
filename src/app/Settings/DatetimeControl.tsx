@@ -48,8 +48,6 @@ const Component = () => {
   const [dateLocaleOpen, setDateLocaleOpen] = React.useState(false);
   const [_, datetimeFormat] = useDayjs();
 
-  const handleDateToggle = React.useCallback((expanded: boolean) => setDateLocaleOpen(expanded), [setDateLocaleOpen]);
-
   const handleDateLocaleSelect = React.useCallback(
     (_, locale) => {
       setDateLocaleOpen(false);
@@ -116,8 +114,9 @@ const Component = () => {
             <HelperTextItem>{'Select current date locale.'}</HelperTextItem>
           </HelperText>
           <Select
+            aria-label="Select a datetime locale"
             isOpen={dateLocaleOpen}
-            onToggle={handleDateToggle}
+            onToggle={setDateLocaleOpen}
             isFlipEnabled
             menuAppendTo="parent"
             selections={{

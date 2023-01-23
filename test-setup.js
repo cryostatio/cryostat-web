@@ -32,5 +32,17 @@ jest.mock('@i18n/datetime', () => ({
         full: 'UTC',
         short: 'UTC',
       },
+    },
+  locales: [
+    {
+      name: 'English',
+      key: 'en',
+      load: jest.fn()
+    },
+    {
+      name: 'French',
+      key: 'fr',
+      load: jest.fn()
     }
+  ]
 }));
