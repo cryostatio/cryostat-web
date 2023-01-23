@@ -79,7 +79,7 @@ export const categoriesToDisplayNames = {
   State: 'Recording State',
   StartedBeforeDate: 'Started Before Date',
   StartedAfterDate: 'Started After Date',
-  DurationSeconds: ' Duration (s)',
+  DurationSeconds: 'Duration (s)',
 };
 
 export const categoryIsDate = (fieldKey: string) => /date/i.test(fieldKey);

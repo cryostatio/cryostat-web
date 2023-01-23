@@ -90,6 +90,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
+import { t } from 'i18next';
 import * as React from 'react';
 
 export interface DateTimeFilterProps {
@@ -208,12 +209,16 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
                     type="text"
                     id="date-time"
                     placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).format('L LTS z')}
-                    aria-label="Datetime Picker"
+                    aria-label={t('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT') || ''}
                     value={datetimeInput.text}
                     validated={datetimeInput.validation}
                     onChange={handleTextInput}
                   />
-                  <Button variant="control" aria-label="Toggle the calendar" onClick={onToggleCalendar}>
+                  <Button
+                    variant="control"
+                    aria-label={t('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR') || ''}
+                    onClick={onToggleCalendar}
+                  >
                     <OutlinedCalendarAltIcon />
                   </Button>
                 </InputGroup>
@@ -221,7 +226,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
               {datetimeInput.validation === ValidatedOptions.error ? (
                 <StackItem>
                   <HelperText>
-                    <HelperTextItem variant="error">Invalid date time</HelperTextItem>
+                    <HelperTextItem variant="error">{t('DatetimeFilter.INVALID_DATE_TEXT')}</HelperTextItem>
                   </HelperText>
                 </StackItem>
               ) : (
@@ -234,7 +239,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
       <FlexItem alignSelf={{ default: 'alignSelfFlexStart' }}>
         <Button
           variant={ButtonVariant.control}
-          aria-label="Search For Date"
+          aria-label={t('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') || ''}
           isDisabled={datetimeInput.validation !== ValidatedOptions.success}
           onClick={handleSubmit}
         >

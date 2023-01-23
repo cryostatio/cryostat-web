@@ -168,13 +168,13 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
   return (
     <Form>
       <Tabs
-        aria-label="Select a date or time tab"
+        aria-label={t('DateTimePicker.ARIA_LABELS.TABS') || ''}
         onSelect={handleTabSelect}
         activeKey={activeTab}
         isFilled
         role="region"
       >
-        <Tab key={'date'} eventKey={'date'} title={<TabTitleText>Date</TabTitleText>}>
+        <Tab key={'date'} eventKey={'date'} title={<TabTitleText>{t('DATE', { ns: 'common' })}</TabTitleText>}>
           <FormGroup key={'calendar'}>
             <Bullseye>
               <CalendarMonth
@@ -190,7 +190,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
             </Bullseye>
           </FormGroup>
         </Tab>
-        <Tab key={'time'} eventKey={'time'} title={<TabTitleText>Time</TabTitleText>}>
+        <Tab key={'time'} eventKey={'time'} title={<TabTitleText>{t('TIME', { ns: 'common' })}</TabTitleText>}>
           <FormGroup key={'time'}>
             <Bullseye>
               <TimePicker
@@ -213,7 +213,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
           <FlexItem>
             <TextInput
               id="selected-datetime"
-              aria-label="Displayed selected datetime"
+              aria-label={t('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME') || ''}
               className="datetime-picker__datetime-selected-display"
               readOnly
               value={selectedDatetimeDisplay}

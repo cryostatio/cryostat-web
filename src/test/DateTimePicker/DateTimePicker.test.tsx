@@ -64,7 +64,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const dateTab = screen.getByRole('tab', { name: 'Date' });
+    const dateTab = screen.getByRole('tab', { name: testTranslate('DATE', 'common') });
     expect(dateTab).toBeInTheDocument();
     expect(dateTab).toBeVisible();
     expect(dateTab.getAttribute('aria-selected')).toBe('true');
@@ -85,7 +85,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const display = screen.getByLabelText('Displayed selected datetime');
+    const display = screen.getByLabelText(testTranslate('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME'));
     expect(display).toBeInTheDocument();
     expect(display).toBeVisible();
     expect(display.getAttribute('value')).toBe(dayjs(prefilledDate).format('L LTS'));
@@ -106,7 +106,7 @@ describe('<DateTimePicker/>', () => {
 
     await user.click(selectedDate);
 
-    const timeTab = screen.getByRole('tab', { name: 'Time' });
+    const timeTab = screen.getByRole('tab', { name: testTranslate('TIME', 'common') });
     expect(timeTab).toBeInTheDocument();
     expect(timeTab).toBeVisible();
     expect(timeTab.getAttribute('aria-selected')).toBe('true');
@@ -124,14 +124,14 @@ describe('<DateTimePicker/>', () => {
 
     // Switched to time now
     const mInput = within(screen.getByLabelText(testTranslate('MINUTE', 'common'))).getByLabelText(
-      'Select minute value'
+      testTranslate('TimeSpinner.INPUT_MINUTE_VALUE')
     );
     expect(mInput).toBeInTheDocument();
     expect(mInput).toBeVisible();
 
     await user.type(mInput, '1');
 
-    const display = screen.getByLabelText('Displayed selected datetime');
+    const display = screen.getByLabelText(testTranslate('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME'));
     expect(display).toBeInTheDocument();
     expect(display).toBeVisible();
     expect(display.getAttribute('value')).toBe(dayjs(prefilledDate).date(13).minute(1).format('L LTS'));
@@ -142,7 +142,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const submitButton = screen.getByText('Select');
+    const submitButton = screen.getByText(testTranslate('SELECT', 'common'));
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
 
@@ -157,7 +157,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const dismissButton = screen.getByText('Cancel');
+    const dismissButton = screen.getByText(testTranslate('CANCEL', 'common'));
     expect(dismissButton).toBeInTheDocument();
     expect(dismissButton).toBeVisible();
 

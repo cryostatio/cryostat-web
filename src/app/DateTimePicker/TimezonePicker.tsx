@@ -41,6 +41,7 @@ import { supportedTimezones, Timezone } from '@i18n/datetime';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import { GlobeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface TimezonePickerProps {
   isFlipEnabled?: boolean;
@@ -57,6 +58,7 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
   selected,
   onTimezoneChange = (_) => undefined,
 }) => {
+  const [t] = useTranslation();
   const [dayjs, _] = useDayjs();
   const [isTimezoneOpen, setIsTimezoneOpen] = React.useState(false);
 
@@ -114,8 +116,8 @@ export const TimezonePicker: React.FunctionComponent<TimezonePickerProps> = ({
       onSelect={onSelect}
       onFilter={onFilter}
       hasInlineFilter
-      aria-label="Select a timezone"
-      typeAheadAriaLabel="Search a timezone"
+      aria-label={t('TimezonePicker.ARIA_LABELS.SELECT') || ''}
+      typeAheadAriaLabel={t('TimezonePicker.ARIA_LABELS.TYPE_AHEAD') || ''}
       isOpen={isTimezoneOpen}
       toggleIndicator={<GlobeIcon />}
     >

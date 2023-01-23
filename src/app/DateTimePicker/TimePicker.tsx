@@ -143,7 +143,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
             <HelperText>
               <HelperTextItem>{t('TimePicker.USE_24HR_TIME')}</HelperTextItem>
             </HelperText>
-            <Switch id={'24-hour-switch'} label="24-hour" isChecked={is24h} onChange={setIs24h} />
+            <Switch id={'24-hour-switch'} label={t('TimePicker.24HOUR')} isChecked={is24h} onChange={setIs24h} />
           </PanelFooter>
         </PanelMain>
       </Panel>
@@ -159,6 +159,7 @@ interface TimeSpinnerProps {
 }
 
 const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, label }) => {
+  const [t] = useTranslation();
   const computedMax = React.useMemo(() => {
     switch (variant) {
       case 'hour12':
@@ -222,7 +223,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
         <Button
           className={css('datetime-picker__time-spin-box', 'up')}
           onClick={handleIncrement}
-          aria-label={`Increment ${variant} value`}
+          aria-label={t(`TimeSpinner.INCREMENT_${variant.toUpperCase()}_VALUE`) || ''}
         >
           <AngleUpIcon size="md" />
         </Button>
@@ -230,7 +231,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
       <StackItem key={`${variant}-input`}>
         <TextInput
           id={`${variant}-input`}
-          aria-label={`Select ${variant} value`}
+          aria-label={t(`TimeSpinner.INPUT_${variant.toUpperCase()}_VALUE`) || ''}
           className="datetime-picker__number-input"
           type="number"
           min={computedMin}
@@ -243,7 +244,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
         <Button
           className={css('datetime-picker__time-spin-box', 'down')}
           onClick={handleDecrement}
-          aria-label={`Decrement ${variant} value`}
+          aria-label={t(`TimeSpinner.DECREMENT_${variant.toUpperCase()}_VALUE`) || ''}
         >
           <AngleDownIcon size="md" />
         </Button>
@@ -251,3 +252,18 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
     </Stack>
   );
 };
+
+/**
+ * t('TimeSpinner.INPUT_HOUR12_VALUE')
+ * t('TimeSpinner.INPUT_HOUR24_VALUE')
+ * t('TimeSpinner.INPUT_MINUTE_VALUE')
+ * t('TimeSpinner.INPUT_SECOND_VALUE')
+ * t('TimeSpinner.INCREMENT_HOUR12_VALUE')
+ * t('TimeSpinner.INCREMENT_HOUR24_VALUE')
+ * t('TimeSpinner.INCREMENT_MINUTE_VALUE')
+ * t('TimeSpinner.INCREMENT_SECOND_VALUE')
+ * t('TimeSpinner.DECREMENT_HOUR12_VALUE')
+ * t('TimeSpinner.DECREMENT_HOUR24_VALUE')
+ * t('TimeSpinner.DECREMENT_MINUTE_VALUE')
+ * t('TimeSpinner.DECREMENT_SECOND_VALUE')
+ */

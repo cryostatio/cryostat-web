@@ -75,7 +75,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
             >
               <input
                 aria-invalid={false}
-                aria-label="Select hour24 value"
+                aria-label="Input hour24 value"
                 className="pf-c-form-control datetime-picker__number-input"
                 data-ouia-component-id="OUIA-Generated-TextInputBase-1"
                 data-ouia-component-type="PF4/TextInput"
@@ -193,7 +193,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
             >
               <input
                 aria-invalid={false}
-                aria-label="Select minute value"
+                aria-label="Input minute value"
                 className="pf-c-form-control datetime-picker__number-input"
                 data-ouia-component-id="OUIA-Generated-TextInputBase-2"
                 data-ouia-component-type="PF4/TextInput"
@@ -311,7 +311,7 @@ exports[`<TimePicker/> renders correctly 1`] = `
             >
               <input
                 aria-invalid={false}
-                aria-label="Select second value"
+                aria-label="Input second value"
                 className="pf-c-form-control datetime-picker__number-input"
                 data-ouia-component-id="OUIA-Generated-TextInputBase-3"
                 data-ouia-component-type="PF4/TextInput"

@@ -41,7 +41,7 @@ import dayjs, { defaultDatetimeFormat, supportedTimezones, Timezone } from '@i18
 import { act, cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderDefault } from '../Common';
+import { renderDefault, testTranslate } from '../Common';
 
 const onTimezoneChange = jest.fn((_: Timezone) => undefined);
 
@@ -77,7 +77,7 @@ describe('<TimezonePicker/>', () => {
       await user.click(optionMenu);
     });
 
-    const ul = screen.getByLabelText('Select a timezone');
+    const ul = screen.getByLabelText(testTranslate('TimezonePicker.ARIA_LABELS.SELECT'));
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 
@@ -111,7 +111,7 @@ describe('<TimezonePicker/>', () => {
       await user.click(optionMenu);
     });
 
-    const ul = screen.getByLabelText('Select a timezone');
+    const ul = screen.getByLabelText(testTranslate('TimezonePicker.ARIA_LABELS.SELECT'));
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 
@@ -140,7 +140,7 @@ describe('<TimezonePicker/>', () => {
       await user.click(optionMenu);
     });
 
-    const ul = screen.getByLabelText('Select a timezone');
+    const ul = screen.getByLabelText(testTranslate('TimezonePicker.ARIA_LABELS.SELECT'));
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 
