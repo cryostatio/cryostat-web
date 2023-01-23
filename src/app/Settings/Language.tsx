@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { i18nResources } from '@i18n/config';
+import { i18nLanguages, i18nResources } from '@i18n/config';
 import { localeReadable } from '@i18n/i18nextUtil';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
@@ -56,6 +56,12 @@ const Component = () => {
     },
     [i18n, setOpen]
   );
+
+  React.useEffect(() => {
+    if (!i18nLanguages.includes(i18n.language)) {
+      i18n.changeLanguage('en');
+    }
+  }, [i18n, i18n.language]);
 
   return (
     <Select
