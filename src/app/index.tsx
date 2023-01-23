@@ -37,13 +37,12 @@
  */
 import '@app/app.css';
 import '@patternfly/react-core/dist/styles/base.css';
-
+import '@i18n/config';
 import { AppLayout } from '@app/AppLayout/AppLayout';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { AppRoutes } from '@app/routes';
 import { store } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import '@i18n/config';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
