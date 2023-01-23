@@ -38,7 +38,15 @@
 
 import { DeleteOrDisableWarningType, getFromWarningMap } from '@app/Modal/DeleteWarningUtils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ExpandableSection, FormGroup, Stack, StackItem, Switch } from '@patternfly/react-core';
+import {
+  ExpandableSection,
+  FormGroup,
+  HelperText,
+  HelperTextItem,
+  Stack,
+  StackItem,
+  Switch,
+} from '@patternfly/react-core';
 import * as React from 'react';
 import { UserSetting } from './Settings';
 
@@ -89,7 +97,10 @@ const Component = () => {
     <>
       <Stack hasGutter>
         <StackItem key="all-deletion-warnings">
-          <FormGroup label={'Enable or disable deletion dialogs by deletion type.'}>
+          <FormGroup>
+            <HelperText>
+              <HelperTextItem>{'Enable or disable deletion dialogs by deletion type.'}</HelperTextItem>
+            </HelperText>
             <Switch
               id="all-deletion-warnings"
               label="All Deletion Warnings"
@@ -98,13 +109,15 @@ const Component = () => {
             />
           </FormGroup>
         </StackItem>
-        <ExpandableSection
-          toggleText={expanded ? 'Show less' : 'Show more'}
-          onToggle={setExpanded}
-          isExpanded={expanded}
-        >
-          {switches}
-        </ExpandableSection>
+        <StackItem key={'expandable-delete-warning-switch-list'}>
+          <ExpandableSection
+            toggleText={expanded ? 'Show less' : 'Show more'}
+            onToggle={setExpanded}
+            isExpanded={expanded}
+          >
+            {switches}
+          </ExpandableSection>
+        </StackItem>
       </Stack>
     </>
   );

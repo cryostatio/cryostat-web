@@ -38,7 +38,16 @@
 import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ExpandableSection, Switch, Stack, StackItem, NumberInput, FormGroup } from '@patternfly/react-core';
+import {
+  ExpandableSection,
+  Switch,
+  Stack,
+  StackItem,
+  NumberInput,
+  FormGroup,
+  HelperText,
+  HelperTextItem,
+} from '@patternfly/react-core';
 import * as React from 'react';
 import { UserSetting } from './Settings';
 
@@ -122,12 +131,20 @@ const Component = () => {
     <>
       <Stack hasGutter>
         <StackItem key="all-notifications">
-          <FormGroup label="Enable or disable all notifications.">
+          <FormGroup>
+            <HelperText>
+              <HelperTextItem>{'Enable or disable all notifications.'}</HelperTextItem>
+            </HelperText>
             <Switch id="all-notifications" label="All Notifications" isChecked={allChecked} onChange={handleCheckAll} />
           </FormGroup>
         </StackItem>
         <StackItem key="notifications-notification-count">
-          <FormGroup label="Control the maximum number of notification alerts that appear at once.">
+          <FormGroup>
+            <HelperText>
+              <HelperTextItem>
+                {'Control the maximum number of notification alerts that appear at once.'}
+              </HelperTextItem>
+            </HelperText>
             <NumberInput
               inputName="alert count"
               value={visibleNotificationsCount}
@@ -139,13 +156,15 @@ const Component = () => {
             />
           </FormGroup>
         </StackItem>
-        <ExpandableSection
-          toggleText={expanded ? 'Show less' : 'Show more'}
-          onToggle={setExpanded}
-          isExpanded={expanded}
-        >
-          {switches}
-        </ExpandableSection>
+        <StackItem key={'expandable-noti-switch-list'}>
+          <ExpandableSection
+            toggleText={expanded ? 'Show less' : 'Show more'}
+            onToggle={setExpanded}
+            isExpanded={expanded}
+          >
+            {switches}
+          </ExpandableSection>
+        </StackItem>
       </Stack>
     </>
   );
