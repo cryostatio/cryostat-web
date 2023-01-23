@@ -87,7 +87,7 @@ import {
   Stack,
   StackItem,
   TextInput,
-  ValidatedOptions
+  ValidatedOptions,
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
 import { t } from 'i18next';
