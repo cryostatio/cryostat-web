@@ -36,32 +36,133 @@
  * SOFTWARE.
  */
 
-// Mock system time
-const mockCurrentDate = new Date('14 Sep 2022 00:00:00 UTC');
-jest.useFakeTimers('modern').setSystemTime(mockCurrentDate);
+import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
+import { defaultServices } from '@app/Shared/Services/Services';
+import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
+import { cleanup, screen, within } from '@testing-library/react';
+import * as React from 'react';
+import { of } from 'rxjs';
+import { renderWithServiceContext, testTranslate } from '../Common';
 
-import { cleanup } from '@testing-library/react';
+const onSelect = jest.fn((date: Date) => undefined);
+const onDismiss = jest.fn();
 
-const onSubmit = jest.fn((date: Date) => undefined);
+const prefilledDate = new Date('14 Sep 2022 00:00:00');
 
-describe.skip('<DateTimePicker />', () => {
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
+
+describe('<DateTimePicker/>', () => {
   beforeEach(() => {
-    jest.mocked(onSubmit).mockReset();
+    jest.mocked(onSelect).mockReset();
+    jest.mocked(onDismiss).mockReset();
   });
 
   afterEach(cleanup);
 
-  afterAll(jest.useRealTimers);
+  it('should show date tab as default', async () => {
+    renderWithServiceContext(
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+    );
 
-  it('should render date selection as default', async () => {});
+    const dateTab = screen.getByRole('tab', { name: 'Date' });
+    expect(dateTab).toBeInTheDocument();
+    expect(dateTab).toBeVisible();
+    expect(dateTab.getAttribute('aria-selected')).toBe('true');
+  });
 
-  it('should render currently selected datetime', async () => {});
+  it('should render currently selected date in calendar', async () => {
+    renderWithServiceContext(
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+    );
 
-  it('should switch to time tab when a date is selected', async () => {});
+    const selectedDate = screen.getByLabelText('14 September 2022');
+    expect(selectedDate).toBeInTheDocument();
+    expect(selectedDate).toBeVisible();
+  });
 
-  it('should update selected datetime when date or date is seleted', async () => {});
+  it('should render currently selected datetime', async () => {
+    renderWithServiceContext(
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+    );
 
-  it('should submit when select button is clicked', async () => {});
+    const display = screen.getByLabelText('Displayed selected datetime');
+    expect(display).toBeInTheDocument();
+    expect(display).toBeVisible();
+    expect(display.getAttribute('value')).toBe(dayjs(prefilledDate).format('L LTS'));
 
-  it('shoud dismiss the modal when cancel button is clicked', async () => {});
+    const timezoneDisplay = screen.getByText(defaultDatetimeFormat.timeZone.short);
+    expect(timezoneDisplay).toBeInTheDocument();
+    expect(timezoneDisplay).toBeVisible();
+  });
+
+  it('should switch to time tab when a date is selected', async () => {
+    const { user } = renderWithServiceContext(
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+    );
+
+    const selectedDate = screen.getByLabelText('14 September 2022');
+    expect(selectedDate).toBeInTheDocument();
+    expect(selectedDate).toBeVisible();
+
+    await user.click(selectedDate);
+
+    const timeTab = screen.getByRole('tab', { name: 'Time' });
+    expect(timeTab).toBeInTheDocument();
+    expect(timeTab).toBeVisible();
+    expect(timeTab.getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('should update selected datetime when date or time is seleted', async () => {
+    const { user } = renderWithServiceContext(
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+    );
+    const selectedDate = screen.getByLabelText('13 September 2022');
+    expect(selectedDate).toBeInTheDocument();
+    expect(selectedDate).toBeVisible();
+
+    await user.click(selectedDate);
+
+    // Switched to time now
+    const mInput = within(screen.getByLabelText(testTranslate('MINUTE', 'common'))).getByLabelText(
+      'Select minute value'
+    );
+    expect(mInput).toBeInTheDocument();
+    expect(mInput).toBeVisible();
+
+    await user.type(mInput, '1');
+
+    const display = screen.getByLabelText('Displayed selected datetime');
+    expect(display).toBeInTheDocument();
+    expect(display).toBeVisible();
+    expect(display.getAttribute('value')).toBe(dayjs(prefilledDate).date(13).minute(1).format('L LTS'));
+  });
+
+  it('should submit when select button is clicked', async () => {
+    const { user } = renderWithServiceContext(
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+    );
+
+    const submitButton = screen.getByText('Select');
+    expect(submitButton).toBeInTheDocument();
+    expect(submitButton).toBeVisible();
+
+    await user.click(submitButton);
+
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(onSelect).toHaveBeenCalledWith(prefilledDate, defaultDatetimeFormat.timeZone);
+  });
+
+  it('shoud dismiss the modal when cancel button is clicked', async () => {
+    const { user } = renderWithServiceContext(
+      <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
+    );
+
+    const dismissButton = screen.getByText('Cancel');
+    expect(dismissButton).toBeInTheDocument();
+    expect(dismissButton).toBeVisible();
+
+    await user.click(dismissButton);
+
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+  });
 });

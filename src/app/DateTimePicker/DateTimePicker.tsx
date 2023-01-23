@@ -161,7 +161,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
 
   React.useEffect(() => {
     if (prefilledDate) {
-      setDatetime(prefilledDate);
+      setDatetime(new Date(prefilledDate));
     }
   }, [setDatetime, prefilledDate]);
 
