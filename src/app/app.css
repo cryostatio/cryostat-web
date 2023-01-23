@@ -329,6 +329,10 @@ input[type=number].datetime-picker__number-input {
   max-width: 14em !important;
 }
 
+.datetime-picker__calendar .pf-c-calendar-month__header-year{
+  min-width: 6em !important;
+}
+
 .recording-filter__toolbar-filter {
   z-index: 199;  /* Fix input border overlap */
 }

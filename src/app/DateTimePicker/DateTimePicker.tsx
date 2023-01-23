@@ -183,6 +183,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
           <FormGroup>
             <Bullseye>
               <CalendarMonth
+                className="datetime-picker__calendar"
                 isDateFocused
                 locale={dayjs.locale()}
                 inlineProps={{
