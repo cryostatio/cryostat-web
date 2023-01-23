@@ -49,7 +49,7 @@ export function useDayjs(): [typeof dayjs, DatetimeFormat] {
   React.useEffect(() => () => _localeSubRef.current.forEach((s: Subscription): void => s.unsubscribe()), []);
 
   React.useEffect(() => {
-    _localeSubRef.current.concat(
+    _localeSubRef.current = _localeSubRef.current.concat([
       _services.settings
         .datetimeFormat()
         .pipe(
@@ -76,8 +76,8 @@ export function useDayjs(): [typeof dayjs, DatetimeFormat] {
             }
           })
         )
-        .subscribe(setDatetimeContext)
-    );
+        .subscribe(setDatetimeContext),
+    ]);
   }, [_services.settings, setDatetimeContext, _localeSubRef]);
 
   return [dayjs, datetimeContext];
