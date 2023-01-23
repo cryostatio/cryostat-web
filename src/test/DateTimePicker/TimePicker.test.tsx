@@ -35,27 +35,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import dayjs, { Timezone } from '@i18n/datetime';
-import * as React from 'react';
 
-export interface DatetimeFormat {
-  dateLocale: {
-    name: string;
-    key: string;
-  };
-  timeZone: Timezone;
-}
+import { cleanup } from '@testing-library/react';
 
-export const defaultDatetimeFormat: DatetimeFormat = {
-  dateLocale: {
-    key: 'en',
-    name: 'English',
-  }, // default en
-  timeZone: {
-    // guess current timezone
-    full: dayjs.tz.guess(),
-    short: dayjs().tz(dayjs.tz.guess()).format('z'),
-  } as Timezone,
-};
+describe('TimePicker', () => {
+  afterEach(cleanup);
 
-export const DateTimeContext = React.createContext(defaultDatetimeFormat);
+  it('should render correct default in 12hr mode', async () => {});
+
+  it('should render correct default in 24hr mode', async () => {});
+
+  it('should switch meridiem when necessary', async () => {});
+
+  it('should update time when increment/decrement buttons are clicked', async () => {});
+
+  it('should update time when time input is changed', async () => {});
+
+  it('should switch to 12hr if switch is turned off', async () => {});
+
+  it('should switch to 24hr if switch is turned on', async () => {});
+});

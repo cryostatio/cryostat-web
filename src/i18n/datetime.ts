@@ -76,6 +76,26 @@ export interface Timezone {
   short: string;
 }
 
+export interface DatetimeFormat {
+  dateLocale: {
+    name: string;
+    key: string;
+  };
+  timeZone: Timezone;
+}
+
+export const defaultDatetimeFormat: DatetimeFormat = {
+  dateLocale: {
+    key: 'en',
+    name: 'English',
+  }, // default en
+  timeZone: {
+    // guess current timezone
+    full: dayjs.tz.guess(),
+    short: dayjs().tz(dayjs.tz.guess()).format('z'),
+  } as Timezone,
+};
+
 export const localTimezone = {
   full: dayjs.tz.guess(),
   short: dayjs().tz(dayjs.tz.guess()).format('z'),

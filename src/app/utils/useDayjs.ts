@@ -36,30 +36,49 @@
  * SOFTWARE.
  */
 
-import dayjs, { getLocale } from '@i18n/datetime';
-import React, { useContext } from 'react';
-import { from, Subscription } from 'rxjs';
-import { DateTimeContext, DatetimeFormat } from '@app/Shared/DateTimeContext';
-import { useForceUpdate } from './useForceUpdate';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import dayjs, { DatetimeFormat, defaultDatetimeFormat, getLocale } from '@i18n/datetime';
+import * as React from 'react';
+import { concatMap, from, of, Subscription } from 'rxjs';
 
 export function useDayjs(): [typeof dayjs, DatetimeFormat] {
-  const _localeSubRef = React.useRef([] as Subscription[]);
-  const datetimeContext = useContext(DateTimeContext); // Expecting an available DateTimeContext
-  const forceUpdate = useForceUpdate();
+  const _localeSubRef = React.useRef<Subscription[]>([]);
+  const _services = React.useContext(ServiceContext);
+  const [datetimeContext, setDatetimeContext] = React.useState<DatetimeFormat>(defaultDatetimeFormat);
 
   React.useEffect(() => () => _localeSubRef.current.forEach((s: Subscription): void => s.unsubscribe()), []);
 
   React.useEffect(() => {
-    const locale = getLocale(datetimeContext.dateLocale.key);
-    if (locale) {
-      _localeSubRef.current.concat(
-        from(locale.load()).subscribe(() => {
-          dayjs.locale(locale.key);
-          forceUpdate();
-        })
-      );
-    }
-  }, [datetimeContext.dateLocale, forceUpdate]);
+    _localeSubRef.current.concat(
+      _services.settings
+        .datetimeFormat()
+        .pipe(
+          concatMap((f: DatetimeFormat) => {
+            const locale = getLocale(f.dateLocale.key);
+            if (locale) {
+              return dayjs.locale() === f.dateLocale.key // only load if not yet
+                ? of(f)
+                : from(
+                    locale
+                      .load()
+                      .then(() => {
+                        dayjs.locale(locale.key); // Load globally
+                        return f;
+                      })
+                      .catch((err) => {
+                        console.warn(err);
+                        return f;
+                      })
+                  );
+            } else {
+              console.warn(`${f.dateLocale.name} (${f.dateLocale.key}) is not supported.`);
+              return of(f);
+            }
+          })
+        )
+        .subscribe(setDatetimeContext)
+    );
+  }, [_services.settings, setDatetimeContext, _localeSubRef]);
 
   return [dayjs, datetimeContext];
 }

@@ -38,14 +38,19 @@
 
 import { DateTimePickerProps } from '@app/DateTimePicker/DateTimePicker';
 import { DateTimeFilter } from '@app/Recordings/Filters/DatetimeFilter';
+import { defaultServices } from '@app/Shared/Services/Services';
+import { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event/dist/types/setup/setup';
 import React from 'react';
+import { of } from 'rxjs';
 import { renderDefault } from '../../Common';
 
 jest.mock('@app/DateTimePicker/DateTimePicker', () => ({
   DateTimePicker: (_: DateTimePickerProps) => <>DateTimePicker</>,
 }));
+
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
 const onDateTimeSelect = jest.fn((_date) => undefined);
 

@@ -38,8 +38,8 @@
 
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { DatetimeFormat, defaultDatetimeFormat } from '../DateTimeContext';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,

@@ -42,7 +42,6 @@ import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { selectTab } from '@app/Settings/Settings';
-import { DateTimeContext, defaultDatetimeFormat } from '@app/Shared/DateTimeContext';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
@@ -106,7 +105,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
-  const [datetimeFormat, setDatetimeFormat] = React.useState(defaultDatetimeFormat);
 
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
@@ -124,10 +122,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const location = useLocation();
-
-  React.useEffect(() => {
-    addSubscription(serviceContext.settings.datetimeFormat().subscribe(setDatetimeFormat));
-  }, [addSubscription, serviceContext.settings, setDatetimeFormat]);
 
   React.useEffect(() => {
     addSubscription(
@@ -551,41 +545,34 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   return (
     <>
-      <DateTimeContext.Provider value={datetimeFormat}>
-        <AlertGroup
-          isToast
-          isLiveRegion
-          overflowMessage={overflowMessage}
-          onOverflowClick={handleOpenNotificationCenter}
-        >
-          {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
-            <Alert
-              isLiveRegion
-              variant={variant}
-              key={title}
-              title={title}
-              actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
-              timeout={true}
-              onTimeout={handleTimeout(key)}
-            >
-              {message?.toString()}
-            </Alert>
-          ))}
-        </AlertGroup>
-        <Page
-          mainContainerId="primary-app-container"
-          header={Header}
-          sidebar={Sidebar}
-          notificationDrawer={NotificationDrawer}
-          isNotificationDrawerExpanded={isNotificationDrawerExpanded}
-          onPageResize={onPageResize}
-          skipToContent={PageSkipToContent}
-        >
-          {children}
-        </Page>
-        <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
-        <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
-      </DateTimeContext.Provider>
+      <AlertGroup isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
+        {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
+          <Alert
+            isLiveRegion
+            variant={variant}
+            key={title}
+            title={title}
+            actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
+            timeout={true}
+            onTimeout={handleTimeout(key)}
+          >
+            {message?.toString()}
+          </Alert>
+        ))}
+      </AlertGroup>
+      <Page
+        mainContainerId="primary-app-container"
+        header={Header}
+        sidebar={Sidebar}
+        notificationDrawer={NotificationDrawer}
+        isNotificationDrawerExpanded={isNotificationDrawerExpanded}
+        onPageResize={onPageResize}
+        skipToContent={PageSkipToContent}
+      >
+        {children}
+      </Page>
+      <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
+      <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
     </>
   );
 };
