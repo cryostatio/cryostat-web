@@ -73,7 +73,7 @@
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 import { useDayjs } from '@app/utils/useDayjs';
-import { getTimezone, Timezone, defaultDatetimeFormat } from '@i18n/datetime';
+import { getTimezone, Timezone } from '@i18n/datetime';
 import {
   Button,
   ButtonVariant,
@@ -87,7 +87,7 @@ import {
   Stack,
   StackItem,
   TextInput,
-  ValidatedOptions,
+  ValidatedOptions
 } from '@patternfly/react-core';
 import { OutlinedCalendarAltIcon, SearchIcon } from '@patternfly/react-icons';
 import { t } from 'i18next';
@@ -100,12 +100,12 @@ export interface DateTimeFilterProps {
 const _emptyDatetimeInput: {
   text: string;
   date: Date | undefined; // Ignore timezone
-  timezone: Timezone; // default to local
+  timezone: Timezone | undefined; // default to local
   validation: ValidatedOptions;
 } = {
   text: '',
   date: undefined,
-  timezone: defaultDatetimeFormat.timeZone,
+  timezone: undefined,
   validation: ValidatedOptions.default,
 };
 
@@ -119,7 +119,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
   const onPopoverDismiss = React.useCallback(() => setIsCalendarOpen(false), [setIsCalendarOpen]);
 
   const handleSubmit = React.useCallback(() => {
-    if (datetimeInput.validation === ValidatedOptions.success) {
+    if (datetimeInput.validation === ValidatedOptions.success && datetimeInput.timezone) {
       // internally uses ISOString but display will be localized.
       onSubmit(dayjs(datetimeInput.date).tz(datetimeInput.timezone.full, true).toISOString());
       setDatetimeInput(_emptyDatetimeInput);
@@ -146,25 +146,28 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
           return _emptyDatetimeInput;
         }
 
+        // Expecting timezone comes last
+        const parts = value.split(' ');
+        const shortName = parts.length ? parts[parts.length - 1] : 'Invalid';
+        const tz = getTimezone(shortName);
+        if (!tz) {
+          return {
+            ...old,
+            text: value,
+            date: undefined,
+            validation: ValidatedOptions.error,
+          };
+        }
+
+        const extractDatetime = parts.slice(0, parts.length - 1).join(' ');
         const d = dayjs(
-          value,
+          extractDatetime,
           `${dayjs.Ls[dayjs.locale()].formats.L} ${dayjs.Ls[dayjs.locale()].formats.LTS}`,
-          dayjs.locale()
+          dayjs.locale(),
+          true
         );
 
         if (d.isValid()) {
-          // Expecting timezone comes last, else default to user preferences
-          const parts = value.split(/\s/);
-          const shortName = parts.length ? parts[parts.length - 1] : 'Invalid';
-          const tz = getTimezone(shortName);
-          if (!tz) {
-            return {
-              ...old,
-              text: value,
-              date: undefined,
-              validation: ValidatedOptions.error,
-            };
-          }
           return {
             text: value,
             date: d.toDate(),
