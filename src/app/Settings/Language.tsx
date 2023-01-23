@@ -66,6 +66,7 @@ const Component = () => {
   return (
     <Select
       isOpen={open}
+      aria-label={'Select a language'}
       onToggle={handleLanguageToggle}
       onSelect={handleLanguageSelect}
       selections={localeReadable(i18n.language)}
