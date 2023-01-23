@@ -56,8 +56,8 @@ import {
   TabTitleText,
   Title,
 } from '@patternfly/react-core';
-import * as React from 'react';
 import { css } from '@patternfly/react-styles';
+import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';

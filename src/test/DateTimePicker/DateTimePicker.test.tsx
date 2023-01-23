@@ -44,7 +44,7 @@ import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContext, testTranslate } from '../Common';
 
-const onSelect = jest.fn((date: Date) => undefined);
+const onSelect = jest.fn((_: Date) => undefined);
 const onDismiss = jest.fn();
 
 const prefilledDate = new Date('14 Sep 2022 00:00:00');

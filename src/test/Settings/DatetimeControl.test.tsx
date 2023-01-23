@@ -58,7 +58,7 @@ describe('<DatetimeControl/>', () => {
 
   afterEach(cleanup);
 
-  it.skip('should show selections correctly', async () => {
+  it('should show selections correctly', async () => {
     renderWithServiceContext(React.createElement(DatetimeControl.content, null));
 
     const selectedLocale = screen.getByText(defaultDatetimeFormat.dateLocale.name);
