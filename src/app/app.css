@@ -307,7 +307,6 @@ input[type=number].datetime-picker__number-input {
 }
 
 .datetime-picker__time-spin-box.up {
-  background-color: var(--pf-global--palette--black-100);
   border-radius: 0.5rem 0.5rem 0 0;
 }
 
@@ -333,7 +332,6 @@ input[type=number].datetime-picker__number-input {
 .recording-filter__toolbar-filter {
   z-index: 199;  /* Fix input border overlap */
 }
-
 
 .settings__content {
   padding: 2ch;
