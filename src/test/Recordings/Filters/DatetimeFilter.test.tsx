@@ -41,7 +41,6 @@ import { DateTimeFilter } from '@app/Recordings/Filters/DatetimeFilter';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
-import { UserEvent } from '@testing-library/user-event/dist/types/setup/setup';
 import React from 'react';
 import { of } from 'rxjs';
 import { renderDefault } from '../../Common';
@@ -62,11 +61,7 @@ describe('<DatetimeFilter/>', () => {
   afterEach(cleanup);
 
   it('should toggle calendar when calendar icon is clicked', async () => {
-    // FIXME: Should internally wrap render* with act
-    let user: UserEvent;
-    await act(async () => {
-      user = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />).user;
-    });
+    const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
     const calendarIcon = screen.getByRole('button', { name: 'Toggle the calendar' });
     expect(calendarIcon).toBeInTheDocument();
@@ -92,10 +87,7 @@ describe('<DatetimeFilter/>', () => {
   });
 
   it('should disable search icon when no date is entered', async () => {
-    let user: UserEvent;
-    await act(async () => {
-      user = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />).user;
-    });
+    renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
     const searchIcon = screen.getByRole('button', { name: 'Search For Date' });
     expect(searchIcon).toBeInTheDocument();
@@ -104,10 +96,7 @@ describe('<DatetimeFilter/>', () => {
   });
 
   it('should enable search icon when a valid date is entered', async () => {
-    let user: UserEvent;
-    await act(async () => {
-      user = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />).user;
-    });
+    const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
     const dateInput = screen.getByLabelText('Datetime Picker');
     expect(dateInput).toBeInTheDocument();
@@ -124,10 +113,7 @@ describe('<DatetimeFilter/>', () => {
   });
 
   it('should show error when an invalid date is entered', async () => {
-    let user: UserEvent;
-    await act(async () => {
-      user = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />).user;
-    });
+    const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
     const dateInput = screen.getByLabelText('Datetime Picker');
     expect(dateInput).toBeInTheDocument();
@@ -148,10 +134,7 @@ describe('<DatetimeFilter/>', () => {
   });
 
   it('should update date time when date is entered and search icon is clicked', async () => {
-    let user: UserEvent;
-    await act(async () => {
-      user = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />).user;
-    });
+    const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
     const dateInput = screen.getByLabelText('Datetime Picker');
     expect(dateInput).toBeInTheDocument();
