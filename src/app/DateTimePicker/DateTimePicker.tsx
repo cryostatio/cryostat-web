@@ -184,6 +184,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
             <Bullseye>
               <CalendarMonth
                 isDateFocused
+                locale={dayjs.locale()}
                 inlineProps={{
                   component: 'article',
                   ariaLabelledby: 'start-date',

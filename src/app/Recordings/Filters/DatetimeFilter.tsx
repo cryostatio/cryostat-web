@@ -203,7 +203,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
             showClose={false}
             minWidth={'28em'}
             position={PopoverPosition.bottom}
-            flipBehavior={['bottom', 'right', 'left']}
+            flipBehavior={['bottom']}
           >
             <Stack>
               <StackItem>
