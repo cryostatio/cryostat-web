@@ -35,6 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import useDayjs from '@app/utils/useDayjs';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Dropdown,
   DropdownItem,
@@ -52,6 +54,7 @@ import {
   Text,
   TextVariants,
 } from '@patternfly/react-core';
+
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
 import { Notification, NotificationsContext } from './Notifications';
@@ -68,7 +71,10 @@ export interface NotificationDrawerCategory {
 }
 
 export const NotificationCenter: React.FunctionComponent<NotificationCenterProps> = (props) => {
+  const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(NotificationsContext);
+  const addSubscription = useSubscriptions();
+
   const [totalUnreadNotificationsCount, setTotalUnreadNotificationsCount] = React.useState(0);
   const [isHeaderDropdownOpen, setHeaderDropdownOpen] = React.useState(false);
   const PROBLEMS_CATEGORY_IDX = 2;
@@ -83,28 +89,30 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
   };
 
   React.useEffect(() => {
-    const sub = combineLatest([
-      context.actionsNotifications(),
-      context.cryostatStatusNotifications(),
-      context.problemsNotifications(),
-    ]).subscribe((notificationLists) => {
-      setDrawerCategories((drawerCategories) => {
-        return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
-          category.notifications = notificationLists[idx];
-          category.unreadCount = countUnreadNotifications(notificationLists[idx]);
-          return category;
+    addSubscription(
+      combineLatest([
+        context.actionsNotifications(),
+        context.cryostatStatusNotifications(),
+        context.problemsNotifications(),
+      ]).subscribe((notificationLists) => {
+        setDrawerCategories((drawerCategories) => {
+          return drawerCategories.map((category: NotificationDrawerCategory, idx) => {
+            category.notifications = notificationLists[idx];
+            category.unreadCount = countUnreadNotifications(notificationLists[idx]);
+            return category;
+          });
         });
-      });
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.notifications, setDrawerCategories]);
+      })
+    );
+  }, [addSubscription, context, context.notifications, setDrawerCategories]);
 
   React.useEffect(() => {
-    const sub = context.unreadNotifications().subscribe((s) => {
-      setTotalUnreadNotificationsCount(s.length);
-    });
-    return () => sub.unsubscribe();
-  }, [context, context.unreadNotifications, setTotalUnreadNotificationsCount]);
+    addSubscription(
+      context.unreadNotifications().subscribe((s) => {
+        setTotalUnreadNotificationsCount(s.length);
+      })
+    );
+  }, [addSubscription, context, context.unreadNotifications, setTotalUnreadNotificationsCount]);
 
   const handleToggleDropdown = React.useCallback(() => {
     setHeaderDropdownOpen((v) => !v);
@@ -155,8 +163,7 @@ export const NotificationCenter: React.FunctionComponent<NotificationCenterProps
     if (!timestamp) {
       return '';
     }
-    const date = new Date(timestamp);
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    return dayjs(timestamp).tz(datetimeContext.timeZone.full).format('L LTS z');
   };
 
   const drawerDropdownItems = [

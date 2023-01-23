@@ -38,6 +38,7 @@
 
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   AutomatedAnalysisRecordingConfig,
@@ -51,10 +52,6 @@ export enum FeatureLevel {
   DEVELOPMENT = 0,
   BETA = 1,
   PRODUCTION = 2,
-}
-
-export function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
-  return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
 }
 
 export const automatedAnalysisConfigToRecordingAttributes = (
@@ -87,11 +84,24 @@ export class SettingsService {
     getFromLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', 5)
   );
 
+  private readonly _datetimeFormat$ = new BehaviorSubject<DatetimeFormat>(
+    getFromLocalStorage('DATETIME_FORMAT', defaultDatetimeFormat)
+  );
+
   constructor() {
     this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
     this._visibleNotificationsCount$.subscribe((count: number) =>
       saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
     );
+    this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
+  }
+
+  datetimeFormat(): Observable<DatetimeFormat> {
+    return this._datetimeFormat$.asObservable();
+  }
+
+  setDatetimeFormat(format: DatetimeFormat) {
+    this._datetimeFormat$.next(format);
   }
 
   featureLevel(): Observable<FeatureLevel> {

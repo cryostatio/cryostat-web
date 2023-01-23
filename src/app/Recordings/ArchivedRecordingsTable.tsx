@@ -608,7 +608,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
           updateFilters={props.updateFilters}
         />
         <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
-          <ToolbarItem>
+          <ToolbarItem key={'edit-label-button'}>
             <Button
               key="edit labels"
               variant="secondary"
@@ -618,7 +618,7 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
               Edit Labels
             </Button>
           </ToolbarItem>
-          <ToolbarItem>
+          <ToolbarItem key={'delete-archive-button'}>
             <Button
               variant="danger"
               onClick={handleDeleteButton}

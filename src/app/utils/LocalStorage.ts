@@ -52,6 +52,7 @@ export enum LocalStorageKey {
   VISIBLE_NOTIFICATIONS_COUNT,
   NOTIFICATIONS_ENABLED,
   WEBSOCKET_DEBOUNCE_MS,
+  DATETIME_FORMAT,
 }
 
 export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;

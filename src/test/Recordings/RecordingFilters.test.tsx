@@ -49,11 +49,14 @@ import {
 } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { ActiveRecording, ArchivedRecording, RecordingState } from '@app/Shared/Services/Api.service';
+import { defaultServices } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
+import { defaultDatetimeFormat } from '@i18n/datetime';
 import { Toolbar, ToolbarContent } from '@patternfly/react-core';
 import { cleanup, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { of } from 'rxjs';
 import { renderWithReduxStore } from '../Common';
 
 const mockFooTarget: Target = {
@@ -105,6 +108,8 @@ const activeCategoryOptions = Object.keys({} as RecordingFiltersCategories);
 const archivedCategoryOptions = ['Name', 'Label'];
 
 const updateFilters = jest.fn((_target: string, _options: UpdateFilterOptions) => undefined);
+
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
 describe('<RecordingFilters />', () => {
   let preloadedState: RootState;

@@ -44,6 +44,7 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { t } from 'i18next';
 import React, { PropsWithChildren } from 'react';
+import '@i18n/config';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 // userEvent functions are recommended to be called in tests (i.e it()).

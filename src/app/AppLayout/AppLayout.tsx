@@ -96,7 +96,6 @@ import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-
 import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
-
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -106,6 +105,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
+
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);

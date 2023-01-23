@@ -36,61 +36,8 @@
  * SOFTWARE.
  */
 
-import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
-import React from 'react';
+declare namespace Intl {
+  type Key = 'calendar' | 'collation' | 'currency' | 'numberingSystem' | 'timeZone' | 'unit';
 
-export interface DurationFilterProps {
-  durations: string[] | undefined;
-  onDurationInput: (e: number) => void;
-  onContinuousDurationSelect: (checked: boolean) => void;
+  function supportedValuesOf(input: Key): string[];
 }
-
-export const DurationFilter: React.FC<DurationFilterProps> = ({
-  durations,
-  onDurationInput,
-  onContinuousDurationSelect,
-}) => {
-  const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
-
-  const handleContinuousCheckBoxChange = React.useCallback(
-    (checked) => {
-      onContinuousDurationSelect(checked);
-    },
-    [onContinuousDurationSelect]
-  );
-
-  const handleEnterKey = React.useCallback(
-    (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
-      }
-      onDurationInput(duration);
-    },
-    [onDurationInput, duration]
-  );
-
-  return (
-    <Flex>
-      <FlexItem flex={{ default: 'flex_1' }}>
-        <TextInput
-          type="number"
-          value={duration}
-          id="duration-input"
-          aria-label="duration filter"
-          onChange={(e) => setDuration(Number(e))}
-          min="0"
-          onKeyDown={handleEnterKey}
-        />
-      </FlexItem>
-      <FlexItem>
-        <Checkbox
-          label="Continuous"
-          id="continuous-checkbox"
-          isChecked={isContinuous}
-          onChange={handleContinuousCheckBoxChange}
-        />
-      </FlexItem>
-    </Flex>
-  );
-};

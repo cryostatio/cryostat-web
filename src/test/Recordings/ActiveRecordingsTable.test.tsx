@@ -48,6 +48,7 @@ import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.servic
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { TargetService } from '@app/Shared/Services/Target.service';
+import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
@@ -134,6 +135,8 @@ jest
   .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
   .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
   .mockReturnValue(true);
+
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
 jest
   .spyOn(defaultServices.notificationChannel, 'messages')
@@ -242,7 +245,7 @@ describe('<ActiveRecordingsTable />', () => {
     expect(name).toBeInTheDocument();
     expect(name).toBeVisible();
 
-    const startTime = screen.getByText(new Date(mockRecording.startTime).toISOString());
+    const startTime = screen.getByText(dayjs(mockRecording.startTime).tz('UTC').format('L LTS z'));
     expect(startTime).toBeInTheDocument();
     expect(startTime).toBeVisible();
 

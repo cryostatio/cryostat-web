@@ -14,5 +14,49 @@
   },
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
+  },
+  "DatetimeFilter": {
+    "ARIA_LABELS": {
+      "DATETIME_INPUT": "Input a datetime",
+      "SEARCH_BUTTON": "Search For Date",
+      "TOGGLE_CALENDAR": "Toggle the calendar"
+    },
+    "INVALID_DATE_TEXT": "Invalid date time"
+  },
+  "DateTimePicker": {
+    "ARIA_LABELS": {
+      "DISPLAY_SELECTED_DATETIME": "Displayed selected datetime",
+      "TABS": "Select a date or time tab"
+    },
+    "SELECTED_DATETIME": "Selected DateTime"
+  },
+  "MeridiemPicker": {
+    "ARIA_LABELS": {
+      "LISTBOX": "Select AM or PM"
+    }
+  },
+  "TimePicker": {
+    "24HOUR": "24-hour",
+    "USE_24HR_TIME": "Use 24-hour time"
+  },
+  "TimeSpinner": {
+    "DECREMENT_HOUR12_VALUE": "Decrement hour12 value",
+    "DECREMENT_HOUR24_VALUE": "Decrement hour24 value",
+    "DECREMENT_MINUTE_VALUE": "Decrement minute value",
+    "DECREMENT_SECOND_VALUE": "Decrement second value",
+    "INCREMENT_HOUR12_VALUE": "Increment hour12 value",
+    "INCREMENT_HOUR24_VALUE": "Increment hour24 value",
+    "INCREMENT_MINUTE_VALUE": "Increment minute value",
+    "INCREMENT_SECOND_VALUE": "Increment second value",
+    "INPUT_HOUR12_VALUE": "Input hour12 value",
+    "INPUT_HOUR24_VALUE": "Input hour24 value",
+    "INPUT_MINUTE_VALUE": "Input minute value",
+    "INPUT_SECOND_VALUE": "Input second value"
+  },
+  "TimezonePicker": {
+    "ARIA_LABELS": {
+      "SELECT": "Select a timezone",
+      "TYPE_AHEAD": "Search a timezone"
+    }
   }
 }

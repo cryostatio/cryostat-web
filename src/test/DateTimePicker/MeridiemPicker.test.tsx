@@ -36,61 +36,39 @@
  * SOFTWARE.
  */
 
-import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
-import React from 'react';
+import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
+import { cleanup, screen } from '@testing-library/react';
+import * as React from 'react';
+import renderer, { act } from 'react-test-renderer';
+import { renderDefault, testTranslate } from '../Common';
 
-export interface DurationFilterProps {
-  durations: string[] | undefined;
-  onDurationInput: (e: number) => void;
-  onContinuousDurationSelect: (checked: boolean) => void;
-}
+const onSelect = jest.fn((_: boolean) => undefined);
 
-export const DurationFilter: React.FC<DurationFilterProps> = ({
-  durations,
-  onDurationInput,
-  onContinuousDurationSelect,
-}) => {
-  const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
+describe('<MeridiemPicker/>', () => {
+  beforeEach(() => {
+    jest.mocked(onSelect).mockReset();
+  });
 
-  const handleContinuousCheckBoxChange = React.useCallback(
-    (checked) => {
-      onContinuousDurationSelect(checked);
-    },
-    [onContinuousDurationSelect]
-  );
+  afterEach(cleanup);
 
-  const handleEnterKey = React.useCallback(
-    (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
-      }
-      onDurationInput(duration);
-    },
-    [onDurationInput, duration]
-  );
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(<MeridiemPicker onSelect={onSelect} />);
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
 
-  return (
-    <Flex>
-      <FlexItem flex={{ default: 'flex_1' }}>
-        <TextInput
-          type="number"
-          value={duration}
-          id="duration-input"
-          aria-label="duration filter"
-          onChange={(e) => setDuration(Number(e))}
-          min="0"
-          onKeyDown={handleEnterKey}
-        />
-      </FlexItem>
-      <FlexItem>
-        <Checkbox
-          label="Continuous"
-          id="continuous-checkbox"
-          isChecked={isContinuous}
-          onChange={handleContinuousCheckBoxChange}
-        />
-      </FlexItem>
-    </Flex>
-  );
-};
+  it('should select a meridiem when click', async () => {
+    const { user } = renderDefault(<MeridiemPicker onSelect={onSelect} />);
+
+    const pm = screen.getByText(testTranslate('MERIDIEM_PM', 'common'));
+    expect(pm).toBeInTheDocument();
+    expect(pm).toBeVisible();
+
+    await user.click(pm);
+
+    expect(onSelect).toHaveBeenCalledTimes(1);
+    expect(onSelect).toHaveBeenCalledWith(false);
+  });
+});

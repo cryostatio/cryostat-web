@@ -1,4 +1,13 @@
 {
+  "CANCEL": "Cancel",
   "CRYOSTAT_TRADEMARK": "Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0",
-  "REMOVE": "Remove"
+  "DATE": "Date",
+  "HOUR": "Hour",
+  "MERIDIEM_AM": "AM",
+  "MERIDIEM_PM": "PM",
+  "MINUTE": "Minute",
+  "REMOVE": "Remove",
+  "SECOND": "Second",
+  "SELECT": "Select",
+  "TIME": "Time"
 }

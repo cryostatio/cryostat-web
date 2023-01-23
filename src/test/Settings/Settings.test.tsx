@@ -124,6 +124,16 @@ jest.mock('@app/Settings/Language', () => ({
   },
 }));
 
+jest.mock('@app/Settings/DatetimeControl', () => ({
+  DatetimeControl: {
+    title: 'DatetimeControl Title',
+    description: 'DatetimeControl Description',
+    category: 'Language & Region',
+    featureLevel: FeatureLevel.PRODUCTION,
+    content: () => <Text>DatetimeControl Component</Text>,
+  },
+}));
+
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
 const history = createMemoryHistory({ initialEntries: ['/settings'] });
@@ -145,9 +155,8 @@ describe('<Settings/>', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  // This test will check if language setting (BETA) is being hidden.
-  // Update this test when language setting is in PRODUCTION.
-  it('should not show tabs with featureLevel lower than current', async () => {
+  // Currently, no tab is lower than PRODUCTION
+  it.skip('should not show tabs with featureLevel lower than current', async () => {
     renderWithServiceContextAndRouter(<Settings />);
 
     const hiddenTab = screen.queryByText('Language & Region');

@@ -250,6 +250,98 @@ html, body, #root {
   width: 0.8em;
 }
 
-.setting-content {
-  padding: 2ch !important;
+.datetime-picker__meridiem-tile {
+  font-size: 1.5em;
+  font-weight: 600;
+  padding: var(--pf-global--spacer--xs) var(--pf-global--spacer--sm);
+  border: solid;
+  border-color: var(--pf-global--BorderColor--100);
+  border-width: 0 0.10rem 0.10rem 0.10rem;
+}
+
+.datetime-picker__meridiem-tile:first-child {
+  border-top-width: 0.10rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.datetime-picker__meridiem-tile:last-child {
+  border-radius: 0 0 0.5rem 0.5rem ;
+}
+
+.datetime-picker__meridiem-tile.selected {
+  background-color: var(--pf-global--palette--blue-100);
+  color: var(--pf-global--palette--blue-500);
+}
+
+.datetime-picker__meridiem-tile.unselected {
+  color: var(--pf-global--palette--black-500);
+}
+
+.datetime-picker__meridiem-tile:hover {
+  cursor: pointer;
+}
+
+.datetime-picker__meridiem-title-stack {
+  margin-top: 2.5em;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input.datetime-picker__number-input::-webkit-outer-spin-button,
+input.datetime-picker__number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number].datetime-picker__number-input {
+  -moz-appearance: textfield; /* Firefox */
+  width: 3.6rem;
+  height: 3.6em;
+  background-color: var(--pf-global--palette--black-100);
+  text-align: center;
+  font-weight: 600;
+}
+
+.datetime-picker__time-spin-box {
+  width: 3.6rem;
+  height: 2.2rem;
+}
+
+.datetime-picker__time-spin-box.up {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.datetime-picker__time-spin-box.down {
+  border-radius: 0 0 0.5rem 0.5rem ;
+}
+
+.datetime-picker__colon-divider {
+  margin-top: 0.8em;
+  font-size: 2.25em;
+}
+
+.datetime-picker__time-text-top-label {
+  text-align: center;
+  color: var(--pf-global--palette--black-600);
+  margin: 0 0 0.5em 0 !important;
+}
+
+.datetime-picker__datetime-selected-display {
+  max-width: 14em !important;
+}
+
+.datetime-picker__calendar .pf-c-calendar-month__header-year{
+  min-width: 6em !important;
+}
+
+.recording-filter__toolbar-filter {
+  z-index: 199;  /* Fix input border overlap */
+}
+
+.settings__content {
+  padding: 2ch;
+  display: none; /* only show when active */
+}
+
+.settings__content.active {
+  display: block;
 }

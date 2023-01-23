@@ -45,6 +45,7 @@
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/triple-slash-reference": ["error", { "lib": "always", "path": "always", "types": "prefer-import" }],
     "import/extensions": "off",
     "import/no-named-as-default": "off",
     "import/no-unresolved": "off",

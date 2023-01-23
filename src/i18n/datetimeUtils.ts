@@ -36,61 +36,34 @@
  * SOFTWARE.
  */
 
-import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
-import React from 'react';
+import dayjs from '@i18n/datetime';
+import { clamp } from 'lodash';
 
-export interface DurationFilterProps {
-  durations: string[] | undefined;
-  onDurationInput: (e: number) => void;
-  onContinuousDurationSelect: (checked: boolean) => void;
-}
+export const hourIn12HrFormat = (hourIn24h: number): [number, boolean] => {
+  // return [hour, isAM]
+  hourIn24h = clamp(hourIn24h, 0, 23);
+  if (hourIn24h > 12) {
+    return [hourIn24h - 12, false];
+  } else if (hourIn24h === 0) {
+    return [12, true]; // 12AM
+  } else {
+    return [hourIn24h, true];
+  }
+};
 
-export const DurationFilter: React.FC<DurationFilterProps> = ({
-  durations,
-  onDurationInput,
-  onContinuousDurationSelect,
-}) => {
-  const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
+export const hourIn24HrFormat = (hourIn12h: number, isAM: boolean): number => {
+  hourIn12h = clamp(hourIn12h, 0, 12);
+  return dayjs(`2023-01-01 ${hourIn12h}:00:00 ${isAM ? 'AM' : 'PM'}`, 'YY-MM-DD H:mm:ss A').hour();
+};
 
-  const handleContinuousCheckBoxChange = React.useCallback(
-    (checked) => {
-      onContinuousDurationSelect(checked);
-    },
-    [onContinuousDurationSelect]
-  );
+export const isHourIn24hAM = (hourIn24h: number): boolean => {
+  hourIn24h = clamp(hourIn24h, 0, 23);
+  const marker = dayjs(`2023-01-01 12:00`);
+  return dayjs(`2023-01-01 ${hourIn24h}:00`).isBefore(marker);
+};
 
-  const handleEnterKey = React.useCallback(
-    (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
-      }
-      onDurationInput(duration);
-    },
-    [onDurationInput, duration]
-  );
-
-  return (
-    <Flex>
-      <FlexItem flex={{ default: 'flex_1' }}>
-        <TextInput
-          type="number"
-          value={duration}
-          id="duration-input"
-          aria-label="duration filter"
-          onChange={(e) => setDuration(Number(e))}
-          min="0"
-          onKeyDown={handleEnterKey}
-        />
-      </FlexItem>
-      <FlexItem>
-        <Checkbox
-          label="Continuous"
-          id="continuous-checkbox"
-          isChecked={isContinuous}
-          onChange={handleContinuousCheckBoxChange}
-        />
-      </FlexItem>
-    </Flex>
-  );
+export const format2Digit = (value: number): string => {
+  return value.toLocaleString('en', {
+    minimumIntegerDigits: 2,
+  });
 };

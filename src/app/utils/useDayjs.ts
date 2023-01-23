@@ -36,61 +36,51 @@
  * SOFTWARE.
  */
 
-import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
-import React from 'react';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import dayjs, { DatetimeFormat, defaultDatetimeFormat, getLocale } from '@i18n/datetime';
+import * as React from 'react';
+import { concatMap, from, of, Subscription } from 'rxjs';
 
-export interface DurationFilterProps {
-  durations: string[] | undefined;
-  onDurationInput: (e: number) => void;
-  onContinuousDurationSelect: (checked: boolean) => void;
+export function useDayjs(): [typeof dayjs, DatetimeFormat] {
+  const _localeSubRef = React.useRef<Subscription[]>([]);
+  const _services = React.useContext(ServiceContext);
+  const [datetimeContext, setDatetimeContext] = React.useState<DatetimeFormat>(defaultDatetimeFormat);
+
+  React.useEffect(() => () => _localeSubRef.current.forEach((s: Subscription): void => s.unsubscribe()), []);
+
+  React.useEffect(() => {
+    _localeSubRef.current = _localeSubRef.current.concat([
+      _services.settings
+        .datetimeFormat()
+        .pipe(
+          concatMap((f: DatetimeFormat) => {
+            const locale = getLocale(f.dateLocale.key);
+            if (locale) {
+              return dayjs.locale() === f.dateLocale.key // only load if not yet
+                ? of(f)
+                : from(
+                    locale
+                      .load()
+                      .then(() => {
+                        dayjs.locale(locale.key); // Load globally
+                        return f;
+                      })
+                      .catch((err) => {
+                        console.warn(err);
+                        return f;
+                      })
+                  );
+            } else {
+              console.warn(`${f.dateLocale.name} (${f.dateLocale.key}) is not supported.`);
+              return of(f);
+            }
+          })
+        )
+        .subscribe(setDatetimeContext),
+    ]);
+  }, [_services.settings, setDatetimeContext, _localeSubRef]);
+
+  return [dayjs, datetimeContext];
 }
 
-export const DurationFilter: React.FC<DurationFilterProps> = ({
-  durations,
-  onDurationInput,
-  onContinuousDurationSelect,
-}) => {
-  const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
-
-  const handleContinuousCheckBoxChange = React.useCallback(
-    (checked) => {
-      onContinuousDurationSelect(checked);
-    },
-    [onContinuousDurationSelect]
-  );
-
-  const handleEnterKey = React.useCallback(
-    (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
-      }
-      onDurationInput(duration);
-    },
-    [onDurationInput, duration]
-  );
-
-  return (
-    <Flex>
-      <FlexItem flex={{ default: 'flex_1' }}>
-        <TextInput
-          type="number"
-          value={duration}
-          id="duration-input"
-          aria-label="duration filter"
-          onChange={(e) => setDuration(Number(e))}
-          min="0"
-          onKeyDown={handleEnterKey}
-        />
-      </FlexItem>
-      <FlexItem>
-        <Checkbox
-          label="Continuous"
-          id="continuous-checkbox"
-          isChecked={isContinuous}
-          onChange={handleContinuousCheckBoxChange}
-        />
-      </FlexItem>
-    </Flex>
-  );
-};
+export default useDayjs;

@@ -35,62 +35,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { css } from '@patternfly/react-styles';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Checkbox, Flex, FlexItem, TextInput } from '@patternfly/react-core';
-import React from 'react';
-
-export interface DurationFilterProps {
-  durations: string[] | undefined;
-  onDurationInput: (e: number) => void;
-  onContinuousDurationSelect: (checked: boolean) => void;
+export interface MeridiemPickerProps {
+  onSelect?: (isAM: boolean) => void;
+  isAM?: boolean;
 }
 
-export const DurationFilter: React.FC<DurationFilterProps> = ({
-  durations,
-  onDurationInput,
-  onContinuousDurationSelect,
-}) => {
-  const [duration, setDuration] = React.useState(30);
-  const isContinuous = React.useMemo(() => durations && durations.includes('continuous'), [durations]);
+export const MeridiemPicker: React.FC<MeridiemPickerProps> = ({ onSelect = () => undefined, isAM = true }) => {
+  const [t] = useTranslation();
+  const handleSelectAM = React.useCallback(() => {
+    onSelect(true);
+  }, [onSelect]);
 
-  const handleContinuousCheckBoxChange = React.useCallback(
-    (checked) => {
-      onContinuousDurationSelect(checked);
-    },
-    [onContinuousDurationSelect]
-  );
-
-  const handleEnterKey = React.useCallback(
-    (e) => {
-      if (e.key && e.key !== 'Enter') {
-        return;
-      }
-      onDurationInput(duration);
-    },
-    [onDurationInput, duration]
-  );
+  const handleSelectPM = React.useCallback(() => {
+    onSelect(false);
+  }, [onSelect]);
 
   return (
-    <Flex>
-      <FlexItem flex={{ default: 'flex_1' }}>
-        <TextInput
-          type="number"
-          value={duration}
-          id="duration-input"
-          aria-label="duration filter"
-          onChange={(e) => setDuration(Number(e))}
-          min="0"
-          onKeyDown={handleEnterKey}
-        />
-      </FlexItem>
-      <FlexItem>
-        <Checkbox
-          label="Continuous"
-          id="continuous-checkbox"
-          isChecked={isContinuous}
-          onChange={handleContinuousCheckBoxChange}
-        />
-      </FlexItem>
-    </Flex>
+    <div
+      role={'listbox'}
+      aria-label={t('MeridiemPicker.ARIA_LABELS.LISTBOX') || ''}
+      className="datetime-picker__meridiem-title-stack"
+    >
+      <div className={css('datetime-picker__meridiem-tile', `${isAM ? '' : 'un'}selected`)} onClick={handleSelectAM}>
+        {t('MERIDIEM_AM', { ns: 'common' })}
+      </div>
+      <div className={css('datetime-picker__meridiem-tile', `${isAM ? 'un' : ''}selected`)} onClick={handleSelectPM}>
+        {t('MERIDIEM_PM', { ns: 'common' })}
+      </div>
+    </div>
   );
 };

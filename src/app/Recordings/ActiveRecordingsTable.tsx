@@ -44,10 +44,10 @@ import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
 import { emptyActiveRecordingFilters, TargetRecordingFilters } from '@app/Shared/Redux/Filters/RecordingFilterSlice';
 import {
   recordingAddFilterIntent,
-  recordingDeleteFilterIntent,
   recordingAddTargetIntent,
-  recordingDeleteCategoryFiltersIntent,
   recordingDeleteAllFiltersIntent,
+  recordingDeleteCategoryFiltersIntent,
+  recordingDeleteFilterIntent,
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
@@ -55,6 +55,7 @@ import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.servic
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { useDayjs } from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
@@ -63,12 +64,14 @@ import {
   DrawerContent,
   DrawerContentBody,
   Text,
+  Timestamp,
+  TimestampTooltipVariant,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { Tbody, Tr, Td, ExpandableRowContent } from '@patternfly/react-table';
+import { ExpandableRowContent, Tbody, Td, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -94,6 +97,7 @@ export interface ActiveRecordingsTableProps {
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
   const context = React.useContext(ServiceContext);
+
   const routerHistory = useHistory();
   const { url } = useRouteMatch();
   const addSubscription = useSubscriptions();
@@ -712,6 +716,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   handleRowCheck,
   updateFilters,
 }) => {
+  const [dayjs, datetimeContext] = useDayjs();
   const context = React.useContext(ServiceContext);
 
   const parsedLabels = React.useMemo(() => {
@@ -737,11 +742,6 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
   );
 
   const parentRow = React.useMemo(() => {
-    const ISOTime = (props: { timeStmp: number }) => {
-      const fmt = React.useMemo(() => new Date(props.timeStmp).toISOString(), [props.timeStmp]);
-      return <span>{fmt}</span>;
-    };
-
     const RecordingDuration = (props: { duration: number }) => {
       const str = React.useMemo(
         () => (props.duration === 0 ? 'Continuous' : `${props.duration / 1000}s`),
@@ -774,7 +774,13 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
           {recording.name}
         </Td>
         <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[1]}>
-          <ISOTime timeStmp={recording.startTime} />
+          <Timestamp
+            className="recording-table__timestamp"
+            tooltip={{ variant: TimestampTooltipVariant.default }}
+            date={new Date(recording.startTime)}
+          >
+            {dayjs(recording.startTime).tz(datetimeContext.timeZone.full).format('L LTS z')}
+          </Timestamp>
         </Td>
         <Td key={`active-table-row-${index}_4`} dataLabel={tableColumns[2]}>
           <RecordingDuration duration={recording.duration} />
@@ -801,6 +807,8 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
     );
   }, [
     index,
+    dayjs,
+    datetimeContext.timeZone.full,
     checkedIndices,
     isExpanded,
     recording,
