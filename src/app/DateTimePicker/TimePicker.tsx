@@ -143,7 +143,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
             <HelperText>
               <HelperTextItem>{t('TimePicker.USE_24HR_TIME')}</HelperTextItem>
             </HelperText>
-            <Switch label="24-hour" isChecked={is24h} onChange={setIs24h} />
+            <Switch id={'24-hour-switch'} label="24-hour" isChecked={is24h} onChange={setIs24h} />
           </PanelFooter>
         </PanelMain>
       </Panel>
@@ -208,7 +208,7 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
   }, [selected, _sanitizeValue, onChange]);
 
   return (
-    <Stack>
+    <Stack aria-label={label || variant}>
       {label ? (
         <StackItem>
           <Title className="datetime-picker__time-text-top-label" headingLevel={'h4'}>
@@ -219,7 +219,11 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
         <></>
       )}
       <StackItem key={`${variant}-increment`}>
-        <Button className={css('datetime-picker__time-spin-box', 'up')} onClick={handleIncrement}>
+        <Button
+          className={css('datetime-picker__time-spin-box', 'up')}
+          onClick={handleIncrement}
+          aria-label={`Increment ${variant} value`}
+        >
           <AngleUpIcon size="md" />
         </Button>
       </StackItem>
@@ -236,7 +240,11 @@ const TimeSpinner: React.FC<TimeSpinnerProps> = ({ variant, onChange, selected, 
         />
       </StackItem>
       <StackItem key={`${variant}-decrement`}>
-        <Button className={css('datetime-picker__time-spin-box', 'down')} onClick={handleDecrement}>
+        <Button
+          className={css('datetime-picker__time-spin-box', 'down')}
+          onClick={handleDecrement}
+          aria-label={`Decrement ${variant} value`}
+        >
           <AngleDownIcon size="md" />
         </Button>
       </StackItem>
