@@ -57,6 +57,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import { css } from '@patternfly/react-styles';
 import { useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
@@ -116,27 +117,31 @@ interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
 export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
-  const settings = [
-    NotificationControl,
-    AutomatedAnalysisConfig,
-    CredentialsStorage,
-    DeletionDialogControl,
-    WebSocketDebounce,
-    AutoRefresh,
-    FeatureLevels,
-    Language,
-    DatetimeControl,
-  ].map(
-    (c) =>
-      ({
-        title: c.title,
-        description: c.description,
-        element: React.createElement(c.content, null),
-        category: c.category,
-        disabled: c.disabled,
-        orderInGroup: c.orderInGroup || -1,
-        featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
-      } as _TransformedUserSetting)
+  const settings = React.useMemo(
+    () =>
+      [
+        NotificationControl,
+        AutomatedAnalysisConfig,
+        CredentialsStorage,
+        DeletionDialogControl,
+        WebSocketDebounce,
+        AutoRefresh,
+        FeatureLevels,
+        Language,
+        DatetimeControl,
+      ].map(
+        (c) =>
+          ({
+            title: c.title,
+            description: c.description,
+            element: React.createElement(c.content, null),
+            category: c.category,
+            disabled: c.disabled,
+            orderInGroup: c.orderInGroup || -1,
+            featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
+          } as _TransformedUserSetting)
+      ),
+    []
   );
 
   const location = useLocation();
@@ -187,10 +192,12 @@ export const Settings: React.FC<SettingsProps> = (_) => {
               </Tabs>
             </SidebarPanel>
             <SidebarContent>
-              {settingGroups
-                .filter((g) => g.groupLabel === activeTab)
-                .map((grp) => (
-                  <Form key={`${grp.groupLabel}-setting`} className="setting-content">
+              {settingGroups.map((grp) => (
+                <div
+                  key={`${grp.groupLabel}-setting`}
+                  className={css('settings__content', grp.groupLabel === activeTab ? 'active' : '')}
+                >
+                  <Form>
                     {grp.settings.map((s, index) => (
                       <FeatureFlag level={s.featureLevel} key={`${grp.groupLabel}-${s.title}-${index}-flag`}>
                         <FormGroup
@@ -224,7 +231,8 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                       </FeatureFlag>
                     ))}
                   </Form>
-                ))}
+                </div>
+              ))}
             </SidebarContent>
           </Sidebar>
         </Card>

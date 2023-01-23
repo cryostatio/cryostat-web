@@ -88,6 +88,28 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
+                      aria-controls="pf-tab-section-Language & Region-1054143478"
+                      aria-selected={false}
+                      className="pf-c-tabs__link"
+                      data-ouia-component-type="PF4/TabButton"
+                      data-ouia-safe={true}
+                      id="pf-tab-Language & Region-1054143478"
+                      onClick={[Function]}
+                      role="tab"
+                      type="button"
+                    >
+                      <span
+                        className="pf-c-tabs__item-text"
+                      >
+                        Language & Region
+                      </span>
+                    </button>
+                  </li>
+                  <li
+                    className="pf-c-tabs__item"
+                    role="presentation"
+                  >
+                    <button
                       aria-controls="pf-tab-section-Notifications & Messages--1892985218"
                       aria-selected={false}
                       className="pf-c-tabs__link"
@@ -155,113 +177,459 @@ exports[`<Settings/> renders correctly 1`] = `
             <div
               className="pf-c-sidebar__content"
             >
-              <form
-                className="pf-c-form setting-content"
-                noValidate={true}
+              <div
+                className="settings__content active"
               >
-                <div
-                  className="pf-c-form__group"
+                <form
+                  className="pf-c-form"
+                  noValidate={true}
                 >
                   <div
-                    className="pf-c-form__group-label"
-                  >
-                    <label
-                      className="pf-c-form__label"
-                    >
-                      <span
-                        className="pf-c-form__label-text"
-                      >
-                        <h2
-                          className="pf-c-title pf-m-lg"
-                          data-ouia-component-id="OUIA-Generated-Title-1"
-                          data-ouia-component-type="PF4/Title"
-                          data-ouia-safe={true}
-                        >
-                          WebSocket Debounce Title
-                        </h2>
-                      </span>
-                    </label>
-                     
-                  </div>
-                  <div
-                    className="pf-c-form__group-control"
+                    className="pf-c-form__group"
                   >
                     <div
-                      className="pf-c-helper-text"
+                      className="pf-c-form__group-label"
                     >
-                      <div
-                        className="pf-c-helper-text__item"
+                      <label
+                        className="pf-c-form__label"
                       >
                         <span
-                          className="pf-c-helper-text__item-text"
+                          className="pf-c-form__label-text"
                         >
-                          WebSocket Debounce Description
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-1"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            WebSocket Debounce Title
+                          </h2>
                         </span>
-                      </div>
+                      </label>
+                       
                     </div>
-                    <p
-                      className=""
-                      data-ouia-component-id="OUIA-Generated-Text-1"
-                      data-ouia-component-type="PF4/Text"
-                      data-ouia-safe={true}
-                      data-pf-content={true}
+                    <div
+                      className="pf-c-form__group-control"
                     >
-                      WebSocket Debounce Component
-                    </p>
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            WebSocket Debounce Description
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-1"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        WebSocket Debounce Component
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div
-                  className="pf-c-form__group"
+                  <div
+                    className="pf-c-form__group"
+                  >
+                    <div
+                      className="pf-c-form__group-label"
+                    >
+                      <label
+                        className="pf-c-form__label"
+                      >
+                        <span
+                          className="pf-c-form__label-text"
+                        >
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-2"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            AutoRefresh Title
+                          </h2>
+                        </span>
+                      </label>
+                       
+                    </div>
+                    <div
+                      className="pf-c-form__group-control"
+                    >
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            AutoRefresh Description
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-2"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        AutoRefresh Component
+                      </p>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div
+                className="settings__content"
+              >
+                <form
+                  className="pf-c-form"
+                  noValidate={true}
                 >
                   <div
-                    className="pf-c-form__group-label"
-                  >
-                    <label
-                      className="pf-c-form__label"
-                    >
-                      <span
-                        className="pf-c-form__label-text"
-                      >
-                        <h2
-                          className="pf-c-title pf-m-lg"
-                          data-ouia-component-id="OUIA-Generated-Title-2"
-                          data-ouia-component-type="PF4/Title"
-                          data-ouia-safe={true}
-                        >
-                          AutoRefresh Title
-                        </h2>
-                      </span>
-                    </label>
-                     
-                  </div>
-                  <div
-                    className="pf-c-form__group-control"
+                    className="pf-c-form__group"
                   >
                     <div
-                      className="pf-c-helper-text"
+                      className="pf-c-form__group-label"
                     >
-                      <div
-                        className="pf-c-helper-text__item"
+                      <label
+                        className="pf-c-form__label"
                       >
                         <span
-                          className="pf-c-helper-text__item-text"
+                          className="pf-c-form__label-text"
                         >
-                          AutoRefresh Description
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-3"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            DatetimeControl Title
+                          </h2>
                         </span>
-                      </div>
+                      </label>
+                       
                     </div>
-                    <p
-                      className=""
-                      data-ouia-component-id="OUIA-Generated-Text-2"
-                      data-ouia-component-type="PF4/Text"
-                      data-ouia-safe={true}
-                      data-pf-content={true}
+                    <div
+                      className="pf-c-form__group-control"
                     >
-                      AutoRefresh Component
-                    </p>
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            DatetimeControl Description
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-3"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        DatetimeControl Component
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </form>
+                </form>
+              </div>
+              <div
+                className="settings__content"
+              >
+                <form
+                  className="pf-c-form"
+                  noValidate={true}
+                >
+                  <div
+                    className="pf-c-form__group"
+                  >
+                    <div
+                      className="pf-c-form__group-label"
+                    >
+                      <label
+                        className="pf-c-form__label"
+                      >
+                        <span
+                          className="pf-c-form__label-text"
+                        >
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-4"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            Notification Control Title
+                          </h2>
+                        </span>
+                      </label>
+                       
+                    </div>
+                    <div
+                      className="pf-c-form__group-control"
+                    >
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            Notification Control Description
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-4"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        Notification Control Component
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className="pf-c-form__group"
+                  >
+                    <div
+                      className="pf-c-form__group-label"
+                    >
+                      <label
+                        className="pf-c-form__label"
+                      >
+                        <span
+                          className="pf-c-form__label-text"
+                        >
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-5"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            Deletion Dialog Control Title
+                          </h2>
+                        </span>
+                      </label>
+                       
+                    </div>
+                    <div
+                      className="pf-c-form__group-control"
+                    >
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            Deletion Dialog Control Description
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-5"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        Deletion Dialog Control Component
+                      </p>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div
+                className="settings__content"
+              >
+                <form
+                  className="pf-c-form"
+                  noValidate={true}
+                >
+                  <div
+                    className="pf-c-form__group"
+                  >
+                    <div
+                      className="pf-c-form__group-label"
+                    >
+                      <label
+                        className="pf-c-form__label"
+                      >
+                        <span
+                          className="pf-c-form__label-text"
+                        >
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-6"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            Automated Analysis Config Title
+                          </h2>
+                        </span>
+                      </label>
+                       
+                    </div>
+                    <div
+                      className="pf-c-form__group-control"
+                    >
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            Automated Analysis Config Description
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-6"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        Automated Analysis Config Component
+                      </p>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div
+                className="settings__content"
+              >
+                <form
+                  className="pf-c-form"
+                  noValidate={true}
+                >
+                  <div
+                    className="pf-c-form__group"
+                  >
+                    <div
+                      className="pf-c-form__group-label"
+                    >
+                      <label
+                        className="pf-c-form__label"
+                      >
+                        <span
+                          className="pf-c-form__label-text"
+                        >
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-7"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            Credentials Storage Title
+                          </h2>
+                        </span>
+                      </label>
+                       
+                    </div>
+                    <div
+                      className="pf-c-form__group-control"
+                    >
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            Credentials Storage Description
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-7"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        Credentials Storage Component
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className="pf-c-form__group"
+                  >
+                    <div
+                      className="pf-c-form__group-label"
+                    >
+                      <label
+                        className="pf-c-form__label"
+                      >
+                        <span
+                          className="pf-c-form__label-text"
+                        >
+                          <h2
+                            className="pf-c-title pf-m-lg"
+                            data-ouia-component-id="OUIA-Generated-Title-8"
+                            data-ouia-component-type="PF4/Title"
+                            data-ouia-safe={true}
+                          >
+                            Feature Levels Title
+                          </h2>
+                        </span>
+                      </label>
+                       
+                    </div>
+                    <div
+                      className="pf-c-form__group-control"
+                    >
+                      <div
+                        className="pf-c-helper-text"
+                      >
+                        <div
+                          className="pf-c-helper-text__item"
+                        >
+                          <span
+                            className="pf-c-helper-text__item-text"
+                          >
+                            Feature Levels Description
+                          </span>
+                        </div>
+                      </div>
+                      <p
+                        className=""
+                        data-ouia-component-id="OUIA-Generated-Text-8"
+                        data-ouia-component-type="PF4/Text"
+                        data-ouia-safe={true}
+                        data-pf-content={true}
+                      >
+                        Feature Levels Component
+                      </p>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>

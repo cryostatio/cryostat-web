@@ -250,10 +250,6 @@ html, body, #root {
   width: 0.8em;
 }
 
-.setting-content {
-  padding: 2ch !important;
-}
-
 .datetime-picker__meridiem-tile {
   font-size: 1.5em;
   font-weight: 600;
@@ -336,4 +332,14 @@ input[type=number].datetime-picker__number-input {
 
 .recording-filter__toolbar-filter {
   z-index: 199;  /* Fix input border overlap */
+}
+
+
+.settings__content {
+  padding: 2ch;
+  display: none; /* only show when active */
+}
+
+.settings__content.active {
+  display: block;
 }
