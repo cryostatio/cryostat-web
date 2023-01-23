@@ -61,6 +61,7 @@ jest.mock('@i18n/config', () => ({
       common: {},
     },
   },
+  i18nLanguages: ['en'],
 }));
 
 describe('<Language/>', () => {
