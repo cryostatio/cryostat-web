@@ -99,14 +99,19 @@ export interface DateTimePickerProps {
   onDismiss: () => void;
 }
 
+type _TabKey = 'date' | 'time';
+
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDismiss, prefilledDate }) => {
   const [t] = useTranslation();
   const [dayjs, _] = useDayjs();
-  const [activeTab, setActiveTab] = React.useState('date');
+  const [activeTab, setActiveTab] = React.useState<_TabKey>('date');
   const [datetime, setDatetime] = React.useState<Date>(new Date());
   const [timezone, setTimezone] = React.useState<Timezone>(defaultDatetimeFormat.timeZone); // Not affected by user preferences
 
-  const handleTabSelect = React.useCallback((_, key: string | number) => setActiveTab(`${key}`), [setActiveTab]);
+  const handleTabSelect = React.useCallback(
+    (_, key: string | number) => setActiveTab(`${key}` as _TabKey),
+    [setActiveTab]
+  );
 
   const handleSubmit = React.useCallback(() => {
     onSelect && onSelect(datetime, timezone);
@@ -175,7 +180,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
         role="region"
       >
         <Tab key={'date'} eventKey={'date'} title={<TabTitleText>{t('DATE', { ns: 'common' })}</TabTitleText>}>
-          <FormGroup key={'calendar'}>
+          <FormGroup>
             <Bullseye>
               <CalendarMonth
                 isDateFocused
@@ -191,7 +196,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({ onSelect, onDism
           </FormGroup>
         </Tab>
         <Tab key={'time'} eventKey={'time'} title={<TabTitleText>{t('TIME', { ns: 'common' })}</TabTitleText>}>
-          <FormGroup key={'time'}>
+          <FormGroup>
             <Bullseye>
               <TimePicker
                 selected={{
