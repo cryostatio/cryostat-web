@@ -141,7 +141,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
 
   const handleTextInput = React.useCallback(
     (value: string) => {
-      setDatetimeInput((old) => {
+      setDatetimeInput((_) => {
         if (value === '') {
           return _emptyDatetimeInput;
         }
@@ -152,9 +152,9 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
         const tz = getTimezone(shortName);
         if (!tz) {
           return {
-            ...old,
             text: value,
             date: undefined,
+            timezone: undefined,
             validation: ValidatedOptions.error,
           };
         }
@@ -176,9 +176,9 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
           };
         } else {
           return {
-            ...old,
             text: value,
             date: undefined,
+            timezone: undefined,
             validation: ValidatedOptions.error,
           };
         }
