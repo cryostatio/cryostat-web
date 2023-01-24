@@ -44,7 +44,7 @@ import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const Component = () => {
-  const [_t, i18n] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [open, setOpen] = React.useState(false);
 
   const handleLanguageToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
@@ -66,7 +66,7 @@ const Component = () => {
   return (
     <Select
       isOpen={open}
-      aria-label={'Select a language'}
+      aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT') || ''}
       onToggle={handleLanguageToggle}
       onSelect={handleLanguageSelect}
       selections={localeReadable(i18n.language)}

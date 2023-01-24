@@ -35,6 +35,13 @@
       "LISTBOX": "Select AM or PM"
     }
   },
+  "SETTINGS": {
+    "LANGUAGE": {
+      "ARIA_LABELS": {
+        "SELECT": "Select a language"
+      }
+    }
+  },
   "TimePicker": {
     "24HOUR": "24-hour",
     "USE_24HR_TIME": "Use 24-hour time"
