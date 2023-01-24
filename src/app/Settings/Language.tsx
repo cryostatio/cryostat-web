@@ -86,7 +86,7 @@ export const Language: UserSetting = {
   title: 'Language',
   description: 'Set the current language for web console.',
   content: Component,
-  category: 'Language & Region',
+  category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
   orderInGroup: 1,
   featureLevel: FeatureLevel.BETA,
 };

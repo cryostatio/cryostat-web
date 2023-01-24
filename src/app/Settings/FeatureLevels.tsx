@@ -99,5 +99,5 @@ export const FeatureLevels: UserSetting = {
   title: 'Feature Level',
   description: 'Control which graphical features appear in the application.',
   content: Component,
-  category: 'Advanced',
+  category: 'SETTINGS.CATEGORIES.ADVANCED',
 };

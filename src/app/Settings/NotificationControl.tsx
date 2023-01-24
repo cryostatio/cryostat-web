@@ -174,6 +174,6 @@ export const NotificationControl: UserSetting = {
   title: 'Notifications',
   description: '',
   content: Component,
-  category: 'Notifications & Messages',
+  category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
   orderInGroup: 1,
 };

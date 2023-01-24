@@ -127,5 +127,5 @@ export const DeletionDialogControl: UserSetting = {
   title: 'Show Deletion Dialogs',
   description: '',
   content: Component,
-  category: 'Notifications & Messages',
+  category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
 };

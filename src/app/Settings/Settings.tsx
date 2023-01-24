@@ -58,6 +58,7 @@ import {
 } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
@@ -69,15 +70,24 @@ import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
 
-const _SettingCategories = [
-  'Connectivity',
-  'Language & Region',
-  'Notifications & Messages',
-  'Dashboard',
-  'Advanced',
+/**
+ * t('SETTINGS.CATEGORIES.CONNECTIVITY')
+ * t('SETTINGS.CATEGORIES.LANGUAGE_REGION')
+ * t('SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE')
+ * t('SETTINGS.CATEGORIES.DASHBOARD')
+ * t('SETTINGS.CATEGORIES.ADVANCED')
+ */
+
+const _SettingCategoryKeys = [
+  'SETTINGS.CATEGORIES.CONNECTIVITY',
+  'SETTINGS.CATEGORIES.LANGUAGE_REGION',
+  'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
+  'SETTINGS.CATEGORIES.DASHBOARD',
+  'SETTINGS.CATEGORIES.ADVANCED',
 ] as const;
 
-export type SettingCategory = (typeof _SettingCategories)[number];
+// Use translation keys for internal categorization
+export type SettingCategory = (typeof _SettingCategoryKeys)[number];
 
 export interface SettingGroup {
   groupLabel: SettingCategory;
@@ -85,18 +95,6 @@ export interface SettingGroup {
   disabled?: boolean;
   settings: _TransformedUserSetting[];
 }
-
-const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLevel => {
-  if (!settings.length) {
-    return FeatureLevel.DEVELOPMENT;
-  }
-  return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
-};
-
-export const selectTab = (tabName: SettingCategory) => {
-  const tab = document.getElementById(`pf-tab-${tabName}-${hashCode(tabName)}`);
-  tab && tab.click();
-};
 
 export interface UserSetting {
   title: string;
@@ -114,9 +112,23 @@ interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   featureLevel: FeatureLevel;
 }
 
+const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLevel => {
+  if (!settings.length) {
+    return FeatureLevel.DEVELOPMENT;
+  }
+  return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
+};
+
+export const selectTab = (tabName: SettingCategory) => {
+  const tab = document.getElementById(`pf-tab-${tabName}-${hashCode(tabName)}`);
+  tab && tab.click();
+};
+
 export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
+  const [t] = useTranslation();
+
   const settings = React.useMemo(
     () =>
       [
@@ -156,15 +168,15 @@ export const Settings: React.FC<SettingsProps> = (_) => {
   );
 
   const settingGroups = React.useMemo(() => {
-    return _SettingCategories.map((cat) => {
+    return _SettingCategoryKeys.map((cat) => {
       const panels = settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup);
       return {
-        groupLabel: cat,
+        groupLabel: t(cat),
         settings: panels,
         featureLevel: _getGroupFeatureLevel(panels),
       };
     }) as SettingGroup[];
-  }, [settings]);
+  }, [settings, t]);
 
   return (
     <>

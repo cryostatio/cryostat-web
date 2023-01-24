@@ -108,5 +108,5 @@ export const AutoRefresh: UserSetting = {
   description:
     'Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.',
   content: Component,
-  category: 'Connectivity',
+  category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
 };

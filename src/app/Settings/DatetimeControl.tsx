@@ -154,5 +154,5 @@ export const DatetimeControl: UserSetting = {
   title: 'Date & Time',
   description: '',
   content: Component,
-  category: 'Language & Region',
+  category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
 };

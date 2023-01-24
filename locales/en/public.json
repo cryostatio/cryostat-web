@@ -36,6 +36,13 @@
     }
   },
   "SETTINGS": {
+    "CATEGORIES": {
+      "ADVANCED": "Advanced",
+      "CONNECTIVITY": "Connectivity",
+      "DASHBOARD": "Dashboard",
+      "LANGUAGE_REGION": "Language & Region",
+      "NOTIFICATION_MESSAGE": "Notifications & Messages"
+    },
     "LANGUAGE": {
       "ARIA_LABELS": {
         "SELECT": "Select a language"
