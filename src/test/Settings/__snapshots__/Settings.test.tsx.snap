@@ -66,12 +66,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-Connectivity-2087632343"
+                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.CONNECTIVITY--1507428482"
                       aria-selected={true}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-Connectivity-2087632343"
+                      id="pf-tab-SETTINGS.CATEGORIES.CONNECTIVITY--1507428482"
                       onClick={[Function]}
                       role="tab"
                       type="button"
@@ -88,12 +88,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-Language & Region-1054143478"
+                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.LANGUAGE_REGION--663170412"
                       aria-selected={false}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-Language & Region-1054143478"
+                      id="pf-tab-SETTINGS.CATEGORIES.LANGUAGE_REGION--663170412"
                       onClick={[Function]}
                       role="tab"
                       type="button"
@@ -110,12 +110,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-Notifications & Messages--1892985218"
+                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE-719517530"
                       aria-selected={false}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-Notifications & Messages--1892985218"
+                      id="pf-tab-SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE-719517530"
                       onClick={[Function]}
                       role="tab"
                       type="button"
@@ -132,12 +132,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-Dashboard-956107380"
+                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.DASHBOARD-129171981"
                       aria-selected={false}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-Dashboard-956107380"
+                      id="pf-tab-SETTINGS.CATEGORIES.DASHBOARD-129171981"
                       onClick={[Function]}
                       role="tab"
                       type="button"
@@ -154,12 +154,12 @@ exports[`<Settings/> renders correctly 1`] = `
                     role="presentation"
                   >
                     <button
-                      aria-controls="pf-tab-section-Advanced--654193598"
+                      aria-controls="pf-tab-section-SETTINGS.CATEGORIES.ADVANCED-843151721"
                       aria-selected={false}
                       className="pf-c-tabs__link"
                       data-ouia-component-type="PF4/TabButton"
                       data-ouia-safe={true}
-                      id="pf-tab-Advanced--654193598"
+                      id="pf-tab-SETTINGS.CATEGORIES.ADVANCED-843151721"
                       onClick={[Function]}
                       role="tab"
                       type="button"
@@ -202,7 +202,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            WebSocket Debounce Title
+                            WebSocket Connection Debounce
                           </h2>
                         </span>
                       </label>
@@ -220,7 +220,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            WebSocket Debounce Description
+                            Set the debounce time (in milliseconds) used when establishing WebSocket connections. Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages. Decrease this time if the web-interface takes a long time to populate on startup.
                           </span>
                         </div>
                       </div>
@@ -253,7 +253,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            AutoRefresh Title
+                            Auto-Refresh
                           </h2>
                         </span>
                       </label>
@@ -271,7 +271,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            AutoRefresh Description
+                            Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.
                           </span>
                         </div>
                       </div>
@@ -313,7 +313,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            DatetimeControl Title
+                            Date & Time
                           </h2>
                         </span>
                       </label>
@@ -331,7 +331,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            DatetimeControl Description
+                            
                           </span>
                         </div>
                       </div>
@@ -373,7 +373,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            Notification Control Title
+                            Notifications
                           </h2>
                         </span>
                       </label>
@@ -391,7 +391,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            Notification Control Description
+                            
                           </span>
                         </div>
                       </div>
@@ -424,7 +424,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            Deletion Dialog Control Title
+                            Show Deletion Dialogs
                           </h2>
                         </span>
                       </label>
@@ -442,7 +442,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            Deletion Dialog Control Description
+                            
                           </span>
                         </div>
                       </div>
@@ -484,7 +484,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            Automated Analysis Config Title
+                            Automated Analysis Recording Configuration
                           </h2>
                         </span>
                       </label>
@@ -502,7 +502,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            Automated Analysis Config Description
+                            Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.
                           </span>
                         </div>
                       </div>
@@ -544,7 +544,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            Credentials Storage Title
+                            JMX Credentials Storage
                           </h2>
                         </span>
                       </label>
@@ -562,7 +562,9 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            Credentials Storage Description
+                            When you attempt to connect to a target application which requires authentication, you will see a prompt for credentials to present to the application and complete the connection. You can choose where to persist these credentials. Any credentials added through the 
+                            Security
+                             panel will always be stored in Cryostat backend encrypted storage.
                           </span>
                         </div>
                       </div>
@@ -595,7 +597,7 @@ exports[`<Settings/> renders correctly 1`] = `
                             data-ouia-component-type="PF4/Title"
                             data-ouia-safe={true}
                           >
-                            Feature Levels Title
+                            Feature Level
                           </h2>
                         </span>
                       </label>
@@ -613,7 +615,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            Feature Levels Description
+                            Control which graphical features appear in the application.
                           </span>
                         </div>
                       </div>

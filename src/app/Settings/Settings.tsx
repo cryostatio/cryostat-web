@@ -41,7 +41,6 @@ import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { hashCode } from '@app/utils/utils';
 import {
-  Button,
   Card,
   Form,
   FormGroup,
@@ -161,6 +160,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                 t(c.descConstruct)
               ) : (
                 // Use children prop to avoid i18n parses body as key
+                /* eslint react/no-children-prop: 0 */
                 <Trans i18nKey={c.descConstruct.key} children={c.descConstruct.parts} />
               ),
             element: React.createElement(c.content, null),

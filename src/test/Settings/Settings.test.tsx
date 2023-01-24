@@ -39,7 +39,7 @@
 // Must import before @app/Settings/Settings (circular deps)
 /* eslint import/order: 0*/
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { Settings } from '@app/Settings/Settings';
+import { Settings, UserSetting } from '@app/Settings/Settings';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Text } from '@patternfly/react-core';
 import '@testing-library/jest-dom';
@@ -53,81 +53,86 @@ import { Router } from 'react-router-dom';
 
 jest.mock('@app/Settings/NotificationControl', () => ({
   NotificationControl: {
-    title: 'Notification Control Title',
-    description: 'Notification Control Description',
+    titleKey: 'SETTINGS.NOTIFICATION_CONTROL.TITLE',
+    descConstruct: 'SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
     content: () => <Text>Notification Control Component</Text>,
-  },
+    orderInGroup: 1,
+  } as UserSetting,
 }));
 
 jest.mock('@app/Settings/AutomatedAnalysisConfig', () => ({
   AutomatedAnalysisConfig: {
-    title: 'Automated Analysis Config Title',
-    description: 'Automated Analysis Config Description',
+    titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
+    descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.DASHBOARD',
     content: () => <Text>Automated Analysis Config Component</Text>,
-  },
+  } as UserSetting,
 }));
 
 jest.mock('@app/Settings/CredentialsStorage', () => ({
   CredentialsStorage: {
-    title: 'Credentials Storage Title',
-    description: 'Credentials Storage Description',
+    titleKey: 'SETTINGS.CREDENTIALS_STORAGE.TITLE',
+    descConstruct: {
+      key: 'SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION',
+      parts: [], // Just raw string (avoid using React component during mock)
+    },
     category: 'SETTINGS.CATEGORIES.ADVANCED',
     content: () => <Text>Credentials Storage Component</Text>,
-  },
+  } as UserSetting,
 }));
 
 jest.mock('@app/Settings/DeletionDialogControl', () => ({
   DeletionDialogControl: {
-    title: 'Deletion Dialog Control Title',
-    description: 'Deletion Dialog Control Description',
+    titleKey: 'SETTINGS.DELETION_DIALOG_CONTROL.TITLE',
+    descConstruct: 'SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
     content: () => <Text>Deletion Dialog Control Component</Text>,
-  },
+  } as UserSetting,
 }));
 
 jest.mock('@app/Settings/WebSocketDebounce', () => ({
   WebSocketDebounce: {
-    title: 'WebSocket Debounce Title',
-    description: 'WebSocket Debounce Description',
+    titleKey: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE',
+    descConstruct: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
     content: () => <Text>WebSocket Debounce Component</Text>,
-  },
+  } as UserSetting,
 }));
 
 jest.mock('@app/Settings/AutoRefresh', () => ({
   AutoRefresh: {
-    title: 'AutoRefresh Title',
-    description: 'AutoRefresh Description',
+    titleKey: 'SETTINGS.AUTO_REFRESH.TITLE',
+    descConstruct: 'SETTINGS.AUTO_REFRESH.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
     content: () => <Text>AutoRefresh Component</Text>,
-  },
+  } as UserSetting,
 }));
 
 jest.mock('@app/Settings/FeatureLevels', () => ({
   FeatureLevels: {
-    title: 'Feature Levels Title',
-    description: 'Feature Levels Description',
+    titleKey: 'SETTINGS.FEATURE_LEVEL.TITLE',
+    descConstruct: 'SETTINGS.FEATURE_LEVEL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.ADVANCED',
     content: () => <Text>Feature Levels Component</Text>,
-  },
+  } as UserSetting,
 }));
 
 jest.mock('@app/Settings/Language', () => ({
   Language: {
-    title: 'Language Title',
-    description: 'Language Description',
+    titleKey: 'SETTINGS.LANGUAGE.TITLE',
+    descConstruct: 'SETTINGS.LANGUAGE.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
     featureLevel: FeatureLevel.BETA,
+    orderInGroup: 1,
     content: () => <Text>Language Component</Text>,
   },
 }));
 
 jest.mock('@app/Settings/DatetimeControl', () => ({
   DatetimeControl: {
-    title: 'DatetimeControl Title',
-    description: 'DatetimeControl Description',
+    titleKey: 'SETTINGS.DATETIME_CONTROL.TITLE',
+    descConstruct: 'SETTINGS.DATETIME_CONTROL.DESCRIPTION',
     category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
     featureLevel: FeatureLevel.PRODUCTION,
     content: () => <Text>DatetimeControl Component</Text>,
