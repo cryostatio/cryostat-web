@@ -91,13 +91,14 @@ export type SettingCategory = (typeof _SettingCategoryKeys)[number];
 
 export interface SettingGroup {
   groupLabel: SettingCategory;
+  groupKey: string;
   featureLevel: FeatureLevel;
   disabled?: boolean;
   settings: _TransformedUserSetting[];
 }
 
 export interface UserSetting {
-  title: string;
+  titleKey: string;
   disabled?: boolean;
   description: JSX.Element | string;
   content: React.FunctionComponent;
@@ -107,6 +108,7 @@ export interface UserSetting {
 }
 
 interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
+  title: string;
   element: React.FunctionComponentElement<Record<string, never>>;
   orderInGroup: number;
   featureLevel: FeatureLevel;
@@ -119,8 +121,8 @@ const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLeve
   return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
 };
 
-export const selectTab = (tabName: SettingCategory) => {
-  const tab = document.getElementById(`pf-tab-${tabName}-${hashCode(tabName)}`);
+export const selectTab = (tabKey: SettingCategory) => {
+  const tab = document.getElementById(`pf-tab-${tabKey}-${hashCode(tabKey)}`);
   tab && tab.click();
 };
 
@@ -144,7 +146,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
       ].map(
         (c) =>
           ({
-            title: c.title,
+            title: t(c.titleKey) || '',
             description: c.description,
             element: React.createElement(c.content, null),
             category: c.category,
@@ -153,12 +155,12 @@ export const Settings: React.FC<SettingsProps> = (_) => {
             featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
           } as _TransformedUserSetting)
       ),
-    []
+    [t]
   );
 
   const location = useLocation();
   const [activeTab, setActiveTab] = React.useState<SettingCategory>(
-    ((location.state && location.state['preSelectedTab']) as SettingCategory) || 'Connectivity'
+    ((location.state && location.state['preSelectedTab']) as SettingCategory) || 'SETTINGS.CATEGORIES.CONNECTIVITY'
   );
 
   const onTabSelect = React.useCallback(
@@ -172,6 +174,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
       const panels = settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup);
       return {
         groupLabel: t(cat),
+        groupKey: cat,
         settings: panels,
         featureLevel: _getGroupFeatureLevel(panels),
       };
@@ -194,7 +197,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                 {settingGroups.map((grp) => (
                   <SettingTab
                     key={`${grp.groupLabel}-tab`}
-                    eventKey={grp.groupLabel}
+                    eventKey={grp.groupKey}
                     title={<TabTitleText>{grp.groupLabel}</TabTitleText>}
                     featureLevelConfig={{
                       level: grp.featureLevel,
@@ -206,8 +209,8 @@ export const Settings: React.FC<SettingsProps> = (_) => {
             <SidebarContent>
               {settingGroups.map((grp) => (
                 <div
-                  key={`${grp.groupLabel}-setting`}
-                  className={css('settings__content', grp.groupLabel === activeTab ? 'active' : '')}
+                  key={`${grp.groupKey}-setting`}
+                  className={css('settings__content', grp.groupKey === activeTab ? 'active' : '')}
                 >
                   <Form>
                     {grp.settings.map((s, index) => (

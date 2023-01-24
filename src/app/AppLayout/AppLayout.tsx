@@ -268,9 +268,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const handleLanguagePref = React.useCallback(() => {
     if (routerHistory.location.pathname === '/settings') {
-      selectTab('Language & Region');
+      selectTab('SETTINGS.CATEGORIES.LANGUAGE_REGION');
     } else {
-      routerHistory.push('/settings', { preSelectedTab: 'Language & Region' });
+      routerHistory.push('/settings', { preSelectedTab: 'SETTINGS.CATEGORIES.LANGUAGE_REGION' });
     }
   }, [routerHistory]);
 

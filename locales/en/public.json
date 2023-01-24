@@ -36,6 +36,12 @@
     }
   },
   "SETTINGS": {
+    "AUTO_REFRESH": {
+      "TITLE": "Auto-Refresh"
+    },
+    "AUTOMATED_ANALYSIS_CONFIG": {
+      "TITLE": "Automated Analysis Recording Configuration"
+    },
     "CATEGORIES": {
       "ADVANCED": "Advanced",
       "CONNECTIVITY": "Connectivity",
@@ -43,10 +49,29 @@
       "LANGUAGE_REGION": "Language & Region",
       "NOTIFICATION_MESSAGE": "Notifications & Messages"
     },
+    "CREDENTIALS_STORAGE": {
+      "TITLE": "JMX Credentials Storage"
+    },
+    "DATETIME_CONTROL": {
+      "TITLE": "Date & Time"
+    },
+    "DELETION_DIALOG_CONTROL": {
+      "TITLE": "Show Deletion Dialogs"
+    },
+    "FEATURE_LEVEL": {
+      "TITLE": "Feature Level"
+    },
     "LANGUAGE": {
       "ARIA_LABELS": {
         "SELECT": "Select a language"
-      }
+      },
+      "TITLE": "Language"
+    },
+    "NOTIFICATION_CONTROL": {
+      "TITLE": "Notifications"
+    },
+    "WEBSOCKET_CONNECTION_DEBOUNCE": {
+      "TITLE": "WebSocket Connection Debounce"
     }
   },
   "TimePicker": {

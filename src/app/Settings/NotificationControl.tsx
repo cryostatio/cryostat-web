@@ -171,9 +171,13 @@ const Component = () => {
 };
 
 export const NotificationControl: UserSetting = {
-  title: 'Notifications',
+  titleKey: 'SETTINGS.NOTIFICATION_CONTROL.TITLE',
   description: '',
   content: Component,
   category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
   orderInGroup: 1,
 };
+
+/**
+ * t('SETTINGS.NOTIFICATION_CONTROL.TITLE')
+ */

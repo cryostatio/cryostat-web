@@ -104,9 +104,13 @@ const Component = () => {
 };
 
 export const AutomatedAnalysisConfig: UserSetting = {
-  title: 'Automated Analysis Recording Configuration',
+  titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
   description:
     'Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.',
   content: Component,
   category: 'SETTINGS.CATEGORIES.DASHBOARD',
 };
+
+/**
+ * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE')
+ */

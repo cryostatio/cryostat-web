@@ -109,7 +109,7 @@ const Component = () => {
 };
 
 export const CredentialsStorage: UserSetting = {
-  title: 'JMX Credentials Storage',
+  titleKey: 'SETTINGS.CREDENTIALS_STORAGE.TITLE',
   description: (
     <>
       When you attempt to connect to a target application which requires authentication, you will see a prompt for
@@ -121,4 +121,6 @@ export const CredentialsStorage: UserSetting = {
   content: Component,
   category: 'SETTINGS.CATEGORIES.ADVANCED',
 };
-// https://github.com/i18next/react-i18next/issues/909
+/**
+ * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
+ */

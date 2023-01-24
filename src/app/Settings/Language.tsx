@@ -83,10 +83,14 @@ const Component = () => {
 };
 
 export const Language: UserSetting = {
-  title: 'Language',
+  titleKey: 'SETTINGS.LANGUAGE.TITLE',
   description: 'Set the current language for web console.',
   content: Component,
   category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
   orderInGroup: 1,
   featureLevel: FeatureLevel.BETA,
 };
+
+/**
+ * t('SETTINGS.LANGUAGE.TITLE')
+ */

@@ -124,8 +124,12 @@ const Component = () => {
 };
 
 export const DeletionDialogControl: UserSetting = {
-  title: 'Show Deletion Dialogs',
+  titleKey: 'SETTINGS.DELETION_DIALOG_CONTROL.TITLE',
   description: '',
   content: Component,
   category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
 };
+
+/**
+ * t('SETTINGS.DELETION_DIALOG_CONTROL.TITLE')
+ */
