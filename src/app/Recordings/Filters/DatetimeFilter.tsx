@@ -162,7 +162,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
         const extractDatetime = parts.slice(0, parts.length - 1).join(' ');
         const d = dayjs(
           extractDatetime,
-          `${dayjs.Ls[dayjs.locale()].formats.L} ${dayjs.Ls[dayjs.locale()].formats.LTS}`,
+          `${dayjs.localeData().longDateFormat('L')} ${dayjs.localeData().longDateFormat('LTS')}`,
           dayjs.locale(),
           true
         );
