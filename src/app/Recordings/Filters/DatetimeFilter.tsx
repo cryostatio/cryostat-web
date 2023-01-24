@@ -73,7 +73,7 @@
  */
 import { DateTimePicker } from '@app/DateTimePicker/DateTimePicker';
 import { useDayjs } from '@app/utils/useDayjs';
-import { getTimezone, Timezone } from '@i18n/datetime';
+import { Timezone } from '@i18n/datetime';
 import {
   Button,
   ButtonVariant,
@@ -100,12 +100,10 @@ export interface DateTimeFilterProps {
 const _emptyDatetimeInput: {
   text: string;
   date: Date | undefined; // Ignore timezone
-  timezone: Timezone | undefined; // default to local
   validation: ValidatedOptions;
 } = {
   text: '',
   date: undefined,
-  timezone: undefined,
   validation: ValidatedOptions.default,
 };
 
@@ -119,19 +117,19 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
   const onPopoverDismiss = React.useCallback(() => setIsCalendarOpen(false), [setIsCalendarOpen]);
 
   const handleSubmit = React.useCallback(() => {
-    if (datetimeInput.validation === ValidatedOptions.success && datetimeInput.timezone) {
+    if (datetimeInput.validation === ValidatedOptions.success) {
       // internally uses ISOString but display will be localized.
-      onSubmit(dayjs(datetimeInput.date).tz(datetimeInput.timezone.full, true).toISOString());
+      onSubmit(dayjs(datetimeInput.date).toISOString());
       setDatetimeInput(_emptyDatetimeInput);
     }
   }, [onSubmit, datetimeInput, setDatetimeInput, dayjs]);
 
   const handleDatetimeSelect = React.useCallback(
     (date: Date, timezone: Timezone) => {
+      const d = dayjs(date).tz(timezone.full, true);
       setDatetimeInput({
-        text: dayjs(date).tz(timezone.full, true).format('L LTS z'),
-        date: date,
-        timezone: timezone,
+        text: d.toISOString(),
+        date: d.toDate(),
         validation: ValidatedOptions.success,
       });
       onPopoverDismiss();
@@ -145,40 +143,17 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
         if (value === '') {
           return _emptyDatetimeInput;
         }
-
-        // Expecting timezone comes last
-        const parts = value.split(' ');
-        const shortName = parts.length ? parts[parts.length - 1] : 'Invalid';
-        const tz = getTimezone(shortName);
-        if (!tz) {
-          return {
-            text: value,
-            date: undefined,
-            timezone: undefined,
-            validation: ValidatedOptions.error,
-          };
-        }
-
-        const extractDatetime = parts.slice(0, parts.length - 1).join(' ');
-        const d = dayjs(
-          extractDatetime,
-          `${dayjs.localeData().longDateFormat('L')} ${dayjs.localeData().longDateFormat('LTS')}`,
-          dayjs.locale(),
-          true
-        );
-
+        const d = dayjs.utc(value, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]', true); // Parse ISO8601, must be in UTC
         if (d.isValid()) {
           return {
             text: value,
             date: d.toDate(),
             validation: ValidatedOptions.success,
-            timezone: { short: shortName, full: tz.full },
           };
         } else {
           return {
             text: value,
             date: undefined,
-            timezone: undefined,
             validation: ValidatedOptions.error,
           };
         }
@@ -211,7 +186,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
                   <TextInput
                     type="text"
                     id="date-time"
-                    placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).format('L LTS z')}
+                    placeholder={dayjs().startOf('year').tz(datetimeContext.timeZone.full, true).toISOString()}
                     aria-label={t('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT') || ''}
                     value={datetimeInput.text}
                     validated={datetimeInput.validation}

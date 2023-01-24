@@ -776,8 +776,7 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
         <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[1]}>
           <Timestamp
             className="recording-table__timestamp"
-            tooltip={{ variant: TimestampTooltipVariant.default }}
-            date={new Date(recording.startTime)}
+            tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(recording.startTime).toISOString() }}
           >
             {dayjs(recording.startTime).tz(datetimeContext.timeZone.full).format('L LTS z')}
           </Timestamp>

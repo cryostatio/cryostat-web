@@ -217,7 +217,7 @@ describe('<ActiveRecordingsTable />', () => {
   afterEach(cleanup);
 
   it('renders the recording table correctly', async () => {
-    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
       preloadState: preloadedState,
       history: history,
     });
@@ -248,6 +248,14 @@ describe('<ActiveRecordingsTable />', () => {
     const startTime = screen.getByText(dayjs(mockRecording.startTime).tz('UTC').format('L LTS z'));
     expect(startTime).toBeInTheDocument();
     expect(startTime).toBeVisible();
+
+    await act(async () => {
+      await user.click(startTime);
+    });
+
+    const toolTip = await screen.findByText(dayjs(mockRecording.startTime).toISOString());
+    expect(toolTip).toBeInTheDocument();
+    expect(toolTip).toBeVisible();
 
     const duration = screen.getByText(
       mockRecording.continuous || mockRecording.duration === 0 ? 'Continuous' : `${mockRecording.duration / 1000}s`

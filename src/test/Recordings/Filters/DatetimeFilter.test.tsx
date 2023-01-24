@@ -105,7 +105,7 @@ describe('<DatetimeFilter/>', () => {
     expect(dateInput).toBeVisible();
 
     await act(async () => {
-      await user.type(dateInput, '01/20/2023 6:23:29 PM UTC');
+      await user.type(dateInput, '2023-01-24T16:06:41.945Z');
     });
 
     const searchIcon = screen.getByRole('button', { name: testTranslate('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
@@ -143,7 +143,7 @@ describe('<DatetimeFilter/>', () => {
     expect(dateInput).toBeVisible();
 
     await act(async () => {
-      await user.type(dateInput, '01/20/2023 6:23:29 PM UTC');
+      await user.type(dateInput, '2023-01-24T16:06:41.945Z');
     });
 
     const searchIcon = screen.getByRole('button', { name: testTranslate('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
@@ -156,6 +156,6 @@ describe('<DatetimeFilter/>', () => {
     });
 
     expect(onDateTimeSelect).toHaveBeenCalledTimes(1);
-    expect(onDateTimeSelect).toHaveBeenCalledWith('2023-01-20T18:23:29.000Z');
+    expect(onDateTimeSelect).toHaveBeenCalledWith('2023-01-24T16:06:41.945Z');
   });
 });
