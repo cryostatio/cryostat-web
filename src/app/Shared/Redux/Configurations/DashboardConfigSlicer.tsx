@@ -69,6 +69,7 @@ export interface DashboardResizeConfigActionPayload {
 export interface DashboardOrderConfigActionPayload {
   idx: number;
   order: number;
+  swap: boolean;
 }
 
 export const dashboardCardConfigAddCardIntent = createAction(
@@ -100,10 +101,11 @@ export const dashboardCardConfigResizeCardIntent = createAction(
 
 export const dashboardCardConfigReorderCardIntent = createAction(
   DashboardConfigAction.CARD_REORDER,
-  (idx: number, order: number) => ({
+  (idx: number, order: number, swap = false) => ({
     payload: {
       idx,
       order,
+      swap,
     } as DashboardOrderConfigActionPayload,
   })
 );
@@ -118,8 +120,13 @@ const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
 });
 
-function move(arr: [], from: number, to: number) {
+export function move(arr: [], from: number, to: number) {
   arr.splice(to, 0, arr.splice(from, 1)[0]);
+  return arr;
+}
+
+function swap(arr: [], from: number, to: number) {
+  arr[from] = arr.splice(to, 1, arr[from])[0];
   return arr;
 }
 
@@ -135,7 +142,11 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       state.list[payload.idx].span = payload.span;
     })
     .addCase(dashboardCardConfigReorderCardIntent, (state, { payload }) => {
-      state.list = move(state.list, payload.idx, payload.order);
+      if (payload.swap) {
+        swap(state.list, payload.idx, payload.order);
+      } else {
+        move(state.list, payload.idx, payload.order);
+      }
     });
 });
 

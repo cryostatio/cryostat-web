@@ -257,6 +257,10 @@ html, body, #root {
   border-bottom-right-radius: 3px;
 }
 
+#dashboard-grid {
+  border: 1px solid red;
+}
+
 .draggable-ref {
   border-radius: var(--pf-global--BorderRadius--sm); /* 3px */
 }
