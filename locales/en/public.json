@@ -37,11 +37,15 @@
   },
   "SETTINGS": {
     "AUTO_REFRESH": {
+      "CHECKBOX_LABEL": "Enabled",
       "DESCRIPTION": "Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.",
       "TITLE": "Auto-Refresh"
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
+      "CURRENT_CONFIG": "Current configuration",
       "DESCRIPTION": "Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
+      "SHOW_LESS": "Hide configuration edit",
+      "SHOW_MORE": "Show configuration edit",
       "TITLE": "Automated Analysis Recording Configuration"
     },
     "CATEGORIES": {
@@ -52,15 +56,28 @@
       "NOTIFICATION_MESSAGE": "Notifications & Messages"
     },
     "CREDENTIALS_STORAGE": {
+      "BACKEND": {
+        "DESCRIPTION": "Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated Rules."
+      },
+      "BROWSER_SESSION": {
+        "DESCRIPTION": "Keep credentials in browser memory for the current session only. When you close this browser tab the credentials will be forgotten."
+      },
       "DESCRIPTION": "When you attempt to connect to a target application which requires authentication, you will see a prompt for credentials to present to the application and complete the connection. You can choose where to persist these credentials. Any credentials added through the <0>Security</0> panel will always be stored in Cryostat backend encrypted storage.",
       "TITLE": "JMX Credentials Storage"
     },
     "DATETIME_CONTROL": {
+      "ARIA_LABELS": {
+        "LOCALE_SELECT": "Select a datetime locale"
+      },
       "DESCRIPTION": "",
+      "LOCALE_SELECT_DESCRIPTION": "Select current date locale.",
+      "TIMEZONE_SELECT_DESCRIPTION": "Select current timezone.",
       "TITLE": "Date & Time"
     },
     "DELETION_DIALOG_CONTROL": {
       "DESCRIPTION": "",
+      "SWITCH_DESCRIPTION": "Enable or disable deletion dialogs by deletion type.",
+      "SWITCH_LABEL": "All Deletion Warnings",
       "TITLE": "Show Deletion Dialogs"
     },
     "FEATURE_LEVEL": {
@@ -76,6 +93,9 @@
     },
     "NOTIFICATION_CONTROL": {
       "DESCRIPTION": "",
+      "INPUT": "Control the maximum number of notification alerts that appear at once.",
+      "INPUT_DESCRIPTION": "Enable or disable all notifications.",
+      "SWITCH_LABEL": "All Notifications",
       "TITLE": "Notifications"
     },
     "WEBSOCKET_CONNECTION_DEBOUNCE": {

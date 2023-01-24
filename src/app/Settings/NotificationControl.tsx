@@ -49,12 +49,14 @@ import {
   HelperTextItem,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const min = 0;
 const max = 10;
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
@@ -133,17 +135,20 @@ const Component = () => {
         <StackItem key="all-notifications">
           <FormGroup>
             <HelperText>
-              <HelperTextItem>{'Enable or disable all notifications.'}</HelperTextItem>
+              <HelperTextItem>{t('SETTINGS.NOTIFICATION_CONTROL.INPUT_DESCRIPTION')}</HelperTextItem>
             </HelperText>
-            <Switch id="all-notifications" label="All Notifications" isChecked={allChecked} onChange={handleCheckAll} />
+            <Switch
+              id="all-notifications"
+              label={t('SETTINGS.NOTIFICATION_CONTROL.SWITCH_LABEL')}
+              isChecked={allChecked}
+              onChange={handleCheckAll}
+            />
           </FormGroup>
         </StackItem>
         <StackItem key="notifications-notification-count">
           <FormGroup>
             <HelperText>
-              <HelperTextItem>
-                {'Control the maximum number of notification alerts that appear at once.'}
-              </HelperTextItem>
+              <HelperTextItem>{t('SETTINGS.NOTIFICATION_CONTROL.INPUT')}</HelperTextItem>
             </HelperText>
             <NumberInput
               inputName="alert count"
@@ -158,7 +163,7 @@ const Component = () => {
         </StackItem>
         <StackItem key={'expandable-noti-switch-list'}>
           <ExpandableSection
-            toggleText={expanded ? 'Show less' : 'Show more'}
+            toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
             onToggle={setExpanded}
             isExpanded={expanded}
           >

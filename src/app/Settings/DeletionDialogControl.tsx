@@ -48,9 +48,11 @@ import {
   Switch,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(context.settings.deletionDialogsEnabled());
   const [expanded, setExpanded] = React.useState(false);
@@ -99,11 +101,11 @@ const Component = () => {
         <StackItem key="all-deletion-warnings">
           <FormGroup>
             <HelperText>
-              <HelperTextItem>{'Enable or disable deletion dialogs by deletion type.'}</HelperTextItem>
+              <HelperTextItem>{t('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_DESCRIPTION')}</HelperTextItem>
             </HelperText>
             <Switch
               id="all-deletion-warnings"
-              label="All Deletion Warnings"
+              label={t('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL')}
               isChecked={allChecked}
               onChange={handleCheckAll}
             />
@@ -111,7 +113,7 @@ const Component = () => {
         </StackItem>
         <StackItem key={'expandable-delete-warning-switch-list'}>
           <ExpandableSection
-            toggleText={expanded ? 'Show less' : 'Show more'}
+            toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
             onToggle={setExpanded}
             isExpanded={expanded}
           >

@@ -39,24 +39,23 @@
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { UserSetting } from './Settings';
 
 export interface Location {
   key: string;
-  description: string;
+  descriptionKey: string;
 }
 
 export class Locations {
   static readonly BROWSER_SESSION: Location = {
     key: 'Session (Browser Memory)',
-    description:
-      'Keep credentials in browser memory for the current session only. When you close this browser tab the credentials will be forgotten.',
+    descriptionKey: 'SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION',
   };
   static readonly BACKEND: Location = {
     key: 'Backend',
-    description:
-      'Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated Rules.',
+    descriptionKey: 'SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION',
   };
 }
 
@@ -72,6 +71,7 @@ const getLocation = (key: string): Location => {
 };
 
 const Component = () => {
+  const [t] = useTranslation();
   const [isExpanded, setExpanded] = React.useState(false);
   const [selection, setSelection] = React.useState(Locations.BACKEND.key);
 
@@ -101,7 +101,7 @@ const Component = () => {
         selections={selection}
       >
         {locations.map((location) => (
-          <SelectOption key={location.key} value={location.key} description={location.description} />
+          <SelectOption key={location.key} value={location.key} description={t(location.descriptionKey)} />
         ))}
       </Select>
     </>
@@ -121,4 +121,6 @@ export const CredentialsStorage: UserSetting = {
 /**
  * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
  * t('SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION')
  */

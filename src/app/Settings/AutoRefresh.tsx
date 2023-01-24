@@ -40,6 +40,7 @@ import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Checkbox } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const defaultPreferences = {
@@ -49,6 +50,7 @@ const defaultPreferences = {
 };
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(defaultPreferences);
 
@@ -95,7 +97,7 @@ const Component = () => {
       />
       <Checkbox
         id="auto-refresh-enabled"
-        label="Enabled"
+        label={t('SETTINGS.AUTO_REFRESH.CHECKBOX_LABEL')}
         isChecked={state.autoRefreshEnabled}
         onChange={handleAutoRefreshEnabledChange}
       />
