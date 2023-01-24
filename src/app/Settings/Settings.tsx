@@ -41,6 +41,7 @@ import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { hashCode } from '@app/utils/utils';
 import {
+  Button,
   Card,
   Form,
   FormGroup,
@@ -58,7 +59,7 @@ import {
 } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
@@ -100,7 +101,14 @@ export interface SettingGroup {
 export interface UserSetting {
   titleKey: string;
   disabled?: boolean;
-  description: JSX.Element | string;
+  // Translation Key | [Translation Key, [Placeholder Parts]]
+  // https://react.i18next.com/latest/trans-component#how-to-get-the-correct-translation-string
+  descConstruct:
+    | string
+    | {
+        key: string;
+        parts: React.ReactNode[];
+      };
   content: React.FunctionComponent;
   category: SettingCategory;
   orderInGroup?: number; // default -1
@@ -109,6 +117,7 @@ export interface UserSetting {
 
 interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
   title: string;
+  description: React.ReactNode;
   element: React.FunctionComponentElement<Record<string, never>>;
   orderInGroup: number;
   featureLevel: FeatureLevel;
@@ -147,7 +156,13 @@ export const Settings: React.FC<SettingsProps> = (_) => {
         (c) =>
           ({
             title: t(c.titleKey) || '',
-            description: c.description,
+            description:
+              typeof c.descConstruct === 'string' ? (
+                t(c.descConstruct)
+              ) : (
+                // Use children prop to avoid i18n parses body as key
+                <Trans i18nKey={c.descConstruct.key} children={c.descConstruct.parts} />
+              ),
             element: React.createElement(c.content, null),
             category: c.category,
             disabled: c.disabled,

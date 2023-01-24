@@ -172,7 +172,7 @@ const Component = () => {
 
 export const NotificationControl: UserSetting = {
   titleKey: 'SETTINGS.NOTIFICATION_CONTROL.TITLE',
-  description: '',
+  descConstruct: 'SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION',
   content: Component,
   category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
   orderInGroup: 1,
@@ -180,4 +180,5 @@ export const NotificationControl: UserSetting = {
 
 /**
  * t('SETTINGS.NOTIFICATION_CONTROL.TITLE')
+ * t('SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION')
  */

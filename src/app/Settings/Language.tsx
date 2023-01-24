@@ -84,7 +84,7 @@ const Component = () => {
 
 export const Language: UserSetting = {
   titleKey: 'SETTINGS.LANGUAGE.TITLE',
-  description: 'Set the current language for web console.',
+  descConstruct: 'SETTINGS.LANGUAGE.DESCRIPTION',
   content: Component,
   category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
   orderInGroup: 1,
@@ -93,4 +93,5 @@ export const Language: UserSetting = {
 
 /**
  * t('SETTINGS.LANGUAGE.TITLE')
+ * t('SETTINGS.LANGUAGE.DESCRIPTION')
  */

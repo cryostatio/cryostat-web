@@ -97,11 +97,12 @@ const Component = () => {
 
 export const FeatureLevels: UserSetting = {
   titleKey: 'SETTINGS.FEATURE_LEVEL.TITLE',
-  description: 'Control which graphical features appear in the application.',
+  descConstruct: 'SETTINGS.FEATURE_LEVEL.DESCRIPTION',
   content: Component,
   category: 'SETTINGS.CATEGORIES.ADVANCED',
 };
 
 /**
  * t('SETTINGS.FEATURE_LEVEL.TITLE')
+ * t('SETTINGS.FEATURE_LEVEL.DESCRIPTION')
  */

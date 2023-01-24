@@ -152,11 +152,12 @@ const Component = () => {
 
 export const DatetimeControl: UserSetting = {
   titleKey: 'SETTINGS.DATETIME_CONTROL.TITLE',
-  description: '',
+  descConstruct: '',
   content: Component,
   category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
 };
 
 /**
  * t('SETTINGS.DATETIME_CONTROL.TITLE')
+ * t('SETTINGS.DATETIME_CONTROL.DESCRIPTION')
  */

@@ -110,17 +110,15 @@ const Component = () => {
 
 export const CredentialsStorage: UserSetting = {
   titleKey: 'SETTINGS.CREDENTIALS_STORAGE.TITLE',
-  description: (
-    <>
-      When you attempt to connect to a target application which requires authentication, you will see a prompt for
-      credentials to present to the application and complete the connection. You can choose where to persist these
-      credentials. Any credentials added through the <Link to="/security">Security</Link> panel will always be stored in
-      Cryostat backend encrypted storage.
-    </>
-  ),
+  descConstruct: {
+    key: 'SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION',
+    parts: [<Link key={1} to="/security" />],
+  },
   content: Component,
   category: 'SETTINGS.CATEGORIES.ADVANCED',
 };
+
 /**
  * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
+ * t('SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION')
  */

@@ -125,11 +125,12 @@ const Component = () => {
 
 export const DeletionDialogControl: UserSetting = {
   titleKey: 'SETTINGS.DELETION_DIALOG_CONTROL.TITLE',
-  description: '',
+  descConstruct: 'SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION',
   content: Component,
   category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
 };
 
 /**
  * t('SETTINGS.DELETION_DIALOG_CONTROL.TITLE')
+ * t('SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION')
  */

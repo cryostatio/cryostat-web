@@ -105,12 +105,12 @@ const Component = () => {
 
 export const AutoRefresh: UserSetting = {
   titleKey: 'SETTINGS.AUTO_REFRESH.TITLE',
-  description:
-    'Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.',
+  descConstruct: 'SETTINGS.AUTO_REFRESH.DESCRIPTION',
   content: Component,
   category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
 };
 
 /**
  * t('SETTINGS.AUTO_REFRESH.TITLE')
+ * t('SETTINGS.AUTO_REFRESH.DESCRIPTION')
  */
