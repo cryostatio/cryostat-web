@@ -8,6 +8,10 @@ jest.mock('@app/Shared/Services/Report.service');
 jest.mock('@app/Shared/Services/Settings.service');
 jest.mock('@app/Shared/Services/Target.service');
 jest.mock('@app/Shared/Services/Targets.service');
+jest.mock('@i18n/config', () => ({
+  ...jest.requireActual('@test/i18n_config'),
+  __esModule: true
+}));
 jest.mock('@i18n/datetime', () => ({
   ...jest.requireActual('@i18n/datetime'),
   __esModule: true,
