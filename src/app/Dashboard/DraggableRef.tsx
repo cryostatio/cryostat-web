@@ -124,7 +124,7 @@ export interface DraggableRefProps {
   dashboardId: number;
 }
 
-export const draggableRef = `draggable-ref`;
+export const draggableRefKlazz = `draggable-ref`;
 
 export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   children,
@@ -303,7 +303,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       const dragging = ev.target as HTMLElement;
       const rect = dragging.getBoundingClientRect();
 
-      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${draggableRef}-ref`));
+      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${draggableRefKlazz}-ref`));
       const droppableItems: DroppableItem[] = draggableNodes.reduce((acc: DroppableItem[], cur) => {
         const isDraggingHost = cur.contains(dragging);
         const droppableItem: DroppableItem = {
@@ -345,7 +345,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   return (
     <div
       ref={wrapperRef}
-      className={css(`${draggableRef}-wrapper`)}
+      className={css(`${draggableRefKlazz}-wrapper`)}
       onDragStart={onDragStart}
       onTransitionEnd={onTransitionEnd}
       style={{ ...refStyle }}

@@ -40,7 +40,7 @@ import { Card, CardProps } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { DashboardCardSizes } from './Dashboard';
-import { draggableRef, DraggableRef } from './DraggableRef';
+import { draggableRefKlazz, DraggableRef } from './DraggableRef';
 import { ResizableRef } from './ResizableRef';
 
 export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
@@ -66,7 +66,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
       <DraggableRef dashboardId={dashboardId}>
         <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
           <Card className="dashboard-card" isRounded {...props}>
-            <div className={css(`${draggableRef}__grip`)} draggable>
+            <div className={css(`${draggableRefKlazz}__grip`)} draggable>
               {cardHeader}
             </div>
             {children}
