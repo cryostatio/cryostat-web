@@ -750,24 +750,26 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       id="automated-analysis-card"
       isCompact
       isExpanded={isCardExpanded}
+      cardHeader={
+        <CardHeader
+          onExpand={onCardExpand}
+          toggleButtonProps={{
+            id: 'automated-analysis-toggle-details',
+            'aria-label': 'Details',
+            'aria-labelledby': 'automated-analysis-card-title toggle-details',
+            'aria-expanded': isCardExpanded,
+          }}
+        >
+          <CardActions>{...props.actions || []}</CardActions>
+          <Level hasGutter>
+            <LevelItem>
+              <CardTitle component="h4">Automated Analysis</CardTitle>
+            </LevelItem>
+            <LevelItem>{reportSource}</LevelItem>
+          </Level>
+        </CardHeader>
+      }
     >
-      <CardHeader
-        onExpand={onCardExpand}
-        toggleButtonProps={{
-          id: 'automated-analysis-toggle-details',
-          'aria-label': 'Details',
-          'aria-labelledby': 'automated-analysis-card-title toggle-details',
-          'aria-expanded': isCardExpanded,
-        }}
-      >
-        <CardActions>{...props.actions || []}</CardActions>
-        <Level hasGutter>
-          <LevelItem>
-            <CardTitle component="h4">Automated Analysis</CardTitle>
-          </LevelItem>
-          <LevelItem>{reportSource}</LevelItem>
-        </Level>
-      </CardHeader>
       <CardExpandableContent>
         <Stack hasGutter>
           <StackItem>{errorMessage ? null : toolbar}</StackItem>

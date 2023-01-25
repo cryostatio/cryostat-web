@@ -37,9 +37,10 @@
  */
 
 import { Card, CardProps } from '@patternfly/react-core';
+import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { DashboardCardSizes } from './Dashboard';
-import { DraggableRef } from './DraggableRef';
+import { draggableRef, DraggableRef } from './DraggableRef';
 import { ResizableRef } from './ResizableRef';
 
 export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
@@ -47,11 +48,13 @@ export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivE
 export interface DashboardCardProps extends CardProps {
   dashboardId: number;
   cardSizes: DashboardCardSizes;
+  cardHeader: React.ReactNode;
   children?: React.ReactNode;
 }
 
 export const DashboardCard: React.FC<DashboardCardProps> = ({
   children = null,
+  cardHeader = null,
   dashboardId,
   cardSizes,
   ...props
@@ -62,7 +65,10 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
     <DashboardCardContext.Provider value={cardRef}>
       <DraggableRef dashboardId={dashboardId}>
         <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
-          <Card className="dashboard-card" {...props}>
+          <Card className="dashboard-card" isRounded {...props}>
+            <div className={css(`${draggableRef}__grip`)} draggable>
+              {cardHeader}
+            </div>
             {children}
           </Card>
           <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} />

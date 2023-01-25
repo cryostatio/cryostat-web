@@ -115,10 +115,15 @@ const PlaceholderCard: React.FunctionComponent<
   } & DashboardCardProps
 > = (props) => {
   return (
-    <DashboardCard dashboardId={props.dashboardId} cardSizes={PLACEHOLDER_CARD_SIZE}>
-      <CardHeader>
-        <CardActions>{...props.actions || []}</CardActions>
-      </CardHeader>
+    <DashboardCard
+      dashboardId={props.dashboardId}
+      cardSizes={PLACEHOLDER_CARD_SIZE}
+      cardHeader={
+        <CardHeader>
+          <CardActions>{...props.actions || []}</CardActions>
+        </CardHeader>
+      }
+    >
       <CardBody>
         <Text>title: {props.title}</Text>
         <Text>message: {props.message}</Text>

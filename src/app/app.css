@@ -250,37 +250,34 @@ html, body, #root {
   justify-content: space-between 
 }
 
+.pf-c-card.pf-m-rounded.dashboard-card {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 .resizable-ref {
   cursor: col-resize;
   position: relative;
-  border-right: var(--pf-global--BorderWidth--xl) outset var(--pf-global--BackgroundColor--dark-400);
-  border-bottom-right-radius: 3px;
-}
-
-#dashboard-grid {
-  border: 1px solid red;
-}
-
-.draggable-ref {
-  border-radius: var(--pf-global--BorderRadius--sm); /* 3px */
-}
-
-.draggable-ref__dragging {
-  border-bottom-left-radius: var(--pf-global--BorderRadius--sm);
-  border-bottom-right-radius: var(--pf-global--BorderRadius--sm);
-  border-left: var(--pf-global--BorderWidth--lg) solid var(--pf-global--palette--blue-300);
-  border-right: var(--pf-global--BorderWidth--lg) solid var(--pf-global--palette--blue-300);
-  border-bottom: var(--pf-global--BorderWidth--lg) solid var(--pf-global--palette--blue-300);
-}
-
-.draggable-ref__grip:hover {
-  border-top-left-radius: var(--pf-global--BorderRadius--sm);
-  border-top-right-radius: var(--pf-global--BorderRadius--sm);
-  background-color: var(--pf-global--palette--blue-300);
+  border-right: var(--pf-global--BorderWidth--xl) solid var(--pf-global--BackgroundColor--dark-400);
+  border-top-right-radius: var(--pf-global--BorderRadius--sm);;
+  border-bottom-right-radius: var(--pf-global--BorderRadius--sm);;
 }
 
 .draggable-ref__grip {
+  border-bottom: var(--pf-global--BorderWidth--lg) solid var(--pf-global--BackgroundColor--dark-400);
+}
+
+.draggable-ref__grip {
+  cursor: move;
   cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.draggable-ref__grip:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
 }
 
 .xsm-icon {

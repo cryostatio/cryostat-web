@@ -36,29 +36,16 @@
  * SOFTWARE.
  */
 import { dashboardCardConfigReorderCardIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { GripVerticalIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-function overlaps(ev: MouseEvent, rect: DOMRect, dragOrder: number, hoverOrder: number) {
-  let padding = 20;
-  if (dragOrder == (hoverOrder - 1) % 2 || dragOrder == hoverOrder + (1 % 2)) {
-    padding = 20;
-  }
-  return (
-    ev.clientX - padding > rect.left &&
-    ev.clientX + padding < rect.right &&
-    ev.clientY > rect.top &&
-    ev.clientY < rect.bottom
-  );
-}
-
 type itemPosition = 'left' | 'right' | 'else';
 //
 // |-----------------| mouse |-----------------|
-// |     rect1.right ^       ^ rect2.left      |
-// return [inBetweenTwoRectangles, {insertLeftMost, insertRightMost}]
+// |   rect1.right   ^       ^   rect2.left    |
+// |                 |       |                 |
+// returns [inBetweenTwoRectangles, {insertedOnLeft, insertedOnRight, else}]
 function inBetween(ev: MouseEvent, rect1: DOMRect, rect2: DOMRect): [boolean, itemPosition] {
   const withinHeightRect1 = ev.clientY > rect1.top && ev.clientY < rect1.bottom;
   const withinHeightRect2 = ev.clientY > rect2.top && ev.clientY < rect2.bottom;
@@ -74,16 +61,17 @@ function inBetween(ev: MouseEvent, rect1: DOMRect, rect2: DOMRect): [boolean, it
   const singularRowAfter =
     rect1.top === rect2.top && ev.clientX >= rect1.right && rect1.right >= rect2.left && withinHeightRect1;
 
+  // different rows before: left end
   const multRowBefore = rect1.top !== rect2.top && ev.clientX <= rect2.left && withinHeightRect2;
   if (multRowBefore || singularRowBefore) {
     return [true, 'left'];
   }
-
+  // different rows after: right end
   const multRowAfter = rect1.top !== rect2.top && ev.clientX >= rect1.right && withinHeightRect1;
   if (multRowAfter || singularRowAfter) {
     return [true, 'right'];
   }
-
+  // different rows between: no ends
   return [rowBetween, 'else'];
 }
 
@@ -91,15 +79,21 @@ function getOrder(el: HTMLElement): number {
   return parseInt(el.getAttribute(dashboardCardOrderAttribute) as string);
 }
 
-const initStyle = {
-  backgroundColor: 'var(--pf-global--palette--blue-200)',
-};
+const initStyle = {};
 
-const overlapColor = 'var(--pf-global--palette--green-100)';
-const overlapHoverTranslate = -15;
 const transition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s';
 const delayedTransition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.3s';
+const overlapTranslateY = -15;
 const translateX = 20;
+
+function overlaps(ev: MouseEvent, rect: DOMRect) {
+  return (
+    ev.clientX - translateX > rect.left &&
+    ev.clientX + translateX < rect.right &&
+    ev.clientY > rect.top &&
+    ev.clientY < rect.bottom
+  );
+}
 
 export const dashboardCardOrderAttribute = 'dashboard-card-order';
 
@@ -112,20 +106,12 @@ interface DroppableItem {
 }
 
 function resetDroppableItem(droppableItem: DroppableItem) {
-  droppableItem.node.style.backgroundColor = initStyle.backgroundColor;
   droppableItem.node.style.transition = '';
   droppableItem.node.style.transform = '';
   droppableItem.isHovered = false;
 }
 
-function setDroppableItem(
-  droppableItem: DroppableItem,
-  backgroundColor: string,
-  transition: string,
-  transform: string,
-  isHovered?: boolean
-) {
-  droppableItem.node.style.backgroundColor = backgroundColor;
+function setDroppableItem(droppableItem: DroppableItem, transition: string, transform: string, isHovered?: boolean) {
   droppableItem.node.style.transition = transition;
   droppableItem.node.style.transform = transform;
   if (isHovered !== undefined) {
@@ -138,7 +124,7 @@ export interface DraggableRefProps {
   dashboardId: number;
 }
 
-const className = `draggable-ref`;
+export const draggableRef = `draggable-ref`;
 
 export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   children,
@@ -159,7 +145,6 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
 
   const [refStyle, setRefStyle] = React.useState<object>(initStyle);
   const [isDragging, setIsDragging] = React.useState(false);
-  const [selected, setSelected] = React.useState(false);
 
   const onTransitionEnd = React.useCallback(
     (_ev: React.TransitionEvent<HTMLElement>) => {
@@ -181,7 +166,6 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       }
       if (hoveringDroppable.current && hoveringIndex.current !== null) {
         setIsDragging(false);
-        setSelected(false);
         setRefStyle({
           ...initStyle,
           transition: transition,
@@ -189,7 +173,6 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         });
         dispatch(dashboardCardConfigReorderCardIntent(dashboardId, hoveringIndex.current, swap.current));
       } else {
-        setSelected(false);
         setRefStyle({
           ...refStyle,
           transition: transition,
@@ -197,7 +180,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         });
       }
     },
-    [dispatch, setIsDragging, setSelected, setRefStyle, refStyle, dashboardId]
+    [dispatch, setIsDragging, setRefStyle, refStyle, dashboardId]
   );
 
   const onMouseMoveWhileDragging = React.useCallback(
@@ -210,9 +193,9 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         const dragOrder = getOrder(dragging);
         droppableItems.forEach((di, idx) => {
           // mouse is hovering on a card
-          if (!di.isDraggingHost && overlaps(ev, di.rect, dragOrder, idx)) {
+          if (!di.isDraggingHost && overlaps(ev, di.rect)) {
             di.isHovered = false;
-            setDroppableItem(di, overlapColor, transition, `translate(0, ${overlapHoverTranslate}px`);
+            setDroppableItem(di, transition, `translate(0, ${overlapTranslateY}px`);
             hoveringDroppable.current = di.node;
             hoveringIndex.current = idx;
             swap.current = true;
@@ -225,14 +208,12 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
             });
           } else {
             // mouse is hovering between two cards
-            let nextItem = droppableItems[(idx + 1) % droppableItems.length];
+            const nextItem = droppableItems[(idx + 1) % droppableItems.length];
             const [betweenTwoRects, draggedPosition] = inBetween(ev, di.rect, nextItem.rect);
             if (betweenTwoRects && droppableItems.length > 1) {
-              let hover = (idx + 1) % droppableItems.length;
+              const hover = (idx + 1) % droppableItems.length;
               if (dragOrder > hover) {
                 di.isHovered = false;
-                di.node.style.backgroundColor = 'yellow';
-                nextItem.node.style.backgroundColor = 'yellow';
                 hoveringDroppable.current = nextItem.node;
                 hoveringIndex.current = hover;
                 swap.current = false;
@@ -242,59 +223,28 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                   }
                   if (draggedPosition == 'left') {
                     if (_idx >= hover && _idx < dragOrder && _item.rect.top == nextItem.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`, true);
                     }
                   } else if (draggedPosition == 'right') {
                     if (_idx < hover && _item.rect.top == di.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(-${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`, true);
                     }
-                    // special case where hoveredIndex (veryLastCard) overflows to 0 index
+                    // special case where moving card to end (very last card) overflows hoveredIndex back to 0
                     else if (hover == 0 && _item.rect.top == di.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(-${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`, true);
                       hoveringDroppable.current = di.node;
                       hoveringIndex.current = idx;
                     }
                   } else {
                     if (_idx < hover && _item.rect.top == nextItem.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(-${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`, true);
                     } else if (_idx >= hover && _idx < dragOrder && _item.rect.top == nextItem.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`, true);
                     }
                   }
                 });
               } else if (dragOrder < idx) {
                 di.isHovered = false;
-                di.node.style.backgroundColor = 'red';
                 hoveringDroppable.current = di.node;
                 hoveringIndex.current = idx;
                 swap.current = false;
@@ -304,43 +254,19 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                   }
                   if (draggedPosition == 'left') {
                     if (_idx > idx && _item.rect.top == di.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`, true);
                     }
                   }
                   // correct
                   else if (draggedPosition == 'right') {
                     if (_idx <= idx && _idx > dragOrder && _item.rect.top == di.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(-${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`, true);
                     }
                   } else {
                     if (_idx <= idx && _idx > dragOrder && _item.rect.top == di.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(-${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`, true);
                     } else if (_idx > idx && _item.rect.top == di.rect.top) {
-                      setDroppableItem(
-                        _item,
-                        initStyle.backgroundColor,
-                        delayedTransition,
-                        `translate(${translateX}px, 0px)`,
-                        true
-                      );
+                      setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`, true);
                     }
                   }
                 });
@@ -377,7 +303,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       const dragging = ev.target as HTMLElement;
       const rect = dragging.getBoundingClientRect();
 
-      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${className}`));
+      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${draggableRef}-ref`));
       const droppableItems: DroppableItem[] = draggableNodes.reduce((acc: DroppableItem[], cur) => {
         const isDraggingHost = cur.contains(dragging);
         const droppableItem: DroppableItem = {
@@ -404,13 +330,12 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       startCoords.current = [ev.pageX, ev.pageY];
       setRefStyle(initStyle);
       setIsDragging(true);
-      setSelected(true);
       mouseMoveListener.current = (ev) => onMouseMoveWhileDragging(ev as MouseEvent, droppableItems);
       mouseUpListener.current = () => onMouseUpWhileDragging(droppableItems);
       document.addEventListener('mousemove', mouseMoveListener.current);
       document.addEventListener('mouseup', mouseUpListener.current);
     },
-    [setRefStyle, setIsDragging, setSelected, onMouseMoveWhileDragging, onMouseUpWhileDragging, refStyle, isDragging]
+    [setRefStyle, setIsDragging, onMouseMoveWhileDragging, onMouseUpWhileDragging, refStyle, isDragging]
   );
 
   const variableAttribute = React.useMemo(() => {
@@ -420,16 +345,13 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   return (
     <div
       ref={wrapperRef}
-      className={css(className)}
-      {...variableAttribute}
+      className={css(`${draggableRef}-wrapper`)}
       onDragStart={onDragStart}
       onTransitionEnd={onTransitionEnd}
       style={{ ...refStyle }}
+      {...variableAttribute}
     >
-      <div ref={draggableRef} draggable className={css(`${className}__grip`)}>
-        <GripVerticalIcon />
-      </div>
-      <div className={css(`${className}__content`, selected && `${className}__dragging`)}>{children}</div>
+      {children}
     </div>
   );
 };
