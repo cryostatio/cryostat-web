@@ -127,7 +127,7 @@ export const CredentialsStorage: UserSetting = {
   titleKey: 'SETTINGS.CREDENTIALS_STORAGE.TITLE',
   descConstruct: {
     key: 'SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION',
-    parts: [<Link key={1} to="/security" />],
+    parts: [<Link key={0} to="/security" />],
   },
   content: Component,
   category: 'SETTINGS.CATEGORIES.ADVANCED',
