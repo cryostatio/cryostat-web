@@ -36,11 +36,12 @@
  * SOFTWARE.
  */
 
+import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
-const _version = '2';
+const _version = '3';
 
 // Common action string format: "resource(s)/action"
 export enum DashboardConfigAction {
@@ -67,8 +68,8 @@ export interface DashboardResizeConfigActionPayload {
 }
 
 export interface DashboardOrderConfigActionPayload {
-  idx: number;
-  order: number;
+  prevOrder: number;
+  nextOrder: number;
   swap: boolean;
 }
 
@@ -101,10 +102,10 @@ export const dashboardCardConfigResizeCardIntent = createAction(
 
 export const dashboardCardConfigReorderCardIntent = createAction(
   DashboardConfigAction.CARD_REORDER,
-  (idx: number, order: number, swap = false) => ({
+  (prevOrder: number, nextOrder: number, swap = false) => ({
     payload: {
-      idx,
-      order,
+      prevOrder,
+      nextOrder,
       swap,
     } as DashboardOrderConfigActionPayload,
   })
@@ -120,16 +121,6 @@ const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
 });
 
-export function move(arr: [], from: number, to: number) {
-  arr.splice(to, 0, arr.splice(from, 1)[0]);
-  return arr;
-}
-
-function swap(arr: [], from: number, to: number) {
-  arr[from] = arr.splice(to, 1, arr[from])[0];
-  return arr;
-}
-
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
     .addCase(dashboardCardConfigAddCardIntent, (state, { payload }) => {
@@ -143,9 +134,9 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardCardConfigReorderCardIntent, (state, { payload }) => {
       if (payload.swap) {
-        swap(state.list, payload.idx, payload.order);
+        swap(state.list, payload.prevOrder, payload.nextOrder);
       } else {
-        move(state.list, payload.idx, payload.order);
+        move(state.list, payload.prevOrder, payload.nextOrder);
       }
     });
 });

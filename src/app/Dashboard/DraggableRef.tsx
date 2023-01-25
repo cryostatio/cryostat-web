@@ -49,30 +49,29 @@ type itemPosition = 'left' | 'right' | 'else';
 function inBetween(ev: MouseEvent, rect1: DOMRect, rect2: DOMRect): [boolean, itemPosition] {
   const withinHeightRect1 = ev.clientY > rect1.top && ev.clientY < rect1.bottom;
   const withinHeightRect2 = ev.clientY > rect2.top && ev.clientY < rect2.bottom;
-
-  // cases
-  // same row between: no ends
-  const rowBetween =
+  // Cases
+  // same row -> between: no ends
+  const singleRowBetween =
     rect1.top === rect2.top && rect1.right <= ev.clientX + 20 && ev.clientX - 20 <= rect2.left && withinHeightRect1;
-  // same row before: left end
-  const singularRowBefore =
+  // same row -> before: left end
+  const singleRowBefore =
     rect1.top === rect2.top && ev.clientX <= rect2.left && rect1.left >= rect2.right && withinHeightRect1;
-  // same row after: right end
-  const singularRowAfter =
+  // same row -> after: right end
+  const singleRowAfter =
     rect1.top === rect2.top && ev.clientX >= rect1.right && rect1.right >= rect2.left && withinHeightRect1;
 
-  // different rows before: left end
+  // different rows -> before: left end
   const multRowBefore = rect1.top !== rect2.top && ev.clientX <= rect2.left && withinHeightRect2;
-  if (multRowBefore || singularRowBefore) {
+  if (multRowBefore || singleRowBefore) {
     return [true, 'left'];
   }
-  // different rows after: right end
+  // different rows -> after: right end
   const multRowAfter = rect1.top !== rect2.top && ev.clientX >= rect1.right && withinHeightRect1;
-  if (multRowAfter || singularRowAfter) {
+  if (multRowAfter || singleRowAfter) {
     return [true, 'right'];
   }
-  // different rows between: no ends
-  return [rowBetween, 'else'];
+  // different rows -> between: no ends
+  return [singleRowBetween, 'else'];
 }
 
 function getOrder(el: HTMLElement): number {
@@ -87,8 +86,6 @@ const overlapTranslateY = -15;
 const translateX = 20;
 
 function overlaps(ev: MouseEvent, rect: DOMRect) {
-  console.log('ASDFSA');
-
   return (
     ev.clientX - translateX > rect.left &&
     ev.clientX + translateX < rect.right &&
@@ -188,19 +185,18 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
     (ev: MouseEvent, droppableItems: DroppableItem[]) => {
       hoveringDroppable.current = null;
       hoveringIndex.current = null;
-      const dragging = wrapperRef.current;
-      if (dragging) {
+      const currDragged = wrapperRef.current;
+      if (currDragged) {
         isMouseDown.current = true;
-        const dragOrder = getOrder(dragging);
+        const dragOrder = getOrder(currDragged);
         droppableItems.forEach((di, idx) => {
           // mouse is hovering on a card
           if (!di.isDraggingHost && overlaps(ev, di.rect)) {
-            di.isHovered = false;
-            setDroppableItem(di, transition, `translate(0, ${overlapTranslateY}px`);
+            setDroppableItem(di, transition, `translate(0, ${overlapTranslateY}px`, false);
             hoveringDroppable.current = di.node;
             hoveringIndex.current = idx;
             swap.current = true;
-            // Reset non overlapping items
+            // reset non overlapping items
             droppableItems.forEach((_item, _idx) => {
               if (_idx == idx || _item.isDraggingHost) {
                 return;
@@ -213,6 +209,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
             const [betweenTwoRects, draggedPosition] = inBetween(ev, di.rect, nextItem.rect);
             if (betweenTwoRects && droppableItems.length > 1) {
               const hover = (idx + 1) % droppableItems.length;
+              // if the dragged card has a greater order than the hovered card
               if (dragOrder > hover) {
                 di.isHovered = false;
                 hoveringDroppable.current = nextItem.node;

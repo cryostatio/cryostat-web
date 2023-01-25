@@ -41,6 +41,16 @@ const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 const HOUR_MILLIS = 60 * MINUTE_MILLIS;
 const DAY_MILLIS = 24 * HOUR_MILLIS;
 
+export function move(arr: [], from: number, to: number) {
+  arr.splice(to, 0, arr.splice(from, 1)[0]);
+  return arr;
+}
+
+export function swap(arr: [], from: number, to: number) {
+  arr[from] = arr.splice(to, 1, arr[from])[0];
+  return arr;
+}
+
 export const openTabForUrl = (url: string) => {
   const anchor = document.createElement('a') as HTMLAnchorElement;
   anchor.setAttribute('href', url);
