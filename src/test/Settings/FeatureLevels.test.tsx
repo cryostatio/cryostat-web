@@ -41,7 +41,7 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { cleanup, screen, act } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { renderWithServiceContext, testTranslate } from '../Common';
 
 jest.spyOn(defaultServices.settings, 'featureLevel').mockReturnValue(of(FeatureLevel.PRODUCTION));
 
@@ -55,7 +55,7 @@ describe('<FeatureLevels/>', () => {
   it('should show PRODUCTION as default', async () => {
     renderWithServiceContext(React.createElement(FeatureLevels.content, null));
 
-    const productionOption = screen.getByText(FeatureLevel[FeatureLevel.PRODUCTION]);
+    const productionOption = screen.getByText(testTranslate(FeatureLevel[FeatureLevel.PRODUCTION], 'common'));
     expect(productionOption).toBeInTheDocument();
     expect(productionOption).toBeVisible();
   });
@@ -75,15 +75,15 @@ describe('<FeatureLevels/>', () => {
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 
-    await user.selectOptions(ul, FeatureLevel[FeatureLevel.BETA]);
+    await user.selectOptions(ul, testTranslate(FeatureLevel[FeatureLevel.BETA], 'common'));
 
     expect(ul).not.toBeInTheDocument(); // Should close menu
 
-    const betaOption = screen.getByText(FeatureLevel[FeatureLevel.BETA]);
+    const betaOption = screen.getByText(testTranslate(FeatureLevel[FeatureLevel.BETA], 'common'));
     expect(betaOption).toBeInTheDocument();
     expect(betaOption).toBeVisible();
 
-    const productionOption = screen.queryByText(FeatureLevel[FeatureLevel.PRODUCTION]);
+    const productionOption = screen.queryByText(testTranslate(FeatureLevel[FeatureLevel.PRODUCTION], 'common'));
     expect(productionOption).not.toBeInTheDocument();
   });
 });

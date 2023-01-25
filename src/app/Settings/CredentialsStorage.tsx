@@ -45,16 +45,19 @@ import { UserSetting } from './Settings';
 
 export interface Location {
   key: string;
+  titleKey: string;
   descriptionKey: string;
 }
 
 export class Locations {
   static readonly BROWSER_SESSION: Location = {
     key: 'Session (Browser Memory)',
+    titleKey: 'SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.TITLE',
     descriptionKey: 'SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION',
   };
   static readonly BACKEND: Location = {
     key: 'Backend',
+    titleKey: 'SETTINGS.CREDENTIALS_STORAGE.BACKEND.TITLE',
     descriptionKey: 'SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION',
   };
 }
@@ -77,16 +80,16 @@ const Component = () => {
 
   const handleSelect = React.useCallback(
     (_, selection) => {
-      const location = getLocation(selection);
+      const location = getLocation(selection.value);
       setSelection(location.key);
       setExpanded(false);
-      saveToLocalStorage('JMX_CREDENTIAL_LOCATION', selection);
+      saveToLocalStorage('JMX_CREDENTIAL_LOCATION', selection.value);
     },
     [setSelection, setExpanded]
   );
 
   React.useEffect(() => {
-    handleSelect(undefined, getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key));
+    handleSelect(undefined, { value: getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key) });
   }, [handleSelect]);
 
   return (
@@ -98,10 +101,22 @@ const Component = () => {
         onToggle={setExpanded}
         onSelect={handleSelect}
         isOpen={isExpanded}
-        selections={selection}
+        selections={{
+          ...{ value: selection },
+          toString: () => t(getLocation(selection).titleKey),
+          compareTo: (val) => val.value === selection,
+        }}
       >
-        {locations.map((location) => (
-          <SelectOption key={location.key} value={location.key} description={t(location.descriptionKey)} />
+        {locations.map(({ key, titleKey, descriptionKey }) => (
+          <SelectOption
+            key={titleKey}
+            value={{
+              ...{ value: key },
+              toString: () => t(titleKey),
+              compareTo: (val) => val.value === key,
+            }}
+            description={t(descriptionKey)}
+          />
         ))}
       </Select>
     </>
@@ -121,6 +136,8 @@ export const CredentialsStorage: UserSetting = {
 /**
  * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
  * t('SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.TITLE')
  * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.TITLE')
  * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION')
  */

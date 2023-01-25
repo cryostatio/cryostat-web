@@ -100,7 +100,7 @@ export interface SettingGroup {
 export interface UserSetting {
   titleKey: string;
   disabled?: boolean;
-  // Translation Key | [Translation Key, [Placeholder Parts]]
+  // Translation Key or { Translation Key, React Component Parts }
   // https://react.i18next.com/latest/trans-component#how-to-get-the-correct-translation-string
   descConstruct:
     | string

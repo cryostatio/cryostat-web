@@ -57,10 +57,12 @@
     },
     "CREDENTIALS_STORAGE": {
       "BACKEND": {
-        "DESCRIPTION": "Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated Rules."
+        "DESCRIPTION": "Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated Rules.",
+        "TITLE": "Backend"
       },
       "BROWSER_SESSION": {
-        "DESCRIPTION": "Keep credentials in browser memory for the current session only. When you close this browser tab the credentials will be forgotten."
+        "DESCRIPTION": "Keep credentials in browser memory for the current session only. When you close this browser tab the credentials will be forgotten.",
+        "TITLE": "Session (Browser Memory)"
       },
       "DESCRIPTION": "When you attempt to connect to a target application which requires authentication, you will see a prompt for credentials to present to the application and complete the connection. You can choose where to persist these credentials. Any credentials added through the <0>Security</0> panel will always be stored in Cryostat backend encrypted storage.",
       "TITLE": "JMX Credentials Storage"

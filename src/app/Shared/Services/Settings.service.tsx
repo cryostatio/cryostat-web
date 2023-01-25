@@ -48,6 +48,12 @@ import {
 } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
 
+/**
+ * Use enum keys as translation keys
+ * t('PRODUCTION', { ns: 'common' })
+ * t('DEVELOPMENT', { ns: 'common' })
+ * t('BETA', { ns: 'common' })
+ */
 export enum FeatureLevel {
   DEVELOPMENT = 0,
   BETA = 1,
