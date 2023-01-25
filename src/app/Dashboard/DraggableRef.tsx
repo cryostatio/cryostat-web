@@ -52,7 +52,10 @@ function inBetween(ev: MouseEvent, rect1: DOMRect, rect2: DOMRect): [boolean, it
   // Cases
   // same row -> between: no ends
   const singleRowBetween =
-    rect1.top === rect2.top && rect1.right <= ev.clientX + 20 && ev.clientX - 20 <= rect2.left && withinHeightRect1;
+    rect1.top === rect2.top &&
+    rect1.right <= ev.clientX + translateX &&
+    ev.clientX - translateX <= rect2.left &&
+    withinHeightRect1;
   // same row -> before: left end
   const singleRowBefore =
     rect1.top === rect2.top && ev.clientX <= rect2.left && rect1.left >= rect2.right && withinHeightRect1;
@@ -83,7 +86,7 @@ const initStyle = {};
 const transition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s';
 const delayedTransition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.3s';
 const overlapTranslateY = -15;
-const translateX = 20;
+const translateX = 30;
 
 function overlaps(ev: MouseEvent, rect: DOMRect) {
   return (
