@@ -182,8 +182,3 @@ export const NotificationControl: UserSetting = {
   category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
   orderInGroup: 1,
 };
-
-/**
- * t('SETTINGS.NOTIFICATION_CONTROL.TITLE')
- * t('SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION')
- */

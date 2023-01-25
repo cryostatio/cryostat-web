@@ -70,14 +70,6 @@ import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
 
-/**
- * t('SETTINGS.CATEGORIES.CONNECTIVITY')
- * t('SETTINGS.CATEGORIES.LANGUAGE_REGION')
- * t('SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE')
- * t('SETTINGS.CATEGORIES.DASHBOARD')
- * t('SETTINGS.CATEGORIES.ADVANCED')
- */
-
 const _SettingCategoryKeys = [
   'SETTINGS.CATEGORIES.CONNECTIVITY',
   'SETTINGS.CATEGORIES.LANGUAGE_REGION',

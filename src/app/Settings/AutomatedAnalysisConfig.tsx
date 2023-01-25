@@ -115,8 +115,3 @@ export const AutomatedAnalysisConfig: UserSetting = {
   content: Component,
   category: 'SETTINGS.CATEGORIES.DASHBOARD',
 };
-
-/**
- * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE')
- * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION')
- */

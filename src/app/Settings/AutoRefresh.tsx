@@ -111,8 +111,3 @@ export const AutoRefresh: UserSetting = {
   content: Component,
   category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
 };
-
-/**
- * t('SETTINGS.AUTO_REFRESH.TITLE')
- * t('SETTINGS.AUTO_REFRESH.DESCRIPTION')
- */

@@ -114,8 +114,3 @@ export const FeatureLevels: UserSetting = {
   content: Component,
   category: 'SETTINGS.CATEGORIES.ADVANCED',
 };
-
-/**
- * t('SETTINGS.FEATURE_LEVEL.TITLE')
- * t('SETTINGS.FEATURE_LEVEL.DESCRIPTION')
- */

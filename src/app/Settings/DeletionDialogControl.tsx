@@ -131,8 +131,3 @@ export const DeletionDialogControl: UserSetting = {
   content: Component,
   category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
 };
-
-/**
- * t('SETTINGS.DELETION_DIALOG_CONTROL.TITLE')
- * t('SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION')
- */

@@ -35,58 +35,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { i18nLanguages, i18nResources } from '@i18n/config';
-import { localeReadable } from '@i18n/i18nextUtil';
-import { Select, SelectOption } from '@patternfly/react-core';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { UserSetting } from './Settings';
-
-const Component = () => {
-  const [t, i18n] = useTranslation();
-  const [open, setOpen] = React.useState(false);
-
-  const handleLanguageToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
-
-  const handleLanguageSelect = React.useCallback(
-    (_, v) => {
-      i18n.changeLanguage(v);
-      setOpen(false);
-    },
-    [i18n, setOpen]
-  );
-
-  React.useEffect(() => {
-    if (!i18nLanguages.includes(i18n.language)) {
-      i18n.changeLanguage('en');
-    }
-  }, [i18n, i18n.language]);
-
-  return (
-    <Select
-      isOpen={open}
-      aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT') || ''}
-      onToggle={handleLanguageToggle}
-      onSelect={handleLanguageSelect}
-      selections={localeReadable(i18n.language)}
-      isFlipEnabled
-      menuAppendTo="parent"
-    >
-      {Object.keys(i18nResources).map((l) => (
-        <SelectOption key={l} value={l}>
-          {localeReadable(l)}
-        </SelectOption>
-      ))}
-    </Select>
-  );
-};
-
-export const Language: UserSetting = {
-  titleKey: 'SETTINGS.LANGUAGE.TITLE',
-  descConstruct: 'SETTINGS.LANGUAGE.DESCRIPTION',
-  content: Component,
-  category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
-  orderInGroup: 1,
-  featureLevel: FeatureLevel.BETA,
-};
+/**
+ * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE')
+ * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION')
+ * t('SETTINGS.AUTO_REFRESH.TITLE')
+ * t('SETTINGS.AUTO_REFRESH.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
+ * t('SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.TITLE')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.TITLE')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION')
+ * t('SETTINGS.DATETIME_CONTROL.TITLE')
+ * t('SETTINGS.DATETIME_CONTROL.DESCRIPTION')
+ * t('SETTINGS.DELETION_DIALOG_CONTROL.TITLE')
+ * t('SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION')
+ * t('SETTINGS.FEATURE_LEVEL.TITLE')
+ * t('SETTINGS.FEATURE_LEVEL.DESCRIPTION')
+ * t('SETTINGS.LANGUAGE.TITLE')
+ * t('SETTINGS.LANGUAGE.DESCRIPTION')
+ * t('SETTINGS.NOTIFICATION_CONTROL.TITLE')
+ * t('SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION')
+ * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE')
+ * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION')
+ * t('SETTINGS.CATEGORIES.CONNECTIVITY')
+ * t('SETTINGS.CATEGORIES.LANGUAGE_REGION')
+ * t('SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE')
+ * t('SETTINGS.CATEGORIES.DASHBOARD')
+ * t('SETTINGS.CATEGORIES.ADVANCED')
+ */

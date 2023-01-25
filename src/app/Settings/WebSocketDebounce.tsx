@@ -121,8 +121,3 @@ export const WebSocketDebounce: UserSetting = {
   content: Component,
   category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
 };
-
-/**
- * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE')
- * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION')
- */

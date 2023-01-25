@@ -35,58 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { i18nLanguages, i18nResources } from '@i18n/config';
-import { localeReadable } from '@i18n/i18nextUtil';
-import { Select, SelectOption } from '@patternfly/react-core';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
-import { UserSetting } from './Settings';
-
-const Component = () => {
-  const [t, i18n] = useTranslation();
-  const [open, setOpen] = React.useState(false);
-
-  const handleLanguageToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
-
-  const handleLanguageSelect = React.useCallback(
-    (_, v) => {
-      i18n.changeLanguage(v);
-      setOpen(false);
-    },
-    [i18n, setOpen]
-  );
-
-  React.useEffect(() => {
-    if (!i18nLanguages.includes(i18n.language)) {
-      i18n.changeLanguage('en');
-    }
-  }, [i18n, i18n.language]);
-
-  return (
-    <Select
-      isOpen={open}
-      aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT') || ''}
-      onToggle={handleLanguageToggle}
-      onSelect={handleLanguageSelect}
-      selections={localeReadable(i18n.language)}
-      isFlipEnabled
-      menuAppendTo="parent"
-    >
-      {Object.keys(i18nResources).map((l) => (
-        <SelectOption key={l} value={l}>
-          {localeReadable(l)}
-        </SelectOption>
-      ))}
-    </Select>
-  );
-};
-
-export const Language: UserSetting = {
-  titleKey: 'SETTINGS.LANGUAGE.TITLE',
-  descConstruct: 'SETTINGS.LANGUAGE.DESCRIPTION',
-  content: Component,
-  category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
-  orderInGroup: 1,
-  featureLevel: FeatureLevel.BETA,
-};
+/**
+ * t('PRODUCTION', { ns: 'common' })
+ * t('DEVELOPMENT', { ns: 'common' })
+ * t('BETA', { ns: 'common' })
+ */

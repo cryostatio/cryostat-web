@@ -78,3 +78,15 @@ npm run bundle-profile:analyze
 npm run start
 ```
 
+## LOCALIZATION
+
+To generate translation entries for texts in the app, run:
+
+```
+yarn localize
+```
+
+The extraction tool is [`i18next-parser`](https://www.npmjs.com/package/i18next-parser), which statically finds and exports translation entries, meaning `i18next-parser` does not run code and requires explicit values. See more [details](https://github.com/i18next/i18next-parser#caveats
+).
+
+To workaround this, specify static values in `i18n.ts` file under any top-level directory below `src/app`. For example, `src/app/Settings/i18n.ts`.
