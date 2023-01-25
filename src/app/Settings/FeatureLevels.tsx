@@ -41,9 +41,11 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, setState] = React.useState(FeatureLevel.PRODUCTION);
@@ -59,8 +61,8 @@ const Component = () => {
 
   const handleSelect = React.useCallback(
     (_, v) => {
-      setState(v);
-      context.settings.setFeatureLevel(v);
+      setState(v.value);
+      context.settings.setFeatureLevel(v.value);
       setOpen(false);
     },
     [setState, setOpen, context.settings]
@@ -71,7 +73,11 @@ const Component = () => {
       <Select
         isOpen={open}
         onToggle={handleToggle}
-        selections={FeatureLevel[state]}
+        selections={{
+          ...{ value: state },
+          toString: () => t(FeatureLevel[state]),
+          compareTo: (val) => val.value === state,
+        }}
         onSelect={handleSelect}
         isFlipEnabled={true}
         menuAppendTo="parent"
@@ -85,8 +91,15 @@ const Component = () => {
             }
             return true;
           })
-          .map((level, idx) => (
-            <SelectOption key={idx} value={level.value}>
+          .map((level) => (
+            <SelectOption
+              key={level.key}
+              value={{
+                ...{ value: level.value },
+                toString: () => t(level.key),
+                compareTo: (val) => val.value === level.value,
+              }}
+            >
               {level.key}
             </SelectOption>
           ))}
@@ -96,8 +109,8 @@ const Component = () => {
 };
 
 export const FeatureLevels: UserSetting = {
-  title: 'Feature Level',
-  description: 'Control which graphical features appear in the application.',
+  titleKey: 'SETTINGS.FEATURE_LEVEL.TITLE',
+  descConstruct: 'SETTINGS.FEATURE_LEVEL.DESCRIPTION',
   content: Component,
-  category: 'Advanced',
+  category: 'SETTINGS.CATEGORIES.ADVANCED',
 };

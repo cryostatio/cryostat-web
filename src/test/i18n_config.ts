@@ -35,30 +35,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
+/**
+ * i18n configurations for testing that set default language to en
+ */
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import en_common from '../../locales/en/common.json';
+import en_public from '../../locales/en/public.json';
 
-export { App };
+export const i18nResources = {
+  en: {
+    public: en_public,
+    common: en_common,
+  },
+} as const;
+
+export const i18nNamespaces = ['public', 'common'];
+
+export const i18nLanguages = Object.keys(i18nResources);
+
+// eslint-disable-next-line import/no-named-as-default-member
+i18next.use(initReactI18next).init({
+  resources: i18nResources,
+  lng: 'en',
+  ns: i18nNamespaces,
+  defaultNS: 'public',
+  fallbackNS: ['common'],
+  fallbackLng: ['en'],
+  debug: false,
+  returnNull: false,
+  interpolation: {
+    escapeValue: false,
+  },
+  react: {
+    useSuspense: true,
+  },
+});
+
+export default i18next;

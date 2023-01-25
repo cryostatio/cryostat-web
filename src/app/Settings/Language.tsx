@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { i18nResources } from '@i18n/config';
+import { i18nLanguages, i18nResources } from '@i18n/config';
 import { localeReadable } from '@i18n/i18nextUtil';
 import { Select, SelectOption } from '@patternfly/react-core';
 import * as React from 'react';
@@ -44,7 +44,7 @@ import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const Component = () => {
-  const [_t, i18n] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [open, setOpen] = React.useState(false);
 
   const handleLanguageToggle = React.useCallback(() => setOpen((v) => !v), [setOpen]);
@@ -57,9 +57,16 @@ const Component = () => {
     [i18n, setOpen]
   );
 
+  React.useEffect(() => {
+    if (!i18nLanguages.includes(i18n.language)) {
+      i18n.changeLanguage('en');
+    }
+  }, [i18n, i18n.language]);
+
   return (
     <Select
       isOpen={open}
+      aria-label={t('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT') || ''}
       onToggle={handleLanguageToggle}
       onSelect={handleLanguageSelect}
       selections={localeReadable(i18n.language)}
@@ -76,10 +83,10 @@ const Component = () => {
 };
 
 export const Language: UserSetting = {
-  title: 'Language',
-  description: 'Set the current language for web console.',
+  titleKey: 'SETTINGS.LANGUAGE.TITLE',
+  descConstruct: 'SETTINGS.LANGUAGE.DESCRIPTION',
   content: Component,
-  category: 'Language & Region',
+  category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
   orderInGroup: 1,
   featureLevel: FeatureLevel.BETA,
 };

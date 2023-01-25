@@ -35,30 +35,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
-
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
-
-export { App };
+/**
+ * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE')
+ * t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION')
+ * t('SETTINGS.AUTO_REFRESH.TITLE')
+ * t('SETTINGS.AUTO_REFRESH.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.TITLE')
+ * t('SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.TITLE')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.TITLE')
+ * t('SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION')
+ * t('SETTINGS.DATETIME_CONTROL.TITLE')
+ * t('SETTINGS.DATETIME_CONTROL.DESCRIPTION')
+ * t('SETTINGS.DELETION_DIALOG_CONTROL.TITLE')
+ * t('SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION')
+ * t('SETTINGS.FEATURE_LEVEL.TITLE')
+ * t('SETTINGS.FEATURE_LEVEL.DESCRIPTION')
+ * t('SETTINGS.LANGUAGE.TITLE')
+ * t('SETTINGS.LANGUAGE.DESCRIPTION')
+ * t('SETTINGS.NOTIFICATION_CONTROL.TITLE')
+ * t('SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION')
+ * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE')
+ * t('SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION')
+ * t('SETTINGS.CATEGORIES.CONNECTIVITY')
+ * t('SETTINGS.CATEGORIES.LANGUAGE_REGION')
+ * t('SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE')
+ * t('SETTINGS.CATEGORIES.DASHBOARD')
+ * t('SETTINGS.CATEGORIES.ADVANCED')
+ */

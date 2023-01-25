@@ -309,7 +309,7 @@ export const filterRecordings = (recordings: any[], filters: RecordingFiltersCat
       if (!filters.StartedAfterDate) return true;
       return filters.StartedAfterDate.filter((startedAfter) => {
         const afterDate = dayjs(startedAfter);
-        return dayjs(rec.startTime).isAfter(afterDate);
+        return dayjs(rec.startTime).isSame(afterDate) || dayjs(rec.startTime).isAfter(afterDate);
       }).length;
     });
   }

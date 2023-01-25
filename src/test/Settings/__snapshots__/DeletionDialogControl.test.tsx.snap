@@ -11,22 +11,21 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
       className="pf-c-form__group"
     >
       <div
-        className="pf-c-form__group-label"
-      >
-        <label
-          className="pf-c-form__label"
-        >
-          <span
-            className="pf-c-form__label-text"
-          >
-            Enable or disable deletion dialogs by deletion type.
-          </span>
-        </label>
-         
-      </div>
-      <div
         className="pf-c-form__group-control"
       >
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Enable or disable deletion dialogs by deletion type.
+            </span>
+          </div>
+        </div>
         <label
           className="pf-c-switch"
           data-ouia-component-id="OUIA-Generated-Switch-1"
@@ -67,397 +66,401 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
     </div>
   </div>
   <div
-    className="pf-c-expandable-section"
+    className="pf-l-stack__item"
   >
-    <button
-      aria-expanded={false}
-      className="pf-c-expandable-section__toggle"
-      onClick={[Function]}
-      type="button"
-    >
-      <span
-        className="pf-c-expandable-section__toggle-icon"
-      >
-        <svg
-          aria-hidden={true}
-          aria-labelledby={null}
-          fill="currentColor"
-          height="1em"
-          role="img"
-          style={
-            Object {
-              "verticalAlign": "-0.125em",
-            }
-          }
-          viewBox="0 0 256 512"
-          width="1em"
-        >
-          <path
-            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-          />
-        </svg>
-      </span>
-      <span
-        className="pf-c-expandable-section__toggle-text"
-      >
-        Show more
-      </span>
-    </button>
     <div
-      className="pf-c-expandable-section__content"
-      hidden={true}
-      id=""
+      className="pf-c-expandable-section"
     >
-      <div
-        className="pf-l-stack__item"
+      <button
+        aria-expanded={false}
+        className="pf-c-expandable-section__toggle"
+        onClick={[Function]}
+        type="button"
       >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-2"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DeleteActiveRecordings"
+        <span
+          className="pf-c-expandable-section__toggle-icon"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DeleteActiveRecordings-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DeleteActiveRecordings"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DeleteActiveRecordings-on"
+          <svg
+            aria-hidden={true}
+            aria-labelledby={null}
+            fill="currentColor"
+            height="1em"
+            role="img"
+            style={
+              Object {
+                "verticalAlign": "-0.125em",
+              }
+            }
+            viewBox="0 0 256 512"
+            width="1em"
           >
-            Delete Active Recording
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DeleteActiveRecordings-off"
-          >
-            Delete Active Recording
-          </span>
-        </label>
-      </div>
+            <path
+              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+            />
+          </svg>
+        </span>
+        <span
+          className="pf-c-expandable-section__toggle-text"
+        >
+          Show more
+        </span>
+      </button>
       <div
-        className="pf-l-stack__item"
+        className="pf-c-expandable-section__content"
+        hidden={true}
+        id=""
       >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-3"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DeleteArchivedRecordings"
+        <div
+          className="pf-l-stack__item"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DeleteArchivedRecordings-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DeleteArchivedRecordings"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DeleteArchivedRecordings-on"
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-2"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DeleteActiveRecordings"
           >
-            Delete Archived Recording
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DeleteArchivedRecordings-off"
-          >
-            Delete Archived Recording
-          </span>
-        </label>
-      </div>
-      <div
-        className="pf-l-stack__item"
-      >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-4"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DeleteAutomatedRules"
+            <input
+              aria-label=""
+              aria-labelledby="DeleteActiveRecordings-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DeleteActiveRecordings"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DeleteActiveRecordings-on"
+            >
+              Delete Active Recording
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DeleteActiveRecordings-off"
+            >
+              Delete Active Recording
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-l-stack__item"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DeleteAutomatedRules-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DeleteAutomatedRules"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DeleteAutomatedRules-on"
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-3"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DeleteArchivedRecordings"
           >
-            Delete Automated Rule
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DeleteAutomatedRules-off"
-          >
-            Delete Automated Rule
-          </span>
-        </label>
-      </div>
-      <div
-        className="pf-l-stack__item"
-      >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-5"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DisableAutomatedRules"
+            <input
+              aria-label=""
+              aria-labelledby="DeleteArchivedRecordings-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DeleteArchivedRecordings"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DeleteArchivedRecordings-on"
+            >
+              Delete Archived Recording
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DeleteArchivedRecordings-off"
+            >
+              Delete Archived Recording
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-l-stack__item"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DisableAutomatedRules-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DisableAutomatedRules"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DisableAutomatedRules-on"
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-4"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DeleteAutomatedRules"
           >
-            Disable Automated Rule
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DisableAutomatedRules-off"
-          >
-            Disable Automated Rule
-          </span>
-        </label>
-      </div>
-      <div
-        className="pf-l-stack__item"
-      >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-6"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DeleteEventTemplates"
+            <input
+              aria-label=""
+              aria-labelledby="DeleteAutomatedRules-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DeleteAutomatedRules"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DeleteAutomatedRules-on"
+            >
+              Delete Automated Rule
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DeleteAutomatedRules-off"
+            >
+              Delete Automated Rule
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-l-stack__item"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DeleteEventTemplates-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DeleteEventTemplates"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DeleteEventTemplates-on"
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-5"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DisableAutomatedRules"
           >
-            Delete Event Template
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DeleteEventTemplates-off"
-          >
-            Delete Event Template
-          </span>
-        </label>
-      </div>
-      <div
-        className="pf-l-stack__item"
-      >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-7"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DeleteProbeTemplates"
+            <input
+              aria-label=""
+              aria-labelledby="DisableAutomatedRules-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DisableAutomatedRules"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DisableAutomatedRules-on"
+            >
+              Disable Automated Rule
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DisableAutomatedRules-off"
+            >
+              Disable Automated Rule
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-l-stack__item"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DeleteProbeTemplates-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DeleteProbeTemplates"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DeleteProbeTemplates-on"
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-6"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DeleteEventTemplates"
           >
-            Delete Probe Template
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DeleteProbeTemplates-off"
-          >
-            Delete Probe Template
-          </span>
-        </label>
-      </div>
-      <div
-        className="pf-l-stack__item"
-      >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-8"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DeleteActiveProbes"
+            <input
+              aria-label=""
+              aria-labelledby="DeleteEventTemplates-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DeleteEventTemplates"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DeleteEventTemplates-on"
+            >
+              Delete Event Template
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DeleteEventTemplates-off"
+            >
+              Delete Event Template
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-l-stack__item"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DeleteActiveProbes-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DeleteActiveProbes"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DeleteActiveProbes-on"
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-7"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DeleteProbeTemplates"
           >
-            Remove Active Probes
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DeleteActiveProbes-off"
-          >
-            Remove Active Probes
-          </span>
-        </label>
-      </div>
-      <div
-        className="pf-l-stack__item"
-      >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-9"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DeleteJMXCredentials"
+            <input
+              aria-label=""
+              aria-labelledby="DeleteProbeTemplates-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DeleteProbeTemplates"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DeleteProbeTemplates-on"
+            >
+              Delete Probe Template
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DeleteProbeTemplates-off"
+            >
+              Delete Probe Template
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-l-stack__item"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DeleteJMXCredentials-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DeleteJMXCredentials"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DeleteJMXCredentials-on"
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-8"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DeleteActiveProbes"
           >
-            Delete JMX Credentials
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DeleteJMXCredentials-off"
-          >
-            Delete JMX Credentials
-          </span>
-        </label>
-      </div>
-      <div
-        className="pf-l-stack__item"
-      >
-        <label
-          className="pf-c-switch"
-          data-ouia-component-id="OUIA-Generated-Switch-10"
-          data-ouia-component-type="PF4/Switch"
-          data-ouia-safe={true}
-          htmlFor="DeleteCustomTargets"
+            <input
+              aria-label=""
+              aria-labelledby="DeleteActiveProbes-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DeleteActiveProbes"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DeleteActiveProbes-on"
+            >
+              Remove Active Probes
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DeleteActiveProbes-off"
+            >
+              Remove Active Probes
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-l-stack__item"
         >
-          <input
-            aria-label=""
-            aria-labelledby="DeleteCustomTargets-on"
-            checked={true}
-            className="pf-c-switch__input"
-            disabled={false}
-            id="DeleteCustomTargets"
-            onChange={[Function]}
-            type="checkbox"
-          />
-          <span
-            className="pf-c-switch__toggle"
-          />
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-on"
-            id="DeleteCustomTargets-on"
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-9"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DeleteJMXCredentials"
           >
-            Delete Custom Targets
-          </span>
-          <span
-            aria-hidden="true"
-            className="pf-c-switch__label pf-m-off"
-            id="DeleteCustomTargets-off"
+            <input
+              aria-label=""
+              aria-labelledby="DeleteJMXCredentials-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DeleteJMXCredentials"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DeleteJMXCredentials-on"
+            >
+              Delete JMX Credentials
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DeleteJMXCredentials-off"
+            >
+              Delete JMX Credentials
+            </span>
+          </label>
+        </div>
+        <div
+          className="pf-l-stack__item"
+        >
+          <label
+            className="pf-c-switch"
+            data-ouia-component-id="OUIA-Generated-Switch-10"
+            data-ouia-component-type="PF4/Switch"
+            data-ouia-safe={true}
+            htmlFor="DeleteCustomTargets"
           >
-            Delete Custom Targets
-          </span>
-        </label>
+            <input
+              aria-label=""
+              aria-labelledby="DeleteCustomTargets-on"
+              checked={true}
+              className="pf-c-switch__input"
+              disabled={false}
+              id="DeleteCustomTargets"
+              onChange={[Function]}
+              type="checkbox"
+            />
+            <span
+              className="pf-c-switch__toggle"
+            />
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-on"
+              id="DeleteCustomTargets-on"
+            >
+              Delete Custom Targets
+            </span>
+            <span
+              aria-hidden="true"
+              className="pf-c-switch__label pf-m-off"
+              id="DeleteCustomTargets-off"
+            >
+              Delete Custom Targets
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   </div>

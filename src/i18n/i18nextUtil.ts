@@ -36,13 +36,6 @@
  * SOFTWARE.
  */
 
-export function localeReadable(locale: string): string {
-  switch (locale) {
-    case 'en':
-      return 'English';
-    case 'zh':
-      return '中文';
-    default:
-      return locale;
-  }
-}
+export const localeReadable = (locale: string): string => {
+  return new Intl.DisplayNames([locale], { type: 'language', languageDisplay: 'standard' }).of(locale) || locale;
+};

@@ -38,14 +38,25 @@
 import { NotificationCategory, messageKeys } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ExpandableSection, Switch, Stack, StackItem, NumberInput, FormGroup } from '@patternfly/react-core';
+import {
+  ExpandableSection,
+  Switch,
+  Stack,
+  StackItem,
+  NumberInput,
+  FormGroup,
+  HelperText,
+  HelperTextItem,
+} from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const min = 0;
 const max = 10;
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [state, setState] = React.useState(context.settings.notificationsEnabled());
@@ -122,12 +133,23 @@ const Component = () => {
     <>
       <Stack hasGutter>
         <StackItem key="all-notifications">
-          <FormGroup label="Enable or disable all notifications.">
-            <Switch id="all-notifications" label="All Notifications" isChecked={allChecked} onChange={handleCheckAll} />
+          <FormGroup>
+            <HelperText>
+              <HelperTextItem>{t('SETTINGS.NOTIFICATION_CONTROL.INPUT_DESCRIPTION')}</HelperTextItem>
+            </HelperText>
+            <Switch
+              id="all-notifications"
+              label={t('SETTINGS.NOTIFICATION_CONTROL.SWITCH_LABEL')}
+              isChecked={allChecked}
+              onChange={handleCheckAll}
+            />
           </FormGroup>
         </StackItem>
         <StackItem key="notifications-notification-count">
-          <FormGroup label="Control the maximum number of notification alerts that appear at once.">
+          <FormGroup>
+            <HelperText>
+              <HelperTextItem>{t('SETTINGS.NOTIFICATION_CONTROL.INPUT')}</HelperTextItem>
+            </HelperText>
             <NumberInput
               inputName="alert count"
               value={visibleNotificationsCount}
@@ -139,22 +161,24 @@ const Component = () => {
             />
           </FormGroup>
         </StackItem>
-        <ExpandableSection
-          toggleText={expanded ? 'Show less' : 'Show more'}
-          onToggle={setExpanded}
-          isExpanded={expanded}
-        >
-          {switches}
-        </ExpandableSection>
+        <StackItem key={'expandable-noti-switch-list'}>
+          <ExpandableSection
+            toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
+            onToggle={setExpanded}
+            isExpanded={expanded}
+          >
+            {switches}
+          </ExpandableSection>
+        </StackItem>
       </Stack>
     </>
   );
 };
 
 export const NotificationControl: UserSetting = {
-  title: 'Notifications',
-  description: '',
+  titleKey: 'SETTINGS.NOTIFICATION_CONTROL.TITLE',
+  descConstruct: 'SETTINGS.NOTIFICATION_CONTROL.DESCRIPTION',
   content: Component,
-  category: 'Notifications & Messages',
+  category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
   orderInGroup: 1,
 };

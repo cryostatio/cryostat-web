@@ -27,6 +27,7 @@ module.exports = {
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
     "@app/(.*)": '<rootDir>/src/app/$1',
     "@i18n/(.*)": '<rootDir>/src/i18n/$1',
+    "@test/(.*)": '<rootDir>/src/test/$1',
   },
 
   // A preset that is used as a base for Jest's configuration

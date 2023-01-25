@@ -39,24 +39,26 @@
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Select, SelectOption, SelectVariant } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { UserSetting } from './Settings';
 
 export interface Location {
   key: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
 }
 
 export class Locations {
   static readonly BROWSER_SESSION: Location = {
     key: 'Session (Browser Memory)',
-    description:
-      'Keep credentials in browser memory for the current session only. When you close this browser tab the credentials will be forgotten.',
+    titleKey: 'SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.TITLE',
+    descriptionKey: 'SETTINGS.CREDENTIALS_STORAGE.BROWSER_SESSION.DESCRIPTION',
   };
   static readonly BACKEND: Location = {
     key: 'Backend',
-    description:
-      'Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated Rules.',
+    titleKey: 'SETTINGS.CREDENTIALS_STORAGE.BACKEND.TITLE',
+    descriptionKey: 'SETTINGS.CREDENTIALS_STORAGE.BACKEND.DESCRIPTION',
   };
 }
 
@@ -72,21 +74,22 @@ const getLocation = (key: string): Location => {
 };
 
 const Component = () => {
+  const [t] = useTranslation();
   const [isExpanded, setExpanded] = React.useState(false);
   const [selection, setSelection] = React.useState(Locations.BACKEND.key);
 
   const handleSelect = React.useCallback(
     (_, selection) => {
-      const location = getLocation(selection);
+      const location = getLocation(selection.value);
       setSelection(location.key);
       setExpanded(false);
-      saveToLocalStorage('JMX_CREDENTIAL_LOCATION', selection);
+      saveToLocalStorage('JMX_CREDENTIAL_LOCATION', selection.value);
     },
     [setSelection, setExpanded]
   );
 
   React.useEffect(() => {
-    handleSelect(undefined, getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key));
+    handleSelect(undefined, { value: getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key) });
   }, [handleSelect]);
 
   return (
@@ -98,10 +101,22 @@ const Component = () => {
         onToggle={setExpanded}
         onSelect={handleSelect}
         isOpen={isExpanded}
-        selections={selection}
+        selections={{
+          ...{ value: selection },
+          toString: () => t(getLocation(selection).titleKey),
+          compareTo: (val) => val.value === selection,
+        }}
       >
-        {locations.map((location) => (
-          <SelectOption key={location.key} value={location.key} description={location.description} />
+        {locations.map(({ key, titleKey, descriptionKey }) => (
+          <SelectOption
+            key={titleKey}
+            value={{
+              ...{ value: key },
+              toString: () => t(titleKey),
+              compareTo: (val) => val.value === key,
+            }}
+            description={t(descriptionKey)}
+          />
         ))}
       </Select>
     </>
@@ -109,15 +124,11 @@ const Component = () => {
 };
 
 export const CredentialsStorage: UserSetting = {
-  title: 'JMX Credentials Storage',
-  description: (
-    <>
-      When you attempt to connect to a target application which requires authentication, you will see a prompt for
-      credentials to present to the application and complete the connection. You can choose where to persist these
-      credentials. Any credentials added through the <Link to="/security">Security</Link> panel will always be stored in
-      Cryostat backend encrypted storage.
-    </>
-  ),
+  titleKey: 'SETTINGS.CREDENTIALS_STORAGE.TITLE',
+  descConstruct: {
+    key: 'SETTINGS.CREDENTIALS_STORAGE.DESCRIPTION',
+    parts: [<Link key={0} to="/security" />],
+  },
   content: Component,
-  category: 'Advanced',
+  category: 'SETTINGS.CATEGORIES.ADVANCED',
 };

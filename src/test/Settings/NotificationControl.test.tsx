@@ -42,7 +42,7 @@ import { act as doAct, cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { BehaviorSubject } from 'rxjs';
-import { renderWithServiceContext } from '../Common';
+import { renderWithServiceContext, testTranslate } from '../Common';
 
 const defaultNumOfNotifications = 5;
 const defaults = new Map<NotificationCategory, boolean>();
@@ -80,7 +80,7 @@ describe('<NotificationControl/>', () => {
   it('should default to enable all notifications', async () => {
     renderWithServiceContext(React.createElement(NotificationControl.content, null));
 
-    const enableSwitch = screen.getByLabelText('All Notifications');
+    const enableSwitch = screen.getByLabelText(testTranslate('SETTINGS.NOTIFICATION_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();
     expect(enableSwitch).toBeVisible();
     expect(enableSwitch).toBeChecked();
@@ -119,7 +119,7 @@ describe('<NotificationControl/>', () => {
   it('should turn off enable-all switch if any child switch is off', async () => {
     const { user } = renderWithServiceContext(React.createElement(NotificationControl.content, null));
 
-    const enableSwitch = screen.getByLabelText('All Notifications');
+    const enableSwitch = screen.getByLabelText(testTranslate('SETTINGS.NOTIFICATION_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();
     expect(enableSwitch).toBeVisible();
     expect(enableSwitch).toBeChecked();

@@ -1,13 +1,21 @@
 {
+  "BETA": "BETA",
   "CANCEL": "Cancel",
   "CRYOSTAT_TRADEMARK": "Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0",
   "DATE": "Date",
+  "DEVELOPMENT": "DEVELOPMENT",
   "HOUR": "Hour",
+  "MAX_AGE": "Max Age ({{unit}})",
+  "MAX_SIZE": "Max Size ({{unit}})",
   "MERIDIEM_AM": "AM",
   "MERIDIEM_PM": "PM",
   "MINUTE": "Minute",
+  "PRODUCTION": "PRODUCTION",
   "REMOVE": "Remove",
   "SECOND": "Second",
   "SELECT": "Select",
+  "SHOW_LESS": "Show less",
+  "SHOW_MORE": "Show more",
+  "TEMPLATE": "Template",
   "TIME": "Time"
 }

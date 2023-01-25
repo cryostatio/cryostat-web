@@ -38,11 +38,21 @@
 
 import { DeleteOrDisableWarningType, getFromWarningMap } from '@app/Modal/DeleteWarningUtils';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { ExpandableSection, FormGroup, Stack, StackItem, Switch } from '@patternfly/react-core';
+import {
+  ExpandableSection,
+  FormGroup,
+  HelperText,
+  HelperTextItem,
+  Stack,
+  StackItem,
+  Switch,
+} from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(context.settings.deletionDialogsEnabled());
   const [expanded, setExpanded] = React.useState(false);
@@ -89,30 +99,35 @@ const Component = () => {
     <>
       <Stack hasGutter>
         <StackItem key="all-deletion-warnings">
-          <FormGroup label={'Enable or disable deletion dialogs by deletion type.'}>
+          <FormGroup>
+            <HelperText>
+              <HelperTextItem>{t('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_DESCRIPTION')}</HelperTextItem>
+            </HelperText>
             <Switch
               id="all-deletion-warnings"
-              label="All Deletion Warnings"
+              label={t('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL')}
               isChecked={allChecked}
               onChange={handleCheckAll}
             />
           </FormGroup>
         </StackItem>
-        <ExpandableSection
-          toggleText={expanded ? 'Show less' : 'Show more'}
-          onToggle={setExpanded}
-          isExpanded={expanded}
-        >
-          {switches}
-        </ExpandableSection>
+        <StackItem key={'expandable-delete-warning-switch-list'}>
+          <ExpandableSection
+            toggleText={(expanded ? t('SHOW_LESS', { ns: 'common' }) : t('SHOW_MORE', { ns: 'common' })) || ''}
+            onToggle={setExpanded}
+            isExpanded={expanded}
+          >
+            {switches}
+          </ExpandableSection>
+        </StackItem>
       </Stack>
     </>
   );
 };
 
 export const DeletionDialogControl: UserSetting = {
-  title: 'Show Deletion Dialogs',
-  description: '',
+  titleKey: 'SETTINGS.DELETION_DIALOG_CONTROL.TITLE',
+  descConstruct: 'SETTINGS.DELETION_DIALOG_CONTROL.DESCRIPTION',
   content: Component,
-  category: 'Notifications & Messages',
+  category: 'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
 };

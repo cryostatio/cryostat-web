@@ -34,7 +34,9 @@ In order to render the component under test into its HTML DOM representation and
 
 * The `within` function from `@testing-library/react` can be used to perform queries within nested elements in the HTML DOM.
 
-* Import [`userEvent`](https://testing-library.com/docs/ecosystem-user-event) from RTL's companion library `@testing-library/user-event` in order to simulate user actions such as clicking a button. 
+* Use the [`userEvent`](https://testing-library.com/docs/ecosystem-user-event) instance, which is set up and returned from any setup functions in `@test/Common.tsx` in order to simulate user actions such as clicking a button.
+
+* To search for a localized text, for example, with `getByText`, use `testTranslate` function from `@test/Common.tsx` to return a translated text. Tests are configued to use `en` locale as default.
 
 ## MOCKING
 

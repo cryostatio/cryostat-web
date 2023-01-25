@@ -40,6 +40,7 @@ import { DurationPicker } from '@app/DurationPicker/DurationPicker';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Checkbox } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const defaultPreferences = {
@@ -49,6 +50,7 @@ const defaultPreferences = {
 };
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
   const [state, setState] = React.useState(defaultPreferences);
 
@@ -95,7 +97,7 @@ const Component = () => {
       />
       <Checkbox
         id="auto-refresh-enabled"
-        label="Enabled"
+        label={t('SETTINGS.AUTO_REFRESH.CHECKBOX_LABEL')}
         isChecked={state.autoRefreshEnabled}
         onChange={handleAutoRefreshEnabledChange}
       />
@@ -104,9 +106,8 @@ const Component = () => {
 };
 
 export const AutoRefresh: UserSetting = {
-  title: 'Auto-Refresh',
-  description:
-    'Set the refresh period for content views. Views normally update dynamically via WebSocket notifications, so this should not be needed unless WebSockets are not working.',
+  titleKey: 'SETTINGS.AUTO_REFRESH.TITLE',
+  descConstruct: 'SETTINGS.AUTO_REFRESH.DESCRIPTION',
   content: Component,
-  category: 'Connectivity',
+  category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
 };

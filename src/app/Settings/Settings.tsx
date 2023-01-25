@@ -58,6 +58,7 @@ import {
 } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
@@ -69,21 +70,48 @@ import { Language } from './Language';
 import { NotificationControl } from './NotificationControl';
 import { WebSocketDebounce } from './WebSocketDebounce';
 
-const _SettingCategories = [
-  'Connectivity',
-  'Language & Region',
-  'Notifications & Messages',
-  'Dashboard',
-  'Advanced',
+const _SettingCategoryKeys = [
+  'SETTINGS.CATEGORIES.CONNECTIVITY',
+  'SETTINGS.CATEGORIES.LANGUAGE_REGION',
+  'SETTINGS.CATEGORIES.NOTIFICATION_MESSAGE',
+  'SETTINGS.CATEGORIES.DASHBOARD',
+  'SETTINGS.CATEGORIES.ADVANCED',
 ] as const;
 
-export type SettingCategory = (typeof _SettingCategories)[number];
+// Use translation keys for internal categorization
+export type SettingCategory = (typeof _SettingCategoryKeys)[number];
 
 export interface SettingGroup {
   groupLabel: SettingCategory;
+  groupKey: string;
   featureLevel: FeatureLevel;
   disabled?: boolean;
   settings: _TransformedUserSetting[];
+}
+
+export interface UserSetting {
+  titleKey: string;
+  disabled?: boolean;
+  // Translation Key or { Translation Key, React Component Parts }
+  // https://react.i18next.com/latest/trans-component#how-to-get-the-correct-translation-string
+  descConstruct:
+    | string
+    | {
+        key: string;
+        parts: React.ReactNode[];
+      };
+  content: React.FunctionComponent;
+  category: SettingCategory;
+  orderInGroup?: number; // default -1
+  featureLevel?: FeatureLevel; // default PRODUCTION
+}
+
+interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
+  title: string;
+  description: React.ReactNode;
+  element: React.FunctionComponentElement<Record<string, never>>;
+  orderInGroup: number;
+  featureLevel: FeatureLevel;
 }
 
 const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLevel => {
@@ -93,30 +121,16 @@ const _getGroupFeatureLevel = (settings: _TransformedUserSetting[]): FeatureLeve
   return settings.slice().sort((a, b) => b.featureLevel - a.featureLevel)[0].featureLevel;
 };
 
-export const selectTab = (tabName: SettingCategory) => {
-  const tab = document.getElementById(`pf-tab-${tabName}-${hashCode(tabName)}`);
+export const selectTab = (tabKey: SettingCategory) => {
+  const tab = document.getElementById(`pf-tab-${tabKey}-${hashCode(tabKey)}`);
   tab && tab.click();
 };
-
-export interface UserSetting {
-  title: string;
-  disabled?: boolean;
-  description: JSX.Element | string;
-  content: React.FunctionComponent;
-  category: SettingCategory;
-  orderInGroup?: number; // default -1
-  featureLevel?: FeatureLevel; // default PRODUCTION
-}
-
-interface _TransformedUserSetting extends Omit<UserSetting, 'content'> {
-  element: React.FunctionComponentElement<Record<string, never>>;
-  orderInGroup: number;
-  featureLevel: FeatureLevel;
-}
 
 export interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = (_) => {
+  const [t] = useTranslation();
+
   const settings = React.useMemo(
     () =>
       [
@@ -132,8 +146,15 @@ export const Settings: React.FC<SettingsProps> = (_) => {
       ].map(
         (c) =>
           ({
-            title: c.title,
-            description: c.description,
+            title: t(c.titleKey) || '',
+            description:
+              typeof c.descConstruct === 'string' ? (
+                t(c.descConstruct)
+              ) : (
+                // Use children prop to avoid i18n parses body as key
+                /* eslint react/no-children-prop: 0 */
+                <Trans i18nKey={c.descConstruct.key} children={c.descConstruct.parts} />
+              ),
             element: React.createElement(c.content, null),
             category: c.category,
             disabled: c.disabled,
@@ -141,12 +162,12 @@ export const Settings: React.FC<SettingsProps> = (_) => {
             featureLevel: c.featureLevel || FeatureLevel.PRODUCTION,
           } as _TransformedUserSetting)
       ),
-    []
+    [t]
   );
 
   const location = useLocation();
   const [activeTab, setActiveTab] = React.useState<SettingCategory>(
-    ((location.state && location.state['preSelectedTab']) as SettingCategory) || 'Connectivity'
+    ((location.state && location.state['preSelectedTab']) as SettingCategory) || 'SETTINGS.CATEGORIES.CONNECTIVITY'
   );
 
   const onTabSelect = React.useCallback(
@@ -156,15 +177,16 @@ export const Settings: React.FC<SettingsProps> = (_) => {
   );
 
   const settingGroups = React.useMemo(() => {
-    return _SettingCategories.map((cat) => {
+    return _SettingCategoryKeys.map((cat) => {
       const panels = settings.filter((s) => s.category === cat).sort((a, b) => b.orderInGroup - a.orderInGroup);
       return {
-        groupLabel: cat,
+        groupLabel: t(cat),
+        groupKey: cat,
         settings: panels,
         featureLevel: _getGroupFeatureLevel(panels),
       };
     }) as SettingGroup[];
-  }, [settings]);
+  }, [settings, t]);
 
   return (
     <>
@@ -182,7 +204,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
                 {settingGroups.map((grp) => (
                   <SettingTab
                     key={`${grp.groupLabel}-tab`}
-                    eventKey={grp.groupLabel}
+                    eventKey={grp.groupKey}
                     title={<TabTitleText>{grp.groupLabel}</TabTitleText>}
                     featureLevelConfig={{
                       level: grp.featureLevel,
@@ -194,8 +216,8 @@ export const Settings: React.FC<SettingsProps> = (_) => {
             <SidebarContent>
               {settingGroups.map((grp) => (
                 <div
-                  key={`${grp.groupLabel}-setting`}
-                  className={css('settings__content', grp.groupLabel === activeTab ? 'active' : '')}
+                  key={`${grp.groupKey}-setting`}
+                  className={css('settings__content', grp.groupKey === activeTab ? 'active' : '')}
                 >
                   <Form>
                     {grp.settings.map((s, index) => (

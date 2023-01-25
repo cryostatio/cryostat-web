@@ -51,9 +51,11 @@ import {
   Title,
 } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
 
   const [config, setConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
@@ -73,27 +75,31 @@ const Component = () => {
       </StackItem>
       <StackItem>
         <Title headingLevel="h3" size="md">
-          Current configuration
+          {t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.CURRENT_CONFIG')}
         </Title>
       </StackItem>
       <StackItem>
         <DescriptionList columnModifier={{ lg: '3Col' }}>
           <DescriptionListGroup>
-            <DescriptionListTerm>Template</DescriptionListTerm>
+            <DescriptionListTerm>{t('TEMPLATE', { ns: 'common' })}</DescriptionListTerm>
             <DescriptionListDescription>{config.template}</DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
-            <DescriptionListTerm>Max Size (B)</DescriptionListTerm>
+            <DescriptionListTerm>{t('MAX_SIZE', { ns: 'common', unit: 'B' })}</DescriptionListTerm>
             <DescriptionListDescription>{config.maxSize}</DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
-            <DescriptionListTerm>Max Age (s)</DescriptionListTerm>
+            <DescriptionListTerm>{t('MAX_AGE', { ns: 'common', unit: 's' })}</DescriptionListTerm>
             <DescriptionListDescription>{config.maxAge}</DescriptionListDescription>
           </DescriptionListGroup>
         </DescriptionList>
       </StackItem>
       <ExpandableSection
-        toggleText={expanded ? 'Hide configuration edit' : 'Show configuration edit'}
+        toggleText={
+          (expanded
+            ? t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.SHOW_LESS')
+            : t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.SHOW_MORE')) || ''
+        }
         onToggle={setExpanded}
         isExpanded={expanded}
       >
@@ -104,9 +110,8 @@ const Component = () => {
 };
 
 export const AutomatedAnalysisConfig: UserSetting = {
-  title: 'Automated Analysis Recording Configuration',
-  description:
-    'Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.',
+  titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
+  descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
   content: Component,
-  category: 'Dashboard',
+  category: 'SETTINGS.CATEGORIES.DASHBOARD',
 };

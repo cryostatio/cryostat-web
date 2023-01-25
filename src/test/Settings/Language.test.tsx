@@ -36,40 +36,93 @@
  * SOFTWARE.
  */
 
-import { cleanup, screen } from '@testing-library/react';
+import { Language } from '@app/Settings/Language';
+import i18next, { i18nLanguages } from '@i18n/config';
+import { localeReadable } from '@i18n/i18nextUtil';
+import { act, cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
-import { Language } from '../../app/Settings/Language';
-import { renderDefault } from '../Common';
-
-const mockDetectedLocale = 'en';
-const mockDetectedLocaleAsReadable = 'English';
-
-jest.mock('react-i18next', () => ({
-  useTranslation: () => [
-    jest.fn((str: string) => str),
-    {
-      changeLanguage: () => new Promise(() => undefined),
-      language: mockDetectedLocale,
-    },
-  ],
-}));
-
-jest.mock('@i18n/config', () => ({
-  i18nResources: {
-    en: {
-      public: {},
-      common: {},
-    },
-  },
-}));
+import { renderDefault, testTranslate } from '../Common';
 
 describe('<Language/>', () => {
+  let detectedLanguage: string;
+  beforeAll(() => {
+    detectedLanguage = i18next.language;
+  });
+
+  beforeEach(() => {
+    // Shared instance of i18next
+    i18next.changeLanguage(detectedLanguage);
+  });
+
   afterEach(cleanup);
 
-  it('should default to detected language', async () => {
+  it('should default to detected language if supported', async () => {
+    i18next.changeLanguage('en');
+
     renderDefault(React.createElement(Language.content, null));
 
-    const defaultLocale = screen.getByText(mockDetectedLocaleAsReadable);
+    const defaultLocale = screen.getByText(localeReadable('en'));
+    expect(defaultLocale).toBeInTheDocument();
+    expect(defaultLocale).toBeVisible();
+  });
+
+  it('should default to en if language is not supported', async () => {
+    i18next.changeLanguage('en-unknow-variant');
+
+    renderDefault(React.createElement(Language.content, null));
+
+    const defaultLocale = screen.getByText(localeReadable('en'));
+    expect(defaultLocale).toBeInTheDocument();
+    expect(defaultLocale).toBeVisible();
+  });
+
+  it('should display supported language', async () => {
+    const { user } = renderDefault(React.createElement(Language.content, null));
+
+    const optionMenu = screen.getByLabelText('Options menu');
+    expect(optionMenu).toBeInTheDocument();
+    expect(optionMenu).toBeVisible();
+
+    await act(async () => {
+      await user.click(optionMenu);
+    });
+
+    const ul = screen.getByLabelText(testTranslate('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT'));
+    expect(ul).toBeInTheDocument();
+    expect(ul).toBeVisible();
+
+    i18nLanguages.forEach((l) => {
+      const option = within(ul).getByText(localeReadable(l));
+      expect(option).toBeInTheDocument();
+      expect(option).toBeVisible();
+    });
+  });
+
+  // Unskip this test when more languages are supported
+  it.skip('should change language when select', async () => {
+    const { user } = renderDefault(React.createElement(Language.content, null));
+
+    const optionMenu = screen.getByLabelText('Options menu');
+    expect(optionMenu).toBeInTheDocument();
+    expect(optionMenu).toBeVisible();
+
+    await act(async () => {
+      await user.click(optionMenu);
+    });
+
+    const ul = screen.getByLabelText(testTranslate('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT'));
+    expect(ul).toBeInTheDocument();
+    expect(ul).toBeVisible();
+
+    const option = within(ul).getByText(localeReadable(i18nLanguages[1]));
+    expect(option).toBeInTheDocument();
+    expect(option).toBeVisible();
+
+    await act(async () => {
+      await user.click(option);
+    });
+
+    const defaultLocale = screen.getByText(localeReadable(i18nLanguages[1]));
     expect(defaultLocale).toBeInTheDocument();
     expect(defaultLocale).toBeVisible();
   });

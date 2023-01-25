@@ -41,9 +41,11 @@ import useDayjs from '@app/utils/useDayjs';
 import { locales, Timezone } from '@i18n/datetime';
 import { FormGroup, HelperText, HelperTextItem, Select, SelectOption, Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const Component = () => {
+  const [t] = useTranslation();
   const context = React.useContext(ServiceContext);
   const [dateLocaleOpen, setDateLocaleOpen] = React.useState(false);
   const [_, datetimeFormat] = useDayjs();
@@ -111,10 +113,10 @@ const Component = () => {
       <StackItem key={'date-locale-select'}>
         <FormGroup>
           <HelperText>
-            <HelperTextItem>{'Select current date locale.'}</HelperTextItem>
+            <HelperTextItem>{t('SETTINGS.DATETIME_CONTROL.LOCALE_SELECT_DESCRIPTION')}</HelperTextItem>
           </HelperText>
           <Select
-            aria-label="Select a datetime locale"
+            aria-label={t('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.LOCALE_SELECT') || ''}
             isOpen={dateLocaleOpen}
             onToggle={setDateLocaleOpen}
             isFlipEnabled
@@ -136,7 +138,7 @@ const Component = () => {
       <StackItem key={'timezone-select'}>
         <FormGroup>
           <HelperText>
-            <HelperTextItem>{'Select current timezone.'}</HelperTextItem>
+            <HelperTextItem>{t('SETTINGS.DATETIME_CONTROL.TIMEZONE_SELECT_DESCRIPTION')}</HelperTextItem>
           </HelperText>
           <TimezonePicker
             selected={datetimeFormat.timeZone}
@@ -151,8 +153,8 @@ const Component = () => {
 };
 
 export const DatetimeControl: UserSetting = {
-  title: 'Date & Time',
-  description: '',
+  titleKey: 'SETTINGS.DATETIME_CONTROL.TITLE',
+  descConstruct: 'SETTINGS.DATETIME_CONTROL.DESCRIPTION',
   content: Component,
-  category: 'Language & Region',
+  category: 'SETTINGS.CATEGORIES.LANGUAGE_REGION',
 };

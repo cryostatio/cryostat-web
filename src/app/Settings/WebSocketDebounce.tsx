@@ -116,10 +116,8 @@ const Component = () => {
 };
 
 export const WebSocketDebounce: UserSetting = {
-  title: 'WebSocket Connection Debounce',
-  description: `Set the debounce time (in milliseconds) used when establishing WebSocket connections.
-    Increase this time if the web-interface repeatedly displays WebSocket connection/disconnection messages.
-    Decrease this time if the web-interface takes a long time to populate on startup.`,
+  titleKey: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.TITLE',
+  descConstruct: 'SETTINGS.WEBSOCKET_CONNECTION_DEBOUNCE.DESCRIPTION',
   content: Component,
-  category: 'Connectivity',
+  category: 'SETTINGS.CATEGORIES.CONNECTIVITY',
 };

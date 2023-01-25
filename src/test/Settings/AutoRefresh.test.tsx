@@ -41,7 +41,7 @@ import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { renderWithServiceContext } from '../Common';
+import { renderWithServiceContext, testTranslate } from '../Common';
 
 jest.spyOn(defaultServices.settings, 'autoRefreshEnabled').mockReturnValue(false);
 jest.spyOn(defaultServices.settings, 'autoRefreshPeriod').mockReturnValue(30);
@@ -80,7 +80,7 @@ describe('<AutoRefresh/>', () => {
   it('should enable selections if checkbox is checked', async () => {
     const { user } = renderWithServiceContext(React.createElement(AutoRefresh.content, null));
 
-    const enableCheckbox = screen.getByLabelText('Enabled');
+    const enableCheckbox = screen.getByLabelText(testTranslate('SETTINGS.AUTO_REFRESH.CHECKBOX_LABEL'));
     expect(enableCheckbox).toBeInTheDocument();
     expect(enableCheckbox).toBeVisible();
 
@@ -106,7 +106,7 @@ describe('<AutoRefresh/>', () => {
     expect(periodInput).toBeInTheDocument();
     expect(periodInput).toBeVisible();
 
-    const enableCheckbox = screen.getByLabelText('Enabled');
+    const enableCheckbox = screen.getByLabelText(testTranslate('SETTINGS.AUTO_REFRESH.CHECKBOX_LABEL'));
     expect(enableCheckbox).toBeInTheDocument();
     expect(enableCheckbox).toBeVisible();
 
