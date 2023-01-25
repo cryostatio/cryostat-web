@@ -87,6 +87,8 @@ const overlapTranslateY = -15;
 const translateX = 20;
 
 function overlaps(ev: MouseEvent, rect: DOMRect) {
+  console.log('ASDFSA');
+
   return (
     ev.clientX - translateX > rect.left &&
     ev.clientX + translateX < rect.right &&
@@ -132,7 +134,6 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   ..._props
 }: DraggableRefProps) => {
   const dispatch = useDispatch();
-  const draggableRef = React.useRef<HTMLDivElement>(null);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
 
   const startCoords = React.useRef<[number, number]>([0, 0]);
@@ -217,10 +218,12 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                 hoveringDroppable.current = nextItem.node;
                 hoveringIndex.current = hover;
                 swap.current = false;
+                // check which items should be translated
                 droppableItems.forEach((_item, _idx) => {
                   if (_item.isDraggingHost) {
                     return;
                   }
+                  // handle cases where the hovered card is the first or last card of a row is hovered in
                   if (draggedPosition == 'left') {
                     if (_idx >= hover && _idx < dragOrder && _item.rect.top == nextItem.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`, true);
@@ -303,7 +306,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       const dragging = ev.target as HTMLElement;
       const rect = dragging.getBoundingClientRect();
 
-      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${draggableRefKlazz}-ref`));
+      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${draggableRefKlazz}-wrapper`));
       const droppableItems: DroppableItem[] = draggableNodes.reduce((acc: DroppableItem[], cur) => {
         const isDraggingHost = cur.contains(dragging);
         const droppableItem: DroppableItem = {
