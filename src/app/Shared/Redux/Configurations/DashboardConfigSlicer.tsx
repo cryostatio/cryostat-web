@@ -54,6 +54,7 @@ export enum DashboardConfigAction {
 export const enumValues = new Set(Object.values(DashboardConfigAction));
 
 export interface DashboardAddConfigActionPayload {
+  id: string;
   name: string;
   props: object;
 }
@@ -75,8 +76,9 @@ export interface DashboardOrderConfigActionPayload {
 
 export const dashboardCardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
-  (name: string, span: gridSpans, props: object) => ({
+  (id: string, name: string, span: gridSpans, props: object) => ({
     payload: {
+      id,
       name,
       span,
       props,
@@ -112,6 +114,7 @@ export const dashboardCardConfigReorderCardIntent = createAction(
 );
 
 export interface CardConfig {
+  id: string;
   name: string;
   span: gridSpans;
   props: object;

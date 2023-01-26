@@ -272,7 +272,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     <TargetView pageTitle="Dashboard" compactSelect={false}>
       <Grid id={'dashboard-grid'} hasGutter>
         {cardConfigs.map((cfg, idx) => (
-          <GridItem span={cfg.span} key={idx} order={{ default: idx.toString() }}>
+          <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
             {React.createElement(getConfigByName(cfg.name).component, {
               ...cfg.props,
               dashboardId: idx,

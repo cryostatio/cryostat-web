@@ -68,6 +68,7 @@ import {
   WizardStep,
 } from '@patternfly/react-core/dist/js/next';
 import { PlusCircleIcon } from '@patternfly/react-icons';
+import { nanoid } from 'nanoid';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
@@ -119,7 +120,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
     const config = getConfigByTitle(selection);
-    dispatch(dashboardCardConfigAddCardIntent(config.component.name, config.cardSizes.span.default, propsConfig));
+    dispatch(dashboardCardConfigAddCardIntent(`${config.component.name}-${nanoid()}`, config.component.name, config.cardSizes.span.default, propsConfig));
   }, [dispatch, setShowWizard, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {

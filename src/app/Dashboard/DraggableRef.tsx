@@ -40,13 +40,13 @@ import { css } from '@patternfly/react-styles';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-type itemPosition = 'left' | 'right' | 'else';
+type ItemPosition = 'left' | 'right' | 'inBetween';
 //
 // |-----------------| mouse |-----------------|
 // |   rect1.right   ^       ^   rect2.left    |
 // |                 |       |                 |
 // returns [inBetweenTwoRectangles, {insertedOnLeft, insertedOnRight, else}]
-function inBetween(ev: MouseEvent, rect1: DOMRect, rect2: DOMRect): [boolean, itemPosition] {
+const inBetween = (ev: MouseEvent, rect1: DOMRect, rect2: DOMRect): [boolean, ItemPosition] => {
   const withinHeightRect1 = ev.clientY > rect1.top && ev.clientY < rect1.bottom;
   const withinHeightRect2 = ev.clientY > rect2.top && ev.clientY < rect2.bottom;
   // Cases
@@ -74,7 +74,7 @@ function inBetween(ev: MouseEvent, rect1: DOMRect, rect2: DOMRect): [boolean, it
     return [true, 'right'];
   }
   // different rows -> between: no ends
-  return [singleRowBetween, 'else'];
+  return [singleRowBetween, 'inBetween'];
 }
 
 function getOrder(el: HTMLElement): number {
@@ -109,13 +109,15 @@ interface DroppableItem {
 }
 
 function resetDroppableItem(droppableItem: DroppableItem) {
-  droppableItem.node.style.transition = transition;
+  droppableItem.node.style.opacity = '1';
+  droppableItem.node.style.transition = transition + ', opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s';
   droppableItem.node.style.transform = '';
   droppableItem.isHovered = false;
 }
 
 function setDroppableItem(droppableItem: DroppableItem, transition: string, transform: string, isHovered?: boolean) {
-  droppableItem.node.style.transition = transition;
+  droppableItem.node.style.opacity = '0.5';
+  droppableItem.node.style.transition = transition + ', opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s';
   droppableItem.node.style.transform = transform;
   if (isHovered !== undefined) {
     droppableItem.isHovered = isHovered;
@@ -202,9 +204,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
             swap.current = true;
             // reset non overlapping items
             droppableItems.forEach((_item, _idx) => {
-              if (_idx == idx || _item.isDraggingHost) {
-                return;
-              }
+              if (_idx == idx || _item.isDraggingHost) return;
               resetDroppableItem(_item);
             });
           } else {
