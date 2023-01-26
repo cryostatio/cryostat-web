@@ -86,7 +86,7 @@ const initStyle = {};
 const transition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s';
 const delayedTransition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.3s';
 const overlapTranslateY = -15;
-const translateX = 30;
+const translateX = 50;
 
 function overlaps(ev: MouseEvent, rect: DOMRect) {
   return (
@@ -108,7 +108,7 @@ interface DroppableItem {
 }
 
 function resetDroppableItem(droppableItem: DroppableItem) {
-  droppableItem.node.style.transition = '';
+  droppableItem.node.style.transition = transition;
   droppableItem.node.style.transform = '';
   droppableItem.isHovered = false;
 }
@@ -279,7 +279,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                 }
               }
             } else {
-              if (!di.isDraggingHost && !di.isHovered) {
+              if (!di.isDraggingHost && hoveringDroppable.current == null) {
                 resetDroppableItem(di);
               }
             }
