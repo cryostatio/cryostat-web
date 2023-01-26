@@ -258,13 +258,14 @@ html, body, #root {
 .resizable-ref {
   cursor: col-resize;
   position: relative;
-  border-right: var(--pf-global--BorderWidth--xl) solid var(--pf-global--BackgroundColor--dark-400);
-  border-top-right-radius: var(--pf-global--BorderRadius--sm);;
-  border-bottom-right-radius: var(--pf-global--BorderRadius--sm);;
+  border-right: var(--pf-global--BorderWidth--lg) solid var(--pf-global--palette--black-500); /* 3px */
+  border-top-right-radius: var(--pf-global--BorderRadius--sm); /* 3px */
+  border-bottom-right-radius: var(--pf-global--BorderRadius--sm);
 }
 
 .draggable-ref__grip {
-  border-bottom: var(--pf-global--BorderWidth--lg) solid var(--pf-global--BackgroundColor--dark-400);
+  border-bottom: var(--pf-global--BorderWidth--sm) solid var(--pf-global--palette--black-500); /* 1px */
+  border-bottom-left-radius: var(--pf-global--BorderRadius--sm);
 }
 
 .draggable-ref__grip {

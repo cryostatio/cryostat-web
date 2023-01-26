@@ -53,8 +53,8 @@ function inBetween(ev: MouseEvent, rect1: DOMRect, rect2: DOMRect): [boolean, it
   // same row -> between: no ends
   const singleRowBetween =
     rect1.top === rect2.top &&
-    rect1.right <= ev.clientX + translateX &&
-    ev.clientX - translateX <= rect2.left &&
+    rect1.right <= ev.clientX + rect1.width * offsetScale &&
+    ev.clientX - rect2.width * offsetScale <= rect2.left &&
     withinHeightRect1;
   // same row -> before: left end
   const singleRowBefore =
@@ -87,11 +87,12 @@ const transition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s';
 const delayedTransition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.3s';
 const overlapTranslateY = -15;
 const translateX = 50;
+const offsetScale = 0.33;
 
-function overlaps(ev: MouseEvent, rect: DOMRect) {
+function overlaps(ev: MouseEvent, rect: DOMRect): boolean {
   return (
-    ev.clientX - translateX > rect.left &&
-    ev.clientX + translateX < rect.right &&
+    ev.clientX - rect.width * offsetScale > rect.left &&
+    ev.clientX + rect.width * offsetScale < rect.right &&
     ev.clientY > rect.top &&
     ev.clientY < rect.bottom
   );
@@ -256,12 +257,10 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                     return;
                   }
                   if (draggedPosition == 'left') {
-                    if (_idx > idx && _item.rect.top == di.rect.top) {
+                    if (_idx > idx && _item.rect.top == nextItem.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`, true);
                     }
-                  }
-                  // correct
-                  else if (draggedPosition == 'right') {
+                  } else if (draggedPosition == 'right') {
                     if (_idx <= idx && _idx > dragOrder && _item.rect.top == di.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`, true);
                     }
@@ -274,11 +273,13 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                   }
                 });
               } else {
-                if (!di.isDraggingHost && !di.isHovered) {
+                // dragged card is in the same position as the hovered card');
+                if (!di.isDraggingHost) {
                   resetDroppableItem(di);
                 }
               }
             } else {
+              // reset when the mouse is not hovering on a card or between two cards
               if (!di.isDraggingHost && hoveringDroppable.current == null) {
                 resetDroppableItem(di);
               }
