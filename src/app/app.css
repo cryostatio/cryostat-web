@@ -262,7 +262,7 @@ html, body, #root {
 .resizable-ref {
   cursor: col-resize;
   position: relative;
-  border-right: var(--pf-global--BorderWidth--lg) solid var(--pf-global--palette--black-500); /* 3px */
+  border-right: 4px solid var(--pf-global--palette--black-500);
   border-top-right-radius: var(--pf-global--BorderRadius--sm); /* 3px */
   border-bottom-right-radius: var(--pf-global--BorderRadius--sm);
 }

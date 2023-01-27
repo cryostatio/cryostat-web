@@ -218,6 +218,11 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
             setDroppableItem(di, transition, `translate(0, ${overlapTranslateY}px`);
             insertPosition.current = idx;
             swap.current = true;
+            droppableItems.forEach((_di, _idx) => {
+              if (_idx !== dragIndex && _idx !== idx) {
+                resetDroppableItem(_di);
+              }
+            });
           } else {
             // mouse is hovering between two cards
             const gapIndex = (idx + 1) % droppableItems.length;
