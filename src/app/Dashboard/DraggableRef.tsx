@@ -40,14 +40,26 @@ import { css } from '@patternfly/react-styles';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
-function getScales(dragIndex: number, hoverIndex: number): [number, number] {
+function getOverlapScales(dragIndex: number, hoverIndex: number): [number, number] {
   let leftScale = offsetScale;
   let rightScale = offsetScale;
+  if (dragIndex - hoverIndex == -1) {
+    leftScale = 0;
+  }
   if (dragIndex - hoverIndex == 1) {
     rightScale = 0;
   }
-  else if (dragIndex - hoverIndex == -1) {
+  return [leftScale, rightScale];
+}
+
+function getBetweenScales(dragIndex: number, gapIndex: number): [number, number] {
+  let leftScale = offsetScale;
+  let rightScale = offsetScale;
+  if (dragIndex - gapIndex == 0) {
     leftScale = 0;
+  }
+  if (dragIndex - gapIndex == -1) {
+    rightScale = 0;
   }
   return [leftScale, rightScale];
 }
@@ -68,7 +80,12 @@ type ItemPosition = 'left' | 'right' | 'inBetween';
 // |   rect1.right   ^       ^   rect2.left    |
 // |                 |       |                 |
 // returns [inBetweenTwoRectangles, {insertedOnLeft, insertedOnRight, else}]
-const inBetween = (ev: MouseEvent, rect1: DOMRect, rect2: DOMRect, scales: [number, number]): [boolean, ItemPosition] => {
+const inBetween = (
+  ev: MouseEvent,
+  rect1: DOMRect,
+  rect2: DOMRect,
+  scales: [number, number]
+): [boolean, ItemPosition] => {
   const [leftScale, rightScale] = scales;
   const withinHeightRect1 = ev.clientY > rect1.top && ev.clientY < rect1.bottom;
   const withinHeightRect2 = ev.clientY > rect2.top && ev.clientY < rect2.bottom;
@@ -92,18 +109,19 @@ const inBetween = (ev: MouseEvent, rect1: DOMRect, rect2: DOMRect, scales: [numb
     return [true, 'left'];
   }
   // different rows -> after: right end
-  const multRowAfter = rect1.top !== rect2.top && ev.clientX >= rect1.right && withinHeightRect1;  
+  const multRowAfter = rect1.top !== rect2.top && ev.clientX >= rect1.right && withinHeightRect1;
   if (multRowAfter || singleRowAfter) {
     return [true, 'right'];
   }
   // different rows -> between: no ends
   return [singleRowBetween, 'inBetween'];
-}
+};
 
 const initStyle = {};
 
-const transition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s';
-const delayedTransition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.3s';
+const transition = 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s';
+const delayedTransition =
+  'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.3s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s';
 const overlapTranslateY = -15;
 const translateX = 50;
 const offsetScale = 0.33;
@@ -118,14 +136,20 @@ interface DroppableItem {
 }
 
 function resetDroppableItem(droppableItem: DroppableItem) {
-  droppableItem.node.style.opacity = '1';
-  droppableItem.node.style.transition = transition + ', opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s';
+  function onTransitionEnd() {
+    droppableItem.node.style.transition = '';
+    droppableItem.node.removeEventListener('transitionend', onTransitionEnd);
+  }
+
+  droppableItem.node.style.opacity = '';
+  droppableItem.node.style.transition = transition;
   droppableItem.node.style.transform = '';
+  droppableItem.node.addEventListener('transitionend', onTransitionEnd);
 }
 
 function setDroppableItem(droppableItem: DroppableItem, transition: string, transform: string) {
   droppableItem.node.style.opacity = '0.5';
-  droppableItem.node.style.transition = transition + ', opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s';
+  droppableItem.node.style.transition = transition;
   droppableItem.node.style.transform = transform;
 }
 
@@ -174,23 +198,11 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       }
       if (insertPosition.current !== null) {
         setIsDragging(false);
-        setRefStyle({
-          ...initStyle,
-          transition: transition,
-          transform: '',
-        });
+        setRefStyle(initStyle);
         dispatch(dashboardCardConfigReorderCardIntent(dashboardId, insertPosition.current, swap.current));
-        console.log('reorder card', dashboardId, insertPosition.current);
-        
-      } else {
-        setRefStyle({
-          ...refStyle,
-          transition: transition,
-          transform: '',
-        });
       }
     },
-    [dispatch, setIsDragging, setRefStyle, refStyle, dashboardId]
+    [dispatch, setIsDragging, setRefStyle, dashboardId]
   );
 
   const onMouseMoveWhileDragging = React.useCallback(
@@ -198,35 +210,38 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       insertPosition.current = null;
       const currDragged = wrapperRef.current;
       if (currDragged) {
-        isMouseDown.current = true;
         const dragIndex = droppableItems.findIndex((di) => di.isDraggingHost);
         droppableItems.forEach((di, idx) => {
-          const scales = getScales(dragIndex, idx);
-          // mouse is hovering on a card
+          let scales = getOverlapScales(dragIndex, idx);
           if (!di.isDraggingHost && overlaps(ev, di.rect, scales)) {
+            // mouse is hovering on a card
             setDroppableItem(di, transition, `translate(0, ${overlapTranslateY}px`);
             insertPosition.current = idx;
             swap.current = true;
           } else {
             // mouse is hovering between two cards
-            const nextItem = droppableItems[(idx + 1) % droppableItems.length];
+            const gapIndex = (idx + 1) % droppableItems.length;
+            const nextItem = droppableItems[gapIndex];
+            scales = getBetweenScales(dragIndex, gapIndex);
             const [betweenTwoRects, draggedPosition] = inBetween(ev, di.rect, nextItem.rect, scales);
+            // check if hovering right next to each other in the adjacent gap indices
+            if (gapIndex - dragIndex == 1 || (gapIndex - dragIndex == 0 && draggedPosition != 'right')) {
+              if (!di.isDraggingHost && insertPosition.current == null) resetDroppableItem(di);
+              return;
+            }
             if (betweenTwoRects && droppableItems.length > 1) {
-              const gapIndex = (idx + 1) % droppableItems.length;
-              // check if hovering right next to each other in the adjacent gap indices
-              if (gapIndex - dragIndex == 1 || gapIndex - dragIndex == 0 && draggedPosition != 'right') {
-                return;
-              }
               // [     0,    1,    2,    3     ] dashboard span array
-              //       0     1     2     3       indexes
               // {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
               /*
                 If we wanted to put 0 between indexes 2 and 3, we would have to specify the gapIndex of 3 (idx + 1)
               */
-              // [     0,    1,    2,    
-              //       3     ]            multi-row dashboard span array
-              // {  0  |  1  |  2  |  3.a  
-              //   3.b |  4  } gap indices (drop zones)
+              // [     0,    1,    2,
+              //       3     ]                multi-row dashboard span array
+              // {  0  |  1  |  2  |  3(a)
+              //   3(b) |  4  }               (idealized) gap indices
+              //
+              // caveat -> gapIndex is always the 0 index when hovering at the end of the last card in the grid
+              // that is why there is a special case to set the insertPosition specially
 
               insertPosition.current = gapIndex;
               swap.current = false;
@@ -240,8 +255,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                   if (draggedPosition == 'left') {
                     if (_idx >= gapIndex && _idx < dragIndex && _item.rect.top == nextItem.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`);
-                    }
-                    else {
+                    } else {
                       resetDroppableItem(_item);
                     }
                   } else if (draggedPosition == 'right') {
@@ -252,8 +266,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                     else if (gapIndex == 0 && _idx > dragIndex && _item.rect.top == di.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`);
                       insertPosition.current = idx + 1;
-                    }
-                    else {  
+                    } else {
                       resetDroppableItem(_item);
                     }
                   } else {
@@ -261,25 +274,22 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                       setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`);
                     } else if (_idx >= gapIndex && _idx < dragIndex && _item.rect.top == nextItem.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`);
-                    }
-                    else {
+                    } else {
                       resetDroppableItem(_item);
                     }
                   }
-
-                } else { // if (dragOrder < hover)
+                } else {
+                  // if (dragOrder < hover)
                   if (draggedPosition == 'left') {
                     if (_idx >= gapIndex && _item.rect.top == nextItem.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`);
-                    }
-                    else {
+                    } else {
                       resetDroppableItem(_item);
                     }
                   } else if (draggedPosition == 'right') {
                     if (_idx < gapIndex && _idx > dragIndex && _item.rect.top == di.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`);
-                    }
-                    else {
+                    } else {
                       resetDroppableItem(_item);
                     }
                   } else {
@@ -287,8 +297,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                       setDroppableItem(_item, delayedTransition, `translate(-${translateX}px, 0px)`);
                     } else if (_idx >= gapIndex && _item.rect.top == di.rect.top) {
                       setDroppableItem(_item, delayedTransition, `translate(${translateX}px, 0px)`);
-                    }
-                    else {
+                    } else {
                       resetDroppableItem(_item);
                     }
                   }
@@ -296,9 +305,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
               });
             } else {
               // reset when the mouse is not hovering on a card or between two cards
-              if (!di.isDraggingHost && insertPosition.current == null) {
-                resetDroppableItem(di);
-              }
+              if (!di.isDraggingHost && insertPosition.current == null) resetDroppableItem(di);
             }
           }
         });
@@ -320,6 +327,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       if (isDragging) {
         return;
       }
+      isMouseDown.current = true;
       const dragging = ev.target as HTMLElement;
       const rect = dragging.getBoundingClientRect();
 

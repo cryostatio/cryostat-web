@@ -120,7 +120,14 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
     const config = getConfigByTitle(selection);
-    dispatch(dashboardCardConfigAddCardIntent(`${config.component.name}-${nanoid()}`, config.component.name, config.cardSizes.span.default, propsConfig));
+    dispatch(
+      dashboardCardConfigAddCardIntent(
+        `${config.component.name}-${nanoid()}`,
+        config.component.name,
+        config.cardSizes.span.default,
+        propsConfig
+      )
+    );
   }, [dispatch, setShowWizard, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {

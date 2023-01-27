@@ -240,13 +240,18 @@ html, body, #root {
   margin-top: 0.5em;
 }
 
-.dashboard-card {
-  width: 100%;
-  overflow: auto;
+.draggable-ref-wrapper:active {
+  box-shadow: 0 0.5rem 1rem 0 rgba(3, 3, 3, 0.16);
 }
 
 .dashboard-card-resizable-wrapper { 
   display: flex;
+}
+
+.dashboard-card {
+  position: relative;
+  width: 100%;
+  overflow: auto;
 }
 
 .pf-c-card.pf-m-rounded.dashboard-card {
@@ -263,15 +268,12 @@ html, body, #root {
 }
 
 .draggable-ref__grip {
-  border-bottom: var(--pf-global--BorderWidth--sm) solid var(--pf-global--palette--black-500); /* 1px */
-  border-bottom-left-radius: var(--pf-global--BorderRadius--sm);
-}
-
-.draggable-ref__grip {
   cursor: move;
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;
+  border-bottom: var(--pf-global--BorderWidth--sm) solid var(--pf-global--palette--black-500); /* 1px */
+  border-bottom-left-radius: var(--pf-global--BorderRadius--sm);
 }
 
 .draggable-ref__grip:active {
