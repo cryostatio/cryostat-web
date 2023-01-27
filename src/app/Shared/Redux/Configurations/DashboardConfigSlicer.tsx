@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { move, swap } from '@app/utils/utils';
+import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
@@ -137,9 +137,9 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardCardConfigReorderCardIntent, (state, { payload }) => {
       if (payload.swap) {
-        swap(state.list, payload.prevOrder, payload.nextOrder);
+        swapDashboardCard(state.list, payload.prevOrder, payload.nextOrder);
       } else {
-        move(state.list, payload.prevOrder, payload.nextOrder);
+        moveDashboardCard(state.list, payload.prevOrder, payload.nextOrder);
       }
     });
 });

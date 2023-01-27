@@ -41,12 +41,18 @@ const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 const HOUR_MILLIS = 60 * MINUTE_MILLIS;
 const DAY_MILLIS = 24 * HOUR_MILLIS;
 
-export function move(arr: [], from: number, to: number) {
-  arr.splice(to, 0, arr.splice(from, 1)[0]);
+// [     0,    1,    2,    3     ] array
+//       0     1     2     3       indexes
+// {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
+export function moveDashboardCard(arr: [], from: number, gapIndex: number) {
+  if (gapIndex > from) {
+    gapIndex--;
+  }
+  arr.splice(gapIndex, 0, arr.splice(from, 1)[0]);
   return arr;
 }
 
-export function swap(arr: [], from: number, to: number) {
+export function swapDashboardCard(arr: [], from: number, to: number) {
   arr[from] = arr.splice(to, 1, arr[from])[0];
   return arr;
 }

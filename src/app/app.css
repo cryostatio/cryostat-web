@@ -247,7 +247,6 @@ html, body, #root {
 
 .dashboard-card-resizable-wrapper { 
   display: flex;
-  justify-content: space-between 
 }
 
 .pf-c-card.pf-m-rounded.dashboard-card {
