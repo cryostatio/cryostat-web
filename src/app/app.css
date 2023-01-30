@@ -240,6 +240,30 @@ html, body, #root {
   margin-top: 0.5em;
 }
 
+.draggable-ref-wrapper__left {
+  opacity: 0.5;
+  transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
+  transform: translate(-50px, 0px); 
+}
+
+.draggable-ref-wrapper__right {
+  opacity: 0.5;
+  transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
+  transform: translate(50px, 0px); 
+}
+
+.draggable-ref-wrapper__overlap {
+  opacity: 0.5;
+  transform: translate(0px, -15px); 
+  transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
+}
+
+.draggable-ref-wrapper__reset {
+  opacity: 1;
+  transform: '';
+  transition: transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s, opacity 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0.1s;
+}
+
 .draggable-ref-wrapper:active {
   box-shadow: 0 0.5rem 1rem 0 rgba(3, 3, 3, 0.16);
 }
