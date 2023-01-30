@@ -61,12 +61,29 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 }: DashboardCardProps) => {
   const cardRef = React.useRef<HTMLDivElement>(null);
 
+  const onMouseEnter = React.useCallback((_e: React.MouseEvent<HTMLDivElement>) => {
+    if (cardRef.current) {
+      cardRef.current.classList.add(`${draggableRefKlazz}-hover`);
+    }
+  }, []);
+
+  const onMouseLeave = React.useCallback((_e: React.MouseEvent<HTMLDivElement>) => {
+    if (cardRef.current) {
+      cardRef.current.classList.remove(`${draggableRefKlazz}-hover`);
+    }
+  }, []);
+
   return (
     <DashboardCardContext.Provider value={cardRef}>
       <DraggableRef dashboardId={dashboardId}>
         <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
           <Card className="dashboard-card" isRounded {...props}>
-            <div className={css(`${draggableRefKlazz}__grip`)} draggable>
+            <div
+              className={css(`${draggableRefKlazz}__grip`)}
+              onMouseEnter={onMouseEnter}
+              onMouseLeave={onMouseLeave}
+              draggable // draggable is required for drag events to fire
+            >
               {cardHeader}
             </div>
             {children}
