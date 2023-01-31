@@ -36,22 +36,25 @@
  * SOFTWARE.
  */
 
+import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
-const _version = '2';
+const _version = '3';
 
 // Common action string format: "resource(s)/action"
 export enum DashboardConfigAction {
   CARD_ADD = 'dashboard-card-config/add',
   CARD_REMOVE = 'dashboard-card-config/remove',
+  CARD_REORDER = 'dashboard-card-config/reorder',
   CARD_RESIZE = 'dashboard-card-config/resize',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
 
 export interface DashboardAddConfigActionPayload {
+  id: string;
   name: string;
   props: object;
 }
@@ -65,10 +68,17 @@ export interface DashboardResizeConfigActionPayload {
   span: number;
 }
 
+export interface DashboardOrderConfigActionPayload {
+  prevOrder: number;
+  nextOrder: number;
+  swap: boolean;
+}
+
 export const dashboardCardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
-  (name: string, span: gridSpans, props: object) => ({
+  (id: string, name: string, span: gridSpans, props: object) => ({
     payload: {
+      id,
       name,
       span,
       props,
@@ -92,7 +102,19 @@ export const dashboardCardConfigResizeCardIntent = createAction(
   })
 );
 
+export const dashboardCardConfigReorderCardIntent = createAction(
+  DashboardConfigAction.CARD_REORDER,
+  (prevOrder: number, nextOrder: number, swap = false) => ({
+    payload: {
+      prevOrder,
+      nextOrder,
+      swap,
+    } as DashboardOrderConfigActionPayload,
+  })
+);
+
 export interface CardConfig {
+  id: string;
   name: string;
   span: gridSpans;
   props: object;
@@ -112,6 +134,13 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardCardConfigResizeCardIntent, (state, { payload }) => {
       state.list[payload.idx].span = payload.span;
+    })
+    .addCase(dashboardCardConfigReorderCardIntent, (state, { payload }) => {
+      if (payload.swap) {
+        swapDashboardCard(state.list, payload.prevOrder, payload.nextOrder);
+      } else {
+        moveDashboardCard(state.list, payload.prevOrder, payload.nextOrder);
+      }
     });
 });
 

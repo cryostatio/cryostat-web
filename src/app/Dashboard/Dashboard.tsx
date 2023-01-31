@@ -49,8 +49,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { ResizableCard } from './ResizableCard';
 
 export interface Sized<T> {
   minimum: T;
@@ -115,15 +115,15 @@ const PlaceholderCard: React.FunctionComponent<
   } & DashboardCardProps
 > = (props) => {
   return (
-    <ResizableCard
+    <DashboardCard
       dashboardId={props.dashboardId}
       cardSizes={PLACEHOLDER_CARD_SIZE}
-      className="dashboard-card"
-      isRounded
+      cardHeader={
+        <CardHeader>
+          <CardActions>{...props.actions || []}</CardActions>
+        </CardHeader>
+      }
     >
-      <CardHeader>
-        <CardActions>{...props.actions || []}</CardActions>
-      </CardHeader>
       <CardBody>
         <Text>title: {props.title}</Text>
         <Text>message: {props.message}</Text>
@@ -133,7 +133,7 @@ const PlaceholderCard: React.FunctionComponent<
         <Text>asyncmenu: {props.asyncmenu}</Text>
         <Text>asyncmenus: {props.asyncmenu2}</Text>
       </CardBody>
-    </ResizableCard>
+    </DashboardCard>
   );
 };
 
@@ -270,9 +270,9 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <Grid hasGutter>
+      <Grid id={'dashboard-grid'} hasGutter>
         {cardConfigs.map((cfg, idx) => (
-          <GridItem span={cfg.span} key={idx}>
+          <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
             {React.createElement(getConfigByName(cfg.name).component, {
               ...cfg.props,
               dashboardId: idx,
@@ -286,7 +286,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
             })}
           </GridItem>
         ))}
-        <GridItem key={cardConfigs.length}>
+        <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
           <AddCard />
         </GridItem>
       </Grid>

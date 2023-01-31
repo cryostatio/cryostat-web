@@ -46,9 +46,15 @@ exports[`<Dashboard /> renders correctly 1`] = `
         >
           <div
             className="pf-l-grid pf-m-gutter"
+            id="dashboard-grid"
           >
             <div
               className="pf-l-grid__item"
+              style={
+                Object {
+                  "--pf-l-grid--item--Order": "0",
+                }
+              }
             >
               <div>
                 Add Card

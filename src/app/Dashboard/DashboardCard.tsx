@@ -37,33 +37,61 @@
  */
 
 import { Card, CardProps } from '@patternfly/react-core';
+import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { DashboardCardSizes } from './Dashboard';
-import { DraggableRef } from './DraggableRef';
+import { draggableRefKlazz, DraggableRef } from './DraggableRef';
+import { ResizableRef } from './ResizableRef';
 
 export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
 
-export interface ResizableCardProps extends CardProps {
+export interface DashboardCardProps extends CardProps {
   dashboardId: number;
   cardSizes: DashboardCardSizes;
+  cardHeader: React.ReactNode;
   children?: React.ReactNode;
 }
 
-export const ResizableCard: React.FC<ResizableCardProps> = ({
+export const DashboardCard: React.FC<DashboardCardProps> = ({
   children = null,
+  cardHeader = null,
   dashboardId,
   cardSizes,
   ...props
-}: ResizableCardProps) => {
+}: DashboardCardProps) => {
   const cardRef = React.useRef<HTMLDivElement>(null);
+
+  const onMouseEnter = React.useCallback((_e: React.MouseEvent<HTMLDivElement>) => {
+    if (cardRef.current) {
+      cardRef.current.classList.add(`${draggableRefKlazz}-hover`);
+    }
+  }, []);
+
+  const onMouseLeave = React.useCallback((_e: React.MouseEvent<HTMLDivElement>) => {
+    if (cardRef.current) {
+      cardRef.current.classList.remove(`${draggableRefKlazz}-hover`);
+    }
+  }, []);
 
   return (
     <DashboardCardContext.Provider value={cardRef}>
-      <div className="resizable-card" ref={cardRef} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Card {...props}>{children}</Card>
-        <DraggableRef dashboardId={dashboardId} cardSizes={cardSizes} />
-      </div>
+      <DraggableRef dashboardId={dashboardId}>
+        <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
+          <Card className="dashboard-card" isRounded {...props}>
+            <div
+              className={css(`${draggableRefKlazz}__grip`)}
+              onMouseEnter={onMouseEnter}
+              onMouseLeave={onMouseLeave}
+              draggable // draggable is required for drag events to fire
+            >
+              {cardHeader}
+            </div>
+            {children}
+          </Card>
+          <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} />
+        </div>
+      </DraggableRef>
     </DashboardCardContext.Provider>
   );
 };
-ResizableCard.displayName = 'ResizableCard';
+DashboardCard.displayName = 'DashboardCard';

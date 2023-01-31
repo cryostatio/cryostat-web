@@ -100,7 +100,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
-import { ResizableCard } from '../ResizableCard';
+import { DashboardCard } from '../DashboardCard';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 import {
@@ -744,32 +744,32 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
   return (
-    <ResizableCard
+    <DashboardCard
       dashboardId={props.dashboardId}
       cardSizes={AutomatedAnalysisCardSizes}
-      className="dashboard-card"
       id="automated-analysis-card"
-      isRounded
       isCompact
       isExpanded={isCardExpanded}
+      cardHeader={
+        <CardHeader
+          onExpand={onCardExpand}
+          toggleButtonProps={{
+            id: 'automated-analysis-toggle-details',
+            'aria-label': 'Details',
+            'aria-labelledby': 'automated-analysis-card-title toggle-details',
+            'aria-expanded': isCardExpanded,
+          }}
+        >
+          <CardActions>{...props.actions || []}</CardActions>
+          <Level hasGutter>
+            <LevelItem>
+              <CardTitle component="h4">Automated Analysis</CardTitle>
+            </LevelItem>
+            <LevelItem>{reportSource}</LevelItem>
+          </Level>
+        </CardHeader>
+      }
     >
-      <CardHeader
-        onExpand={onCardExpand}
-        toggleButtonProps={{
-          id: 'automated-analysis-toggle-details',
-          'aria-label': 'Details',
-          'aria-labelledby': 'automated-analysis-card-title toggle-details',
-          'aria-expanded': isCardExpanded,
-        }}
-      >
-        <CardActions>{...props.actions || []}</CardActions>
-        <Level hasGutter>
-          <LevelItem>
-            <CardTitle component="h4">Automated Analysis</CardTitle>
-          </LevelItem>
-          <LevelItem>{reportSource}</LevelItem>
-        </Level>
-      </CardHeader>
       <CardExpandableContent>
         <Stack hasGutter>
           <StackItem>{errorMessage ? null : toolbar}</StackItem>
@@ -784,7 +784,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
           </StackItem>
         </Stack>
       </CardExpandableContent>
-    </ResizableCard>
+    </DashboardCard>
   );
 };
 
