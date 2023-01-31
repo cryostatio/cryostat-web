@@ -23,6 +23,7 @@ module.exports = merge(common('development'), {
     new ESLintPlugin({
       extensions: ['js', 'jsx', 'ts', 'tsx'],
       exclude: ['node_modules', 'dist'],
+      lintDirtyModulesOnly: true,
     }),
   ],
   module: {
