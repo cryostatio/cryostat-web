@@ -21,9 +21,10 @@ module.exports = merge(common('development'), {
   plugins: [
     new DotenvPlugin(),
     new ESLintPlugin({
+      cache: true,
+      cacheLocation: path.resolve(__dirname, '.eslintcache'),
       extensions: ['js', 'jsx', 'ts', 'tsx'],
       exclude: ['node_modules', 'dist'],
-      lintDirtyModulesOnly: true,
     }),
   ],
   module: {
