@@ -1334,7 +1334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:*":
+"@types/eslint@npm:*, @types/eslint@npm:^7.29.0 || ^8.4.1":
   version: 8.4.10
   resolution: "@types/eslint@npm:8.4.10"
   dependencies:
@@ -3389,6 +3389,7 @@ __metadata:
     eslint-plugin-react: ^7.32.2
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-unused-imports: ^2.0.0
+    eslint-webpack-plugin: ^3.2.0
     file-loader: ^6.2.0
     fork-ts-checker-webpack-plugin: ^7.3.0
     html-webpack-plugin: ^5.5.0
@@ -4682,6 +4683,22 @@ __metadata:
   version: 3.3.0
   resolution: "eslint-visitor-keys@npm:3.3.0"
   checksum: d59e68a7c5a6d0146526b0eec16ce87fbf97fe46b8281e0d41384224375c4e52f5ffb9e16d48f4ea50785cde93f766b0c898e31ab89978d88b0e1720fbfb7808
+  languageName: node
+  linkType: hard
+
+"eslint-webpack-plugin@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "eslint-webpack-plugin@npm:3.2.0"
+  dependencies:
+    "@types/eslint": ^7.29.0 || ^8.4.1
+    jest-worker: ^28.0.2
+    micromatch: ^4.0.5
+    normalize-path: ^3.0.0
+    schema-utils: ^4.0.0
+  peerDependencies:
+    eslint: ^7.0.0 || ^8.0.0
+    webpack: ^5.0.0
+  checksum: 095034c35e773fdb21ec7e597ae1f8a6899679c290db29d8568ca94619e8c7f4971f0f9edccc8a965322ab8af9286c87205985a38f4fdcf17654aee7cd8bb7b5
   languageName: node
   linkType: hard
 
@@ -7166,6 +7183,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jest-worker@npm:^28.0.2":
+  version: 28.1.3
+  resolution: "jest-worker@npm:28.1.3"
+  dependencies:
+    "@types/node": "*"
+    merge-stream: ^2.0.0
+    supports-color: ^8.0.0
+  checksum: e921c9a1b8f0909da9ea07dbf3592f95b653aef3a8bb0cbcd20fc7f9a795a1304adecac31eecb308992c167e8d7e75c522061fec38a5928ace0f9571c90169ca
+  languageName: node
+  linkType: hard
+
 "jest-worker@npm:^29.1.2":
   version: 29.3.1
   resolution: "jest-worker@npm:29.3.1"
@@ -7780,7 +7808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4":
+"micromatch@npm:^4.0.0, micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
   version: 4.0.5
   resolution: "micromatch@npm:4.0.5"
   dependencies:

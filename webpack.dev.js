@@ -2,6 +2,7 @@ const path = require('path');
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const DotenvPlugin = require('dotenv-webpack');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const HOST = process.env.HOST || "localhost";
 const PORT = process.env.PORT || "9000";
@@ -19,6 +20,12 @@ module.exports = merge(common('development'), {
   },
   plugins: [
     new DotenvPlugin(),
+    new ESLintPlugin({
+      cache: true,
+      cacheLocation: path.resolve(__dirname, '.eslintcache'),
+      extensions: ['js', 'jsx', 'ts', 'tsx'],
+      exclude: ['node_modules', 'dist'],
+    }),
   ],
   module: {
     rules: [
