@@ -1010,13 +1010,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-icons@npm:^4.93.0, @patternfly/react-icons@npm:^4.93.3":
+"@patternfly/react-icons@npm:^4.93.3":
   version: 4.93.3
   resolution: "@patternfly/react-icons@npm:4.93.3"
   peerDependencies:
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
   checksum: 77ccc7e4f007d1fe889bfbfff586c0c0b0193e00f634d250885d806ab926577f88ece053f85b3369ce91a1d30749fd4b2100deafc725695396c472314824e756
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-icons@npm:^4.93.6":
+  version: 4.93.6
+  resolution: "@patternfly/react-icons@npm:4.93.6"
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 4d314d49a5252ee4c30089641f5b3cd852f683aa550a144df729682edfcfd2eef011a6e10a671e21a4342f906b17b0bde25daff2615f3996625550daba42f629
   languageName: node
   linkType: hard
 
@@ -3367,7 +3377,7 @@ __metadata:
   resolution: "cryostat-web@workspace:."
   dependencies:
     "@patternfly/react-core": ^4.267.6
-    "@patternfly/react-icons": ^4.93.0
+    "@patternfly/react-icons": ^4.93.6
     "@patternfly/react-styles": ^4.92.6
     "@patternfly/react-table": ^4.112.6
     "@reduxjs/toolkit": ^1.9.2
