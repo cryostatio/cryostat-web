@@ -64,6 +64,14 @@ import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
+  Dropdown,
+  KebabToggle,
+  OverflowMenu,
+  OverflowMenuContent,
+  OverflowMenuControl,
+  OverflowMenuDropdownItem,
+  OverflowMenuGroup,
+  OverflowMenuItem,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
@@ -90,6 +98,7 @@ export interface ArchivedRecordingsTableProps {
   isNestedTable: boolean;
   directory?: RecordingDirectory;
   directoryRecordings?: ArchivedRecording[];
+  toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
 export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = ({
@@ -98,6 +107,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
   isNestedTable,
   directory: propsDirectory,
   directoryRecordings,
+  toolbarBreakReference,
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
@@ -435,6 +445,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
         handleShowUploadModal={() => setShowUploadModal(true)}
         isUploadsTable={isUploadsTable}
         actionLoadings={actionLoadings}
+        toolbarBreakReference={toolbarBreakReference}
       />
     ),
     [
@@ -450,6 +461,7 @@ export const ArchivedRecordingsTable: React.FC<ArchivedRecordingsTableProps> = (
       setShowUploadModal,
       isUploadsTable,
       actionLoadings,
+      toolbarBreakReference,
     ]
   );
 
@@ -548,16 +560,20 @@ export interface ArchivedRecordingsToolbarProps {
   handleShowUploadModal: () => void;
   isUploadsTable: boolean;
   actionLoadings: Record<ArchiveActions, boolean>;
+  toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
 const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
 
   const deletionDialogsEnabled = React.useMemo(
     () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteArchivedRecordings),
     [context.settings]
   );
+
+  const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
@@ -593,11 +609,54 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
     [props]
   );
 
+  const buttons = React.useMemo(() => {
+    return [
+      {
+        default: (
+          <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>
+            Edit Labels
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Edit Labels'} isShared onClick={props.handleEditLabels}>
+            Edit Labels
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Edit Labels',
+      },
+      {
+        default: (
+          <Button
+            variant="danger"
+            onClick={handleDeleteButton}
+            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+            {...actionLoadingProps['DELETE']}
+          >
+            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
+            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Delete',
+      },
+    ];
+  }, [
+    props.handleEditLabels,
+    handleDeleteButton,
+    props.checkedIndices.length,
+    props.actionLoadings,
+    actionLoadingProps,
+  ]);
+
   return (
     <Toolbar
       id="archived-recordings-toolbar"
       aria-label="archived-recording-toolbar"
       clearAllFilters={props.handleClearFilters}
+      isSticky
     >
       <ToolbarContent>
         <RecordingFilters
@@ -606,27 +665,37 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
           recordings={props.recordings}
           filters={props.targetRecordingFilters}
           updateFilters={props.updateFilters}
+          breakpoint={'xl'}
         />
         <ToolbarGroup variant="button-group" style={{ alignSelf: 'start' }}>
-          <ToolbarItem key={'edit-label-button'}>
-            <Button
-              key="edit labels"
-              variant="secondary"
-              onClick={props.handleEditLabels}
-              isDisabled={!props.checkedIndices.length}
+          <ToolbarItem variant="overflow-menu">
+            <OverflowMenu
+              breakpoint="sm"
+              breakpointReference={
+                props.toolbarBreakReference ||
+                (() => document.getElementById('archived-recordings-toolbar') || document.body)
+              }
             >
-              Edit Labels
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem key={'delete-archive-button'}>
-            <Button
-              variant="danger"
-              onClick={handleDeleteButton}
-              isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
-              {...actionLoadingProps['DELETE']}
-            >
-              {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
-            </Button>
+              <OverflowMenuContent>
+                <OverflowMenuGroup groupType="button">
+                  {buttons.map((b) => (
+                    <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
+                  ))}
+                </OverflowMenuGroup>
+              </OverflowMenuContent>
+              <OverflowMenuControl>
+                <Dropdown
+                  aria-label={'archive-recording-actions'}
+                  isPlain
+                  isFlipEnabled
+                  onSelect={() => setActionToggleOpen(false)}
+                  menuAppendTo={'parent'}
+                  isOpen={actionToggleOpen}
+                  toggle={<KebabToggle id="archive-recording-actions-toggle-kebab" onToggle={handleActionToggle} />}
+                  dropdownItems={buttons.map((b) => b.collapsed)}
+                />
+              </OverflowMenuControl>
+            </OverflowMenu>
           </ToolbarItem>
         </ToolbarGroup>
         {deleteArchivedWarningModal}

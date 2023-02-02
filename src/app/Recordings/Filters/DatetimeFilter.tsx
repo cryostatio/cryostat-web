@@ -164,7 +164,7 @@ export const DateTimeFilter: React.FunctionComponent<DateTimeFilterProps> = ({ o
 
   return (
     <Flex>
-      <Flex alignSelf={{ default: 'alignSelfFlexStart' }} flex={{ default: 'flex_1' }}>
+      <Flex alignSelf={{ default: 'alignSelfFlexStart' }}>
         <FlexItem spacer={{ default: 'spacerNone' }}>
           <Popover
             bodyContent={

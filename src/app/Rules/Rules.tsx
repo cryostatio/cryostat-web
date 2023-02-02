@@ -69,7 +69,6 @@ import {
   Td,
   Tbody,
   ActionsColumn,
-  OuterScrollContainer,
   InnerScrollContainer,
 } from '@patternfly/react-table';
 import * as React from 'react';

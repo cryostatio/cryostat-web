@@ -86,6 +86,7 @@ export const categoryIsDate = (fieldKey: string) => /date/i.test(fieldKey);
 
 export interface RecordingFiltersProps {
   target: string;
+  breakpoint: 'md' | 'lg' | 'xl' | '2xl';
   isArchived: boolean;
   recordings: Recording[];
   filters: RecordingFiltersCategories;
@@ -97,6 +98,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   isArchived,
   recordings,
   filters,
+  breakpoint = 'xl',
   updateFilters,
 }) => {
   const [formatter, _] = useDayjs();
@@ -236,7 +238,7 @@ export const RecordingFilters: React.FC<RecordingFiltersProps> = ({
   );
 
   return (
-    <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint="xl">
+    <ToolbarToggleGroup toggleIcon={<FilterIcon />} breakpoint={breakpoint}>
       <ToolbarGroup variant="filter-group">
         <ToolbarItem style={{ alignSelf: 'start' }} key={'category-select'}>
           {categoryDropdown}

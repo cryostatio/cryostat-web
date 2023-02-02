@@ -61,7 +61,7 @@ export const Recordings: React.FunctionComponent<RecordingsProps> = (_) => {
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
-      <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect}>
+      <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
         <Tab id="active-recordings" eventKey={0} title={<TabTitleText>Active Recordings</TabTitleText>}>
           <ActiveRecordingsTable archiveEnabled={true} />
         </Tab>
