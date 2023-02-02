@@ -53,7 +53,7 @@ import { act, cleanup, screen, within } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of, Subject } from 'rxjs';
-import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
+import { DEFAULT_DIMENSIONS, renderWithServiceContextAndReduxStoreWithRouter, resize } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -109,8 +109,8 @@ jest.mock('@app/Recordings/RecordingFilters', () => {
 jest.spyOn(defaultServices.api, 'archiveRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'deleteRecording').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockRecording]));
-jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue();
-jest.spyOn(defaultServices.api, 'downloadReport').mockReturnValue();
+jest.spyOn(defaultServices.api, 'downloadRecording').mockReturnValue(void 0);
+jest.spyOn(defaultServices.api, 'downloadReport').mockReturnValue(void 0);
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of('/grafanaUrl'));
 jest.spyOn(defaultServices.api, 'grafanaDatasourceUrl').mockReturnValue(of('/datasource'));
 jest.spyOn(defaultServices.api, 'stopRecording').mockReturnValue(of(true));
@@ -118,7 +118,7 @@ jest.spyOn(defaultServices.api, 'uploadActiveRecordingToGrafana').mockReturnValu
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
-jest.spyOn(defaultServices.reports, 'delete').mockReturnValue();
+jest.spyOn(defaultServices.reports, 'delete').mockReturnValue(void 0);
 
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
@@ -178,7 +178,13 @@ jest.spyOn(window, 'open').mockReturnValue(null);
 describe('<ActiveRecordingsTable />', () => {
   let preloadedState: RootState;
 
-  beforeEach(() => {
+  beforeAll(async () => {
+    await act(async () => {
+      resize(2400, 1080);
+    });
+  });
+
+  beforeEach(async () => {
     mockRecording.metadata.labels = mockRecordingLabels;
     mockRecording.state = RecordingState.RUNNING;
     history.go(-history.length);
@@ -214,13 +220,20 @@ describe('<ActiveRecordingsTable />', () => {
     };
   });
 
+  afterAll(() => {
+    resize(DEFAULT_DIMENSIONS[0], DEFAULT_DIMENSIONS[1]);
+  });
+
   afterEach(cleanup);
 
   it('renders the recording table correctly', async () => {
-    const { user } = renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
-      preloadState: preloadedState,
-      history: history,
-    });
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
 
     ['Create', 'Edit Labels', 'Stop', 'Delete'].map((text) => {
       const button = screen.getByText(text);
@@ -273,7 +286,7 @@ describe('<ActiveRecordingsTable />', () => {
       expect(label).toBeVisible();
     });
 
-    const actionIcon = screen.getByRole('button', { name: 'Actions' });
+    const actionIcon = within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions');
     expect(actionIcon).toBeInTheDocument();
     expect(actionIcon).toBeVisible();
   });
@@ -314,10 +327,13 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('displays the toolbar buttons', async () => {
-    renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
-      preloadState: preloadedState,
-      history: history,
-    });
+    renderWithServiceContextAndReduxStoreWithRouter(
+      <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
 
     expect(screen.getByText('Create')).toBeInTheDocument();
     expect(screen.getByText('Archive')).toBeInTheDocument();
@@ -327,10 +343,13 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('routes to the Create Flight Recording form when Create is clicked', async () => {
-    const { user } = renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
-      preloadState: preloadedState,
-      history: history,
-    });
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
 
     await user.click(screen.getByText('Create'));
 
@@ -338,10 +357,13 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('archives the selected recording when Archive is clicked', async () => {
-    const { user } = renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
-      preloadState: preloadedState,
-      history: history,
-    });
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
@@ -355,10 +377,13 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('stops the selected recording when Stop is clicked', async () => {
-    const { user } = renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
-      preloadState: preloadedState,
-      history: history,
-    });
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
@@ -372,10 +397,13 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('opens the labels drawer when Edit Labels is clicked', async () => {
-    const { user } = renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
-      preloadState: preloadedState,
-      history: history,
-    });
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
@@ -385,10 +413,13 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
-    const { user } = renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
-      preloadState: preloadedState,
-      history: history,
-    });
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
@@ -412,10 +443,13 @@ describe('<ActiveRecordingsTable />', () => {
   });
 
   it('deletes the recording when Delete is clicked w/o popup warning', async () => {
-    const { user } = renderWithServiceContextAndReduxStoreWithRouter(<ActiveRecordingsTable archiveEnabled={true} />, {
-      preloadState: preloadedState,
-      history: history,
-    });
+    const { user } = renderWithServiceContextAndReduxStoreWithRouter(
+      <ActiveRecordingsTable archiveEnabled={true} toolbarBreakReference={document.body} />,
+      {
+        preloadState: preloadedState,
+        history: history,
+      }
+    );
 
     const checkboxes = screen.getAllByRole('checkbox');
     const selectAllCheck = checkboxes[0];
@@ -436,7 +470,7 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     await act(async () => {
-      await user.click(screen.getByLabelText('Actions'));
+      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
     });
     await user.click(screen.getByText('Download Recording'));
 
@@ -453,7 +487,7 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     await act(async () => {
-      await user.click(screen.getByLabelText('Actions'));
+      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
     });
     await user.click(screen.getByText('View Report ...'));
 
@@ -469,7 +503,7 @@ describe('<ActiveRecordingsTable />', () => {
     });
 
     await act(async () => {
-      await user.click(screen.getByLabelText('Actions'));
+      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
     });
     await user.click(screen.getByText('View in Grafana ...'));
 

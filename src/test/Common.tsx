@@ -197,3 +197,12 @@ export const testTranslate = (key: string, ns = 'public'): string => {
   // if no translation is found, return the "test value" for debugging
   return t(key, 'i18next test value', { ns: ns });
 };
+
+// Default jsdom size 1024x728
+export const DEFAULT_DIMENSIONS = [1024, 728];
+
+export const resize = (width: number, height: number) => {
+  Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: width });
+  Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: height });
+  window.dispatchEvent(new Event('resize'));
+};
