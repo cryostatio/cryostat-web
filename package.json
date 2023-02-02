@@ -94,7 +94,7 @@
   "dependencies": {
     "@patternfly/react-core": "^4.267.6",
     "@patternfly/react-icons": "^4.93.0",
-    "@patternfly/react-styles": "^4.92.0",
+    "@patternfly/react-styles": "^4.92.6",
     "@patternfly/react-table": "^4.112.6",
     "@reduxjs/toolkit": "^1.9.2",
     "@types/lodash": "^4.14.191",

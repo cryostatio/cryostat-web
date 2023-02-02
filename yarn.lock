@@ -1020,10 +1020,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-styles@npm:^4.92.0, @patternfly/react-styles@npm:^4.92.3":
+"@patternfly/react-styles@npm:^4.92.3":
   version: 4.92.3
   resolution: "@patternfly/react-styles@npm:4.92.3"
   checksum: 98f3c89a446fbf2c14879e96d128af38fa29c251e9ed405827599b52e284dcc0afaa16986385cd1eea342d08629db52cf352d1c74e6a2eccd944b846e7b47d4c
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-styles@npm:^4.92.6":
+  version: 4.92.6
+  resolution: "@patternfly/react-styles@npm:4.92.6"
+  checksum: fef3317cf2c6f79afea3c1903372ac62a0e753b239f360c4c9896dbdbe98a2d72abd62e047cd29b6569a1c7d3654110cd3f3934a2268d01d1891855eeff2b72a
   languageName: node
   linkType: hard
 
@@ -3361,7 +3368,7 @@ __metadata:
   dependencies:
     "@patternfly/react-core": ^4.267.6
     "@patternfly/react-icons": ^4.93.0
-    "@patternfly/react-styles": ^4.92.0
+    "@patternfly/react-styles": ^4.92.6
     "@patternfly/react-table": ^4.112.6
     "@reduxjs/toolkit": ^1.9.2
     "@testing-library/dom": ^8.20.0
