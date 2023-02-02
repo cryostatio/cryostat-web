@@ -40,7 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Grid, GridItem } from '@patternfly/react-core';
+import { Grid, GridItem, gridSpans } from '@patternfly/react-core';
 import * as React from 'react';
 import { NoTargetSelected } from './NoTargetSelected';
 
@@ -69,11 +69,23 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
     [props.compactSelect]
   );
 
+  const responsiveSpans = React.useMemo(
+    () =>
+      ({
+        sm: 12,
+        md: 12,
+        lg: compact ? 6 : 12,
+        xl: compact ? 6 : 12,
+        xl2: compact ? 6 : 12,
+      } as Record<'sm' | 'md' | 'lg' | 'xl' | 'xl2', gridSpans>),
+    [compact]
+  );
+
   return (
     <>
       <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
         <Grid hasGutter>
-          <GridItem span={compact ? 6 : 12}>
+          <GridItem {...responsiveSpans}>
             <TargetSelect />
           </GridItem>
           <GridItem>{hasSelection ? props.children : <NoTargetSelected />}</GridItem>
