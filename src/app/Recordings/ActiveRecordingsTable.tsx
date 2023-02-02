@@ -63,6 +63,14 @@ import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
+  Dropdown,
+  KebabToggle,
+  OverflowMenu,
+  OverflowMenuContent,
+  OverflowMenuControl,
+  OverflowMenuDropdownItem,
+  OverflowMenuGroup,
+  OverflowMenuItem,
   Text,
   Timestamp,
   TimestampTooltipVariant,
@@ -93,6 +101,7 @@ const tableColumns: string[] = ['Name', 'Start Time', 'Duration', 'State', 'Labe
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
+  toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
 export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTableProps> = (props) => {
@@ -449,6 +458,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
         handleStopRecordings={handleStopRecordings}
         handleDeleteRecordings={handleDeleteRecordings}
         actionLoadings={actionLoadings}
+        toolbarBreakReference={props.toolbarBreakReference}
       />
     ),
     [
@@ -466,6 +476,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
       handleStopRecordings,
       handleDeleteRecordings,
       actionLoadings,
+      props.toolbarBreakReference,
     ]
   );
 
@@ -538,16 +549,20 @@ export interface ActiveRecordingsToolbarProps {
   handleStopRecordings: () => void;
   handleDeleteRecordings: () => void;
   actionLoadings: Record<ActiveActions, boolean>;
+  toolbarBreakReference?: HTMLElement | (() => HTMLElement);
 }
 
 const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
+  const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
 
   const deletionDialogsEnabled = React.useMemo(
     () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteActiveRecordings),
     [context.settings]
   );
+
+  const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
   const handleWarningModalClose = React.useCallback(() => {
     setWarningModalOpen(false);
@@ -593,59 +608,93 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
 
   const buttons = React.useMemo(() => {
     let arr = [
-      <Button key="create" variant="primary" onClick={props.handleCreateRecording}>
-        Create
-      </Button>,
+      {
+        default: (
+          <Button variant="primary" onClick={props.handleCreateRecording}>
+            Create
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Create'} isShared onClick={props.handleCreateRecording}>
+            Create
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Create',
+      },
     ];
     if (props.archiveEnabled) {
-      arr.push(
-        <Button
-          key="archive"
-          variant="secondary"
-          onClick={props.handleArchiveRecordings}
-          isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
-          {...actionLoadingProps['ARCHIVE']}
-        >
-          {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
-        </Button>
-      );
+      arr.push({
+        default: (
+          <Button
+            variant="secondary"
+            onClick={props.handleArchiveRecordings}
+            isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
+            {...actionLoadingProps['ARCHIVE']}
+          >
+            {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Archive'} isShared onClick={props.handleArchiveRecordings}>
+            {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Archive',
+      });
     }
     arr = [
       ...arr,
-      <Button
-        key="edit labels"
-        variant="secondary"
-        onClick={props.handleEditLabels}
-        isDisabled={!props.checkedIndices.length}
-      >
-        Edit Labels
-      </Button>,
-      <Button
-        key="stop"
-        variant="tertiary"
-        onClick={props.handleStopRecordings}
-        isDisabled={isStopDisabled}
-        {...actionLoadingProps['STOP']}
-      >
-        {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
-      </Button>,
-      <Button
-        key="delete"
-        variant="danger"
-        onClick={handleDeleteButton}
-        isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
-        {...actionLoadingProps['DELETE']}
-      >
-        {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
-      </Button>,
+      {
+        default: (
+          <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>
+            Edit Labels
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Edit Labels'} isShared onClick={props.handleEditLabels}>
+            Edit Labels
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Edit Labels',
+      },
+      {
+        default: (
+          <Button
+            variant="tertiary"
+            onClick={props.handleStopRecordings}
+            isDisabled={isStopDisabled}
+            {...actionLoadingProps['STOP']}
+          >
+            {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Stop'} isShared onClick={props.handleStopRecordings}>
+            {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Stop',
+      },
+      {
+        default: (
+          <Button
+            variant="danger"
+            onClick={handleDeleteButton}
+            isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+            {...actionLoadingProps['DELETE']}
+          >
+            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+          </Button>
+        ),
+        collapsed: (
+          <OverflowMenuDropdownItem key={'Delete'} isShared onClick={handleDeleteButton}>
+            {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}
+          </OverflowMenuDropdownItem>
+        ),
+        key: 'Delete',
+      },
     ];
-    return (
-      <>
-        {arr.map((btn, idx) => (
-          <ToolbarItem key={idx}>{btn}</ToolbarItem>
-        ))}
-      </>
-    );
+    return arr;
   }, [
     handleDeleteButton,
     isStopDisabled,
@@ -675,6 +724,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
       id="active-recordings-toolbar"
       aria-label="active-recording-toolbar"
       clearAllFilters={props.handleClearFilters}
+      isSticky
     >
       <ToolbarContent>
         <RecordingFilters
@@ -683,9 +733,38 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
           recordings={props.recordings}
           filters={props.targetRecordingFilters}
           updateFilters={props.updateFilters}
+          breakpoint={'xl'}
         />
         <ToolbarGroup style={{ alignSelf: 'start' }} variant="button-group">
-          {buttons}
+          <ToolbarItem variant="overflow-menu">
+            <OverflowMenu
+              breakpoint="lg"
+              breakpointReference={
+                props.toolbarBreakReference ||
+                (() => document.getElementById('active-recordings-toolbar') || document.body)
+              }
+            >
+              <OverflowMenuContent>
+                <OverflowMenuGroup groupType="button">
+                  {buttons.map((b) => (
+                    <OverflowMenuItem key={b.key}>{b.default}</OverflowMenuItem>
+                  ))}
+                </OverflowMenuGroup>
+              </OverflowMenuContent>
+              <OverflowMenuControl>
+                <Dropdown
+                  aria-label={'active-recording-actions'}
+                  isPlain
+                  isFlipEnabled
+                  onSelect={() => setActionToggleOpen(false)}
+                  menuAppendTo={document.body}
+                  isOpen={actionToggleOpen}
+                  toggle={<KebabToggle id="active-recording-actions-toggle-kebab" onToggle={handleActionToggle} />}
+                  dropdownItems={buttons.map((b) => b.collapsed)}
+                />
+              </OverflowMenuControl>
+            </OverflowMenu>
+          </ToolbarItem>
         </ToolbarGroup>
         {deleteActiveWarningModal}
       </ToolbarContent>

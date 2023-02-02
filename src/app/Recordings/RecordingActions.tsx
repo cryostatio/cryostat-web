@@ -136,6 +136,7 @@ export const RecordingActions: React.FunctionComponent<RecordingActionsProps> = 
   return (
     <Td isActionCell>
       <Dropdown
+        aria-label={`${props.recording.name}-actions`}
         menuAppendTo={document.body}
         position="right"
         direction="down"

@@ -69,6 +69,7 @@ import {
   Td,
   Tbody,
   ActionsColumn,
+  InnerScrollContainer,
 } from '@patternfly/react-table';
 import * as React from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
@@ -467,6 +468,17 @@ export const Rules: React.FC<RulesProps> = (_) => {
     <>
       <BreadcrumbPage pageTitle="Automated Rules">
         <Card>
+          <CardTitle>About Automated Rules</CardTitle>
+          <CardBody>
+            Automated Rules define a dynamic set of Target JVMs to connect to and start{' '}
+            <Link to="/recordings">Active Recordings</Link> using a specific <Link to="/events">Event Template</Link>{' '}
+            when the Automated Rule is created and when any new matching Target JVMs appear. If your Target JVM
+            connections require JMX Credentials, you can configure these in <Link to="/security">Security</Link>.
+            Automated Rules can be configured to periodically copy the contents of the Active Recording to{' '}
+            <Link to="/archives">Archives</Link> to ensure you always have up-to-date information about your JVMs.
+          </CardBody>
+        </Card>
+        <Card>
           <CardBody>
             <Toolbar id="event-templates-toolbar">
               <ToolbarContent>
@@ -499,18 +511,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
                 )}
               </ToolbarContent>
             </Toolbar>
-            {viewContent}
-          </CardBody>
-        </Card>
-        <Card>
-          <CardTitle>About Automated Rules</CardTitle>
-          <CardBody>
-            Automated Rules define a dynamic set of Target JVMs to connect to and start{' '}
-            <Link to="/recordings">Active Recordings</Link> using a specific <Link to="/events">Event Template</Link>{' '}
-            when the Automated Rule is created and when any new matching Target JVMs appear. If your Target JVM
-            connections require JMX Credentials, you can configure these in <Link to="/security">Security</Link>.
-            Automated Rules can be configured to periodically copy the contents of the Active Recording to{' '}
-            <Link to="/archives">Archives</Link> to ensure you always have up-to-date information about your JVMs.
+            <InnerScrollContainer>{viewContent}</InnerScrollContainer>
           </CardBody>
         </Card>
       </BreadcrumbPage>

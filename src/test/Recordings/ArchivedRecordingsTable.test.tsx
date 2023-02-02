@@ -53,7 +53,7 @@ import { screen, within, cleanup } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of, Subject } from 'rxjs';
-import { renderWithServiceContextAndReduxStoreWithRouter } from '../Common';
+import { DEFAULT_DIMENSIONS, renderWithServiceContextAndReduxStoreWithRouter, resize } from '../Common';
 
 const mockConnectUrl = 'service:jmx:rmi://someUrl';
 const mockTarget = { connectUrl: mockConnectUrl, alias: 'fooTarget' };
@@ -169,6 +169,13 @@ jest.spyOn(window, 'open').mockReturnValue(null);
 
 describe('<ArchivedRecordingsTable />', () => {
   let preloadedState: RootState;
+
+  beforeAll(async () => {
+    await tlr.act(async () => {
+      resize(2400, 1080);
+    });
+  });
+
   beforeEach(() => {
     history.go(-history.length);
     preloadedState = {
@@ -205,9 +212,18 @@ describe('<ArchivedRecordingsTable />', () => {
 
   afterEach(cleanup);
 
+  afterAll(() => {
+    resize(DEFAULT_DIMENSIONS[0], DEFAULT_DIMENSIONS[1]);
+  });
+
   it('renders the recording table correctly', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+      <ArchivedRecordingsTable
+        target={of(mockTarget)}
+        isUploadsTable={false}
+        isNestedTable={false}
+        toolbarBreakReference={document.body}
+      />,
       {
         preloadState: preloadedState,
         history: history,
@@ -247,7 +263,7 @@ describe('<ArchivedRecordingsTable />', () => {
       expect(label).toBeVisible();
     });
 
-    const actionIcon = screen.getByRole('button', { name: 'Actions' });
+    const actionIcon = within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions');
     expect(actionIcon).toBeInTheDocument();
     expect(actionIcon).toBeVisible();
 
@@ -293,7 +309,12 @@ describe('<ArchivedRecordingsTable />', () => {
 
   it('displays the toolbar buttons', async () => {
     renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+      <ArchivedRecordingsTable
+        target={of(mockTarget)}
+        isUploadsTable={false}
+        isNestedTable={false}
+        toolbarBreakReference={document.body}
+      />,
       {
         preloadState: preloadedState,
         history: history,
@@ -306,7 +327,12 @@ describe('<ArchivedRecordingsTable />', () => {
 
   it('opens the labels drawer when Edit Labels is clicked', async () => {
     const { user } = renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+      <ArchivedRecordingsTable
+        target={of(mockTarget)}
+        isUploadsTable={false}
+        isNestedTable={false}
+        toolbarBreakReference={document.body}
+      />,
       {
         preloadState: preloadedState,
         history: history,
@@ -322,7 +348,12 @@ describe('<ArchivedRecordingsTable />', () => {
 
   it('shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete', async () => {
     const { user } = renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+      <ArchivedRecordingsTable
+        target={of(mockTarget)}
+        isUploadsTable={false}
+        isNestedTable={false}
+        toolbarBreakReference={document.body}
+      />,
       {
         preloadState: preloadedState,
         history: history,
@@ -351,7 +382,12 @@ describe('<ArchivedRecordingsTable />', () => {
 
   it('deletes the recording when Delete is clicked w/o popup warning', async () => {
     const { user } = renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockTarget)} isUploadsTable={false} isNestedTable={false} />,
+      <ArchivedRecordingsTable
+        target={of(mockTarget)}
+        isUploadsTable={false}
+        isNestedTable={false}
+        toolbarBreakReference={document.body}
+      />,
       {
         preloadState: preloadedState,
         history: history,
@@ -380,7 +416,7 @@ describe('<ArchivedRecordingsTable />', () => {
     );
 
     await tlr.act(async () => {
-      await user.click(screen.getByLabelText('Actions'));
+      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
     });
     await user.click(screen.getByText('Download Recording'));
 
@@ -400,7 +436,7 @@ describe('<ArchivedRecordingsTable />', () => {
     );
 
     await tlr.act(async () => {
-      await user.click(screen.getByLabelText('Actions'));
+      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
     });
     await user.click(screen.getByText('View Report ...'));
 
@@ -419,7 +455,7 @@ describe('<ArchivedRecordingsTable />', () => {
     );
 
     await tlr.act(async () => {
-      await user.click(screen.getByLabelText('Actions'));
+      await user.click(within(screen.getByLabelText(`${mockRecording.name}-actions`)).getByLabelText('Actions'));
     });
     await user.click(screen.getByText('View in Grafana ...'));
 
@@ -430,7 +466,12 @@ describe('<ArchivedRecordingsTable />', () => {
 
   it('renders correctly the Uploads table', async () => {
     const { user } = renderWithServiceContextAndReduxStoreWithRouter(
-      <ArchivedRecordingsTable target={of(mockUploadsTarget)} isUploadsTable={true} isNestedTable={false} />,
+      <ArchivedRecordingsTable
+        target={of(mockUploadsTarget)}
+        isUploadsTable={true}
+        isNestedTable={false}
+        toolbarBreakReference={document.body}
+      />,
       {
         preloadState: preloadedState,
         history: history,

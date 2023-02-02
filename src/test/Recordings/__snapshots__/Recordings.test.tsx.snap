@@ -53,7 +53,6 @@ exports[`<Recordings /> renders correctly 1`] = `
             role="presentation"
           >
             <button
-              aria-controls="pf-tab-section-1-archived-recordings"
               aria-selected={false}
               className="pf-c-tabs__link"
               data-ouia-component-type="PF4/TabButton"
@@ -84,20 +83,6 @@ exports[`<Recordings /> renders correctly 1`] = `
       >
         <div>
           Active Recordings Table
-        </div>
-      </section>
-      <section
-        aria-labelledby="pf-tab-1-archived-recordings"
-        className="pf-c-tab-content"
-        data-ouia-component-type="PF4/TabContent"
-        data-ouia-safe={true}
-        hidden={true}
-        id="pf-tab-section-1-archived-recordings"
-        role="tabpanel"
-        tabIndex={0}
-      >
-        <div>
-          Archived Recordings Table
         </div>
       </section>
     </div>
