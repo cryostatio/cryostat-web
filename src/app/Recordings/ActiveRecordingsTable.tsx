@@ -738,7 +738,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
         <ToolbarGroup style={{ alignSelf: 'start' }} variant="button-group">
           <ToolbarItem variant="overflow-menu">
             <OverflowMenu
-              breakpoint="xl"
+              breakpoint="lg"
               breakpointReference={
                 props.toolbarBreakReference ||
                 (() => document.getElementById('active-recordings-toolbar') || document.body)
