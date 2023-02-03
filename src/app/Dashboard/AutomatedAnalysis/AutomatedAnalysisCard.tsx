@@ -772,9 +772,9 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     >
       <CardExpandableContent>
         <Stack hasGutter>
-          <StackItem>{errorMessage ? null : toolbar}</StackItem>
+          <StackItem>{isLoading || errorMessage ? null : toolbar}</StackItem>
           <StackItem className="automated-analysis-score-filter-stack-item">
-            {errorMessage ? null : <AutomatedAnalysisScoreFilter />}
+            {isLoading || errorMessage ? null : <AutomatedAnalysisScoreFilter />}
           </StackItem>
           <StackItem>
             <CardBody isFilled={true}>

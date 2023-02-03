@@ -144,11 +144,11 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-          <AutomatedAnalysisConfigForm onCreate={onCreate} isSettingsForm={false} />
+          <AutomatedAnalysisConfigForm isSettingsForm={false} />
         </DrawerPanelBody>
       </DrawerPanelContent>
     );
-  }, [isExpanded, onDrawerClose, onCreate]);
+  }, [isExpanded, onDrawerClose]);
 
   const dropdownItems = React.useMemo(
     () => [
