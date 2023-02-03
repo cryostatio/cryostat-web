@@ -38,13 +38,27 @@
 
 import { ApiService, RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { NO_TARGET, TargetService } from '@app/Shared/Services/Target.service';
-import { BehaviorSubject, combineLatest, concatMap, map, Observable, of, ReplaySubject, tap, timer } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  concatMap,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  Observable,
+  of,
+  ReplaySubject,
+  tap,
+  timer,
+} from 'rxjs';
 
 const RECORDING_NAME = 'dashboard_metrics';
 
 export class ChartController {
   private readonly _timer$ = new ReplaySubject<number>();
   private readonly _hasRecording$ = new ReplaySubject<boolean>();
+  private readonly _refCount$ = new BehaviorSubject<number>(0);
 
   constructor(private readonly _api: ApiService, private readonly _target: TargetService) {
     // TODO extract this interval to a configurable setting
@@ -86,13 +100,24 @@ export class ChartController {
       )
       .subscribe(this._hasRecording$);
 
-    combineLatest([this._hasRecording$, this._timer$]).subscribe((parts) => {
+    this._target
+      .target()
+      .pipe(filter((v) => v !== NO_TARGET))
+      .subscribe((_) => this._timer$.next(+Date.now()));
+
+    combineLatest([this.hasActiveRecording(), this._refCount$, this._timer$]).subscribe((parts) => {
       const hasRecording = parts[0];
-      if (!hasRecording) {
+      const subscribers = parts[1];
+      if (!hasRecording || subscribers === 0) {
         return;
       }
-      this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((resp) => console.log({ resp }));
+      console.log('uploading to jfr-datasource...');
+      this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((_) => {
+        /* do nothing */
+      });
     });
+
+    this._refCount$.subscribe((count) => console.log('card controller subscribers', count));
   }
 
   refresh(): Observable<number> {
@@ -101,12 +126,18 @@ export class ChartController {
     // global timer instance. This ensures charts refresh immediately once
     // loaded, and then all refresh in sync together later.
     const s = new BehaviorSubject(+Date.now());
-    this._timer$.subscribe((_) => s.next(+Date.now()));
-    return s.asObservable();
+    const subscription = this._timer$.subscribe((_) => s.next(+Date.now()));
+    this._refCount$.next(this._refCount$.value + 1);
+    return s.asObservable().pipe(
+      finalize(() => {
+        subscription.unsubscribe();
+        this._refCount$.next(this._refCount$.value - 1);
+      })
+    );
   }
 
   hasActiveRecording(): Observable<boolean> {
-    return this._hasRecording$.asObservable();
+    return this._hasRecording$.asObservable().pipe(distinctUntilChanged());
   }
 
   startRecording(): Observable<boolean> {
