@@ -297,7 +297,9 @@ export class ApiService {
     if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
       form.append('duration', String(recordingAttributes.duration));
     }
-    form.append('archiveOnStop', String(recordingAttributes.archiveOnStop));
+    if (recordingAttributes.archiveOnStop != null) {
+      form.append('archiveOnStop', String(recordingAttributes.archiveOnStop));
+    }
     if (recordingAttributes.options) {
       if (recordingAttributes.options.toDisk != null) {
         form.append('toDisk', String(recordingAttributes.options.toDisk));

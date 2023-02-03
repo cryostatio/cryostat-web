@@ -51,6 +51,7 @@ import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { ChartCardDescriptor } from './Charts/ChartCard';
+import { ChartContext, defaultControllers } from './Charts/ChartContext';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 
@@ -281,17 +282,19 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
         {cardConfigs.map((cfg, idx) => (
           <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
             <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-              {React.createElement(getConfigByName(cfg.name).component, {
-                ...cfg.props,
-                dashboardId: idx,
-                actions: [
-                  <DashboardCardActionMenu
-                    key={`${cfg.name}-actions`}
-                    onRemove={() => handleRemove(idx)}
-                    onResetSize={() => handleResetSize(idx)}
-                  />,
-                ],
-              })}
+              <ChartContext.Provider value={defaultControllers}>
+                {React.createElement(getConfigByName(cfg.name).component, {
+                  ...cfg.props,
+                  dashboardId: idx,
+                  actions: [
+                    <DashboardCardActionMenu
+                      key={`${cfg.name}-actions`}
+                      onRemove={() => handleRemove(idx)}
+                      onResetSize={() => handleResetSize(idx)}
+                    />,
+                  ],
+                })}
+              </ChartContext.Provider>
             </GridItem>
           </FeatureFlag>
         ))}

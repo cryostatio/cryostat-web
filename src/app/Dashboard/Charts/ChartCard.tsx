@@ -38,10 +38,12 @@
 
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { CardActions, CardHeader } from '@patternfly/react-core';
+import { Button, CardActions, CardHeader, Text } from '@patternfly/react-core';
 import * as React from 'react';
+import { combineLatest } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
+import { ChartContext } from './ChartContext';
 
 export interface ChartCardProps extends DashboardCardProps {
   theme: string;
@@ -91,13 +93,35 @@ function getHeight(kind: string): number {
 }
 
 export const ChartCard: React.FC<ChartCardProps> = (props) => {
-  const context = React.useContext(ServiceContext);
+  const serviceContext = React.useContext(ServiceContext);
+  const controllerContext = React.useContext(ChartContext);
   const addSubscription = useSubscriptions();
-  const [dashboardUrl, setDashboardUrl] = React.useState('');
+  const [hasRecording, setHasRecording] = React.useState(false);
+  const [chartSrc, setChartSrc] = React.useState('');
 
   React.useEffect(() => {
-    addSubscription(context.api.grafanaDashboardUrl().subscribe(setDashboardUrl));
-  }, [addSubscription, context, setDashboardUrl]);
+    addSubscription(controllerContext.controller.hasActiveRecording().subscribe(setHasRecording));
+  }, [addSubscription, controllerContext, setHasRecording]);
+
+  React.useEffect(() => {
+    addSubscription(
+      combineLatest([serviceContext.api.grafanaDashboardUrl(), controllerContext.controller.refresh()]).subscribe(
+        (parts) => {
+          const dashboardUrl = parts[0];
+          const now = parts[1];
+          if (!dashboardUrl) {
+            return;
+          }
+          const u = new URL('/d-solo/main', dashboardUrl);
+          u.searchParams.append('theme', props.theme);
+          u.searchParams.append('panelId', String(kindToId(props.chartKind)));
+          u.searchParams.append('to', String(now));
+          u.searchParams.append('from', String(now - props.duration * 1000));
+          setChartSrc(u.toString());
+        }
+      )
+    );
+  }, [addSubscription, serviceContext.api, controllerContext, props.theme, props.chartKind, props.duration]);
 
   const cardStyle = React.useMemo(() => {
     return {
@@ -105,18 +129,9 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     };
   }, [props.chartKind]);
 
-  const chartSrc = React.useMemo(() => {
-    if (!dashboardUrl) {
-      return '';
-    }
-    const now = Date.now();
-    const u = new URL('/d-solo/main', dashboardUrl);
-    u.searchParams.append('theme', props.theme);
-    u.searchParams.append('panelId', String(kindToId(props.chartKind)));
-    u.searchParams.append('to', String(+now));
-    u.searchParams.append('from', String(now - props.duration * 1000));
-    return u.toString();
-  }, [dashboardUrl, props.theme, props.chartKind, props.duration]);
+  const handleCreateRecording = React.useCallback(() => {
+    addSubscription(controllerContext.controller.startRecording().subscribe(setHasRecording));
+  }, [addSubscription, controllerContext]);
 
   return (
     <>
@@ -132,7 +147,14 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
           </CardHeader>
         }
       >
-        <iframe style={cardStyle} src={chartSrc} />
+        {hasRecording ? (
+          <iframe style={cardStyle} src={chartSrc} />
+        ) : (
+          <>
+            <Text>No source recordings available</Text>
+            <Button onClick={handleCreateRecording}>Create</Button>
+          </>
+        )}
       </DashboardCard>
     </>
   );
