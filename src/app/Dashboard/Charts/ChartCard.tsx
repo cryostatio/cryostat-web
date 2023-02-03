@@ -95,14 +95,9 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const addSubscription = useSubscriptions();
   const [dashboardUrl, setDashboardUrl] = React.useState('');
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     addSubscription(context.api.grafanaDashboardUrl().subscribe(setDashboardUrl));
   }, [addSubscription, context, setDashboardUrl]);
-
-  const timestamps = React.useMemo(() => {
-    const now = Date.now();
-    return [now, now - props.duration * 1000];
-  }, [props.duration]);
 
   const cardStyle = React.useMemo(() => {
     return {
@@ -110,12 +105,25 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     };
   }, [props.chartKind]);
 
+  const chartSrc = React.useMemo(() => {
+    if (!dashboardUrl) {
+      return '';
+    }
+    const now = Date.now();
+    const u = new URL('/d-solo/main', dashboardUrl);
+    u.searchParams.append('theme', props.theme);
+    u.searchParams.append('panelId', String(kindToId(props.chartKind)));
+    u.searchParams.append('to', String(+now));
+    u.searchParams.append('from', String(now - props.duration * 1000));
+    return u.toString();
+  }, [dashboardUrl, props.theme, props.chartKind, props.duration]);
+
   return (
     <>
       <DashboardCard
         dashboardId={props.dashboardId}
         cardSizes={ChartCardSizes}
-        id="automated-analysis-card"
+        id={props.chartKind + '-chart-card'}
         isCompact
         style={cardStyle}
         cardHeader={
@@ -124,12 +132,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
           </CardHeader>
         }
       >
-        <iframe
-          style={cardStyle}
-          src={`${dashboardUrl}/d-solo/main?orgId=1&theme=${props.theme}&panelId=${kindToId(props.chartKind)}&to=${
-            timestamps[0]
-          }&from=${timestamps[1]}`}
-        />
+        <iframe style={cardStyle} src={chartSrc} />
       </DashboardCard>
     </>
   );
