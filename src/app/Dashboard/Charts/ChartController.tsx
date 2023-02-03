@@ -42,7 +42,6 @@ import {
   BehaviorSubject,
   combineLatest,
   concatMap,
-  distinctUntilChanged,
   filter,
   finalize,
   map,
@@ -94,11 +93,12 @@ export class ChartController {
         }`,
                 { connectUrl: target.connectUrl }
               )
+              // TODO error handling
               .pipe(map((resp) => resp.data.targetNodes[0].recordings.active.aggregate.count > 0))
           );
         })
       )
-      .subscribe(this._hasRecording$);
+      .subscribe((v) => this._hasRecording$.next(v));
 
     this._target
       .target()
@@ -111,13 +111,10 @@ export class ChartController {
       if (!hasRecording || subscribers === 0) {
         return;
       }
-      console.log('uploading to jfr-datasource...');
       this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((_) => {
         /* do nothing */
       });
     });
-
-    this._refCount$.subscribe((count) => console.log('card controller subscribers', count));
   }
 
   refresh(): Observable<number> {
@@ -137,7 +134,7 @@ export class ChartController {
   }
 
   hasActiveRecording(): Observable<boolean> {
-    return this._hasRecording$.asObservable().pipe(distinctUntilChanged());
+    return this._hasRecording$.asObservable();
   }
 
   startRecording(): Observable<boolean> {
