@@ -20,12 +20,6 @@ module.exports = merge(common('development'), {
   },
   plugins: [
     new DotenvPlugin(),
-    new ESLintPlugin({
-      cache: true,
-      cacheLocation: path.resolve(__dirname, '.eslintcache'),
-      extensions: ['js', 'jsx', 'ts', 'tsx'],
-      exclude: ['node_modules', 'dist'],
-    }),
   ],
   module: {
     rules: [
@@ -47,3 +41,13 @@ module.exports = merge(common('development'), {
     ]
   }
 });
+
+if (process.env.ESLINT_ENABLE === 'true') {
+  console.log('ESLint webpack-plugin enabled...');
+  module.exports.plugins.push(new ESLintPlugin({
+    cache: true,
+    cacheLocation: path.resolve(__dirname, '.eslintcache'),
+    extensions: ['js', 'jsx', 'ts', 'tsx'],
+    exclude: ['node_modules', 'dist'],
+  }));
+}
