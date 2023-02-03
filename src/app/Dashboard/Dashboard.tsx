@@ -50,6 +50,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import { ChartCardDescriptor } from './Charts/ChartCard';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 
@@ -225,7 +226,12 @@ export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
 export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
   featureLevel = FeatureLevel.DEVELOPMENT
 ) => {
-  const cards = [AutomatedAnalysisCardDescriptor, NonePlaceholderCardDescriptor, AllPlaceholderCardDescriptor];
+  const cards = [
+    AutomatedAnalysisCardDescriptor,
+    ChartCardDescriptor,
+    NonePlaceholderCardDescriptor,
+    AllPlaceholderCardDescriptor,
+  ];
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };
 
