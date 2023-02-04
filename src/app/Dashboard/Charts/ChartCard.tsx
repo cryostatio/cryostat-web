@@ -142,7 +142,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         isCompact
         style={cardStyle}
         cardHeader={
-          <CardHeader style={{ marginBottom: -44 }}>
+          <CardHeader style={{ marginBottom: '-2.8em' }}>
             <CardActions>{props.actions || []}</CardActions>
           </CardHeader>
         }
