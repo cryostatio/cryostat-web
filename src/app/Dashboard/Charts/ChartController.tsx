@@ -61,7 +61,7 @@ export class ChartController {
 
   constructor(private readonly _api: ApiService, private readonly _target: TargetService) {
     // TODO extract this interval to a configurable setting
-    timer(0, 30_000)
+    timer(0, 60_000)
       .pipe(map((_) => +Date.now()))
       .subscribe(this._timer$);
 
@@ -131,6 +131,10 @@ export class ChartController {
         this._refCount$.next(this._refCount$.value - 1);
       })
     );
+  }
+
+  requestRefresh(): void {
+    this._timer$.next(+Date.now());
   }
 
   hasActiveRecording(): Observable<boolean> {

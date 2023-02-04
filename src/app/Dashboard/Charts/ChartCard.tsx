@@ -39,6 +39,7 @@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
+import { ExternalLinkAltIcon, RedoIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
@@ -103,7 +104,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     addSubscription(controllerContext.controller.hasActiveRecording().subscribe(setHasRecording));
   }, [addSubscription, controllerContext, setHasRecording]);
 
-  React.useEffect(() => {
+  const resetIFrame = React.useCallback(() => {
     addSubscription(
       combineLatest([serviceContext.api.grafanaDashboardUrl(), controllerContext.controller.refresh()]).subscribe(
         (parts) => {
@@ -123,6 +124,19 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     );
   }, [addSubscription, serviceContext.api, controllerContext, props.theme, props.chartKind, props.duration]);
 
+  React.useEffect(() => {
+    resetIFrame();
+  }, [resetIFrame]);
+
+  const refresh = React.useCallback(() => {
+    resetIFrame();
+    controllerContext.controller.requestRefresh();
+  }, [resetIFrame, controllerContext]);
+
+  const popout = React.useCallback(() => {
+    window.open(chartSrc, '_blank');
+  }, [chartSrc]);
+
   const cardStyle = React.useMemo(() => {
     return {
       height: getHeight(props.chartKind),
@@ -132,6 +146,32 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const handleCreateRecording = React.useCallback(() => {
     addSubscription(controllerContext.controller.startRecording().subscribe(setHasRecording));
   }, [addSubscription, controllerContext]);
+
+  const popoutButton = React.useMemo(() => {
+    return (
+      <>
+        <Button
+          aria-label={`Pop out ${props.chartKind} chart`}
+          onClick={popout}
+          variant="plain"
+          icon={<ExternalLinkAltIcon />}
+        />
+      </>
+    );
+  }, [props.chartKind, popout]);
+
+  const refreshButton = React.useMemo(() => {
+    return (
+      <>
+        <Button aria-label={`Refresh ${props.chartKind} chart`} onClick={refresh} variant="plain" icon={<RedoIcon />} />
+      </>
+    );
+  }, [props.chartKind, refresh]);
+
+  const actions = React.useMemo(() => {
+    const a = [refreshButton, popoutButton];
+    return a.concat(...(props.actions || []));
+  }, [props.actions, refreshButton, popoutButton]);
 
   return (
     <>
@@ -143,7 +183,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         style={cardStyle}
         cardHeader={
           <CardHeader style={{ marginBottom: '-2.8em' }}>
-            <CardActions>{props.actions || []}</CardActions>
+            <CardActions>{actions}</CardActions>
           </CardHeader>
         }
       >
