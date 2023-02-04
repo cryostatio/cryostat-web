@@ -61,7 +61,7 @@ export class ChartController {
 
   constructor(private readonly _api: ApiService, private readonly _target: TargetService) {
     // TODO extract this interval to a configurable setting
-    timer(0, 15_000)
+    timer(0, 30_000)
       .pipe(map((_) => +Date.now()))
       .subscribe(this._timer$);
 
