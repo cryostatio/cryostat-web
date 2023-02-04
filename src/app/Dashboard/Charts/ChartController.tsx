@@ -117,6 +117,10 @@ export class ChartController {
     });
   }
 
+  // TODO maybe invert this control. The controller refcounts how many subscribers and ignores
+  // the upload action if there are no current subscribers. Maybe instead the subscribers should
+  // independently request refreshes to be performed, and the controller can debounce/throttle
+  // these requests and determine when to actually do them.
   refresh(): Observable<number> {
     // return a BehaviorSubject that immediately emits the current timestamp,
     // and is subsequently updated along with all others according to the
