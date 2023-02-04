@@ -38,7 +38,7 @@
 
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, CardActions, CardHeader, Text } from '@patternfly/react-core';
+import { Button, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { combineLatest } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
@@ -147,14 +147,22 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
           </CardHeader>
         }
       >
-        {hasRecording ? (
-          <iframe style={cardStyle} src={chartSrc} />
-        ) : (
-          <>
-            <Text>No source recordings available</Text>
-            <Button onClick={handleCreateRecording}>Create</Button>
-          </>
-        )}
+        <CardBody>
+          {hasRecording ? (
+            <iframe style={{ height: '100%', width: '100%' }} src={chartSrc} />
+          ) : (
+            <>
+              <Stack>
+                <StackItem>
+                  <Text>No source recordings available</Text>
+                </StackItem>
+                <StackItem>
+                  <Button onClick={handleCreateRecording}>Create</Button>
+                </StackItem>
+              </Stack>
+            </>
+          )}
+        </CardBody>
       </DashboardCard>
     </>
   );
