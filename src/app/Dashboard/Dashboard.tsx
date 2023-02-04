@@ -84,6 +84,7 @@ export interface PropControl {
   kind: 'boolean' | 'number' | 'string' | 'text' | 'select';
   values?: any[] | Observable<any>;
   defaultValue: any;
+  extras?: any;
 }
 
 export interface DashboardProps {}

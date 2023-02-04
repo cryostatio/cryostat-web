@@ -301,6 +301,8 @@ const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
               onChange={handleNumeric(ctrl.key)}
               onPlus={handleNumericStep(ctrl.key, 1)}
               onMinus={handleNumericStep(ctrl.key, -1)}
+              min={ctrl?.extras?.min}
+              max={ctrl?.extras?.max}
             />
           );
           break;

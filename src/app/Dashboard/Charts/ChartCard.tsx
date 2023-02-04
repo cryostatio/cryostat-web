@@ -41,7 +41,7 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
 import { ExternalLinkAltIcon, RedoIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { combineLatest } from 'rxjs';
+import { combineLatest, interval } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import { ChartContext } from './ChartContext';
@@ -50,6 +50,7 @@ export interface ChartCardProps extends DashboardCardProps {
   theme: string;
   chartKind: string;
   duration: number;
+  period: number;
 }
 
 // TODO these need to be localized
@@ -124,14 +125,15 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     );
   }, [addSubscription, serviceContext.api, controllerContext, props.theme, props.chartKind, props.duration]);
 
-  React.useEffect(() => {
-    resetIFrame();
-  }, [resetIFrame]);
-
   const refresh = React.useCallback(() => {
     resetIFrame();
     controllerContext.controller.requestRefresh();
   }, [resetIFrame, controllerContext]);
+
+  React.useEffect(() => {
+    refresh();
+    addSubscription(interval(props.period * 1000).subscribe(() => refresh()));
+  }, [addSubscription, props.period, refresh]);
 
   const popout = React.useCallback(() => {
     window.open(chartSrc, '_blank');
@@ -247,11 +249,26 @@ export const ChartCardDescriptor: DashboardCardDescriptor = {
       kind: 'select',
     },
     {
-      name: 'Duration',
+      name: 'Data Window',
       key: 'duration',
-      defaultValue: 60,
+      defaultValue: 120,
       description: 'The data window width in seconds.',
       kind: 'number',
+      extras: {
+        min: 30,
+        max: 300,
+      },
+    },
+    {
+      name: 'Refresh Period',
+      key: 'period',
+      defaultValue: 60,
+      description: 'The chart refresh period in seconds.',
+      kind: 'number',
+      extras: {
+        min: 30,
+        max: 120,
+      },
     },
   ],
 };

@@ -38,33 +38,16 @@
 
 import { ApiService, RecordingAttributes } from '@app/Shared/Services/Api.service';
 import { NO_TARGET, TargetService } from '@app/Shared/Services/Target.service';
-import {
-  BehaviorSubject,
-  combineLatest,
-  concatMap,
-  filter,
-  finalize,
-  map,
-  Observable,
-  of,
-  ReplaySubject,
-  tap,
-  timer,
-} from 'rxjs';
+import { combineLatest, concatMap, filter, map, Observable, of, ReplaySubject, Subject, tap, throttleTime } from 'rxjs';
 
-const RECORDING_NAME = 'dashboard_metrics';
+const RECORDING_NAME = 'dashboard-metrics';
 
 export class ChartController {
-  private readonly _timer$ = new ReplaySubject<number>();
+  private readonly _updateRequests$ = new Subject<void>();
+  private readonly _updates$ = new Subject<number>();
   private readonly _hasRecording$ = new ReplaySubject<boolean>();
-  private readonly _refCount$ = new BehaviorSubject<number>(0);
 
   constructor(private readonly _api: ApiService, private readonly _target: TargetService) {
-    // TODO extract this interval to a configurable setting
-    timer(0, 60_000)
-      .pipe(map((_) => +Date.now()))
-      .subscribe(this._timer$);
-
     this._target
       .target()
       .pipe(
@@ -100,45 +83,26 @@ export class ChartController {
       )
       .subscribe((v) => this._hasRecording$.next(v));
 
+    this._updateRequests$.pipe(throttleTime(10_000)).subscribe((_) => this._updates$.next(+Date.now()));
+
     this._target
       .target()
       .pipe(filter((v) => v !== NO_TARGET))
-      .subscribe((_) => this._timer$.next(+Date.now()));
+      .subscribe((_) => this._updates$.next(+Date.now()));
 
-    combineLatest([this.hasActiveRecording(), this._refCount$, this._timer$]).subscribe((parts) => {
-      const hasRecording = parts[0];
-      const subscribers = parts[1];
-      if (!hasRecording || subscribers === 0) {
-        return;
-      }
+    combineLatest([this.hasActiveRecording().pipe(filter((v) => v)), this._updates$]).subscribe((_) => {
       this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((_) => {
         /* do nothing */
       });
     });
   }
 
-  // TODO maybe invert this control. The controller refcounts how many subscribers and ignores
-  // the upload action if there are no current subscribers. Maybe instead the subscribers should
-  // independently request refreshes to be performed, and the controller can debounce/throttle
-  // these requests and determine when to actually do them.
   refresh(): Observable<number> {
-    // return a BehaviorSubject that immediately emits the current timestamp,
-    // and is subsequently updated along with all others according to the
-    // global timer instance. This ensures charts refresh immediately once
-    // loaded, and then all refresh in sync together later.
-    const s = new BehaviorSubject(+Date.now());
-    const subscription = this._timer$.subscribe((_) => s.next(+Date.now()));
-    this._refCount$.next(this._refCount$.value + 1);
-    return s.asObservable().pipe(
-      finalize(() => {
-        subscription.unsubscribe();
-        this._refCount$.next(this._refCount$.value - 1);
-      })
-    );
+    return this._updates$.asObservable();
   }
 
   requestRefresh(): void {
-    this._timer$.next(+Date.now());
+    this._updateRequests$.next();
   }
 
   hasActiveRecording(): Observable<boolean> {
@@ -148,15 +112,20 @@ export class ChartController {
   startRecording(): Observable<boolean> {
     const attrs: RecordingAttributes = {
       name: RECORDING_NAME,
-      events: 'template=Profiling,type=TARGET', // TODO make this configurable like for the automated analysis card
+      // TODO make this configurable like for the automated analysis card
+      events: 'template=Profiling,type=TARGET',
       options: {
         toDisk: true,
-        maxAge: 60, // TODO get this from settings
+        // TODO get this from settings? this should probably somehow be the maximum data window width of
+        // all configured dashboard cards. But how to handle when a new card is added with a new maximum?
+        // Restart recording?
+        maxAge: 60,
       },
     };
     return this._api.createRecording(attrs).pipe(
       map((resp) => resp?.ok || false),
-      tap((success) => this._hasRecording$.next(success))
+      tap((success) => this._hasRecording$.next(success)),
+      tap((_) => this._updates$.next(+Date.now()))
     );
   }
 }
