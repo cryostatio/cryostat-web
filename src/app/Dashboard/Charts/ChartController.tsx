@@ -56,6 +56,7 @@ import {
 
 export const RECORDING_NAME = 'dashboard_metrics';
 
+// TODO make this configurable
 export const MIN_REFRESH = 10_000;
 
 export class ChartController {

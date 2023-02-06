@@ -127,21 +127,20 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     addSubscription(serviceContext.api.grafanaDashboardUrl().subscribe(setDashboardUrl));
   }, [addSubscription, serviceContext, setDashboardUrl]);
 
-  const resetIFrame = React.useCallback(
-    (now: number) => {
-      if (!dashboardUrl) {
-        return;
-      }
-      setRefreshDisabled(true);
-      const u = new URL('/d-solo/main', dashboardUrl);
-      u.searchParams.append('theme', props.theme);
-      u.searchParams.append('panelId', String(kindToId(props.chartKind)));
-      u.searchParams.append('to', String(now));
-      u.searchParams.append('from', String(now - props.duration * 1000));
-      setChartSrc(u.toString());
-    },
-    [setRefreshDisabled, dashboardUrl, setChartSrc, props.theme, props.chartKind, props.duration]
-  );
+  React.useEffect(() => {
+    if (!dashboardUrl) {
+      return;
+    }
+    setRefreshDisabled(true);
+    const u = new URL('/d-solo/main', dashboardUrl);
+    u.searchParams.append('theme', props.theme);
+    u.searchParams.append('panelId', String(kindToId(props.chartKind)));
+    u.searchParams.append('to', 'now');
+    u.searchParams.append('from', `now-${props.duration}s`);
+    // TODO make this configurable
+    u.searchParams.append('refresh', '5s');
+    setChartSrc(u.toString());
+  }, [dashboardUrl, setRefreshDisabled, props.theme, props.chartKind, props.duration, setChartSrc]);
 
   const handleOnLoad = React.useCallback(() => {
     addSubscription(
@@ -152,8 +151,12 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [addSubscription, setRefreshDisabled]);
 
   React.useEffect(() => {
-    addSubscription(controllerContext.controller.refresh().subscribe(resetIFrame));
-  }, [addSubscription, controllerContext, resetIFrame]);
+    addSubscription(
+      controllerContext.controller.refresh().subscribe((_) => {
+        /* do nothing */
+      })
+    );
+  }, [addSubscription, controllerContext]);
 
   const refresh = React.useCallback(() => {
     controllerContext.controller.requestRefresh();
@@ -340,11 +343,11 @@ export const ChartCardDescriptor: DashboardCardDescriptor = {
     {
       name: 'Refresh Period',
       key: 'period',
-      defaultValue: 60,
+      defaultValue: 10,
       description: 'The chart refresh period in seconds.',
       kind: 'number',
       extras: {
-        min: 30,
+        min: 5,
         max: 120,
       },
     },
