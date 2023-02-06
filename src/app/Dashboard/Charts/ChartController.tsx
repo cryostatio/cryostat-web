@@ -36,69 +36,58 @@
  * SOFTWARE.
  */
 
-import { ApiService, RecordingAttributes } from '@app/Shared/Services/Api.service';
+import { ApiService } from '@app/Shared/Services/Api.service';
 import { NO_TARGET, TargetService } from '@app/Shared/Services/Target.service';
-import { combineLatest, concatMap, filter, map, Observable, of, ReplaySubject, Subject, tap, throttleTime } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  concatMap,
+  filter,
+  finalize,
+  map,
+  Observable,
+  of,
+  pairwise,
+  ReplaySubject,
+  Subject,
+  Subscription,
+  throttleTime,
+} from 'rxjs';
 
-const RECORDING_NAME = 'dashboard-metrics';
+export const RECORDING_NAME = 'dashboard_metrics';
+
+export const MIN_REFRESH = 10_000;
 
 export class ChartController {
+  private readonly _refCount$ = new BehaviorSubject<number>(0);
   private readonly _updateRequests$ = new Subject<void>();
-  private readonly _updates$ = new Subject<number>();
+  private readonly _updates$ = new ReplaySubject<number>();
   private readonly _hasRecording$ = new ReplaySubject<boolean>();
+  private readonly _subscriptions: Subscription[] = [];
 
   constructor(private readonly _api: ApiService, private readonly _target: TargetService) {
-    this._target
-      .target()
+    this._refCount$
       .pipe(
-        concatMap((target) => {
-          if (target === NO_TARGET) {
-            return of(false);
-          }
-
-          return (
-            this._api
-              /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-              .graphql<any>(
-                `
-        query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
-          targetNodes(filter: { name: $connectUrl }) {
-            recordings {
-              active (filter: {
-                labels: ["template.name=Profiling", "template.type=TARGET"],
-              }) {
-              aggregate {
-                count
-              }
-            }
-          }
-          }
-        }`,
-                { connectUrl: target.connectUrl }
-              )
-              // TODO error handling
-              .pipe(map((resp) => resp.data.targetNodes[0].recordings.active.aggregate.count > 0))
-          );
-        })
+        map((v) => v > 0),
+        pairwise()
       )
-      .subscribe((v) => this._hasRecording$.next(v));
-
-    this._updateRequests$.pipe(throttleTime(10_000)).subscribe((_) => this._updates$.next(+Date.now()));
-
-    this._target
-      .target()
-      .pipe(filter((v) => v !== NO_TARGET))
-      .subscribe((_) => this._updates$.next(+Date.now()));
-
-    combineLatest([this.hasActiveRecording().pipe(filter((v) => v)), this._updates$]).subscribe((_) => {
-      this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((_) => {
-        /* do nothing */
+      .subscribe((v) => {
+        const prev = v[0];
+        const curr = v[1];
+        if (prev && !curr) {
+          // last subscriber left
+          this._subscriptions.forEach((s) => s.unsubscribe());
+        }
+        if (!prev && curr) {
+          // first subscriber joined
+          this._init();
+        }
       });
-    });
   }
 
   refresh(): Observable<number> {
-    return this._updates$.asObservable();
+    this._refCount$.next(this._refCount$.value + 1);
+    return this._updates$.asObservable().pipe(finalize(() => this._refCount$.next(this._refCount$.value - 1)));
   }
 
   requestRefresh(): void {
@@ -109,23 +98,109 @@ export class ChartController {
     return this._hasRecording$.asObservable();
   }
 
-  startRecording(): Observable<boolean> {
-    const attrs: RecordingAttributes = {
-      name: RECORDING_NAME,
-      // TODO make this configurable like for the automated analysis card
-      events: 'template=Profiling,type=TARGET',
-      options: {
-        toDisk: true,
-        // TODO get this from settings? this should probably somehow be the maximum data window width of
-        // all configured dashboard cards. But how to handle when a new card is added with a new maximum?
-        // Restart recording?
-        maxAge: 60,
-      },
-    };
-    return this._api.createRecording(attrs).pipe(
-      map((resp) => resp?.ok || false),
-      tap((success) => this._hasRecording$.next(success)),
-      tap((_) => this._updates$.next(+Date.now()))
+  private _init(): void {
+    this._subscriptions.push(
+      this._target
+        .target()
+        .pipe(
+          concatMap((target) => {
+            if (target === NO_TARGET) {
+              return of(false);
+            }
+
+            return (
+              this._api
+                /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                .graphql<any>(
+                  `
+          query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
+            targetNodes(filter: { name: $connectUrl }) {
+              recordings {
+                active (filter: {
+                  labels: ["origin=${RECORDING_NAME}"],
+                }) {
+                aggregate {
+                  count
+                }
+              }
+            }
+            }
+          }`,
+                  { connectUrl: target.connectUrl }
+                )
+                // TODO error handling
+                .pipe(map((resp) => resp.data.targetNodes[0].recordings.active.aggregate.count > 0))
+            );
+          })
+        )
+        .subscribe((v) => this._hasRecording$.next(v))
     );
+
+    this._subscriptions.push(
+      this._updateRequests$.pipe(throttleTime(MIN_REFRESH)).subscribe((_) => this._updates$.next(+Date.now()))
+    );
+
+    this._subscriptions.push(
+      this._target
+        .target()
+        .pipe(filter((v) => v !== NO_TARGET))
+        .subscribe((_) => this._updates$.next(+Date.now()))
+    );
+
+    this._subscriptions.push(
+      combineLatest([this.hasActiveRecording().pipe(filter((v) => v)), this._updates$]).subscribe((_) => {
+        this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((_) => {
+          /* do nothing */
+        });
+      })
+    );
+
+    // TODO listen for websocket notifications about active recordings and update the hasRecording
+    // state accordingly
+    // combineLatest([
+    //   context.target.target(),
+    //   merge(
+    //     context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
+    //     context.notificationChannel.messages(NotificationCategory.SnapshotCreated)
+    //   ),
+    // ]).subscribe(([currentTarget, event]) => {
+    //   if (currentTarget.connectUrl != event.message.target) {
+    //     return;
+    //   }
+    //   setRecordings((old) => old.concat([event.message.recording]));
+    // })
+
+    // combineLatest([
+    //   context.target.target(),
+    //   merge(
+    //     context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
+    //     context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
+    //   ),
+    // ]).subscribe(([currentTarget, event]) => {
+    //   if (currentTarget.connectUrl != event.message.target) {
+    //     return;
+    //   }
+
+    //   setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
+    //   setCheckedIndices((old) => old.filter((idx) => idx !== event.message.recording.id));
+    // })
+
+    // combineLatest([
+    //   context.target.target(),
+    //   context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
+    // ]).subscribe(([currentTarget, event]) => {
+    //   if (currentTarget.connectUrl != event.message.target) {
+    //     return;
+    //   }
+    //   setRecordings((old) => {
+    //     const updated = [...old];
+    //     for (const r of updated) {
+    //       if (r.name === event.message.recording.name) {
+    //         r.state = RecordingState.STOPPED;
+    //       }
+    //     }
+    //     return updated;
+    //   });
+    // })
   }
 }

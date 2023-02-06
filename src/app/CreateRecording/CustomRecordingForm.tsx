@@ -75,8 +75,13 @@ import { EventTemplate } from './CreateRecording';
 
 export interface CustomRecordingFormProps {
   prefilled?: {
+    name?: string;
     templateName?: string;
     templateType?: TemplateType;
+    labels?: RecordingLabel[];
+    duration?: number;
+    maxAge?: number;
+    maxSize?: number;
   };
 }
 
@@ -89,22 +94,28 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
   const history = useHistory();
   const addSubscription = useSubscriptions();
 
-  const [recordingName, setRecordingName] = React.useState('');
-  const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
-  const [continuous, setContinuous] = React.useState(false);
+  const [recordingName, setRecordingName] = React.useState(prefilled?.name || '');
+  const [nameValid, setNameValid] = React.useState(
+    prefilled?.name
+      ? RecordingNamePattern.test(recordingName)
+        ? ValidatedOptions.success
+        : ValidatedOptions.error
+      : ValidatedOptions.default
+  );
+  const [continuous, setContinuous] = React.useState((prefilled?.duration || 30) < 1);
   const [archiveOnStop, setArchiveOnStop] = React.useState(true);
-  const [duration, setDuration] = React.useState(30);
+  const [duration, setDuration] = React.useState(prefilled?.duration || 30);
   const [durationUnit, setDurationUnit] = React.useState(1000);
   const [durationValid, setDurationValid] = React.useState(ValidatedOptions.success);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [templateName, setTemplateName] = React.useState<string | undefined>(prefilled?.templateName);
   const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(prefilled?.templateType);
-  const [maxAge, setMaxAge] = React.useState(0);
+  const [maxAge, setMaxAge] = React.useState(prefilled?.maxAge || 0);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
-  const [maxSize, setMaxSize] = React.useState(0);
+  const [maxSize, setMaxSize] = React.useState(prefilled?.maxSize || 0);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [toDisk, setToDisk] = React.useState(true);
-  const [labels, setLabels] = React.useState([] as RecordingLabel[]);
+  const [labels, setLabels] = React.useState(prefilled?.labels || []);
   const [labelsValid, setLabelsValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -119,7 +130,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
           .subscribe((resp) => {
             setLoading(false);
             if (resp && resp.ok) {
-              history.push('/recordings');
+              history.goBack();
             }
           })
       );
@@ -228,12 +239,12 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
   const setRecordingOptions = React.useCallback(
     (options: RecordingOptions) => {
       // toDisk is not set, and defaults to true because of https://github.com/cryostatio/cryostat/issues/263
-      setMaxAge(options.maxAge || 0);
+      setMaxAge(prefilled?.maxAge || options.maxAge || 0);
       setMaxAgeUnits(1);
-      setMaxSize(options.maxSize || 0);
+      setMaxSize(prefilled?.maxSize || options.maxSize || 0);
       setMaxSizeUnits(1);
     },
-    [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits]
+    [setMaxAge, setMaxAgeUnits, setMaxSize, setMaxSizeUnits, prefilled]
   );
 
   const handleSubmit = React.useCallback(() => {

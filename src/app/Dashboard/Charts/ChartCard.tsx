@@ -36,15 +36,30 @@
  * SOFTWARE.
  */
 
+import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, CardActions, CardBody, CardHeader, Stack, StackItem, Text } from '@patternfly/react-core';
-import { ExternalLinkAltIcon, RedoIcon } from '@patternfly/react-icons';
+import {
+  Bullseye,
+  Button,
+  CardActions,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  EmptyStateVariant,
+  Title,
+} from '@patternfly/react-core';
+import { ExternalLinkAltIcon, PlusCircleIcon, RedoIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { combineLatest, interval } from 'rxjs';
+import { useHistory } from 'react-router-dom';
+import { first, interval, timer } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import { ChartContext } from './ChartContext';
+import { MIN_REFRESH, RECORDING_NAME } from './ChartController';
 
 export interface ChartCardProps extends DashboardCardProps {
   theme: string;
@@ -97,38 +112,52 @@ function getHeight(kind: string): number {
 export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
+  const history = useHistory();
   const addSubscription = useSubscriptions();
   const [hasRecording, setHasRecording] = React.useState(false);
   const [chartSrc, setChartSrc] = React.useState('');
+  const [dashboardUrl, setDashboardUrl] = React.useState('');
+  const [refreshDisabled, setRefreshDisabled] = React.useState(true);
 
   React.useEffect(() => {
     addSubscription(controllerContext.controller.hasActiveRecording().subscribe(setHasRecording));
   }, [addSubscription, controllerContext, setHasRecording]);
 
-  const resetIFrame = React.useCallback(() => {
+  React.useEffect(() => {
+    addSubscription(serviceContext.api.grafanaDashboardUrl().subscribe(setDashboardUrl));
+  }, [addSubscription, serviceContext, setDashboardUrl]);
+
+  const resetIFrame = React.useCallback(
+    (now: number) => {
+      if (!dashboardUrl) {
+        return;
+      }
+      setRefreshDisabled(true);
+      const u = new URL('/d-solo/main', dashboardUrl);
+      u.searchParams.append('theme', props.theme);
+      u.searchParams.append('panelId', String(kindToId(props.chartKind)));
+      u.searchParams.append('to', String(now));
+      u.searchParams.append('from', String(now - props.duration * 1000));
+      setChartSrc(u.toString());
+    },
+    [setRefreshDisabled, dashboardUrl, setChartSrc, props.theme, props.chartKind, props.duration]
+  );
+
+  const handleOnLoad = React.useCallback(() => {
     addSubscription(
-      combineLatest([serviceContext.api.grafanaDashboardUrl(), controllerContext.controller.refresh()]).subscribe(
-        (parts) => {
-          const dashboardUrl = parts[0];
-          const now = parts[1];
-          if (!dashboardUrl) {
-            return;
-          }
-          const u = new URL('/d-solo/main', dashboardUrl);
-          u.searchParams.append('theme', props.theme);
-          u.searchParams.append('panelId', String(kindToId(props.chartKind)));
-          u.searchParams.append('to', String(now));
-          u.searchParams.append('from', String(now - props.duration * 1000));
-          setChartSrc(u.toString());
-        }
-      )
+      timer(MIN_REFRESH)
+        .pipe(first())
+        .subscribe((_) => setRefreshDisabled(false))
     );
-  }, [addSubscription, serviceContext.api, controllerContext, props.theme, props.chartKind, props.duration]);
+  }, [addSubscription, setRefreshDisabled]);
+
+  React.useEffect(() => {
+    addSubscription(controllerContext.controller.refresh().subscribe(resetIFrame));
+  }, [addSubscription, controllerContext, resetIFrame]);
 
   const refresh = React.useCallback(() => {
-    resetIFrame();
     controllerContext.controller.requestRefresh();
-  }, [resetIFrame, controllerContext]);
+  }, [controllerContext]);
 
   React.useEffect(() => {
     refresh();
@@ -136,18 +165,16 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [addSubscription, props.period, refresh]);
 
   const popout = React.useCallback(() => {
-    window.open(chartSrc, '_blank');
-  }, [chartSrc]);
+    if (chartSrc && dashboardUrl) {
+      window.open(chartSrc, '_blank');
+    }
+  }, [chartSrc, dashboardUrl]);
 
   const cardStyle = React.useMemo(() => {
     return {
       height: getHeight(props.chartKind),
     };
   }, [props.chartKind]);
-
-  const handleCreateRecording = React.useCallback(() => {
-    addSubscription(controllerContext.controller.startRecording().subscribe(setHasRecording));
-  }, [addSubscription, controllerContext]);
 
   const popoutButton = React.useMemo(() => {
     return (
@@ -157,23 +184,70 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
           onClick={popout}
           variant="plain"
           icon={<ExternalLinkAltIcon />}
+          isDisabled={!chartSrc || !dashboardUrl}
         />
       </>
     );
-  }, [props.chartKind, popout]);
+  }, [props.chartKind, popout, chartSrc, dashboardUrl]);
 
   const refreshButton = React.useMemo(() => {
     return (
       <>
-        <Button aria-label={`Refresh ${props.chartKind} chart`} onClick={refresh} variant="plain" icon={<RedoIcon />} />
+        <Button
+          aria-label={`Refresh ${props.chartKind} chart`}
+          onClick={refresh}
+          variant="plain"
+          icon={<RedoIcon />}
+          isDisabled={refreshDisabled}
+        />
       </>
     );
-  }, [props.chartKind, refresh]);
+  }, [props.chartKind, refresh, refreshDisabled]);
 
   const actions = React.useMemo(() => {
-    const a = [refreshButton, popoutButton];
-    return a.concat(...(props.actions || []));
-  }, [props.actions, refreshButton, popoutButton]);
+    const a = props.actions || [];
+    if (!hasRecording) {
+      return a;
+    }
+    return [popoutButton, refreshButton, ...a];
+  }, [props.actions, hasRecording, refreshButton, popoutButton]);
+
+  const header = React.useMemo(() => {
+    if (hasRecording) {
+      return (
+        <>
+          <CardHeader style={{ marginBottom: '-2.8em' }}>
+            <CardActions>{actions}</CardActions>
+          </CardHeader>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <CardHeader>
+            <CardTitle>{props.chartKind}</CardTitle>
+            <CardActions>{actions}</CardActions>
+          </CardHeader>
+        </>
+      );
+    }
+  }, [props.chartKind, hasRecording, actions]);
+
+  const handleCreateRecording = React.useCallback(() => {
+    history.push({
+      pathname: '/recordings/create',
+      state: {
+        name: RECORDING_NAME,
+        templateName: 'Profiling',
+        templateType: 'TARGET',
+        labels: [{ key: 'origin', value: RECORDING_NAME }],
+        duration: -1,
+        // TODO make these two configurable
+        maxAge: 120, // seconds
+        maxSize: 50 * 1024 * 1024, // bytes
+      } as CreateRecordingProps,
+    });
+  }, [history]);
 
   return (
     <>
@@ -183,25 +257,29 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         id={props.chartKind + '-chart-card'}
         isCompact
         style={cardStyle}
-        cardHeader={
-          <CardHeader style={{ marginBottom: '-2.8em' }}>
-            <CardActions>{actions}</CardActions>
-          </CardHeader>
-        }
+        cardHeader={header}
       >
         <CardBody>
           {hasRecording ? (
-            <iframe style={{ height: '100%', width: '100%' }} src={chartSrc} />
+            <iframe style={{ height: '100%', width: '100%' }} src={chartSrc} onLoad={handleOnLoad} />
           ) : (
             <>
-              <Stack>
-                <StackItem>
-                  <Text>No source recordings available</Text>
-                </StackItem>
-                <StackItem>
-                  <Button onClick={handleCreateRecording}>Create</Button>
-                </StackItem>
-              </Stack>
+              <Bullseye>
+                <EmptyState variant={EmptyStateVariant.large}>
+                  <EmptyStateIcon icon={PlusCircleIcon} />
+                  <Title headingLevel="h2" size="md">
+                    Start a source recording
+                  </Title>
+                  <EmptyStateBody>
+                    Metrics cards display data taken from running flight recordings with the label{' '}
+                    <code>origin={RECORDING_NAME}</code>. No such recordings are currently available.
+                  </EmptyStateBody>
+
+                  <Button variant="primary" onClick={handleCreateRecording}>
+                    Create
+                  </Button>
+                </EmptyState>
+              </Bullseye>
             </>
           )}
         </CardBody>
@@ -213,7 +291,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
 export const ChartCardSizes: DashboardCardSizes = {
   span: {
     minimum: 3,
-    default: 3,
+    default: 4,
     maximum: 12,
   },
   height: {

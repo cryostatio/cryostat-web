@@ -42,6 +42,7 @@ import {
   dashboardCardConfigResizeCardIntent,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
@@ -51,7 +52,8 @@ import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { ChartCardDescriptor } from './Charts/ChartCard';
-import { ChartContext, defaultControllers } from './Charts/ChartContext';
+import { ChartContext } from './Charts/ChartContext';
+import { ChartController } from './Charts/ChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 
@@ -256,8 +258,10 @@ export function getConfigByTitle(title: string): DashboardCardDescriptor {
 }
 
 export const Dashboard: React.FC<DashboardProps> = (_) => {
+  const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
   const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const chartController = React.useRef(new ChartController(serviceContext.api, serviceContext.target));
 
   const handleRemove = React.useCallback(
     (idx: number) => {
@@ -279,11 +283,11 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <Grid id={'dashboard-grid'} hasGutter>
-        {cardConfigs.map((cfg, idx) => (
-          <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
-            <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-              <ChartContext.Provider value={defaultControllers}>
+      <ChartContext.Provider value={{ controller: chartController.current }}>
+        <Grid id={'dashboard-grid'} hasGutter>
+          {cardConfigs.map((cfg, idx) => (
+            <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
+              <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
                 {React.createElement(getConfigByName(cfg.name).component, {
                   ...cfg.props,
                   dashboardId: idx,
@@ -295,14 +299,14 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
                     />,
                   ],
                 })}
-              </ChartContext.Provider>
-            </GridItem>
-          </FeatureFlag>
-        ))}
-        <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
-          <AddCard />
-        </GridItem>
-      </Grid>
+              </GridItem>
+            </FeatureFlag>
+          ))}
+          <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
+            <AddCard />
+          </GridItem>
+        </Grid>
+      </ChartContext.Provider>
     </TargetView>
   );
 };

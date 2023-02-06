@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { TemplateType } from '@app/Shared/Services/Api.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Card, CardBody, Tab, Tabs } from '@patternfly/react-core';
@@ -45,8 +46,13 @@ import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
 export interface CreateRecordingProps {
+  name?: string;
   templateName?: string;
   templateType?: TemplateType;
+  labels?: RecordingLabel[];
+  duration?: number;
+  maxAge?: number;
+  maxSize?: number;
 }
 
 export interface EventTemplate {
@@ -63,8 +69,13 @@ const Comp: React.FC<RouteComponentProps<Record<string, never>, StaticContext, C
 
   const prefilled = React.useMemo(
     () => ({
+      name: props.location?.state?.name,
       templateName: props.location?.state?.templateName,
       templateType: props.location?.state?.templateType,
+      labels: props.location?.state?.labels,
+      duration: props.location?.state?.duration,
+      maxAge: props.location?.state?.maxAge,
+      maxSize: props.location?.state?.maxSize,
     }),
     [props.location]
   );
