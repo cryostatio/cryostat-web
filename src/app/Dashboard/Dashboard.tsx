@@ -92,6 +92,7 @@ export interface PropControl {
 export interface DashboardProps {}
 
 export interface DashboardCardProps {
+  span: number;
   dashboardId: number;
   actions?: JSX.Element[];
 }
@@ -315,6 +316,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
               <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
                 {hasConfigByName(cfg.name) ? (
                   React.createElement(getConfigByName(cfg.name).component, {
+                    span: cfg.span,
                     ...cfg.props,
                     dashboardId: idx,
                     actions: [

@@ -212,17 +212,19 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
 
   const actions = React.useMemo(() => {
     const a = props.actions || [];
-    if (!hasRecording) {
-      return a;
-    }
     return [expandButton, popoutButton, ...a];
-  }, [props.actions, hasRecording, expandButton, popoutButton]);
+  }, [props.actions, expandButton, popoutButton]);
 
   const header = React.useMemo(() => {
+    console.log({ span: props.span, kind: props.chartKind, hasRecording });
+    const isWide = props.span > 4;
+    const style = {
+      marginBottom: isWide ? '-2.8em' : '',
+    };
     if (hasRecording) {
       return (
         <>
-          <CardHeader style={{ marginBottom: '-2.8em' }}>
+          <CardHeader style={style}>
             <CardActions>{actions}</CardActions>
           </CardHeader>
         </>
@@ -230,14 +232,14 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     } else {
       return (
         <>
-          <CardHeader>
+          <CardHeader style={style}>
             <CardTitle>{props.chartKind}</CardTitle>
-            <CardActions>{actions}</CardActions>
+            <CardActions>{props.actions}</CardActions>
           </CardHeader>
         </>
       );
     }
-  }, [props.chartKind, hasRecording, actions]);
+  }, [props.actions, props.span, props.chartKind, hasRecording, actions]);
 
   const handleCreateRecording = React.useCallback(() => {
     history.push({
