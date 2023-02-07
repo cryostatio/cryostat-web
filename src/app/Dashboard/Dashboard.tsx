@@ -263,6 +263,13 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
   const chartController = React.useRef(new ChartController(serviceContext.api, serviceContext.target));
 
+  React.useEffect(() => {
+    const controller = chartController.current;
+    return () => {
+      controller._tearDown();
+    };
+  }, []);
+
   const handleRemove = React.useCallback(
     (idx: number) => {
       dispatch(dashboardCardConfigDeleteCardIntent(idx));

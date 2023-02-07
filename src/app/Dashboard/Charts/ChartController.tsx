@@ -44,12 +44,16 @@ import {
   concatMap,
   filter,
   finalize,
+  first,
   map,
+  merge,
+  mergeMap,
   Observable,
   of,
   pairwise,
   ReplaySubject,
   Subscription,
+  switchMap,
   throttleTime,
 } from 'rxjs';
 
@@ -60,38 +64,30 @@ export const MIN_REFRESH = 10_000;
 
 export class ChartController {
   private readonly _refCount$ = new BehaviorSubject<number>(0);
-  private readonly _updates$ = new ReplaySubject<void>();
-  private readonly _hasRecording$ = new ReplaySubject<boolean>();
+  private readonly _updates$ = new ReplaySubject<void>(1);
+  private readonly _hasRecording$ = new ReplaySubject<boolean>(1);
   private readonly _subscriptions: Subscription[] = [];
 
   constructor(private readonly _api: ApiService, private readonly _target: TargetService) {
-    this._refCount$
-      .pipe(
-        map((v) => v > 0),
-        pairwise()
-      )
-      .subscribe((v) => {
-        const prev = v[0];
-        const curr = v[1];
-        if (prev && !curr) {
-          // last subscriber left
-          this._tearDown();
-        }
-        if (!prev && curr) {
-          // first subscriber joined
-          this._init();
-        }
-      });
-
-    this._target
-      .target()
-      .pipe(concatMap((t) => this._hasRecording(t)))
-      .subscribe((v) => {
-        this._hasRecording$.next(v);
-        if (!v) {
-          this._tearDown();
-        }
-      });
+    this._subscriptions.push(
+      this._refCount$
+        .pipe(
+          map((v) => v > 0),
+          pairwise()
+        )
+        .subscribe((v) => {
+          const prev = v[0];
+          const curr = v[1];
+          if (prev && !curr) {
+            // last subscriber left
+            this._tearDown();
+          }
+          if (!prev && curr) {
+            // first subscriber joined
+            this._init();
+          }
+        })
+    );
   }
 
   hasActiveRecording(): Observable<boolean> {
@@ -135,23 +131,39 @@ export class ChartController {
         // TODO error handling
         .pipe(
           map((resp) => resp.data.targetNodes[0].recordings.active.aggregate.count > 0),
-          catchError((_) => of(false))
+          catchError((_) => of(false)),
+          first()
         )
     );
   }
 
   private _init(): void {
     this._subscriptions.push(
-      this._updates$
-        .pipe(
+      this._target
+        .target()
+        .pipe(mergeMap((t) => this._hasRecording(t)))
+        .subscribe((v) => this._hasRecording$.next(v))
+    );
+
+    this._subscriptions.push(
+      merge(
+        this._updates$.pipe(
           throttleTime(MIN_REFRESH),
-          concatMap((_) => this._hasRecording$),
+          switchMap((_) => this._target.target().pipe(first()))
+        ),
+        this._target.target()
+      )
+        .pipe(
+          concatMap((t) => this._hasRecording(t)),
           filter((v) => !!v)
         )
         .subscribe((_) => {
-          this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((_) => {
-            /* do nothing */
-          });
+          this._api
+            .uploadActiveRecordingToGrafana(RECORDING_NAME)
+            .pipe(first())
+            .subscribe((_) => {
+              /* do nothing */
+            });
         })
     );
 
@@ -204,7 +216,7 @@ export class ChartController {
     // })
   }
 
-  private _tearDown() {
+  _tearDown() {
     this._subscriptions.forEach((s) => s.unsubscribe());
     this._subscriptions.splice(0, this._subscriptions.length);
   }

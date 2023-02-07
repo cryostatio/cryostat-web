@@ -220,7 +220,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         duration: -1,
         // TODO make these two configurable
         maxAge: 120, // seconds
-        maxSize: 50 * 1024 * 1024, // bytes
+        maxSize: 100 * 1024 * 1024, // bytes
       } as CreateRecordingProps,
     });
   }, [history]);
