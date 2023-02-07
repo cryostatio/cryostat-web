@@ -61,6 +61,7 @@ import {
 } from '@patternfly/react-core';
 import { CogIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
 interface AutomatedAnalysisConfigDrawerProps {
@@ -77,6 +78,8 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+
+  const [t] = useTranslation();
 
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -186,7 +189,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
                 splitButtonVariant="action"
                 toggleVariant="default"
               >
-                Create Recording &nbsp;&nbsp;
+                {t('AutomatedAnalysisConfigDrawer.Create Recording')} &nbsp;&nbsp;
               </DropdownToggle>
             }
             isOpen={isDropdownOpen}

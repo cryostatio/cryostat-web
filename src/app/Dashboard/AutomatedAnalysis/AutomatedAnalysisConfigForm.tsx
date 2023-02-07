@@ -218,7 +218,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     () => (
       <>
         <FormGroup
-          label={`Template`}
+          label={t(`TEMPLATE`, { ns: 'common' })}
           isRequired
           fieldId="recording-template"
           validated={!templateName ? ValidatedOptions.error : ValidatedOptions.success}

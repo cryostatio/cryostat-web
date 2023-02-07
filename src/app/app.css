@@ -173,6 +173,12 @@ html, body, #root {
   text-overflow: ellipsis;
 }
 
+.pf-c-label.clickable-label-hovered {
+  cursor: pointer;
+  --pf-c-label__content--before--BorderWidth: 2.5px;
+  --pf-c-label__content--before--BorderColor: #8a8d90;
+}
+
 .pf-c-label-group.pf-m-vertical.pf-c-label-group {
   height: 100%;
   width: 100%;

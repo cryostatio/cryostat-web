@@ -42,18 +42,19 @@ import { InfoCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import popoverStyles from '@patternfly/react-styles/css/components/Popover/popover';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface ClickableAutomatedAnalysisLabelProps {
   label: RuleEvaluation;
-  isSelected: boolean;
 }
 
 export const clickableAutomatedAnalysisKey = 'clickable-automated-analysis-label';
 
 export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableAutomatedAnalysisLabelProps> = ({
   label,
-  isSelected,
 }) => {
+  const { t } = useTranslation();
+
   const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
   const [isDescriptionVisible, setIsDescriptionVisible] = React.useState(false);
 
@@ -67,17 +68,6 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
     warning: popoverStyles.modifiers.warning,
     danger: popoverStyles.modifiers.danger,
   };
-
-  const style = React.useMemo(() => {
-    if (isHoveredOrFocused) {
-      const defaultStyle = { cursor: 'pointer', '--pf-c-label__content--before--BorderWidth': '2.5px' };
-      if (isSelected) {
-        return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#06c' };
-      }
-      return { ...defaultStyle, '--pf-c-label__content--before--BorderColor': '#8a8d90' };
-    }
-    return {};
-  }, [isSelected, isHoveredOrFocused]);
 
   const colorScheme = React.useMemo((): LabelProps['color'] => {
     // TODO: use label color schemes based on settings for accessibility
@@ -103,7 +93,7 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
 
   return (
     <Popover
-      aria-label="automated-analysis-description-popover"
+      aria-label={t('ClickableAutomatedAnalysisLabel.ARIA_LABELS.POPOVER')}
       isVisible={isDescriptionVisible}
       headerContent={<div className={`${clickableAutomatedAnalysisKey}-popover-header`}>{label.name}</div>}
       alertSeverityVariant={alertPopoverVariant}
@@ -124,10 +114,10 @@ export const ClickableAutomatedAnalysisLabel: React.FunctionComponent<ClickableA
       }
     >
       <Label
-        aria-label={`${label.name}`}
+        aria-label={label.name}
         icon={<InfoCircleIcon />}
         color={colorScheme}
-        style={style}
+        className={isHoveredOrFocused ? `clickable-label-hovered` : ''}
         onMouseEnter={handleHoveredOrFocused}
         onMouseLeave={handleNonHoveredOrFocused}
         onFocus={handleHoveredOrFocused}
