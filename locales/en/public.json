@@ -55,6 +55,11 @@
       "LANGUAGE_REGION": "Language & Region",
       "NOTIFICATION_MESSAGE": "Notifications & Messages"
     },
+    "CHARTS_CONFIG": {
+      "DESCRIPTION": "Set configuration options for the behaviour of Metrics cards on the Dashboard.",
+      "REFRESH_RATE_SETTING": "Configure the minimum time to wait between data refreshes. Individual metrics cards may still request updates on a faster cycle, but the client application instance will throttle update requests to the server according to this setting.",
+      "TITLE": "Dashboard Metrics Configuration"
+    },
     "CREDENTIALS_STORAGE": {
       "BACKEND": {
         "DESCRIPTION": "Keep credentials in encrypted Cryostat backend storage. These credentials will be available to other users and will be used for Automated Rules.",

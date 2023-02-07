@@ -62,6 +62,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { AutomatedAnalysisConfig } from './AutomatedAnalysisConfig';
 import { AutoRefresh } from './AutoRefresh';
+import { ChartCardsConfig } from './ChartCardsConfig';
 import { CredentialsStorage } from './CredentialsStorage';
 import { DatetimeControl } from './DatetimeControl';
 import { DeletionDialogControl } from './DeletionDialogControl';
@@ -136,6 +137,7 @@ export const Settings: React.FC<SettingsProps> = (_) => {
       [
         NotificationControl,
         AutomatedAnalysisConfig,
+        ChartCardsConfig,
         CredentialsStorage,
         DeletionDialogControl,
         WebSocketDebounce,

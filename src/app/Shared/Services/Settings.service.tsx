@@ -37,6 +37,7 @@
  */
 
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { ChartControllerConfig, defaultChartControllerConfig } from '@app/Settings/ChartCardsConfig';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -144,6 +145,14 @@ export class SettingsService {
 
   setAutomatedAnalysisRecordingConfig(config: AutomatedAnalysisRecordingConfig): void {
     saveToLocalStorage('AUTOMATED_ANALYSIS_RECORDING_CONFIG', config);
+  }
+
+  chartControllerConfig(defaultConfig = defaultChartControllerConfig): ChartControllerConfig {
+    return getFromLocalStorage('CHART_CONTROLLER_CONFIG', defaultConfig);
+  }
+
+  setChartControllerConfig(config: ChartControllerConfig): void {
+    saveToLocalStorage('CHART_CONTROLLER_CONFIG', config);
   }
 
   deletionDialogsEnabled(): Map<DeleteOrDisableWarningType, boolean> {

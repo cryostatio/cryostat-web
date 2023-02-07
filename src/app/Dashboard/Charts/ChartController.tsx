@@ -38,6 +38,7 @@
 
 import { ApiService } from '@app/Shared/Services/Api.service';
 import { NotificationCategory, NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
+import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { NO_TARGET, Target, TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
@@ -58,9 +59,6 @@ import {
 
 export const RECORDING_NAME = 'dashboard_metrics';
 
-// TODO make this configurable
-export const MIN_REFRESH = 10_000;
-
 export class ChartController {
   private readonly _refCount$ = new BehaviorSubject<number>(0);
   private readonly _updates$ = new ReplaySubject<void>(1);
@@ -70,7 +68,8 @@ export class ChartController {
   constructor(
     private readonly _api: ApiService,
     private readonly _target: TargetService,
-    private readonly _notifications: NotificationChannel
+    private readonly _notifications: NotificationChannel,
+    private readonly _settings: SettingsService
   ) {
     this._subscriptions.push(
       this._refCount$
@@ -148,7 +147,7 @@ export class ChartController {
     this._subscriptions.push(
       merge(
         merge(
-          this._updates$.pipe(throttleTime(MIN_REFRESH)),
+          this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh)),
           this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
           this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
           this._notifications.messages(NotificationCategory.ActiveRecordingStopped)
