@@ -119,6 +119,7 @@ export class ChartController {
               recordings {
                 active (filter: {
                   labels: ["origin=${RECORDING_NAME}"],
+                  state: "RUNNING",
                 }) {
                 aggregate {
                   count
