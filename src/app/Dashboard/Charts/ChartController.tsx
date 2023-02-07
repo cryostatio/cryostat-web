@@ -37,6 +37,7 @@
  */
 
 import { ApiService } from '@app/Shared/Services/Api.service';
+import { NotificationCategory, NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { NO_TARGET, Target, TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
@@ -66,7 +67,11 @@ export class ChartController {
   private readonly _hasRecording$ = new ReplaySubject<boolean>(1);
   private readonly _subscriptions: Subscription[] = [];
 
-  constructor(private readonly _api: ApiService, private readonly _target: TargetService) {
+  constructor(
+    private readonly _api: ApiService,
+    private readonly _target: TargetService,
+    private readonly _notifications: NotificationChannel
+  ) {
     this._subscriptions.push(
       this._refCount$
         .pipe(
@@ -106,10 +111,9 @@ export class ChartController {
       return of(false);
     }
 
-    return (
-      this._api
-        .graphql<CountResponse>(
-          `
+    return this._api
+      .graphql<CountResponse>(
+        `
           query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
             targetNodes(filter: { name: $connectUrl }) {
               recordings {
@@ -123,30 +127,31 @@ export class ChartController {
             }
             }
           }`,
-          { connectUrl: target.connectUrl }
-        )
-        .pipe(
-          map((resp) => {
-            const nodes = resp?.data?.targetNodes;
-            if (nodes.length === 0) {
-              return false;
-            }
-            const count = nodes[0]?.recordings?.active?.aggregate?.count;
-            return count > 0;
-          }),
-          catchError((_) => of(false)),
-          first()
-        )
-    );
+        { connectUrl: target.connectUrl }
+      )
+      .pipe(
+        map((resp) => {
+          const nodes = resp?.data?.targetNodes;
+          if (nodes.length === 0) {
+            return false;
+          }
+          const count = nodes[0]?.recordings?.active?.aggregate?.count;
+          return count > 0;
+        }),
+        catchError((_) => of(false)),
+        first()
+      );
   }
 
   private _init(): void {
     this._subscriptions.push(
       merge(
-        this._updates$.pipe(
-          throttleTime(MIN_REFRESH),
-          switchMap((_) => this._target.target().pipe(first()))
-        ),
+        merge(
+          this._updates$.pipe(throttleTime(MIN_REFRESH)),
+          this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
+          this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
+          this._notifications.messages(NotificationCategory.ActiveRecordingStopped)
+        ).pipe(switchMap((_) => this._target.target().pipe(first()))),
         this._target.target()
       )
         .pipe(concatMap((t) => this._hasRecording(t)))
@@ -162,54 +167,6 @@ export class ChartController {
           }
         })
     );
-
-    // TODO listen for websocket notifications about active recordings and update the hasRecording
-    // state accordingly
-    // combineLatest([
-    //   context.target.target(),
-    //   merge(
-    //     context.notificationChannel.messages(NotificationCategory.ActiveRecordingCreated),
-    //     context.notificationChannel.messages(NotificationCategory.SnapshotCreated)
-    //   ),
-    // ]).subscribe(([currentTarget, event]) => {
-    //   if (currentTarget.connectUrl != event.message.target) {
-    //     return;
-    //   }
-    //   setRecordings((old) => old.concat([event.message.recording]));
-    // })
-
-    // combineLatest([
-    //   context.target.target(),
-    //   merge(
-    //     context.notificationChannel.messages(NotificationCategory.ActiveRecordingDeleted),
-    //     context.notificationChannel.messages(NotificationCategory.SnapshotDeleted)
-    //   ),
-    // ]).subscribe(([currentTarget, event]) => {
-    //   if (currentTarget.connectUrl != event.message.target) {
-    //     return;
-    //   }
-
-    //   setRecordings((old) => old.filter((r) => r.name !== event.message.recording.name));
-    //   setCheckedIndices((old) => old.filter((idx) => idx !== event.message.recording.id));
-    // })
-
-    // combineLatest([
-    //   context.target.target(),
-    //   context.notificationChannel.messages(NotificationCategory.ActiveRecordingStopped),
-    // ]).subscribe(([currentTarget, event]) => {
-    //   if (currentTarget.connectUrl != event.message.target) {
-    //     return;
-    //   }
-    //   setRecordings((old) => {
-    //     const updated = [...old];
-    //     for (const r of updated) {
-    //       if (r.name === event.message.recording.name) {
-    //         r.state = RecordingState.STOPPED;
-    //       }
-    //     }
-    //     return updated;
-    //   });
-    // })
   }
 
   _tearDown() {

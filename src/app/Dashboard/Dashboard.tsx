@@ -280,7 +280,9 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
   const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
-  const chartController = React.useRef(new ChartController(serviceContext.api, serviceContext.target));
+  const chartController = React.useRef(
+    new ChartController(serviceContext.api, serviceContext.target, serviceContext.notificationChannel)
+  );
 
   React.useEffect(() => {
     const controller = chartController.current;
