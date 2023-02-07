@@ -216,7 +216,6 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [props.actions, expandButton, popoutButton]);
 
   const header = React.useMemo(() => {
-    console.log({ span: props.span, kind: props.chartKind, hasRecording });
     const isWide = props.span > 4;
     const style = {
       marginBottom: isWide ? '-2.8em' : '',
