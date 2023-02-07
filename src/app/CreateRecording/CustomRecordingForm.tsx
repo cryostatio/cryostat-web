@@ -75,6 +75,7 @@ import { EventTemplate } from './CreateRecording';
 
 export interface CustomRecordingFormProps {
   prefilled?: {
+    restartExisting?: boolean;
     name?: string;
     templateName?: string;
     templateType?: TemplateType;
@@ -102,6 +103,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
         : ValidatedOptions.error
       : ValidatedOptions.default
   );
+  const [restartExisting, setRestartExisting] = React.useState(prefilled?.restartExisting || false);
   const [continuous, setContinuous] = React.useState((prefilled?.duration || 30) < 1);
   const [archiveOnStop, setArchiveOnStop] = React.useState(true);
   const [duration, setDuration] = React.useState(prefilled?.duration || 30);
@@ -136,6 +138,13 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
       );
     },
     [addSubscription, context.api, history, setLoading]
+  );
+
+  const handleRestartExistingChange = React.useCallback(
+    (checked) => {
+      setRestartExisting(checked);
+    },
+    [setRestartExisting]
   );
 
   const handleContinuousChange = React.useCallback(
@@ -260,6 +269,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
     }
 
     const options: RecordingOptions = {
+      restart: restartExisting,
       toDisk: toDisk,
       maxAge: toDisk ? (continuous ? maxAge * maxAgeUnits : undefined) : undefined,
       maxSize: toDisk ? maxSize * maxSizeUnits : undefined,
@@ -287,6 +297,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
     nameValid,
     notifications,
     recordingName,
+    restartExisting,
     toDisk,
     handleCreateRecording,
   ]);
@@ -407,6 +418,15 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             aria-describedby="recording-name-helper"
             onChange={handleRecordingNameChange}
             validated={nameValid}
+          />
+          <Checkbox
+            label="Restart if recording already exists"
+            isChecked={restartExisting}
+            isDisabled={loading}
+            onChange={handleRestartExistingChange}
+            aria-label="restartExisting checkbox"
+            id="recording-restart-existing"
+            name="recording-restart-existing"
           />
         </FormGroup>
         <FormGroup

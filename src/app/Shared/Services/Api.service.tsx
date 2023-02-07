@@ -301,6 +301,9 @@ export class ApiService {
       form.append('archiveOnStop', String(recordingAttributes.archiveOnStop));
     }
     if (recordingAttributes.options) {
+      if (recordingAttributes.options.restart) {
+        form.append('restart', String(recordingAttributes.options.restart));
+      }
       if (recordingAttributes.options.toDisk != null) {
         form.append('toDisk', String(recordingAttributes.options.toDisk));
       }
@@ -1351,6 +1354,7 @@ export interface EventTemplate {
 }
 
 export interface RecordingOptions {
+  restart?: boolean;
   toDisk?: boolean;
   maxSize?: number;
   maxAge?: number;

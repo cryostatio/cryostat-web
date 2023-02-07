@@ -46,6 +46,7 @@ import { CustomRecordingForm } from './CustomRecordingForm';
 import { SnapshotRecordingForm } from './SnapshotRecordingForm';
 
 export interface CreateRecordingProps {
+  restartExisting?: boolean;
   name?: string;
   templateName?: string;
   templateType?: TemplateType;
@@ -69,6 +70,7 @@ const Comp: React.FC<RouteComponentProps<Record<string, never>, StaticContext, C
 
   const prefilled = React.useMemo(
     () => ({
+      restartExisting: props.location?.state?.restartExisting,
       name: props.location?.state?.name,
       templateName: props.location?.state?.templateName,
       templateType: props.location?.state?.templateType,

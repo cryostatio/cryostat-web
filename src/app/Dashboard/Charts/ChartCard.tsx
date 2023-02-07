@@ -245,6 +245,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     history.push({
       pathname: '/recordings/create',
       state: {
+        restartExisting: true,
         name: RECORDING_NAME,
         templateName: 'Profiling',
         templateType: 'TARGET',
