@@ -45,31 +45,31 @@ import {
   Button,
   Card,
   CardBody,
+  CardTitle,
   EmptyState,
   EmptyStateIcon,
   Switch,
   Title,
   Toolbar,
   ToolbarContent,
-  ToolbarItem,
   ToolbarGroup,
-  CardTitle,
+  ToolbarItem,
 } from '@patternfly/react-core';
 import { SearchIcon, UploadIcon } from '@patternfly/react-icons';
 import {
-  SortByDirection,
-  TableVariant,
-  ISortBy,
-  IAction,
-  TableComposable,
-  Thead,
-  Tr,
-  Th,
-  ThProps,
-  Td,
-  Tbody,
   ActionsColumn,
+  IAction,
   InnerScrollContainer,
+  ISortBy,
+  SortByDirection,
+  TableComposable,
+  TableVariant,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  ThProps,
+  Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
@@ -416,7 +416,10 @@ export const Rules: React.FC<RulesProps> = (_) => {
           {r.maxSizeBytes}
         </Td>
         <Td key={`automatic-rule-action-${index}`} isActionCell style={{ paddingRight: '0' }}>
-          <ActionsColumn items={actionResolver(r)} />
+          <ActionsColumn
+            items={actionResolver(r)}
+            menuAppendTo={() => document.getElementById('automated-rule-toolbar') || document.body}
+          />
         </Td>
       </Tr>
     ));
@@ -438,28 +441,30 @@ export const Rules: React.FC<RulesProps> = (_) => {
       );
     } else {
       return (
-        <TableComposable aria-label="Automated Rules Table" variant={TableVariant.compact}>
-          <Thead>
-            <Tr>
-              {tableColumns.map((col, index) => (
-                <Th
-                  key={`automatic-rule-header-${col.title}`}
-                  sort={col.sortable ? getSortParams(index) : undefined}
-                  info={
-                    col.tooltip
-                      ? {
-                          tooltip: col.tooltip,
-                        }
-                      : undefined
-                  }
-                >
-                  {col.title}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>{ruleRows}</Tbody>
-        </TableComposable>
+        <InnerScrollContainer>
+          <TableComposable aria-label="Automated Rules Table" variant={TableVariant.compact}>
+            <Thead>
+              <Tr>
+                {tableColumns.map((col, index) => (
+                  <Th
+                    key={`automatic-rule-header-${col.title}`}
+                    sort={col.sortable ? getSortParams(index) : undefined}
+                    info={
+                      col.tooltip
+                        ? {
+                            tooltip: col.tooltip,
+                          }
+                        : undefined
+                    }
+                  >
+                    {col.title}
+                  </Th>
+                ))}
+              </Tr>
+            </Thead>
+            <Tbody>{ruleRows}</Tbody>
+          </TableComposable>
+        </InnerScrollContainer>
       );
     }
   }, [getSortParams, isLoading, rules, ruleRows, tableColumns]);
@@ -480,7 +485,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
         </Card>
         <Card>
           <CardBody>
-            <Toolbar id="event-templates-toolbar">
+            <Toolbar id="automated-rule-toolbar">
               <ToolbarContent>
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
@@ -511,7 +516,7 @@ export const Rules: React.FC<RulesProps> = (_) => {
                 )}
               </ToolbarContent>
             </Toolbar>
-            <InnerScrollContainer>{viewContent}</InnerScrollContainer>
+            {viewContent}
           </CardBody>
         </Card>
       </BreadcrumbPage>

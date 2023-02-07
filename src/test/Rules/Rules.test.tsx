@@ -144,7 +144,7 @@ describe('<Rules />', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
-            <Router location={history.location} history={history}>
+            <Router history={history}>
               <Rules />
             </Router>
           </NotificationsContext.Provider>
