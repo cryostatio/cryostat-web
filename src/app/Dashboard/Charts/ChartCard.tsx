@@ -224,7 +224,10 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         templateType: 'TARGET',
         labels: [{ key: 'origin', value: RECORDING_NAME }],
         duration: -1,
-        // TODO make these two configurable
+        // TODO make these two configurable. The maxSize should be set somehow according
+        // to the capabilities of the jfr-datasource, and the maxAge should be based on
+        // the widest data window of all the defined dashboard cards. But what if a new
+        // card is added with a wider window?
         maxAge: 120, // seconds
         maxSize: 100 * 1024 * 1024, // bytes
       } as CreateRecordingProps,
