@@ -189,7 +189,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
                 splitButtonVariant="action"
                 toggleVariant="default"
               >
-                {t('AutomatedAnalysisConfigDrawer.Create Recording')} &nbsp;&nbsp;
+                {t('AutomatedAnalysisConfigDrawer.CREATE_RECORDING')} &nbsp;&nbsp;
               </DropdownToggle>
             }
             isOpen={isDropdownOpen}
@@ -198,7 +198,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
         </LevelItem>
       </Level>
     );
-  }, [isDropdownOpen, dropdownItems, onToggle, onOptionSelect]);
+  }, [t, isDropdownOpen, dropdownItems, onToggle, onOptionSelect]);
 
   const drawerContentBody = React.useMemo(() => {
     return (

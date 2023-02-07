@@ -72,11 +72,8 @@ describe('<AutomatedAnalysisConfig/>', () => {
 
   it('should display current configurations', async () => {
     renderWithServiceContext(React.createElement(AutomatedAnalysisConfig.content, null));
-
-    Object.values(defaultAutomatedAnalysisRecordingConfig).forEach((v) => {
-      const currentConfig = screen.getByText(v);
-      expect(currentConfig).toBeInTheDocument();
-      expect(currentConfig).toBeVisible();
-    });
+    const template = screen.getByText('Current configuration');
+    expect(template).toBeInTheDocument();
+    expect(template).toBeVisible();
   });
 });

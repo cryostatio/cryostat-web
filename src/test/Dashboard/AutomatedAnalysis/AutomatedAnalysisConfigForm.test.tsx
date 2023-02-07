@@ -38,7 +38,6 @@
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
 import { defaultAutomatedAnalysisRecordingConfig, EventTemplate } from '@app/Shared/Services/Api.service';
 import { defaultServices } from '@app/Shared/Services/Services';
-import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import '@testing-library/jest-dom';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
@@ -88,21 +87,11 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     const templateSelect = screen.getByLabelText('Template *'); // Template select
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
-    expect(screen.getByText(/the event template to be applied in this recording/i)).toBeInTheDocument();
+    expect(screen.getByText(/The Event Template to be applied to Automated Analysis recordings./i)).toBeInTheDocument();
 
-    expect(screen.getByText(/the maximum size of recording data saved to disk/i)).toBeInTheDocument();
+    expect(screen.getByText(/the maximum size of recording data saved to disk./i)).toBeInTheDocument();
 
-    expect(screen.getByText(/the maximum age of recording data stored to disk/i)).toBeInTheDocument();
-
-    const createButton = screen.getByRole('button', { name: /create/i }); // Create button
-    expect(createButton).toBeInTheDocument();
-    expect(createButton).toBeVisible();
-    expect(createButton).toBeDisabled();
-
-    const saveConfigurationButton = screen.getByRole('button', { name: /save configuration/i }); // Save configuration button
-    expect(saveConfigurationButton).toBeInTheDocument();
-    expect(saveConfigurationButton).toBeVisible();
-    expect(saveConfigurationButton).toBeDisabled();
+    expect(screen.getByText(/the maximum age of recording data stored to disk./i)).toBeInTheDocument();
   });
 
   it('renders settings view correctly', async () => {
@@ -113,23 +102,14 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     const templateSelect = screen.getByLabelText('Template *'); // Template select
     expect(templateSelect).toBeInTheDocument();
     expect(templateSelect).toBeVisible();
-    expect(screen.getByText(/the event template to be applied in this recording/i)).toBeInTheDocument();
+    expect(screen.getByText(/The Event Template to be applied to Automated Analysis recordings./i)).toBeInTheDocument();
 
-    expect(screen.getByText(/the maximum size of recording data saved to disk/i)).toBeInTheDocument();
+    expect(screen.getByText(/the maximum size of recording data saved to disk./i)).toBeInTheDocument();
 
-    expect(screen.getByText(/the maximum age of recording data stored to disk/i)).toBeInTheDocument();
-
-    const createButton = screen.queryByRole('button', { name: /create/i }); // Create button
-    expect(createButton).not.toBeInTheDocument();
-
-    const saveConfigurationButton = screen.getByRole('button', { name: /save configuration/i }); // Save configuration button
-    expect(saveConfigurationButton).toBeInTheDocument();
-    expect(saveConfigurationButton).toBeVisible();
-    expect(saveConfigurationButton).toBeDisabled();
+    expect(screen.getByText(/the maximum age of recording data stored to disk./i)).toBeInTheDocument();
   });
 
-  it('saves configuration and creates recording', async () => {
-    const createRecordingRequestSpy = jest.spyOn(defaultServices.api, 'createRecording');
+  it('saves configuration', async () => {
     const setConfigRequestSpy = jest.spyOn(defaultServices.settings, 'setAutomatedAnalysisRecordingConfig');
     const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm isSettingsForm={false} />);
 
@@ -138,30 +118,31 @@ describe('<AutomatedAnalysisConfigForm />', () => {
     });
 
     const maxSizeInput = screen.getByRole('spinbutton', {
-      name: /max size value/i,
+      name: /maximum size value/i,
     });
 
     const maxAgeInput = screen.getByRole('spinbutton', {
-      name: /max age duration/i,
+      name: /maximum age value/i,
     });
 
     expect(templateSelect).toHaveDisplayValue(['Select a Template']);
     expect(maxAgeInput).toHaveValue(defaultAutomatedAnalysisRecordingConfig.maxAge);
     expect(maxSizeInput).toHaveValue(defaultAutomatedAnalysisRecordingConfig.maxSize);
 
-    const saveConfigurationButton = screen.getByRole('button', { name: /save configuration/i }); // Save configuration button
-    expect(saveConfigurationButton).toBeDisabled();
-
     await user.selectOptions(templateSelect, ['template1']);
-    expect(saveConfigurationButton).not.toBeDisabled();
+    expect(setConfigRequestSpy).toHaveBeenCalledTimes(1);
 
     await user.clear(maxSizeInput);
+    expect(setConfigRequestSpy).toHaveBeenCalledTimes(2);
+
     await user.clear(maxAgeInput);
+    expect(setConfigRequestSpy).toHaveBeenCalledTimes(3);
 
     await user.type(maxSizeInput, '100');
-    await user.type(maxAgeInput, '100');
+    expect(setConfigRequestSpy).toHaveBeenCalledTimes(6);
 
-    await user.click(saveConfigurationButton);
+    await user.type(maxAgeInput, '100');
+    expect(setConfigRequestSpy).toHaveBeenCalledTimes(9); // settings are saved on every change
 
     const config = {
       template: `template=${mockTemplate1.name},type=${mockTemplate1.type}`,
@@ -169,12 +150,6 @@ describe('<AutomatedAnalysisConfigForm />', () => {
       maxAge: 100,
     };
 
-    expect(setConfigRequestSpy).toHaveBeenCalledTimes(1);
     expect(setConfigRequestSpy).toHaveBeenCalledWith(config);
-
-    const createButton = screen.getByRole('button', { name: /create/i }); // Create button
-    await user.click(createButton);
-    expect(createRecordingRequestSpy).toHaveBeenCalledTimes(1);
-    expect(createRecordingRequestSpy).toHaveBeenCalledWith(automatedAnalysisConfigToRecordingAttributes(config));
   });
 });

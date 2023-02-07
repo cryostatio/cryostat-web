@@ -215,7 +215,7 @@ describe('<AutomatedAnalysisCard />', () => {
   it('renders report generation error view correctly', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of());
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
       preloadState: preloadedState,
     });
 
@@ -223,7 +223,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText(FAILED_REPORT_MESSAGE)).toBeInTheDocument(); // Error message
     expect(screen.getByText('Cryostat was unable to generate an automated analysis report.')).toBeInTheDocument(); // Error details
     expect(screen.getByRole('button', { name: /retry loading report/i })).toBeInTheDocument(); // Retry button
-    expect(screen.queryByLabelText('automated-analysis-toolbar')).not.toBeInTheDocument(); // Toolbar
+    expect(screen.queryByLabelText('Automated Analysis Toolbar')).not.toBeInTheDocument(); // Toolbar
   });
 
   it('renders empty recordings error view and creates recording when clicked', async () => {
@@ -232,7 +232,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyArchivedRecordingsResponse));
 
     jest.spyOn(defaultServices.api, 'createRecording').mockReturnValueOnce(of());
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
       preloadState: preloadedState,
     });
 
@@ -241,7 +241,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText('Automated Analysis Error')).toBeInTheDocument(); // Error view
     expect(screen.getByText(NO_RECORDINGS_MESSAGE)).toBeInTheDocument(); // Error message
     expect(screen.getByText('Cryostat was unable to generate an automated analysis report.')).toBeInTheDocument(); // Error details
-    expect(screen.queryByLabelText('automated-analysis-toolbar')).not.toBeInTheDocument(); // Toolbar
+    expect(screen.queryByLabelText('Automated Analysis Toolbar')).not.toBeInTheDocument(); // Toolbar
 
     await user.click(screen.getByRole('button', { name: /recording config dropdown/i }));
 
@@ -267,7 +267,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
       preloadState: preloadedState,
     });
 
@@ -287,7 +287,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
     expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByLabelText('Automated Analysis Toolbar')).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Active report name=${mockRecording.name}`)).toBeInTheDocument(); // Active report name
     expect(screen.queryByText('Most recent data')).not.toBeInTheDocument(); // Last updated text
@@ -317,7 +317,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockArchivedRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
       preloadState: preloadedState,
     });
 
@@ -337,7 +337,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
     expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByLabelText('Automated Analysis Toolbar')).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Archived report name=${mockArchivedRecording.name}`)).toBeInTheDocument(); // Archived report name
     expect(screen.getByText('Most recent data from 1 day ago.')).toBeInTheDocument(); // Last updated text
@@ -380,7 +380,7 @@ describe('<AutomatedAnalysisCard />', () => {
       },
     };
 
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
       preloadState: newPreloadedState,
     });
 
@@ -400,7 +400,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
     expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByLabelText('Automated Analysis Toolbar')).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Cached report name=${automatedAnalysisRecordingName}`)).toBeInTheDocument(); // Cached report name
     expect(screen.getByText('Most recent data from 2 days ago.')).toBeInTheDocument(); // Last updated text
@@ -426,7 +426,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
       preloadState: preloadedState, // Filter score default = 100
     });
 

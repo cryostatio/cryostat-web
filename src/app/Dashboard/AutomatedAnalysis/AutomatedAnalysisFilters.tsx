@@ -82,8 +82,8 @@ export const AutomatedAnalysisFilters: React.FC<AutomatedAnalysisFiltersProps> =
       (targetFilter) => targetFilter.target === props.target
     );
     if (!targetAutomatedAnalysisFilters.length) {
-      return t('FILTER_NAME', { ns: 'common' })
-    }; // Target is not yet loaded
+      return t('FILTER_NAME', { ns: 'common' });
+    } // Target is not yet loaded
     return targetAutomatedAnalysisFilters[0].selectedCategory;
   });
 

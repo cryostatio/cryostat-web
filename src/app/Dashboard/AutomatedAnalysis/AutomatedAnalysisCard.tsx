@@ -169,7 +169,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   const [usingCachedReport, setUsingCachedReport] = React.useState<boolean>(false);
   const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
   const [report, setReport] = React.useState<string>('automated-analysis');
-  const [showListView, setShowListView] = React.useState<boolean>(true);
+  const [showListView, setShowListView] = React.useState<boolean>(false);
   const [activeSortIndex, setActiveSortIndex] = React.useState<number | undefined>(undefined);
   const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc' | undefined>(undefined);
 
@@ -465,7 +465,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         if (errorMessage === NO_RECORDINGS_MESSAGE) {
           return [undefined, undefined];
         } else if (isAuthFail(errorMessage)) {
-          return [t('RETRY', { ns: 'common'}), generateReport];
+          return [t('RETRY', { ns: 'common' }), generateReport];
         } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
           return [t('AutomatedAnalysisCard.RETRY_STARTING'), startProfilingRecording];
           // 'Retry starting recording`
@@ -475,7 +475,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         } else if (errorMessage === TEMPLATE_UNSUPPORTED_MESSAGE) {
           return [undefined, undefined];
         } else {
-          return [t('RETRY', { ns: 'common'}), generateReport];
+          return [t('RETRY', { ns: 'common' }), generateReport];
         }
       }
       return [undefined, undefined];
@@ -641,11 +641,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             reportStalenessTimer > 1 ? 's' : ''
           } ago.`}
           &nbsp;
-          <Tooltip
-            content={
-              t('AutomatedAnalysisCard.STALE_REPORT_TOOLTIP')
-            }
-          >
+          <Tooltip content={t('AutomatedAnalysisCard.STALE_REPORT_TOOLTIP')}>
             <OutlinedQuestionCircleIcon
               style={{ height: '0.85em', width: '0.85em', color: 'var(--pf-global--Color--100)' }}
             />
@@ -664,9 +660,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
           <Title headingLevel="h4" size="lg">
             {t(`AutomatedAnalysisCard.NO_RESULTS`)}
           </Title>
-          <EmptyStateBody>
-            {t('AutomatedAnalysisCard.NO_RESULTS_BODY')}
-          </EmptyStateBody>
+          <EmptyStateBody>{t('AutomatedAnalysisCard.NO_RESULTS_BODY')}</EmptyStateBody>
           <EmptyStateSecondaryActions>
             <Button variant="link" onClick={handleClearFilters}>
               {t('AutomatedAnalysisCard.CLEAR_FILTERS')}
@@ -756,12 +750,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
                 key={topic}
               >
                 {evaluations.map((evaluation) => {
-                  return (
-                    <ClickableAutomatedAnalysisLabel
-                      label={evaluation}
-                      key={clickableAutomatedAnalysisKey}
-                    />
-                  );
+                  return <ClickableAutomatedAnalysisLabel label={evaluation} key={clickableAutomatedAnalysisKey} />;
                 })}
               </LabelGroup>
             </GridItem>
@@ -783,7 +772,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     return (
       <Toolbar
         id="automated-analysis-toolbar"
-        aria-label={t("AutomatedAnalysisCard.ARIA_LABELS.TOOLBAR")}
+        aria-label={t('AutomatedAnalysisCard.ARIA_LABELS.TOOLBAR')}
         clearAllFilters={handleClearFilters}
         clearFiltersButtonText="Clear all filters"
         isFullHeight
@@ -801,7 +790,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
                 isSmall
                 isDisabled={isLoading || usingCachedReport || usingArchivedReport}
                 isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
-                aria-label={t("AutomatedAnalysisCard.ARIA_LABELS.REFRESH_AA")}
+                aria-label={t('AutomatedAnalysisCard.ARIA_LABELS.REFRESH_AA')}
                 onClick={generateReport}
                 variant="control"
                 icon={<Spinner2Icon />}
@@ -810,7 +799,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
                 isSmall
                 isDisabled={isLoading}
                 isAriaDisabled={isLoading}
-                aria-label={t("AutomatedAnalysisCard.ARIA_LABELS.DELETE_AA")}
+                aria-label={t('AutomatedAnalysisCard.ARIA_LABELS.DELETE_AA')}
                 onClick={clearAnalysis}
                 variant="control"
                 icon={<TrashIcon />}
@@ -818,7 +807,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             </ToolbarItem>
             <ToolbarItem>
               <Checkbox
-                label={t("AutomatedAnalysisCard.CHECKBOX_LABEL_SHOW_NA_SCORES")}
+                label={t('AutomatedAnalysisCard.CHECKBOX_LABEL_SHOW_NA_SCORES')}
                 isChecked={showNAScores}
                 onChange={handleNAScoreChange}
                 id="show-na-scores"
@@ -827,7 +816,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             </ToolbarItem>
             <ToolbarItem>
               <Switch
-                label={t("AutomatedAnalysisCard.SWITCH_LABEL_LIST_VIEW")}
+                label={t('AutomatedAnalysisCard.SWITCH_LABEL_LIST_VIEW')}
                 isChecked={showListView}
                 onChange={() => setShowListView(!showListView)}
                 id="show-list-view"
@@ -859,7 +848,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         title={t('AutomatedAnalysisCard.ERROR_TITLE')}
         message={
           <TextContent>
-            <Text component={TextVariants.p}>{t("AutomatedAnalysisCard.ERROR_TEXT")}</Text>
+            <Text component={TextVariants.p}>{t('AutomatedAnalysisCard.ERROR_TEXT')}</Text>
             <Text component={TextVariants.small}>{errorMessage}</Text>
           </TextContent>
         }
@@ -924,11 +913,10 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     );
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
 
-
   const headerLabels = React.useMemo(() => {
     if (isLoading || errorMessage) return undefined;
     const filtered = evaluations.filter((e) => e.score >= AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD);
-    if (filtered.length === 0)  return <AutomatedAnalysisHeaderLabel />;
+    if (filtered.length === 0) return <AutomatedAnalysisHeaderLabel />;
     const [warnings, errors] = _.partition(filtered, (e) => e.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD);
     return (
       <LabelGroup>
@@ -1004,7 +992,7 @@ export const AutomatedAnalysisHeaderLabel: React.FC<AutomatedAnalysisHeaderLabel
   let color: 'red' | 'orange' | 'green';
   let children: React.ReactNode;
 
-  switch(props.type) {
+  switch (props.type) {
     case 'critical':
       onClick = () => {
         dispatch(automatedAnalysisAddGlobalFilterIntent('Score', AutomatedAnalysisScore.RED_SCORE_THRESHOLD));
@@ -1045,8 +1033,7 @@ export const AutomatedAnalysisHeaderLabel: React.FC<AutomatedAnalysisHeaderLabel
       {children}
     </Label>
   );
-
-}
+};
 
 export const AutomatedAnalysisCardSizes: DashboardCardSizes = {
   span: {

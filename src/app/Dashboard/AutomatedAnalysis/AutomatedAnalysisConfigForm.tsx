@@ -295,7 +295,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         {templateType == 'TARGET' && (
           <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
             <HelperTextItem variant="warning">
-              <Text component={TextVariants.p}>{t('TEMPLATE_INVALID_WARNING', { ns: 'common' })}</Text>
+              <Text component={TextVariants.p}>{t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}</Text>
             </HelperTextItem>
           </HelperText>
         )}

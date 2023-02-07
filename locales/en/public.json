@@ -25,7 +25,7 @@
     "CLEAR_FILTERS": "Clear all filters",
     "CRITICAL_RESULTS_one": "{{count}} Critical Result",
     "CRITICAL_RESULTS_other": "{{count}} Critical Results",
-    "ERROR_TEXT": "Cryostat was unable to generate an automated analysis report",
+    "ERROR_TEXT": "Cryostat was unable to generate an automated analysis report.",
     "ERROR_TITLE": "Automated Analysis Error",
     "GOOD_RESULTS": "No problems",
     "NO_RESULTS": "No Results Found",
@@ -40,12 +40,13 @@
     "WARNING_RESULTS_other": "{{count}} Warning Results"
   },
   "AutomatedAnalysisConfigDrawer": {
-    "Create Recording": "Create Recording"
+    "CREATE_RECORDING": "Create Recording"
   },
   "AutomatedAnalysisConfigForm": {
     "ERROR_TITLE": "Error displaying recording configuration settings",
     "FORM_TITLE": "Profiling Recording Configuration",
-    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings."
+    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings.",
+    "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if they do not support them."
   },
   "CHART_CARD": {
     "BUTTONS": {
