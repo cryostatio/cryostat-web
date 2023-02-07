@@ -86,16 +86,17 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     }
     return [templateName, templateType];
   };
-
-  const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [templateName, setTemplateName] = React.useState<string | undefined>(parseEventString()[0]);
-  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(parseEventString()[1]);
-  const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
-  const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
-  const [errorMessage, setErrorMessage] = React.useState('');
   const [recordingConfig, setRecordingConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
     context.settings.automatedAnalysisRecordingConfig()
   );
+  const [templates, setTemplates] = React.useState([] as EventTemplate[]);
+  const [templateName, setTemplateName] = React.useState<string | undefined>(parseEventString()[0]);
+  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(parseEventString()[1]);
+  const [maxAge, setMaxAge] = React.useState(recordingConfig.maxAge);
+  const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
+  const [maxSize, setMaxSize] = React.useState(recordingConfig.maxSize);
+  const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const refreshTemplates = React.useCallback(() => {
     addSubscription(
@@ -157,40 +158,43 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 
   const handleMaxAgeChange = React.useCallback(
     (evt) => {
+      setMaxAge(Number(evt));
       setAAConfig({ ...recordingConfig, maxAge: Number(evt) * maxAgeUnits });
     },
-    [setAAConfig, recordingConfig, maxAgeUnits]
+    [setMaxAge, setAAConfig, recordingConfig, maxAgeUnits]
   );
 
   const handleMaxAgeUnitChange = React.useCallback(
     (evt) => {
       setMaxAgeUnits(Number(evt));
-      const maxAge = recordingConfig.maxAge;
       setAAConfig({ ...recordingConfig, maxAge: Number(evt) * maxAge });
     },
-    [recordingConfig, setMaxAgeUnits, setAAConfig]
+    [setMaxAgeUnits, setAAConfig, recordingConfig, maxAge]
   );
 
   const handleMaxSizeChange = React.useCallback(
     (evt) => {
+      setMaxSize(Number(evt));
       setAAConfig({ ...recordingConfig, maxSize: Number(evt) * maxSizeUnits });
     },
-    [setAAConfig, recordingConfig, maxSizeUnits]
+    [setMaxSize, setAAConfig, recordingConfig, maxSizeUnits]
   );
 
   const handleMaxSizeUnitChange = React.useCallback(
     (evt) => {
       setMaxSizeUnits(Number(evt));
-      const maxSize = recordingConfig.maxSize;
       setAAConfig({ ...recordingConfig, maxSize: Number(evt) * maxSize });
     },
-    [recordingConfig, setMaxSizeUnits, setAAConfig]
+    [setMaxSizeUnits, setAAConfig, recordingConfig, maxSize]
   );
 
   const handleTemplateChange = React.useCallback(
     (templateName?: string, templateType?: TemplateType) => {
       setTemplateName(templateName);
       setTemplateType(templateType);
+      if (!templateName || !templateType) {
+        return;
+      }
       setAAConfig({
         ...recordingConfig,
         template: getEventString(templateName || '', templateType || ''),
@@ -217,32 +221,40 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           label={`Template`}
           isRequired
           fieldId="recording-template"
-          validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+          validated={!templateName ? ValidatedOptions.error : ValidatedOptions.success}
           helperText={t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}
-          helperTextInvalid="A Template must be selected"
+          helperTextInvalid={t('TEMPLATE_HELPER_TEXT_INVALID', { ns: 'common' })}
         >
           <SelectTemplateSelectorForm
             templates={templates}
-            validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+            validated={!templateName ? ValidatedOptions.error : ValidatedOptions.success}
             onSelect={handleTemplateChange}
             selected={selectedSpecifier}
           />
         </FormGroup>
-        <FormGroup label="Maximum size" fieldId="maxSize" helperText="The maximum size of recording data saved to disk">
+        <FormGroup
+          label={t('MAXIMUM_SIZE', { ns: 'common' })}
+          fieldId="maxSize"
+          helperText={t('MAXIMUM_SIZE_HELPER_TEXT', { ns: 'common' })}
+        >
           <Split hasGutter={true}>
             <SplitItem isFilled>
               <TextInput
-                value={recordingConfig.maxSize}
+                value={maxSize}
                 isRequired
                 type="number"
                 id="maxSize"
-                aria-label="max size value"
+                aria-label={t('AriaLabels.MAXIMUM_SIZE', { ns: 'common' })}
                 onChange={handleMaxSizeChange}
                 min="0"
               />
             </SplitItem>
             <SplitItem>
-              <FormSelect value={maxSizeUnits} onChange={handleMaxSizeUnitChange} aria-label="Max size units input">
+              <FormSelect
+                value={maxSizeUnits}
+                onChange={handleMaxSizeUnitChange}
+                aria-label={t('AriaLabels.MAXIMUM_SIZE_UNITS_INPUT', { ns: 'common' })}
+              >
                 <FormSelectOption key="1" value="1" label="B" />
                 <FormSelectOption key="2" value={1024} label="KiB" />
                 <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
@@ -250,24 +262,32 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             </SplitItem>
           </Split>
         </FormGroup>
-        <FormGroup label="Maximum age" fieldId="maxAge" helperText="The maximum age of recording data stored to disk">
+        <FormGroup
+          label={t('MAXIMUM_AGE', { ns: 'common' })}
+          fieldId="maxAge"
+          helperText={t('MAXIMUM_AGE_HELPER_TEXT', { ns: 'common' })}
+        >
           <Split hasGutter={true}>
             <SplitItem isFilled>
               <TextInput
-                value={recordingConfig.maxAge}
+                value={maxAge}
                 isRequired
                 type="number"
                 id="maxAgeDuration"
-                aria-label="Max age duration"
+                aria-label={t('AriaLabels.MAXIMUM_AGE', { ns: 'common' })}
                 onChange={handleMaxAgeChange}
                 min="0"
               />
             </SplitItem>
             <SplitItem>
-              <FormSelect value={maxAgeUnits} onChange={handleMaxAgeUnitChange} aria-label="Max Age units Input">
-                <FormSelectOption key="1" value="1" label="Seconds" />
-                <FormSelectOption key="2" value={60} label="Minutes" />
-                <FormSelectOption key="3" value={60 * 60} label="Hours" />
+              <FormSelect
+                value={maxAgeUnits}
+                onChange={handleMaxAgeUnitChange}
+                aria-label={t('AriaLabels.MAXIMUM_AGE_UNITS_INPUT', { ns: 'common' })}
+              >
+                <FormSelectOption key="1" value="1" label={t('SECOND', { count: 0, ns: 'common' })} />
+                <FormSelectOption key="2" value={60} label={t('MINUTE', { count: 0, ns: 'common' })} />
+                <FormSelectOption key="3" value={60 * 60} label={t('HOUR', { count: 0, ns: 'common' })} />
               </FormSelect>
             </SplitItem>
           </Split>
@@ -275,24 +295,21 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         {templateType == 'TARGET' && (
           <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
             <HelperTextItem variant="warning">
-              <Text component={TextVariants.p}>
-                WARNING: Setting a Target Template as a default template type configuration may not apply to all
-                Target JVMs if they do not support them.
-              </Text>
+              <Text component={TextVariants.p}>{t('TEMPLATE_INVALID_WARNING', { ns: 'common' })}</Text>
             </HelperTextItem>
           </HelperText>
         )}
-    </>
+      </>
     ),
     [
       t,
-      recordingConfig.maxSize,
-      recordingConfig.maxAge,
       templateName,
       templateType,
       templates,
       selectedSpecifier,
+      maxSize,
       maxSizeUnits,
+      maxAge,
       maxAgeUnits,
       handleMaxSizeChange,
       handleMaxAgeChange,
@@ -305,7 +322,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error displaying recording configuration settings'}
+        title={t('AutomatedAnalysisConfigForm.ERROR_TITLE')}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
@@ -317,7 +334,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
         formContent
       ) : (
         <Form>
-          <FormSection title={'Profiling Recording Configuration'}>{formContent}</FormSection>
+          <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
         </Form>
       )}
     </>

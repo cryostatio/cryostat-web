@@ -38,6 +38,7 @@
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import {
+  automatedAnalysisAddGlobalFilterIntent,
   emptyAutomatedAnalysisFilters,
   TargetAutomatedAnalysisFilters,
 } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
@@ -58,6 +59,7 @@ import {
   Recording,
 } from '@app/Shared/Services/Api.service';
 import {
+  AutomatedAnalysisScore,
   CategorizedRuleEvaluations,
   FAILED_REPORT_MESSAGE,
   NO_RECORDINGS_MESSAGE,
@@ -78,6 +80,12 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  EmptyStateSecondaryActions,
+  Flex,
+  FlexItem,
   Grid,
   GridItem,
   Label,
@@ -86,16 +94,41 @@ import {
   LevelItem,
   Stack,
   StackItem,
+  Switch,
   Text,
   TextContent,
   TextVariants,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
   Tooltip,
 } from '@patternfly/react-core';
-import { InfoCircleIcon, OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  ExclamationTriangleIcon,
+  InfoCircleIcon,
+  OutlinedQuestionCircleIcon,
+  SearchIcon,
+  Spinner2Icon,
+  TrashIcon,
+} from '@patternfly/react-icons';
+import { css } from '@patternfly/react-styles';
+import {
+  InnerScrollContainer,
+  OuterScrollContainer,
+  TableComposable,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  ThProps,
+  Tr,
+} from '@patternfly/react-table';
+import { t } from 'i18next';
+import _ from 'lodash';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
@@ -120,6 +153,8 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   const dispatch = useDispatch<StateDispatch>();
 
   const [targetConnectURL, setTargetConnectURL] = React.useState('');
+  const [evaluations, setEvaluations] = React.useState<RuleEvaluation[]>([]);
+
   const [categorizedEvaluation, setCategorizedEvaluation] = React.useState<CategorizedRuleEvaluations[]>([]);
   const [filteredCategorizedEvaluation, setFilteredCategorizedEvaluation] = React.useState<
     CategorizedRuleEvaluations[]
@@ -134,6 +169,9 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   const [usingCachedReport, setUsingCachedReport] = React.useState<boolean>(false);
   const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
   const [report, setReport] = React.useState<string>('automated-analysis');
+  const [showListView, setShowListView] = React.useState<boolean>(true);
+  const [activeSortIndex, setActiveSortIndex] = React.useState<number | undefined>(undefined);
+  const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc' | undefined>(undefined);
 
   const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.state.targetFilters.filter(
@@ -148,6 +186,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
 
   const categorizeEvaluation = React.useCallback(
     (arr: RuleEvaluation[]) => {
+      setEvaluations(arr);
       const map = new Map<string, RuleEvaluation[]>();
       arr.forEach((evaluation) => {
         const topicValue = map.get(evaluation.topic);
@@ -161,7 +200,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       const sorted = (Array.from(map) as CategorizedRuleEvaluations[]).sort();
       setCategorizedEvaluation(sorted);
     },
-    [setCategorizedEvaluation]
+    [setCategorizedEvaluation, setEvaluations]
   );
 
   // Will perform analysis on  the first ActiveRecording which has
@@ -502,32 +541,6 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     [setShowNAScores]
   );
 
-  const filteredCategorizedLabels = React.useMemo(() => {
-    return (
-      <Grid>
-        {filteredCategorizedEvaluation
-          .filter(([_, evaluations]) => evaluations.length > 0)
-          .map(([topic, evaluations]) => {
-            return (
-              <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
-                <LabelGroup categoryName={topic} isVertical numLabels={3} isCompact key={`topic-${topic}`}>
-                  {evaluations.map((evaluation) => {
-                    return (
-                      <ClickableAutomatedAnalysisLabel
-                        label={evaluation}
-                        isSelected={false}
-                        key={clickableAutomatedAnalysisKey}
-                      />
-                    );
-                  })}
-                </LabelGroup>
-              </GridItem>
-            );
-          })}
-      </Grid>
-    );
-  }, [filteredCategorizedEvaluation]);
-
   const clearAnalysis = React.useCallback(() => {
     if (usingArchivedReport) {
       handleStateErrors(NO_RECORDINGS_MESSAGE);
@@ -580,6 +593,43 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     dispatch(automatedAnalysisDeleteAllFiltersIntent(targetConnectURL));
   }, [dispatch, targetConnectURL]);
 
+  const icon = React.useCallback((score: number): JSX.Element => {
+    return score == AutomatedAnalysisScore.NA_SCORE ? (
+      <span className={css('pf-m-grey', 'pf-c-label__icon')}>
+        <InfoCircleIcon />
+      </span>
+    ) : score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD ? (
+      <span className={css('pf-m-green', 'pf-c-label__icon')}>
+        <CheckCircleIcon />
+      </span>
+    ) : score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD ? (
+      <span className={css('pf-m-orange', 'pf-c-label__icon')}>
+        <ExclamationTriangleIcon />
+      </span>
+    ) : (
+      <span className={css('pf-m-red', 'pf-c-label__icon')}>
+        <ExclamationCircleIcon />
+      </span>
+    );
+  }, []);
+
+  const getSortParams = React.useCallback(
+    (columnIndex: number): ThProps['sort'] => ({
+      sortBy: {
+        index: activeSortIndex,
+        direction: activeSortDirection,
+      },
+      onSort: (_event, index, direction) => {
+        console.log('??');
+
+        setActiveSortIndex(index);
+        setActiveSortDirection(direction);
+      },
+      columnIndex,
+    }),
+    [setActiveSortIndex, setActiveSortDirection, activeSortIndex, activeSortDirection]
+  );
+
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
       return undefined;
@@ -604,6 +654,132 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       </TextContent>
     );
   }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits]);
+
+  const filteredCategorizedLabels = React.useMemo(() => {
+    const filtered = filteredCategorizedEvaluation.filter(([_, evaluations]) => evaluations.length > 0);
+    if (filtered.length === 0) {
+      return (
+        <EmptyState>
+          <EmptyStateIcon icon={SearchIcon} />
+          <Title headingLevel="h4" size="lg">
+            No Results Found
+          </Title>
+          <EmptyStateBody>
+            No results match this filter criteria. Try removing filters, or resetting the severity score filter to 0 to
+            show results.
+          </EmptyStateBody>
+          <EmptyStateSecondaryActions>
+            <Button variant="link" onClick={handleClearFilters}>
+              Clear all filters
+            </Button>
+          </EmptyStateSecondaryActions>
+        </EmptyState>
+      );
+    }
+    if (showListView) {
+      const flatFiltered = filtered
+        .flatMap(([_, evaluations]) => {
+          return evaluations.map((evaluation) => evaluation);
+        })
+        .sort((a, b) => {
+          const aValue = activeSortIndex === 0 ? a.name : a.score;
+          const bValue = activeSortIndex === 0 ? b.name : b.score;
+          if (typeof aValue === 'string' && typeof bValue === 'string') {
+            if (activeSortDirection === 'asc') {
+              return aValue.localeCompare(bValue);
+            }
+            return bValue.localeCompare(aValue);
+          }
+          if (typeof aValue === 'number' && typeof bValue === 'number') {
+            if (activeSortDirection === 'asc') {
+              if (aValue === bValue) {
+                return a.name.localeCompare(b.name);
+              }
+              return aValue - bValue;
+            } else {
+              if (aValue === bValue) {
+                return b.name.localeCompare(a.name);
+              }
+              return bValue - aValue;
+            }
+          }
+          return 0;
+        });
+      return (
+        <OuterScrollContainer>
+          <InnerScrollContainer className="automated-analysis-data-list-scroll">
+            <TableComposable aria-label={'automated-analysis-data-list'} gridBreakPoint={'grid-md'} isStickyHeader>
+              <Thead>
+                <Tr>
+                  <Th sort={getSortParams(0)}>Result</Th>
+                  <Th modifier="wrap" sort={getSortParams(1)}>
+                    Score
+                  </Th>
+                  <Th modifier="wrap">Description</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {flatFiltered.map((evaluation) => {
+                  return (
+                    <Tr key={evaluation.name}>
+                      <Td dataLabel="Result" width={20}>
+                        {evaluation.name}
+                      </Td>
+                      <Td dataLabel="Score" modifier="wrap">
+                        <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+                          <FlexItem>
+                            {evaluation.score == AutomatedAnalysisScore.NA_SCORE ? 'N/A' : evaluation.score.toFixed(1)}
+                          </FlexItem>
+                          <FlexItem>{icon(evaluation.score)}</FlexItem>
+                        </Flex>
+                      </Td>
+                      <Td dataLabel="Description">{evaluation.description}</Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </TableComposable>
+          </InnerScrollContainer>
+        </OuterScrollContainer>
+      );
+    }
+    return (
+      <Grid>
+        {filtered.map(([topic, evaluations]) => {
+          return (
+            <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
+              <LabelGroup
+                className="automated-analysis-topic-label-groups"
+                categoryName={topic}
+                isVertical
+                numLabels={3}
+                isCompact
+                key={`topic-${topic}`}
+              >
+                {evaluations.map((evaluation) => {
+                  return (
+                    <ClickableAutomatedAnalysisLabel
+                      label={evaluation}
+                      isSelected={false}
+                      key={clickableAutomatedAnalysisKey}
+                    />
+                  );
+                })}
+              </LabelGroup>
+            </GridItem>
+          );
+        })}
+      </Grid>
+    );
+  }, [
+    handleClearFilters,
+    getSortParams,
+    icon,
+    activeSortIndex,
+    activeSortDirection,
+    filteredCategorizedEvaluation,
+    showListView,
+  ]);
 
   const toolbar = React.useMemo(() => {
     return (
@@ -651,6 +827,14 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
                 name="show-na-scores"
               />
             </ToolbarItem>
+            <ToolbarItem>
+              <Switch
+                label="Toggle list view"
+                isChecked={showListView}
+                onChange={() => setShowListView(!showListView)}
+                id="show-list-view"
+              />
+            </ToolbarItem>
           </ToolbarGroup>
         </ToolbarContent>
       </Toolbar>
@@ -658,6 +842,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   }, [
     isLoading,
     showNAScores,
+    showListView,
     targetConnectURL,
     categorizedEvaluation,
     targetAutomatedAnalysisFilters,
@@ -733,15 +918,54 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   ]);
 
   const reportSource = React.useMemo(() => {
-    if (isLoading || errorMessage) {
-      return undefined;
-    }
+    if (isLoading || errorMessage) return undefined;
     return (
       <Label icon={<InfoCircleIcon />} color={'cyan'}>
         {`${usingArchivedReport ? 'Archived' : usingCachedReport ? 'Cached' : 'Active'} report name=${report}`}
       </Label>
     );
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
+
+  const headerLabels = React.useMemo(() => {
+    if (isLoading || errorMessage) return undefined;
+    const filtered = evaluations.filter((e) => e.score >= AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD);
+    if (filtered.length === 0)
+      return (
+        <Label icon={<CheckCircleIcon />} color={'green'}>
+          No problems
+        </Label>
+      );
+    const [warnings, errors] = _.partition(filtered, (e) => e.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD);
+    return (
+      <LabelGroup>
+        {reportSource}
+        {errors.length > 0 && (
+          <Label
+            onClick={(e) => {
+              e.stopPropagation;
+              dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 100));
+            }}
+            icon={<ExclamationCircleIcon />}
+            color={'red'}
+          >
+            {t('AutomatedAnalysisCard.CRITICAL_RESULTS', { count: errors.length })}
+          </Label>
+        )}
+        {warnings.length > 0 && (
+          <Label
+            onClick={(e) => {
+              e.stopPropagation;
+              dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 50));
+            }}
+            icon={<ExclamationTriangleIcon />}
+            color={'orange'}
+          >
+            {t('AutomatedAnalysisCard.WARNING_RESULTS', { count: warnings.length })}
+          </Label>
+        )}
+      </LabelGroup>
+    );
+  }, [dispatch, isLoading, errorMessage, evaluations, reportSource]);
 
   return (
     <DashboardCard
@@ -765,7 +989,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             <LevelItem>
               <CardTitle component="h4">Automated Analysis</CardTitle>
             </LevelItem>
-            <LevelItem>{reportSource}</LevelItem>
+            <LevelItem>{headerLabels}</LevelItem>
           </Level>
         </CardHeader>
       }
@@ -816,6 +1040,5 @@ This card should be unique on a dashboard.
       `,
   component: AutomatedAnalysisCard,
   propControls: [],
-  // FIXME this form gets embedded within a form, and should not have its own independent create/save controls
   advancedConfig: <AutomatedAnalysisConfigForm isSettingsForm={false}></AutomatedAnalysisConfigForm>,
 };

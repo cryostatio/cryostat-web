@@ -1,22 +1,36 @@
 {
+  "AriaLabels": {
+    "MAXIMUM_AGE": "Maximum age duration",
+    "MAXIMUM_AGE_UNITS_INPUT": "Maximum age units input",
+    "MAXIMUM_SIZE": "Maximum size value",
+    "MAXIMUM_SIZE_UNITS_INPUT": "Maximum size units input"
+  },
   "BETA": "BETA",
   "CANCEL": "Cancel",
   "CRYOSTAT_TRADEMARK": "Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0",
   "DATE": "Date",
   "DEVELOPMENT": "DEVELOPMENT",
   "HOUR": "Hour",
-  "MAX_AGE": "Max Age ({{unit}})",
-  "MAX_SIZE": "Max Size ({{unit}})",
+  "HOUR_one": "Hour",
+  "HOUR_other": "Hours",
+  "MAXIMUM_AGE": "Maximum age",
+  "MAXIMUM_AGE_HELPER_TEXT": "The maximum age of recording data stored to disk",
+  "MAXIMUM_SIZE": "Maximum size",
+  "MAXIMUM_SIZE_HELPER_TEXT": "The maximum size of recording data saved to disk",
   "MERIDIEM_AM": "AM",
   "MERIDIEM_PM": "PM",
   "MINUTE": "Minute",
+  "MINUTE_one": "Minute",
+  "MINUTE_other": "Minutes",
   "PRODUCTION": "PRODUCTION",
   "REMOVE": "Remove",
   "SECOND": "Second",
+  "SECOND_one": "Second",
+  "SECOND_other": "Seconds",
   "SELECT": "Select",
   "SHOW_LESS": "Show less",
   "SHOW_MORE": "Show more",
-  "TIME": "Time",
-  "TEMPLATE": "Template"
-
+  "TEMPLATE_HELPER_TEXT_INVALID": "Template must be selected",
+  "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if they do not support them",
+  "TIME": "Time"
 }

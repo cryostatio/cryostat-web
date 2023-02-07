@@ -215,6 +215,7 @@ export interface CachedReportValue {
   timestamp: number;
 }
 
+// [topic, { ruleName, score, description, ... }}]
 export type CategorizedRuleEvaluations = [string, RuleEvaluation[]];
 
 export type GenerationError = Error & {

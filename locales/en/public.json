@@ -12,7 +12,15 @@
     "OPEN_SOURCE_LICENSE": "Open Source License",
     "VERSION": "version"
   },
+  "AutomatedAnalysisCard": {
+    "CRITICAL_RESULTS_one": "{{count}} Critical Result",
+    "CRITICAL_RESULTS_other": "{{count}} Critical Results",
+    "WARNING_RESULTS_one": "{{count}} Warning Result",
+    "WARNING_RESULTS_other": "{{count}} Warning Results"
+  },
   "AutomatedAnalysisConfigForm": {
+    "ERROR_TITLE": "Error displaying recording configuration settings",
+    "FORM_TITLE": "Profiling Recording Configuration",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings."
   },
   "CHART_CARD": {
