@@ -42,12 +42,10 @@ import {
   BehaviorSubject,
   catchError,
   concatMap,
-  filter,
   finalize,
   first,
   map,
   merge,
-  mergeMap,
   Observable,
   of,
   pairwise,
@@ -139,13 +137,6 @@ export class ChartController {
 
   private _init(): void {
     this._subscriptions.push(
-      this._target
-        .target()
-        .pipe(mergeMap((t) => this._hasRecording(t)))
-        .subscribe((v) => this._hasRecording$.next(v))
-    );
-
-    this._subscriptions.push(
       merge(
         this._updates$.pipe(
           throttleTime(MIN_REFRESH),
@@ -153,17 +144,17 @@ export class ChartController {
         ),
         this._target.target()
       )
-        .pipe(
-          concatMap((t) => this._hasRecording(t)),
-          filter((v) => !!v)
-        )
-        .subscribe((_) => {
-          this._api
-            .uploadActiveRecordingToGrafana(RECORDING_NAME)
-            .pipe(first())
-            .subscribe((_) => {
-              /* do nothing */
-            });
+        .pipe(concatMap((t) => this._hasRecording(t)))
+        .subscribe((v) => {
+          this._hasRecording$.next(v);
+          if (v) {
+            this._api
+              .uploadActiveRecordingToGrafana(RECORDING_NAME)
+              .pipe(first())
+              .subscribe((_) => {
+                /* do nothing */
+              });
+          }
         })
     );
 
