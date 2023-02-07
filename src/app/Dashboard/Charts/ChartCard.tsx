@@ -53,7 +53,7 @@ import {
   EmptyStateVariant,
   Title,
 } from '@patternfly/react-core';
-import { ExternalLinkAltIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { DataSourceIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { interval } from 'rxjs';
@@ -251,9 +251,9 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
           ) : (
             <Bullseye>
               <EmptyState variant={EmptyStateVariant.large}>
-                <EmptyStateIcon icon={PlusCircleIcon} />
+                <EmptyStateIcon icon={DataSourceIcon} />
                 <Title headingLevel="h2" size="md">
-                  Start a source recording
+                  No source recording
                 </Title>
                 <EmptyStateBody>
                   Metrics cards display data taken from running flight recordings with the label{' '}
