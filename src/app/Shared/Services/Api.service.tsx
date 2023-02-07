@@ -1415,6 +1415,14 @@ export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecording
   maxAge: 0,
 };
 
+export interface ChartControllerConfig {
+  minRefresh: number;
+}
+
+export const defaultChartControllerConfig: ChartControllerConfig = {
+  minRefresh: 10,
+};
+
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
 export const UPLOADS_SUBDIRECTORY = 'uploads';

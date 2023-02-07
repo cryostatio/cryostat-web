@@ -98,11 +98,3 @@ export const ChartCardsConfig: UserSetting = {
   content: Component,
   category: 'SETTINGS.CATEGORIES.DASHBOARD',
 };
-
-export interface ChartControllerConfig {
-  minRefresh: number;
-}
-
-export const defaultChartControllerConfig: ChartControllerConfig = {
-  minRefresh: 10,
-};

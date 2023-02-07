@@ -37,14 +37,15 @@
  */
 
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { ChartControllerConfig, defaultChartControllerConfig } from '@app/Settings/ChartCardsConfig';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
+  ChartControllerConfig,
   defaultAutomatedAnalysisRecordingConfig,
+  defaultChartControllerConfig,
   RecordingAttributes,
 } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
