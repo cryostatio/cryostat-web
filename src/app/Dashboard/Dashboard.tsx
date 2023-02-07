@@ -239,6 +239,15 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };
 
+export function hasConfigByName(name: string): boolean {
+  for (const choice of getDashboardCards()) {
+    if (choice.component.name === name) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function getConfigByName(name: string): DashboardCardDescriptor {
   for (const choice of getDashboardCards()) {
     if (choice.component.name === name) {
@@ -246,6 +255,15 @@ export function getConfigByName(name: string): DashboardCardDescriptor {
     }
   }
   throw new Error(`Unknown card type selection: ${name}`);
+}
+
+export function hasConfigByTitle(title: string): boolean {
+  for (const choice of getDashboardCards()) {
+    if (choice.title === title) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function getConfigByTitle(title: string): DashboardCardDescriptor {
@@ -280,7 +298,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const handleResetSize = React.useCallback(
     (idx: number) => {
       const defaultSpan = getConfigByName(cardConfigs[idx].name).cardSizes.span.default;
-      if (defaultSpan == cardConfigs[idx].span) {
+      if (defaultSpan === cardConfigs[idx].span) {
         return;
       }
       dispatch(dashboardCardConfigResizeCardIntent(idx, defaultSpan));
@@ -295,17 +313,21 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
           {cardConfigs.map((cfg, idx) => (
             <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
               <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-                {React.createElement(getConfigByName(cfg.name).component, {
-                  ...cfg.props,
-                  dashboardId: idx,
-                  actions: [
-                    <DashboardCardActionMenu
-                      key={`${cfg.name}-actions`}
-                      onRemove={() => handleRemove(idx)}
-                      onResetSize={() => handleResetSize(idx)}
-                    />,
-                  ],
-                })}
+                {hasConfigByName(cfg.name) ? (
+                  React.createElement(getConfigByName(cfg.name).component, {
+                    ...cfg.props,
+                    dashboardId: idx,
+                    actions: [
+                      <DashboardCardActionMenu
+                        key={`${cfg.name}-actions`}
+                        onRemove={() => handleRemove(idx)}
+                        onResetSize={() => handleResetSize(idx)}
+                      />,
+                    ],
+                  })
+                ) : (
+                  <></>
+                )}
               </GridItem>
             </FeatureFlag>
           ))}
