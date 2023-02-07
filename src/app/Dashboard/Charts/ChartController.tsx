@@ -108,8 +108,7 @@ export class ChartController {
 
     return (
       this._api
-        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-        .graphql<any>(
+        .graphql<CountResponse>(
           `
           query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
             targetNodes(filter: { name: $connectUrl }) {
@@ -126,9 +125,15 @@ export class ChartController {
           }`,
           { connectUrl: target.connectUrl }
         )
-        // TODO error handling
         .pipe(
-          map((resp) => resp.data.targetNodes[0].recordings.active.aggregate.count > 0),
+          map((resp) => {
+            const nodes = resp?.data?.targetNodes;
+            if (nodes.length === 0) {
+              return false;
+            }
+            const count = nodes[0]?.recordings?.active?.aggregate?.count;
+            return count > 0;
+          }),
           catchError((_) => of(false)),
           first()
         )
@@ -211,4 +216,18 @@ export class ChartController {
     this._subscriptions.forEach((s) => s.unsubscribe());
     this._subscriptions.splice(0, this._subscriptions.length);
   }
+}
+
+interface CountResponse {
+  data: {
+    targetNodes: {
+      recordings: {
+        active: {
+          aggregate: {
+            count: number;
+          };
+        };
+      };
+    }[];
+  };
 }
