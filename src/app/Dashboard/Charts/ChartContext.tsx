@@ -44,10 +44,8 @@ export interface Controllers {
   controller: ChartController;
 }
 
-const defaultControllers: Controllers = {
+const ChartContext: React.Context<Controllers> = React.createContext({
   controller: new ChartController(defaultServices.api, defaultServices.target),
-};
+});
 
-const ChartContext: React.Context<Controllers> = React.createContext(defaultControllers);
-
-export { defaultControllers, ChartContext };
+export { ChartContext };

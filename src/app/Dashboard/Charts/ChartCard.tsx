@@ -52,14 +52,14 @@ import {
   EmptyStateVariant,
   Title,
 } from '@patternfly/react-core';
-import { ExternalLinkAltIcon, PlusCircleIcon, RedoIcon } from '@patternfly/react-icons';
+import { ExternalLinkAltIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
-import { first, interval, timer } from 'rxjs';
+import { interval } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import { ChartContext } from './ChartContext';
-import { MIN_REFRESH, RECORDING_NAME } from './ChartController';
+import { RECORDING_NAME } from './ChartController';
 
 export interface ChartCardProps extends DashboardCardProps {
   theme: string;
@@ -114,10 +114,10 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const controllerContext = React.useContext(ChartContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
+  const [idx, setIdx] = React.useState(0);
   const [hasRecording, setHasRecording] = React.useState(false);
   const [chartSrc, setChartSrc] = React.useState('');
   const [dashboardUrl, setDashboardUrl] = React.useState('');
-  const [refreshDisabled, setRefreshDisabled] = React.useState(true);
 
   React.useEffect(() => {
     addSubscription(controllerContext.controller.hasActiveRecording().subscribe(setHasRecording));
@@ -131,31 +131,17 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     if (!dashboardUrl) {
       return;
     }
-    setRefreshDisabled(true);
     const u = new URL('/d-solo/main', dashboardUrl);
     u.searchParams.append('theme', props.theme);
     u.searchParams.append('panelId', String(kindToId(props.chartKind)));
     u.searchParams.append('to', 'now');
     u.searchParams.append('from', `now-${props.duration}s`);
-    // TODO make this configurable
-    u.searchParams.append('refresh', '5s');
+    u.searchParams.append('refresh', `${props.period}s`);
     setChartSrc(u.toString());
-  }, [dashboardUrl, setRefreshDisabled, props.theme, props.chartKind, props.duration, setChartSrc]);
-
-  const handleOnLoad = React.useCallback(() => {
-    addSubscription(
-      timer(MIN_REFRESH)
-        .pipe(first())
-        .subscribe((_) => setRefreshDisabled(false))
-    );
-  }, [addSubscription, setRefreshDisabled]);
+  }, [dashboardUrl, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
 
   React.useEffect(() => {
-    addSubscription(
-      controllerContext.controller.refresh().subscribe((_) => {
-        /* do nothing */
-      })
-    );
+    addSubscription(controllerContext.controller.attach().subscribe(setIdx));
   }, [addSubscription, controllerContext]);
 
   const refresh = React.useCallback(() => {
@@ -183,6 +169,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     return (
       <>
         <Button
+          key={0}
           aria-label={`Pop out ${props.chartKind} chart`}
           onClick={popout}
           variant="plain"
@@ -193,27 +180,13 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     );
   }, [props.chartKind, popout, chartSrc, dashboardUrl]);
 
-  const refreshButton = React.useMemo(() => {
-    return (
-      <>
-        <Button
-          aria-label={`Refresh ${props.chartKind} chart`}
-          onClick={refresh}
-          variant="plain"
-          icon={<RedoIcon />}
-          isDisabled={refreshDisabled}
-        />
-      </>
-    );
-  }, [props.chartKind, refresh, refreshDisabled]);
-
   const actions = React.useMemo(() => {
     const a = props.actions || [];
     if (!hasRecording) {
       return a;
     }
-    return [popoutButton, refreshButton, ...a];
-  }, [props.actions, hasRecording, refreshButton, popoutButton]);
+    return [popoutButton, ...a];
+  }, [props.actions, hasRecording, popoutButton]);
 
   const header = React.useMemo(() => {
     if (hasRecording) {
@@ -255,35 +228,34 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   return (
     <>
       <DashboardCard
+        key={idx}
+        id={props.chartKind + '-chart-card'}
         dashboardId={props.dashboardId}
         cardSizes={ChartCardSizes}
-        id={props.chartKind + '-chart-card'}
         isCompact
         style={cardStyle}
         cardHeader={header}
       >
         <CardBody>
           {hasRecording ? (
-            <iframe style={{ height: '100%', width: '100%' }} src={chartSrc} onLoad={handleOnLoad} />
+            <iframe style={{ height: '100%', width: '100%' }} src={chartSrc} />
           ) : (
-            <>
-              <Bullseye>
-                <EmptyState variant={EmptyStateVariant.large}>
-                  <EmptyStateIcon icon={PlusCircleIcon} />
-                  <Title headingLevel="h2" size="md">
-                    Start a source recording
-                  </Title>
-                  <EmptyStateBody>
-                    Metrics cards display data taken from running flight recordings with the label{' '}
-                    <code>origin={RECORDING_NAME}</code>. No such recordings are currently available.
-                  </EmptyStateBody>
+            <Bullseye>
+              <EmptyState variant={EmptyStateVariant.large}>
+                <EmptyStateIcon icon={PlusCircleIcon} />
+                <Title headingLevel="h2" size="md">
+                  Start a source recording
+                </Title>
+                <EmptyStateBody>
+                  Metrics cards display data taken from running flight recordings with the label{' '}
+                  <code>origin={RECORDING_NAME}</code>. No such recordings are currently available.
+                </EmptyStateBody>
 
-                  <Button variant="primary" onClick={handleCreateRecording}>
-                    Create
-                  </Button>
-                </EmptyState>
-              </Bullseye>
-            </>
+                <Button variant="primary" onClick={handleCreateRecording}>
+                  Create
+                </Button>
+              </EmptyState>
+            </Bullseye>
           )}
         </CardBody>
       </DashboardCard>

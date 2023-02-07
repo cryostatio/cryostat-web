@@ -37,10 +37,10 @@
  */
 
 import { ApiService } from '@app/Shared/Services/Api.service';
-import { NO_TARGET, TargetService } from '@app/Shared/Services/Target.service';
+import { NO_TARGET, Target, TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
-  combineLatest,
+  catchError,
   concatMap,
   filter,
   finalize,
@@ -49,7 +49,6 @@ import {
   of,
   pairwise,
   ReplaySubject,
-  Subject,
   Subscription,
   throttleTime,
 } from 'rxjs';
@@ -61,8 +60,7 @@ export const MIN_REFRESH = 10_000;
 
 export class ChartController {
   private readonly _refCount$ = new BehaviorSubject<number>(0);
-  private readonly _updateRequests$ = new Subject<void>();
-  private readonly _updates$ = new ReplaySubject<number>();
+  private readonly _updates$ = new ReplaySubject<void>();
   private readonly _hasRecording$ = new ReplaySubject<boolean>();
   private readonly _subscriptions: Subscription[] = [];
 
@@ -77,43 +75,48 @@ export class ChartController {
         const curr = v[1];
         if (prev && !curr) {
           // last subscriber left
-          this._subscriptions.forEach((s) => s.unsubscribe());
+          this._tearDown();
         }
         if (!prev && curr) {
           // first subscriber joined
           this._init();
         }
       });
-  }
 
-  refresh(): Observable<number> {
-    this._refCount$.next(this._refCount$.value + 1);
-    return this._updates$.asObservable().pipe(finalize(() => this._refCount$.next(this._refCount$.value - 1)));
-  }
-
-  requestRefresh(): void {
-    this._updateRequests$.next();
+    this._target
+      .target()
+      .pipe(concatMap((t) => this._hasRecording(t)))
+      .subscribe((v) => {
+        this._hasRecording$.next(v);
+        if (!v) {
+          this._tearDown();
+        }
+      });
   }
 
   hasActiveRecording(): Observable<boolean> {
     return this._hasRecording$.asObservable();
   }
 
-  private _init(): void {
-    this._subscriptions.push(
-      this._target
-        .target()
-        .pipe(
-          concatMap((target) => {
-            if (target === NO_TARGET) {
-              return of(false);
-            }
+  attach(): Observable<number> {
+    this._refCount$.next(this._refCount$.value + 1);
+    return this._refCount$.asObservable().pipe(finalize(() => this._refCount$.next(this._refCount$.value - 1)));
+  }
 
-            return (
-              this._api
-                /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-                .graphql<any>(
-                  `
+  requestRefresh(): void {
+    this._updates$.next();
+  }
+
+  private _hasRecording(target: Target): Observable<boolean> {
+    if (target === NO_TARGET) {
+      return of(false);
+    }
+
+    return (
+      this._api
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        .graphql<any>(
+          `
           query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
             targetNodes(filter: { name: $connectUrl }) {
               recordings {
@@ -127,33 +130,29 @@ export class ChartController {
             }
             }
           }`,
-                  { connectUrl: target.connectUrl }
-                )
-                // TODO error handling
-                .pipe(map((resp) => resp.data.targetNodes[0].recordings.active.aggregate.count > 0))
-            );
-          })
+          { connectUrl: target.connectUrl }
         )
-        .subscribe((v) => this._hasRecording$.next(v))
+        // TODO error handling
+        .pipe(
+          map((resp) => resp.data.targetNodes[0].recordings.active.aggregate.count > 0),
+          catchError((_) => of(false))
+        )
     );
+  }
 
+  private _init(): void {
     this._subscriptions.push(
-      this._updateRequests$.pipe(throttleTime(MIN_REFRESH)).subscribe((_) => this._updates$.next(+Date.now()))
-    );
-
-    this._subscriptions.push(
-      this._target
-        .target()
-        .pipe(filter((v) => v !== NO_TARGET))
-        .subscribe((_) => this._updates$.next(+Date.now()))
-    );
-
-    this._subscriptions.push(
-      combineLatest([this.hasActiveRecording().pipe(filter((v) => v)), this._updates$]).subscribe((_) => {
-        this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((_) => {
-          /* do nothing */
-        });
-      })
+      this._updates$
+        .pipe(
+          throttleTime(MIN_REFRESH),
+          concatMap((_) => this._hasRecording$),
+          filter((v) => !!v)
+        )
+        .subscribe((_) => {
+          this._api.uploadActiveRecordingToGrafana(RECORDING_NAME).subscribe((_) => {
+            /* do nothing */
+          });
+        })
     );
 
     // TODO listen for websocket notifications about active recordings and update the hasRecording
@@ -203,5 +202,10 @@ export class ChartController {
     //     return updated;
     //   });
     // })
+  }
+
+  private _tearDown() {
+    this._subscriptions.forEach((s) => s.unsubscribe());
+    this._subscriptions.splice(0, this._subscriptions.length);
   }
 }
