@@ -38,7 +38,6 @@
 
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Bullseye,
@@ -53,7 +52,7 @@ import {
   EmptyStateVariant,
   Title,
 } from '@patternfly/react-core';
-import { DataSourceIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
+import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 import { interval } from 'rxjs';
@@ -116,14 +115,24 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const history = useHistory();
   const addSubscription = useSubscriptions();
   const [idx, setIdx] = React.useState(0);
-  const [target, setTarget] = React.useState(NO_TARGET);
+  const [key, setKey] = React.useState(Math.floor(Math.random()));
   const [hasRecording, setHasRecording] = React.useState(false);
   const [chartSrc, setChartSrc] = React.useState('');
   const [dashboardUrl, setDashboardUrl] = React.useState('');
 
+  const updateKey = React.useCallback(() => {
+    setKey((prev) => {
+      let next = prev + 1;
+      if (next >= 10) {
+        next = 0;
+      }
+      return next;
+    });
+  }, [setKey]);
+
   React.useEffect(() => {
-    addSubscription(serviceContext.target.target().subscribe(setTarget));
-  }, [addSubscription, serviceContext, setTarget]);
+    addSubscription(serviceContext.target.target().subscribe((_) => updateKey()));
+  }, [addSubscription, serviceContext, updateKey]);
 
   React.useEffect(() => {
     addSubscription(controllerContext.controller.hasActiveRecording().subscribe(setHasRecording));
@@ -171,11 +180,26 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     };
   }, [props.chartKind]);
 
-  const popoutButton = React.useMemo(() => {
+  const expandButton = React.useMemo(() => {
     return (
       <>
         <Button
           key={0}
+          aria-label={`Expand ${props.chartKind} chart window`}
+          onClick={updateKey}
+          variant="plain"
+          icon={<SyncAltIcon />}
+          isDisabled={!chartSrc || !dashboardUrl}
+        />
+      </>
+    );
+  }, [props.chartKind, updateKey, chartSrc, dashboardUrl]);
+
+  const popoutButton = React.useMemo(() => {
+    return (
+      <>
+        <Button
+          key={1}
           aria-label={`Pop out ${props.chartKind} chart`}
           onClick={popout}
           variant="plain"
@@ -191,8 +215,8 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     if (!hasRecording) {
       return a;
     }
-    return [popoutButton, ...a];
-  }, [props.actions, hasRecording, popoutButton]);
+    return [expandButton, popoutButton, ...a];
+  }, [props.actions, hasRecording, expandButton, popoutButton]);
 
   const header = React.useMemo(() => {
     if (hasRecording) {
@@ -247,7 +271,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
       >
         <CardBody>
           {hasRecording ? (
-            <iframe key={target.connectUrl} style={{ height: '100%', width: '100%' }} src={chartSrc} />
+            <iframe key={key} style={{ height: '100%', width: '100%' }} src={chartSrc} />
           ) : (
             <Bullseye>
               <EmptyState variant={EmptyStateVariant.large}>
