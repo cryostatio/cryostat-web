@@ -38,6 +38,7 @@
 
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Bullseye,
@@ -115,9 +116,14 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const history = useHistory();
   const addSubscription = useSubscriptions();
   const [idx, setIdx] = React.useState(0);
+  const [target, setTarget] = React.useState(NO_TARGET);
   const [hasRecording, setHasRecording] = React.useState(false);
   const [chartSrc, setChartSrc] = React.useState('');
   const [dashboardUrl, setDashboardUrl] = React.useState('');
+
+  React.useEffect(() => {
+    addSubscription(serviceContext.target.target().subscribe(setTarget));
+  }, [addSubscription, serviceContext, setTarget]);
 
   React.useEffect(() => {
     addSubscription(controllerContext.controller.hasActiveRecording().subscribe(setHasRecording));
@@ -238,7 +244,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
       >
         <CardBody>
           {hasRecording ? (
-            <iframe style={{ height: '100%', width: '100%' }} src={chartSrc} />
+            <iframe key={target.connectUrl} style={{ height: '100%', width: '100%' }} src={chartSrc} />
           ) : (
             <Bullseye>
               <EmptyState variant={EmptyStateVariant.large}>
