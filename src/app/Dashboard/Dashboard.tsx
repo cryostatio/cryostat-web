@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import {
   CardConfig,
   dashboardCardConfigResizeCardIntent,
@@ -64,6 +65,7 @@ export interface DashboardCardSizes {
 }
 
 export interface DashboardCardDescriptor {
+  featureLevel: FeatureLevel;
   title: string;
   cardSizes: DashboardCardSizes;
   description: string;
@@ -138,6 +140,7 @@ const PlaceholderCard: React.FunctionComponent<
 };
 
 export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
+  featureLevel: FeatureLevel.DEVELOPMENT,
   title: 'None Placeholder',
   cardSizes: PLACEHOLDER_CARD_SIZE,
   description: 'placeholder',
@@ -147,6 +150,7 @@ export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
 } as DashboardCardDescriptor;
 
 export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
+  featureLevel: FeatureLevel.DEVELOPMENT,
   title: 'All Placeholder',
   cardSizes: PLACEHOLDER_CARD_SIZE,
   description: 'placeholder',
@@ -219,13 +223,10 @@ export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
 } as DashboardCardDescriptor;
 
 export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
-  featureLevel?: FeatureLevel
+  featureLevel = FeatureLevel.DEVELOPMENT
 ) => {
-  let cards = [AutomatedAnalysisCardDescriptor];
-  if (featureLevel === undefined || featureLevel === FeatureLevel.DEVELOPMENT) {
-    cards = cards.concat([NonePlaceholderCardDescriptor, AllPlaceholderCardDescriptor]);
-  }
-  return cards;
+  const cards = [AutomatedAnalysisCardDescriptor, NonePlaceholderCardDescriptor, AllPlaceholderCardDescriptor];
+  return cards.filter((card) => card.featureLevel >= featureLevel);
 };
 
 export function getConfigByName(name: string): DashboardCardDescriptor {
@@ -272,19 +273,21 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     <TargetView pageTitle="Dashboard" compactSelect={false}>
       <Grid id={'dashboard-grid'} hasGutter>
         {cardConfigs.map((cfg, idx) => (
-          <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-            {React.createElement(getConfigByName(cfg.name).component, {
-              ...cfg.props,
-              dashboardId: idx,
-              actions: [
-                <DashboardCardActionMenu
-                  key={`${cfg.name}-actions`}
-                  onRemove={() => handleRemove(idx)}
-                  onResetSize={() => handleResetSize(idx)}
-                />,
-              ],
-            })}
-          </GridItem>
+          <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
+            <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
+              {React.createElement(getConfigByName(cfg.name).component, {
+                ...cfg.props,
+                dashboardId: idx,
+                actions: [
+                  <DashboardCardActionMenu
+                    key={`${cfg.name}-actions`}
+                    onRemove={() => handleRemove(idx)}
+                    onResetSize={() => handleResetSize(idx)}
+                  />,
+                ],
+              })}
+            </GridItem>
+          </FeatureFlag>
         ))}
         <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
           <AddCard />
