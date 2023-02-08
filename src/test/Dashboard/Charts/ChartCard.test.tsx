@@ -37,19 +37,30 @@
  */
 
 jest.mock('@app/Dashboard/Charts/ChartController');
-import { ChartCard } from '@app/Dashboard/Charts/ChartCard';
+
+import { createMemoryHistory } from 'history';
+const history = createMemoryHistory({ initialEntries: ['/'] });
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useRouteMatch: () => ({ url: history.location.pathname }),
+  useHistory: () => history,
+}));
+import { ChartCard, ChartKind, kindToId } from '@app/Dashboard/Charts/ChartCard';
 import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
 import { ChartController } from '@app/Dashboard/Charts/ChartController';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { store } from '@app/Shared/Redux/ReduxStore';
+import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import React from 'react';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React, { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 
-const mockGrafanaDashboardUrlResponse = 'http://localhost:3000';
-jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValueOnce(of(mockGrafanaDashboardUrlResponse));
+const mockDashboardUrl = 'http://localhost:3000';
+jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDashboardUrl));
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
@@ -64,10 +75,11 @@ const mockChartContext = {
   controller: mockController,
 };
 
+jest.spyOn(mockController, 'attach').mockReturnValue(of(0));
+
 describe('<ChartCard />', () => {
   it('renders correctly', async () => {
     jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(true));
-    jest.spyOn(mockController, 'attach').mockReturnValue(of(0));
 
     let tree;
     await act(async () => {
@@ -83,6 +95,117 @@ describe('<ChartCard />', () => {
         </ServiceContext.Provider>
       );
     });
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(tree.toJSON()).toMatchSnapshot('with-content');
+  });
+
+  it('renders empty state correctly', async () => {
+    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(false));
+
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <ChartContext.Provider value={mockChartContext}>
+              <Provider store={store}>
+                <ChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
+              </Provider>
+            </ChartContext.Provider>
+          </NotificationsContext.Provider>
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot('empty-state');
+  });
+
+  it('renders empty state with information and action button', async () => {
+    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(false));
+
+    renderChartCard(
+      <ChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
+    );
+
+    expect(screen.getByText('CPU Load')).toBeInTheDocument();
+    expect(screen.getByText('No source recording')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
+  });
+
+  it('navigates to recording creation with prefilled state when empty state button clicked', async () => {
+    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(false));
+
+    const { user } = renderChartCard(
+      <ChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
+    );
+
+    expect(history.location.pathname).toBe('/');
+    await user.click(screen.getByRole('button', { name: /create/i }));
+    expect(history.location.pathname).toBe('/recordings/create');
+    expect(history.location.state).toEqual({
+      duration: -1,
+      labels: [
+        {
+          key: 'origin',
+          value: 'dashboard_metrics',
+        },
+      ],
+      maxAge: 120,
+      maxSize: 100 * 1024 * 1024,
+      name: 'dashboard_metrics',
+      restartExisting: true,
+      templateName: 'Profiling',
+      templateType: 'TARGET',
+    });
+  });
+
+  it.each([
+    ['CPU Load', 120, 5],
+    ['Heap Usage', 90, 10],
+    ['Network Utilization', 60, 15],
+    ['File I/O', 30, 20],
+  ])('renders iframe', async (chartKind: string, duration: number, period: number) => {
+    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(true));
+
+    const { container } = renderChartCard(
+      <ChartCard theme={'light'} chartKind={chartKind} duration={duration} period={period} span={6} dashboardId={0} />
+    );
+
+    const iframe = container.querySelector('iframe');
+    expect(iframe).toBeTruthy();
+    const u = new URL(iframe?.src || '');
+    expect(u.host).toBe('localhost:3000');
+    expect(u.protocol).toBe('http:');
+    const params = new URLSearchParams();
+    params.set('theme', 'light');
+    params.set('panelId', String(kindToId(chartKind)));
+    params.set('to', 'now');
+    params.set('from', `now-${duration}s`);
+    params.set('refresh', `${period}s`);
+    expect(u.searchParams.toString()).toEqual(params.toString());
   });
 });
+
+const renderChartCard = (
+  ui: React.ReactElement,
+  {
+    services = defaultServices,
+    notifications = NotificationsInstance,
+    chartContext = mockChartContext,
+    preloadState = {},
+    store = setupStore(preloadState),
+    user = userEvent.setup(),
+    ...renderOptions
+  } = {}
+) => {
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+    return (
+      <ChartContext.Provider value={chartContext}>
+        <ServiceContext.Provider value={services}>
+          <NotificationsContext.Provider value={notifications}>
+            <Provider store={store}>{children}</Provider>
+          </NotificationsContext.Provider>
+        </ServiceContext.Provider>
+      </ChartContext.Provider>
+    );
+  };
+  return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};

@@ -69,7 +69,7 @@ export interface ChartCardProps extends DashboardCardProps {
 }
 
 // TODO these need to be localized
-enum ChartKind {
+export enum ChartKind {
   'Core Count' = 1,
   'Thread Count' = 2,
   'CPU Load' = 3,
@@ -96,7 +96,7 @@ enum ChartKind {
   'Object Allocation Sample' = 38,
 }
 
-function kindToId(kind: string): number {
+export function kindToId(kind: string): number {
   return ChartKind[kind];
 }
 
