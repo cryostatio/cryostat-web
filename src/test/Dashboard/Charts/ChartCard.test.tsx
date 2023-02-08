@@ -38,26 +38,25 @@
 
 jest.mock('@app/Dashboard/Charts/ChartController');
 
+import { ChartCard, kindToId } from '@app/Dashboard/Charts/ChartCard';
+import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
+import { ChartController } from '@app/Dashboard/Charts/ChartController';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
+import React, { PropsWithChildren } from 'react';
+import { Provider } from 'react-redux';
+import renderer, { act } from 'react-test-renderer';
+import { of } from 'rxjs';
 const history = createMemoryHistory({ initialEntries: ['/'] });
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useRouteMatch: () => ({ url: history.location.pathname }),
   useHistory: () => history,
 }));
-import { ChartCard, ChartKind, kindToId } from '@app/Dashboard/Charts/ChartCard';
-import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
-import { ChartController } from '@app/Dashboard/Charts/ChartController';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
-import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import React, { PropsWithChildren } from 'react';
-import { Provider } from 'react-redux';
-import renderer, { act } from 'react-test-renderer';
-import { Observable, of } from 'rxjs';
-import { cleanup, screen, waitFor } from '@testing-library/react';
 
 const mockDashboardUrl = 'http://localhost:3000';
 jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDashboardUrl));
