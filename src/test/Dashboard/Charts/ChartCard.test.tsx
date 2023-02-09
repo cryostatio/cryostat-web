@@ -44,13 +44,14 @@ import { ChartController, ControllerState } from '@app/Dashboard/Charts/ChartCon
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
+import { renderWithProvidersAndRedux } from '../../Common';
 
 let history: MemoryHistory = createMemoryHistory({ initialEntries: ['/'] });
 jest.mock('react-router-dom', () => ({
@@ -147,8 +148,8 @@ describe('<ChartCard />', () => {
     );
 
     expect(screen.getByText('CPU Load')).toBeInTheDocument();
-    expect(screen.getByText('CHART_CARD.NO_RECORDING.TITLE')).toBeInTheDocument();
-    expect(screen.getByText('CHART_CARD.NO_RECORDING.DESCRIPTION')).toBeInTheDocument();
+    expect(screen.getByText('No source recording')).toBeInTheDocument();
+    expect(screen.getByText(s => s.includes('Metrics cards display data taken from running flight recordings'))).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
   });
 
@@ -218,7 +219,7 @@ const renderChartCard = (
     ...renderOptions
   } = {}
 ) => {
-  return renderWithProviders(
+  return renderWithProvidersAndRedux(
     ui,
     [
       {
@@ -241,32 +242,3 @@ const renderChartCard = (
     }
   );
 };
-
-const renderWithProviders = (
-  ui: React.ReactElement,
-  providers: ProviderInstance<any>[],
-  { preloadedState = {}, store = setupStore(preloadedState), user = userEvent.setup(), ...renderOptions } = {}
-) => {
-  if (providers.length < 1) {
-    throw new Error('At least one provider must be specified');
-  }
-  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
-    let els = children;
-    for (let i = 0; i < providers.length; i++) {
-      const provider = providers[i];
-      let ctx = React.createElement(provider.kind, { key: i, value: provider.instance, children: els });
-      els = [ctx];
-    }
-    return (
-      <Provider key={0} store={store}>
-        {els}
-      </Provider>
-    );
-  };
-  return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
-};
-
-interface ProviderInstance<T> {
-  kind: React.Provider<T>;
-  instance: T;
-}
