@@ -37,6 +37,7 @@
  */
 
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -110,6 +111,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const history = useHistory();
   const addSubscription = useSubscriptions();
   const [key, setKey] = React.useState(Math.floor(Math.random()));
+  const [isLoading, setLoading] = React.useState(false);
   const [hasRecording, setHasRecording] = React.useState(false);
   const [chartSrc, setChartSrc] = React.useState('');
   const [dashboardUrl, setDashboardUrl] = React.useState('');
@@ -125,11 +127,21 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [setKey]);
 
   React.useEffect(() => {
-    addSubscription(serviceContext.target.target().subscribe((_) => updateKey()));
+    addSubscription(
+      serviceContext.target.target().subscribe((_) => {
+        setLoading(true);
+        updateKey();
+      })
+    );
   }, [addSubscription, serviceContext, updateKey]);
 
   React.useEffect(() => {
-    addSubscription(controllerContext.controller.hasActiveRecording().subscribe(setHasRecording));
+    addSubscription(
+      controllerContext.controller.hasActiveRecording().subscribe((v) => {
+        setHasRecording(v);
+        setLoading(false);
+      })
+    );
   }, [addSubscription, controllerContext, setHasRecording]);
 
   React.useEffect(() => {
@@ -140,6 +152,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     if (!dashboardUrl) {
       return;
     }
+    setLoading(true);
     const u = new URL('/d-solo/main', dashboardUrl);
     u.searchParams.append('theme', props.theme);
     u.searchParams.append('panelId', String(kindToId(props.chartKind)));
@@ -147,12 +160,12 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     u.searchParams.append('from', `now-${props.duration}s`);
     u.searchParams.append('refresh', `${props.period}s`);
     setChartSrc(u.toString());
-  }, [dashboardUrl, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
+  }, [dashboardUrl, setLoading, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
 
   React.useEffect(() => {
     addSubscription(
       controllerContext.controller.attach().subscribe((_) => {
-        /* do nothing */
+        setLoading(true);
       })
     );
   }, [addSubscription, controllerContext]);
@@ -259,6 +272,10 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     });
   }, [history]);
 
+  const handleIFrameLoaded = React.useCallback(() => {
+    setLoading(false);
+  }, [setLoading]);
+
   return (
     <DashboardCard
       id={props.chartKind + '-chart-card'}
@@ -269,8 +286,10 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
       cardHeader={header}
     >
       <CardBody>
-        {hasRecording ? (
-          <iframe key={key} style={{ height: '100%', width: '100%' }} src={chartSrc} />
+        {isLoading ? (
+          <LoadingView />
+        ) : hasRecording ? (
+          <iframe key={key} style={{ height: '100%', width: '100%' }} src={chartSrc} onLoad={handleIFrameLoaded} />
         ) : (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.large}>
