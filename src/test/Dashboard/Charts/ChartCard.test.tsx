@@ -218,16 +218,55 @@ const renderChartCard = (
     ...renderOptions
   } = {}
 ) => {
+  return renderWithProviders(
+    ui,
+    [
+      {
+        kind: ChartContext.Provider,
+        instance: chartContext,
+      },
+      {
+        kind: NotificationsContext.Provider,
+        instance: notifications,
+      },
+      {
+        kind: ServiceContext.Provider,
+        instance: services,
+      },
+    ],
+    {
+      store,
+      user,
+      ...renderOptions,
+    }
+  );
+};
+
+const renderWithProviders = (
+  ui: React.ReactElement,
+  providers: ProviderInstance<any>[],
+  { preloadedState = {}, store = setupStore(preloadedState), user = userEvent.setup(), ...renderOptions } = {}
+) => {
+  if (providers.length < 1) {
+    throw new Error('At least one provider must be specified');
+  }
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+    let els = children;
+    for (let i = 0; i < providers.length; i++) {
+      const provider = providers[i];
+      let ctx = React.createElement(provider.kind, { key: i, value: provider.instance, children: els });
+      els = [ctx];
+    }
     return (
-      <ServiceContext.Provider value={services}>
-        <NotificationsContext.Provider value={notifications}>
-          <Provider store={store}>
-            <ChartContext.Provider value={chartContext}>{children}</ChartContext.Provider>
-          </Provider>
-        </NotificationsContext.Provider>
-      </ServiceContext.Provider>
+      <Provider key={0} store={store}>
+        {els}
+      </Provider>
     );
   };
   return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
+
+interface ProviderInstance<T> {
+  kind: React.Provider<T>;
+  instance: T;
+}
