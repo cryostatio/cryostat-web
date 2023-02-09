@@ -195,6 +195,7 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
 
 export const renderWithProvidersAndRedux = (
   ui: React.ReactElement,
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   providers: ProviderInstance<any>[],
   { preloadedState = {}, store = setupStore(preloadedState), user = userEvent.setup(), ...renderOptions } = {}
 ) => {
@@ -205,7 +206,7 @@ export const renderWithProvidersAndRedux = (
     let els = children;
     for (let i = 0; i < providers.length; i++) {
       const provider = providers[i];
-      let ctx = React.createElement(provider.kind, { key: i, value: provider.instance, children: els });
+      const ctx = React.createElement(provider.kind, { key: i, value: provider.instance }, els);
       els = [ctx];
     }
     return (
