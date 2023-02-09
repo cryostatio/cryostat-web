@@ -44,14 +44,15 @@ import { ChartController, ControllerState } from '@app/Dashboard/Charts/ChartCon
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory } from 'history';
+import { createMemoryHistory, MemoryHistory } from 'history';
 import React, { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-const history = createMemoryHistory({ initialEntries: ['/'] });
+
+let history: MemoryHistory = createMemoryHistory({ initialEntries: ['/'] });
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useRouteMatch: () => ({ url: history.location.pathname }),
@@ -75,6 +76,9 @@ const mockChartContext = {
 };
 
 describe('<ChartCard />', () => {
+  beforeEach(() => (history = createMemoryHistory({ initialEntries: ['/'] })));
+  afterEach(cleanup);
+
   it('renders correctly', async () => {
     jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.READY));
 
