@@ -95,6 +95,26 @@ describe('<ChartCard />', () => {
     expect(tree.toJSON()).toMatchSnapshot('with-content');
   });
 
+  it('renders loading state correctly', async () => {
+    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.UNKNOWN));
+
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <ChartContext.Provider value={mockChartContext}>
+              <Provider store={store}>
+                <ChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
+              </Provider>
+            </ChartContext.Provider>
+          </NotificationsContext.Provider>
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot('loading-view');
+  });
+
   it('renders empty state correctly', async () => {
     jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
