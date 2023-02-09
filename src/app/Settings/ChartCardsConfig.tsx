@@ -52,14 +52,16 @@ const Component = () => {
 
   const handleChange = React.useCallback(
     (evt) => {
-      let value = isNaN(evt.target.value) ? minRefresh : Number(evt.target.value);
-      if (value < min) {
-        value = min;
-      }
-      setMinRefresh(value);
-      context.settings.setChartControllerConfig({ minRefresh: value });
+      setMinRefresh((prev) => {
+        let value = isNaN(evt.target.value) ? prev : Number(evt.target.value);
+        if (value < min) {
+          value = min;
+        }
+        context.settings.setChartControllerConfig({ minRefresh: value });
+        return value;
+      });
     },
-    [minRefresh, setMinRefresh, context.settings]
+    [setMinRefresh, context.settings]
   );
 
   const handleVisibleStep = React.useCallback(
