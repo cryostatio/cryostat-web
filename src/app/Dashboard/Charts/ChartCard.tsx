@@ -56,6 +56,7 @@ import {
 } from '@patternfly/react-core';
 import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { interval } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
@@ -103,6 +104,7 @@ export function kindToId(kind: string): number {
 }
 
 export const ChartCard: React.FC<ChartCardProps> = (props) => {
+  const [t] = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
   const history = useHistory();
@@ -180,36 +182,38 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         height = 380;
         break;
     }
-    return hasRecording ? {
-      height
-    } : {};
+    return hasRecording
+      ? {
+          height,
+        }
+      : {};
   }, [hasRecording, props.chartKind]);
 
   const resyncButton = React.useMemo(() => {
     return (
       <Button
         key={0}
-        aria-label={`Synchronize ${props.chartKind} chart`}
+        aria-label={t('CHART_CARD.BUTTONS.SYNC.LABEL', { chartKind: props.chartKind })}
         onClick={updateKey}
         variant="plain"
         icon={<SyncAltIcon />}
         isDisabled={!chartSrc || !dashboardUrl}
       />
     );
-  }, [props.chartKind, updateKey, chartSrc, dashboardUrl]);
+  }, [t, props.chartKind, updateKey, chartSrc, dashboardUrl]);
 
   const popoutButton = React.useMemo(() => {
     return (
       <Button
         key={1}
-        aria-label={`Pop out ${props.chartKind} chart`}
+        aria-label={t('CHART_CARD.BUTTONS.POPOUT.LABEL', { chartKind: props.chartKind })}
         onClick={popout}
         variant="plain"
         icon={<ExternalLinkAltIcon />}
         isDisabled={!chartSrc || !dashboardUrl}
       />
     );
-  }, [props.chartKind, popout, chartSrc, dashboardUrl]);
+  }, [t, props.chartKind, popout, chartSrc, dashboardUrl]);
 
   const actions = React.useMemo(() => {
     const a = props.actions || [];
@@ -276,18 +280,17 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
             <EmptyState variant={EmptyStateVariant.large}>
               <EmptyStateIcon icon={DataSourceIcon} />
               <Title headingLevel="h2" size="md">
-                No source recording
+                {t('CHART_CARD.NO_RECORDING.TITLE')}
               </Title>
               <EmptyStateBody>
-                Metrics cards display data taken from running flight recordings with the label{' '}
-                <Label color="blue" isCompact>
-                  origin={RECORDING_NAME}
-                </Label>
-                . No such recordings are currently available.
+                <Trans
+                  i18nKey="CHART_CARD.NO_RECORDING.DESCRIPTION"
+                  values={{ recordingName: RECORDING_NAME }}
+                  components={{ label: <Label color="blue" isCompact /> }}
+                />
               </EmptyStateBody>
-
               <Button variant="primary" onClick={handleCreateRecording}>
-                Create
+                {t('CHART_CARD.BUTTONS.CREATE.LABEL')}
               </Button>
             </EmptyState>
           </Bullseye>

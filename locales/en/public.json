@@ -12,6 +12,23 @@
     "OPEN_SOURCE_LICENSE": "Open Source License",
     "VERSION": "version"
   },
+  "CHART_CARD": {
+    "BUTTONS": {
+      "CREATE": {
+        "LABEL": "Create"
+      },
+      "POPOUT": {
+        "LABEL": "Pop out {{chartKind}} chart"
+      },
+      "SYNC": {
+        "LABEL": "Synchronize {{chartKind}} chart"
+      }
+    },
+    "NO_RECORDING": {
+      "DESCRIPTION": "Metrics cards display data taken from running flight recordings with the label <label>origin={{recordingName}}</label>. No such recordings are currently available.",
+      "TITLE": "No source recording"
+    }
+  },
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
   },
