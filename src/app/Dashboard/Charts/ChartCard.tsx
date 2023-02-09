@@ -170,11 +170,11 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     }
   }, [chartSrc, dashboardUrl]);
 
-  const expandButton = React.useMemo(() => {
+  const resyncButton = React.useMemo(() => {
     return (
       <Button
         key={0}
-        aria-label={`Expand ${props.chartKind} chart window`}
+        aria-label={`Synchronize ${props.chartKind} chart`}
         onClick={updateKey}
         variant="plain"
         icon={<SyncAltIcon />}
@@ -198,8 +198,8 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
 
   const actions = React.useMemo(() => {
     const a = props.actions || [];
-    return [expandButton, popoutButton, ...a];
-  }, [props.actions, expandButton, popoutButton]);
+    return [resyncButton, popoutButton, ...a];
+  }, [props.actions, resyncButton, popoutButton]);
 
   const header = React.useMemo(() => {
     const isWide = props.span > 4;
