@@ -51,6 +51,7 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateVariant,
+  Label,
   Title,
 } from '@patternfly/react-core';
 import { DataSourceIcon, ExternalLinkAltIcon, SyncAltIcon } from '@patternfly/react-icons';
@@ -264,7 +265,10 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
               </Title>
               <EmptyStateBody>
                 Metrics cards display data taken from running flight recordings with the label{' '}
-                <code>origin={RECORDING_NAME}</code>. No such recordings are currently available.
+                <Label color="blue" isCompact>
+                  origin={RECORDING_NAME}
+                </Label>
+                . No such recordings are currently available.
               </EmptyStateBody>
 
               <Button variant="primary" onClick={handleCreateRecording}>
