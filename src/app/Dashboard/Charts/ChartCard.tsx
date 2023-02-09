@@ -284,10 +284,12 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
               </Title>
               <EmptyStateBody>
                 <Trans
-                  i18nKey="CHART_CARD.NO_RECORDING.DESCRIPTION"
+                  t={t}
                   values={{ recordingName: RECORDING_NAME }}
                   components={{ label: <Label color="blue" isCompact /> }}
-                />
+                >
+                  CHART_CARD.NO_RECORDING.DESCRIPTION
+                </Trans>
               </EmptyStateBody>
               <Button variant="primary" onClick={handleCreateRecording}>
                 {t('CHART_CARD.BUTTONS.CREATE.LABEL')}

@@ -553,7 +553,7 @@ exports[`<Settings/> renders correctly 1`] = `
                           <span
                             className="pf-c-helper-text__item-text"
                           >
-                            Set configuration options for the behaviour of Metrics cards on the Dashboard.
+                            
                           </span>
                         </div>
                       </div>

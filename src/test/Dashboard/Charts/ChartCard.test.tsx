@@ -125,7 +125,8 @@ describe('<ChartCard />', () => {
     );
 
     expect(screen.getByText('CPU Load')).toBeInTheDocument();
-    expect(screen.getByText('No source recording')).toBeInTheDocument();
+    expect(screen.getByText('CHART_CARD.NO_RECORDING.TITLE')).toBeInTheDocument();
+    expect(screen.getByText('CHART_CARD.NO_RECORDING.DESCRIPTION')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
   });
 

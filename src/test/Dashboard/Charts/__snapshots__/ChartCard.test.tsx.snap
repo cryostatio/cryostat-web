@@ -32,7 +32,7 @@ exports[`<ChartCard /> renders correctly: with-content 1`] = `
           className="pf-c-card__header"
           style={
             Object {
-              "marginBottom": "-2.8em",
+              "marginBottom": "-2em",
             }
           }
         >
@@ -41,7 +41,7 @@ exports[`<ChartCard /> renders correctly: with-content 1`] = `
           >
             <button
               aria-disabled={false}
-              aria-label="Expand CPU Load chart window"
+              aria-label="CHART_CARD.BUTTONS.SYNC.LABEL"
               className="pf-c-button pf-m-plain"
               data-ouia-component-id="OUIA-Generated-Button-plain-1"
               data-ouia-component-type="PF4/Button"
@@ -72,7 +72,7 @@ exports[`<ChartCard /> renders correctly: with-content 1`] = `
             </button>
             <button
               aria-disabled={false}
-              aria-label="Pop out CPU Load chart"
+              aria-label="CHART_CARD.BUTTONS.POPOUT.LABEL"
               className="pf-c-button pf-m-plain"
               data-ouia-component-id="OUIA-Generated-Button-plain-2"
               data-ouia-component-type="PF4/Button"
@@ -142,11 +142,7 @@ exports[`<ChartCard /> renders empty state correctly: empty-state 1`] = `
       data-ouia-component-type="PF4/Card"
       data-ouia-safe={true}
       id="CPU Load-chart-card"
-      style={
-        Object {
-          "height": 380,
-        }
-      }
+      style={Object {}}
     >
       <div
         className="draggable-ref__grip"
@@ -158,7 +154,7 @@ exports[`<ChartCard /> renders empty state correctly: empty-state 1`] = `
           className="pf-c-card__header"
           style={
             Object {
-              "marginBottom": "-2.8em",
+              "marginBottom": "-2em",
             }
           }
         >
@@ -210,18 +206,12 @@ exports[`<ChartCard /> renders empty state correctly: empty-state 1`] = `
                 data-ouia-component-type="PF4/Title"
                 data-ouia-safe={true}
               >
-                No source recording
+                CHART_CARD.NO_RECORDING.TITLE
               </h2>
               <div
                 className="pf-c-empty-state__body"
               >
-                Metrics cards display data taken from running flight recordings with the label
-                 
-                <code>
-                  origin=
-                  dashboard_metrics
-                </code>
-                . No such recordings are currently available.
+                CHART_CARD.NO_RECORDING.DESCRIPTION
               </div>
               <button
                 aria-disabled={false}
@@ -235,7 +225,7 @@ exports[`<ChartCard /> renders empty state correctly: empty-state 1`] = `
                 role={null}
                 type="button"
               >
-                Create
+                CHART_CARD.BUTTONS.CREATE.LABEL
               </button>
             </div>
           </div>
