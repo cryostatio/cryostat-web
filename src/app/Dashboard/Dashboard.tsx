@@ -289,6 +289,12 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     )
   );
 
+  const chartContext = React.useMemo(() => {
+    return {
+      controller: chartController.current,
+    };
+  }, [chartController]);
+
   React.useEffect(() => {
     const controller = chartController.current;
     return () => {
@@ -316,7 +322,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <ChartContext.Provider value={{ controller: chartController.current }}>
+      <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
           {cardConfigs
             .filter((cfg) => hasConfigByName(cfg.name))
