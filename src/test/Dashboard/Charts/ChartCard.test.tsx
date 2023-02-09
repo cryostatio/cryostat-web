@@ -149,7 +149,9 @@ describe('<ChartCard />', () => {
 
     expect(screen.getByText('CPU Load')).toBeInTheDocument();
     expect(screen.getByText('No source recording')).toBeInTheDocument();
-    expect(screen.getByText(s => s.includes('Metrics cards display data taken from running flight recordings'))).toBeInTheDocument();
+    expect(
+      screen.getByText((s) => s.includes('Metrics cards display data taken from running flight recordings'))
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /create/i })).toBeInTheDocument();
   });
 

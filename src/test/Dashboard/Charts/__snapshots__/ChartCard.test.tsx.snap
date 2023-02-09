@@ -108,6 +108,7 @@ exports[`<ChartCard /> renders correctly: with-content 1`] = `
         className="pf-c-card__body"
       >
         <iframe
+          className="disabled-pointer"
           src="http://localhost:3000/d-solo/main?theme=light&panelId=3&to=now&from=now-120s&refresh=10s"
           style={
             Object {

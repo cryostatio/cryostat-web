@@ -260,7 +260,12 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         {controllerState === ControllerState.UNKNOWN ? (
           <LoadingView />
         ) : controllerState === ControllerState.READY ? (
-          <iframe key={controllerState + randomKey} style={{ height: '100%', width: '100%' }} src={chartSrc} />
+          <iframe
+            className="disabled-pointer"
+            key={controllerState + randomKey}
+            style={{ height: '100%', width: '100%' }}
+            src={chartSrc}
+          />
         ) : (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.large}>

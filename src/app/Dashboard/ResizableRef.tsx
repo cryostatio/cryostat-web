@@ -121,6 +121,14 @@ export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
     [dispatch, cardRef, cardConfigs, nearEdgeMultiplier, dashboardId, cardSizes]
   );
 
+  const handleDisabledElements = React.useCallback((disabled: boolean): void => {
+    const disabledElements = document.getElementsByClassName('disabled-pointer');
+    for (let i = 0; i < disabledElements.length; i++) {
+      const element = disabledElements[i] as HTMLElement;
+      element.style['pointer-events'] = disabled ? 'none' : 'auto';
+    }
+  }, []);
+
   const callbackMouseUp = React.useCallback(() => {
     if (!isResizing.current) {
       return;
@@ -129,7 +137,8 @@ export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
     document.body.style.removeProperty('cursor');
     document.removeEventListener('mousemove', callbackMouseMove);
     document.removeEventListener('mouseup', callbackMouseUp);
-  }, [callbackMouseMove]);
+    handleDisabledElements(false);
+  }, [callbackMouseMove, handleDisabledElements]);
 
   const handleOnMouseDown = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -141,8 +150,9 @@ export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
       isResizing.current = true;
       minWidth.current = undefined;
       maxWidth.current = undefined;
+      handleDisabledElements(true);
     },
-    [callbackMouseMove, callbackMouseUp]
+    [callbackMouseMove, callbackMouseUp, handleDisabledElements]
   );
 
   return <div className="resizable-ref" onMouseDown={handleOnMouseDown} />;
