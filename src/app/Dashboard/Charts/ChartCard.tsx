@@ -235,7 +235,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
       state: {
         restartExisting: true,
         name: RECORDING_NAME,
-        templateName: 'Profiling',
+        templateName: 'Continuous',
         templateType: 'TARGET',
         labels: [{ key: 'origin', value: RECORDING_NAME }],
         duration: -1,

@@ -170,7 +170,7 @@ describe('<ChartCard />', () => {
       maxSize: 100 * 1024 * 1024,
       name: 'dashboard_metrics',
       restartExisting: true,
-      templateName: 'Profiling',
+      templateName: 'Continuous',
       templateType: 'TARGET',
     });
   });
