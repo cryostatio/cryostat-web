@@ -170,6 +170,21 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     }
   }, [chartSrc, dashboardUrl]);
 
+  const cardStyle = React.useMemo(() => {
+    let height: number;
+    switch (props.chartKind) {
+      case 'Core Count':
+        height = 250;
+        break;
+      default:
+        height = 380;
+        break;
+    }
+    return hasRecording ? {
+      height
+    } : {};
+  }, [hasRecording, props.chartKind]);
+
   const resyncButton = React.useMemo(() => {
     return (
       <Button
@@ -250,7 +265,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
       dashboardId={props.dashboardId}
       cardSizes={ChartCardSizes}
       isCompact
-      style={{ height: 380 }}
+      style={cardStyle}
       cardHeader={header}
     >
       <CardBody>
