@@ -220,13 +220,13 @@ const renderChartCard = (
 ) => {
   const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
     return (
-      <ChartContext.Provider value={chartContext}>
-        <ServiceContext.Provider value={services}>
-          <NotificationsContext.Provider value={notifications}>
-            <Provider store={store}>{children}</Provider>
-          </NotificationsContext.Provider>
-        </ServiceContext.Provider>
-      </ChartContext.Provider>
+      <ServiceContext.Provider value={services}>
+        <NotificationsContext.Provider value={notifications}>
+          <Provider store={store}>
+            <ChartContext.Provider value={chartContext}>{children}</ChartContext.Provider>
+          </Provider>
+        </NotificationsContext.Provider>
+      </ServiceContext.Provider>
     );
   };
   return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
