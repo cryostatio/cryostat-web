@@ -308,7 +308,7 @@ export const ChartCardSizes: DashboardCardSizes = {
 };
 
 export const ChartCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.PRODUCTION,
+  featureLevel: FeatureLevel.BETA,
   title: 'Metrics Chart',
   cardSizes: ChartCardSizes,
   description: 'Display common performance metrics.',
