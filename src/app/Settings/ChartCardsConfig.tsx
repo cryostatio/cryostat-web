@@ -66,6 +66,7 @@ const Component = () => {
     (delta: number) => () => {
       const v = minRefresh + delta;
       context.settings.setChartControllerConfig({ minRefresh: v });
+      setMinRefresh(v);
     },
     [minRefresh, context.settings]
   );
