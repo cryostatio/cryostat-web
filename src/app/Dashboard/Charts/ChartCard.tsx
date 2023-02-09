@@ -101,15 +101,6 @@ export function kindToId(kind: string): number {
   return ChartKind[kind];
 }
 
-function getHeight(kind: string): number {
-  switch (kind) {
-    case 'Core Count':
-      return 180;
-    default:
-      return 380;
-  }
-}
-
 export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
@@ -174,12 +165,6 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
       window.open(chartSrc, '_blank');
     }
   }, [chartSrc, dashboardUrl]);
-
-  const cardStyle = React.useMemo(() => {
-    return {
-      height: getHeight(props.chartKind),
-    };
-  }, [props.chartKind]);
 
   const expandButton = React.useMemo(() => {
     return (
@@ -267,7 +252,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         dashboardId={props.dashboardId}
         cardSizes={ChartCardSizes}
         isCompact
-        style={cardStyle}
+        style={{ height: 380 }}
         cardHeader={header}
       >
         <CardBody>
