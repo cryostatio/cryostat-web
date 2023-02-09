@@ -38,7 +38,7 @@
 
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import {FeatureLevel} from '@app/Shared/Services/Settings.service';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Bullseye,
@@ -106,7 +106,6 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const controllerContext = React.useContext(ChartContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
-  const [idx, setIdx] = React.useState(0);
   const [key, setKey] = React.useState(Math.floor(Math.random()));
   const [hasRecording, setHasRecording] = React.useState(false);
   const [chartSrc, setChartSrc] = React.useState('');
@@ -148,7 +147,11 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [dashboardUrl, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
 
   React.useEffect(() => {
-    addSubscription(controllerContext.controller.attach().subscribe(setIdx));
+    addSubscription(
+      controllerContext.controller.attach().subscribe((_) => {
+        /* do nothing */
+      })
+    );
   }, [addSubscription, controllerContext]);
 
   const refresh = React.useCallback(() => {
@@ -168,31 +171,27 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
 
   const expandButton = React.useMemo(() => {
     return (
-      <>
-        <Button
-          key={0}
-          aria-label={`Expand ${props.chartKind} chart window`}
-          onClick={updateKey}
-          variant="plain"
-          icon={<SyncAltIcon />}
-          isDisabled={!chartSrc || !dashboardUrl}
-        />
-      </>
+      <Button
+        key={0}
+        aria-label={`Expand ${props.chartKind} chart window`}
+        onClick={updateKey}
+        variant="plain"
+        icon={<SyncAltIcon />}
+        isDisabled={!chartSrc || !dashboardUrl}
+      />
     );
   }, [props.chartKind, updateKey, chartSrc, dashboardUrl]);
 
   const popoutButton = React.useMemo(() => {
     return (
-      <>
-        <Button
-          key={1}
-          aria-label={`Pop out ${props.chartKind} chart`}
-          onClick={popout}
-          variant="plain"
-          icon={<ExternalLinkAltIcon />}
-          isDisabled={!chartSrc || !dashboardUrl}
-        />
-      </>
+      <Button
+        key={1}
+        aria-label={`Pop out ${props.chartKind} chart`}
+        onClick={popout}
+        variant="plain"
+        icon={<ExternalLinkAltIcon />}
+        isDisabled={!chartSrc || !dashboardUrl}
+      />
     );
   }, [props.chartKind, popout, chartSrc, dashboardUrl]);
 
@@ -245,40 +244,37 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [history]);
 
   return (
-    <>
-      <DashboardCard
-        key={idx}
-        id={props.chartKind + '-chart-card'}
-        dashboardId={props.dashboardId}
-        cardSizes={ChartCardSizes}
-        isCompact
-        style={{ height: 380 }}
-        cardHeader={header}
-      >
-        <CardBody>
-          {hasRecording ? (
-            <iframe key={key} style={{ height: '100%', width: '100%' }} src={chartSrc} />
-          ) : (
-            <Bullseye>
-              <EmptyState variant={EmptyStateVariant.large}>
-                <EmptyStateIcon icon={DataSourceIcon} />
-                <Title headingLevel="h2" size="md">
-                  No source recording
-                </Title>
-                <EmptyStateBody>
-                  Metrics cards display data taken from running flight recordings with the label{' '}
-                  <code>origin={RECORDING_NAME}</code>. No such recordings are currently available.
-                </EmptyStateBody>
+    <DashboardCard
+      id={props.chartKind + '-chart-card'}
+      dashboardId={props.dashboardId}
+      cardSizes={ChartCardSizes}
+      isCompact
+      style={{ height: 380 }}
+      cardHeader={header}
+    >
+      <CardBody>
+        {hasRecording ? (
+          <iframe key={key} style={{ height: '100%', width: '100%' }} src={chartSrc} />
+        ) : (
+          <Bullseye>
+            <EmptyState variant={EmptyStateVariant.large}>
+              <EmptyStateIcon icon={DataSourceIcon} />
+              <Title headingLevel="h2" size="md">
+                No source recording
+              </Title>
+              <EmptyStateBody>
+                Metrics cards display data taken from running flight recordings with the label{' '}
+                <code>origin={RECORDING_NAME}</code>. No such recordings are currently available.
+              </EmptyStateBody>
 
-                <Button variant="primary" onClick={handleCreateRecording}>
-                  Create
-                </Button>
-              </EmptyState>
-            </Bullseye>
-          )}
-        </CardBody>
-      </DashboardCard>
-    </>
+              <Button variant="primary" onClick={handleCreateRecording}>
+                Create
+              </Button>
+            </EmptyState>
+          </Bullseye>
+        )}
+      </CardBody>
+    </DashboardCard>
   );
 };
 
