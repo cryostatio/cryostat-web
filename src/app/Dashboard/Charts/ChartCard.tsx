@@ -204,7 +204,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const header = React.useMemo(() => {
     const isWide = props.span > 4;
     const style = {
-      marginBottom: isWide ? '-2.8em' : '',
+      marginBottom: isWide ? '-2em' : '',
     };
     if (hasRecording) {
       return (
