@@ -44,6 +44,7 @@ import {
   BehaviorSubject,
   catchError,
   concatMap,
+  distinctUntilChanged,
   finalize,
   first,
   map,
@@ -70,7 +71,8 @@ export class ChartController {
   private readonly _state$ = new BehaviorSubject<ControllerState>(ControllerState.UNKNOWN);
   private readonly _refCount$ = new BehaviorSubject<number>(0);
   private readonly _updates$ = new ReplaySubject<void>(1);
-  private readonly _subscriptions: Subscription[] = [];
+  private readonly _lazy: Subscription;
+  private _attach: Subscription | undefined;
 
   constructor(
     private readonly _api: ApiService,
@@ -78,28 +80,29 @@ export class ChartController {
     private readonly _notifications: NotificationChannel,
     private readonly _settings: SettingsService
   ) {
-    this._subscriptions.push(
-      this._refCount$
-        .pipe(
-          map((v) => v > 0),
-          pairwise()
-        )
-        .subscribe(([prev, curr]) => {
-          if (prev && !curr) {
-            // last subscriber left
-            this._tearDown();
-          }
-          if (!prev && curr) {
-            // first subscriber joined
-            this._init();
-          }
-        })
-    );
+    this._lazy = this._refCount$
+      .pipe(
+        map((v) => v > 0),
+        pairwise()
+      )
+      .subscribe(([prev, curr]) => {
+        if (!prev && curr) {
+          // first subscriber joined
+          this._start();
+        }
+        if (prev && !curr) {
+          // last subscriber left
+          this._stop();
+        }
+      });
   }
 
   attach(): Observable<ControllerState> {
     this._refCount$.next(this._refCount$.value + 1);
-    return this._state$.asObservable().pipe(finalize(() => this._refCount$.next(this._refCount$.value - 1)));
+    return this._state$.asObservable().pipe(
+      distinctUntilChanged(),
+      finalize(() => this._refCount$.next(this._refCount$.value - 1))
+    );
   }
 
   requestRefresh(): void {
@@ -107,34 +110,41 @@ export class ChartController {
   }
 
   _tearDown() {
-    this._subscriptions.forEach((s) => s.unsubscribe());
-    this._subscriptions.splice(0, this._subscriptions.length);
+    this._state$.next(ControllerState.UNKNOWN);
+    this._lazy.unsubscribe();
+    this._stop();
   }
 
-  private _init(): void {
-    this._subscriptions.push(
+  private _stop(): void {
+    if (this._attach) {
+      this._attach.unsubscribe();
+      this._attach = undefined;
+    }
+  }
+
+  private _start(): void {
+    this._stop();
+    this._attach = merge(
       merge(
-        merge(
-          this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh)),
-          this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
-          this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
-          this._notifications.messages(NotificationCategory.ActiveRecordingStopped)
-        ).pipe(switchMap((_) => this._target.target().pipe(first()))),
-        this._target.target().pipe(tap((_) => this._state$.next(ControllerState.UNKNOWN)))
-      )
-        .pipe(concatMap((t) => this._hasRecording(t)))
-        .subscribe((v) => {
-          this._state$.next(v ? ControllerState.READY : ControllerState.NO_DATA);
-          if (v) {
-            this._api
-              .uploadActiveRecordingToGrafana(RECORDING_NAME)
-              .pipe(first())
-              .subscribe((_) => {
-                this._state$.next(ControllerState.READY);
-              });
-          }
-        })
-    );
+        this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh)),
+        this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
+        this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
+        this._notifications.messages(NotificationCategory.ActiveRecordingStopped)
+      ).pipe(switchMap((_) => this._target.target().pipe(first()))),
+      this._target.target().pipe(tap((_) => this._state$.next(ControllerState.UNKNOWN)))
+    )
+      .pipe(concatMap((t) => this._hasRecording(t)))
+      .subscribe((v) => {
+        this._state$.next(v ? ControllerState.READY : ControllerState.NO_DATA);
+        if (v) {
+          this._api
+            .uploadActiveRecordingToGrafana(RECORDING_NAME)
+            .pipe(first())
+            .subscribe((_) => {
+              this._state$.next(ControllerState.READY);
+            });
+        }
+      });
   }
 
   private _hasRecording(target: Target): Observable<boolean> {

@@ -143,11 +143,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [dashboardUrl, setControllerState, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
 
   React.useEffect(() => {
-    addSubscription(
-      controllerContext.controller.attach().subscribe((state: ControllerState) => {
-        setControllerState(state);
-      })
-    );
+    addSubscription(controllerContext.controller.attach().subscribe(setControllerState));
   }, [addSubscription, controllerContext, setControllerState]);
 
   const refresh = React.useCallback(() => {
