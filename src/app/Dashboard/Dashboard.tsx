@@ -318,11 +318,12 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     <TargetView pageTitle="Dashboard" compactSelect={false}>
       <ChartContext.Provider value={{ controller: chartController.current }}>
         <Grid id={'dashboard-grid'} hasGutter>
-          {cardConfigs.map((cfg, idx) => (
-            <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
-              <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-                {hasConfigByName(cfg.name) ? (
-                  React.createElement(getConfigByName(cfg.name).component, {
+          {cardConfigs
+            .filter((cfg) => hasConfigByName(cfg.name))
+            .map((cfg, idx) => (
+              <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
+                <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
+                  {React.createElement(getConfigByName(cfg.name).component, {
                     span: cfg.span,
                     ...cfg.props,
                     dashboardId: idx,
@@ -333,13 +334,10 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
                         onResetSize={() => handleResetSize(idx)}
                       />,
                     ],
-                  })
-                ) : (
-                  <></>
-                )}
-              </GridItem>
-            </FeatureFlag>
-          ))}
+                  })}
+                </GridItem>
+              </FeatureFlag>
+            ))}
           <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
             <AddCard />
           </GridItem>

@@ -38,6 +38,7 @@
 
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import {FeatureLevel} from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Bullseye,
@@ -311,6 +312,7 @@ export const ChartCardSizes: DashboardCardSizes = {
 };
 
 export const ChartCardDescriptor: DashboardCardDescriptor = {
+  featureLevel: FeatureLevel.PRODUCTION,
   title: 'Metrics Chart',
   cardSizes: ChartCardSizes,
   description: 'Display common performance metrics.',
