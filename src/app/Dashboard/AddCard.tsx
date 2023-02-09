@@ -73,7 +73,7 @@ import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
-import { getDashboardCards, getConfigByTitle, PropControl } from './Dashboard';
+import { getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
 
 interface AddCardProps {}
 

@@ -66,7 +66,7 @@ import {
   TEMPLATE_UNSUPPORTED_MESSAGE,
 } from '@app/Shared/Services/Report.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
+import { automatedAnalysisConfigToRecordingAttributes, FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { calculateAnalysisTimer } from '@app/utils/utils';
@@ -803,6 +803,7 @@ export const AutomatedAnalysisCardSizes: DashboardCardSizes = {
 };
 
 export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
+  featureLevel: FeatureLevel.PRODUCTION,
   title: 'Automated Analysis',
   cardSizes: AutomatedAnalysisCardSizes,
   description: `
