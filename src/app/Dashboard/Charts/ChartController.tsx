@@ -129,14 +129,14 @@ export class ChartController {
       )
       .pipe(
         map((resp) => {
-          const nodes = resp?.data?.targetNodes;
+          const nodes = resp.data.targetNodes;
           if (nodes.length === 0) {
             return false;
           }
-          const count = nodes[0]?.recordings?.active?.aggregate?.count;
+          const count = nodes[0].recordings.active.aggregate.count;
           return count > 0;
         }),
-        catchError((_) => of(false)),
+        catchError((_) => of(false))
       );
   }
 
