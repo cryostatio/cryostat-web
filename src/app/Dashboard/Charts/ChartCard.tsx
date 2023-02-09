@@ -227,20 +227,16 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     };
     if (hasRecording) {
       return (
-        <>
-          <CardHeader style={style}>
-            <CardActions>{actions}</CardActions>
-          </CardHeader>
-        </>
+        <CardHeader style={style}>
+          <CardActions>{actions}</CardActions>
+        </CardHeader>
       );
     } else {
       return (
-        <>
-          <CardHeader style={style}>
-            <CardTitle>{props.chartKind}</CardTitle>
-            <CardActions>{props.actions}</CardActions>
-          </CardHeader>
-        </>
+        <CardHeader style={style}>
+          <CardTitle>{props.chartKind}</CardTitle>
+          <CardActions>{props.actions}</CardActions>
+        </CardHeader>
       );
     }
   }, [props.actions, props.span, props.chartKind, hasRecording, actions]);
