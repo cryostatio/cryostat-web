@@ -77,9 +77,7 @@ export class ChartController {
           map((v) => v > 0),
           pairwise()
         )
-        .subscribe((v) => {
-          const prev = v[0];
-          const curr = v[1];
+        .subscribe(([prev, curr]) => {
           if (prev && !curr) {
             // last subscriber left
             this._tearDown();
