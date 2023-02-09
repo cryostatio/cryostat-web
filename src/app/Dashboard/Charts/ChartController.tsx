@@ -137,7 +137,6 @@ export class ChartController {
           return count > 0;
         }),
         catchError((_) => of(false)),
-        first()
       );
   }
 
