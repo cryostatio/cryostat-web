@@ -63,7 +63,7 @@ import { interval } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import { ChartContext } from './ChartContext';
-import { RECORDING_NAME } from './ChartController';
+import { ControllerState, RECORDING_NAME } from './ChartController';
 
 export interface ChartCardProps extends DashboardCardProps {
   theme: string;
@@ -110,39 +110,20 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   const controllerContext = React.useContext(ChartContext);
   const history = useHistory();
   const addSubscription = useSubscriptions();
-  const [key, setKey] = React.useState(Math.floor(Math.random()));
-  const [isLoading, setLoading] = React.useState(false);
-  const [hasRecording, setHasRecording] = React.useState(false);
+  const [controllerState, setControllerState] = React.useState(ControllerState.NO_DATA);
+  const [randomKey, setRandomKey] = React.useState(Math.floor(Math.random()));
   const [chartSrc, setChartSrc] = React.useState('');
   const [dashboardUrl, setDashboardUrl] = React.useState('');
 
-  const updateKey = React.useCallback(() => {
-    setKey((prev) => {
+  const updateRandomKey = React.useCallback(() => {
+    setRandomKey((prev) => {
       let next = prev + 1;
       if (next >= 10) {
         next = 0;
       }
       return next;
     });
-  }, [setKey]);
-
-  React.useEffect(() => {
-    addSubscription(
-      serviceContext.target.target().subscribe((_) => {
-        setLoading(true);
-        updateKey();
-      })
-    );
-  }, [addSubscription, serviceContext, updateKey]);
-
-  React.useEffect(() => {
-    addSubscription(
-      controllerContext.controller.hasActiveRecording().subscribe((v) => {
-        setHasRecording(v);
-        setLoading(false);
-      })
-    );
-  }, [addSubscription, controllerContext, setHasRecording]);
+  }, [setRandomKey]);
 
   React.useEffect(() => {
     addSubscription(serviceContext.api.grafanaDashboardUrl().subscribe(setDashboardUrl));
@@ -152,7 +133,6 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     if (!dashboardUrl) {
       return;
     }
-    setLoading(true);
     const u = new URL('/d-solo/main', dashboardUrl);
     u.searchParams.append('theme', props.theme);
     u.searchParams.append('panelId', String(kindToId(props.chartKind)));
@@ -160,15 +140,15 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     u.searchParams.append('from', `now-${props.duration}s`);
     u.searchParams.append('refresh', `${props.period}s`);
     setChartSrc(u.toString());
-  }, [dashboardUrl, setLoading, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
+  }, [dashboardUrl, setControllerState, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
 
   React.useEffect(() => {
     addSubscription(
-      controllerContext.controller.attach().subscribe((_) => {
-        setLoading(true);
+      controllerContext.controller.attach().subscribe((state: ControllerState) => {
+        setControllerState(state);
       })
     );
-  }, [addSubscription, controllerContext]);
+  }, [addSubscription, controllerContext, setControllerState]);
 
   const refresh = React.useCallback(() => {
     controllerContext.controller.requestRefresh();
@@ -186,6 +166,9 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [chartSrc, dashboardUrl]);
 
   const cardStyle = React.useMemo(() => {
+    if (controllerState !== ControllerState.READY) {
+      return {};
+    }
     let height: number;
     switch (props.chartKind) {
       case 'Core Count':
@@ -195,25 +178,21 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         height = 380;
         break;
     }
-    return hasRecording
-      ? {
-          height,
-        }
-      : {};
-  }, [hasRecording, props.chartKind]);
+    return { height };
+  }, [controllerState, props.chartKind]);
 
   const resyncButton = React.useMemo(() => {
     return (
       <Button
         key={0}
         aria-label={t('CHART_CARD.BUTTONS.SYNC.LABEL', { chartKind: props.chartKind })}
-        onClick={updateKey}
+        onClick={updateRandomKey}
         variant="plain"
         icon={<SyncAltIcon />}
         isDisabled={!chartSrc || !dashboardUrl}
       />
     );
-  }, [t, props.chartKind, updateKey, chartSrc, dashboardUrl]);
+  }, [t, props.chartKind, updateRandomKey, chartSrc, dashboardUrl]);
 
   const popoutButton = React.useMemo(() => {
     return (
@@ -238,7 +217,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     const style = {
       marginBottom: isWide ? '-2em' : '',
     };
-    if (hasRecording) {
+    if (controllerState === ControllerState.READY) {
       return (
         <CardHeader style={style}>
           <CardActions>{actions}</CardActions>
@@ -252,7 +231,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
         </CardHeader>
       );
     }
-  }, [props.actions, props.span, props.chartKind, hasRecording, actions]);
+  }, [props.actions, props.span, props.chartKind, controllerState, actions]);
 
   const handleCreateRecording = React.useCallback(() => {
     history.push({
@@ -272,10 +251,6 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     });
   }, [history]);
 
-  const handleIFrameLoaded = React.useCallback(() => {
-    setLoading(false);
-  }, [setLoading]);
-
   return (
     <DashboardCard
       id={props.chartKind + '-chart-card'}
@@ -286,10 +261,10 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
       cardHeader={header}
     >
       <CardBody>
-        {isLoading ? (
+        {controllerState === ControllerState.UNKNOWN ? (
           <LoadingView />
-        ) : hasRecording ? (
-          <iframe key={key} style={{ height: '100%', width: '100%' }} src={chartSrc} onLoad={handleIFrameLoaded} />
+        ) : controllerState === ControllerState.READY ? (
+          <iframe key={controllerState + randomKey} style={{ height: '100%', width: '100%' }} src={chartSrc} />
         ) : (
           <Bullseye>
             <EmptyState variant={EmptyStateVariant.large}>

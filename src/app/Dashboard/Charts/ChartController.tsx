@@ -54,15 +54,22 @@ import {
   ReplaySubject,
   Subscription,
   switchMap,
+  tap,
   throttleTime,
 } from 'rxjs';
 
 export const RECORDING_NAME = 'dashboard_metrics';
 
+export enum ControllerState {
+  UNKNOWN = 0,
+  NO_DATA = 1,
+  READY = 2,
+}
+
 export class ChartController {
+  private readonly _state$ = new BehaviorSubject<ControllerState>(ControllerState.UNKNOWN);
   private readonly _refCount$ = new BehaviorSubject<number>(0);
   private readonly _updates$ = new ReplaySubject<void>(1);
-  private readonly _hasRecording$ = new ReplaySubject<boolean>(1);
   private readonly _subscriptions: Subscription[] = [];
 
   constructor(
@@ -90,17 +97,44 @@ export class ChartController {
     );
   }
 
-  hasActiveRecording(): Observable<boolean> {
-    return this._hasRecording$.asObservable();
-  }
-
-  attach(): Observable<number> {
+  attach(): Observable<ControllerState> {
     this._refCount$.next(this._refCount$.value + 1);
-    return this._refCount$.asObservable().pipe(finalize(() => this._refCount$.next(this._refCount$.value - 1)));
+    return this._state$.asObservable().pipe(finalize(() => this._refCount$.next(this._refCount$.value - 1)));
   }
 
   requestRefresh(): void {
     this._updates$.next();
+  }
+
+  _tearDown() {
+    this._subscriptions.forEach((s) => s.unsubscribe());
+    this._subscriptions.splice(0, this._subscriptions.length);
+  }
+
+  private _init(): void {
+    this._subscriptions.push(
+      merge(
+        merge(
+          this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh)),
+          this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
+          this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
+          this._notifications.messages(NotificationCategory.ActiveRecordingStopped)
+        ).pipe(switchMap((_) => this._target.target().pipe(first()))),
+        this._target.target().pipe(tap((_) => this._state$.next(ControllerState.UNKNOWN)))
+      )
+        .pipe(concatMap((t) => this._hasRecording(t)))
+        .subscribe((v) => {
+          this._state$.next(v ? ControllerState.READY : ControllerState.NO_DATA);
+          if (v) {
+            this._api
+              .uploadActiveRecordingToGrafana(RECORDING_NAME)
+              .pipe(first())
+              .subscribe((_) => {
+                this._state$.next(ControllerState.READY);
+              });
+          }
+        })
+    );
   }
 
   private _hasRecording(target: Target): Observable<boolean> {
@@ -138,37 +172,6 @@ export class ChartController {
         }),
         catchError((_) => of(false))
       );
-  }
-
-  private _init(): void {
-    this._subscriptions.push(
-      merge(
-        merge(
-          this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh)),
-          this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
-          this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
-          this._notifications.messages(NotificationCategory.ActiveRecordingStopped)
-        ).pipe(switchMap((_) => this._target.target().pipe(first()))),
-        this._target.target()
-      )
-        .pipe(concatMap((t) => this._hasRecording(t)))
-        .subscribe((v) => {
-          this._hasRecording$.next(v);
-          if (v) {
-            this._api
-              .uploadActiveRecordingToGrafana(RECORDING_NAME)
-              .pipe(first())
-              .subscribe((_) => {
-                /* do nothing */
-              });
-          }
-        })
-    );
-  }
-
-  _tearDown() {
-    this._subscriptions.forEach((s) => s.unsubscribe());
-    this._subscriptions.splice(0, this._subscriptions.length);
   }
 }
 

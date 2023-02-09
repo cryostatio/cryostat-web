@@ -40,7 +40,7 @@ jest.mock('@app/Dashboard/Charts/ChartController');
 
 import { ChartCard, kindToId } from '@app/Dashboard/Charts/ChartCard';
 import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
-import { ChartController } from '@app/Dashboard/Charts/ChartController';
+import { ChartController, ControllerState } from '@app/Dashboard/Charts/ChartController';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
@@ -74,11 +74,9 @@ const mockChartContext = {
   controller: mockController,
 };
 
-jest.spyOn(mockController, 'attach').mockReturnValue(of(0));
-
 describe('<ChartCard />', () => {
   it('renders correctly', async () => {
-    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(true));
+    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.READY));
 
     let tree;
     await act(async () => {
@@ -98,7 +96,7 @@ describe('<ChartCard />', () => {
   });
 
   it('renders empty state correctly', async () => {
-    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(false));
+    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     let tree;
     await act(async () => {
@@ -118,7 +116,7 @@ describe('<ChartCard />', () => {
   });
 
   it('renders empty state with information and action button', async () => {
-    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(false));
+    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     renderChartCard(
       <ChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
@@ -131,7 +129,7 @@ describe('<ChartCard />', () => {
   });
 
   it('navigates to recording creation with prefilled state when empty state button clicked', async () => {
-    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(false));
+    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     const { user } = renderChartCard(
       <ChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
@@ -163,7 +161,7 @@ describe('<ChartCard />', () => {
     ['Network Utilization', 60, 15],
     ['File I/O', 30, 20],
   ])('renders iframe', async (chartKind: string, duration: number, period: number) => {
-    jest.spyOn(mockController, 'hasActiveRecording').mockReturnValue(of(true));
+    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.READY));
 
     const { container } = renderChartCard(
       <ChartCard theme={'light'} chartKind={chartKind} duration={duration} period={period} span={6} dashboardId={0} />
