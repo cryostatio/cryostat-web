@@ -48,6 +48,20 @@
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings.",
     "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if they do not support them."
   },
+  "AutomatedAnalysisScoreFilter": {
+    "CURRENT_SCORE_TEXT": "Only showing analysis results with severity scores ≥ {{ val }}:",
+    "SLIDER": {
+      "RESET0": {
+        "LABEL": "Reset score to 0"
+      },
+      "RESET100": {
+        "LABEL": "Reset score to 100"
+      }
+    },
+    "TOOLTIP": {
+      "CONTENT": "Severity scores are calculated based on the number of JFR events that were triggered by the application in the time the report was generated."
+    }
+  },
   "CHART_CARD": {
     "BUTTONS": {
       "CREATE": {

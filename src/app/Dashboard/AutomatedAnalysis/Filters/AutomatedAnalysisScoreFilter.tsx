@@ -49,12 +49,14 @@ import {
   Tooltip,
 } from '@patternfly/react-core';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 
 export interface AutomatedAnalysisScoreFilterProps {}
 
 export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilterProps> = (_) => {
   const dispatch = useDispatch<StateDispatch>();
+  const { t } = useTranslation();
   const currentScore = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.state.globalFilters.filters;
     if (!filters) return 0;
@@ -63,14 +65,14 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
 
   const steps = [
     { value: 0, label: '0' },
-    { value: 25, label: 'OK' }, // some hacks that work with css to get bolded and coloured labels above slider
+    { value: 25, label: t('OK', { ns: 'common' }) }, // some hacks that work with css to get bolded and coloured labels above slider
     {
       value: AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD,
       label: String(AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD),
     },
-    { value: 62.5, label: 'WARNING' },
+    { value: 62.5, label: t('WARNING', { ns: 'common' }) },
     { value: AutomatedAnalysisScore.RED_SCORE_THRESHOLD, label: String(AutomatedAnalysisScore.RED_SCORE_THRESHOLD) },
-    { value: 87.5, label: 'CRITICAL' },
+    { value: 87.5, label: t('CRITICAL', { ns: 'common' }) },
     { value: 100, label: '100' },
   ] as SliderStepObject[];
 
@@ -83,8 +85,8 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
   }, [dispatch]);
 
   const onChange = React.useCallback(
-    (value, inputValue) => {
-      value = Math.floor(value);
+    (value: number, inputValue: number | undefined) => {
+      value = Math.round(value * 10) / 10;
       let newValue;
       if (inputValue === undefined) {
         newValue = value;
@@ -94,7 +96,7 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
         } else if (inputValue < 0) {
           newValue = 0;
         } else {
-          newValue = Math.floor(inputValue);
+          newValue = Math.round(inputValue * 10) / 10;
         }
       }
       dispatch(automatedAnalysisAddGlobalFilterIntent('Score', newValue));
@@ -111,39 +113,51 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
       return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok';
     }
   }, [currentScore]);
+  //       // 'Severity scores are calculated based on the number of JFR events that were triggered by the application in the time the report was generated.'
 
   return (
     <>
-      <Tooltip
-        content={
-          'Severity scores are calculated based on the number of JFR events that were triggered by the application in the time the report was generated.'
-        }
-      >
-        <Text component={TextVariants.small}>Only showing analysis results with severity scores ≥ {currentScore}:</Text>
+      <Tooltip content={t('AutomatedAnalysisScoreFilter.TOOLTIP.CONTENT')}>
+        <Text component={TextVariants.small}>
+          {t('AutomatedAnalysisScoreFilter.CURRENT_SCORE_TEXT', { val: currentScore })}
+        </Text>
       </Tooltip>
       <Slider
         leftActions={
           <Level hasGutter>
             <LevelItem>
-              <Text component={TextVariants.small}>Reset:</Text>
+              <Text component={TextVariants.small}>{t('RESET', { ns: 'common' })}:</Text>
             </LevelItem>
             <LevelItem>
-              <Button isSmall isInline variant="link" aria-label="Reset score to 0" onClick={on0Reset}>
+              <Button
+                isSmall
+                isInline
+                variant="link"
+                aria-label={t('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL')}
+                onClick={on0Reset}
+              >
                 0
               </Button>
             </LevelItem>
             <LevelItem>
-              <Button isSmall isInline variant="link" aria-label="Reset score to 100" onClick={on100Reset}>
+              <Button
+                isSmall
+                isInline
+                variant="link"
+                aria-label={t('AutomatedAnalysisScoreFilter.SLIDER.RESET100.LABEL')}
+                onClick={on100Reset}
+              >
                 100
               </Button>
             </LevelItem>
           </Level>
         }
+        step={0.1}
         className={className}
         areCustomStepsContinuous
         customSteps={steps}
         isInputVisible
-        inputLabel="Score"
+        inputLabel={t('SCORE', { ns: 'common' })}
         inputValue={currentScore}
         value={currentScore}
         onChange={onChange}

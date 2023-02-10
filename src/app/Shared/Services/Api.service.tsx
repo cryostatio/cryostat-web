@@ -1415,7 +1415,7 @@ export interface AutomatedAnalysisRecordingConfig {
 
 export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecordingConfig = {
   template: 'template=Continuous,type=TARGET',
-  maxSize: 2048,
+  maxSize: 1048576,
   maxAge: 0,
 };
 

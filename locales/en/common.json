@@ -7,6 +7,7 @@
   },
   "BETA": "BETA",
   "CANCEL": "Cancel",
+  "CRITICAL": "CRITICAL",
   "CRYOSTAT_TRADEMARK": "Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0",
   "DATE": "Date",
   "DESCRIPTION": "Description",
@@ -24,9 +25,12 @@
   "MINUTE": "Minute",
   "MINUTE_one": "Minute",
   "MINUTE_other": "Minutes",
+  "OK": "OK",
   "PRODUCTION": "PRODUCTION",
   "REMOVE": "Remove",
+  "RESET": "Reset",
   "RETRY": "Retry",
+  "SCORE": "Score",
   "SECOND": "Second",
   "SECOND_one": "Second",
   "SECOND_other": "Seconds",
@@ -35,5 +39,6 @@
   "SHOW_MORE": "Show more",
   "TEMPLATE": "Template",
   "TEMPLATE_HELPER_TEXT_INVALID": "Template must be selected",
-  "TIME": "Time"
+  "TIME": "Time",
+  "WARNING": "WARNING"
 }
