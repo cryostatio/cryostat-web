@@ -193,6 +193,36 @@ export const renderWithServiceContextAndReduxStoreWithRouter = (
   return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
 
+export const renderWithProvidersAndRedux = (
+  ui: React.ReactElement,
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  providers: ProviderInstance<any>[],
+  { preloadedState = {}, store = setupStore(preloadedState), user = userEvent.setup(), ...renderOptions } = {}
+) => {
+  if (providers.length < 1) {
+    throw new Error('At least one provider must be specified');
+  }
+  const Wrapper = ({ children }: PropsWithChildren<unknown>) => {
+    let els = children;
+    for (let i = 0; i < providers.length; i++) {
+      const provider = providers[i];
+      const ctx = React.createElement(provider.kind, { key: i, value: provider.instance }, els);
+      els = [ctx];
+    }
+    return (
+      <Provider key={0} store={store}>
+        {els}
+      </Provider>
+    );
+  };
+  return { store, user, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
+};
+
+export interface ProviderInstance<T> {
+  kind: React.Provider<T>;
+  instance: T;
+}
+
 export const testTranslate = (key: string, ns = 'public'): string => {
   // if no translation is found, return the "test value" for debugging
   return t(key, 'i18next test value', { ns: ns });

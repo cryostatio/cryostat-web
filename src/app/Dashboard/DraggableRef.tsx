@@ -39,6 +39,7 @@ import { dashboardCardConfigReorderCardIntent } from '@app/Shared/Redux/Configur
 import { css } from '@patternfly/react-styles';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { handleDisabledElements } from './ResizableRef';
 
 const getOverlapScales = (dragIndex: number, hoverIndex: number): [number, number] => {
   let leftScale = OFFSET_SCALE;
@@ -188,6 +189,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         setIsDragging(false);
         setRefStyle(INIT_STYLE);
       }
+      handleDisabledElements(false);
     },
     [setIsDragging, setRefStyle, isDragging]
   );
@@ -211,6 +213,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
           ...refStyle,
         });
       }
+      handleDisabledElements(false);
     },
     [dispatch, setIsDragging, setRefStyle, refStyle, dashboardId]
   );
@@ -266,7 +269,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
                   return;
                 }
                 // check the position we are hovering the card over
-                /* this case needs to be checked so that cards to the left of the dragged card are 
+                /* this case needs to be checked so that cards to the left of the dragged card are
                    not translated when the dragged card is being dragged to the right, and vice versa */
 
                 // if (dragIndex >= gapIndex) => we are dragging the card "backwards"
@@ -336,6 +339,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
         transition: '',
         transform: `translate(${ev.pageX - startCoords.current[0]}px, ${ev.pageY - startCoords.current[1]}px)`,
       });
+      handleDisabledElements(true);
     },
     [setRefStyle, refStyle]
   );
@@ -379,6 +383,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       mouseUpListener.current = () => onMouseUpWhileDragging(droppableItems);
       document.addEventListener('mousemove', mouseMoveListener.current);
       document.addEventListener('mouseup', mouseUpListener.current);
+      handleDisabledElements(true);
     },
     [setRefStyle, setIsDragging, onMouseMoveWhileDragging, onMouseUpWhileDragging, refStyle, isDragging]
   );

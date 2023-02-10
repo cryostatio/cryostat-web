@@ -145,6 +145,7 @@ describe('<CustomRecordingForm />', () => {
       duration: 30,
       archiveOnStop: true,
       options: {
+        restart: false,
         toDisk: true,
         maxAge: undefined,
         maxSize: 0,

@@ -12,6 +12,23 @@
     "OPEN_SOURCE_LICENSE": "Open Source License",
     "VERSION": "version"
   },
+  "CHART_CARD": {
+    "BUTTONS": {
+      "CREATE": {
+        "LABEL": "Create"
+      },
+      "POPOUT": {
+        "LABEL": "Pop out {{chartKind}} chart"
+      },
+      "SYNC": {
+        "LABEL": "Synchronize {{chartKind}} chart"
+      }
+    },
+    "NO_RECORDING": {
+      "DESCRIPTION": "Metrics cards display data taken from running flight recordings with the label <label>origin={{recordingName}}</label>. No such recordings are currently available.",
+      "TITLE": "No source recording"
+    }
+  },
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
   },
@@ -54,6 +71,11 @@
       "DASHBOARD": "Dashboard",
       "LANGUAGE_REGION": "Language & Region",
       "NOTIFICATION_MESSAGE": "Notifications & Messages"
+    },
+    "CHARTS_CONFIG": {
+      "DESCRIPTION": "",
+      "REFRESH_RATE_SETTING": "Configure the minimum time to wait between data refreshes. Individual metrics cards may still request updates on a faster cycle, but the client application instance will throttle update requests to the server according to this setting.",
+      "TITLE": "Dashboard Metrics Configuration"
     },
     "CREDENTIALS_STORAGE": {
       "BACKEND": {

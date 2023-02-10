@@ -70,6 +70,15 @@ jest.mock('@app/Settings/AutomatedAnalysisConfig', () => ({
   } as UserSetting,
 }));
 
+jest.mock('@app/Settings/ChartCardsConfig', () => ({
+  ChartCardsConfig: {
+    titleKey: 'SETTINGS.CHARTS_CONFIG.TITLE',
+    descConstruct: 'SETTINGS.CHARTS_CONFIG.DESCRIPTION',
+    category: 'SETTINGS.CATEGORIES.DASHBOARD',
+    content: () => <Text>Chart Cards Config Component</Text>,
+  } as UserSetting,
+}));
+
 jest.mock('@app/Settings/CredentialsStorage', () => ({
   CredentialsStorage: {
     titleKey: 'SETTINGS.CREDENTIALS_STORAGE.TITLE',

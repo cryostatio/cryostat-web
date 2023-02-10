@@ -42,6 +42,7 @@ import {
   dashboardCardConfigResizeCardIntent,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
@@ -50,6 +51,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
+import { ChartCardDescriptor } from './Charts/ChartCard';
+import { ChartContext } from './Charts/ChartContext';
+import { ChartController } from './Charts/ChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 
@@ -82,11 +86,13 @@ export interface PropControl {
   kind: 'boolean' | 'number' | 'string' | 'text' | 'select';
   values?: any[] | Observable<any>;
   defaultValue: any;
+  extras?: any;
 }
 
 export interface DashboardProps {}
 
 export interface DashboardCardProps {
+  span: number;
   dashboardId: number;
   actions?: JSX.Element[];
 }
@@ -225,9 +231,23 @@ export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
 export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDescriptor[] = (
   featureLevel = FeatureLevel.DEVELOPMENT
 ) => {
-  const cards = [AutomatedAnalysisCardDescriptor, NonePlaceholderCardDescriptor, AllPlaceholderCardDescriptor];
+  const cards = [
+    AutomatedAnalysisCardDescriptor,
+    ChartCardDescriptor,
+    NonePlaceholderCardDescriptor,
+    AllPlaceholderCardDescriptor,
+  ];
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };
+
+export function hasConfigByName(name: string): boolean {
+  for (const choice of getDashboardCards()) {
+    if (choice.component.name === name) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export function getConfigByName(name: string): DashboardCardDescriptor {
   for (const choice of getDashboardCards()) {
@@ -236,6 +256,15 @@ export function getConfigByName(name: string): DashboardCardDescriptor {
     }
   }
   throw new Error(`Unknown card type selection: ${name}`);
+}
+
+export function hasConfigByTitle(title: string): boolean {
+  for (const choice of getDashboardCards()) {
+    if (choice.title === title) {
+      return true;
+    }
+  }
+  return false;
 }
 
 export function getConfigByTitle(title: string): DashboardCardDescriptor {
@@ -248,8 +277,30 @@ export function getConfigByTitle(title: string): DashboardCardDescriptor {
 }
 
 export const Dashboard: React.FC<DashboardProps> = (_) => {
+  const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
   const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const chartController = React.useRef(
+    new ChartController(
+      serviceContext.api,
+      serviceContext.target,
+      serviceContext.notificationChannel,
+      serviceContext.settings
+    )
+  );
+
+  const chartContext = React.useMemo(() => {
+    return {
+      controller: chartController.current,
+    };
+  }, [chartController]);
+
+  React.useEffect(() => {
+    const controller = chartController.current;
+    return () => {
+      controller._tearDown();
+    };
+  }, []);
 
   const handleRemove = React.useCallback(
     (idx: number) => {
@@ -261,7 +312,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const handleResetSize = React.useCallback(
     (idx: number) => {
       const defaultSpan = getConfigByName(cardConfigs[idx].name).cardSizes.span.default;
-      if (defaultSpan == cardConfigs[idx].span) {
+      if (defaultSpan === cardConfigs[idx].span) {
         return;
       }
       dispatch(dashboardCardConfigResizeCardIntent(idx, defaultSpan));
@@ -271,28 +322,33 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   return (
     <TargetView pageTitle="Dashboard" compactSelect={false}>
-      <Grid id={'dashboard-grid'} hasGutter>
-        {cardConfigs.map((cfg, idx) => (
-          <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
-            <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
-              {React.createElement(getConfigByName(cfg.name).component, {
-                ...cfg.props,
-                dashboardId: idx,
-                actions: [
-                  <DashboardCardActionMenu
-                    key={`${cfg.name}-actions`}
-                    onRemove={() => handleRemove(idx)}
-                    onResetSize={() => handleResetSize(idx)}
-                  />,
-                ],
-              })}
-            </GridItem>
-          </FeatureFlag>
-        ))}
-        <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
-          <AddCard />
-        </GridItem>
-      </Grid>
+      <ChartContext.Provider value={chartContext}>
+        <Grid id={'dashboard-grid'} hasGutter>
+          {cardConfigs
+            .filter((cfg) => hasConfigByName(cfg.name))
+            .map((cfg, idx) => (
+              <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
+                <GridItem span={cfg.span} key={cfg.id} order={{ default: idx.toString() }}>
+                  {React.createElement(getConfigByName(cfg.name).component, {
+                    span: cfg.span,
+                    ...cfg.props,
+                    dashboardId: idx,
+                    actions: [
+                      <DashboardCardActionMenu
+                        key={`${cfg.name}-actions`}
+                        onRemove={() => handleRemove(idx)}
+                        onResetSize={() => handleResetSize(idx)}
+                      />,
+                    ],
+                  })}
+                </GridItem>
+              </FeatureFlag>
+            ))}
+          <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
+            <AddCard />
+          </GridItem>
+        </Grid>
+      </ChartContext.Provider>
     </TargetView>
   );
 };

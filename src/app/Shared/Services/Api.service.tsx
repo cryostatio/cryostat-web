@@ -297,8 +297,13 @@ export class ApiService {
     if (!!recordingAttributes.duration && recordingAttributes.duration > 0) {
       form.append('duration', String(recordingAttributes.duration));
     }
-    form.append('archiveOnStop', String(recordingAttributes.archiveOnStop));
+    if (recordingAttributes.archiveOnStop != null) {
+      form.append('archiveOnStop', String(recordingAttributes.archiveOnStop));
+    }
     if (recordingAttributes.options) {
+      if (recordingAttributes.options.restart) {
+        form.append('restart', String(recordingAttributes.options.restart));
+      }
       if (recordingAttributes.options.toDisk != null) {
         form.append('toDisk', String(recordingAttributes.options.toDisk));
       }
@@ -1349,6 +1354,7 @@ export interface EventTemplate {
 }
 
 export interface RecordingOptions {
+  restart?: boolean;
   toDisk?: boolean;
   maxSize?: number;
   maxAge?: number;
@@ -1411,6 +1417,14 @@ export const defaultAutomatedAnalysisRecordingConfig: AutomatedAnalysisRecording
   template: 'template=Continuous,type=TARGET',
   maxSize: 2048,
   maxAge: 0,
+};
+
+export interface ChartControllerConfig {
+  minRefresh: number;
+}
+
+export const defaultChartControllerConfig: ChartControllerConfig = {
+  minRefresh: 10,
 };
 
 // New target specific archived recording apis now enforce a non-empty target field

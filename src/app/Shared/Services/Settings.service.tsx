@@ -43,7 +43,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
+  ChartControllerConfig,
   defaultAutomatedAnalysisRecordingConfig,
+  defaultChartControllerConfig,
   RecordingAttributes,
 } from './Api.service';
 import { NotificationCategory } from './NotificationChannel.service';
@@ -144,6 +146,14 @@ export class SettingsService {
 
   setAutomatedAnalysisRecordingConfig(config: AutomatedAnalysisRecordingConfig): void {
     saveToLocalStorage('AUTOMATED_ANALYSIS_RECORDING_CONFIG', config);
+  }
+
+  chartControllerConfig(defaultConfig = defaultChartControllerConfig): ChartControllerConfig {
+    return getFromLocalStorage('CHART_CONTROLLER_CONFIG', defaultConfig);
+  }
+
+  setChartControllerConfig(config: ChartControllerConfig): void {
+    saveToLocalStorage('CHART_CONTROLLER_CONFIG', config);
   }
 
   deletionDialogsEnabled(): Map<DeleteOrDisableWarningType, boolean> {

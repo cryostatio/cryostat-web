@@ -273,7 +273,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               aria-label="Create target"
               isDisabled={isLoading}
               onClick={showCreateTargetModal}
-              variant="control"
+              variant="plain"
               icon={<PlusCircleIcon />}
             />
             <Button
@@ -282,7 +282,7 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
                 isLoading || selected == NO_TARGET || selected.annotations?.cryostat['REALM'] !== CUSTOM_TARGETS_REALM
               }
               onClick={handleDeleteButton}
-              variant="control"
+              variant="plain"
               icon={<TrashIcon />}
               {...deleteButtonLoadingProps}
             />

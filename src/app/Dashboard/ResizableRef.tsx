@@ -59,6 +59,11 @@ function normalizeAsGridSpans(val: number, min: number, max: number, a: gridSpan
   return _.clamp(ans, a, b) as gridSpans;
 }
 
+export function handleDisabledElements(disabled: boolean): void {
+  const disabledElements: HTMLElement[] = Array.from(document.querySelectorAll('.disabled-pointer'));
+  disabledElements.forEach((el) => (el.style['pointer-events'] = disabled ? 'none' : 'auto'));
+}
+
 export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
   dashboardId,
   cardSizes,
@@ -129,6 +134,7 @@ export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
     document.body.style.removeProperty('cursor');
     document.removeEventListener('mousemove', callbackMouseMove);
     document.removeEventListener('mouseup', callbackMouseUp);
+    handleDisabledElements(false);
   }, [callbackMouseMove]);
 
   const handleOnMouseDown = React.useCallback(
@@ -141,6 +147,7 @@ export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
       isResizing.current = true;
       minWidth.current = undefined;
       maxWidth.current = undefined;
+      handleDisabledElements(true);
     },
     [callbackMouseMove, callbackMouseUp]
   );
