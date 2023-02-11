@@ -69,30 +69,43 @@ interface JMXMetricsChartKind {
   visual: (t: TFunction, dayjs, samples: Sample[]) => React.ReactElement;
 }
 
+const SingleLineChart: React.FC<{
+  data: { x: number; y: number }[];
+  xTicks?: (number | string)[];
+  yTicks?: (number | string)[];
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  labeller: (datum: any) => string;
+}> = ({ data, xTicks, yTicks, labeller }) => {
+  return (
+    <Chart height={286} containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}>
+      <ChartAxis tickValues={xTicks} fixLabelOverlap />
+      <ChartAxis tickValues={yTicks} dependentAxis showGrid />
+      <ChartGroup>
+        <ChartLine data={data}></ChartLine>
+      </ChartGroup>
+    </Chart>
+  );
+};
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const SimpleChart: React.FC<{ t: TFunction; dayjs; samples: Sample[] }> = ({ dayjs, samples }) => {
+  const data = samples.map((v) => ({ x: v.timestamp, y: v.values[0] }));
+  return (
+    <SingleLineChart
+      data={data}
+      xTicks={samples.map((v) => v.timestamp).map(dayjs)}
+      labeller={({ datum }) => `${dayjs(datum.x)}: ${datum.y}`}
+    />
+  );
+};
+
 // TODO these need to be localized
 const chartKinds: JMXMetricsChartKind[] = [
   {
     displayName: 'System Load Average',
     category: 'os',
     fieldNames: ['systemCpuLoad'],
-    visual: (_, dayjs, samples: Sample[]) => {
-      // TODO use timestamp for x-axis
-      const data = samples.map((v) => ({ x: v.timestamp, y: v.values[0] }));
-      return (
-        <Chart
-          height={286}
-          containerComponent={
-            <ChartVoronoiContainer labels={({ datum }) => `${dayjs(datum.x)}: ${datum.y}`} constrainToVisibleArea />
-          }
-        >
-          <ChartAxis tickValues={samples.map((v) => v.timestamp).map(dayjs)} fixLabelOverlap />
-          <ChartAxis dependentAxis showGrid />
-          <ChartGroup>
-            <ChartLine data={data}></ChartLine>
-          </ChartGroup>
-        </Chart>
-      );
-    },
+    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} />,
   },
 ];
 
