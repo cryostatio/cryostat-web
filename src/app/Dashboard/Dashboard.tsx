@@ -55,9 +55,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
-import { JFRMetricsChartCardDescriptor } from './Charts/JFRMetricsChartCard';
 import { ChartContext } from './Charts/ChartContext';
+import { JFRMetricsChartCardDescriptor } from './Charts/JFRMetricsChartCard';
 import { JFRMetricsChartController } from './Charts/JFRMetricsChartController';
+import { JMXMetricsChartCardDescriptor } from './Charts/JMXMetricsChartCard';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
@@ -239,6 +240,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
   const cards = [
     AutomatedAnalysisCardDescriptor,
     JFRMetricsChartCardDescriptor,
+    JMXMetricsChartCardDescriptor,
     NonePlaceholderCardDescriptor,
     AllPlaceholderCardDescriptor,
     QuickStartsCardDescriptor,
