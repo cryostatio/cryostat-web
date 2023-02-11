@@ -67,7 +67,7 @@ export enum ControllerState {
   READY = 2,
 }
 
-export class ChartController {
+export class JFRMetricsChartController {
   private readonly _state$ = new BehaviorSubject<ControllerState>(ControllerState.UNKNOWN);
   private readonly _refCount$ = new BehaviorSubject<number>(0);
   private readonly _updates$ = new ReplaySubject<void>(1);
