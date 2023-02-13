@@ -52,7 +52,6 @@ import {
 } from '@patternfly/react-charts';
 import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import { SyncAltIcon } from '@patternfly/react-icons';
-import { TFunction } from 'i18next';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -83,19 +82,33 @@ interface MBeanMetricsChartKind {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   mapper: (metrics: any) => { name: string; values: number[] };
   singleValue?: boolean;
-  visual: (t: TFunction, dayjs, samples: Sample[]) => React.ReactElement;
+  visual: (samples: Sample[]) => React.ReactElement;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const SimpleChart: React.FC<{
-  t: TFunction;
-  dayjs;
   style: 'line' | 'area';
   samples: Sample[];
   units?: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
-}> = ({ dayjs, style, samples, units, interpolation }) => {
-  const data = samples.map((v) => ({ x: v.timestamp, y: v.datapoint.values[0], name: v.datapoint.name }));
+}> = ({ style, samples, units, interpolation }) => {
+  const [dayjs] = useDayjs();
+
+  const data = React.useMemo(
+    () => samples.map((v) => ({ x: v.timestamp, y: v.datapoint.values[0], name: v.datapoint.name })),
+    [samples]
+  );
+
+  const render = React.useCallback(
+    (data, style) =>
+      style === 'line' ? (
+        <ChartLine data={data} name={units} interpolation={interpolation} />
+      ) : (
+        <ChartArea data={data} name={units} interpolation={interpolation} />
+      ),
+    [units, interpolation]
+  );
+
   return (
     <div className="disabled-pointer">
       <Chart
@@ -110,13 +123,7 @@ const SimpleChart: React.FC<{
       >
         <ChartAxis tickValues={samples.map((v) => v.timestamp).map(dayjs)} fixLabelOverlap />
         <ChartAxis dependentAxis showGrid label={units} />
-        <ChartGroup>
-          {style === 'line' ? (
-            <ChartLine data={data} name={units} interpolation={interpolation}></ChartLine>
-          ) : (
-            <ChartArea data={data} name={units} interpolation={interpolation}></ChartArea>
-          )}
-        </ChartGroup>
+        <ChartGroup>{render(data, style)}</ChartGroup>
       </Chart>
     </div>
   );
@@ -130,7 +137,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['processCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => ({ name: 'processCpuLoad', values: [metrics.processCpuLoad] }),
-    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} style={'line'} />,
+    visual: (samples: Sample[]) => <SimpleChart samples={samples} style={'line'} />,
   },
   {
     displayName: 'System Load Average',
@@ -138,7 +145,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['systemCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => ({ name: 'systemCpuLoad', values: [metrics.systemCpuLoad] }),
-    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} style={'line'} />,
+    visual: (samples: Sample[]) => <SimpleChart samples={samples} style={'line'} />,
   },
   {
     displayName: 'Heap Memory Usage',
@@ -150,8 +157,8 @@ const chartKinds: MBeanMetricsChartKind[] = [
       name: 'heapMemoryUsed',
       values: [Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2))],
     }),
-    visual: (t, dayjs, samples: Sample[]) => (
-      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
+    visual: (samples: Sample[]) => (
+      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
   },
   {
@@ -162,7 +169,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => ({ name: 'heapMemoryUsage', values: [metrics.heapMemoryUsagePercent] }),
     singleValue: true,
-    visual: (_t, _dayjs, samples: Sample[]) => {
+    visual: (samples: Sample[]) => {
       let value = 0;
       if (samples?.length > 0) {
         value = samples.slice(-1)[0].datapoint.values[0] * 100;
@@ -186,8 +193,8 @@ const chartKinds: MBeanMetricsChartKind[] = [
       name: 'noneapMemoryUsed',
       values: [Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2))],
     }),
-    visual: (t, dayjs, samples: Sample[]) => (
-      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
+    visual: (samples: Sample[]) => (
+      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
   },
 ];
@@ -198,7 +205,6 @@ function getChartKindByName(name: string): MBeanMetricsChartKind {
 
 export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (props) => {
   const [t] = useTranslation();
-  const [dayjs] = useDayjs();
   const serviceContext = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [samples, setSamples] = React.useState([] as Sample[]);
@@ -285,8 +291,8 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   }, [props.chartKind, actions]);
 
   const visual = React.useMemo(() => {
-    return getChartKindByName(props.chartKind).visual(t, dayjs, samples);
-  }, [props.chartKind, t, dayjs, samples]);
+    return getChartKindByName(props.chartKind).visual(samples);
+  }, [props.chartKind, samples]);
 
   return (
     <DashboardCard
