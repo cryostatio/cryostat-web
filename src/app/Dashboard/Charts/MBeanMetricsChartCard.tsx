@@ -82,18 +82,18 @@ interface MBeanMetricsChartKind {
 const SingleLineChart: React.FC<{
   data: { x: number; y: number }[];
   units?: string;
+  interpolation?: 'linear' | 'step' | 'monotoneX';
   xTicks?: (number | string)[];
-  yTicks?: (number | string)[];
   /* eslint-disable @typescript-eslint/no-explicit-any */
   labeller: (datum: any) => string;
-}> = ({ data, xTicks, yTicks, units, labeller }) => {
+}> = ({ data, xTicks, units, interpolation, labeller }) => {
   return (
     <div className="disabled-pointer">
       <Chart containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}>
         <ChartAxis tickValues={xTicks} fixLabelOverlap />
-        <ChartAxis tickValues={yTicks} dependentAxis showGrid label={units} />
+        <ChartAxis dependentAxis showGrid label={units} />
         <ChartGroup>
-          <ChartLine data={data} name={units}></ChartLine>
+          <ChartLine data={data} name={units} interpolation={interpolation}></ChartLine>
         </ChartGroup>
       </Chart>
     </div>
@@ -106,7 +106,8 @@ const SimpleChart: React.FC<{
   dayjs;
   samples: Sample[];
   units?: string;
-}> = ({ dayjs, samples, units }) => {
+  interpolation?: 'linear' | 'step' | 'monotoneX';
+}> = ({ dayjs, samples, units, interpolation }) => {
   const data = samples.map((v) => ({ x: v.timestamp, y: v.values[0] }));
   return (
     <SingleLineChart
@@ -114,6 +115,7 @@ const SimpleChart: React.FC<{
       units={units}
       xTicks={samples.map((v) => v.timestamp).map(dayjs)}
       labeller={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
+      interpolation={interpolation}
     />
   );
 };
@@ -126,7 +128,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['processCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [metrics.processCpuLoad],
-    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} />,
+    visual: (t, dayjs, samples: Sample[]) => (
+      <SimpleChart t={t} dayjs={dayjs} samples={samples} />
+    ),
   },
   {
     displayName: 'System Load Average',
@@ -134,7 +138,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['systemCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [metrics.systemCpuLoad],
-    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} />,
+    visual: (t, dayjs, samples: Sample[]) => (
+      <SimpleChart t={t} dayjs={dayjs} samples={samples} />
+    ),
   },
   {
     displayName: 'Heap Memory Usage',
@@ -143,7 +149,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
     // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2))],
-    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} />,
+    visual: (t, dayjs, samples: Sample[]) => (
+      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} />
+    ),
   },
   {
     displayName: 'Heap Usage Percentage',
@@ -174,7 +182,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['nonHeapMemoryUsage{ used }'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2))],
-    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} />,
+    visual: (t, dayjs, samples: Sample[]) => (
+      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} />
+    ),
   },
 ];
 
@@ -190,7 +200,7 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const [samples, setSamples] = React.useState([] as Sample[]);
 
   React.useEffect(() => {
-    addSubscription(serviceContext.target.target().subscribe(_ => setSamples([])));
+    addSubscription(serviceContext.target.target().subscribe((_) => setSamples([])));
   }, [addSubscription, serviceContext, setSamples]);
 
   const refresh = React.useCallback(() => {
