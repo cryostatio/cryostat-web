@@ -43,6 +43,7 @@ import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Chart,
+  ChartArea,
   ChartAxis,
   ChartDonutUtilization,
   ChartGroup,
@@ -80,20 +81,25 @@ interface MBeanMetricsChartKind {
 }
 
 const SingleLineChart: React.FC<{
+  style: 'line' | 'area';
   data: { x: number; y: number }[];
   units?: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
   xTicks?: (number | string)[];
   /* eslint-disable @typescript-eslint/no-explicit-any */
   labeller: (datum: any) => string;
-}> = ({ data, xTicks, units, interpolation, labeller }) => {
+}> = ({ style, data, xTicks, units, interpolation, labeller }) => {
   return (
     <div className="disabled-pointer">
       <Chart containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}>
         <ChartAxis tickValues={xTicks} fixLabelOverlap />
         <ChartAxis dependentAxis showGrid label={units} />
         <ChartGroup>
-          <ChartLine data={data} name={units} interpolation={interpolation}></ChartLine>
+          {style === 'line' ? (
+            <ChartLine data={data} name={units} interpolation={interpolation}></ChartLine>
+          ) : (
+            <ChartArea data={data} name={units} interpolation={interpolation}></ChartArea>
+          )}
         </ChartGroup>
       </Chart>
     </div>
@@ -104,18 +110,20 @@ const SingleLineChart: React.FC<{
 const SimpleChart: React.FC<{
   t: TFunction;
   dayjs;
+  style: 'line' | 'area';
   samples: Sample[];
   units?: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
-}> = ({ dayjs, samples, units, interpolation }) => {
+}> = ({ dayjs, style, samples, units, interpolation }) => {
   const data = samples.map((v) => ({ x: v.timestamp, y: v.values[0] }));
   return (
     <SingleLineChart
+      style={style}
       data={data}
       units={units}
       xTicks={samples.map((v) => v.timestamp).map(dayjs)}
-      labeller={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
       interpolation={interpolation}
+      labeller={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
     />
   );
 };
@@ -128,9 +136,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['processCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [metrics.processCpuLoad],
-    visual: (t, dayjs, samples: Sample[]) => (
-      <SimpleChart t={t} dayjs={dayjs} samples={samples} />
-    ),
+    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} style={'line'} />,
   },
   {
     displayName: 'System Load Average',
@@ -138,9 +144,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['systemCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [metrics.systemCpuLoad],
-    visual: (t, dayjs, samples: Sample[]) => (
-      <SimpleChart t={t} dayjs={dayjs} samples={samples} />
-    ),
+    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} style={'line'} />,
   },
   {
     displayName: 'Heap Memory Usage',
@@ -150,7 +154,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2))],
     visual: (t, dayjs, samples: Sample[]) => (
-      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} />
+      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
   },
   {
@@ -183,7 +187,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2))],
     visual: (t, dayjs, samples: Sample[]) => (
-      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} />
+      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
   },
 ];
