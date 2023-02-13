@@ -151,6 +151,14 @@ const chartKinds: MBeanMetricsChartKind[] = [
   {
     displayName: 'System Load Average',
     category: 'os',
+    fields: ['systemLoadAverage'],
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    mapper: (metrics: any) => [{ name: 'systemLoadAverage', value: metrics.systemLoadAverage }],
+    visual: (samples: Sample[]) => <SimpleChart samples={samples} style={'line'} />,
+  },
+  {
+    displayName: 'System CPU Load',
+    category: 'os',
     fields: ['systemCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [{ name: 'systemCpuLoad', value: metrics.systemCpuLoad }],
