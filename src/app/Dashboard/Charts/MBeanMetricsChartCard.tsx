@@ -41,7 +41,14 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Target } from '@app/Shared/Services/Target.service';
 import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Chart, ChartAxis, ChartGroup, ChartLine, ChartVoronoiContainer } from '@patternfly/react-charts';
+import {
+  Chart,
+  ChartAxis,
+  ChartDonutUtilization,
+  ChartGroup,
+  ChartLine,
+  ChartVoronoiContainer,
+} from '@patternfly/react-charts';
 import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import { SyncAltIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
@@ -74,27 +81,16 @@ interface MBeanMetricsChartKind {
 const SingleLineChart: React.FC<{
   data: { x: number; y: number }[];
   units?: string;
-  xMin?: number;
-  xMax?: number;
-  yMin?: number;
-  yMax?: number;
   xTicks?: (number | string)[];
   yTicks?: (number | string)[];
   /* eslint-disable @typescript-eslint/no-explicit-any */
   labeller: (datum: any) => string;
-}> = ({ data, xMin, xMax, yMin, yMax, xTicks, yTicks, units, labeller }) => {
+}> = ({ data, xTicks, yTicks, units, labeller }) => {
   return (
     <div className="disabled-pointer">
       <Chart containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}>
-        <ChartAxis tickValues={xTicks} fixLabelOverlap minDomain={{ x: xMin }} maxDomain={{ x: xMax }} />
-        <ChartAxis
-          tickValues={yTicks}
-          dependentAxis
-          showGrid
-          minDomain={{ y: yMin }}
-          maxDomain={{ y: yMax }}
-          label={units}
-        />
+        <ChartAxis tickValues={xTicks} fixLabelOverlap />
+        <ChartAxis tickValues={yTicks} dependentAxis showGrid label={units} />
         <ChartGroup>
           <ChartLine data={data} name={units}></ChartLine>
         </ChartGroup>
@@ -109,17 +105,12 @@ const SimpleChart: React.FC<{
   dayjs;
   samples: Sample[];
   units?: string;
-  domain?: { xMin?: number; xMax?: number; yMin?: number; yMax?: number };
-}> = ({ dayjs, samples, units, domain }) => {
+}> = ({ dayjs, samples, units }) => {
   const data = samples.map((v) => ({ x: v.timestamp, y: v.values[0] }));
   return (
     <SingleLineChart
       data={data}
       units={units}
-      xMin={domain?.xMin}
-      xMax={domain?.xMax}
-      yMin={domain?.yMin}
-      yMax={domain?.yMax}
       xTicks={samples.map((v) => v.timestamp).map(dayjs)}
       labeller={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
     />
@@ -143,9 +134,37 @@ const chartKinds: MBeanMetricsChartKind[] = [
     // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2))],
-    visual: (t, dayjs, samples: Sample[]) => (
-      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} domain={{ yMin: 0 }} />
-    ),
+    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} />,
+  },
+  {
+    displayName: 'Heap Usage Percentage',
+    category: 'memory',
+    fields: ['heapMemoryUsagePercent'],
+    // TODO scale units automatically and report units dynamically
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    mapper: (metrics: any) => [metrics.heapMemoryUsagePercent],
+    visual: (_t, _dayjs, samples: Sample[]) => {
+      let value = 0;
+      if (samples?.length > 0) {
+        value = samples.slice(-1)[0].values[0] * 100;
+      }
+      return (
+        <ChartDonutUtilization
+          constrainToVisibleArea
+          data={{ x: 'Used heap memory', y: value }}
+          title={`${value.toFixed(2)}%`}
+          labels={({ datum }) => (datum.x ? `${datum.x}: ${datum.y.toFixed(2)}%` : null)}
+        />
+      );
+    },
+  },
+  {
+    displayName: 'Non-Heap Memory Usage',
+    category: 'memory',
+    fields: ['nonHeapMemoryUsage{ used }'],
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    mapper: (metrics: any) => [Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2))],
+    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} />,
   },
 ];
 
