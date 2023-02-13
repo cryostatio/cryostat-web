@@ -60,6 +60,7 @@ import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from 
 import { DashboardCard } from '../DashboardCard';
 
 export interface MBeanMetricsChartCardProps extends DashboardCardProps {
+  themeColor: string;
   chartKind: string;
   duration: number;
   period: number;
@@ -82,16 +83,17 @@ interface MBeanMetricsChartKind {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   mapper: (metrics: any) => Datapoint[];
   singleValue?: boolean;
-  visual: (samples: Sample[]) => React.ReactElement;
+  visual: (themeColor: string, samples: Sample[]) => React.ReactElement;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const SimpleChart: React.FC<{
+  themeColor?: string;
   style: 'line' | 'area';
   samples: Sample[];
   units?: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
-}> = ({ style, samples, units, interpolation }) => {
+}> = ({ themeColor, style, samples, units, interpolation }) => {
   const [dayjs] = useDayjs();
 
   const data = React.useMemo(
@@ -122,6 +124,7 @@ const SimpleChart: React.FC<{
         }
         legendData={keys.length > 1 ? keys.map((k) => ({ name: k.name })) : []}
         legendPosition={'bottom'}
+        themeColor={themeColor}
       >
         <ChartAxis tickValues={samples.map((v) => v.timestamp).map(dayjs)} fixLabelOverlap />
         <ChartAxis dependentAxis showGrid label={units} />
@@ -146,7 +149,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['processCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [{ name: 'processCpuLoad', value: metrics.processCpuLoad }],
-    visual: (samples: Sample[]) => <SimpleChart samples={samples} interpolation={'monotoneX'} style={'line'} />,
+    visual: (themeColor: string, samples: Sample[]) => (
+      <SimpleChart samples={samples} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
+    ),
   },
   {
     displayName: 'System Load Average',
@@ -154,7 +159,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['systemLoadAverage'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [{ name: 'systemLoadAverage', value: metrics.systemLoadAverage }],
-    visual: (samples: Sample[]) => <SimpleChart samples={samples} interpolation={'monotoneX'} style={'line'} />,
+    visual: (themeColor: string, samples: Sample[]) => (
+      <SimpleChart samples={samples} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
+    ),
   },
   {
     displayName: 'System CPU Load',
@@ -162,7 +169,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['systemCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [{ name: 'systemCpuLoad', value: metrics.systemCpuLoad }],
-    visual: (samples: Sample[]) => <SimpleChart samples={samples} style={'line'} />,
+    visual: (themeColor: string, samples: Sample[]) => (
+      <SimpleChart samples={samples} style={'line'} themeColor={themeColor} />
+    ),
   },
   {
     displayName: 'Physical Memory',
@@ -180,8 +189,8 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: metrics.totalPhysicalMemorySize / Math.pow(1024, 2),
       },
     ],
-    visual: (samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
+    visual: (themeColor: string, samples: Sample[]) => (
+      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} themeColor={themeColor} />
     ),
   },
   {
@@ -195,8 +204,8 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2)),
       },
     ],
-    visual: (samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
+    visual: (themeColor: string, samples: Sample[]) => (
+      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} themeColor={themeColor} />
     ),
   },
   {
@@ -206,7 +215,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [{ name: 'heapMemoryUsage', value: metrics.heapMemoryUsagePercent }],
     singleValue: true,
-    visual: (samples: Sample[]) => {
+    visual: (themeColor: string, samples: Sample[]) => {
       let value = 0;
       if (samples?.length > 0) {
         value = samples.slice(-1)[0].datapoint.value * 100;
@@ -217,6 +226,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
           data={{ x: 'Used heap memory', y: value }}
           title={`${value.toFixed(2)}%`}
           labels={({ datum }) => (datum.x ? `${datum.x}: ${datum.y.toFixed(2)}%` : null)}
+          themeColor={themeColor}
         />
       );
     },
@@ -232,8 +242,8 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2)),
       },
     ],
-    visual: (samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
+    visual: (themeColor: string, samples: Sample[]) => (
+      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} themeColor={themeColor} />
     ),
   },
   {
@@ -251,7 +261,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: metrics.threadCount,
       },
     ],
-    visual: (samples: Sample[]) => <SimpleChart samples={samples} interpolation={'step'} style={'line'} />,
+    visual: (themeColor: string, samples: Sample[]) => (
+      <SimpleChart samples={samples} interpolation={'step'} style={'line'} themeColor={themeColor} />
+    ),
   },
 ];
 
@@ -351,7 +363,10 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
 
   const chartKind = React.useMemo(() => getChartKindByName(props.chartKind), [props.chartKind]);
 
-  const visual = React.useMemo(() => chartKind.visual(samples), [chartKind, samples]);
+  const visual = React.useMemo(
+    () => chartKind.visual(props.themeColor, samples),
+    [props.themeColor, chartKind, samples]
+  );
 
   return (
     <DashboardCard
@@ -417,6 +432,14 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
         min: 1,
         max: 300,
       },
+    },
+    {
+      name: 'Color',
+      key: 'themeColor',
+      values: ['blue', 'cyan', 'gold', 'gray', 'green', 'orange', 'purple'],
+      defaultValue: 'blue',
+      description: 'The color theme to apply to this chart.',
+      kind: 'select',
     },
   ],
 };
