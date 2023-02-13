@@ -202,12 +202,14 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const serviceContext = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [samples, setSamples] = React.useState([] as Sample[]);
+  const [isLoading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     addSubscription(serviceContext.target.target().subscribe((_) => setSamples([])));
   }, [addSubscription, serviceContext, setSamples]);
 
   const refresh = React.useCallback(() => {
+    setLoading(true);
     const kind = getChartKindByName(props.chartKind);
     const fields = kind.fields.join('\n');
     serviceContext.target
@@ -238,16 +240,17 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
           return { timestamp, values };
         })
       )
-      .subscribe((v) =>
+      .subscribe((v) => {
+        setLoading(false);
         setSamples((old) => {
           const now = Date.now();
           if (kind.singleValue) {
             return [v];
           }
           return [...old, v].filter((d) => d.timestamp > now - props.duration * 1000);
-        })
-      );
-  }, [serviceContext, props.chartKind, props.duration]);
+        });
+      });
+  }, [serviceContext, props.chartKind, props.duration, setLoading]);
 
   React.useEffect(() => {
     refresh();
@@ -262,9 +265,10 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
         onClick={refresh}
         variant="plain"
         icon={<SyncAltIcon />}
+        isDisabled={isLoading}
       />
     );
-  }, [t, props.chartKind, refresh]);
+  }, [t, props.chartKind, refresh, isLoading]);
 
   const actions = React.useMemo(() => {
     const a = props.actions || [];
