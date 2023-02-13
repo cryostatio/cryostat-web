@@ -62,10 +62,12 @@ interface Sample {
   values: number[];
 }
 
-interface MBeanMetricsChartCard {
+interface MBeanMetricsChartKind {
   displayName: string;
   category: string;
   fieldNames: string[];
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  mapper: (metrics: any) => [number];
   visual: (t: TFunction, dayjs, samples: Sample[]) => React.ReactElement;
 }
 
@@ -100,16 +102,18 @@ const SimpleChart: React.FC<{ t: TFunction; dayjs; samples: Sample[] }> = ({ day
 };
 
 // TODO these need to be localized
-const chartKinds: MBeanMetricsChartCard[] = [
+const chartKinds: MBeanMetricsChartKind[] = [
   {
     displayName: 'System Load Average',
     category: 'os',
     fieldNames: ['systemCpuLoad'],
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    mapper: (metrics: any) => [metrics['systemCpuLoad']],
     visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} />,
   },
 ];
 
-function getChartKindByName(name: string): MBeanMetricsChartCard {
+function getChartKindByName(name: string): MBeanMetricsChartKind {
   return chartKinds.filter((k) => k.displayName === name)[0];
 }
 
@@ -146,7 +150,8 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
         /* eslint-disable @typescript-eslint/no-explicit-any */
         map((resp: any) => {
           const timestamp = Date.now();
-          const values: number[] = Object.values(resp.data.targetNodes[0].mbeanMetrics[kind.category]);
+          const metrics = resp.data.targetNodes[0].mbeanMetrics;
+          const values: number[] = kind.mapper(metrics[kind.category]);
           return { timestamp, values };
         })
       )
