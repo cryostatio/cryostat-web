@@ -290,7 +290,7 @@ export const MBeanMetricsChartCardSizes: DashboardCardSizes = {
 };
 
 export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.BETA,
+  featureLevel: FeatureLevel.PRODUCTION,
   title: 'MBean Metrics Chart',
   cardSizes: MBeanMetricsChartCardSizes,
   description: 'Display common performance metrics from current MBean data.',
