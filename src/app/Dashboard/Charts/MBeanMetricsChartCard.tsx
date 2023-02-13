@@ -121,6 +121,14 @@ const SimpleChart: React.FC<{
 // TODO these need to be localized
 const chartKinds: MBeanMetricsChartKind[] = [
   {
+    displayName: 'Process Load Average',
+    category: 'os',
+    fields: ['processCpuLoad'],
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    mapper: (metrics: any) => [metrics.processCpuLoad],
+    visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} />,
+  },
+  {
     displayName: 'System Load Average',
     category: 'os',
     fields: ['systemCpuLoad'],
