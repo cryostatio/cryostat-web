@@ -41,11 +41,11 @@ import * as React from 'react';
 import { JFRMetricsChartController } from './JFRMetricsChartController';
 
 export interface Controllers {
-  jfrController: JFRMetricsChartController;
+  controller: JFRMetricsChartController;
 }
 
 const ChartContext: React.Context<Controllers> = React.createContext({
-  jfrController: new JFRMetricsChartController(
+  controller: new JFRMetricsChartController(
     defaultServices.api,
     defaultServices.target,
     defaultServices.notificationChannel,

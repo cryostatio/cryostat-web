@@ -65,7 +65,7 @@ interface Sample {
 interface MBeanMetricsChartKind {
   displayName: string;
   category: string;
-  fieldNames: string[];
+  fields: string[];
   /* eslint-disable @typescript-eslint/no-explicit-any */
   mapper: (metrics: any) => [number];
   visual: (t: TFunction, dayjs, samples: Sample[]) => React.ReactElement;
@@ -73,30 +73,55 @@ interface MBeanMetricsChartKind {
 
 const SingleLineChart: React.FC<{
   data: { x: number; y: number }[];
+  units?: string;
+  xMin?: number;
+  xMax?: number;
+  yMin?: number;
+  yMax?: number;
   xTicks?: (number | string)[];
   yTicks?: (number | string)[];
   /* eslint-disable @typescript-eslint/no-explicit-any */
   labeller: (datum: any) => string;
-}> = ({ data, xTicks, yTicks, labeller }) => {
+}> = ({ data, xMin, xMax, yMin, yMax, xTicks, yTicks, units, labeller }) => {
   return (
-    <Chart height={286} containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}>
-      <ChartAxis tickValues={xTicks} fixLabelOverlap />
-      <ChartAxis tickValues={yTicks} dependentAxis showGrid />
-      <ChartGroup>
-        <ChartLine data={data}></ChartLine>
-      </ChartGroup>
-    </Chart>
+    <div className="disabled-pointer">
+      <Chart containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}>
+        <ChartAxis tickValues={xTicks} fixLabelOverlap minDomain={{ x: xMin }} maxDomain={{ x: xMax }} />
+        <ChartAxis
+          tickValues={yTicks}
+          dependentAxis
+          showGrid
+          minDomain={{ y: yMin }}
+          maxDomain={{ y: yMax }}
+          label={units}
+        />
+        <ChartGroup>
+          <ChartLine data={data} name={units}></ChartLine>
+        </ChartGroup>
+      </Chart>
+    </div>
   );
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const SimpleChart: React.FC<{ t: TFunction; dayjs; samples: Sample[] }> = ({ dayjs, samples }) => {
+const SimpleChart: React.FC<{
+  t: TFunction;
+  dayjs;
+  samples: Sample[];
+  units?: string;
+  domain?: { xMin?: number; xMax?: number; yMin?: number; yMax?: number };
+}> = ({ dayjs, samples, units, domain }) => {
   const data = samples.map((v) => ({ x: v.timestamp, y: v.values[0] }));
   return (
     <SingleLineChart
       data={data}
+      units={units}
+      xMin={domain?.xMin}
+      xMax={domain?.xMax}
+      yMin={domain?.yMin}
+      yMax={domain?.yMax}
       xTicks={samples.map((v) => v.timestamp).map(dayjs)}
-      labeller={({ datum }) => `${dayjs(datum.x)}: ${datum.y}`}
+      labeller={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
     />
   );
 };
@@ -106,10 +131,21 @@ const chartKinds: MBeanMetricsChartKind[] = [
   {
     displayName: 'System Load Average',
     category: 'os',
-    fieldNames: ['systemCpuLoad'],
+    fields: ['systemCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [metrics['systemCpuLoad']],
+    mapper: (metrics: any) => [metrics.systemCpuLoad],
     visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} />,
+  },
+  {
+    displayName: 'Heap Memory Usage',
+    category: 'memory',
+    fields: ['heapMemoryUsage{ used }'],
+    // TODO scale units automatically and report units dynamically
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    mapper: (metrics: any) => [Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2))],
+    visual: (t, dayjs, samples: Sample[]) => (
+      <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} domain={{ yMin: 0 }} />
+    ),
   },
 ];
 
@@ -126,7 +162,7 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
 
   const refresh = React.useCallback(() => {
     const kind = getChartKindByName(props.chartKind);
-    const fields = kind.fieldNames.join('\n');
+    const fields = kind.fields.join('\n');
     serviceContext.target
       .target()
       .pipe(
@@ -168,19 +204,6 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
     addSubscription(interval(props.period * 1000).subscribe(() => refresh()));
   }, [addSubscription, props.period, refresh]);
 
-  const cardStyle = React.useMemo(() => {
-    let height: number;
-    switch (props.chartKind) {
-      case 'Core Count':
-        height = 250;
-        break;
-      default:
-        height = 380;
-        break;
-    }
-    return { height };
-  }, [props.chartKind]);
-
   const refreshButton = React.useMemo(() => {
     return (
       <Button
@@ -217,7 +240,6 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
       dashboardId={props.dashboardId}
       cardSizes={MBeanMetricsChartCardSizes}
       isCompact
-      style={cardStyle}
       cardHeader={header}
     >
       <CardBody>{visual}</CardBody>

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<ChartCard /> renders correctly: with-content 1`] = `
+exports[`<JFRMetricsChartCard /> renders correctly: with-content 1`] = `
 <div
   className="draggable-ref-wrapper"
   onDragStart={[Function]}
@@ -127,7 +127,7 @@ exports[`<ChartCard /> renders correctly: with-content 1`] = `
 </div>
 `;
 
-exports[`<ChartCard /> renders empty state correctly: empty-state 1`] = `
+exports[`<JFRMetricsChartCard /> renders empty state correctly: empty-state 1`] = `
 <div
   className="draggable-ref-wrapper"
   onDragStart={[Function]}
@@ -251,7 +251,7 @@ exports[`<ChartCard /> renders empty state correctly: empty-state 1`] = `
 </div>
 `;
 
-exports[`<ChartCard /> renders loading state correctly: loading-view 1`] = `
+exports[`<JFRMetricsChartCard /> renders loading state correctly: loading-view 1`] = `
 <div
   className="draggable-ref-wrapper"
   onDragStart={[Function]}

@@ -307,7 +307,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   const chartContext = React.useMemo(() => {
     return {
-      jfrController: jfrChartController.current,
+      controller: jfrChartController.current,
     };
   }, [jfrChartController]);
 
