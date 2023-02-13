@@ -86,36 +86,6 @@ interface MBeanMetricsChartKind {
   visual: (t: TFunction, dayjs, samples: Sample[]) => React.ReactElement;
 }
 
-const SingleLineChart: React.FC<{
-  style: 'line' | 'area';
-  data: { x: number; y: number; name: string }[];
-  units?: string;
-  interpolation?: 'linear' | 'step' | 'monotoneX';
-  xTicks?: (number | string)[];
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  labeller: (datum: any) => string;
-}> = ({ style, data, xTicks, units, interpolation, labeller }) => {
-  return (
-    <div className="disabled-pointer">
-      <Chart
-        containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}
-        legendData={_.uniqBy(data, (d) => d.name)}
-        legendPosition={'bottom'}
-      >
-        <ChartAxis tickValues={xTicks} fixLabelOverlap />
-        <ChartAxis dependentAxis showGrid label={units} />
-        <ChartGroup>
-          {style === 'line' ? (
-            <ChartLine data={data} name={units} interpolation={interpolation}></ChartLine>
-          ) : (
-            <ChartArea data={data} name={units} interpolation={interpolation}></ChartArea>
-          )}
-        </ChartGroup>
-      </Chart>
-    </div>
-  );
-};
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const SimpleChart: React.FC<{
   t: TFunction;
@@ -127,14 +97,28 @@ const SimpleChart: React.FC<{
 }> = ({ dayjs, style, samples, units, interpolation }) => {
   const data = samples.map((v) => ({ x: v.timestamp, y: v.datapoint.values[0], name: v.datapoint.name }));
   return (
-    <SingleLineChart
-      style={style}
-      data={data}
-      units={units}
-      xTicks={samples.map((v) => v.timestamp).map(dayjs)}
-      interpolation={interpolation}
-      labeller={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
-    />
+    <div className="disabled-pointer">
+      <Chart
+        containerComponent={
+          <ChartVoronoiContainer
+            labels={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
+            constrainToVisibleArea
+          />
+        }
+        legendData={_.uniqBy(data, (d) => d.name)}
+        legendPosition={'bottom'}
+      >
+        <ChartAxis tickValues={samples.map((v) => v.timestamp).map(dayjs)} fixLabelOverlap />
+        <ChartAxis dependentAxis showGrid label={units} />
+        <ChartGroup>
+          {style === 'line' ? (
+            <ChartLine data={data} name={units} interpolation={interpolation}></ChartLine>
+          ) : (
+            <ChartArea data={data} name={units} interpolation={interpolation}></ChartArea>
+          )}
+        </ChartGroup>
+      </Chart>
+    </div>
   );
 };
 
