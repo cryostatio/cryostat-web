@@ -75,6 +75,7 @@ interface MBeanMetricsChartKind {
   fields: string[];
   /* eslint-disable @typescript-eslint/no-explicit-any */
   mapper: (metrics: any) => [number];
+  singleValue?: boolean;
   visual: (t: TFunction, dayjs, samples: Sample[]) => React.ReactElement;
 }
 
@@ -143,6 +144,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [metrics.heapMemoryUsagePercent],
+    singleValue: true,
     visual: (_t, _dayjs, samples: Sample[]) => {
       let value = 0;
       if (samples?.length > 0) {
@@ -217,6 +219,9 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
       .subscribe((v) =>
         setSamples((old) => {
           const now = Date.now();
+          if (kind.singleValue) {
+            return [v];
+          }
           return [...old, v].filter((d) => d.timestamp > now - props.duration * 1000);
         })
       );
