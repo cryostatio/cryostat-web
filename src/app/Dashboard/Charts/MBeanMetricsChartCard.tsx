@@ -50,7 +50,7 @@ import {
   ChartLine,
   ChartVoronoiContainer,
 } from '@patternfly/react-charts';
-import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
+import { Bullseye, Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import { SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
@@ -376,7 +376,9 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
       isCompact
       cardHeader={header}
     >
-      <CardBody>{visual}</CardBody>
+      <CardBody>
+        <Bullseye>{visual}</Bullseye>
+      </CardBody>
     </DashboardCard>
   );
 };
