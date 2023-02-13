@@ -37,7 +37,7 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { CardConfig, dashboardCardConfigFirstRunIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import {
   dashboardCardConfigAddCardIntent,
   dashboardCardConfigDeleteCardIntent,
@@ -298,32 +298,12 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     )
   );
 
-  const firstRunDashboard = React.useMemo((): CardConfig[] => {
-    return [
-      {
-        id: `${WelcomeCardDescriptor.component.name}-${nanoid()}`,
-        name: `${WelcomeCardDescriptor.component.name}`,
-        span: WelcomeCardDescriptor.cardSizes.span.default,
-        props: {},
-      },
-      {
-        // Metrics Card  // TODO replace with config props
-        id: `MetricsCard-${nanoid()}`,
-        name: `MetricsCard`,
-        span: 3,
-        props: {},
-      },
-    ];
-  }, []);
-
   React.useEffect(() => {
     const currentVersion = serviceContext.settings.dashboardSlicerVersion();
     if (currentVersion == undefined) {
-      for (const { id, name, span, props } of firstRunDashboard) {
-        dispatch(dashboardCardConfigAddCardIntent(id, name, span, props));
-      }
+      dispatch(dashboardCardConfigFirstRunIntent());
     }
-  }, [dispatch, serviceContext.settings, firstRunDashboard]);
+  }, [dispatch, serviceContext.settings]);
 
   const chartContext = React.useMemo(() => {
     return {

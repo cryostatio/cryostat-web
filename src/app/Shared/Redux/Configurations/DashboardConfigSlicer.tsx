@@ -36,9 +36,10 @@
  * SOFTWARE.
  */
 
+import { WelcomeCardDescriptor } from '@app/Dashboard/WelcomeCard';
 import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createAction, createReducer, nanoid } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
 const _version = '3';
@@ -49,6 +50,7 @@ export enum DashboardConfigAction {
   CARD_REMOVE = 'dashboard-card-config/remove',
   CARD_REORDER = 'dashboard-card-config/reorder',
   CARD_RESIZE = 'dashboard-card-config/resize',
+  FIRST_RUN = 'dashboard-card-config/first-run',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -73,6 +75,8 @@ export interface DashboardOrderConfigActionPayload {
   nextOrder: number;
   swap: boolean;
 }
+
+export interface DashboardFirstRunActionPayload {}
 
 export const dashboardCardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
@@ -113,6 +117,10 @@ export const dashboardCardConfigReorderCardIntent = createAction(
   })
 );
 
+export const dashboardCardConfigFirstRunIntent = createAction(DashboardConfigAction.FIRST_RUN, () => ({
+  payload: {} as DashboardFirstRunActionPayload,
+}));
+
 export interface CardConfig {
   id: string;
   name: string;
@@ -123,6 +131,22 @@ export interface CardConfig {
 const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
 });
+
+const firstRunDashboard: CardConfig[] = [
+  {
+    id: `${WelcomeCardDescriptor.component.name}-${nanoid()}`,
+    name: `${WelcomeCardDescriptor.component.name}`,
+    span: WelcomeCardDescriptor.cardSizes.span.default,
+    props: {},
+  },
+  {
+    // Metrics Card  // TODO replace with config props
+    id: `MetricsCard-${nanoid()}`,
+    name: `MetricsCard`,
+    span: 3,
+    props: {},
+  },
+];
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
@@ -141,6 +165,9 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       } else {
         moveDashboardCard(state.list, payload.prevOrder, payload.nextOrder);
       }
+    })
+    .addCase(dashboardCardConfigFirstRunIntent, (state) => {
+      state.list = firstRunDashboard;
     });
 });
 
