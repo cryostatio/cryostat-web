@@ -53,6 +53,7 @@ import {
 import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import { SyncAltIcon } from '@patternfly/react-icons';
 import { TFunction } from 'i18next';
+import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { first, interval, map, switchMap } from 'rxjs';
@@ -65,9 +66,14 @@ export interface MBeanMetricsChartCardProps extends DashboardCardProps {
   period: number;
 }
 
+interface Datapoint {
+  name: string;
+  values: number[];
+}
+
 interface Sample {
   timestamp: number;
-  values: number[];
+  datapoint: Datapoint;
 }
 
 interface MBeanMetricsChartKind {
@@ -75,14 +81,14 @@ interface MBeanMetricsChartKind {
   category: string;
   fields: string[];
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  mapper: (metrics: any) => [number];
+  mapper: (metrics: any) => { name: string; values: number[] };
   singleValue?: boolean;
   visual: (t: TFunction, dayjs, samples: Sample[]) => React.ReactElement;
 }
 
 const SingleLineChart: React.FC<{
   style: 'line' | 'area';
-  data: { x: number; y: number }[];
+  data: { x: number; y: number; name: string }[];
   units?: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
   xTicks?: (number | string)[];
@@ -91,7 +97,11 @@ const SingleLineChart: React.FC<{
 }> = ({ style, data, xTicks, units, interpolation, labeller }) => {
   return (
     <div className="disabled-pointer">
-      <Chart containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}>
+      <Chart
+        containerComponent={<ChartVoronoiContainer labels={labeller} constrainToVisibleArea />}
+        legendData={_.uniqBy(data, (d) => d.name)}
+        legendPosition={'bottom'}
+      >
         <ChartAxis tickValues={xTicks} fixLabelOverlap />
         <ChartAxis dependentAxis showGrid label={units} />
         <ChartGroup>
@@ -115,7 +125,7 @@ const SimpleChart: React.FC<{
   units?: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
 }> = ({ dayjs, style, samples, units, interpolation }) => {
-  const data = samples.map((v) => ({ x: v.timestamp, y: v.values[0] }));
+  const data = samples.map((v) => ({ x: v.timestamp, y: v.datapoint.values[0], name: v.datapoint.name }));
   return (
     <SingleLineChart
       style={style}
@@ -135,7 +145,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['processCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [metrics.processCpuLoad],
+    mapper: (metrics: any) => ({ name: 'processCpuLoad', values: [metrics.processCpuLoad] }),
     visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} style={'line'} />,
   },
   {
@@ -143,7 +153,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['systemCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [metrics.systemCpuLoad],
+    mapper: (metrics: any) => ({ name: 'systemCpuLoad', values: [metrics.systemCpuLoad] }),
     visual: (t, dayjs, samples: Sample[]) => <SimpleChart t={t} dayjs={dayjs} samples={samples} style={'line'} />,
   },
   {
@@ -152,7 +162,10 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['heapMemoryUsage{ used }'],
     // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2))],
+    mapper: (metrics: any) => ({
+      name: 'heapMemoryUsed',
+      values: [Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2))],
+    }),
     visual: (t, dayjs, samples: Sample[]) => (
       <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
@@ -163,12 +176,12 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['heapMemoryUsagePercent'],
     // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [metrics.heapMemoryUsagePercent],
+    mapper: (metrics: any) => ({ name: 'heapMemoryUsage', values: [metrics.heapMemoryUsagePercent] }),
     singleValue: true,
     visual: (_t, _dayjs, samples: Sample[]) => {
       let value = 0;
       if (samples?.length > 0) {
-        value = samples.slice(-1)[0].values[0] * 100;
+        value = samples.slice(-1)[0].datapoint.values[0] * 100;
       }
       return (
         <ChartDonutUtilization
@@ -185,7 +198,10 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'memory',
     fields: ['nonHeapMemoryUsage{ used }'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2))],
+    mapper: (metrics: any) => ({
+      name: 'noneapMemoryUsed',
+      values: [Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2))],
+    }),
     visual: (t, dayjs, samples: Sample[]) => (
       <SimpleChart t={t} dayjs={dayjs} samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
@@ -236,8 +252,8 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
         map((resp: any) => {
           const timestamp = Date.now();
           const metrics = resp.data.targetNodes[0].mbeanMetrics;
-          const values: number[] = kind.mapper(metrics[kind.category]);
-          return { timestamp, values };
+          const datapoint: Datapoint = kind.mapper(metrics[kind.category]);
+          return { timestamp, datapoint };
         })
       )
       .subscribe((v) => {
