@@ -160,6 +160,10 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const addSubscription = useSubscriptions();
   const [samples, setSamples] = React.useState([] as Sample[]);
 
+  React.useEffect(() => {
+    addSubscription(serviceContext.target.target().subscribe(_ => setSamples([])));
+  }, [addSubscription, serviceContext, setSamples]);
+
   const refresh = React.useCallback(() => {
     const kind = getChartKindByName(props.chartKind);
     const fields = kind.fields.join('\n');
@@ -249,7 +253,7 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
 
 export const MBeanMetricsChartCardSizes: DashboardCardSizes = {
   span: {
-    minimum: 3,
+    minimum: 2,
     default: 4,
     maximum: 12,
   },
