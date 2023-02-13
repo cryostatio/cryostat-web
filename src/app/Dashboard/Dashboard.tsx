@@ -37,16 +37,20 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import {
-  CardConfig,
+  dashboardCardConfigAddCardIntent,
+  dashboardCardConfigDeleteCardIntent,
   dashboardCardConfigResizeCardIntent,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
+import { nanoid } from 'nanoid';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -58,6 +62,7 @@ import { ChartContext } from './Charts/ChartContext';
 import { ChartController } from './Charts/ChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
+import { WelcomeCardDescriptor } from './WelcomeCard';
 
 export interface Sized<T> {
   minimum: T;
@@ -238,6 +243,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
     ChartCardDescriptor,
     NonePlaceholderCardDescriptor,
     AllPlaceholderCardDescriptor,
+    WelcomeCardDescriptor,
   ];
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };
@@ -291,6 +297,33 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
       serviceContext.settings
     )
   );
+
+  const firstRunDashboard = React.useMemo((): CardConfig[] => {
+    return [
+      {
+        id: `${WelcomeCardDescriptor.component.name}-${nanoid()}`,
+        name: `${WelcomeCardDescriptor.component.name}`,
+        span: WelcomeCardDescriptor.cardSizes.span.default,
+        props: {},
+      },
+      {
+        // Metrics Card  // TODO replace with config props
+        id: `MetricsCard-${nanoid()}`,
+        name: `MetricsCard`,
+        span: 3,
+        props: {},
+      },
+    ];
+  }, []);
+
+  React.useEffect(() => {
+    const currentVersion = serviceContext.settings.dashboardSlicerVersion();
+    if (currentVersion == undefined) {
+      for (const { id, name, span, props } of firstRunDashboard) {
+        dispatch(dashboardCardConfigAddCardIntent(id, name, span, props));
+      }
+    }
+  }, [dispatch, serviceContext.settings, firstRunDashboard]);
 
   const chartContext = React.useMemo(() => {
     return {
