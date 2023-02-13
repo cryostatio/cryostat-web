@@ -278,10 +278,6 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const [samples, setSamples] = React.useState([] as Sample[]);
   const [isLoading, setLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    addSubscription(serviceContext.target.target().subscribe((_) => setSamples([])));
-  }, [addSubscription, serviceContext, setSamples]);
-
   const refresh = React.useCallback(() => {
     setLoading(true);
     const kind = getChartKindByName(props.chartKind);
@@ -325,6 +321,15 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
         });
       });
   }, [serviceContext, props.chartKind, props.duration, setLoading]);
+
+  React.useEffect(() => {
+    addSubscription(
+      serviceContext.target.target().subscribe((_) => {
+        setSamples([]);
+        refresh();
+      })
+    );
+  }, [addSubscription, serviceContext, setSamples, refresh]);
 
   React.useEffect(() => {
     refresh();
