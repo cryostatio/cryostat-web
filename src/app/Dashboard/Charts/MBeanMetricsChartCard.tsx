@@ -234,6 +234,23 @@ const chartKinds: MBeanMetricsChartKind[] = [
       <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
   },
+  {
+    displayName: 'Threads',
+    category: 'thread',
+    fields: ['daemonThreadCount', 'threadCount'],
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    mapper: (metrics: any) => [
+      {
+        name: 'daemonThreadCount',
+        value: metrics.daemonThreadCount,
+      },
+      {
+        name: 'threadCount',
+        value: metrics.threadCount,
+      },
+    ],
+    visual: (samples: Sample[]) => <SimpleChart samples={samples} interpolation={'step'} style={'line'} />,
+  },
 ];
 
 function getChartKindByName(name: string): MBeanMetricsChartKind {
