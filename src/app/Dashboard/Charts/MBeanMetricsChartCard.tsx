@@ -67,7 +67,7 @@ export interface MBeanMetricsChartCardProps extends DashboardCardProps {
 
 interface Datapoint {
   name: string;
-  values: number[];
+  value: number;
 }
 
 interface Sample {
@@ -80,7 +80,7 @@ interface MBeanMetricsChartKind {
   category: string;
   fields: string[];
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  mapper: (metrics: any) => { name: string; values: number[] };
+  mapper: (metrics: any) => Datapoint[];
   singleValue?: boolean;
   visual: (samples: Sample[]) => React.ReactElement;
 }
@@ -95,9 +95,11 @@ const SimpleChart: React.FC<{
   const [dayjs] = useDayjs();
 
   const data = React.useMemo(
-    () => samples.map((v) => ({ x: v.timestamp, y: v.datapoint.values[0], name: v.datapoint.name })),
+    () => samples.map((v) => ({ x: v.timestamp, y: v.datapoint.value, name: v.datapoint.name })),
     [samples]
   );
+
+  const keys = React.useMemo(() => _.uniqBy(data, (d) => d.name), [data]);
 
   const render = React.useCallback(
     (data, style) =>
@@ -118,12 +120,19 @@ const SimpleChart: React.FC<{
             constrainToVisibleArea
           />
         }
-        legendData={_.uniqBy(data, (d) => d.name)}
+        legendData={keys.length > 1 ? keys.map((k) => ({ name: k.name })) : []}
         legendPosition={'bottom'}
       >
         <ChartAxis tickValues={samples.map((v) => v.timestamp).map(dayjs)} fixLabelOverlap />
         <ChartAxis dependentAxis showGrid label={units} />
-        <ChartGroup>{render(data, style)}</ChartGroup>
+        <ChartGroup>
+          {keys.map((k) =>
+            render(
+              data.filter((d) => d.name === k.name),
+              style
+            )
+          )}
+        </ChartGroup>
       </Chart>
     </div>
   );
@@ -136,7 +145,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['processCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => ({ name: 'processCpuLoad', values: [metrics.processCpuLoad] }),
+    mapper: (metrics: any) => [{ name: 'processCpuLoad', value: metrics.processCpuLoad }],
     visual: (samples: Sample[]) => <SimpleChart samples={samples} style={'line'} />,
   },
   {
@@ -144,7 +153,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['systemCpuLoad'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => ({ name: 'systemCpuLoad', values: [metrics.systemCpuLoad] }),
+    mapper: (metrics: any) => [{ name: 'systemCpuLoad', value: metrics.systemCpuLoad }],
     visual: (samples: Sample[]) => <SimpleChart samples={samples} style={'line'} />,
   },
   {
@@ -153,10 +162,12 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['heapMemoryUsage{ used }'],
     // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => ({
-      name: 'heapMemoryUsed',
-      values: [Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2))],
-    }),
+    mapper: (metrics: any) => [
+      {
+        name: 'heapMemoryUsed',
+        value: Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2)),
+      },
+    ],
     visual: (samples: Sample[]) => (
       <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
@@ -167,12 +178,12 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['heapMemoryUsagePercent'],
     // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => ({ name: 'heapMemoryUsage', values: [metrics.heapMemoryUsagePercent] }),
+    mapper: (metrics: any) => [{ name: 'heapMemoryUsage', value: metrics.heapMemoryUsagePercent }],
     singleValue: true,
     visual: (samples: Sample[]) => {
       let value = 0;
       if (samples?.length > 0) {
-        value = samples.slice(-1)[0].datapoint.values[0] * 100;
+        value = samples.slice(-1)[0].datapoint.value * 100;
       }
       return (
         <ChartDonutUtilization
@@ -189,10 +200,12 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'memory',
     fields: ['nonHeapMemoryUsage{ used }'],
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => ({
-      name: 'noneapMemoryUsed',
-      values: [Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2))],
-    }),
+    mapper: (metrics: any) => [
+      {
+        name: 'noneapMemoryUsed',
+        value: Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2)),
+      },
+    ],
     visual: (samples: Sample[]) => (
       <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
     ),
@@ -242,8 +255,8 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
         map((resp: any) => {
           const timestamp = Date.now();
           const metrics = resp.data.targetNodes[0].mbeanMetrics;
-          const datapoint: Datapoint = kind.mapper(metrics[kind.category]);
-          return { timestamp, datapoint };
+          const datapoints: Datapoint[] = kind.mapper(metrics[kind.category]);
+          return datapoints.map((datapoint) => ({ timestamp, datapoint }));
         })
       )
       .subscribe((v) => {
@@ -251,9 +264,9 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
         setSamples((old) => {
           const now = Date.now();
           if (kind.singleValue) {
-            return [v];
+            return v;
           }
-          return [...old, v].filter((d) => d.timestamp > now - props.duration * 1000);
+          return [...old, ...v].filter((d) => d.timestamp > now - props.duration * 1000);
         });
       });
   }, [serviceContext, props.chartKind, props.duration, setLoading]);
@@ -263,8 +276,8 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
     addSubscription(interval(props.period * 1000).subscribe(() => refresh()));
   }, [addSubscription, props.period, refresh]);
 
-  const refreshButton = React.useMemo(() => {
-    return (
+  const refreshButton = React.useMemo(
+    () => (
       <Button
         key={0}
         aria-label={t('CHART_CARD.BUTTONS.SYNC.LABEL', { chartKind: props.chartKind })}
@@ -273,26 +286,29 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
         icon={<SyncAltIcon />}
         isDisabled={isLoading}
       />
-    );
-  }, [t, props.chartKind, refresh, isLoading]);
+    ),
+    [t, props.chartKind, refresh, isLoading]
+  );
 
   const actions = React.useMemo(() => {
     const a = props.actions || [];
     return [refreshButton, ...a];
   }, [props.actions, refreshButton]);
 
-  const header = React.useMemo(() => {
-    return (
+  const header = React.useMemo(
+    () => (
       <CardHeader>
         <CardTitle>{props.chartKind}</CardTitle>
         <CardActions>{actions}</CardActions>
       </CardHeader>
-    );
-  }, [props.chartKind, actions]);
+    ),
 
-  const visual = React.useMemo(() => {
-    return getChartKindByName(props.chartKind).visual(samples);
-  }, [props.chartKind, samples]);
+    [props.chartKind, actions]
+  );
+
+  const chartKind = React.useMemo(() => getChartKindByName(props.chartKind), [props.chartKind]);
+
+  const visual = React.useMemo(() => chartKind.visual(samples), [chartKind, samples]);
 
   return (
     <DashboardCard
