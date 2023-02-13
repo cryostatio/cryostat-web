@@ -165,10 +165,27 @@ const chartKinds: MBeanMetricsChartKind[] = [
     visual: (samples: Sample[]) => <SimpleChart samples={samples} style={'line'} />,
   },
   {
+    displayName: 'Physical Memory',
+    category: 'os',
+    fields: ['freePhysicalMemorySize', 'totalPhysicalMemorySize'],
+    // TODO scale units automatically and report units dynamically
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    mapper: (metrics: any) => [
+      {
+        name: 'freePhysicalMemorySize',
+        value: metrics.freePhysicalMemorySize,
+      },
+      {
+        name: 'totalPhysicalMemorySize',
+        value: metrics.totalPhysicalMemorySize,
+      },
+    ],
+    visual: (samples: Sample[]) => <SimpleChart samples={samples} units={'B'} interpolation={'step'} style={'area'} />,
+  },
+  {
     displayName: 'Heap Memory Usage',
     category: 'memory',
     fields: ['heapMemoryUsage{ used }'],
-    // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [
       {
@@ -184,7 +201,6 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'Heap Usage Percentage',
     category: 'memory',
     fields: ['heapMemoryUsagePercent'],
-    // TODO scale units automatically and report units dynamically
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [{ name: 'heapMemoryUsage', value: metrics.heapMemoryUsagePercent }],
     singleValue: true,
