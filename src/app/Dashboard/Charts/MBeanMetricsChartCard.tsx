@@ -51,7 +51,7 @@ import { first, interval, map, switchMap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 
-export interface JMXMetricsChartCardProps extends DashboardCardProps {
+export interface MBeanMetricsChartCardProps extends DashboardCardProps {
   chartKind: string;
   duration: number;
   period: number;
@@ -62,7 +62,7 @@ interface Sample {
   values: number[];
 }
 
-interface JMXMetricsChartKind {
+interface MBeanMetricsChartCard {
   displayName: string;
   category: string;
   fieldNames: string[];
@@ -100,7 +100,7 @@ const SimpleChart: React.FC<{ t: TFunction; dayjs; samples: Sample[] }> = ({ day
 };
 
 // TODO these need to be localized
-const chartKinds: JMXMetricsChartKind[] = [
+const chartKinds: MBeanMetricsChartCard[] = [
   {
     displayName: 'System Load Average',
     category: 'os',
@@ -109,11 +109,11 @@ const chartKinds: JMXMetricsChartKind[] = [
   },
 ];
 
-function getChartKindByName(name: string): JMXMetricsChartKind {
+function getChartKindByName(name: string): MBeanMetricsChartCard {
   return chartKinds.filter((k) => k.displayName === name)[0];
 }
 
-export const JMXMetricsChartCard: React.FC<JMXMetricsChartCardProps> = (props) => {
+export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (props) => {
   const [t] = useTranslation();
   const [dayjs] = useDayjs();
   const serviceContext = React.useContext(ServiceContext);
@@ -131,9 +131,9 @@ export const JMXMetricsChartCard: React.FC<JMXMetricsChartCardProps> = (props) =
           /* eslint-disable @typescript-eslint/no-explicit-any */
           serviceContext.api.graphql<any>(
             `
-          query JMXMetricsForTarget($connectUrl: String) {
+          query MBeanMXMetricsForTarget($connectUrl: String) {
             targetNodes(filter: { name: $connectUrl }) {
-              jmxMetrics {
+              mbeanMetrics {
                 ${kind.category} {
                   ${fields}
                 }
@@ -145,11 +145,9 @@ export const JMXMetricsChartCard: React.FC<JMXMetricsChartCardProps> = (props) =
         ),
         /* eslint-disable @typescript-eslint/no-explicit-any */
         map((resp: any) => {
-          const values: Map<string, number> = resp.data.targetNodes[0].jmxMetrics[kind.category];
-          return {
-            timestamp: Date.now(),
-            values: Object.values(values),
-          };
+          const timestamp = Date.now();
+          const values: number[] = Object.values(resp.data.targetNodes[0].mbeanMetrics[kind.category]);
+          return { timestamp, values };
         })
       )
       .subscribe((v) =>
@@ -212,7 +210,7 @@ export const JMXMetricsChartCard: React.FC<JMXMetricsChartCardProps> = (props) =
     <DashboardCard
       id={props.chartKind + '-chart-card'}
       dashboardId={props.dashboardId}
-      cardSizes={JMXMetricsChartCardSizes}
+      cardSizes={MBeanMetricsChartCardSizes}
       isCompact
       style={cardStyle}
       cardHeader={header}
@@ -222,7 +220,7 @@ export const JMXMetricsChartCard: React.FC<JMXMetricsChartCardProps> = (props) =
   );
 };
 
-export const JMXMetricsChartCardSizes: DashboardCardSizes = {
+export const MBeanMetricsChartCardSizes: DashboardCardSizes = {
   span: {
     minimum: 3,
     default: 4,
@@ -236,13 +234,13 @@ export const JMXMetricsChartCardSizes: DashboardCardSizes = {
   },
 };
 
-export const JMXMetricsChartCardDescriptor: DashboardCardDescriptor = {
+export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.BETA,
-  title: 'JMX Metrics Chart',
-  cardSizes: JMXMetricsChartCardSizes,
-  description: 'Display common performance metrics from current JMX data.',
-  descriptionFull: `Display a single performance metric from a list of supported MBeans retrieved over JMX.`,
-  component: JMXMetricsChartCard,
+  title: 'MBean Metrics Chart',
+  cardSizes: MBeanMetricsChartCardSizes,
+  description: 'Display common performance metrics from current MBean data.',
+  descriptionFull: `Display a single performance metric from a list of supported MBeans.`,
+  component: MBeanMetricsChartCard,
   propControls: [
     {
       name: 'Performance Metric',

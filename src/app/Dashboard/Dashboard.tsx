@@ -58,7 +58,7 @@ import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAn
 import { ChartContext } from './Charts/ChartContext';
 import { JFRMetricsChartCardDescriptor } from './Charts/JFRMetricsChartCard';
 import { JFRMetricsChartController } from './Charts/JFRMetricsChartController';
-import { JMXMetricsChartCardDescriptor } from './Charts/JMXMetricsChartCard';
+import { MBeanMetricsChartCardDescriptor } from './Charts/MBeanMetricsChartCard';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
@@ -240,7 +240,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
   const cards = [
     AutomatedAnalysisCardDescriptor,
     JFRMetricsChartCardDescriptor,
-    JMXMetricsChartCardDescriptor,
+    MBeanMetricsChartCardDescriptor,
     NonePlaceholderCardDescriptor,
     AllPlaceholderCardDescriptor,
     QuickStartsCardDescriptor,

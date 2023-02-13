@@ -67,6 +67,8 @@ export enum ControllerState {
   READY = 2,
 }
 
+// TODO extend this controller, or make a similar one, for MBeanMetrics so that the required
+// state updates can be batched as a single GraphQL query instead of one per chart
 export class JFRMetricsChartController {
   private readonly _state$ = new BehaviorSubject<ControllerState>(ControllerState.UNKNOWN);
   private readonly _refCount$ = new BehaviorSubject<number>(0);
