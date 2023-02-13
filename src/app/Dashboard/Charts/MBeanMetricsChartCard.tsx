@@ -172,15 +172,17 @@ const chartKinds: MBeanMetricsChartKind[] = [
     /* eslint-disable @typescript-eslint/no-explicit-any */
     mapper: (metrics: any) => [
       {
-        name: 'freePhysicalMemorySize',
-        value: metrics.freePhysicalMemorySize,
+        name: 'usedPhysicalMemorySize',
+        value: (metrics.totalPhysicalMemorySize - metrics.freePhysicalMemorySize) / Math.pow(1024, 2),
       },
       {
         name: 'totalPhysicalMemorySize',
-        value: metrics.totalPhysicalMemorySize,
+        value: metrics.totalPhysicalMemorySize / Math.pow(1024, 2),
       },
     ],
-    visual: (samples: Sample[]) => <SimpleChart samples={samples} units={'B'} interpolation={'step'} style={'area'} />,
+    visual: (samples: Sample[]) => (
+      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} />
+    ),
   },
   {
     displayName: 'Heap Memory Usage',
