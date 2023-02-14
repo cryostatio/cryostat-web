@@ -54,12 +54,14 @@ import {
   ReplaySubject,
   Subject,
   Subscription,
+  tap,
   throttleTime,
 } from 'rxjs';
 
 export class MBeanMetricsChartController {
   private readonly _metrics = new Map<string, string[]>();
   private readonly _state$ = new Subject<MBeanMetrics>();
+  private readonly _loading$ = new BehaviorSubject<boolean>(true);
   private readonly _refCount$ = new BehaviorSubject<number>(0);
   private readonly _updates$ = new ReplaySubject<void>(1);
   private readonly _lazy: Subscription;
@@ -111,7 +113,12 @@ export class MBeanMetricsChartController {
   }
 
   requestRefresh(): void {
+    this._loading$.next(true);
     this._updates$.next();
+  }
+
+  loading(): Observable<boolean> {
+    return this._loading$.asObservable();
   }
 
   _tearDown() {
@@ -136,7 +143,11 @@ export class MBeanMetricsChartController {
       ),
       this._target.target()
     )
-      .pipe(concatMap((t) => this._queryMetrics(t)))
+      .pipe(
+        tap((_) => this._loading$.next(true)),
+        concatMap((t) => this._queryMetrics(t)),
+        tap((_) => this._loading$.next(false))
+      )
       .subscribe((v) => this._state$.next(v));
   }
 

@@ -54,7 +54,7 @@ import { SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { interval, tap } from 'rxjs';
+import { interval } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import { ChartContext } from './ChartContext';
@@ -278,26 +278,20 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   React.useEffect(() => {
     const kind = getChartKindByName(props.chartKind);
     addSubscription(
-      controllerContext.mbeanController
-        .attach(kind.category, kind.fields)
-        .pipe(tap((_) => setLoading(false)))
-        .subscribe((v: MBeanMetrics) => {
-          setSamples((old: Sample[]) => {
-            const timestamp = Date.now();
-            const newSamples: Sample[] = kind
-              .mapper(v)
-              .map((datapoint: Datapoint): Sample => ({ timestamp, datapoint }));
-            if (kind.singleValue) {
-              return newSamples;
-            }
-            return [...old, ...newSamples].filter((d) => d.timestamp > timestamp - props.duration * 1000);
-          });
-        })
+      controllerContext.mbeanController.attach(kind.category, kind.fields).subscribe((v: MBeanMetrics) => {
+        setSamples((old: Sample[]) => {
+          const timestamp = Date.now();
+          const newSamples: Sample[] = kind.mapper(v).map((datapoint: Datapoint): Sample => ({ timestamp, datapoint }));
+          if (kind.singleValue) {
+            return newSamples;
+          }
+          return [...old, ...newSamples].filter((d) => d.timestamp > timestamp - props.duration * 1000);
+        });
+      })
     );
-  }, [addSubscription, controllerContext, props.chartKind, props.duration, setLoading]);
+  }, [addSubscription, controllerContext, props.chartKind, props.duration]);
 
   const refresh = React.useCallback(() => {
-    setLoading(true);
     controllerContext.mbeanController.requestRefresh();
   }, [controllerContext]);
 
@@ -313,6 +307,10 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
     refresh();
     addSubscription(interval(props.period * 1000).subscribe(() => refresh()));
   }, [addSubscription, props.period, refresh]);
+
+  React.useEffect(() => {
+    addSubscription(controllerContext.mbeanController.loading().subscribe(setLoading));
+  }, [addSubscription, controllerContext, setLoading]);
 
   const refreshButton = React.useMemo(
     () => (
