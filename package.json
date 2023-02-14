@@ -94,7 +94,8 @@
     "yarn": "^1.22.19"
   },
   "dependencies": {
-    "@patternfly/react-core": "^4.267.6",
+    "@patternfly/quickstarts": "^2.3.3",
+    "@patternfly/react-core": "^4.276.6",
     "@patternfly/react-icons": "^4.93.6",
     "@patternfly/react-styles": "^4.92.6",
     "@patternfly/react-table": "^4.112.39",
@@ -109,7 +110,8 @@
     "react-dom": "^17.0.2",
     "react-i18next": "^12.1.5",
     "react-redux": "^8.0.5",
-    "react-router-last-location": "^2.0.1"
+    "react-router-last-location": "^2.0.1",
+    "showdown": "^2.1.0"
   },
   "packageManager": "yarn@3.3.0"
 }

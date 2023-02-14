@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { WelcomeCardDescriptor } from '@app/Dashboard/WelcomeCard';
+import { WelcomeCardDescriptor } from '@app/Dashboard/Quickstart/WelcomeCard';
 import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer, nanoid } from '@reduxjs/toolkit';

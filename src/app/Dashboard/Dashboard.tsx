@@ -62,7 +62,7 @@ import { ChartContext } from './Charts/ChartContext';
 import { ChartController } from './Charts/ChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { WelcomeCardDescriptor } from './WelcomeCard';
+import { WelcomeCardDescriptor } from './Quickstart/WelcomeCard';
 
 export interface Sized<T> {
   minimum: T;

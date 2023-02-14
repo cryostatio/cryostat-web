@@ -35,31 +35,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@patternfly/quickstarts/dist/quickstarts.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
-
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
-
-export { App };
+import { QuickStart } from '@patternfly/quickstarts';
+import { cryostatQuickStartIcon } from './cryostat-icon';
+export const sampleQuickStart: QuickStart = {
+  metadata: {
+    name: 'sample-quickstart',
+  },
+  spec: {
+    displayName: 'Sample QuickStart',
+    durationMinutes: 1,
+    icon: cryostatQuickStartIcon,
+    description: 'This is a sample quickstart',
+    introduction: '### This is a sample quickstart',
+    tasks: [
+      {
+        title: 'Task 1',
+        description: 'This is a sample task.',
+        review: {
+          instructions: '#### Verify that you have done the task',
+          failedTaskHelp: 'This is how you can fix the failed task',
+        },
+      },
+    ],
+    conclusion: '### You have completed the sample quickstart',
+    nextQuickStart: ['add-card-quickstart'],
+    type: {
+      text: 'Introduction',
+      color: 'red',
+    },
+  },
+};
