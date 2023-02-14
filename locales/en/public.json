@@ -123,7 +123,8 @@
         "DESCRIPTION": "Select a colour theme",
         "NAME": "Theme"
       }
-    }
+    },
+    "TITLE": "{{chartKind}} (last {{duration}}s, every {{period}}s)"
   },
   "ClickableAutomatedAnalysisLabel": {
     "ARIA_LABELS": {

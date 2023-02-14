@@ -336,12 +336,13 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const header = React.useMemo(
     () => (
       <CardHeader>
-        <CardTitle>{props.chartKind}</CardTitle>
+        <CardTitle>
+          {t('CHART_CARD.TITLE', { chartKind: props.chartKind, duration: props.duration, period: props.period })}
+        </CardTitle>
         <CardActions>{actions}</CardActions>
       </CardHeader>
     ),
-
-    [props.chartKind, actions]
+    [t, props.chartKind, props.duration, props.period, actions]
   );
 
   const chartKind = React.useMemo(() => getChartKindByName(props.chartKind), [props.chartKind]);
