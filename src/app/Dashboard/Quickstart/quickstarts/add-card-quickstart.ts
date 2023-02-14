@@ -45,13 +45,13 @@ export const addCardQuickStart: QuickStart = {
     displayName: 'Adding/Removing Cards',
     durationMinutes: 1,
     icon: cryostatQuickStartIcon,
-    description: 'Add and remove cards from the Cryostat Dashboard',
+    description: 'Add and remove cards from the Cryostat Dashboard.',
     introduction: '### This is a sample quickstart.',
     tasks: [
       {
         title: 'Add a Card',
         description: `### We will add a card to the Cryostat Dashboard.
-1. Go to the bottom of this page, and press the **Add** button on the \'Add Card\' card.
+1. Go to the bottom of this page, and press the **Add** button on the 'Add Card' card.
 2. Select a card type.
 3. Press **Finish** to add the card to the dashboard.`,
         review: {

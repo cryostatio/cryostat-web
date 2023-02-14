@@ -36,48 +36,20 @@
  * SOFTWARE.
  */
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import {
-  AllQuickStartStates,
-  QuickStart,
-  QuickStartCatalog,
-  QuickStartCatalogPage,
-  QuickStartContainer,
-  useLocalStorage,
-} from '@patternfly/quickstarts';
-import {
-  Card,
-  CardActions,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListTerm,
-  Text,
-  TextContent,
-  TextList,
-  TextListItem,
-  Title,
-} from '@patternfly/react-core';
+import { QuickStart, QuickStartCatalogPage, QuickStartContainer, useLocalStorage } from '@patternfly/quickstarts';
+import { CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import { allQuickStarts as exampleQuickStarts } from './all-quickstarts';
 
-export interface WelcomeCardProps extends DashboardCardProps {}
+export interface QuickStartsCardProps extends DashboardCardProps {}
 
-const WelcomeCard: React.FunctionComponent<WelcomeCardProps> = (props) => {
+const QuickStartsCard: React.FunctionComponent<QuickStartsCardProps> = (props) => {
+  const { t, i18n } = useTranslation();
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
   const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
-  const language = localStorage.getItem('bridge/language') || 'en';
-
-  // eslint-disable-next-line no-console
-  React.useEffect(() => console.log(activeQuickStartID), [activeQuickStartID]);
-  React.useEffect(() => {
-    // callback on state change
-    // eslint-disable-next-line no-console
-    console.log(allQuickStartStates);
-  }, [allQuickStartStates]);
 
   const [loading, setLoading] = React.useState(true);
   const [quickStarts, setQuickStarts] = React.useState<QuickStart[]>([]);
@@ -97,31 +69,17 @@ const WelcomeCard: React.FunctionComponent<WelcomeCardProps> = (props) => {
     allQuickStartStates,
     setActiveQuickStartID,
     setAllQuickStartStates,
-    language,
+    language: i18n.language,
     loading,
     alwaysShowTaskReview: true,
-    markdown: {
-      extensions: [
-        // variable substitution
-        {
-          type: 'output',
-          filter: function (html) {
-            html = html.replace(/\[APPLICATION\]/g, 'Mercury');
-            html = html.replace(/\[PRODUCT\]/g, 'Lightning');
-
-            return html;
-          },
-        },
-      ],
-    },
   };
   return (
     <DashboardCard
       dashboardId={props.dashboardId}
-      cardSizes={WelcomeCardSizes}
+      cardSizes={QuickStartsCardSizes}
       cardHeader={
         <CardHeader>
-          <CardTitle component="h2">Welcome Tutorial</CardTitle>
+          <CardTitle component="h2">{t('QuickStartsCard.TITLE')}</CardTitle>
           <CardActions>{...props.actions || []}</CardActions>
         </CardHeader>
       }
@@ -129,47 +87,18 @@ const WelcomeCard: React.FunctionComponent<WelcomeCardProps> = (props) => {
       <CardBody>
         <QuickStartContainer {...drawerProps}>
           <QuickStartCatalogPage
-            title="Dashboard Quick Starts"
-            hint="Quick start tutorials to learn some basic features and configurations for the Cryostat Dashboard."
+            title={t('QuickStartsCard.CATALOG_PAGE.TITLE')}
+            hint={t('QuickStartsCard.CATALOG_PAGE.HINT')}
           />
         </QuickStartContainer>
-        {/* TODO: Update when export and import feature is implemented
-          <DescriptionList displaySize='lg' columnModifier={{ default: '2Col' }}>
-          <Card component="div">
-            <DescriptionListTerm>Quick Start</DescriptionListTerm>
-            <DescriptionListDescription>This is a quick start tutorial to learn some basic features and configurations for the Cryostat Dashboard.
-            </DescriptionListDescription>
-          </Card>
-          <Card component="div">
-            <DescriptionListTerm>Adding/Removing Cards</DescriptionListTerm>
-            <DescriptionListDescription>
-              Here you can add various Cards to the Dashboard using the "Add Card" card at the bottom of the Dashboard.
-              You can also remove Cards by clicking the "Remove Card" button in the kebab menu of the Card header.
-            </DescriptionListDescription>
-          </Card>
-          <Card component="div">
-            <DescriptionListTerm>Resizing/Ordering Cards</DescriptionListTerm>
-            <DescriptionListDescription>
-              You can also customize the layout and order of the Cards by dragging the Card headers around.
-              You may also resize cards according to their minimum and maximum sizes by dragging the right side of the Card.
-            </DescriptionListDescription>
-          </Card>
-          <Card component="div">
-            <DescriptionListTerm>Import/Export Layouts</DescriptionListTerm>
-            <DescriptionListDescription>
-              Finally, you can import and export Dashboard layouts and quickly switch between them by clicking the "Import/Export" button in the top right corner.
-            </DescriptionListDescription>
-          </Card>
-        </DescriptionList>
-        */}
       </CardBody>
     </DashboardCard>
   );
 };
 
-const WelcomeCardSizes = {
+const QuickStartsCardSizes = {
   span: {
-    minimum: 1,
+    minimum: 6,
     default: 12,
     maximum: 12,
   },
@@ -180,12 +109,12 @@ const WelcomeCardSizes = {
   },
 } as DashboardCardSizes;
 
-export const WelcomeCardDescriptor: DashboardCardDescriptor = {
+export const QuickStartsCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.PRODUCTION,
-  title: 'Welcome Tutorial',
-  cardSizes: WelcomeCardSizes,
+  title: 'Quick Starts',
+  cardSizes: QuickStartsCardSizes,
   description: 'Cryostat Dashboard quick start tutorial.',
   descriptionFull: 'A quick start tutorial to learn some basic features and configurations for the Cryostat Dashboard.',
-  component: WelcomeCard,
+  component: QuickStartsCard,
   propControls: [],
 } as DashboardCardDescriptor;

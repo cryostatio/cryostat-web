@@ -39,7 +39,6 @@
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { CardConfig, dashboardCardConfigFirstRunIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import {
-  dashboardCardConfigAddCardIntent,
   dashboardCardConfigDeleteCardIntent,
   dashboardCardConfigResizeCardIntent,
   RootState,
@@ -62,7 +61,7 @@ import { ChartContext } from './Charts/ChartContext';
 import { ChartController } from './Charts/ChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { WelcomeCardDescriptor } from './Quickstart/WelcomeCard';
+import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
 
 export interface Sized<T> {
   minimum: T;
@@ -243,7 +242,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
     ChartCardDescriptor,
     NonePlaceholderCardDescriptor,
     AllPlaceholderCardDescriptor,
-    WelcomeCardDescriptor,
+    QuickStartsCardDescriptor,
   ];
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };

@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { WelcomeCardDescriptor } from '@app/Dashboard/Quickstart/WelcomeCard';
+import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
 import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer, nanoid } from '@reduxjs/toolkit';
@@ -134,9 +134,9 @@ const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
 
 const firstRunDashboard: CardConfig[] = [
   {
-    id: `${WelcomeCardDescriptor.component.name}-${nanoid()}`,
-    name: `${WelcomeCardDescriptor.component.name}`,
-    span: WelcomeCardDescriptor.cardSizes.span.default,
+    id: `${QuickStartsCardDescriptor.component.name}-${nanoid()}`,
+    name: `${QuickStartsCardDescriptor.component.name}`,
+    span: QuickStartsCardDescriptor.cardSizes.span.default,
     props: {},
   },
   {

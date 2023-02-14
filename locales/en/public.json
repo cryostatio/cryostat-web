@@ -161,6 +161,13 @@
     "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with no config.",
     "CARD_TITLE": "None Placeholder"
   },
+  "QuickStartsCard": {
+    "CATALOG_PAGE": {
+      "HINT": "Quick start tutorials to learn some basic features and configurations for the Cryostat Dashboard.",
+      "TITLE": "Dashboard Quick Starts"
+    },
+    "TITLE": "Quick Starts"
+  },
   "SETTINGS": {
     "AUTO_REFRESH": {
       "CHECKBOX_LABEL": "Enabled",
