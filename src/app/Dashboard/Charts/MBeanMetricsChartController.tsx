@@ -37,38 +37,26 @@
  */
 
 import { ApiService } from '@app/Shared/Services/Api.service';
-import { NotificationCategory, NotificationChannel } from '@app/Shared/Services/NotificationChannel.service';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
-import { NO_TARGET, Target, TargetService } from '@app/Shared/Services/Target.service';
+import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
-  catchError,
   concatMap,
   distinctUntilChanged,
   finalize,
   first,
   map,
-  merge,
   Observable,
-  of,
   pairwise,
   ReplaySubject,
+  Subject,
   Subscription,
-  switchMap,
-  tap,
   throttleTime,
 } from 'rxjs';
 
-export const RECORDING_NAME = 'dashboard_metrics';
-
-export enum ControllerState {
-  UNKNOWN = 0,
-  NO_DATA = 1,
-  READY = 2,
-}
-
-export class JFRMetricsChartController {
-  private readonly _state$ = new BehaviorSubject<ControllerState>(ControllerState.UNKNOWN);
+export class MBeanMetricsChartController {
+  private readonly _metrics = new Map<string, string[]>();
+  private readonly _state$ = new Subject<MBeanMetrics>();
   private readonly _refCount$ = new BehaviorSubject<number>(0);
   private readonly _updates$ = new ReplaySubject<void>(1);
   private readonly _lazy: Subscription;
@@ -77,7 +65,6 @@ export class JFRMetricsChartController {
   constructor(
     private readonly _api: ApiService,
     private readonly _target: TargetService,
-    private readonly _notifications: NotificationChannel,
     private readonly _settings: SettingsService
   ) {
     this._lazy = this._refCount$
@@ -97,11 +84,26 @@ export class JFRMetricsChartController {
       });
   }
 
-  attach(): Observable<ControllerState> {
+  attach(category: string, fields: string[]): Observable<MBeanMetrics> {
     this._refCount$.next(this._refCount$.value + 1);
+    if (!this._metrics.has(category)) {
+      this._metrics.set(category, []);
+    }
+    this._metrics.get(category)?.push(...fields);
     return this._state$.asObservable().pipe(
       distinctUntilChanged(),
-      finalize(() => this._refCount$.next(this._refCount$.value - 1))
+      finalize(() => {
+        this._refCount$.next(this._refCount$.value - 1);
+        const original = this._metrics.get(category) || [];
+        const updated = [...original];
+        fields.forEach((field) => {
+          const idx = updated.findIndex((e) => e === field);
+          if (idx >= 0) {
+            updated.splice(idx, 1);
+          }
+        });
+        this._metrics.get(category)?.push(...updated);
+      })
     );
   }
 
@@ -110,7 +112,7 @@ export class JFRMetricsChartController {
   }
 
   _tearDown() {
-    this._state$.next(ControllerState.UNKNOWN);
+    this._state$.next({});
     this._lazy.unsubscribe();
     this._stop();
   }
@@ -124,77 +126,68 @@ export class JFRMetricsChartController {
 
   private _start(): void {
     this._stop();
-    this._attach = merge(
-      merge(
-        this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh * 1000)),
-        this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
-        this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
-        this._notifications.messages(NotificationCategory.ActiveRecordingStopped)
-      ).pipe(switchMap((_) => this._target.target().pipe(first()))),
-      this._target.target().pipe(tap((_) => this._state$.next(ControllerState.UNKNOWN)))
-    )
-      .pipe(concatMap((t) => this._hasRecording(t)))
-      .subscribe((v) => {
-        this._state$.next(v ? ControllerState.READY : ControllerState.NO_DATA);
-        if (v) {
-          this._api
-            .uploadActiveRecordingToGrafana(RECORDING_NAME)
-            .pipe(first())
-            .subscribe((_) => {
-              this._state$.next(ControllerState.READY);
-            });
-        }
-      });
+    this._attach = this._updates$
+      .pipe(throttleTime(this._settings.chartControllerConfig().minRefresh * 1000))
+      .pipe(concatMap((_) => this._target.target().pipe(first())))
+      .pipe(concatMap((t) => this._queryMetrics(t)))
+      .subscribe((v) => this._state$.next(v));
   }
 
-  private _hasRecording(target: Target): Observable<boolean> {
-    if (target === NO_TARGET) {
-      return of(false);
-    }
-
+  private _queryMetrics(target: Target): Observable<MBeanMetrics> {
+    const q: string[] = [];
+    this._metrics.forEach((fields, category) => {
+      // TODO deduplicate this constructed query
+      fields.forEach((field) => {
+        q.push(`${category} { ${field} }`);
+      });
+    });
     return this._api
-      .graphql<CountResponse>(
+      .graphql<MBeanMetricsResponse>(
         `
-          query ActiveRecordingsForAutomatedAnalysis($connectUrl: String) {
+          query MBeanMXMetricsForTarget($connectUrl: String) {
             targetNodes(filter: { name: $connectUrl }) {
-              recordings {
-                active (filter: {
-                  labels: ["origin=${RECORDING_NAME}"],
-                  state: "RUNNING",
-                }) {
-                aggregate {
-                  count
-                }
+              mbeanMetrics {
+                ${q.join('\n')}
               }
-            }
             }
           }`,
         { connectUrl: target.connectUrl }
       )
-      .pipe(
-        map((resp) => {
-          const nodes = resp.data.targetNodes;
-          if (nodes.length === 0) {
-            return false;
-          }
-          const count = nodes[0].recordings.active.aggregate.count;
-          return count > 0;
-        }),
-        catchError((_) => of(false))
-      );
+      .pipe(map((resp) => resp.data.targetNodes[0].mbeanMetrics));
   }
 }
 
-interface CountResponse {
+export interface MemoryMetric {
+  init: number;
+  used: number;
+  committed: number;
+  max: number;
+}
+
+export interface MBeanMetrics {
+  thread?: {
+    threadCount?: number;
+    daemonThreadCount?: number;
+  };
+  os?: {
+    systemCpuLoad?: number;
+    systemLoadAverage?: number;
+    processCpuLoad?: number;
+    totalPhysicalMemorySize?: number;
+    freePhysicalMemorySize?: number;
+  };
+  memory?: {
+    heapMemoryUsage?: MemoryMetric;
+    nonHeapMemoryUsage?: MemoryMetric;
+    heapMemoryUsagePercent?: number;
+  };
+  // runtime: {};
+}
+
+export interface MBeanMetricsResponse {
   data: {
     targetNodes: {
-      recordings: {
-        active: {
-          aggregate: {
-            count: number;
-          };
-        };
-      };
+      mbeanMetrics: MBeanMetrics;
     }[];
   };
 }

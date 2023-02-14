@@ -143,11 +143,11 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
   }, [dashboardUrl, setControllerState, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
 
   React.useEffect(() => {
-    addSubscription(controllerContext.controller.attach().subscribe(setControllerState));
+    addSubscription(controllerContext.jfrController.attach().subscribe(setControllerState));
   }, [addSubscription, controllerContext, setControllerState]);
 
   const refresh = React.useCallback(() => {
-    controllerContext.controller.requestRefresh();
+    controllerContext.jfrController.requestRefresh();
   }, [controllerContext]);
 
   React.useEffect(() => {

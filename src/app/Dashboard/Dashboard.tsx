@@ -59,6 +59,7 @@ import { ChartContext } from './Charts/ChartContext';
 import { JFRMetricsChartCardDescriptor } from './Charts/JFRMetricsChartCard';
 import { JFRMetricsChartController } from './Charts/JFRMetricsChartController';
 import { MBeanMetricsChartCardDescriptor } from './Charts/MBeanMetricsChartCard';
+import { MBeanMetricsChartController } from './Charts/MBeanMetricsChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
@@ -297,6 +298,9 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
       serviceContext.settings
     )
   );
+  const mbeanChartController = React.useRef(
+    new MBeanMetricsChartController(serviceContext.api, serviceContext.target, serviceContext.settings)
+  );
 
   React.useEffect(() => {
     const currentDashboard = serviceContext.settings.dashboardConfig();
@@ -307,14 +311,17 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   const chartContext = React.useMemo(() => {
     return {
-      controller: jfrChartController.current,
+      jfrController: jfrChartController.current,
+      mbeanController: mbeanChartController.current,
     };
-  }, [jfrChartController]);
+  }, [jfrChartController, mbeanChartController]);
 
   React.useEffect(() => {
-    const controller = jfrChartController.current;
+    const jfrController = jfrChartController.current;
+    const mbeanController = mbeanChartController.current;
     return () => {
-      controller._tearDown();
+      jfrController._tearDown();
+      mbeanController._tearDown();
     };
   }, []);
 

@@ -38,7 +38,6 @@
 
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { Target } from '@app/Shared/Services/Target.service';
 import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -55,9 +54,11 @@ import { SyncAltIcon } from '@patternfly/react-icons';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { first, interval, map, switchMap } from 'rxjs';
+import { interval, tap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
+import { ChartContext } from './ChartContext';
+import { MBeanMetrics } from './MBeanMetricsChartController';
 
 export interface MBeanMetricsChartCardProps extends DashboardCardProps {
   themeColor: string;
@@ -80,13 +81,11 @@ interface MBeanMetricsChartKind {
   displayName: string;
   category: string;
   fields: string[];
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  mapper: (metrics: any) => Datapoint[];
+  mapper: (metrics: MBeanMetrics) => Datapoint[];
   singleValue?: boolean;
   visual: (themeColor: string, samples: Sample[]) => React.ReactElement;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 const SimpleChart: React.FC<{
   themeColor?: string;
   style: 'line' | 'area';
@@ -104,11 +103,11 @@ const SimpleChart: React.FC<{
   const keys = React.useMemo(() => _.uniqBy(data, (d) => d.name), [data]);
 
   const render = React.useCallback(
-    (data, style) =>
+    (key, data, style) =>
       style === 'line' ? (
-        <ChartLine data={data} name={units} interpolation={interpolation} />
+        <ChartLine key={key} data={data} name={units} interpolation={interpolation} />
       ) : (
-        <ChartArea data={data} name={units} interpolation={interpolation} />
+        <ChartArea key={key} data={data} name={units} interpolation={interpolation} />
       ),
     [units, interpolation]
   );
@@ -131,6 +130,7 @@ const SimpleChart: React.FC<{
         <ChartGroup>
           {keys.map((k) =>
             render(
+              k,
               data.filter((d) => d.name === k.name),
               style
             )
@@ -147,8 +147,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'Process Load Average',
     category: 'os',
     fields: ['processCpuLoad'],
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [{ name: 'processCpuLoad', value: metrics.processCpuLoad }],
+    mapper: (metrics: MBeanMetrics) => [{ name: 'processCpuLoad', value: metrics?.os?.processCpuLoad || 0 }],
     visual: (themeColor: string, samples: Sample[]) => (
       <SimpleChart samples={samples} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
     ),
@@ -157,8 +156,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'System Load Average',
     category: 'os',
     fields: ['systemLoadAverage'],
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [{ name: 'systemLoadAverage', value: metrics.systemLoadAverage }],
+    mapper: (metrics: MBeanMetrics) => [{ name: 'systemLoadAverage', value: metrics?.os?.systemLoadAverage || 0 }],
     visual: (themeColor: string, samples: Sample[]) => (
       <SimpleChart samples={samples} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
     ),
@@ -167,8 +165,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'System CPU Load',
     category: 'os',
     fields: ['systemCpuLoad'],
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [{ name: 'systemCpuLoad', value: metrics.systemCpuLoad }],
+    mapper: (metrics: MBeanMetrics) => [{ name: 'systemCpuLoad', value: metrics?.os?.systemCpuLoad || 0 }],
     visual: (themeColor: string, samples: Sample[]) => (
       <SimpleChart samples={samples} style={'line'} themeColor={themeColor} />
     ),
@@ -178,15 +175,16 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['freePhysicalMemorySize', 'totalPhysicalMemorySize'],
     // TODO scale units automatically and report units dynamically
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [
+    mapper: (metrics: MBeanMetrics) => [
       {
         name: 'usedPhysicalMemorySize',
-        value: (metrics.totalPhysicalMemorySize - metrics.freePhysicalMemorySize) / Math.pow(1024, 2),
+        value:
+          ((metrics?.os?.totalPhysicalMemorySize || 0) - (metrics?.os?.freePhysicalMemorySize || 0)) /
+          Math.pow(1024, 2),
       },
       {
         name: 'totalPhysicalMemorySize',
-        value: metrics.totalPhysicalMemorySize / Math.pow(1024, 2),
+        value: (metrics?.os?.totalPhysicalMemorySize || 0) / Math.pow(1024, 2),
       },
     ],
     visual: (themeColor: string, samples: Sample[]) => (
@@ -197,11 +195,10 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'Heap Memory Usage',
     category: 'memory',
     fields: ['heapMemoryUsage{ used }'],
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [
+    mapper: (metrics: MBeanMetrics) => [
       {
         name: 'heapMemoryUsed',
-        value: Math.round(metrics.heapMemoryUsage.used / Math.pow(1024, 2)),
+        value: Math.round((metrics?.memory?.heapMemoryUsage?.used || 0) / Math.pow(1024, 2)),
       },
     ],
     visual: (themeColor: string, samples: Sample[]) => (
@@ -212,8 +209,9 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'Heap Usage Percentage',
     category: 'memory',
     fields: ['heapMemoryUsagePercent'],
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [{ name: 'heapMemoryUsage', value: metrics.heapMemoryUsagePercent }],
+    mapper: (metrics: MBeanMetrics) => [
+      { name: 'heapMemoryUsage', value: metrics?.memory?.heapMemoryUsagePercent || 0 },
+    ],
     singleValue: true,
     visual: (themeColor: string, samples: Sample[]) => {
       let value = 0;
@@ -235,11 +233,10 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'Non-Heap Memory Usage',
     category: 'memory',
     fields: ['nonHeapMemoryUsage{ used }'],
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [
+    mapper: (metrics: MBeanMetrics) => [
       {
         name: 'noneapMemoryUsed',
-        value: Math.round(metrics.nonHeapMemoryUsage.used / Math.pow(1024, 2)),
+        value: Math.round((metrics?.memory?.nonHeapMemoryUsage?.used || 0) / Math.pow(1024, 2)),
       },
     ],
     visual: (themeColor: string, samples: Sample[]) => (
@@ -250,15 +247,14 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'Threads',
     category: 'thread',
     fields: ['daemonThreadCount', 'threadCount'],
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    mapper: (metrics: any) => [
+    mapper: (metrics: MBeanMetrics) => [
       {
         name: 'daemonThreadCount',
-        value: metrics.daemonThreadCount,
+        value: metrics?.thread?.daemonThreadCount || 0,
       },
       {
         name: 'threadCount',
-        value: metrics.threadCount,
+        value: metrics?.thread?.threadCount || 0,
       },
     ],
     visual: (themeColor: string, samples: Sample[]) => (
@@ -274,59 +270,41 @@ function getChartKindByName(name: string): MBeanMetricsChartKind {
 export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (props) => {
   const [t] = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
+  const controllerContext = React.useContext(ChartContext);
   const addSubscription = useSubscriptions();
   const [samples, setSamples] = React.useState([] as Sample[]);
   const [isLoading, setLoading] = React.useState(true);
 
+  React.useEffect(() => {
+    const kind = getChartKindByName(props.chartKind);
+    addSubscription(
+      controllerContext.mbeanController
+        .attach(kind.category, kind.fields)
+        .pipe(tap((_) => setLoading(false)))
+        .subscribe((v: MBeanMetrics) => {
+          setSamples((old: Sample[]) => {
+            const timestamp = Date.now();
+            const newSamples: Sample[] = kind
+              .mapper(v)
+              .map((datapoint: Datapoint): Sample => ({ timestamp, datapoint }));
+            if (kind.singleValue) {
+              return newSamples;
+            }
+            return [...old, ...newSamples].filter((d) => d.timestamp > timestamp - props.duration * 1000);
+          });
+        })
+    );
+  }, [addSubscription, controllerContext, props.chartKind, props.duration, setLoading]);
+
   const refresh = React.useCallback(() => {
     setLoading(true);
-    const kind = getChartKindByName(props.chartKind);
-    const fields = kind.fields.join('\n');
-    serviceContext.target
-      .target()
-      .pipe(
-        first(),
-        switchMap((target: Target) =>
-          /* eslint-disable @typescript-eslint/no-explicit-any */
-          serviceContext.api.graphql<any>(
-            `
-          query MBeanMXMetricsForTarget($connectUrl: String) {
-            targetNodes(filter: { name: $connectUrl }) {
-              mbeanMetrics {
-                ${kind.category} {
-                  ${fields}
-                }
-              }
-            }
-          }`,
-            { connectUrl: target.connectUrl }
-          )
-        ),
-        /* eslint-disable @typescript-eslint/no-explicit-any */
-        map((resp: any) => {
-          const timestamp = Date.now();
-          const metrics = resp.data.targetNodes[0].mbeanMetrics;
-          const datapoints: Datapoint[] = kind.mapper(metrics[kind.category]);
-          return datapoints.map((datapoint) => ({ timestamp, datapoint }));
-        })
-      )
-      .subscribe((v) => {
-        setLoading(false);
-        setSamples((old) => {
-          const now = Date.now();
-          if (kind.singleValue) {
-            return v;
-          }
-          return [...old, ...v].filter((d) => d.timestamp > now - props.duration * 1000);
-        });
-      });
-  }, [serviceContext, props.chartKind, props.duration, setLoading]);
+    controllerContext.mbeanController.requestRefresh();
+  }, [controllerContext]);
 
   React.useEffect(() => {
     addSubscription(
       serviceContext.target.target().subscribe((_) => {
         setSamples([]);
-        refresh();
       })
     );
   }, [addSubscription, serviceContext, setSamples, refresh]);

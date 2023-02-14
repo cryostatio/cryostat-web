@@ -73,7 +73,7 @@ const mockController = new JFRMetricsChartController(
   defaultServices.settings
 );
 const mockChartContext = {
-  controller: mockController,
+  jfrController: mockController,
 };
 
 describe('<JFRMetricsChartCard />', () => {
