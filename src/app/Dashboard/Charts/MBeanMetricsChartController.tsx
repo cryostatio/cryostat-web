@@ -41,12 +41,15 @@ import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import {
   BehaviorSubject,
+  catchError,
   concatMap,
   distinctUntilChanged,
   finalize,
   first,
   map,
+  merge,
   Observable,
+  of,
   pairwise,
   ReplaySubject,
   Subject,
@@ -126,9 +129,13 @@ export class MBeanMetricsChartController {
 
   private _start(): void {
     this._stop();
-    this._attach = this._updates$
-      .pipe(throttleTime(this._settings.chartControllerConfig().minRefresh * 1000))
-      .pipe(concatMap((_) => this._target.target().pipe(first())))
+    this._attach = merge(
+      this._updates$.pipe(
+        throttleTime(this._settings.chartControllerConfig().minRefresh * 1000),
+        concatMap((_) => this._target.target().pipe(first()))
+      ),
+      this._target.target()
+    )
       .pipe(concatMap((t) => this._queryMetrics(t)))
       .subscribe((v) => this._state$.next(v));
   }
@@ -153,7 +160,16 @@ export class MBeanMetricsChartController {
           }`,
         { connectUrl: target.connectUrl }
       )
-      .pipe(map((resp) => resp.data.targetNodes[0].mbeanMetrics));
+      .pipe(
+        map((resp) => {
+          const nodes = resp?.data?.targetNodes;
+          if (!nodes || nodes.length === 0) {
+            return {};
+          }
+          return nodes[0]?.mbeanMetrics;
+        }),
+        catchError((_) => of({}))
+      );
   }
 }
 
