@@ -32,6 +32,6 @@
     "src/**/*.jsx",
     "src/**/*.js",
     "src/**/*.json"
-  ],
+, "../.temp/DashboardLayoutSlicer.tsx"  ],
   "exclude": ["node_modules", "dist"]
 }

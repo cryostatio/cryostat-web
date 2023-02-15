@@ -45,6 +45,7 @@ import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
+import { DashboardLayout } from '../Redux/Configurations/DashboardConfigSlicer';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';
@@ -1151,6 +1152,14 @@ export class ApiService {
       catchError((_) => of([])),
       map((recs: Partial<ActiveRecording>[]) => recs.length > 0) // At least one
     );
+  }
+  
+  downloadDashboardLayout(layoutName: string, dashboardConfig: DashboardLayout): void {
+    const filename = `${layoutName}.json`;
+    const file = new File([JSON.stringify(dashboardConfig)], filename);
+    const resourceUrl = URL.createObjectURL(file);
+    this.downloadFile(resourceUrl, filename);
+    setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
   }
 
   private downloadFile(url: string, filename: string, download = true): void {

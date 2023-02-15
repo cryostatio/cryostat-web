@@ -40,7 +40,11 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
+<<<<<<< HEAD
 import { DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlicer';
+=======
+import { CardConfig, DashboardLayout } from '../Redux/Configurations/DashboardConfigSlicer';
+>>>>>>> 67dcdc5e (init commit)
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -91,12 +95,27 @@ export class SettingsService {
     getFromLocalStorage('DATETIME_FORMAT', defaultDatetimeFormat)
   );
 
+  private readonly _dashboardLayouts$ = new BehaviorSubject<DashboardLayout[]>(
+    getFromLocalStorage('DASHBOARD_LAYOUTS', [])
+  );
+
   constructor() {
     this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
     this._visibleNotificationsCount$.subscribe((count: number) =>
       saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
     );
     this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
+    this._dashboardLayouts$.subscribe((layouts: DashboardLayout[]) => saveToLocalStorage('DASHBOARD_LAYOUTS', layouts));
+  }
+
+  dashboardLayouts(): Observable<DashboardLayout[]> {
+    return this._dashboardLayouts$.asObservable();
+  }
+
+  setDashboardLayouts(layout: DashboardLayout): void {
+    const layouts = this._dashboardLayouts$.getValue();
+    layouts.push(layout);
+    this._dashboardLayouts$.next(layouts);
   }
 
   datetimeFormat(): Observable<DatetimeFormat> {

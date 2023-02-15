@@ -52,6 +52,7 @@ export enum DashboardConfigAction {
   CARD_REORDER = 'dashboard-card-config/reorder',
   CARD_RESIZE = 'dashboard-card-config/resize',
   FIRST_RUN = 'dashboard-card-config/first-run',
+  LAYOUT_REPLACE = 'dashboard-layout-config/replace',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -79,6 +80,10 @@ export interface DashboardOrderConfigActionPayload {
 }
 
 export interface DashboardFirstRunActionPayload {}
+export interface DashboardReplaceConfigActionPayload {
+  newLayoutName: string;
+  newConfig: CardConfig[];
+}
 
 export const dashboardCardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
@@ -123,6 +128,20 @@ export const dashboardCardConfigFirstRunIntent = createAction(DashboardConfigAct
   payload: {} as DashboardFirstRunActionPayload,
 }));
 
+export const dashboardLayoutConfigReplaceCardIntent = createAction(
+  DashboardConfigAction.LAYOUT_REPLACE,
+  (name: string, config: CardConfig[]) => ({
+    payload: {
+      newLayoutName: name,
+      newConfig: config,
+    } as DashboardReplaceConfigActionPayload,
+  })
+);
+
+export interface DashboardLayout {
+  name: string;
+  cards: CardConfig[];
+}
 export interface CardConfig {
   id: string;
   name: string;
@@ -199,6 +218,10 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
           },
         },
       ];
+    })
+    .addCase(dashboardLayoutConfigReplaceCardIntent, (state, { payload }) => {
+      state.name = payload.newLayoutName;
+      state.list = payload.newConfig;
     });
 });
 
