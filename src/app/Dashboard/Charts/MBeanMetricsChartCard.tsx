@@ -233,7 +233,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['nonHeapMemoryUsage{ used }'],
     mapper: (metrics: MBeanMetrics) => [
       {
-        name: 'noneapMemoryUsed',
+        name: 'nonHeapMemoryUsed',
         value: Math.round((metrics?.memory?.nonHeapMemoryUsage?.used || 0) / Math.pow(1024, 2)),
       },
     ],
