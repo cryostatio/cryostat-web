@@ -12,6 +12,11 @@
     "OPEN_SOURCE_LICENSE": "Open Source License",
     "VERSION": "version"
   },
+  "AllPlaceholderCard": {
+    "CARD_DESCRIPTION": "All placeholder",
+    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with all the config",
+    "CARD_TITLE": "All Placeholder"
+  },
   "AutomatedAnalysisCard": {
     "ARIA_LABELS": {
       "DELETE_AA": "Delete automated analysis",
@@ -22,15 +27,14 @@
     "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard",
     "CARD_TITLE": "Automated Analysis",
     "CHECKBOX_LABEL_SHOW_NA_SCORES": "Show N/A scores",
-    "CLEAR_FILTERS": "Clear all filters",
     "CRITICAL_RESULTS_one": "{{count}} Critical Result",
     "CRITICAL_RESULTS_other": "{{count}} Critical Results",
     "ERROR_TEXT": "Cryostat was unable to generate an automated analysis report.",
     "ERROR_TITLE": "Automated Analysis Error",
     "GOOD_RESULTS": "No problems",
+    "NAME": "Name",
     "NO_RESULTS": "No Results Found",
     "NO_RESULTS_BODY": "No results match this filter criteria. Try removing filters, or resetting the severity score filter to 0 to show results",
-    "RESULT": "Name",
     "RETRY_LOADING": "Retry loading report",
     "RETRY_STARTING": "Retry starting recording",
     "SCORE": "Score",
@@ -40,7 +44,15 @@
     "WARNING_RESULTS_other": "{{count}} Warning Results"
   },
   "AutomatedAnalysisConfigDrawer": {
-    "CREATE_RECORDING": "Create Recording"
+    "CREATE_RECORDING": "Create Recording",
+    "DROPDOWN": {
+      "TOGGLE": {
+        "ACTION": {
+          "LABEL": "Recording actions"
+        },
+        "LABEL": "Recording config dropdown"
+      }
+    }
   },
   "AutomatedAnalysisConfigForm": {
     "ERROR_TITLE": "Error displaying recording configuration settings",
@@ -74,15 +86,39 @@
         "LABEL": "Synchronize {{chartKind}} chart"
       }
     },
+    "CARD_DESCRIPTION": "Display common performance metrics.",
+    "CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported types. Data is displayed from the present moment back to a specified duration.",
+    "CARD_TITLE": "Metrics Card",
     "NO_RECORDING": {
       "DESCRIPTION": "Metrics cards display data taken from running flight recordings with the label <label>origin={{recordingName}}</label>. No such recordings are currently available.",
       "TITLE": "No source recording"
+    },
+    "PROP_CONTROLS": {
+      "DATA_WINDOW": {
+        "DESCRIPTION": "The data window width in seconds.",
+        "NAME": "Data Window"
+      },
+      "PERFORMANCE_METRIC": {
+        "DESCRIPTION": "Select a performance metric to display",
+        "NAME": "Performance Metric"
+      },
+      "REFRESH_PERIOD": {
+        "DESCRIPTION": "The chart refresh period in seconds.",
+        "NAME": "Refresh Period"
+      },
+      "THEME": {
+        "DESCRIPTION": "Select a colour theme",
+        "NAME": "Theme"
+      }
     }
   },
   "ClickableAutomatedAnalysisLabel": {
     "ARIA_LABELS": {
       "POPOVER": "automated-analysis-description-popover"
     }
+  },
+  "Dashboard": {
+    "PAGE_TITLE": "Dashboard"
   },
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
@@ -107,6 +143,11 @@
       "LISTBOX": "Select AM or PM"
     }
   },
+  "NonePlaceholderCard": {
+    "CARD_DESCRIPTION": "None placeholder",
+    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with no config",
+    "CARD_TITLE": "None Placeholder"
+  },
   "SETTINGS": {
     "AUTO_REFRESH": {
       "CHECKBOX_LABEL": "Enabled",
@@ -114,7 +155,6 @@
       "TITLE": "Auto-Refresh"
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
-      "CURRENT_CONFIG": "Current configuration",
       "DESCRIPTION": "Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
       "TITLE": "Automated Analysis Recording Configuration"
     },

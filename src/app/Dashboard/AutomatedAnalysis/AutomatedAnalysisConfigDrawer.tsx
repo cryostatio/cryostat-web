@@ -79,7 +79,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const [t] = useTranslation();
+  const { t } = useTranslation();
 
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
@@ -147,7 +147,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-          <AutomatedAnalysisConfigForm isSettingsForm={false} />
+          <AutomatedAnalysisConfigForm useTitle />
         </DrawerPanelBody>
       </DrawerPanelContent>
     );
@@ -174,12 +174,12 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
             menuAppendTo={() => document.getElementById('automated-analysis-card') || document.body} // shouldn't be appended to parent
             toggle={
               <DropdownToggle
-                aria-label="Recording Config Dropdown"
+                aria-label={t('AutomatedAnalysisConfigDrawer.DROPDOWN.TOGGLE.LABEL')}
                 id="automated-analysis-recording-config-toggle"
                 splitButtonItems={[
                   <DropdownToggleAction
                     key="recording-cog-action"
-                    aria-label="Recording Actions"
+                    aria-label={t('AutomatedAnalysisConfigDrawer.DROPDOWN.TOGGLE.ACTION.LABEL')}
                     onClick={onOptionSelect}
                   >
                     <CogIcon />
@@ -189,7 +189,7 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
                 splitButtonVariant="action"
                 toggleVariant="default"
               >
-                {t('AutomatedAnalysisConfigDrawer.CREATE_RECORDING')} &nbsp;&nbsp;
+                <span style={{ marginRight: '0.5em' }}>{t('AutomatedAnalysisConfigDrawer.CREATE_RECORDING')}</span>
               </DropdownToggle>
             }
             isOpen={isDropdownOpen}

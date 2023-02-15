@@ -46,7 +46,9 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
+import { TFunction } from 'i18next';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
@@ -147,20 +149,20 @@ const PlaceholderCard: React.FunctionComponent<
 
 export const NonePlaceholderCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.DEVELOPMENT,
-  title: 'None Placeholder',
+  title: 'NonePlaceholderCard.CARD_TITLE',
   cardSizes: PLACEHOLDER_CARD_SIZE,
-  description: 'placeholder',
-  descriptionFull: 'This is a do-nothing placeholder with no config',
+  description: 'NonePlaceholderCard.CARD_DESCRIPTION',
+  descriptionFull: 'NonePlaceholderCard.CARD_DESCRIPTION_FULL',
   component: PlaceholderCard,
   propControls: [],
 } as DashboardCardDescriptor;
 
 export const AllPlaceholderCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.DEVELOPMENT,
-  title: 'All Placeholder',
+  title: 'AllPlaceholderCard.CARD_TITLE',
   cardSizes: PLACEHOLDER_CARD_SIZE,
-  description: 'placeholder',
-  descriptionFull: 'This is a do-nothing placeholder with all the config',
+  description: 'AllPlaceholderCard.CARD_DESCRIPTION',
+  descriptionFull: 'AllPlaceholderCard.CARD_DESCRIPTION_FULL',
   component: PlaceholderCard,
   propControls: [
     {
@@ -258,18 +260,18 @@ export function getConfigByName(name: string): DashboardCardDescriptor {
   throw new Error(`Unknown card type selection: ${name}`);
 }
 
-export function hasConfigByTitle(title: string): boolean {
+export function hasConfigByTitle(title: string, t: TFunction): boolean {
   for (const choice of getDashboardCards()) {
-    if (choice.title === title) {
+    if (t(choice.title) === title) {
       return true;
     }
   }
   return false;
 }
 
-export function getConfigByTitle(title: string): DashboardCardDescriptor {
+export function getConfigByTitle(title: string, t: TFunction): DashboardCardDescriptor {
   for (const choice of getDashboardCards()) {
-    if (choice.title === title) {
+    if (t(choice.title) === title) {
       return choice;
     }
   }
@@ -280,6 +282,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
   const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const { t } = useTranslation();
   const chartController = React.useRef(
     new ChartController(
       serviceContext.api,
@@ -321,7 +324,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   );
 
   return (
-    <TargetView pageTitle="Dashboard" compactSelect={false}>
+    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} compactSelect={false}>
       <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
           {cardConfigs

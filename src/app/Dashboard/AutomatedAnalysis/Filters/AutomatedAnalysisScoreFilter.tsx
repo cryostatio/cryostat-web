@@ -113,7 +113,6 @@ export const AutomatedAnalysisScoreFilter: React.FC<AutomatedAnalysisScoreFilter
       return 'automated-analysis-score-filter-slider automated-analysis-score-filter-slider-ok';
     }
   }, [currentScore]);
-  //       // 'Severity scores are calculated based on the number of JFR events that were triggered by the application in the time the report was generated.'
 
   return (
     <>

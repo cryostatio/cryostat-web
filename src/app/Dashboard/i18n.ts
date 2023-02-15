@@ -35,27 +35,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { Stack, StackItem } from '@patternfly/react-core';
-import * as React from 'react';
-import { UserSetting } from './Settings';
-
-const Component = () => {
-  return (
-    <Stack hasGutter>
-      <StackItem>
-        <TargetSelect simple />
-      </StackItem>
-      <AutomatedAnalysisConfigForm />
-    </Stack>
-  );
-};
-
-export const AutomatedAnalysisConfig: UserSetting = {
-  titleKey: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.TITLE',
-  descConstruct: 'SETTINGS.AUTOMATED_ANALYSIS_CONFIG.DESCRIPTION',
-  content: Component,
-  category: 'SETTINGS.CATEGORIES.DASHBOARD',
-};
+/**
+ * t('AutomatedAnalysisCard.CARD_TITLE')
+ * t('AutomatedAnalysisCard.CARD_DESCRIPTION')
+ * t('AutomatedAnalysisCard.CARD_DESCRIPTION_FULL')
+ * t('CHART_CARD.CARD_TITLE')
+ * t('CHART_CARD.CARD_DESCRIPTION')
+ * t('CHART_CARD.CARD_DESCRIPTION_FULL')
+ * t('CHART_CARD.PROP_CONTROLS.THEME.NAME')
+ * t('CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION')
+ * t('CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.NAME')
+ * t('CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.DESCRIPTION')
+ * t('CHART_CARD.PROP_CONTROLS.DATA_WINDOW.NAME')
+ * t('CHART_CARD.PROP_CONTROLS.DATA_WINDOW.DESCRIPTION')
+ * t('CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.NAME')
+ * t('CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.DESCRIPTION')
+ * t('NonePlaceholderCard.CARD_TITLE')
+ * t('NonePlaceholderCard.CARD_DESCRIPTION')
+ * t('NonePlaceholderCard.CARD_DESCRIPTION_FULL')
+ * t('AllPlaceholderCard.CARD_TITLE')
+ * t('AllPlaceholderCard.CARD_DESCRIPTION')
+ * t('AllPlaceholderCard.CARD_DESCRIPTION_FULL')
+ **/

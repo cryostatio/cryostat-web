@@ -37,6 +37,7 @@
  */
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -65,15 +66,15 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { concatMap, filter, first } from 'rxjs';
 interface AutomatedAnalysisConfigFormProps {
-  isSettingsForm: boolean;
+  useTitle?: boolean;
 }
 
-export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({ ...props }) => {
+export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({ useTitle = false }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [t] = useTranslation();
+  const { t } = useTranslation();
 
-  const parseEventString = (): [string | undefined, TemplateType | undefined] => {
+  const parseEventString = React.useMemo((): [string | undefined, TemplateType | undefined] => {
     const eventString = context.settings.automatedAnalysisRecordingConfig().template;
     if (!eventString) {
       return [undefined, undefined];
@@ -85,20 +86,22 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       return [undefined, undefined];
     }
     return [templateName, templateType];
-  };
+  }, [context.settings]);
   const [recordingConfig, setRecordingConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
     context.settings.automatedAnalysisRecordingConfig()
   );
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [templateName, setTemplateName] = React.useState<string | undefined>(parseEventString()[0]);
-  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(parseEventString()[1]);
+  const [templateName, setTemplateName] = React.useState<string | undefined>(parseEventString[0]);
+  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(parseEventString[1]);
   const [maxAge, setMaxAge] = React.useState(recordingConfig.maxAge);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
   const [maxSize, setMaxSize] = React.useState(recordingConfig.maxSize);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const refreshTemplates = React.useCallback(() => {
+    setIsLoading(true);
     addSubscription(
       context.target
         .target()
@@ -122,20 +125,26 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           },
         })
     );
-  }, [addSubscription, context.target, context.api, setErrorMessage, setTemplates]);
+  }, [addSubscription, context.target, context.api, setErrorMessage, setTemplates, setIsLoading]);
 
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
         setErrorMessage(authFailMessage);
         setTemplates([]);
+        setIsLoading(false);
       })
     );
-  }, [addSubscription, context.target, setErrorMessage, setTemplates]);
+  }, [addSubscription, context.target, setErrorMessage, setTemplates, setIsLoading]);
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refreshTemplates));
-  }, [addSubscription, context.target, refreshTemplates]);
+    addSubscription(
+      context.target.target().subscribe(() => {
+        refreshTemplates();
+        setIsLoading(false);
+      })
+    );
+  }, [addSubscription, context.target, refreshTemplates, setIsLoading]);
 
   const getEventString = React.useCallback((templateName: string, templateType: string) => {
     let str = '';
@@ -328,14 +337,17 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       />
     );
   }
+  if (isLoading) {
+    return <LoadingView />;
+  }
   return (
     <>
-      {props.isSettingsForm ? (
-        formContent
-      ) : (
+      {useTitle ? (
         <Form>
           <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
         </Form>
+      ) : (
+        formContent
       )}
     </>
   );
