@@ -114,7 +114,6 @@ const SimpleChart: React.FC<{
 
   return (
     <Chart
-      animate={true}
       containerComponent={
         <ChartVoronoiContainer
           labels={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
@@ -219,7 +218,6 @@ const chartKinds: MBeanMetricsChartKind[] = [
       }
       return (
         <ChartDonutUtilization
-          animate={true}
           constrainToVisibleArea
           data={{ x: 'Used heap memory', y: value }}
           title={`${value.toFixed(2)}%`}
