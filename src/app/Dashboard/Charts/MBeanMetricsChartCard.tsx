@@ -142,7 +142,7 @@ const SimpleChart: React.FC<{
 // TODO these need to be localized
 const chartKinds: MBeanMetricsChartKind[] = [
   {
-    displayName: 'Process Load Average',
+    displayName: 'Process CPU Load',
     category: 'os',
     fields: ['processCpuLoad'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'processCpuLoad', value: metrics?.os?.processCpuLoad || 0 }],
