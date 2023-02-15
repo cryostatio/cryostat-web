@@ -52,6 +52,7 @@ import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import { renderWithProvidersAndRedux } from '../../Common';
+import { MBeanMetricsChartController } from '@app/Dashboard/Charts/MBeanMetricsChartController';
 
 let history: MemoryHistory = createMemoryHistory({ initialEntries: ['/'] });
 jest.mock('react-router-dom', () => ({
@@ -66,14 +67,20 @@ jest.spyOn(defaultServices.api, 'grafanaDashboardUrl').mockReturnValue(of(mockDa
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
-const mockController = new JFRMetricsChartController(
+const mockJfrController = new JFRMetricsChartController(
   defaultServices.api,
   defaultServices.target,
   defaultServices.notificationChannel,
   defaultServices.settings
 );
+const mockMbeanController = new MBeanMetricsChartController(
+  defaultServices.api,
+  defaultServices.target,
+  defaultServices.settings
+);
 const mockChartContext = {
-  jfrController: mockController,
+  jfrController: mockJfrController,
+  mbeanController: mockMbeanController,
 };
 
 describe('<JFRMetricsChartCard />', () => {
@@ -81,7 +88,7 @@ describe('<JFRMetricsChartCard />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
-    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.READY));
+    jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.READY));
 
     let tree;
     await act(async () => {
@@ -108,7 +115,7 @@ describe('<JFRMetricsChartCard />', () => {
   });
 
   it('renders loading state correctly', async () => {
-    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.UNKNOWN));
+    jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.UNKNOWN));
 
     let tree;
     await act(async () => {
@@ -135,7 +142,7 @@ describe('<JFRMetricsChartCard />', () => {
   });
 
   it('renders empty state correctly', async () => {
-    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
+    jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     let tree;
     await act(async () => {
@@ -162,7 +169,7 @@ describe('<JFRMetricsChartCard />', () => {
   });
 
   it('renders empty state with information and action button', async () => {
-    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
+    jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     renderChartCard(
       <JFRMetricsChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
@@ -177,7 +184,7 @@ describe('<JFRMetricsChartCard />', () => {
   });
 
   it('navigates to recording creation with prefilled state when empty state button clicked', async () => {
-    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
+    jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.NO_DATA));
 
     const { user } = renderChartCard(
       <JFRMetricsChartCard theme={'light'} chartKind={'CPU Load'} duration={120} period={10} span={6} dashboardId={0} />
@@ -209,7 +216,7 @@ describe('<JFRMetricsChartCard />', () => {
     ['Network Utilization', 60, 15],
     ['File I/O', 30, 20],
   ])('renders iframe', async (chartKind: string, duration: number, period: number) => {
-    jest.spyOn(mockController, 'attach').mockReturnValue(of(ControllerState.READY));
+    jest.spyOn(mockJfrController, 'attach').mockReturnValue(of(ControllerState.READY));
 
     const { container } = renderChartCard(
       <JFRMetricsChartCard
