@@ -113,31 +113,29 @@ const SimpleChart: React.FC<{
   );
 
   return (
-    <div className="disabled-pointer">
-      <Chart
-        containerComponent={
-          <ChartVoronoiContainer
-            labels={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
-            constrainToVisibleArea
-          />
-        }
-        legendData={keys.length > 1 ? keys.map((k) => ({ name: k.name })) : []}
-        legendPosition={'bottom'}
-        themeColor={themeColor}
-      >
-        <ChartAxis tickValues={samples.map((v) => v.timestamp).map(dayjs)} fixLabelOverlap />
-        <ChartAxis dependentAxis showGrid label={units} />
-        <ChartGroup>
-          {keys.map((k) =>
-            render(
-              k,
-              data.filter((d) => d.name === k.name),
-              style
-            )
-          )}
-        </ChartGroup>
-      </Chart>
-    </div>
+    <Chart
+      containerComponent={
+        <ChartVoronoiContainer
+          labels={({ datum }) => `${dayjs(datum.x)}: ${datum.y} ${units || ''}`}
+          constrainToVisibleArea
+        />
+      }
+      legendData={keys.length > 1 ? keys.map((k) => ({ name: k.name })) : []}
+      legendPosition={'bottom'}
+      themeColor={themeColor}
+    >
+      <ChartAxis tickValues={samples.map((v) => v.timestamp).map(dayjs)} fixLabelOverlap />
+      <ChartAxis dependentAxis showGrid label={units} />
+      <ChartGroup>
+        {keys.map((k) =>
+          render(
+            k,
+            data.filter((d) => d.name === k.name),
+            style
+          )
+        )}
+      </ChartGroup>
+    </Chart>
   );
 };
 
@@ -346,7 +344,7 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const chartKind = React.useMemo(() => getChartKindByName(props.chartKind), [props.chartKind]);
 
   const visual = React.useMemo(
-    () => chartKind.visual(props.themeColor, samples),
+    () => <div className="disabled-pointer">{chartKind.visual(props.themeColor, samples)}</div>,
     [props.themeColor, chartKind, samples]
   );
 
