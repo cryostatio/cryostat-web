@@ -32,13 +32,15 @@
     "ERROR_TEXT": "Cryostat was unable to generate an automated analysis report.",
     "ERROR_TITLE": "Automated Analysis Error",
     "GOOD_RESULTS": "No problems",
-    "NAME": "Name",
     "NO_RESULTS": "No Results Found",
     "NO_RESULTS_BODY": "No results match this filter criteria. Try removing filters, or resetting the severity score filter to 0 to show results",
     "RETRY_LOADING": "Retry loading report",
     "RETRY_STARTING": "Retry starting recording",
-    "SCORE": "Score",
-    "STALE_REPORT_TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from",
+    "STALE_REPORT": {
+      "TEXT_one": "Most recent data from {{ count }} {{ units }} ago.",
+      "TEXT_other": "Most recent data from {{ count }} {{ units }}s ago.",
+      "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from"
+    },
     "SWITCH_LABEL_LIST_VIEW": "Toggle list view",
     "WARNING_RESULTS_one": "{{count}} Warning Result",
     "WARNING_RESULTS_other": "{{count}} Warning Results"

@@ -115,18 +115,6 @@ import {
   Spinner2Icon,
   TrashIcon,
 } from '@patternfly/react-icons';
-import { css } from '@patternfly/react-styles';
-import {
-  InnerScrollContainer,
-  OuterScrollContainer,
-  TableComposable,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  ThProps,
-  Tr,
-} from '@patternfly/react-table';
 import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -134,6 +122,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
+import { AutomatedAnalysisCardList } from './AutomatedAnalysisCardList';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 import {
@@ -171,8 +160,6 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
   const [report, setReport] = React.useState<string>('automated-analysis');
   const [showListView, setShowListView] = React.useState<boolean>(false);
-  const [activeSortIndex, setActiveSortIndex] = React.useState<number | undefined>(undefined);
-  const [activeSortDirection, setActiveSortDirection] = React.useState<'asc' | 'desc' | undefined>(undefined);
 
   const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.state.targetFilters.filter(
@@ -594,41 +581,6 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     dispatch(automatedAnalysisDeleteAllFiltersIntent(targetConnectURL));
   }, [dispatch, targetConnectURL]);
 
-  const icon = React.useCallback((score: number): JSX.Element => {
-    return score == AutomatedAnalysisScore.NA_SCORE ? (
-      <span className={css('pf-m-grey', 'pf-c-label__icon')}>
-        <InfoCircleIcon />
-      </span>
-    ) : score < AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD ? (
-      <span className={css('pf-m-green', 'pf-c-label__icon')}>
-        <CheckCircleIcon />
-      </span>
-    ) : score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD ? (
-      <span className={css('pf-m-orange', 'pf-c-label__icon')}>
-        <ExclamationTriangleIcon />
-      </span>
-    ) : (
-      <span className={css('pf-m-red', 'pf-c-label__icon')}>
-        <ExclamationCircleIcon />
-      </span>
-    );
-  }, []);
-
-  const getSortParams = React.useCallback(
-    (columnIndex: number): ThProps['sort'] => ({
-      sortBy: {
-        index: activeSortIndex,
-        direction: activeSortDirection,
-      },
-      onSort: (_event, index, direction) => {
-        setActiveSortIndex(index);
-        setActiveSortDirection(direction);
-      },
-      columnIndex,
-    }),
-    [setActiveSortIndex, setActiveSortDirection, activeSortIndex, activeSortDirection]
-  );
-
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
       return undefined;
@@ -636,11 +588,13 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     return (
       <TextContent>
         <Text className="stale-report-text" component={TextVariants.p}>
-          {`Most recent data from ${reportStalenessTimer} ${reportStalenessTimerUnits}${
-            reportStalenessTimer > 1 ? 's' : ''
-          } ago.`}
-          &nbsp;
-          <Tooltip content={t('AutomatedAnalysisCard.STALE_REPORT_TOOLTIP')}>
+          <span style={{ marginRight: '0.3rem' }}>
+            {t('AutomatedAnalysisCard.STALE_REPORT.TEXT', {
+              count: reportStalenessTimer,
+              units: reportStalenessTimerUnits,
+            })}
+          </span>
+          <Tooltip content={t('AutomatedAnalysisCard.STALE_REPORT.TOOLTIP')}>
             <OutlinedQuestionCircleIcon
               style={{ height: '0.85em', width: '0.85em', color: 'var(--pf-global--Color--100)' }}
             />
@@ -669,73 +623,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       );
     }
     if (showListView) {
-      const flatFiltered = filtered
-        .flatMap(([_, evaluations]) => {
-          return evaluations.map((evaluation) => evaluation);
-        })
-        .sort((a, b) => {
-          const aValue = activeSortIndex === 0 ? a.name : a.score;
-          const bValue = activeSortIndex === 0 ? b.name : b.score;
-          if (typeof aValue === 'string' && typeof bValue === 'string') {
-            if (activeSortDirection === 'asc') {
-              return aValue.localeCompare(bValue);
-            }
-            return bValue.localeCompare(aValue);
-          }
-          if (typeof aValue === 'number' && typeof bValue === 'number') {
-            if (activeSortDirection === 'asc') {
-              if (aValue === bValue) {
-                return a.name.localeCompare(b.name);
-              }
-              return aValue - bValue;
-            } else {
-              if (aValue === bValue) {
-                return b.name.localeCompare(a.name);
-              }
-              return bValue - aValue;
-            }
-          }
-          return 0;
-        });
-      return (
-        <OuterScrollContainer>
-          <InnerScrollContainer className="automated-analysis-data-list-scroll">
-            <TableComposable aria-label={'automated-analysis-data-list'} gridBreakPoint={'grid-md'} isStickyHeader>
-              <Thead>
-                <Tr>
-                  <Th sort={getSortParams(0)}>{t('AutomatedAnalysisCard.NAME')}</Th>
-                  <Th modifier="wrap" sort={getSortParams(1)}>
-                    {t('AutomatedAnalysisCard.SCORE')}
-                  </Th>
-                  <Th modifier="wrap">{t('DESCRIPTION', { ns: 'common' })}</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {flatFiltered.map((evaluation) => {
-                  return (
-                    <Tr key={evaluation.name}>
-                      <Td dataLabel={t('NAME', { ns: 'common' })} width={20}>
-                        {evaluation.name}
-                      </Td>
-                      <Td dataLabel={t('SCORE', { ns: 'common' })} modifier="wrap">
-                        <Flex spaceItems={{ default: 'spaceItemsSm' }}>
-                          <FlexItem>
-                            {evaluation.score == AutomatedAnalysisScore.NA_SCORE
-                              ? t('N/A', { ns: 'common' })
-                              : evaluation.score.toFixed(1)}
-                          </FlexItem>
-                          <FlexItem>{icon(evaluation.score)}</FlexItem>
-                        </Flex>
-                      </Td>
-                      <Td dataLabel={t('DESCRIPTION', { ns: 'common' })}>{evaluation.description}</Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </TableComposable>
-          </InnerScrollContainer>
-        </OuterScrollContainer>
-      );
+      return <AutomatedAnalysisCardList evaluations={filtered} />;
     }
     return (
       <Grid>
@@ -759,16 +647,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         })}
       </Grid>
     );
-  }, [
-    t,
-    handleClearFilters,
-    getSortParams,
-    icon,
-    activeSortIndex,
-    activeSortDirection,
-    filteredCategorizedEvaluation,
-    showListView,
-  ]);
+  }, [t, handleClearFilters, filteredCategorizedEvaluation, showListView]);
 
   const toolbar = React.useMemo(() => {
     return (

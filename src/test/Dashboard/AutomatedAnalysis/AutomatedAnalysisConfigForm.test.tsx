@@ -80,7 +80,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
   });
 
   it('renders default view correctly', async () => {
-    renderWithServiceContext(<AutomatedAnalysisConfigForm isSettingsForm={false} />);
+    renderWithServiceContext(<AutomatedAnalysisConfigForm useTitle />);
 
     expect(screen.getByText(/profiling recording configuration/i)).toBeInTheDocument(); // Form title
 
@@ -95,7 +95,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
   });
 
   it('renders settings view correctly', async () => {
-    renderWithServiceContext(<AutomatedAnalysisConfigForm isSettingsForm={true} />);
+    renderWithServiceContext(<AutomatedAnalysisConfigForm />);
 
     expect(screen.queryByText(/profiling recording configuration/i)).not.toBeInTheDocument(); // Form title
 
@@ -111,7 +111,7 @@ describe('<AutomatedAnalysisConfigForm />', () => {
 
   it('saves configuration', async () => {
     const setConfigRequestSpy = jest.spyOn(defaultServices.settings, 'setAutomatedAnalysisRecordingConfig');
-    const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm isSettingsForm={false} />);
+    const { user } = renderWithServiceContext(<AutomatedAnalysisConfigForm />);
 
     const templateSelect = screen.getByRole('combobox', {
       name: /event template input/i,

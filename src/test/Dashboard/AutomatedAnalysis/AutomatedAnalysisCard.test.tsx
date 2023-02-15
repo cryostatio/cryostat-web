@@ -59,7 +59,7 @@ import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContextAndReduxStore } from '../../Common';
+import { renderWithServiceContextAndReduxStore, testTranslate } from '../../Common';
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 
@@ -215,7 +215,7 @@ describe('<AutomatedAnalysisCard />', () => {
   it('renders report generation error view correctly', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of());
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
 
@@ -232,7 +232,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyArchivedRecordingsResponse));
 
     jest.spyOn(defaultServices.api, 'createRecording').mockReturnValueOnce(of());
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
 
@@ -267,7 +267,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
 
@@ -317,7 +317,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockArchivedRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
 
@@ -380,7 +380,7 @@ describe('<AutomatedAnalysisCard />', () => {
       },
     };
 
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: newPreloadedState,
     });
 
@@ -426,7 +426,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} />, {
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState, // Filter score default = 100
     });
 

@@ -69,11 +69,4 @@ describe('<AutomatedAnalysisConfig/>', () => {
     });
     expect(tree.toJSON()).toMatchSnapshot();
   });
-
-  it('should display current configurations', async () => {
-    renderWithServiceContext(React.createElement(AutomatedAnalysisConfig.content, null));
-    const template = screen.getByText('Current configuration');
-    expect(template).toBeInTheDocument();
-    expect(template).toBeVisible();
-  });
 });

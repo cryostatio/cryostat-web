@@ -74,13 +74,13 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
   afterEach(cleanup);
 
   it('displays label', async () => {
-    renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation1} isSelected={false} />);
+    renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation1} />);
 
     expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
   });
 
   it('displays popover when critical label is clicked', async () => {
-    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation1} isSelected={true} />);
+    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation1} />);
 
     expect(screen.getByText(mockRuleEvaluation1.name)).toBeInTheDocument();
 
@@ -108,7 +108,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
   });
 
   it('displays popover when warning label is clicked', async () => {
-    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation2} isSelected={true} />);
+    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation2} />);
 
     expect(screen.getByText(mockRuleEvaluation2.name)).toBeInTheDocument();
 
@@ -136,7 +136,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
   });
 
   it('displays popover when ok label is clicked', async () => {
-    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation3} isSelected={true} />);
+    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockRuleEvaluation3} />);
 
     expect(screen.getByText(mockRuleEvaluation3.name)).toBeInTheDocument();
 
@@ -164,7 +164,7 @@ describe('<ClickableAutomatedAnalysisLabel />', () => {
   });
 
   it('displays popover when N/A label is clicked', async () => {
-    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockNaRuleEvaluation} isSelected={true} />);
+    const { user } = renderDefault(<ClickableAutomatedAnalysisLabel label={mockNaRuleEvaluation} />);
 
     expect(screen.getByText(mockNaRuleEvaluation.name)).toBeInTheDocument();
 

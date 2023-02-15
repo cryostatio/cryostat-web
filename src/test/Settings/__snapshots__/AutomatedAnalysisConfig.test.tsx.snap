@@ -9,18 +9,6 @@ exports[`<AutomatedAnalysisConfig/> renders correctly 1`] = `
   >
     Target Select
   </div>
-  <div
-    className="pf-l-stack__item"
-  >
-    <h3
-      className="pf-c-title pf-m-md"
-      data-ouia-component-id="OUIA-Generated-Title-1"
-      data-ouia-component-type="PF4/Title"
-      data-ouia-safe={true}
-    >
-      Current configuration
-    </h3>
-  </div>
   Automated Analysis Configuration Form
 </div>
 `;
