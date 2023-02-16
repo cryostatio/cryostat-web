@@ -152,11 +152,17 @@ export class MBeanMetricsChartController {
 
   private _queryMetrics(target: Target): Observable<MBeanMetrics> {
     const q: string[] = [];
+    const m = new Map<string, Set<string>>();
     this._metrics.forEach((fields, category) => {
-      // TODO deduplicate this constructed query
-      fields.forEach((field) => {
-        q.push(`${category} { ${field} }`);
-      });
+      const s = m.get(category) || new Set<string>();
+      fields.forEach(f => s.add(f));
+      m.set(category, s);
+    });
+    m.forEach((s, k) => {
+      let l = `${k} {`;
+      s.forEach(f => l+=`\t${f}\n`);
+      l += '}'
+      q.push(l);
     });
     return this._api
       .graphql<MBeanMetricsResponse>(
