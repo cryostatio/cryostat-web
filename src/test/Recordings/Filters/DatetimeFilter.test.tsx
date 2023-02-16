@@ -43,7 +43,7 @@ import { defaultDatetimeFormat } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import React from 'react';
 import { of } from 'rxjs';
-import { renderDefault, testTranslate } from '../../Common';
+import { renderDefault, testT } from '../../Common';
 
 jest.mock('@app/DateTimePicker/DateTimePicker', () => ({
   DateTimePicker: (_: DateTimePickerProps) => <>DateTimePicker</>,
@@ -64,7 +64,7 @@ describe('<DatetimeFilter/>', () => {
     const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
     const calendarIcon = screen.getByRole('button', {
-      name: testTranslate('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR'),
+      name: testT('DatetimeFilter.ARIA_LABELS.TOGGLE_CALENDAR'),
     });
     expect(calendarIcon).toBeInTheDocument();
     expect(calendarIcon).toBeVisible();
@@ -91,7 +91,7 @@ describe('<DatetimeFilter/>', () => {
   it('should disable search icon when no date is entered', async () => {
     renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
-    const searchIcon = screen.getByRole('button', { name: testTranslate('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
+    const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
     expect(searchIcon).toBeVisible();
     expect(searchIcon).toBeDisabled();
@@ -100,7 +100,7 @@ describe('<DatetimeFilter/>', () => {
   it('should enable search icon when a valid date is entered', async () => {
     const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
-    const dateInput = screen.getByLabelText(testTranslate('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
+    const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
     expect(dateInput).toBeInTheDocument();
     expect(dateInput).toBeVisible();
 
@@ -108,7 +108,7 @@ describe('<DatetimeFilter/>', () => {
       await user.type(dateInput, '2023-01-24T16:06:41.945Z');
     });
 
-    const searchIcon = screen.getByRole('button', { name: testTranslate('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
+    const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
     expect(searchIcon).toBeVisible();
     expect(searchIcon).not.toBeDisabled();
@@ -117,7 +117,7 @@ describe('<DatetimeFilter/>', () => {
   it('should show error when an invalid date is entered', async () => {
     const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
-    const dateInput = screen.getByLabelText(testTranslate('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
+    const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
     expect(dateInput).toBeInTheDocument();
     expect(dateInput).toBeVisible();
 
@@ -125,12 +125,12 @@ describe('<DatetimeFilter/>', () => {
       await user.type(dateInput, '001/13/2023 25:13:60');
     });
 
-    const searchIcon = screen.getByRole('button', { name: testTranslate('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
+    const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
     expect(searchIcon).toBeVisible();
     expect(searchIcon).toBeDisabled();
 
-    const errorMessage = await screen.findByText(testTranslate('DatetimeFilter.INVALID_DATE_TEXT'));
+    const errorMessage = await screen.findByText(testT('DatetimeFilter.INVALID_DATE_TEXT'));
     expect(errorMessage).toBeInTheDocument();
     expect(errorMessage).toBeVisible();
   });
@@ -138,7 +138,7 @@ describe('<DatetimeFilter/>', () => {
   it('should update date time when date is entered and search icon is clicked', async () => {
     const { user } = renderDefault(<DateTimeFilter onSubmit={onDateTimeSelect} />);
 
-    const dateInput = screen.getByLabelText(testTranslate('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
+    const dateInput = screen.getByLabelText(testT('DatetimeFilter.ARIA_LABELS.DATETIME_INPUT'));
     expect(dateInput).toBeInTheDocument();
     expect(dateInput).toBeVisible();
 
@@ -146,7 +146,7 @@ describe('<DatetimeFilter/>', () => {
       await user.type(dateInput, '2023-01-24T16:06:41.945Z');
     });
 
-    const searchIcon = screen.getByRole('button', { name: testTranslate('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
+    const searchIcon = screen.getByRole('button', { name: testT('DatetimeFilter.ARIA_LABELS.SEARCH_BUTTON') });
     expect(searchIcon).toBeInTheDocument();
     expect(searchIcon).toBeVisible();
     expect(searchIcon).not.toBeDisabled();

@@ -18,15 +18,9 @@
     "CARD_TITLE": "All Placeholder"
   },
   "AutomatedAnalysisCard": {
-    "ARIA_LABELS": {
-      "DELETE_AA": "Delete automated analysis",
-      "REFRESH_AA": "Refresh automated analysis",
-      "TOOLBAR": "Automated Analysis Toolbar"
-    },
     "CARD_DESCRIPTION": "Assess common application performance and configuration issues",
     "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard",
     "CARD_TITLE": "Automated Analysis",
-    "CHECKBOX_LABEL_SHOW_NA_SCORES": "Show N/A scores",
     "CRITICAL_RESULTS_one": "{{count}} Critical Result",
     "CRITICAL_RESULTS_other": "{{count}} Critical Results",
     "ERROR_TEXT": "Cryostat was unable to generate an automated analysis report.",
@@ -41,7 +35,25 @@
       "TEXT_other": "Most recent data from {{ count }} {{ units }}s ago.",
       "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from"
     },
-    "SWITCH_LABEL_LIST_VIEW": "Toggle list view",
+    "TOOLBAR": {
+      "CHECKBOX": {
+        "SHOW_NA": {
+          "LABEL": "Show N/A scores"
+        }
+      },
+      "DELETE": {
+        "LABEL": "Delete automated analysis"
+      },
+      "LABEL": "Automated Analysis Toolbar",
+      "REFRESH": {
+        "LABEL": "Refresh automated analysis"
+      },
+      "SWITCH": {
+        "LIST_VIEW": {
+          "LABEL": "Toggle list view"
+        }
+      }
+    },
     "WARNING_RESULTS_one": "{{count}} Warning Result",
     "WARNING_RESULTS_other": "{{count}} Warning Results"
   },

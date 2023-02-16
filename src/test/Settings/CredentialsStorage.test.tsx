@@ -40,7 +40,7 @@ import { CredentialsStorage, Locations } from '@app/Settings/CredentialsStorage'
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import * as React from 'react';
-import { renderDefault, testTranslate } from '../Common';
+import { renderDefault, testT } from '../Common';
 
 jest.mock('@app/utils/LocalStorage', () => {
   const map = new Map<any, any>();
@@ -70,8 +70,8 @@ describe('<CredentialsStorage/>', () => {
     expect(saveToLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).lastCalledWith(storageKey, Locations.BACKEND.key);
 
-    expect(screen.getByText(testTranslate(Locations.BACKEND.titleKey))).toBeVisible();
-    expect(screen.queryByText(testTranslate(Locations.BROWSER_SESSION.titleKey))).toBeFalsy();
+    expect(screen.getByText(testT(Locations.BACKEND.titleKey))).toBeVisible();
+    expect(screen.queryByText(testT(Locations.BROWSER_SESSION.titleKey))).toBeFalsy();
   });
 
   it.skip('sets value to local storage when dropdown is clicked', async () => {
@@ -85,14 +85,14 @@ describe('<CredentialsStorage/>', () => {
 
     // the default is Backend storage. Click the dropdown and select Session (Browser Memory) to change selection
     const ul = await screen.findByRole('listbox');
-    const browserSession = within(ul).getByText(testTranslate(Locations.BROWSER_SESSION.titleKey));
+    const browserSession = within(ul).getByText(testT(Locations.BROWSER_SESSION.titleKey));
     await user.click(browserSession);
 
     await waitFor(() => expect(ul).not.toBeVisible()); // expect selection menu to close after user clicks an option
 
     // expect the selection to be visible, the other not
-    expect(screen.getByText(testTranslate(Locations.BROWSER_SESSION.titleKey))).toBeVisible();
-    expect(screen.queryByText(testTranslate(Locations.BACKEND.titleKey))).toBeFalsy();
+    expect(screen.getByText(testT(Locations.BROWSER_SESSION.titleKey))).toBeVisible();
+    expect(screen.queryByText(testT(Locations.BACKEND.titleKey))).toBeFalsy();
 
     expect(getFromLocalStorage).toHaveBeenCalledTimes(1);
     expect(saveToLocalStorage).toHaveBeenCalledTimes(2);

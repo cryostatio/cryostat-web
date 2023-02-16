@@ -41,7 +41,7 @@ import i18next, { i18nLanguages } from '@i18n/config';
 import { localeReadable } from '@i18n/i18nextUtil';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
-import { renderDefault, testTranslate } from '../Common';
+import { renderDefault, testT } from '../Common';
 
 describe('<Language/>', () => {
   let detectedLanguage: string;
@@ -87,7 +87,7 @@ describe('<Language/>', () => {
       await user.click(optionMenu);
     });
 
-    const ul = screen.getByLabelText(testTranslate('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT'));
+    const ul = screen.getByLabelText(testT('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT'));
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 
@@ -110,7 +110,7 @@ describe('<Language/>', () => {
       await user.click(optionMenu);
     });
 
-    const ul = screen.getByLabelText(testTranslate('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT'));
+    const ul = screen.getByLabelText(testT('SETTINGS.LANGUAGE.ARIA_LABELS.SELECT'));
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 

@@ -42,7 +42,7 @@ import '@testing-library/jest-dom';
 import * as React from 'react';
 import { I18nextProvider } from 'react-i18next';
 import renderer, { act } from 'react-test-renderer';
-import { renderDefault, testTranslate } from '../Common';
+import { renderDefault, testT } from '../Common';
 jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
   return {
     BreadcrumbPage: jest.fn((props) => {
@@ -88,6 +88,6 @@ describe('<About />', () => {
     expect(logo).toHaveClass('pf-c-brand cryostat-logo');
     expect(logo).toHaveAttribute('alt', 'Cryostat');
     expect(logo).toHaveAttribute('src', 'test-file-stub');
-    expect(screen.getByText(testTranslate('CRYOSTAT_TRADEMARK', 'common'))).toBeInTheDocument();
+    expect(screen.getByText(testT('CRYOSTAT_TRADEMARK', 'common'))).toBeInTheDocument();
   });
 });

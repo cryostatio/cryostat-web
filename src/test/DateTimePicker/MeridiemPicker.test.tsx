@@ -40,7 +40,7 @@ import { MeridiemPicker } from '@app/DateTimePicker/MeridiemPicker';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { renderDefault, testTranslate } from '../Common';
+import { renderDefault, testT } from '../Common';
 
 const onSelect = jest.fn((_: boolean) => undefined);
 
@@ -62,7 +62,7 @@ describe('<MeridiemPicker/>', () => {
   it('should select a meridiem when click', async () => {
     const { user } = renderDefault(<MeridiemPicker onSelect={onSelect} />);
 
-    const pm = screen.getByText(testTranslate('MERIDIEM_PM', 'common'));
+    const pm = screen.getByText(testT('MERIDIEM_PM', 'common'));
     expect(pm).toBeInTheDocument();
     expect(pm).toBeVisible();
 

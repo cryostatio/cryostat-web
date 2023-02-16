@@ -59,7 +59,7 @@ import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContextAndReduxStore } from '../../Common';
+import { renderWithServiceContextAndReduxStore, testT } from '../../Common';
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 
@@ -219,11 +219,11 @@ describe('<AutomatedAnalysisCard />', () => {
       preloadState: preloadedState,
     });
 
-    expect(screen.getByText('Automated Analysis Error')).toBeInTheDocument(); // Error view
+    expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
     expect(screen.getByText(FAILED_REPORT_MESSAGE)).toBeInTheDocument(); // Error message
-    expect(screen.getByText('Cryostat was unable to generate an automated analysis report.')).toBeInTheDocument(); // Error details
-    expect(screen.getByRole('button', { name: /retry loading report/i })).toBeInTheDocument(); // Retry button
-    expect(screen.queryByLabelText('Automated Analysis Toolbar')).not.toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TEXT'))).toBeInTheDocument(); // Error details
+    expect(screen.getByRole('button', { name: testT('AutomatedAnalysisCard.RETRY_LOADING') })).toBeInTheDocument(); // Retry button
+    expect(screen.queryByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).not.toBeInTheDocument(); // Toolbar
   });
 
   it('renders empty recordings error view and creates recording when clicked', async () => {
@@ -238,12 +238,14 @@ describe('<AutomatedAnalysisCard />', () => {
 
     const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
 
-    expect(screen.getByText('Automated Analysis Error')).toBeInTheDocument(); // Error view
+    expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
     expect(screen.getByText(NO_RECORDINGS_MESSAGE)).toBeInTheDocument(); // Error message
-    expect(screen.getByText('Cryostat was unable to generate an automated analysis report.')).toBeInTheDocument(); // Error details
-    expect(screen.queryByLabelText('Automated Analysis Toolbar')).not.toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TEXT'))).toBeInTheDocument(); // Error details
+    expect(screen.queryByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).not.toBeInTheDocument(); // Toolbar
 
-    await user.click(screen.getByRole('button', { name: /create recording/i }));
+    await user.click(
+      screen.getByRole('button', { name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL') })
+    );
 
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(requestSpy).toBeCalledWith(
@@ -259,35 +261,35 @@ describe('<AutomatedAnalysisCard />', () => {
       preloadState: preloadedState,
     });
 
-    expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
+    expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
-      name: /refresh automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
     });
     expect(refreshButton).toBeInTheDocument();
     expect(refreshButton).not.toBeDisabled();
     const deleteButton = screen.getByRole('button', {
       // Delete button
-      name: /delete automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL'),
     });
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
-    expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('Automated Analysis Toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL'))).toBeInTheDocument();
+    expect(screen.getByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Active report name=${mockRecording.name}`)).toBeInTheDocument(); // Active report name
     expect(screen.queryByText('Most recent data')).not.toBeInTheDocument(); // Last updated text
 
     expect(
       screen.queryByRole('button', {
-        name: /create recording/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
       })
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', {
-        name: /open settings/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
       })
     ).not.toBeInTheDocument();
 
@@ -309,35 +311,37 @@ describe('<AutomatedAnalysisCard />', () => {
       preloadState: preloadedState,
     });
 
-    expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
+    expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
-      name: /refresh automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
     });
     expect(refreshButton).toBeInTheDocument();
     expect(refreshButton).toBeDisabled();
     const deleteButton = screen.getByRole('button', {
       // Delete button
-      name: /delete automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL'),
     });
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
-    expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('Automated Analysis Toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL'))).toBeInTheDocument();
+    expect(screen.getByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Archived report name=${mockArchivedRecording.name}`)).toBeInTheDocument(); // Archived report name
-    expect(screen.getByText('Most recent data from 1 day ago.')).toBeInTheDocument(); // Last updated text
+    expect(
+      screen.getByText(testT('AutomatedAnalysisCard.STALE_REPORT.TEXT', { count: 1, units: 'day' }))
+    ).toBeInTheDocument(); // Last updated text
 
     expect(
       screen.getByRole('button', {
-        name: /create recording/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
-        name: /open settings/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
       })
     ).toBeInTheDocument();
 
@@ -372,35 +376,35 @@ describe('<AutomatedAnalysisCard />', () => {
       preloadState: newPreloadedState,
     });
 
-    expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
+    expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
-      name: /refresh automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
     });
     expect(refreshButton).toBeInTheDocument();
     expect(refreshButton).toBeDisabled();
     const deleteButton = screen.getByRole('button', {
       // Delete button
-      name: /delete automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL'),
     });
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
-    expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('Automated Analysis Toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL'))).toBeInTheDocument();
+    expect(screen.getByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Cached report name=${automatedAnalysisRecordingName}`)).toBeInTheDocument(); // Cached report name
     expect(screen.getByText('Most recent data from 2 days ago.')).toBeInTheDocument(); // Last updated text
 
     expect(
       screen.getByRole('button', {
-        name: /create recording/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
-        name: /open settings/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
       })
     ).toBeInTheDocument();
 
@@ -424,7 +428,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.queryByText(mockNaRuleEvaluation.name)).not.toBeInTheDocument(); // Score: -1
 
     const showNAScores = screen.getByRole('checkbox', {
-      name: /show n\/a scores/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL'),
     });
 
     await user.click(showNAScores);

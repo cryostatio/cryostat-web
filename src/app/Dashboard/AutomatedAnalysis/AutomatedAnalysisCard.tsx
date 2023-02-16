@@ -651,9 +651,9 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     return (
       <Toolbar
         id="automated-analysis-toolbar"
-        aria-label={t('AutomatedAnalysisCard.ARIA_LABELS.TOOLBAR')}
+        aria-label={t('AutomatedAnalysisCard.TOOLBAR.LABEL')}
         clearAllFilters={handleClearFilters}
-        clearFiltersButtonText="Clear all filters"
+        clearFiltersButtonText={t('CLEAR_FILTERS', { ns: 'common' })}
         isFullHeight
       >
         <ToolbarContent>
@@ -663,13 +663,13 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             filters={targetAutomatedAnalysisFilters}
             updateFilters={updateFilters}
           />
-          <ToolbarGroup>
+          <ToolbarGroup style={{ margin: '0.5em 0 0.5em 0' }}>
             <ToolbarItem>
               <Button
                 isSmall
                 isDisabled={isLoading || usingCachedReport || usingArchivedReport}
                 isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
-                aria-label={t('AutomatedAnalysisCard.ARIA_LABELS.REFRESH_AA')}
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL')}
                 onClick={generateReport}
                 variant="control"
                 icon={<Spinner2Icon />}
@@ -678,7 +678,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
                 isSmall
                 isDisabled={isLoading}
                 isAriaDisabled={isLoading}
-                aria-label={t('AutomatedAnalysisCard.ARIA_LABELS.DELETE_AA')}
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL')}
                 onClick={clearAnalysis}
                 variant="control"
                 icon={<TrashIcon />}
@@ -686,7 +686,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             </ToolbarItem>
             <ToolbarItem>
               <Checkbox
-                label={t('AutomatedAnalysisCard.CHECKBOX_LABEL_SHOW_NA_SCORES')}
+                label={t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
                 isChecked={showNAScores}
                 onChange={handleNAScoreChange}
                 id="show-na-scores"
@@ -695,7 +695,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             </ToolbarItem>
             <ToolbarItem>
               <Switch
-                label={t('AutomatedAnalysisCard.SWITCH_LABEL_LIST_VIEW')}
+                label={t('AutomatedAnalysisCard.TOOLBAR.SWITCH.LIST_VIEW.LABEL')}
                 isChecked={showListView}
                 onChange={setShowListView}
                 id="show-list-view"

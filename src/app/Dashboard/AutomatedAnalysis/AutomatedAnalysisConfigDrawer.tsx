@@ -55,7 +55,7 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { CogIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { CogIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
@@ -74,7 +74,6 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-
   const { t } = useTranslation();
 
   const [isExpanded, setIsExpanded] = React.useState(false);
@@ -117,8 +116,8 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
   }, [drawerRef]);
 
   const onCogSelect = React.useCallback(() => {
-    setIsExpanded(!isExpanded);
-  }, [setIsExpanded, isExpanded]);
+    setIsExpanded((old) => !old);
+  }, [setIsExpanded]);
 
   const onDrawerClose = React.useCallback(() => {
     setIsExpanded(false);
@@ -152,10 +151,8 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
           />
           <Button
             aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
-            variant="primary"
+            variant="control"
             onClick={onDefaultRecordingStart}
-            icon={<PlusCircleIcon />}
-            iconPosition={'right'}
           >
             <span style={{ marginRight: '0.2em' }}>
               {t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}

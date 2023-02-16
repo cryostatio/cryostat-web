@@ -341,14 +341,12 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     return <LoadingView />;
   }
   return (
-    <>
+    <Form>
       {useTitle ? (
-        <Form>
-          <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
-        </Form>
+        <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
       ) : (
         formContent
       )}
-    </>
+    </Form>
   );
 };

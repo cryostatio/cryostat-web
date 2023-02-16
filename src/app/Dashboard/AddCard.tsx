@@ -171,6 +171,18 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
     [selection]
   );
 
+  const getFullDescription = React.useCallback(
+    (selection: string) => {
+      const config = getConfigByTitle(selection, t).descriptionFull;
+      if (typeof config === 'string') {
+        return t(config);
+      } else {
+        return config;
+      }
+    },
+    [t]
+  );
+
   return (
     <>
       <Card isRounded isLarge>
@@ -196,7 +208,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
                   </Select>
                   <Text>
                     {selection
-                      ? t(getConfigByTitle(selection, t).descriptionFull as string)
+                      ? getFullDescription(selection)
                       : 'Choose a card type to add to your dashboard. Some cards require additional configuration.'}
                   </Text>
                 </FormGroup>

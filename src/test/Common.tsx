@@ -42,7 +42,7 @@ import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
-import { t } from 'i18next';
+import { t, TOptions } from 'i18next';
 import React, { PropsWithChildren } from 'react';
 import '@i18n/config';
 import { Provider } from 'react-redux';
@@ -223,9 +223,13 @@ export interface ProviderInstance<T> {
   instance: T;
 }
 
-export const testTranslate = (key: string, ns = 'public'): string => {
-  // if no translation is found, return the "test value" for debugging
-  return t(key, 'i18next test value', { ns: ns });
+// export const testTranslate = (key: string, ns = 'public', ...options): string => {
+//   // if no translation is found, return the "test value" for debugging
+//   return t(key, 'i18next test value', { ns: ns, ...options });
+// };
+
+export const testT = (key: string, options?: TOptions) => {
+  return t(key, 'i18next test value', options);
 };
 
 // Default jsdom size 1024x728
