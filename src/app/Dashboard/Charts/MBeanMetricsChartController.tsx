@@ -118,7 +118,7 @@ export class MBeanMetricsChartController {
   }
 
   loading(): Observable<boolean> {
-    return this._loading$.asObservable();
+    return this._loading$.asObservable().pipe(distinctUntilChanged());
   }
 
   _tearDown() {
