@@ -132,7 +132,7 @@ export const AutomatedAnalysisCardList: React.FC<AutomatedAnalysisCardListProps>
   }, [sortBy, props.evaluations]);
 
   return (
-    <OuterScrollContainer className='automated-analysis-datalist-outerscroll'>
+    <OuterScrollContainer className="automated-analysis-datalist-outerscroll">
       <InnerScrollContainer className="automated-analysis-datalist-innerscroll">
         <TableComposable aria-label={'Automated Analysis Data List'} gridBreakPoint={'grid-md'} isStickyHeader>
           <Thead>

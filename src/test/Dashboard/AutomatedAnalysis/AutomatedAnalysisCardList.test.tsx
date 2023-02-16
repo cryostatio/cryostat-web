@@ -46,41 +46,41 @@ import renderer, { act } from 'react-test-renderer';
 import '../../Common';
 
 const mockRuleEvaluation1: RuleEvaluation = {
-    name: 'rule1',
-    description: 'rule1 description',
-    score: 100,
-    topic: 'myTopic',
-  };
-  
-  const mockRuleEvaluation2: RuleEvaluation = {
-    name: 'rule2',
-    description: 'rule2 description',
-    score: 0,
-    topic: 'fakeTopic',
-  };
-  
-  const mockRuleEvaluation3: RuleEvaluation = {
-    name: 'rule3',
-    description: 'rule3 description',
-    score: 55,
-    topic: 'fakeTopic',
-  };
-  
-  const mockNaRuleEvaluation: RuleEvaluation = {
-    name: 'N/A rule',
-    description: 'N/A description',
-    score: -1,
-    topic: 'fakeTopic',
-  };
-  
-  const mockEvaluations1: RuleEvaluation[] = [mockRuleEvaluation1];
-  
-  const mockEvaluations2: RuleEvaluation[] = [mockRuleEvaluation2, mockRuleEvaluation3, mockNaRuleEvaluation];
-  
-  const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
-    [mockRuleEvaluation1.topic, mockEvaluations1],
-    [mockRuleEvaluation2.topic, mockEvaluations2],
-  ];
+  name: 'rule1',
+  description: 'rule1 description',
+  score: 100,
+  topic: 'myTopic',
+};
+
+const mockRuleEvaluation2: RuleEvaluation = {
+  name: 'rule2',
+  description: 'rule2 description',
+  score: 0,
+  topic: 'fakeTopic',
+};
+
+const mockRuleEvaluation3: RuleEvaluation = {
+  name: 'rule3',
+  description: 'rule3 description',
+  score: 55,
+  topic: 'fakeTopic',
+};
+
+const mockNaRuleEvaluation: RuleEvaluation = {
+  name: 'N/A rule',
+  description: 'N/A description',
+  score: -1,
+  topic: 'fakeTopic',
+};
+
+const mockEvaluations1: RuleEvaluation[] = [mockRuleEvaluation1];
+
+const mockEvaluations2: RuleEvaluation[] = [mockRuleEvaluation2, mockRuleEvaluation3, mockNaRuleEvaluation];
+
+const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
+  [mockRuleEvaluation1.topic, mockEvaluations1],
+  [mockRuleEvaluation2.topic, mockEvaluations2],
+];
 
 describe('<AutomatedAnalysisCardList />', () => {
   it('renders correctly', async () => {
