@@ -77,10 +77,10 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
     const createRecording = screen.queryByRole('button', {
-      name: /recording config dropdown/i,
+      name: /create recording/i,
     });
     const recordingActions = screen.queryByRole('button', {
-      name: /recording actions/i,
+      name: /open settings/i,
     });
     expect(createRecording).toBeInTheDocument();
     expect(recordingActions).toBeInTheDocument();
@@ -98,14 +98,14 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
 
     expect(screen.getByText(/drawer content/i)).toBeInTheDocument();
     const recordingActions = screen.getByRole('button', {
-      name: /recording actions/i,
+      name: /open settings/i,
     });
 
     await user.click(recordingActions);
     expect(screen.getByText(/automatedanalysisconfigform/i)).toBeInTheDocument();
   });
 
-  it('opens a dropdown when Create Recording is clicked', async () => {
+  it('creates a recording when Create Recording is clicked', async () => {
     const onCreateFunction = jest.fn();
     const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
     const { user } = renderWithServiceContext(
@@ -118,21 +118,13 @@ describe('<AutomatedAnalysisConfigDrawer />', () => {
     );
 
     const createRecording = screen.getByRole('button', {
-      name: /recording config dropdown/i,
+      name: /create recording/i,
     });
 
     expect(screen.queryByText(/automatedanalysisconfigform/i)).not.toBeInTheDocument();
 
-    // Click Custom
-    await user.click(createRecording);
-    const customMenuItem = screen.getByRole('menuitem', { name: /custom/i });
-    await user.click(customMenuItem);
-    expect(screen.getByText(/automatedanalysisconfigform/i)).toBeInTheDocument();
-
     // Click Default
     await user.click(createRecording);
-    const defaultMenuItem = screen.getByRole('menuitem', { name: /default/i });
-    await user.click(defaultMenuItem);
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(onCreateFunction).toHaveBeenCalledTimes(1);
   });

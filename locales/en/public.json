@@ -46,13 +46,12 @@
     "WARNING_RESULTS_other": "{{count}} Warning Results"
   },
   "AutomatedAnalysisConfigDrawer": {
-    "CREATE_RECORDING": "Create Recording",
-    "DROPDOWN": {
-      "TOGGLE": {
-        "ACTION": {
-          "LABEL": "Recording actions"
-        },
-        "LABEL": "Recording config dropdown"
+    "INPUT_GROUP": {
+      "CREATE_RECORDING": {
+        "LABEL": "Create Recording"
+      },
+      "OPEN_SETTINGS": {
+        "LABEL": "Open Settings"
       }
     }
   },
@@ -60,7 +59,7 @@
     "ERROR_TITLE": "Error displaying recording configuration settings",
     "FORM_TITLE": "Profiling Recording Configuration",
     "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings.",
-    "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if they do not support them."
+    "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
   },
   "AutomatedAnalysisScoreFilter": {
     "CURRENT_SCORE_TEXT": "Only showing analysis results with severity scores ≥ {{ val }}:",

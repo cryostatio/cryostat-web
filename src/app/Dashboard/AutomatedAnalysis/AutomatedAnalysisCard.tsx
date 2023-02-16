@@ -84,8 +84,6 @@ import {
   EmptyStateBody,
   EmptyStateIcon,
   EmptyStateSecondaryActions,
-  Flex,
-  FlexItem,
   Grid,
   GridItem,
   Label,
@@ -191,8 +189,8 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     [setCategorizedEvaluation, setEvaluations]
   );
 
-  // Will perform analysis on  the first ActiveRecording which has
-  // name: 'automated-analysis' ; label: 'origin=automated-analysis'
+  // Will perform analysis on the first ActiveRecording which has
+  // name: 'automated-analysis'; label: 'origin=automated-analysis'
   // Query NEEDS 'state' so that isActiveRecording(result) is valid
   const queryActiveRecordings = React.useCallback(
     (connectUrl: string) => {
@@ -809,6 +807,28 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     );
   }, [isLoading, errorMessage, evaluations, reportSource]);
 
+  const header = React.useMemo(() => {
+    return (
+      <CardHeader
+        onExpand={onCardExpand}
+        toggleButtonProps={{
+          id: 'automated-analysis-toggle-details',
+          'aria-label': 'Details',
+          'aria-labelledby': 'automated-analysis-card-title toggle-details',
+          'aria-expanded': isCardExpanded,
+        }}
+      >
+        <CardActions>{...props.actions || []}</CardActions>
+        <Level hasGutter>
+          <LevelItem>
+            <CardTitle component="h4">{t('AutomatedAnalysisCard.CARD_TITLE')}</CardTitle>
+          </LevelItem>
+          <LevelItem>{headerLabels}</LevelItem>
+        </Level>
+      </CardHeader>
+    );
+  }, [t, onCardExpand, isCardExpanded, headerLabels, props.actions]);
+
   return (
     <DashboardCard
       dashboardId={props.dashboardId}
@@ -816,25 +836,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       id="automated-analysis-card"
       isCompact
       isExpanded={isCardExpanded}
-      cardHeader={
-        <CardHeader
-          onExpand={onCardExpand}
-          toggleButtonProps={{
-            id: 'automated-analysis-toggle-details',
-            'aria-label': 'Details',
-            'aria-labelledby': 'automated-analysis-card-title toggle-details',
-            'aria-expanded': isCardExpanded,
-          }}
-        >
-          <CardActions>{...props.actions || []}</CardActions>
-          <Level hasGutter>
-            <LevelItem>
-              <CardTitle component="h4">{t('AutomatedAnalysisCard.CARD_TITLE')}</CardTitle>
-            </LevelItem>
-            <LevelItem>{headerLabels}</LevelItem>
-          </Level>
-        </CardHeader>
-      }
+      cardHeader={header}
     >
       <CardExpandableContent>
         <Stack hasGutter>

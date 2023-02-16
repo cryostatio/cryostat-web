@@ -35,85 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import {
-  automatedAnalysisAddGlobalFilterIntent,
-  emptyAutomatedAnalysisFilters,
-  TargetAutomatedAnalysisFilters,
-} from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
-import { UpdateFilterOptions } from '@app/Shared/Redux/Filters/Common';
-import {
-  automatedAnalysisAddFilterIntent,
-  automatedAnalysisAddTargetIntent,
-  automatedAnalysisDeleteAllFiltersIntent,
-  automatedAnalysisDeleteCategoryFiltersIntent,
-  automatedAnalysisDeleteFilterIntent,
-  RootState,
-  StateDispatch,
-} from '@app/Shared/Redux/ReduxStore';
-import {
-  ArchivedRecording,
-  automatedAnalysisRecordingName,
-  isGraphQLAuthError,
-  Recording,
-} from '@app/Shared/Services/Api.service';
-import {
-  AutomatedAnalysisScore,
-  CategorizedRuleEvaluations,
-  FAILED_REPORT_MESSAGE,
-  NO_RECORDINGS_MESSAGE,
-  RECORDING_FAILURE_MESSAGE,
-  RuleEvaluation,
-  TEMPLATE_UNSUPPORTED_MESSAGE,
-} from '@app/Shared/Services/Report.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { automatedAnalysisConfigToRecordingAttributes, FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { calculateAnalysisTimer } from '@app/utils/utils';
-import {
-  Button,
-  CardActions,
-  CardBody,
-  CardExpandableContent,
-  CardHeader,
-  CardTitle,
-  Checkbox,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStateSecondaryActions,
-  Flex,
-  FlexItem,
-  Grid,
-  GridItem,
-  Label,
-  LabelGroup,
-  Level,
-  LevelItem,
-  Stack,
-  StackItem,
-  Switch,
-  Text,
-  TextContent,
-  TextVariants,
-  Title,
-  Toolbar,
-  ToolbarContent,
-  ToolbarGroup,
-  ToolbarItem,
-  Tooltip,
-} from '@patternfly/react-core';
+
+import { AutomatedAnalysisScore, CategorizedRuleEvaluations } from '@app/Shared/Services/Report.service';
+import { Flex, FlexItem } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
   InfoCircleIcon,
-  OutlinedQuestionCircleIcon,
-  SearchIcon,
-  Spinner2Icon,
-  TrashIcon,
 } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import {
@@ -128,23 +57,8 @@ import {
   ThProps,
   Tr,
 } from '@patternfly/react-table';
-import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { filter, first, map, tap } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
-import { DashboardCard } from '../DashboardCard';
-import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
-import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
-import {
-  AutomatedAnalysisFilters,
-  AutomatedAnalysisFiltersCategories,
-  AutomatedAnalysisGlobalFiltersCategories,
-  filterAutomatedAnalysis,
-} from './AutomatedAnalysisFilters';
-import { clickableAutomatedAnalysisKey, ClickableAutomatedAnalysisLabel } from './ClickableAutomatedAnalysisLabel';
-import { AutomatedAnalysisScoreFilter } from './Filters/AutomatedAnalysisScoreFilter';
 
 export interface AutomatedAnalysisCardListProps {
   evaluations: CategorizedRuleEvaluations[];

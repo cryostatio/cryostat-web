@@ -59,7 +59,7 @@ import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContextAndReduxStore, testTranslate } from '../../Common';
+import { renderWithServiceContextAndReduxStore } from '../../Common';
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 
@@ -243,19 +243,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.getByText('Cryostat was unable to generate an automated analysis report.')).toBeInTheDocument(); // Error details
     expect(screen.queryByLabelText('Automated Analysis Toolbar')).not.toBeInTheDocument(); // Toolbar
 
-    await user.click(screen.getByRole('button', { name: /recording config dropdown/i }));
-
-    const defaultMenuItem = screen.getByRole('menuitem', {
-      name: /default/i,
-    });
-    const customMenuItem = screen.getByRole('menuitem', {
-      name: /custom/i,
-    });
-
-    expect(defaultMenuItem).toBeInTheDocument(); // Default recording config
-    expect(customMenuItem).toBeInTheDocument(); // Custom recording config
-
-    await user.click(defaultMenuItem);
+    await user.click(screen.getByRole('button', { name: /create recording/i }));
 
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(requestSpy).toBeCalledWith(
@@ -294,12 +282,12 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(
       screen.queryByRole('button', {
-        name: /recording config dropdown/i,
+        name: /create recording/i,
       })
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', {
-        name: /recording actions/i,
+        name: /open settings/i,
       })
     ).not.toBeInTheDocument();
 
@@ -344,12 +332,12 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /recording config dropdown/i,
+        name: /create recording/i,
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
-        name: /recording actions/i,
+        name: /open settings/i,
       })
     ).toBeInTheDocument();
 
@@ -407,12 +395,12 @@ describe('<AutomatedAnalysisCard />', () => {
 
     expect(
       screen.getByRole('button', {
-        name: /recording config dropdown/i,
+        name: /create recording/i,
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
-        name: /recording actions/i,
+        name: /open settings/i,
       })
     ).toBeInTheDocument();
 
