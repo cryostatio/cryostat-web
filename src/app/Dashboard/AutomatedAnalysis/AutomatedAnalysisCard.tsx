@@ -520,12 +520,9 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     setIsCardExpanded((isCardExpanded) => !isCardExpanded);
   }, [setIsCardExpanded]);
 
-  const handleNAScoreChange = React.useCallback(
-    (checked: boolean) => {
-      setShowNAScores(checked);
-    },
-    [setShowNAScores]
-  );
+  const handleNAScoreChange = React.useCallback(() => {
+    setShowNAScores((checked) => !checked);
+  }, [setShowNAScores]);
 
   const clearAnalysis = React.useCallback(() => {
     if (usingArchivedReport) {
@@ -579,12 +576,16 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     dispatch(automatedAnalysisDeleteAllFiltersIntent(targetConnectURL));
   }, [dispatch, targetConnectURL]);
 
+  const handleResetScoreFilter = React.useCallback(() => {
+    dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 0));
+  }, [dispatch]);
+
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
       return undefined;
     }
     return (
-      <TextContent>
+      <TextContent style={{ marginBottom: '1em' }}>
         <Text className="stale-report-text" component={TextVariants.p}>
           <span style={{ marginRight: '0.3rem' }}>
             {t('AutomatedAnalysisCard.STALE_REPORT.TEXT', {
@@ -616,6 +617,12 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             <Button variant="link" onClick={handleClearFilters}>
               {t('CLEAR_FILTERS', { ns: 'common' })}
             </Button>
+            <Button variant="link" onClick={handleNAScoreChange}>
+              {t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
+            </Button>
+            <Button variant="link" onClick={handleResetScoreFilter}>
+              {t('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL')}
+            </Button>
           </EmptyStateSecondaryActions>
         </EmptyState>
       );
@@ -645,7 +652,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         })}
       </Grid>
     );
-  }, [t, handleClearFilters, filteredCategorizedEvaluation, showListView]);
+  }, [t, handleClearFilters, handleNAScoreChange, handleResetScoreFilter, filteredCategorizedEvaluation, showListView]);
 
   const toolbar = React.useMemo(() => {
     return (

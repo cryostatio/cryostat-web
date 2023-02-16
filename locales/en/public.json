@@ -14,12 +14,12 @@
   },
   "AllPlaceholderCard": {
     "CARD_DESCRIPTION": "All placeholder",
-    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with all the config",
+    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with all the config.",
     "CARD_TITLE": "All Placeholder"
   },
   "AutomatedAnalysisCard": {
     "CARD_DESCRIPTION": "Assess common application performance and configuration issues",
-    "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard",
+    "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",
     "CARD_TITLE": "Automated Analysis",
     "CRITICAL_RESULTS_one": "{{count}} Critical Result",
     "CRITICAL_RESULTS_other": "{{count}} Critical Results",
@@ -27,13 +27,13 @@
     "ERROR_TITLE": "Automated Analysis Error",
     "GOOD_RESULTS": "No problems",
     "NO_RESULTS": "No Results Found",
-    "NO_RESULTS_BODY": "No results match this filter criteria. Try removing filters, or resetting the severity score filter to 0 to show results",
+    "NO_RESULTS_BODY": "No results match this filter criteria. Try removing filters, showing unavailable scores, or resetting the severity score filter to 0.",
     "RETRY_LOADING": "Retry loading report",
     "RETRY_STARTING": "Retry starting recording",
     "STALE_REPORT": {
       "TEXT_one": "Most recent data from {{ count }} {{ units }} ago.",
       "TEXT_other": "Most recent data from {{ count }} {{ units }}s ago.",
-      "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from"
+      "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from."
     },
     "TOOLBAR": {
       "CHECKBOX": {
@@ -158,7 +158,7 @@
   },
   "NonePlaceholderCard": {
     "CARD_DESCRIPTION": "None placeholder",
-    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with no config",
+    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with no config.",
     "CARD_TITLE": "None Placeholder"
   },
   "SETTINGS": {
