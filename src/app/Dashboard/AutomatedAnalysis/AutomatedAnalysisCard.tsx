@@ -520,8 +520,8 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     setIsCardExpanded((isCardExpanded) => !isCardExpanded);
   }, [setIsCardExpanded]);
 
-  const handleNAScoreChange = React.useCallback(() => {
-    setShowNAScores((checked) => !checked);
+  const showUnavailableScores = React.useCallback(() => {
+    setShowNAScores(true);
   }, [setShowNAScores]);
 
   const clearAnalysis = React.useCallback(() => {
@@ -617,7 +617,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             <Button variant="link" onClick={handleClearFilters}>
               {t('CLEAR_FILTERS', { ns: 'common' })}
             </Button>
-            <Button variant="link" onClick={handleNAScoreChange}>
+            <Button variant="link" onClick={showUnavailableScores}>
               {t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
             </Button>
             <Button variant="link" onClick={handleResetScoreFilter}>
@@ -652,7 +652,14 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         })}
       </Grid>
     );
-  }, [t, handleClearFilters, handleNAScoreChange, handleResetScoreFilter, filteredCategorizedEvaluation, showListView]);
+  }, [
+    t,
+    handleClearFilters,
+    showUnavailableScores,
+    handleResetScoreFilter,
+    filteredCategorizedEvaluation,
+    showListView,
+  ]);
 
   const toolbar = React.useMemo(() => {
     return (
@@ -695,7 +702,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
               <Checkbox
                 label={t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
                 isChecked={showNAScores}
-                onChange={handleNAScoreChange}
+                onChange={setShowNAScores}
                 id="show-na-scores"
                 name="show-na-scores"
               />
@@ -722,10 +729,11 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     targetAutomatedAnalysisFilters,
     usingArchivedReport,
     usingCachedReport,
+    setShowNAScores,
+    setShowListView,
     clearAnalysis,
     generateReport,
     handleClearFilters,
-    handleNAScoreChange,
     updateFilters,
   ]);
 
