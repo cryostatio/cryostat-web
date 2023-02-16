@@ -172,7 +172,7 @@ export class MBeanMetricsChartController {
       )
       .pipe(
         map((resp) => {
-          const nodes = resp?.data?.targetNodes;
+          const nodes = resp.data.targetNodes;
           if (!nodes || nodes.length === 0) {
             return {};
           }
