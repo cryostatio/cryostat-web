@@ -82,23 +82,31 @@ html, body, #root {
   padding: 0.25em;
 }
 
-.automated-analysis-data-list-scroll.pf-c-scroll-inner-wrapper {
+#automated-analysis-card {
+  height: 100%;
+}
+
+.automated-analysis-datalist-outerscroll.pf-c-scroll-outer-wrapper {
+  --pf-c-scroll-outer-wrapper--MinHeight: unset;
+}
+
+.automated-analysis-datalist-innerscroll.pf-c-scroll-inner-wrapper {
   max-height: 26.75rem;
 }
 
-.automated-analysis-data-list-scroll .pf-m-grey {
+.automated-analysis-datalist-innerscroll .pf-m-grey {
   color: var(--pf-global--Color--100);
 }
 
-.automated-analysis-data-list-scroll .pf-m-green {
+.automated-analysis-datalist-innerscroll .pf-m-green {
   color: var(--pf-global--success-color--100);
 }
 
-.automated-analysis-data-list-scroll .pf-m-orange {
+.automated-analysis-datalist-innerscroll .pf-m-orange {
   color: var(--pf-global--warning-color--100);
 }
 
-.automated-analysis-data-list-scroll .pf-m-red {
+.automated-analysis-datalist-innerscroll .pf-m-red {
   color: var(--pf-global--danger-color--100);
 }
 

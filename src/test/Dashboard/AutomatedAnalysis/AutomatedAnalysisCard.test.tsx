@@ -61,6 +61,15 @@ import * as React from 'react';
 import { of } from 'rxjs';
 import { renderWithServiceContextAndReduxStore, testT } from '../../Common';
 
+jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
+  return {
+    ...jest.requireActual('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList'),
+    AutomatedAnalysisCardList: jest.fn(() => {
+      return <div>AutomatedAnalysisCardList</div>;
+    }),
+  };
+});
+
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 
 const mockEmptyCachedReport: CachedReportValue = {
@@ -472,5 +481,25 @@ describe('<AutomatedAnalysisCard />', () => {
       });
 
     expect(screen.queryByText(mockRuleEvaluation1.name)).not.toBeInTheDocument(); // Score: 100
+  });
+
+
+  it('renders list view correctly', async () => {
+    jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
+    jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
+      preloadState: preloadedState, // Filter score default = 100
+    });
+
+    const listViewSwitch = screen.getByRole('checkbox', 
+      { name: testT('AutomatedAnalysisCard.TOOLBAR.SWITCH.LIST_VIEW.LABEL') 
+    });
+    expect(listViewSwitch).toBeInTheDocument();
+
+    expect(screen.queryByText("AutomatedAnalysisCardList")).not.toBeInTheDocument(); // Mocked list view
+
+    await user.click(listViewSwitch);
+
+    expect(screen.getByText("AutomatedAnalysisCardList")).toBeInTheDocument();
   });
 });
