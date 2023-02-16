@@ -42,7 +42,7 @@ import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { renderWithServiceContext, testTranslate } from '../Common';
+import { renderWithServiceContext, testT } from '../Common';
 
 const defaults = new Map<DeleteOrDisableWarningType, boolean>();
 for (const cat in DeleteOrDisableWarningType) {
@@ -73,7 +73,7 @@ describe('<DeletionDialogControl/>', () => {
   it('should default to enable all deletion dialog', async () => {
     renderWithServiceContext(React.createElement(DeletionDialogControl.content, null));
 
-    const enableSwitch = screen.getByLabelText(testTranslate('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
+    const enableSwitch = screen.getByLabelText(testT('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();
     expect(enableSwitch).toBeVisible();
     expect(enableSwitch).toBeChecked();
@@ -82,7 +82,7 @@ describe('<DeletionDialogControl/>', () => {
   it('should disable all deletion dialog if switch is off', async () => {
     const { user } = renderWithServiceContext(React.createElement(DeletionDialogControl.content, null));
 
-    const enableSwitch = screen.getByLabelText(testTranslate('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
+    const enableSwitch = screen.getByLabelText(testT('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();
     expect(enableSwitch).toBeVisible();
     expect(enableSwitch).toBeChecked();
@@ -101,12 +101,12 @@ describe('<DeletionDialogControl/>', () => {
   it('should turn off switch if any child switch is turned off', async () => {
     const { user } = renderWithServiceContext(React.createElement(DeletionDialogControl.content, null));
 
-    const enableSwitch = screen.getByLabelText(testTranslate('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
+    const enableSwitch = screen.getByLabelText(testT('SETTINGS.DELETION_DIALOG_CONTROL.SWITCH_LABEL'));
     expect(enableSwitch).toBeInTheDocument();
     expect(enableSwitch).toBeVisible();
     expect(enableSwitch).toBeChecked();
 
-    const expandButton = screen.getByText(testTranslate('SHOW_MORE', 'common'));
+    const expandButton = screen.getByText(testT('SHOW_MORE', 'common'));
     expect(expandButton).toBeInTheDocument();
     expect(expandButton).toBeVisible();
 

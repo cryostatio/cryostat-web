@@ -71,6 +71,7 @@ import { PlusCircleIcon } from '@patternfly/react-icons';
 import { nanoid } from 'nanoid';
 import * as React from 'react';
 import { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
@@ -80,13 +81,14 @@ interface AddCardProps {}
 export const AddCard: React.FC<AddCardProps> = (_) => {
   const addSubscription = useSubscriptions();
   const settingsContext = useContext(ServiceContext);
+  const dispatch = useDispatch<StateDispatch>();
+  const { t } = useTranslation();
 
   const [showWizard, setShowWizard] = React.useState(false);
   const [selection, setSelection] = React.useState('');
   const [propsConfig, setPropsConfig] = React.useState({});
   const [selectOpen, setSelectOpen] = React.useState(false);
   const [featureLevel, setFeatureLevel] = React.useState(FeatureLevel.PRODUCTION);
-  const dispatch = useDispatch<StateDispatch>();
 
   React.useEffect(() => {
     addSubscription(settingsContext.settings.featureLevel().subscribe(setFeatureLevel));
@@ -94,12 +96,12 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
 
   const options = React.useMemo(() => {
     return [
-      <SelectOption key={0} value={'None'} isPlaceholder />,
+      <SelectOption key={0} value={t('NONE', { ns: 'common' })} isPlaceholder />,
       ...getDashboardCards(featureLevel).map((choice, idx) => (
-        <SelectOption key={idx + 1} value={choice.title} description={choice.description} />
+        <SelectOption key={idx + 1} value={t(choice.title)} description={t(choice.description)} />
       )),
     ];
-  }, [featureLevel]);
+  }, [t, featureLevel]);
 
   const handleSelect = React.useCallback(
     (_, selection, isPlaceholder) => {
@@ -108,18 +110,18 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
 
       const c = {};
       if (selection) {
-        for (const ctrl of getConfigByTitle(selection).propControls) {
+        for (const ctrl of getConfigByTitle(selection, t).propControls) {
           c[ctrl.key] = ctrl.defaultValue;
         }
       }
       setPropsConfig(c);
     },
-    [setSelection, setSelectOpen, setPropsConfig]
+    [t, setSelection, setSelectOpen, setPropsConfig]
   );
 
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
-    const config = getConfigByTitle(selection);
+    const config = getConfigByTitle(selection, t);
     dispatch(
       dashboardCardConfigAddCardIntent(
         `${config.component.name}-${nanoid()}`,
@@ -128,7 +130,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
         propsConfig
       )
     );
-  }, [dispatch, setShowWizard, selection, propsConfig]);
+  }, [dispatch, t, setShowWizard, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {
     setShowWizard(true);
@@ -169,6 +171,18 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
     [selection]
   );
 
+  const getFullDescription = React.useCallback(
+    (selection: string) => {
+      const config = getConfigByTitle(selection, t).descriptionFull;
+      if (typeof config === 'string') {
+        return t(config);
+      } else {
+        return config;
+      }
+    },
+    [t]
+  );
+
   return (
     <>
       <Card isRounded isLarge>
@@ -176,13 +190,13 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
           <Wizard onClose={handleStop} onSave={handleAdd} height={'30rem'} nav={customNav}>
             <WizardStep
               id="card-type-select"
-              name="Card Type"
+              name={t('CARD_TYPE', { ns: 'common' })}
               footer={{
                 isNextDisabled: !selection,
                 nextButtonText:
                   selection &&
-                  !getConfigByTitle(selection).propControls.length &&
-                  !getConfigByTitle(selection).advancedConfig
+                  !getConfigByTitle(selection, t).propControls.length &&
+                  !getConfigByTitle(selection, t).advancedConfig
                     ? 'Finish'
                     : 'Next',
               }}
@@ -194,7 +208,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
                   </Select>
                   <Text>
                     {selection
-                      ? getConfigByTitle(selection).descriptionFull
+                      ? getFullDescription(selection)
                       : 'Choose a card type to add to your dashboard. Some cards require additional configuration.'}
                   </Text>
                 </FormGroup>
@@ -203,14 +217,16 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
             <WizardStep
               id="card-props-config"
               name="Configuration"
-              footer={{ nextButtonText: selection && !getConfigByTitle(selection).advancedConfig ? 'Finish' : 'Next' }}
-              isHidden={!selection || !getConfigByTitle(selection).propControls.length}
+              footer={{
+                nextButtonText: selection && !getConfigByTitle(selection, t).advancedConfig ? 'Finish' : 'Next',
+              }}
+              isHidden={!selection || !getConfigByTitle(selection, t).propControls.length}
             >
               {selection && (
                 <PropsConfigForm
                   cardTitle={selection}
                   config={propsConfig}
-                  controls={getConfigByTitle(selection).propControls}
+                  controls={getConfigByTitle(selection, t).propControls}
                   onChange={setPropsConfig}
                 />
               )}
@@ -219,10 +235,10 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
               id="card-adv-config"
               name="Advanced Configuration"
               footer={{ nextButtonText: 'Finish' }}
-              isHidden={!selection || !getConfigByTitle(selection).advancedConfig}
+              isHidden={!selection || !getConfigByTitle(selection, t).advancedConfig}
             >
               <Title headingLevel="h5">Provide advanced configuration for the {selection} card</Title>
-              {selection && getConfigByTitle(selection).advancedConfig}
+              {selection && getConfigByTitle(selection, t).advancedConfig}
             </WizardStep>
           </Wizard>
         ) : (
@@ -255,6 +271,7 @@ interface PropsConfigFormProps {
 }
 
 const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
+  const { t } = useTranslation();
   const handleChange = React.useCallback(
     (k) => (e) => {
       const copy = { ...props.config };
@@ -295,8 +312,8 @@ const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
         case 'number':
           input = (
             <NumberInput
-              inputName={ctrl.name}
-              inputAriaLabel={`${ctrl.name} input`}
+              inputName={t(ctrl.name)}
+              inputAriaLabel={`${t(ctrl.name)} input`}
               value={props.config[ctrl.key]}
               onChange={handleNumeric(ctrl.key)}
               onPlus={handleNumericStep(ctrl.key, 1)}
@@ -340,12 +357,12 @@ const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
           break;
       }
       return (
-        <FormGroup key={`${ctrl.key}}`} label={ctrl.name} helperText={ctrl.description} isInline isStack>
+        <FormGroup key={`${ctrl.key}}`} label={t(ctrl.name)} helperText={t(ctrl.description)} isInline isStack>
           {input}
         </FormGroup>
       );
     },
-    [props.config, handleChange, handleNumeric, handleNumericStep]
+    [t, props.config, handleChange, handleNumeric, handleNumericStep]
   );
 
   return (

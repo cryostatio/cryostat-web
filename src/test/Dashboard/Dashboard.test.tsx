@@ -44,6 +44,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
+import '../Common';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 

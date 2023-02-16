@@ -37,74 +37,18 @@
  */
 
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
-import { AutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Api.service';
-import { ServiceContext } from '@app/Shared/Services/Services';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import {
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
-  ExpandableSection,
-  Stack,
-  StackItem,
-  Title,
-} from '@patternfly/react-core';
+import { Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { UserSetting } from './Settings';
 
 const Component = () => {
-  const [t] = useTranslation();
-  const context = React.useContext(ServiceContext);
-
-  const [config, setConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
-    context.settings.automatedAnalysisRecordingConfig()
-  );
-  const [expanded, setExpanded] = React.useState(false);
-
-  const onSave = React.useCallback(() => {
-    const newConfig = context.settings.automatedAnalysisRecordingConfig();
-    setConfig(newConfig);
-  }, [context.settings, setConfig]);
-
   return (
     <Stack hasGutter>
       <StackItem>
         <TargetSelect simple />
       </StackItem>
-      <StackItem>
-        <Title headingLevel="h3" size="md">
-          {t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.CURRENT_CONFIG')}
-        </Title>
-      </StackItem>
-      <StackItem>
-        <DescriptionList columnModifier={{ lg: '3Col' }}>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('TEMPLATE', { ns: 'common' })}</DescriptionListTerm>
-            <DescriptionListDescription>{config.template}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('MAX_SIZE', { ns: 'common', unit: 'B' })}</DescriptionListTerm>
-            <DescriptionListDescription>{config.maxSize}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('MAX_AGE', { ns: 'common', unit: 's' })}</DescriptionListTerm>
-            <DescriptionListDescription>{config.maxAge}</DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
-      </StackItem>
-      <ExpandableSection
-        toggleText={
-          (expanded
-            ? t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.SHOW_LESS')
-            : t('SETTINGS.AUTOMATED_ANALYSIS_CONFIG.SHOW_MORE')) || ''
-        }
-        onToggle={setExpanded}
-        isExpanded={expanded}
-      >
-        <AutomatedAnalysisConfigForm onSave={onSave} isSettingsForm={true} />
-      </ExpandableSection>
+      <AutomatedAnalysisConfigForm />
     </Stack>
   );
 };

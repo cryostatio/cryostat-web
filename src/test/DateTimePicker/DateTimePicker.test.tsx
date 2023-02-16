@@ -42,7 +42,7 @@ import dayjs, { defaultDatetimeFormat } from '@i18n/datetime';
 import { cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContext, testTranslate } from '../Common';
+import { renderWithServiceContext, testT } from '../Common';
 
 const onSelect = jest.fn((_: Date) => undefined);
 const onDismiss = jest.fn();
@@ -64,7 +64,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const dateTab = screen.getByRole('tab', { name: testTranslate('DATE', 'common') });
+    const dateTab = screen.getByRole('tab', { name: testT('DATE', 'common') });
     expect(dateTab).toBeInTheDocument();
     expect(dateTab).toBeVisible();
     expect(dateTab.getAttribute('aria-selected')).toBe('true');
@@ -85,7 +85,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const display = screen.getByLabelText(testTranslate('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME'));
+    const display = screen.getByLabelText(testT('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME'));
     expect(display).toBeInTheDocument();
     expect(display).toBeVisible();
     expect(display.getAttribute('value')).toBe(dayjs(prefilledDate).format('L LTS'));
@@ -106,7 +106,7 @@ describe('<DateTimePicker/>', () => {
 
     await user.click(selectedDate);
 
-    const timeTab = screen.getByRole('tab', { name: testTranslate('TIME', 'common') });
+    const timeTab = screen.getByRole('tab', { name: testT('TIME', 'common') });
     expect(timeTab).toBeInTheDocument();
     expect(timeTab).toBeVisible();
     expect(timeTab.getAttribute('aria-selected')).toBe('true');
@@ -123,15 +123,15 @@ describe('<DateTimePicker/>', () => {
     await user.click(selectedDate);
 
     // Switched to time now
-    const mInput = within(screen.getByLabelText(testTranslate('MINUTE', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INPUT_MINUTE_VALUE')
+    const mInput = within(screen.getByLabelText(testT('MINUTE', 'common'))).getByLabelText(
+      testT('TimeSpinner.INPUT_MINUTE_VALUE')
     );
     expect(mInput).toBeInTheDocument();
     expect(mInput).toBeVisible();
 
     await user.type(mInput, '1');
 
-    const display = screen.getByLabelText(testTranslate('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME'));
+    const display = screen.getByLabelText(testT('DateTimePicker.ARIA_LABELS.DISPLAY_SELECTED_DATETIME'));
     expect(display).toBeInTheDocument();
     expect(display).toBeVisible();
     expect(display.getAttribute('value')).toBe(dayjs(prefilledDate).date(13).minute(1).format('L LTS'));
@@ -142,7 +142,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const submitButton = screen.getByText(testTranslate('SELECT', 'common'));
+    const submitButton = screen.getByText(testT('SELECT', 'common'));
     expect(submitButton).toBeInTheDocument();
     expect(submitButton).toBeVisible();
 
@@ -157,7 +157,7 @@ describe('<DateTimePicker/>', () => {
       <DateTimePicker prefilledDate={prefilledDate} onSelect={onSelect} onDismiss={onDismiss} />
     );
 
-    const dismissButton = screen.getByText(testTranslate('CANCEL', 'common'));
+    const dismissButton = screen.getByText(testT('CANCEL', 'common'));
     expect(dismissButton).toBeInTheDocument();
     expect(dismissButton).toBeVisible();
 

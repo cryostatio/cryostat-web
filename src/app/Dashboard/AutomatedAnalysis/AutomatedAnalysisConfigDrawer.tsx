@@ -42,6 +42,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
+  Button,
   Drawer,
   DrawerActions,
   DrawerCloseButton,
@@ -50,17 +51,13 @@ import {
   DrawerHead,
   DrawerPanelBody,
   DrawerPanelContent,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
-  DropdownToggleAction,
-  Level,
-  LevelItem,
+  InputGroup,
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { CogIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { CogIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 
 interface AutomatedAnalysisConfigDrawerProps {
@@ -77,18 +74,11 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const { t } = useTranslation();
 
   const [isExpanded, setIsExpanded] = React.useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const drawerRef = React.useRef<HTMLDivElement>(null);
-
-  const onToggle = React.useCallback(
-    (selected) => {
-      setIsDropdownOpen(selected);
-    },
-    [setIsDropdownOpen]
-  );
 
   const handleCreateRecording = React.useCallback(
     (recordingAttributes: RecordingAttributes) => {
@@ -125,10 +115,9 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
     drawerRef.current && drawerRef.current.focus();
   }, [drawerRef]);
 
-  const onOptionSelect = React.useCallback(() => {
-    setIsDropdownOpen(false);
-    setIsExpanded(!isExpanded);
-  }, [setIsExpanded, setIsDropdownOpen, isExpanded]);
+  const onCogSelect = React.useCallback(() => {
+    setIsExpanded((old) => !old);
+  }, [setIsExpanded]);
 
   const onDrawerClose = React.useCallback(() => {
     setIsExpanded(false);
@@ -144,69 +133,46 @@ export const AutomatedAnalysisConfigDrawer: React.FC<AutomatedAnalysisConfigDraw
           </DrawerActions>
         </DrawerHead>
         <DrawerPanelBody>
-          <AutomatedAnalysisConfigForm onCreate={onCreate} isSettingsForm={false} />
+          <AutomatedAnalysisConfigForm useTitle />
         </DrawerPanelBody>
       </DrawerPanelContent>
     );
-  }, [isExpanded, onDrawerClose, onCreate]);
+  }, [isExpanded, onDrawerClose]);
 
-  const dropdownItems = React.useMemo(
-    () => [
-      <DropdownItem key="custom" onClick={onOptionSelect} icon={<CogIcon />}>
-        Custom
-      </DropdownItem>,
-      <DropdownItem key="default" onClick={onDefaultRecordingStart} icon={<PlusCircleIcon />}>
-        Default
-      </DropdownItem>,
-    ],
-    [onOptionSelect, onDefaultRecordingStart]
-  );
-
-  const dropdown = React.useMemo(() => {
+  const inputGroup = React.useMemo(() => {
     return (
-      <Level>
-        <LevelItem style={{ margin: 'auto' }}>
-          <Dropdown
-            isFlipEnabled
-            menuAppendTo={() => document.getElementById('automated-analysis-card') || document.body} // shouldn't be appended to parent
-            toggle={
-              <DropdownToggle
-                aria-label="Recording Config Dropdown"
-                id="automated-analysis-recording-config-toggle"
-                splitButtonItems={[
-                  <DropdownToggleAction
-                    key="recording-cog-action"
-                    aria-label="Recording Actions"
-                    onClick={onOptionSelect}
-                  >
-                    <CogIcon />
-                  </DropdownToggleAction>,
-                ]}
-                onToggle={onToggle}
-                splitButtonVariant="action"
-                toggleVariant="default"
-              >
-                Create Recording &nbsp;&nbsp;
-              </DropdownToggle>
-            }
-            isOpen={isDropdownOpen}
-            dropdownItems={dropdownItems}
+      <InputGroup>
+        <div style={{ margin: 'auto' }}>
+          <Button
+            aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL')}
+            variant="control"
+            onClick={onCogSelect}
+            icon={<CogIcon />}
           />
-        </LevelItem>
-      </Level>
+          <Button
+            aria-label={t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
+            variant="control"
+            onClick={onDefaultRecordingStart}
+          >
+            <span style={{ marginRight: '0.2em' }}>
+              {t('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL')}
+            </span>
+          </Button>
+        </div>
+      </InputGroup>
     );
-  }, [isDropdownOpen, dropdownItems, onToggle, onOptionSelect]);
+  }, [t, onCogSelect, onDefaultRecordingStart]);
 
   const drawerContentBody = React.useMemo(() => {
     return (
       <DrawerContentBody>
         <Stack hasGutter>
-          <StackItem>{props.isContentAbove ? props.drawerContent : dropdown}</StackItem>
-          <StackItem>{props.isContentAbove ? dropdown : props.drawerContent}</StackItem>
+          <StackItem>{props.isContentAbove ? props.drawerContent : inputGroup}</StackItem>
+          <StackItem>{props.isContentAbove ? inputGroup : props.drawerContent}</StackItem>
         </Stack>
       </DrawerContentBody>
     );
-  }, [props.drawerContent, props.isContentAbove, dropdown]);
+  }, [props.drawerContent, props.isContentAbove, inputGroup]);
 
   const view = React.useMemo(() => {
     if (isLoading) {

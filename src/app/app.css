@@ -82,6 +82,34 @@ html, body, #root {
   padding: 0.25em;
 }
 
+#automated-analysis-card {
+  height: 100%;
+}
+
+.automated-analysis-datalist-outerscroll.pf-c-scroll-outer-wrapper {
+  --pf-c-scroll-outer-wrapper--MinHeight: unset;
+}
+
+.automated-analysis-datalist-innerscroll.pf-c-scroll-inner-wrapper {
+  max-height: 26.75rem;
+}
+
+.automated-analysis-datalist-innerscroll .pf-m-grey {
+  color: var(--pf-global--Color--100);
+}
+
+.automated-analysis-datalist-innerscroll .pf-m-green {
+  color: var(--pf-global--success-color--100);
+}
+
+.automated-analysis-datalist-innerscroll .pf-m-orange {
+  color: var(--pf-global--warning-color--100);
+}
+
+.automated-analysis-datalist-innerscroll .pf-m-red {
+  color: var(--pf-global--danger-color--100);
+}
+
 .automated-analysis-score-filter-stack-item {
   padding-left: 1.3em;
   padding-right: 1.3em;
@@ -151,6 +179,11 @@ html, body, #root {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.pf-c-label.clickable-label-hovered {
+  cursor: pointer;
+  --pf-c-label__content--before--BorderWidth: 2.5px;
 }
 
 .pf-c-label-group.pf-m-vertical.pf-c-label-group {

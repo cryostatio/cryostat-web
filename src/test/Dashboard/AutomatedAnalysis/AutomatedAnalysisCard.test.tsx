@@ -59,7 +59,16 @@ import '@testing-library/jest-dom';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContextAndReduxStore } from '../../Common';
+import { renderWithServiceContextAndReduxStore, testT } from '../../Common';
+
+jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList', () => {
+  return {
+    ...jest.requireActual('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList'),
+    AutomatedAnalysisCardList: jest.fn(() => {
+      return <div>AutomatedAnalysisCardList</div>;
+    }),
+  };
+});
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 
@@ -215,15 +224,15 @@ describe('<AutomatedAnalysisCard />', () => {
   it('renders report generation error view correctly', async () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of());
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
 
-    expect(screen.getByText('Automated Analysis Error')).toBeInTheDocument(); // Error view
+    expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
     expect(screen.getByText(FAILED_REPORT_MESSAGE)).toBeInTheDocument(); // Error message
-    expect(screen.getByText('Cryostat was unable to generate an automated analysis report.')).toBeInTheDocument(); // Error details
-    expect(screen.getByRole('button', { name: /retry loading report/i })).toBeInTheDocument(); // Retry button
-    expect(screen.queryByLabelText('automated-analysis-toolbar')).not.toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TEXT'))).toBeInTheDocument(); // Error details
+    expect(screen.getByRole('button', { name: testT('AutomatedAnalysisCard.RETRY_LOADING') })).toBeInTheDocument(); // Retry button
+    expect(screen.queryByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).not.toBeInTheDocument(); // Toolbar
   });
 
   it('renders empty recordings error view and creates recording when clicked', async () => {
@@ -232,30 +241,20 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockEmptyArchivedRecordingsResponse));
 
     jest.spyOn(defaultServices.api, 'createRecording').mockReturnValueOnce(of());
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
 
     const requestSpy = jest.spyOn(defaultServices.api, 'createRecording');
 
-    expect(screen.getByText('Automated Analysis Error')).toBeInTheDocument(); // Error view
+    expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TITLE'))).toBeInTheDocument(); // Error view
     expect(screen.getByText(NO_RECORDINGS_MESSAGE)).toBeInTheDocument(); // Error message
-    expect(screen.getByText('Cryostat was unable to generate an automated analysis report.')).toBeInTheDocument(); // Error details
-    expect(screen.queryByLabelText('automated-analysis-toolbar')).not.toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.ERROR_TEXT'))).toBeInTheDocument(); // Error details
+    expect(screen.queryByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).not.toBeInTheDocument(); // Toolbar
 
-    await user.click(screen.getByRole('button', { name: /recording config dropdown/i }));
-
-    const defaultMenuItem = screen.getByRole('menuitem', {
-      name: /default/i,
-    });
-    const customMenuItem = screen.getByRole('menuitem', {
-      name: /custom/i,
-    });
-
-    expect(defaultMenuItem).toBeInTheDocument(); // Default recording config
-    expect(customMenuItem).toBeInTheDocument(); // Custom recording config
-
-    await user.click(defaultMenuItem);
+    await user.click(
+      screen.getByRole('button', { name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL') })
+    );
 
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(requestSpy).toBeCalledWith(
@@ -267,39 +266,39 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
 
-    expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
+    expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
-      name: /refresh automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
     });
     expect(refreshButton).toBeInTheDocument();
     expect(refreshButton).not.toBeDisabled();
     const deleteButton = screen.getByRole('button', {
       // Delete button
-      name: /delete automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL'),
     });
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
-    expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL'))).toBeInTheDocument();
+    expect(screen.getByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Active report name=${mockRecording.name}`)).toBeInTheDocument(); // Active report name
     expect(screen.queryByText('Most recent data')).not.toBeInTheDocument(); // Last updated text
 
     expect(
       screen.queryByRole('button', {
-        name: /recording config dropdown/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
       })
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole('button', {
-        name: /recording actions/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
       })
     ).not.toBeInTheDocument();
 
@@ -317,39 +316,41 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockArchivedRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockEvaluations));
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState,
     });
 
-    expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
+    expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
-      name: /refresh automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
     });
     expect(refreshButton).toBeInTheDocument();
     expect(refreshButton).toBeDisabled();
     const deleteButton = screen.getByRole('button', {
       // Delete button
-      name: /delete automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL'),
     });
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
-    expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL'))).toBeInTheDocument();
+    expect(screen.getByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Archived report name=${mockArchivedRecording.name}`)).toBeInTheDocument(); // Archived report name
-    expect(screen.getByText('Most recent data from 1 day ago.')).toBeInTheDocument(); // Last updated text
+    expect(
+      screen.getByText(testT('AutomatedAnalysisCard.STALE_REPORT.TEXT', { count: 1, units: 'day' }))
+    ).toBeInTheDocument(); // Last updated text
 
     expect(
       screen.getByRole('button', {
-        name: /recording config dropdown/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
-        name: /recording actions/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
       })
     ).toBeInTheDocument();
 
@@ -380,39 +381,39 @@ describe('<AutomatedAnalysisCard />', () => {
       },
     };
 
-    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: newPreloadedState,
     });
 
-    expect(screen.getByText('Automated Analysis')).toBeInTheDocument(); // Card title
+    expect(screen.getByText(testT('AutomatedAnalysisCard.CARD_TITLE'))).toBeInTheDocument(); // Card title
     expect(screen.getByLabelText('Details')).toBeInTheDocument(); // Expandable content button
-    expect(screen.getByText('Name')).toBeInTheDocument(); // Default state filter
+    expect(screen.getByText(testT('NAME', { ns: 'common' }))).toBeInTheDocument(); // Default state filter
     const refreshButton = screen.getByRole('button', {
       // Refresh button
-      name: /refresh automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL'),
     });
     expect(refreshButton).toBeInTheDocument();
     expect(refreshButton).toBeDisabled();
     const deleteButton = screen.getByRole('button', {
       // Delete button
-      name: /delete automated analysis/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL'),
     });
     expect(deleteButton).toBeInTheDocument();
     expect(deleteButton).not.toBeDisabled();
-    expect(screen.getByText('Show N/A scores')).toBeInTheDocument();
-    expect(screen.getByLabelText('automated-analysis-toolbar')).toBeInTheDocument(); // Toolbar
+    expect(screen.getByText(testT('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL'))).toBeInTheDocument();
+    expect(screen.getByLabelText(testT('AutomatedAnalysisCard.TOOLBAR.LABEL'))).toBeInTheDocument(); // Toolbar
 
     expect(screen.getByText(`Cached report name=${automatedAnalysisRecordingName}`)).toBeInTheDocument(); // Cached report name
     expect(screen.getByText('Most recent data from 2 days ago.')).toBeInTheDocument(); // Last updated text
 
     expect(
       screen.getByRole('button', {
-        name: /recording config dropdown/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.CREATE_RECORDING.LABEL'),
       })
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', {
-        name: /recording actions/i,
+        name: testT('AutomatedAnalysisConfigDrawer.INPUT_GROUP.OPEN_SETTINGS.LABEL'),
       })
     ).toBeInTheDocument();
 
@@ -426,7 +427,7 @@ describe('<AutomatedAnalysisCard />', () => {
     jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
 
     jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
-    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard />, {
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
       preloadState: preloadedState, // Filter score default = 100
     });
 
@@ -436,7 +437,7 @@ describe('<AutomatedAnalysisCard />', () => {
     expect(screen.queryByText(mockNaRuleEvaluation.name)).not.toBeInTheDocument(); // Score: -1
 
     const showNAScores = screen.getByRole('checkbox', {
-      name: /show n\/a scores/i,
+      name: testT('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL'),
     });
 
     await user.click(showNAScores);
@@ -480,5 +481,24 @@ describe('<AutomatedAnalysisCard />', () => {
       });
 
     expect(screen.queryByText(mockRuleEvaluation1.name)).not.toBeInTheDocument(); // Score: 100
+  });
+
+  it('renders list view correctly', async () => {
+    jest.spyOn(defaultServices.api, 'graphql').mockReturnValueOnce(of(mockActiveRecordingsResponse));
+    jest.spyOn(defaultServices.reports, 'reportJson').mockReturnValueOnce(of(mockFilteredEvaluations));
+    const { user } = renderWithServiceContextAndReduxStore(<AutomatedAnalysisCard dashboardId={0} span={0} />, {
+      preloadState: preloadedState, // Filter score default = 100
+    });
+
+    const listViewSwitch = screen.getByRole('checkbox', {
+      name: testT('AutomatedAnalysisCard.TOOLBAR.SWITCH.LIST_VIEW.LABEL'),
+    });
+    expect(listViewSwitch).toBeInTheDocument();
+
+    expect(screen.queryByText('AutomatedAnalysisCardList')).not.toBeInTheDocument(); // Mocked list view
+
+    await user.click(listViewSwitch);
+
+    expect(screen.getByText('AutomatedAnalysisCardList')).toBeInTheDocument();
   });
 });

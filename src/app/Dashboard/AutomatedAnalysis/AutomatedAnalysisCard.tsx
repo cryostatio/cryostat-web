@@ -38,6 +38,7 @@
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import {
+  automatedAnalysisAddGlobalFilterIntent,
   emptyAutomatedAnalysisFilters,
   TargetAutomatedAnalysisFilters,
 } from '@app/Shared/Redux/Filters/AutomatedAnalysisFilterSlice';
@@ -58,6 +59,7 @@ import {
   Recording,
 } from '@app/Shared/Services/Api.service';
 import {
+  AutomatedAnalysisScore,
   CategorizedRuleEvaluations,
   FAILED_REPORT_MESSAGE,
   NO_RECORDINGS_MESSAGE,
@@ -78,6 +80,10 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateIcon,
+  EmptyStateSecondaryActions,
   Grid,
   GridItem,
   Label,
@@ -86,21 +92,35 @@ import {
   LevelItem,
   Stack,
   StackItem,
+  Switch,
   Text,
   TextContent,
   TextVariants,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
   Tooltip,
 } from '@patternfly/react-core';
-import { InfoCircleIcon, OutlinedQuestionCircleIcon, Spinner2Icon, TrashIcon } from '@patternfly/react-icons';
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  ExclamationTriangleIcon,
+  InfoCircleIcon,
+  OutlinedQuestionCircleIcon,
+  SearchIcon,
+  Spinner2Icon,
+  TrashIcon,
+} from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { filter, first, map, tap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
+import { AutomatedAnalysisCardList } from './AutomatedAnalysisCardList';
 import { AutomatedAnalysisConfigDrawer } from './AutomatedAnalysisConfigDrawer';
 import { AutomatedAnalysisConfigForm } from './AutomatedAnalysisConfigForm';
 import {
@@ -118,8 +138,11 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
+  const { t } = useTranslation();
 
   const [targetConnectURL, setTargetConnectURL] = React.useState('');
+  const [evaluations, setEvaluations] = React.useState<RuleEvaluation[]>([]);
+
   const [categorizedEvaluation, setCategorizedEvaluation] = React.useState<CategorizedRuleEvaluations[]>([]);
   const [filteredCategorizedEvaluation, setFilteredCategorizedEvaluation] = React.useState<
     CategorizedRuleEvaluations[]
@@ -134,6 +157,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   const [usingCachedReport, setUsingCachedReport] = React.useState<boolean>(false);
   const [showNAScores, setShowNAScores] = React.useState<boolean>(false);
   const [report, setReport] = React.useState<string>('automated-analysis');
+  const [showListView, setShowListView] = React.useState<boolean>(false);
 
   const targetAutomatedAnalysisFilters = useSelector((state: RootState) => {
     const filters = state.automatedAnalysisFilters.state.targetFilters.filter(
@@ -148,6 +172,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
 
   const categorizeEvaluation = React.useCallback(
     (arr: RuleEvaluation[]) => {
+      setEvaluations(arr);
       const map = new Map<string, RuleEvaluation[]>();
       arr.forEach((evaluation) => {
         const topicValue = map.get(evaluation.topic);
@@ -161,11 +186,11 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       const sorted = (Array.from(map) as CategorizedRuleEvaluations[]).sort();
       setCategorizedEvaluation(sorted);
     },
-    [setCategorizedEvaluation]
+    [setCategorizedEvaluation, setEvaluations]
   );
 
-  // Will perform analysis on  the first ActiveRecording which has
-  // name: 'automated-analysis' ; label: 'origin=automated-analysis'
+  // Will perform analysis on the first ActiveRecording which has
+  // name: 'automated-analysis'; label: 'origin=automated-analysis'
   // Query NEEDS 'state' so that isActiveRecording(result) is valid
   const queryActiveRecordings = React.useCallback(
     (connectUrl: string) => {
@@ -426,20 +451,20 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         if (errorMessage === NO_RECORDINGS_MESSAGE) {
           return [undefined, undefined];
         } else if (isAuthFail(errorMessage)) {
-          return ['Retry', generateReport];
+          return [t('RETRY', { ns: 'common' }), generateReport];
         } else if (errorMessage === RECORDING_FAILURE_MESSAGE) {
-          return ['Retry starting recording', startProfilingRecording];
+          return [t('AutomatedAnalysisCard.RETRY_STARTING'), startProfilingRecording];
         } else if (errorMessage === FAILED_REPORT_MESSAGE) {
-          return ['Retry loading report', generateReport];
+          return [t('AutomatedAnalysisCard.RETRY_LOADING'), generateReport];
         } else if (errorMessage === TEMPLATE_UNSUPPORTED_MESSAGE) {
           return [undefined, undefined];
         } else {
-          return ['Retry', generateReport];
+          return [t('RETRY', { ns: 'common' }), generateReport];
         }
       }
       return [undefined, undefined];
     },
-    [startProfilingRecording, generateReport]
+    [t, startProfilingRecording, generateReport]
   );
 
   React.useEffect(() => {
@@ -495,38 +520,9 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     setIsCardExpanded((isCardExpanded) => !isCardExpanded);
   }, [setIsCardExpanded]);
 
-  const handleNAScoreChange = React.useCallback(
-    (checked: boolean) => {
-      setShowNAScores(checked);
-    },
-    [setShowNAScores]
-  );
-
-  const filteredCategorizedLabels = React.useMemo(() => {
-    return (
-      <Grid>
-        {filteredCategorizedEvaluation
-          .filter(([_, evaluations]) => evaluations.length > 0)
-          .map(([topic, evaluations]) => {
-            return (
-              <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
-                <LabelGroup categoryName={topic} isVertical numLabels={3} isCompact key={`topic-${topic}`}>
-                  {evaluations.map((evaluation) => {
-                    return (
-                      <ClickableAutomatedAnalysisLabel
-                        label={evaluation}
-                        isSelected={false}
-                        key={clickableAutomatedAnalysisKey}
-                      />
-                    );
-                  })}
-                </LabelGroup>
-              </GridItem>
-            );
-          })}
-      </Grid>
-    );
-  }, [filteredCategorizedEvaluation]);
+  const showUnavailableScores = React.useCallback(() => {
+    setShowNAScores(true);
+  }, [setShowNAScores]);
 
   const clearAnalysis = React.useCallback(() => {
     if (usingArchivedReport) {
@@ -580,22 +576,24 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
     dispatch(automatedAnalysisDeleteAllFiltersIntent(targetConnectURL));
   }, [dispatch, targetConnectURL]);
 
+  const handleResetScoreFilter = React.useCallback(() => {
+    dispatch(automatedAnalysisAddGlobalFilterIntent('Score', 0));
+  }, [dispatch]);
+
   const reportStalenessText = React.useMemo(() => {
     if (isLoading || !(usingArchivedReport || usingCachedReport)) {
       return undefined;
     }
     return (
-      <TextContent>
+      <TextContent style={{ marginBottom: '1em' }}>
         <Text className="stale-report-text" component={TextVariants.p}>
-          {`Most recent data from ${reportStalenessTimer} ${reportStalenessTimerUnits}${
-            reportStalenessTimer > 1 ? 's' : ''
-          } ago.`}
-          &nbsp;
-          <Tooltip
-            content={
-              'Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from.'
-            }
-          >
+          <span style={{ marginRight: '0.3rem' }}>
+            {t('AutomatedAnalysisCard.STALE_REPORT.TEXT', {
+              count: reportStalenessTimer,
+              units: reportStalenessTimerUnits,
+            })}
+          </span>
+          <Tooltip content={t('AutomatedAnalysisCard.STALE_REPORT.TOOLTIP')}>
             <OutlinedQuestionCircleIcon
               style={{ height: '0.85em', width: '0.85em', color: 'var(--pf-global--Color--100)' }}
             />
@@ -603,15 +601,73 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         </Text>
       </TextContent>
     );
-  }, [isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits]);
+  }, [t, isLoading, usingArchivedReport, usingCachedReport, reportStalenessTimer, reportStalenessTimerUnits]);
+
+  const filteredCategorizedLabels = React.useMemo(() => {
+    const filtered = filteredCategorizedEvaluation.filter(([_, evaluations]) => evaluations.length > 0);
+    if (filtered.length === 0) {
+      return (
+        <EmptyState>
+          <EmptyStateIcon icon={SearchIcon} />
+          <Title headingLevel="h4" size="lg">
+            {t(`AutomatedAnalysisCard.NO_RESULTS`)}
+          </Title>
+          <EmptyStateBody>{t('AutomatedAnalysisCard.NO_RESULTS_BODY')}</EmptyStateBody>
+          <EmptyStateSecondaryActions>
+            <Button variant="link" onClick={handleClearFilters}>
+              {t('CLEAR_FILTERS', { ns: 'common' })}
+            </Button>
+            <Button variant="link" onClick={showUnavailableScores}>
+              {t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
+            </Button>
+            <Button variant="link" onClick={handleResetScoreFilter}>
+              {t('AutomatedAnalysisScoreFilter.SLIDER.RESET0.LABEL')}
+            </Button>
+          </EmptyStateSecondaryActions>
+        </EmptyState>
+      );
+    }
+    if (showListView) {
+      return <AutomatedAnalysisCardList evaluations={filtered} />;
+    }
+    return (
+      <Grid>
+        {filtered.map(([topic, evaluations]) => {
+          return (
+            <GridItem className="automated-analysis-grid-item" span={3} key={`gridItem-${topic}`}>
+              <LabelGroup
+                className="automated-analysis-topic-label-groups"
+                categoryName={topic}
+                isVertical
+                numLabels={3}
+                isCompact
+                key={topic}
+              >
+                {evaluations.map((evaluation) => {
+                  return <ClickableAutomatedAnalysisLabel label={evaluation} key={clickableAutomatedAnalysisKey} />;
+                })}
+              </LabelGroup>
+            </GridItem>
+          );
+        })}
+      </Grid>
+    );
+  }, [
+    t,
+    handleClearFilters,
+    showUnavailableScores,
+    handleResetScoreFilter,
+    filteredCategorizedEvaluation,
+    showListView,
+  ]);
 
   const toolbar = React.useMemo(() => {
     return (
       <Toolbar
         id="automated-analysis-toolbar"
-        aria-label="automated-analysis-toolbar"
+        aria-label={t('AutomatedAnalysisCard.TOOLBAR.LABEL')}
         clearAllFilters={handleClearFilters}
-        clearFiltersButtonText="Clear all filters"
+        clearFiltersButtonText={t('CLEAR_FILTERS', { ns: 'common' })}
         isFullHeight
       >
         <ToolbarContent>
@@ -621,13 +677,13 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             filters={targetAutomatedAnalysisFilters}
             updateFilters={updateFilters}
           />
-          <ToolbarGroup>
+          <ToolbarGroup style={{ margin: '0.5em 0 0.5em 0' }}>
             <ToolbarItem>
               <Button
                 isSmall
                 isDisabled={isLoading || usingCachedReport || usingArchivedReport}
                 isAriaDisabled={isLoading || usingCachedReport || usingArchivedReport}
-                aria-label="Refresh automated analysis"
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.REFRESH.LABEL')}
                 onClick={generateReport}
                 variant="control"
                 icon={<Spinner2Icon />}
@@ -636,7 +692,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
                 isSmall
                 isDisabled={isLoading}
                 isAriaDisabled={isLoading}
-                aria-label="Delete automated analysis"
+                aria-label={t('AutomatedAnalysisCard.TOOLBAR.DELETE.LABEL')}
                 onClick={clearAnalysis}
                 variant="control"
                 icon={<TrashIcon />}
@@ -644,11 +700,19 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
             </ToolbarItem>
             <ToolbarItem>
               <Checkbox
-                label="Show N/A scores"
+                label={t('AutomatedAnalysisCard.TOOLBAR.CHECKBOX.SHOW_NA.LABEL')}
                 isChecked={showNAScores}
-                onChange={handleNAScoreChange}
+                onChange={setShowNAScores}
                 id="show-na-scores"
                 name="show-na-scores"
+              />
+            </ToolbarItem>
+            <ToolbarItem>
+              <Switch
+                label={t('AutomatedAnalysisCard.TOOLBAR.SWITCH.LIST_VIEW.LABEL')}
+                isChecked={showListView}
+                onChange={setShowListView}
+                id="show-list-view"
               />
             </ToolbarItem>
           </ToolbarGroup>
@@ -656,27 +720,30 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       </Toolbar>
     );
   }, [
+    t,
     isLoading,
     showNAScores,
+    showListView,
     targetConnectURL,
     categorizedEvaluation,
     targetAutomatedAnalysisFilters,
     usingArchivedReport,
     usingCachedReport,
+    setShowNAScores,
+    setShowListView,
     clearAnalysis,
     generateReport,
     handleClearFilters,
-    handleNAScoreChange,
     updateFilters,
   ]);
 
   const errorView = React.useMemo(() => {
     return (
       <ErrorView
-        title={'Automated Analysis Error'}
+        title={t('AutomatedAnalysisCard.ERROR_TITLE')}
         message={
           <TextContent>
-            <Text component={TextVariants.p}>Cryostat was unable to generate an automated analysis report.</Text>
+            <Text component={TextVariants.p}>{t('AutomatedAnalysisCard.ERROR_TEXT')}</Text>
             <Text component={TextVariants.small}>{errorMessage}</Text>
           </TextContent>
         }
@@ -684,7 +751,7 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         retry={getMessageAndRetry(errorMessage)[1]}
       />
     );
-  }, [errorMessage, getMessageAndRetry]);
+  }, [t, getMessageAndRetry, errorMessage]);
 
   const handleConfigError = React.useCallback(
     (error) => {
@@ -733,15 +800,49 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
   ]);
 
   const reportSource = React.useMemo(() => {
-    if (isLoading || errorMessage) {
-      return undefined;
-    }
+    if (isLoading || errorMessage) return undefined;
     return (
       <Label icon={<InfoCircleIcon />} color={'cyan'}>
         {`${usingArchivedReport ? 'Archived' : usingCachedReport ? 'Cached' : 'Active'} report name=${report}`}
       </Label>
     );
   }, [usingArchivedReport, usingCachedReport, report, isLoading, errorMessage]);
+
+  const headerLabels = React.useMemo(() => {
+    if (isLoading || errorMessage) return undefined;
+    const filtered = evaluations.filter((e) => e.score >= AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD);
+    if (filtered.length === 0) return <AutomatedAnalysisHeaderLabel type="ok" />;
+    const [warnings, errors] = _.partition(filtered, (e) => e.score < AutomatedAnalysisScore.RED_SCORE_THRESHOLD);
+    return (
+      <LabelGroup>
+        {reportSource}
+        {errors.length > 0 && <AutomatedAnalysisHeaderLabel type={'critical'} count={errors.length} />}
+        {warnings.length > 0 && <AutomatedAnalysisHeaderLabel type={'warning'} count={errors.length} />}
+      </LabelGroup>
+    );
+  }, [isLoading, errorMessage, evaluations, reportSource]);
+
+  const header = React.useMemo(() => {
+    return (
+      <CardHeader
+        onExpand={onCardExpand}
+        toggleButtonProps={{
+          id: 'automated-analysis-toggle-details',
+          'aria-label': 'Details',
+          'aria-labelledby': 'automated-analysis-card-title toggle-details',
+          'aria-expanded': isCardExpanded,
+        }}
+      >
+        <CardActions>{...props.actions || []}</CardActions>
+        <Level hasGutter>
+          <LevelItem>
+            <CardTitle component="h4">{t('AutomatedAnalysisCard.CARD_TITLE')}</CardTitle>
+          </LevelItem>
+          <LevelItem>{headerLabels}</LevelItem>
+        </Level>
+      </CardHeader>
+    );
+  }, [t, onCardExpand, isCardExpanded, headerLabels, props.actions]);
 
   return (
     <DashboardCard
@@ -750,31 +851,13 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       id="automated-analysis-card"
       isCompact
       isExpanded={isCardExpanded}
-      cardHeader={
-        <CardHeader
-          onExpand={onCardExpand}
-          toggleButtonProps={{
-            id: 'automated-analysis-toggle-details',
-            'aria-label': 'Details',
-            'aria-labelledby': 'automated-analysis-card-title toggle-details',
-            'aria-expanded': isCardExpanded,
-          }}
-        >
-          <CardActions>{...props.actions || []}</CardActions>
-          <Level hasGutter>
-            <LevelItem>
-              <CardTitle component="h4">Automated Analysis</CardTitle>
-            </LevelItem>
-            <LevelItem>{reportSource}</LevelItem>
-          </Level>
-        </CardHeader>
-      }
+      cardHeader={header}
     >
       <CardExpandableContent>
         <Stack hasGutter>
-          <StackItem>{errorMessage ? null : toolbar}</StackItem>
+          <StackItem>{isLoading || errorMessage ? null : toolbar}</StackItem>
           <StackItem className="automated-analysis-score-filter-stack-item">
-            {errorMessage ? null : <AutomatedAnalysisScoreFilter />}
+            {isLoading || errorMessage ? null : <AutomatedAnalysisScoreFilter />}
           </StackItem>
           <StackItem>
             <CardBody isFilled={true}>
@@ -785,6 +868,70 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
         </Stack>
       </CardExpandableContent>
     </DashboardCard>
+  );
+};
+
+export type AutomatedAnalysisHeaderLabelType = 'critical' | 'warning' | 'ok';
+
+export interface AutomatedAnalysisHeaderLabelProps {
+  type?: AutomatedAnalysisHeaderLabelType;
+  count?: number;
+}
+
+export const AutomatedAnalysisHeaderLabel: React.FC<AutomatedAnalysisHeaderLabelProps> = (props) => {
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+
+  const [isHoveredOrFocused, setIsHoveredOrFocused] = React.useState(false);
+  const handleHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(true), [setIsHoveredOrFocused]);
+  const handleNonHoveredOrFocused = React.useCallback(() => setIsHoveredOrFocused(false), [setIsHoveredOrFocused]);
+  const label = React.useMemo(() => {
+    let onClick: () => void;
+    let icon: React.ReactNode;
+    let color: 'red' | 'orange' | 'green';
+    let children: React.ReactNode;
+    switch (props.type) {
+      case 'critical':
+        onClick = () => {
+          dispatch(automatedAnalysisAddGlobalFilterIntent('Score', AutomatedAnalysisScore.RED_SCORE_THRESHOLD));
+        };
+        icon = <ExclamationCircleIcon />;
+        color = 'red';
+        children = t('AutomatedAnalysisCard.CRITICAL_RESULTS', { count: props.count });
+        break;
+      case 'warning':
+        onClick = () => {
+          dispatch(automatedAnalysisAddGlobalFilterIntent('Score', AutomatedAnalysisScore.ORANGE_SCORE_THRESHOLD));
+        };
+        icon = <ExclamationTriangleIcon />;
+        color = 'orange';
+        children = t('AutomatedAnalysisCard.WARNING_RESULTS', { count: props.count });
+        break;
+      default:
+        onClick = () => undefined;
+        icon = <CheckCircleIcon />;
+        color = 'green';
+        children = t('AutomatedAnalysisCard.GOOD_RESULTS');
+    }
+    return { onClick, icon, color, children };
+  }, [dispatch, t, props.count, props.type]);
+
+  const { onClick, icon, color, children } = label;
+
+  return (
+    <Label
+      className={isHoveredOrFocused ? 'clickable-label-hovered' : undefined}
+      draggable
+      onDragStart={(e) => e.stopPropagation()}
+      onClick={onClick}
+      onMouseEnter={handleHoveredOrFocused}
+      onMouseLeave={handleNonHoveredOrFocused}
+      onFocus={handleHoveredOrFocused}
+      icon={icon}
+      color={color}
+    >
+      {children}
+    </Label>
   );
 };
 
@@ -804,18 +951,11 @@ export const AutomatedAnalysisCardSizes: DashboardCardSizes = {
 
 export const AutomatedAnalysisCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.PRODUCTION,
-  title: 'Automated Analysis',
+  title: 'AutomatedAnalysisCard.CARD_TITLE',
   cardSizes: AutomatedAnalysisCardSizes,
-  description: `
-Assess common application performance and configuration issues.
-    `,
-  descriptionFull: `
-Creates a recording and periodically evalutes various common problems in application configuration and performance.
-Results are displayed with scores from 0-100 with colour coding and in groups.
-This card should be unique on a dashboard.
-      `,
+  description: 'AutomatedAnalysisCard.CARD_DESCRIPTION',
+  descriptionFull: `AutomatedAnalysisCard.CARD_DESCRIPTION_FULL`,
   component: AutomatedAnalysisCard,
   propControls: [],
-  // FIXME this form gets embedded within a form, and should not have its own independent create/save controls
-  advancedConfig: <AutomatedAnalysisConfigForm isSettingsForm={false}></AutomatedAnalysisConfigForm>,
+  advancedConfig: <AutomatedAnalysisConfigForm />,
 };

@@ -12,6 +12,81 @@
     "OPEN_SOURCE_LICENSE": "Open Source License",
     "VERSION": "version"
   },
+  "AllPlaceholderCard": {
+    "CARD_DESCRIPTION": "All placeholder",
+    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with all the config.",
+    "CARD_TITLE": "All Placeholder"
+  },
+  "AutomatedAnalysisCard": {
+    "CARD_DESCRIPTION": "Assess common application performance and configuration issues",
+    "CARD_DESCRIPTION_FULL": "Creates a recording and periodically evaluates various common problems in application configuration and performance. Results are displayed with scores from 0-100 with colour coding and in groups. This card should be unique on a dashboard.",
+    "CARD_TITLE": "Automated Analysis",
+    "CRITICAL_RESULTS_one": "{{count}} Critical Result",
+    "CRITICAL_RESULTS_other": "{{count}} Critical Results",
+    "ERROR_TEXT": "Cryostat was unable to generate an automated analysis report.",
+    "ERROR_TITLE": "Automated Analysis Error",
+    "GOOD_RESULTS": "No problems",
+    "NO_RESULTS": "No Results Found",
+    "NO_RESULTS_BODY": "No results match this filter criteria. Try removing filters, showing unavailable scores, or resetting the severity score filter to 0.",
+    "RETRY_LOADING": "Retry loading report",
+    "RETRY_STARTING": "Retry starting recording",
+    "STALE_REPORT": {
+      "TEXT_one": "Most recent data from {{ count }} {{ units }} ago.",
+      "TEXT_other": "Most recent data from {{ count }} {{ units }}s ago.",
+      "TOOLTIP": "Report data is stale. Click the Create Recording button and choose an option to start an active recording to source automated reports from."
+    },
+    "TOOLBAR": {
+      "CHECKBOX": {
+        "SHOW_NA": {
+          "LABEL": "Show N/A scores"
+        }
+      },
+      "DELETE": {
+        "LABEL": "Delete automated analysis"
+      },
+      "LABEL": "Automated Analysis Toolbar",
+      "REFRESH": {
+        "LABEL": "Refresh automated analysis"
+      },
+      "SWITCH": {
+        "LIST_VIEW": {
+          "LABEL": "Toggle list view"
+        }
+      }
+    },
+    "WARNING_RESULTS_one": "{{count}} Warning Result",
+    "WARNING_RESULTS_other": "{{count}} Warning Results"
+  },
+  "AutomatedAnalysisConfigDrawer": {
+    "INPUT_GROUP": {
+      "CREATE_RECORDING": {
+        "LABEL": "Create Recording"
+      },
+      "OPEN_SETTINGS": {
+        "LABEL": "Open Settings"
+      }
+    }
+  },
+  "AutomatedAnalysisConfigForm": {
+    "ERROR_TITLE": "Error displaying recording configuration settings",
+    "FORM_TITLE": "Profiling Recording Configuration",
+    "TEMPLATE_HELPER_TEXT": "The Event Template to be applied to Automated Analysis recordings.",
+    "TEMPLATE_INVALID_WARNING": "WARNING: Setting a Target Template as a default template type configuration may not apply to all Target JVMs if the JVMs do not support them."
+  },
+  "AutomatedAnalysisScoreFilter": {
+    "CURRENT_SCORE_TEXT": "Only showing analysis results with severity scores ≥ {{ val }}:",
+    "SLIDER": {
+      "RESET0": {
+        "LABEL": "Reset score to 0"
+      },
+      "RESET100": {
+        "LABEL": "Reset score to 100"
+      }
+    },
+    "TOOLTIP": {
+      "CONTENT": "Severity scores are calculated based on the number of JFR events that were triggered by the application in the time the report was generated."
+    }
+  },
   "CHART_CARD": {
     "BUTTONS": {
       "CREATE": {
@@ -24,10 +99,39 @@
         "LABEL": "Synchronize {{chartKind}} chart"
       }
     },
+    "CARD_DESCRIPTION": "Display common performance metrics.",
+    "CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported types. Data is displayed from the present moment back to a specified duration.",
+    "CARD_TITLE": "Metrics Card",
     "NO_RECORDING": {
       "DESCRIPTION": "Metrics cards display data taken from running flight recordings with the label <label>origin={{recordingName}}</label>. No such recordings are currently available.",
       "TITLE": "No source recording"
+    },
+    "PROP_CONTROLS": {
+      "DATA_WINDOW": {
+        "DESCRIPTION": "The data window width in seconds.",
+        "NAME": "Data Window"
+      },
+      "PERFORMANCE_METRIC": {
+        "DESCRIPTION": "Select a performance metric to display",
+        "NAME": "Performance Metric"
+      },
+      "REFRESH_PERIOD": {
+        "DESCRIPTION": "The chart refresh period in seconds.",
+        "NAME": "Refresh Period"
+      },
+      "THEME": {
+        "DESCRIPTION": "Select a colour theme",
+        "NAME": "Theme"
+      }
     }
+  },
+  "ClickableAutomatedAnalysisLabel": {
+    "ARIA_LABELS": {
+      "POPOVER": "automated-analysis-description-popover"
+    }
+  },
+  "Dashboard": {
+    "PAGE_TITLE": "Dashboard"
   },
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
@@ -52,6 +156,11 @@
       "LISTBOX": "Select AM or PM"
     }
   },
+  "NonePlaceholderCard": {
+    "CARD_DESCRIPTION": "None placeholder",
+    "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with no config.",
+    "CARD_TITLE": "None Placeholder"
+  },
   "SETTINGS": {
     "AUTO_REFRESH": {
       "CHECKBOX_LABEL": "Enabled",
@@ -59,10 +168,7 @@
       "TITLE": "Auto-Refresh"
     },
     "AUTOMATED_ANALYSIS_CONFIG": {
-      "CURRENT_CONFIG": "Current configuration",
       "DESCRIPTION": "Set the recording configuration for automated analysis recordings. You may want smaller or larger values for max-age and max-size depending on how recent you want events to be recorded from the analysis.",
-      "SHOW_LESS": "Hide configuration edit",
-      "SHOW_MORE": "Show configuration edit",
       "TITLE": "Automated Analysis Recording Configuration"
     },
     "CATEGORIES": {

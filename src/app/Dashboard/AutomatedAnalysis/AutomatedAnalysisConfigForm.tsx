@@ -37,20 +37,17 @@
  */
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
   TemplateType,
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { automatedAnalysisConfigToRecordingAttributes } from '@app/Shared/Services/Settings.service';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
-  ActionGroup,
-  Button,
   Form,
   FormGroup,
   FormSection,
@@ -65,61 +62,46 @@ import {
   TextVariants,
   ValidatedOptions,
 } from '@patternfly/react-core';
-import { CogIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { concatMap, filter, first } from 'rxjs';
 interface AutomatedAnalysisConfigFormProps {
-  onCreate?: () => void;
-  onSave?: () => void;
-  isSettingsForm: boolean;
+  useTitle?: boolean;
 }
 
-export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({
-  onCreate,
-  onSave,
-  ...props
-}) => {
+export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({ useTitle = false }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const { t } = useTranslation();
 
+  const parseEventString = React.useMemo((): [string | undefined, TemplateType | undefined] => {
+    const eventString = context.settings.automatedAnalysisRecordingConfig().template;
+    if (!eventString) {
+      return [undefined, undefined];
+    }
+    const templateName = eventString.split(',')[0].split('=')[1];
+    const templateType = eventString.split(',')[1].split('=')[1];
+    if (!(templateType === 'TARGET' || templateType === 'CUSTOM')) {
+      console.error(`Invalid template type ${templateType}`);
+      return [undefined, undefined];
+    }
+    return [templateName, templateType];
+  }, [context.settings]);
+  const [recordingConfig, setRecordingConfig] = React.useState<AutomatedAnalysisRecordingConfig>(
+    context.settings.automatedAnalysisRecordingConfig()
+  );
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
-  const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
-  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(undefined);
-  const [maxAge, setMaxAge] = React.useState(context.settings.automatedAnalysisRecordingConfig().maxAge);
+  const [templateName, setTemplateName] = React.useState<string | undefined>(parseEventString[0]);
+  const [templateType, setTemplateType] = React.useState<TemplateType | undefined>(parseEventString[1]);
+  const [maxAge, setMaxAge] = React.useState(recordingConfig.maxAge);
   const [maxAgeUnits, setMaxAgeUnits] = React.useState(1);
-  const [maxSize, setMaxSize] = React.useState(context.settings.automatedAnalysisRecordingConfig().maxSize);
+  const [maxSize, setMaxSize] = React.useState(recordingConfig.maxSize);
   const [maxSizeUnits, setMaxSizeUnits] = React.useState(1);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSaveLoading, setIsSaveLoading] = React.useState(false);
-  const [showHelperMessage, setShowHelperMessage] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
-
-  const createButtonLoadingProps = React.useMemo(
-    () =>
-      ({
-        spinnerAriaValueText: 'Creating',
-        spinnerAriaLabel: 'create-active-recording',
-        isLoading: isLoading,
-      } as LoadingPropsType),
-    [isLoading]
-  );
-
-  const saveButtonLoadingProps = React.useMemo(
-    () =>
-      ({
-        spinnerAriaValueText: 'Saving',
-        spinnerAriaLabel: 'save-config-settings',
-        isLoading: isSaveLoading,
-      } as LoadingPropsType),
-    [isSaveLoading]
-  );
-
-  const isFormInvalid: boolean = React.useMemo(() => {
-    return !templateName || !templateType;
-  }, [templateName, templateType]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const refreshTemplates = React.useCallback(() => {
+    setIsLoading(true);
     addSubscription(
       context.target
         .target()
@@ -143,58 +125,28 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           },
         })
     );
-  }, [addSubscription, context.target, context.api, setErrorMessage, setTemplates]);
+  }, [addSubscription, context.target, context.api, setErrorMessage, setTemplates, setIsLoading]);
 
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
         setErrorMessage(authFailMessage);
         setTemplates([]);
+        setIsLoading(false);
       })
     );
-  }, [addSubscription, context.target, setErrorMessage, setTemplates]);
+  }, [addSubscription, context.target, setErrorMessage, setTemplates, setIsLoading]);
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refreshTemplates));
-  }, [addSubscription, context.target, refreshTemplates]);
+    addSubscription(
+      context.target.target().subscribe(() => {
+        refreshTemplates();
+        setIsLoading(false);
+      })
+    );
+  }, [addSubscription, context.target, refreshTemplates, setIsLoading]);
 
-  const handleMaxAgeChange = React.useCallback(
-    (evt) => {
-      setMaxAge(Number(evt));
-    },
-    [setMaxAge]
-  );
-
-  const handleMaxAgeUnitChange = React.useCallback(
-    (evt) => {
-      setMaxAgeUnits(Number(evt));
-    },
-    [setMaxAgeUnits]
-  );
-
-  const handleMaxSizeChange = React.useCallback(
-    (evt) => {
-      setMaxSize(Number(evt));
-    },
-    [setMaxSize]
-  );
-
-  const handleMaxSizeUnitChange = React.useCallback(
-    (evt) => {
-      setMaxSizeUnits(Number(evt));
-    },
-    [setMaxSizeUnits]
-  );
-
-  const handleTemplateChange = React.useCallback(
-    (templateName?: string, templateType?: TemplateType) => {
-      setTemplateName(templateName);
-      setTemplateType(templateType);
-    },
-    [setTemplateName, setTemplateType]
-  );
-
-  const getEventString = React.useCallback(() => {
+  const getEventString = React.useCallback((templateName: string, templateType: string) => {
     let str = '';
     if (templateName) {
       str += `template=${templateName}`;
@@ -203,68 +155,62 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
       str += `,type=${templateType}`;
     }
     return str;
-  }, [templateName, templateType]);
+  }, []);
 
-  const handleSubmit = React.useCallback(() => {
-    setIsLoading(true);
-    const config: AutomatedAnalysisRecordingConfig = {
-      template: getEventString(),
-      maxAge: maxAge * maxAgeUnits,
-      maxSize: maxSize * maxSizeUnits,
-    };
-    const recordingAttributes = automatedAnalysisConfigToRecordingAttributes(config);
-    addSubscription(
-      context.api.createRecording(recordingAttributes).subscribe({
-        next: (resp) => {
-          if (resp && resp.ok) {
-            onCreate && onCreate();
-          }
-          setIsLoading(false);
-        },
-        error: () => {
-          setIsLoading(false);
-        },
-      })
-    );
-  }, [
-    addSubscription,
-    context.api,
-    setIsLoading,
-    getEventString,
-    onCreate,
-    maxAge,
-    maxAgeUnits,
-    maxSize,
-    maxSizeUnits,
-  ]);
+  const setAAConfig = React.useCallback(
+    (config: AutomatedAnalysisRecordingConfig) => {
+      setRecordingConfig(config);
+      context.settings.setAutomatedAnalysisRecordingConfig(config);
+    },
+    [context.settings, setRecordingConfig]
+  );
 
-  const handleSaveConfig = React.useCallback(() => {
-    const options: AutomatedAnalysisRecordingConfig = {
-      template: getEventString(),
-      maxAge: maxAge * maxAgeUnits,
-      maxSize: maxSize * maxSizeUnits,
-    };
-    context.settings.setAutomatedAnalysisRecordingConfig(options);
-    setIsSaveLoading(true);
-    const timer = setTimeout(() => {
-      setShowHelperMessage(true);
-      if (onSave) {
-        onSave();
+  const handleMaxAgeChange = React.useCallback(
+    (evt) => {
+      setMaxAge(Number(evt));
+      setAAConfig({ ...recordingConfig, maxAge: Number(evt) * maxAgeUnits });
+    },
+    [setMaxAge, setAAConfig, recordingConfig, maxAgeUnits]
+  );
+
+  const handleMaxAgeUnitChange = React.useCallback(
+    (evt) => {
+      setMaxAgeUnits(Number(evt));
+      setAAConfig({ ...recordingConfig, maxAge: Number(evt) * maxAge });
+    },
+    [setMaxAgeUnits, setAAConfig, recordingConfig, maxAge]
+  );
+
+  const handleMaxSizeChange = React.useCallback(
+    (evt) => {
+      setMaxSize(Number(evt));
+      setAAConfig({ ...recordingConfig, maxSize: Number(evt) * maxSizeUnits });
+    },
+    [setMaxSize, setAAConfig, recordingConfig, maxSizeUnits]
+  );
+
+  const handleMaxSizeUnitChange = React.useCallback(
+    (evt) => {
+      setMaxSizeUnits(Number(evt));
+      setAAConfig({ ...recordingConfig, maxSize: Number(evt) * maxSize });
+    },
+    [setMaxSizeUnits, setAAConfig, recordingConfig, maxSize]
+  );
+
+  const handleTemplateChange = React.useCallback(
+    (templateName?: string, templateType?: TemplateType) => {
+      setTemplateName(templateName);
+      setTemplateType(templateType);
+      if (!templateName || !templateType) {
+        return;
       }
-      setIsSaveLoading(false);
-    }, 500);
-    return () => clearInterval(timer);
-  }, [
-    getEventString,
-    setIsSaveLoading,
-    setShowHelperMessage,
-    onSave,
-    maxAge,
-    maxAgeUnits,
-    maxSize,
-    maxSizeUnits,
-    context.settings,
-  ]);
+      setAAConfig({
+        ...recordingConfig,
+        template: getEventString(templateName || '', templateType || ''),
+      });
+    },
+    [recordingConfig, setTemplateName, setTemplateType, setAAConfig, getEventString]
+  );
 
   const authRetry = React.useCallback(() => {
     context.target.setAuthRetry();
@@ -281,22 +227,25 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
     () => (
       <>
         <FormGroup
-          label="Template"
+          label={t(`TEMPLATE`, { ns: 'common' })}
           isRequired
           fieldId="recording-template"
-          validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
-          helperText="The Event Template to be applied in this recording"
-          helperTextInvalid="A Template must be selected"
+          validated={!templateName ? ValidatedOptions.error : ValidatedOptions.success}
+          helperText={t('AutomatedAnalysisConfigForm.TEMPLATE_HELPER_TEXT')}
+          helperTextInvalid={t('TEMPLATE_HELPER_TEXT_INVALID', { ns: 'common' })}
         >
           <SelectTemplateSelectorForm
             templates={templates}
-            validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
-            disabled={isLoading || isSaveLoading}
+            validated={!templateName ? ValidatedOptions.error : ValidatedOptions.success}
             onSelect={handleTemplateChange}
             selected={selectedSpecifier}
           />
         </FormGroup>
-        <FormGroup label="Maximum size" fieldId="maxSize" helperText="The maximum size of recording data saved to disk">
+        <FormGroup
+          label={t('MAXIMUM_SIZE', { ns: 'common' })}
+          fieldId="maxSize"
+          helperText={t('MAXIMUM_SIZE_HELPER_TEXT', { ns: 'common' })}
+        >
           <Split hasGutter={true}>
             <SplitItem isFilled>
               <TextInput
@@ -304,18 +253,16 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 isRequired
                 type="number"
                 id="maxSize"
-                aria-label="max size value"
+                aria-label={t('AriaLabels.MAXIMUM_SIZE', { ns: 'common' })}
                 onChange={handleMaxSizeChange}
                 min="0"
-                isDisabled={isLoading || isSaveLoading}
               />
             </SplitItem>
             <SplitItem>
               <FormSelect
                 value={maxSizeUnits}
                 onChange={handleMaxSizeUnitChange}
-                aria-label="Max size units input"
-                isDisabled={isLoading || isSaveLoading}
+                aria-label={t('AriaLabels.MAXIMUM_SIZE_UNITS_INPUT', { ns: 'common' })}
               >
                 <FormSelectOption key="1" value="1" label="B" />
                 <FormSelectOption key="2" value={1024} label="KiB" />
@@ -324,7 +271,11 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
             </SplitItem>
           </Split>
         </FormGroup>
-        <FormGroup label="Maximum age" fieldId="maxAge" helperText="The maximum age of recording data stored to disk">
+        <FormGroup
+          label={t('MAXIMUM_AGE', { ns: 'common' })}
+          fieldId="maxAge"
+          helperText={t('MAXIMUM_AGE_HELPER_TEXT', { ns: 'common' })}
+        >
           <Split hasGutter={true}>
             <SplitItem isFilled>
               <TextInput
@@ -332,118 +283,70 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
                 isRequired
                 type="number"
                 id="maxAgeDuration"
-                aria-label="Max age duration"
+                aria-label={t('AriaLabels.MAXIMUM_AGE', { ns: 'common' })}
                 onChange={handleMaxAgeChange}
                 min="0"
-                isDisabled={isLoading || isSaveLoading}
               />
             </SplitItem>
             <SplitItem>
               <FormSelect
                 value={maxAgeUnits}
                 onChange={handleMaxAgeUnitChange}
-                aria-label="Max Age units Input"
-                isDisabled={isLoading || isSaveLoading}
+                aria-label={t('AriaLabels.MAXIMUM_AGE_UNITS_INPUT', { ns: 'common' })}
               >
-                <FormSelectOption key="1" value="1" label="Seconds" />
-                <FormSelectOption key="2" value={60} label="Minutes" />
-                <FormSelectOption key="3" value={60 * 60} label="Hours" />
+                <FormSelectOption key="1" value="1" label={t('SECOND', { count: 0, ns: 'common' })} />
+                <FormSelectOption key="2" value={60} label={t('MINUTE', { count: 0, ns: 'common' })} />
+                <FormSelectOption key="3" value={60 * 60} label={t('HOUR', { count: 0, ns: 'common' })} />
               </FormSelect>
             </SplitItem>
           </Split>
         </FormGroup>
-        <ActionGroup>
-          {props.isSettingsForm || (
-            <Button
-              variant="primary"
-              onClick={handleSubmit}
-              isDisabled={isFormInvalid || isLoading}
-              {...createButtonLoadingProps}
-            >
-              {isLoading ? 'Creating' : 'Create'}
-            </Button>
-          )}
-          <Button
-            variant={props.isSettingsForm ? 'primary' : 'secondary'}
-            onClick={handleSaveConfig}
-            isDisabled={isFormInvalid || isSaveLoading}
-            {...saveButtonLoadingProps}
-          >
-            {isSaveLoading ? 'Saving' : 'Save configuration'}
-          </Button>
-          {showHelperMessage && !isSaveLoading && (
-            <HelperText className={`${automatedAnalysisRecordingName}-config-save-helper`}>
-              <HelperTextItem variant="success">
-                <Text component={TextVariants.p}>Automated analysis recording configuration saved.</Text>
-                {!props.isSettingsForm && (
-                  <Text>
-                    You can also change this in the&nbsp;
-                    <Link to="/settings">
-                      <CogIcon /> Settings
-                    </Link>
-                    &nbsp;view.
-                  </Text>
-                )}
-              </HelperTextItem>
-            </HelperText>
-          )}
-          {templateType == 'TARGET' && (
-            <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
-              <HelperTextItem variant="warning">
-                <Text component={TextVariants.p}>
-                  WARNING: Setting a Target Template as a default template type configuration may not apply to all
-                  Target JVMs if they do not support them.
-                </Text>
-              </HelperTextItem>
-            </HelperText>
-          )}
-        </ActionGroup>
+        {templateType == 'TARGET' && (
+          <HelperText className={`${automatedAnalysisRecordingName}-config-save-template-warning-helper`}>
+            <HelperTextItem variant="warning">
+              <Text component={TextVariants.p}>{t('AutomatedAnalysisConfigForm.TEMPLATE_INVALID_WARNING')}</Text>
+            </HelperTextItem>
+          </HelperText>
+        )}
       </>
     ),
     [
+      t,
       templateName,
       templateType,
       templates,
-      isLoading,
-      isSaveLoading,
       selectedSpecifier,
       maxSize,
       maxSizeUnits,
       maxAge,
       maxAgeUnits,
-      isFormInvalid,
-      showHelperMessage,
-      createButtonLoadingProps,
       handleMaxSizeChange,
       handleMaxAgeChange,
       handleMaxSizeUnitChange,
       handleMaxAgeUnitChange,
-      handleSaveConfig,
-      handleSubmit,
       handleTemplateChange,
-      props.isSettingsForm,
-      saveButtonLoadingProps,
     ]
   );
 
   if (errorMessage != '') {
     return (
       <ErrorView
-        title={'Error displaying recording configuration settings'}
+        title={t('AutomatedAnalysisConfigForm.ERROR_TITLE')}
         message={errorMessage}
         retry={isAuthFail(errorMessage) ? authRetry : undefined}
       />
     );
   }
+  if (isLoading) {
+    return <LoadingView />;
+  }
   return (
-    <>
-      {props.isSettingsForm ? (
-        formContent
+    <Form>
+      {useTitle ? (
+        <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
       ) : (
-        <Form>
-          <FormSection title={'Profiling Recording Configuration'}>{formContent}</FormSection>
-        </Form>
+        formContent
       )}
-    </>
+    </Form>
   );
 };

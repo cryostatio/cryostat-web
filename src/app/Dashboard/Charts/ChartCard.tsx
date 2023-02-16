@@ -309,34 +309,33 @@ export const ChartCardSizes: DashboardCardSizes = {
 
 export const ChartCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.BETA,
-  title: 'Metrics Chart',
+  title: 'CHART_CARD.CARD_TITLE',
   cardSizes: ChartCardSizes,
-  description: 'Display common performance metrics.',
-  descriptionFull:
-    'Display a single performance metric from a list of supported types. Data is displayed from the present moment back to a specified duration.',
+  description: 'CHART_CARD.CARD_DESCRIPTION',
+  descriptionFull: 'CHART_CARD.CARD_DESCRIPTION_FULL',
   component: ChartCard,
   propControls: [
     {
-      name: 'Theme',
+      name: 'CHART_CARD.PROP_CONTROLS.THEME.NAME',
       key: 'theme',
       values: ['light', 'dark'],
       defaultValue: 'light',
-      description: 'Select a colour theme',
+      description: 'CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION',
       kind: 'select',
     },
     {
-      name: 'Performance Metric',
+      name: 'CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.NAME',
       key: 'chartKind',
       values: Object.values(ChartKind).filter((v) => typeof v === 'string'),
       defaultValue: Object.values(ChartKind).filter((v) => typeof v === 'string')[0],
-      description: 'Select the metric to display in this card.', // TODO should this be a function that returns a value based on the selection?
+      description: 'CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.DESCRIPTION', // TODO should this be a function that returns a value based on the selection?
       kind: 'select',
     },
     {
-      name: 'Data Window',
+      name: 'CHART_CARD.PROP_CONTROLS.DATA_WINDOW.NAME',
       key: 'duration',
       defaultValue: 120,
-      description: 'The data window width in seconds.',
+      description: 'CHART_CARD.PROP_CONTROLS.DATA_WINDOW.DESCRIPTION',
       kind: 'number',
       extras: {
         min: 30,
@@ -344,10 +343,10 @@ export const ChartCardDescriptor: DashboardCardDescriptor = {
       },
     },
     {
-      name: 'Refresh Period',
+      name: 'CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.NAME',
       key: 'period',
       defaultValue: 10,
-      description: 'The chart refresh period in seconds.',
+      description: 'CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.DESCRIPTION',
       kind: 'number',
       extras: {
         min: 5,

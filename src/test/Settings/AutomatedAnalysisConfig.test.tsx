@@ -40,10 +40,8 @@
 import { AutomatedAnalysisConfig } from '@app/Settings/AutomatedAnalysisConfig';
 import { defaultAutomatedAnalysisRecordingConfig } from '@app/Shared/Services/Api.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { screen } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { renderWithServiceContext } from '../Common';
 
 jest.mock('@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm', () => ({
   AutomatedAnalysisConfigForm: (_: any) => <>Automated Analysis Configuration Form</>,
@@ -68,15 +66,5 @@ describe('<AutomatedAnalysisConfig/>', () => {
       );
     });
     expect(tree.toJSON()).toMatchSnapshot();
-  });
-
-  it('should display current configurations', async () => {
-    renderWithServiceContext(React.createElement(AutomatedAnalysisConfig.content, null));
-
-    Object.values(defaultAutomatedAnalysisRecordingConfig).forEach((v) => {
-      const currentConfig = screen.getByText(v);
-      expect(currentConfig).toBeInTheDocument();
-      expect(currentConfig).toBeVisible();
-    });
   });
 });

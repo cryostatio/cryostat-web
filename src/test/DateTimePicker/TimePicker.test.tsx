@@ -41,7 +41,7 @@ import { cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { TimePicker } from '../../app/DateTimePicker/TimePicker';
-import { renderDefault, testTranslate } from '../Common';
+import { renderDefault, testT } from '../Common';
 
 const onHourSelect = jest.fn((_) => undefined);
 const onMinuteSelect = jest.fn((_) => undefined);
@@ -94,29 +94,29 @@ describe('<TimePicker/>', () => {
       />
     );
 
-    const switchenable24h = screen.getByLabelText(testTranslate('TimePicker.24HOUR'));
+    const switchenable24h = screen.getByLabelText(testT('TimePicker.24HOUR'));
     expect(switchenable24h).toBeInTheDocument();
     expect(switchenable24h).toBeVisible();
     expect(switchenable24h).toBeChecked();
 
     await user.click(switchenable24h);
 
-    const hInput = within(screen.getByLabelText(testTranslate('HOUR', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INPUT_HOUR12_VALUE')
+    const hInput = within(screen.getByLabelText(testT('HOUR', 'common'))).getByLabelText(
+      testT('TimeSpinner.INPUT_HOUR12_VALUE')
     );
     expect(hInput).toBeInTheDocument();
     expect(hInput).toBeVisible();
     expect(hInput.getAttribute('value')).toBe(format2Digit(mockSelectedIn12hr.hour12));
 
-    const mInput = within(screen.getByLabelText(testTranslate('MINUTE', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INPUT_MINUTE_VALUE')
+    const mInput = within(screen.getByLabelText(testT('MINUTE', 'common'))).getByLabelText(
+      testT('TimeSpinner.INPUT_MINUTE_VALUE')
     );
     expect(mInput).toBeInTheDocument();
     expect(mInput).toBeVisible();
     expect(mInput.getAttribute('value')).toBe(format2Digit(mockSelectedIn12hr.minute));
 
-    const sInput = within(screen.getByLabelText(testTranslate('SECOND', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INPUT_SECOND_VALUE')
+    const sInput = within(screen.getByLabelText(testT('SECOND', 'common'))).getByLabelText(
+      testT('TimeSpinner.INPUT_SECOND_VALUE')
     );
     expect(sInput).toBeInTheDocument();
     expect(sInput).toBeVisible();
@@ -138,8 +138,8 @@ describe('<TimePicker/>', () => {
       />
     );
 
-    const upHour = within(screen.getByLabelText(testTranslate('HOUR', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INCREMENT_HOUR24_VALUE')
+    const upHour = within(screen.getByLabelText(testT('HOUR', 'common'))).getByLabelText(
+      testT('TimeSpinner.INCREMENT_HOUR24_VALUE')
     );
     expect(upHour).toBeInTheDocument();
     expect(upHour).toBeVisible();
@@ -149,8 +149,8 @@ describe('<TimePicker/>', () => {
     expect(onHourSelect).toHaveBeenCalledTimes(1);
     expect(onHourSelect).toHaveBeenCalledWith(14);
 
-    const downHour = within(screen.getByLabelText(testTranslate('HOUR', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.DECREMENT_HOUR24_VALUE')
+    const downHour = within(screen.getByLabelText(testT('HOUR', 'common'))).getByLabelText(
+      testT('TimeSpinner.DECREMENT_HOUR24_VALUE')
     );
     expect(downHour).toBeInTheDocument();
     expect(downHour).toBeVisible();
@@ -160,8 +160,8 @@ describe('<TimePicker/>', () => {
     expect(onHourSelect).toHaveBeenCalledTimes(2);
     expect(onHourSelect).toHaveBeenLastCalledWith(12);
 
-    const upMinute = within(screen.getByLabelText(testTranslate('MINUTE', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INCREMENT_MINUTE_VALUE')
+    const upMinute = within(screen.getByLabelText(testT('MINUTE', 'common'))).getByLabelText(
+      testT('TimeSpinner.INCREMENT_MINUTE_VALUE')
     );
     expect(upMinute).toBeInTheDocument();
     expect(upMinute).toBeVisible();
@@ -171,8 +171,8 @@ describe('<TimePicker/>', () => {
     expect(onMinuteSelect).toHaveBeenCalledTimes(1);
     expect(onMinuteSelect).toHaveBeenCalledWith(12);
 
-    const downMinute = within(screen.getByLabelText(testTranslate('MINUTE', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.DECREMENT_MINUTE_VALUE')
+    const downMinute = within(screen.getByLabelText(testT('MINUTE', 'common'))).getByLabelText(
+      testT('TimeSpinner.DECREMENT_MINUTE_VALUE')
     );
     expect(downMinute).toBeInTheDocument();
     expect(downMinute).toBeVisible();
@@ -182,8 +182,8 @@ describe('<TimePicker/>', () => {
     expect(onMinuteSelect).toHaveBeenCalledTimes(2);
     expect(onMinuteSelect).toHaveBeenCalledWith(10);
 
-    const upSecond = within(screen.getByLabelText(testTranslate('SECOND', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INCREMENT_SECOND_VALUE')
+    const upSecond = within(screen.getByLabelText(testT('SECOND', 'common'))).getByLabelText(
+      testT('TimeSpinner.INCREMENT_SECOND_VALUE')
     );
     expect(upSecond).toBeInTheDocument();
     expect(upSecond).toBeVisible();
@@ -193,8 +193,8 @@ describe('<TimePicker/>', () => {
     expect(onSecondSelect).toHaveBeenCalledTimes(1);
     expect(onSecondSelect).toHaveBeenCalledWith(12);
 
-    const downSecond = within(screen.getByLabelText(testTranslate('SECOND', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.DECREMENT_SECOND_VALUE')
+    const downSecond = within(screen.getByLabelText(testT('SECOND', 'common'))).getByLabelText(
+      testT('TimeSpinner.DECREMENT_SECOND_VALUE')
     );
     expect(downSecond).toBeInTheDocument();
     expect(downSecond).toBeVisible();
@@ -215,8 +215,8 @@ describe('<TimePicker/>', () => {
       />
     );
 
-    const hInput = within(screen.getByLabelText(testTranslate('HOUR', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INPUT_HOUR24_VALUE')
+    const hInput = within(screen.getByLabelText(testT('HOUR', 'common'))).getByLabelText(
+      testT('TimeSpinner.INPUT_HOUR24_VALUE')
     );
     expect(hInput).toBeInTheDocument();
     expect(hInput).toBeVisible();
@@ -225,8 +225,8 @@ describe('<TimePicker/>', () => {
     expect(onHourSelect).toHaveBeenCalledTimes(1);
     expect(onHourSelect).toHaveBeenLastCalledWith(1);
 
-    const mInput = within(screen.getByLabelText(testTranslate('MINUTE', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INPUT_MINUTE_VALUE')
+    const mInput = within(screen.getByLabelText(testT('MINUTE', 'common'))).getByLabelText(
+      testT('TimeSpinner.INPUT_MINUTE_VALUE')
     );
     expect(mInput).toBeInTheDocument();
     expect(mInput).toBeVisible();
@@ -235,8 +235,8 @@ describe('<TimePicker/>', () => {
     expect(onHourSelect).toHaveBeenCalledTimes(1);
     expect(onHourSelect).toHaveBeenLastCalledWith(1);
 
-    const sInput = within(screen.getByLabelText(testTranslate('SECOND', 'common'))).getByLabelText(
-      testTranslate('TimeSpinner.INPUT_SECOND_VALUE')
+    const sInput = within(screen.getByLabelText(testT('SECOND', 'common'))).getByLabelText(
+      testT('TimeSpinner.INPUT_SECOND_VALUE')
     );
     expect(sInput).toBeInTheDocument();
     expect(sInput).toBeVisible();

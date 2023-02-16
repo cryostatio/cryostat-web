@@ -35,59 +35,67 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import i18n from '@app/../i18n/config';
-import { About } from '@app/About/About';
-import { cleanup, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import * as React from 'react';
-import { I18nextProvider } from 'react-i18next';
+import { AutomatedAnalysisCardList } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisCardList';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { store } from '@app/Shared/Redux/ReduxStore';
+import { CategorizedRuleEvaluations, RuleEvaluation } from '@app/Shared/Services/Report.service';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import React from 'react';
+import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
-import { renderDefault, testT } from '../Common';
-jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
-  return {
-    BreadcrumbPage: jest.fn((props) => {
-      return (
-        <div>
-          {props.pageTitle}
-          {props.children}
-        </div>
-      );
-    }),
-  };
-});
+import '../../Common';
 
-jest.mock('@app/About/AboutDescription', () => {
-  return {
-    ...jest.requireActual('@app/About/AboutDescription'),
-    AboutDescription: jest.fn(() => {
-      return <div>AboutDescription</div>;
-    }),
-  };
-});
+const mockRuleEvaluation1: RuleEvaluation = {
+  name: 'rule1',
+  description: 'rule1 description',
+  score: 100,
+  topic: 'myTopic',
+};
 
-describe('<About />', () => {
-  afterEach(cleanup);
+const mockRuleEvaluation2: RuleEvaluation = {
+  name: 'rule2',
+  description: 'rule2 description',
+  score: 0,
+  topic: 'fakeTopic',
+};
 
+const mockRuleEvaluation3: RuleEvaluation = {
+  name: 'rule3',
+  description: 'rule3 description',
+  score: 55,
+  topic: 'fakeTopic',
+};
+
+const mockNaRuleEvaluation: RuleEvaluation = {
+  name: 'N/A rule',
+  description: 'N/A description',
+  score: -1,
+  topic: 'fakeTopic',
+};
+
+const mockEvaluations1: RuleEvaluation[] = [mockRuleEvaluation1];
+
+const mockEvaluations2: RuleEvaluation[] = [mockRuleEvaluation2, mockRuleEvaluation3, mockNaRuleEvaluation];
+
+const mockCategorizedEvaluations: CategorizedRuleEvaluations[] = [
+  [mockRuleEvaluation1.topic, mockEvaluations1],
+  [mockRuleEvaluation2.topic, mockEvaluations2],
+];
+
+describe('<AutomatedAnalysisCardList />', () => {
   it('renders correctly', async () => {
     let tree;
     await act(async () => {
-      tree = renderer.create(<About />);
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <Provider store={store}>
+              <AutomatedAnalysisCardList evaluations={mockCategorizedEvaluations} />
+            </Provider>
+          </NotificationsContext.Provider>
+        </ServiceContext.Provider>
+      );
     });
     expect(tree.toJSON()).toMatchSnapshot();
-  });
-
-  it('contains the correct information', async () => {
-    renderDefault(
-      <I18nextProvider i18n={i18n}>
-        <About />
-      </I18nextProvider>
-    );
-
-    expect(screen.getByText('About')).toBeInTheDocument();
-    const logo = screen.getByRole('img');
-    expect(logo).toHaveClass('pf-c-brand cryostat-logo');
-    expect(logo).toHaveAttribute('alt', 'Cryostat');
-    expect(logo).toHaveAttribute('src', 'test-file-stub');
-    expect(screen.getByText(testT('CRYOSTAT_TRADEMARK', 'common'))).toBeInTheDocument();
   });
 });

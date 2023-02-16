@@ -47,7 +47,7 @@ import { cleanup, screen } from '@testing-library/react';
 import * as React from 'react';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithServiceContextAndRouter, testTranslate } from '../Common';
+import { renderWithServiceContextAndRouter, testT } from '../Common';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 
@@ -173,14 +173,14 @@ describe('<Settings/>', () => {
   it.skip('should not show tabs with featureLevel lower than current', async () => {
     renderWithServiceContextAndRouter(<Settings />);
 
-    const hiddenTab = screen.queryByText(testTranslate('SETTINGS.CATEGORIES.LANGUAGE_REGION'));
+    const hiddenTab = screen.queryByText(testT('SETTINGS.CATEGORIES.LANGUAGE_REGION'));
     expect(hiddenTab).not.toBeInTheDocument();
   });
 
   it('should select Connectivity tab as default', async () => {
     renderWithServiceContextAndRouter(<Settings />);
 
-    const generalTab = screen.getByRole('tab', { name: testTranslate('SETTINGS.CATEGORIES.CONNECTIVITY') });
+    const generalTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.CONNECTIVITY') });
     expect(generalTab).toBeInTheDocument();
     expect(generalTab).toBeVisible();
     expect(generalTab.getAttribute('aria-selected')).toBe('true');
@@ -189,7 +189,7 @@ describe('<Settings/>', () => {
   it('should update setting content when a tab is selected', async () => {
     const { user } = renderWithServiceContextAndRouter(<Settings />);
 
-    const dashboardTab = screen.getByRole('tab', { name: testTranslate('SETTINGS.CATEGORIES.DASHBOARD') });
+    const dashboardTab = screen.getByRole('tab', { name: testT('SETTINGS.CATEGORIES.DASHBOARD') });
     expect(dashboardTab).toBeInTheDocument();
     expect(dashboardTab).toBeVisible();
     expect(dashboardTab.getAttribute('aria-selected')).toBe('false');

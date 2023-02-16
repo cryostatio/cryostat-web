@@ -11,7 +11,7 @@ module.exports = {
     defaultNamespace: 'public',
     // Default namespace used in your i18next config
   
-    defaultValue: 'temp',
+    defaultValue: 'cryostat_tmp',
     // Default value to give to empty keys
   
     indentation: 2,

@@ -42,7 +42,7 @@ import { defaultDatetimeFormat, locales } from '@i18n/datetime';
 import { act, cleanup, screen, within } from '@testing-library/react';
 import * as React from 'react';
 import { of } from 'rxjs';
-import { renderWithServiceContext, testTranslate } from '../Common';
+import { renderWithServiceContext, testT } from '../Common';
 
 jest.mock('@app/DateTimePicker/TimezonePicker', () => ({
   TimezonePicker: (_) => <>TimezonePicker</>,
@@ -81,7 +81,7 @@ describe('<DatetimeControl/>', () => {
       await user.click(optionMenu);
     });
 
-    const ul = screen.getByLabelText(testTranslate('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.LOCALE_SELECT'));
+    const ul = screen.getByLabelText(testT('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.LOCALE_SELECT'));
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 
@@ -103,7 +103,7 @@ describe('<DatetimeControl/>', () => {
       await user.click(optionMenu);
     });
 
-    const ul = screen.getByLabelText(testTranslate('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.LOCALE_SELECT'));
+    const ul = screen.getByLabelText(testT('SETTINGS.DATETIME_CONTROL.ARIA_LABELS.LOCALE_SELECT'));
     expect(ul).toBeInTheDocument();
     expect(ul).toBeVisible();
 

@@ -35,59 +35,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import i18n from '@app/../i18n/config';
-import { About } from '@app/About/About';
-import { cleanup, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import * as React from 'react';
-import { I18nextProvider } from 'react-i18next';
-import renderer, { act } from 'react-test-renderer';
-import { renderDefault, testT } from '../Common';
-jest.mock('@app/BreadcrumbPage/BreadcrumbPage', () => {
-  return {
-    BreadcrumbPage: jest.fn((props) => {
-      return (
-        <div>
-          {props.pageTitle}
-          {props.children}
-        </div>
-      );
-    }),
-  };
-});
-
-jest.mock('@app/About/AboutDescription', () => {
-  return {
-    ...jest.requireActual('@app/About/AboutDescription'),
-    AboutDescription: jest.fn(() => {
-      return <div>AboutDescription</div>;
-    }),
-  };
-});
-
-describe('<About />', () => {
-  afterEach(cleanup);
-
-  it('renders correctly', async () => {
-    let tree;
-    await act(async () => {
-      tree = renderer.create(<About />);
-    });
-    expect(tree.toJSON()).toMatchSnapshot();
-  });
-
-  it('contains the correct information', async () => {
-    renderDefault(
-      <I18nextProvider i18n={i18n}>
-        <About />
-      </I18nextProvider>
-    );
-
-    expect(screen.getByText('About')).toBeInTheDocument();
-    const logo = screen.getByRole('img');
-    expect(logo).toHaveClass('pf-c-brand cryostat-logo');
-    expect(logo).toHaveAttribute('alt', 'Cryostat');
-    expect(logo).toHaveAttribute('src', 'test-file-stub');
-    expect(screen.getByText(testT('CRYOSTAT_TRADEMARK', 'common'))).toBeInTheDocument();
-  });
-});
+/**
+ * t('AutomatedAnalysisCard.CARD_TITLE')
+ * t('AutomatedAnalysisCard.CARD_DESCRIPTION')
+ * t('AutomatedAnalysisCard.CARD_DESCRIPTION_FULL')
+ * t('CHART_CARD.CARD_TITLE')
+ * t('CHART_CARD.CARD_DESCRIPTION')
+ * t('CHART_CARD.CARD_DESCRIPTION_FULL')
+ * t('CHART_CARD.PROP_CONTROLS.THEME.NAME')
+ * t('CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION')
+ * t('CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.NAME')
+ * t('CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.DESCRIPTION')
+ * t('CHART_CARD.PROP_CONTROLS.DATA_WINDOW.NAME')
+ * t('CHART_CARD.PROP_CONTROLS.DATA_WINDOW.DESCRIPTION')
+ * t('CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.NAME')
+ * t('CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.DESCRIPTION')
+ * t('NonePlaceholderCard.CARD_TITLE')
+ * t('NonePlaceholderCard.CARD_DESCRIPTION')
+ * t('NonePlaceholderCard.CARD_DESCRIPTION_FULL')
+ * t('AllPlaceholderCard.CARD_TITLE')
+ * t('AllPlaceholderCard.CARD_DESCRIPTION')
+ * t('AllPlaceholderCard.CARD_DESCRIPTION_FULL')
+ **/
