@@ -113,7 +113,6 @@ export class MBeanMetricsChartController {
   }
 
   requestRefresh(): void {
-    this._loading$.next(true);
     this._updates$.next();
   }
 
