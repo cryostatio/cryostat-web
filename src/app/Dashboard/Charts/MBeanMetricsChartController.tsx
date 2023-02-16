@@ -155,13 +155,13 @@ export class MBeanMetricsChartController {
     const m = new Map<string, Set<string>>();
     this._metrics.forEach((fields, category) => {
       const s = m.get(category) || new Set<string>();
-      fields.forEach(f => s.add(f));
+      fields.forEach((f) => s.add(f));
       m.set(category, s);
     });
     m.forEach((s, k) => {
       let l = `${k} {`;
-      s.forEach(f => l+=`\t${f}\n`);
-      l += '}'
+      s.forEach((f) => (l += `\t${f}\n`));
+      l += '}';
       q.push(l);
     });
     return this._api
