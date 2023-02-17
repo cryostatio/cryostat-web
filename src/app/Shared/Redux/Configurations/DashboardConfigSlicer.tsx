@@ -58,6 +58,7 @@ export const enumValues = new Set(Object.values(DashboardConfigAction));
 export interface DashboardAddConfigActionPayload {
   id: string;
   name: string;
+  span: gridSpans;
   props: object;
 }
 
@@ -67,7 +68,7 @@ export interface DashboardDeleteConfigActionPayload {
 
 export interface DashboardResizeConfigActionPayload {
   idx: number;
-  span: number;
+  span: gridSpans;
 }
 
 export interface DashboardOrderConfigActionPayload {
@@ -128,7 +129,12 @@ export interface CardConfig {
   props: object;
 }
 
-const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
+export interface DashboardConfigState {
+  list: CardConfig[];
+  _version: string;
+}
+
+const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
 });
 

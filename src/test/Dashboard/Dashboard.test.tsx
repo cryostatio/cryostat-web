@@ -35,8 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Dashboard, DashboardCardDescriptor, DashboardCardSizes, Sized } from '@app/Dashboard/Dashboard';
-import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
+import { Dashboard } from '@app/Dashboard/Dashboard';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
@@ -113,7 +112,10 @@ jest
   .mockReturnValueOnce(of()) //
   .mockReturnValue(of(mockFooTarget));
 
-jest.spyOn(defaultServices.settings, 'dashboardConfig').mockReturnValue({ version: '1' }); // renders correctly
+jest.spyOn(defaultServices.settings, 'dashboardConfig').mockReturnValue({
+  _version: 'validVersion',
+  list: [],
+}); // renders correctly
 // having a undefined version will result in test errors...
 
 describe('<Dashboard />', () => {

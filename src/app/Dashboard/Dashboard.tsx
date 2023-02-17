@@ -49,7 +49,6 @@ import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
-import { nanoid } from 'nanoid';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -299,7 +298,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   React.useEffect(() => {
     const currentDashboard = serviceContext.settings.dashboardConfig();
-    if (currentDashboard.version === undefined) {
+    if (currentDashboard._version === undefined) {
       dispatch(dashboardCardConfigFirstRunIntent());
     }
   }, [dispatch, serviceContext.settings]);
