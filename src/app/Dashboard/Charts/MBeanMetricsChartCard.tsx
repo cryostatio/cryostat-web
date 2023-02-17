@@ -90,7 +90,7 @@ const SimpleChart: React.FC<{
   themeColor?: string;
   style: 'line' | 'area';
   samples: Sample[];
-  units?: string;
+  units: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
 }> = ({ themeColor, style, samples, units, interpolation }) => {
   const [dayjs] = useDayjs();
@@ -124,7 +124,7 @@ const SimpleChart: React.FC<{
       legendPosition={'bottom'}
       themeColor={themeColor}
     >
-      <ChartAxis tickFormat={t => dayjs(t).format('LTS')} fixLabelOverlap />
+      <ChartAxis tickFormat={(t) => dayjs(t).format('LTS')} fixLabelOverlap />
       <ChartAxis dependentAxis showGrid label={units} />
       <ChartGroup>
         {keys.map((k) =>
@@ -147,7 +147,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['processCpuLoad'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'processCpuLoad', value: metrics?.os?.processCpuLoad || 0 }],
     visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
+      <SimpleChart samples={samples} units={'%'} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
     ),
   },
   {
@@ -156,7 +156,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['systemLoadAverage'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'systemLoadAverage', value: metrics?.os?.systemLoadAverage || 0 }],
     visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
+      <SimpleChart samples={samples} units={''} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
     ),
   },
   {
@@ -165,7 +165,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     fields: ['systemCpuLoad'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'systemCpuLoad', value: metrics?.os?.systemCpuLoad || 0 }],
     visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} style={'line'} themeColor={themeColor} />
+      <SimpleChart samples={samples} units={'%'} style={'line'} themeColor={themeColor} />
     ),
   },
   {
@@ -256,7 +256,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
       },
     ],
     visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} interpolation={'step'} style={'line'} themeColor={themeColor} />
+      <SimpleChart samples={samples} units={'threads'} interpolation={'step'} style={'line'} themeColor={themeColor} />
     ),
   },
 ];
