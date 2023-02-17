@@ -35,9 +35,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import { QuickStart } from '@patternfly/quickstarts';
-import { addCardQuickStart } from './quickstarts/add-card-quickstart';
-
-import { sampleQuickStart } from './quickstarts/my-quickstart';
-
-export const allQuickStarts: QuickStart[] = [sampleQuickStart, addCardQuickStart];
+export const AddCardQuickStart: QuickStart = {
+  apiVersion: 'v2.3.0',
+  metadata: {
+    name: 'add-card-quickstart',
+  },
+  spec: {
+    displayName: 'Adding/Removing Cards',
+    durationMinutes: 1,
+    icon: cryostatLogo,
+    description: 'Add and remove cards from the [PRODUCT] Dashboard.',
+    introduction: '### This is a sample quickstart.',
+    tasks: [
+      {
+        title: 'Add a Card',
+        description: `### We will add a card to the [PRODUCT] Dashboard.
+1. Go to the bottom of this page, and press the **Add** button on the 'Add Card' card.
+2. Select a card type.
+3. Press **Finish** to add the card to the dashboard.`,
+        review: {
+          instructions: `#### To verify the card was added:
+1. Notice the new card located on the Dashboard.
+                    `,
+          failedTaskHelp: 'Try the steps again.',
+        },
+        summary: {
+          success: 'You have successfully added a card.',
+          failed: 'Try the steps again.',
+        },
+      },
+      {
+        title: 'Remove a Card',
+        description: `### We will remove a card to the [PRODUCT] Dashboard.
+1. Find the card was created in Step 1.
+2. Press the kebab on the top right of that card's header.
+3. Press **Remove Card**.`,
+        summary: {
+          success: 'You have successfully removed a card.',
+          failed: 'Try the steps again.',
+        },
+      },
+    ],
+    prerequisites: ['Complete the **Sample Quickstart** quick start.'],
+    conclusion: 'You have completed this quickstart on adding and removing cards.',
+  },
+};

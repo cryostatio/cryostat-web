@@ -121,6 +121,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [visibleNotificationsCount, setVisibleNotificationsCount] = React.useState(5);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
+  const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
   const location = useLocation();
 
   React.useEffect(() => {
@@ -142,6 +143,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   React.useEffect(() => {
     addSubscription(serviceContext.settings.visibleNotificationsCount().subscribe(setVisibleNotificationsCount));
   }, [addSubscription, serviceContext.settings, setVisibleNotificationsCount]);
+
+  React.useLayoutEffect(() => {
+    addSubscription(serviceContext.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
+  }, [addSubscription, serviceContext.settings, setActiveLevel]);
 
   const notificationsToDisplay = React.useMemo(() => {
     return notifications
@@ -504,6 +509,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <NavGroup title={title} key={title}>
                 {routes
                   .filter((route) => route.navGroup === title)
+                  .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
                   .map((route, idx) => {
                     return (
                       route.label && (
@@ -514,6 +520,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                         >
                           <NavLink exact to={route.path} activeClassName="pf-m-current">
                             {route.label}
+                            {route.featureLevel !== undefined && levelBadge(route.featureLevel)}
                           </NavLink>
                         </NavItem>
                       )
@@ -525,7 +532,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </NavList>
       </Nav>
     ),
-    [mobileOnSelect, isActiveRoute]
+    [mobileOnSelect, isActiveRoute, levelBadge, activeLevel]
   );
 
   const Sidebar = React.useMemo(

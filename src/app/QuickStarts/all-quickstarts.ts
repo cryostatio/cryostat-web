@@ -36,32 +36,8 @@
  * SOFTWARE.
  */
 import { QuickStart } from '@patternfly/quickstarts';
-import { cryostatQuickStartIcon } from './cryostat-icon';
-export const sampleQuickStart: QuickStart = {
-  metadata: {
-    name: 'sample-quickstart',
-  },
-  spec: {
-    displayName: 'Sample QuickStart',
-    durationMinutes: 1,
-    icon: cryostatQuickStartIcon,
-    description: 'This is a sample quickstart.',
-    introduction: '### This is a sample quickstart.',
-    tasks: [
-      {
-        title: 'Task 1',
-        description: 'This is a sample task.',
-        review: {
-          instructions: '#### Verify that you have done the task.',
-          failedTaskHelp: 'This is how you can fix the failed task.',
-        },
-      },
-    ],
-    conclusion: '### You have completed the sample quickstart.',
-    nextQuickStart: ['add-card-quickstart'],
-    type: {
-      text: 'Introduction',
-      color: 'green',
-    },
-  },
-};
+import { AddCardQuickStart } from './quickstarts/add-card-quickstart';
+import { GenericQuickStart } from './quickstarts/generic-quickstart';
+import { SampleQuickStart } from './quickstarts/my-quickstart';
+
+export const allQuickStarts: QuickStart[] = [GenericQuickStart, SampleQuickStart, AddCardQuickStart];

@@ -36,6 +36,8 @@
  * SOFTWARE.
  */
 import build from '@app/build.json';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import {
   QuickStart,
@@ -44,16 +46,14 @@ import {
   QuickStartContainerProps,
   useLocalStorage,
 } from '@patternfly/quickstarts';
-import { CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
-import { DashboardCard } from '../DashboardCard';
-import { allQuickStarts as exampleQuickStarts } from './dashboard-quickstarts';
+import { withRouter } from 'react-router-dom';
+import { allQuickStarts as quickstarts } from './all-quickstarts';
 
-export interface QuickStartsCardProps extends DashboardCardProps {}
+export interface QuickStartsProps {}
 
-const QuickStartsCard: React.FunctionComponent<QuickStartsCardProps> = (props) => {
+const QuickStarts: React.FunctionComponent<QuickStartsProps> = (_) => {
   const { t, i18n } = useTranslation();
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
   const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
@@ -61,7 +61,7 @@ const QuickStartsCard: React.FunctionComponent<QuickStartsCardProps> = (props) =
   const [loading, setLoading] = React.useState(true);
   const [quickStarts, setQuickStarts] = React.useState<QuickStart[]>([]);
   React.useEffect(() => {
-    setQuickStarts(exampleQuickStarts);
+    setQuickStarts(quickstarts);
     setLoading(false);
   }, []);
 
@@ -87,47 +87,19 @@ const QuickStartsCard: React.FunctionComponent<QuickStartsCardProps> = (props) =
     },
   };
   return (
-    <DashboardCard
-      dashboardId={props.dashboardId}
-      cardSizes={QuickStartsCardSizes}
-      cardHeader={
-        <CardHeader>
-          <CardTitle component="h2">{t('QuickStartsCard.TITLE')}</CardTitle>
-          <CardActions>{...props.actions || []}</CardActions>
-        </CardHeader>
-      }
-    >
-      <CardBody>
+    <React.Suspense fallback={<LoadingView />}>
+      <FeatureFlag level={FeatureLevel.BETA}>
         <QuickStartContainer {...drawerProps}>
           <QuickStartCatalogPage
-            title={t('QuickStartsCard.CATALOG_PAGE.TITLE')}
-            hint={t('QuickStartsCard.CATALOG_PAGE.HINT')}
+            title={t('QuickStarts.CATALOG_PAGE.TITLE')}
+            hint={t('QuickStarts.CATALOG_PAGE.HINT')}
+            showTitle
+            showFilter
           />
         </QuickStartContainer>
-      </CardBody>
-    </DashboardCard>
+      </FeatureFlag>
+    </React.Suspense>
   );
 };
 
-const QuickStartsCardSizes = {
-  span: {
-    minimum: 6,
-    default: 12,
-    maximum: 12,
-  },
-  height: {
-    minimum: Number.NaN,
-    default: Number.NaN,
-    maximum: Number.NaN,
-  },
-} as DashboardCardSizes;
-
-export const QuickStartsCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.PRODUCTION,
-  title: 'Quick Starts',
-  cardSizes: QuickStartsCardSizes,
-  description: 'Cryostat Dashboard quick start tutorial.',
-  descriptionFull: 'Quick start tutorials to learn some basic features and configurations for the Cryostat Dashboard.',
-  component: QuickStartsCard,
-  propControls: [],
-} as DashboardCardDescriptor;
+export default withRouter(QuickStarts);

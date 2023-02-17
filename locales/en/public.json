@@ -161,6 +161,12 @@
     "CARD_DESCRIPTION_FULL": "This is a do-nothing placeholder with no config.",
     "CARD_TITLE": "None Placeholder"
   },
+  "QuickStarts": {
+    "CATALOG_PAGE": {
+      "HINT": "Quick start tutorials to get started with Cryostat.",
+      "TITLE": "Quick Starts"
+    }
+  },
   "QuickStartsCard": {
     "CATALOG_PAGE": {
       "HINT": "Quick start tutorials to learn some basic features and configurations for the Cryostat Dashboard.",
