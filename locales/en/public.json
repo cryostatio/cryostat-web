@@ -102,6 +102,9 @@
     "JFR_METRICS_CARD_DESCRIPTION": "Display common performance metrics from recent JFR data.",
     "JFR_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported JFR event types. Data is displayed from the present moment back to a specified duration. Note: these metrics are only available for a single target at a time. Second Cryostat-Web instances, for the same user or others, will not behave as expected when using this card type.",
     "JFR_METRICS_CARD_TITLE": "JFR Metrics Chart",
+    "MBEAN_METRICS_CARD_DESCRIPTION": "Display common performance metrics from current MBean data.",
+    "MBEAN_METRICS_CARD_DESCRIPTION_FULL": "Display a single performance metric from a list of supported MBeans.",
+    "MBEAN_METRICS_CARD_TITLE": "MBean Metrics Chart",
     "NO_RECORDING": {
       "DESCRIPTION": "Metrics cards display data taken from running flight recordings with the label <label>origin={{recordingName}}</label>. No such recordings are currently available.",
       "TITLE": "No source recording"
@@ -112,8 +115,8 @@
         "NAME": "Data Window"
       },
       "PERFORMANCE_METRIC": {
-        "DESCRIPTION": "cryostat_tmp",
-        "NAME": "cryostat_tmp"
+        "DESCRIPTION": "Select the metric to display in this card.",
+        "NAME": "Performance Metric"
       },
       "REFRESH_PERIOD": {
         "DESCRIPTION": "The chart refresh period in seconds.",
@@ -122,6 +125,10 @@
       "THEME": {
         "DESCRIPTION": "Select a colour theme",
         "NAME": "Theme"
+      },
+      "THEME_COLOR": {
+        "DESCRIPTION": "The color theme to apply to this chart.",
+        "NAME": "Color"
       }
     },
     "TITLE": "{{chartKind}} (last {{duration}}s, every {{period}}s)"

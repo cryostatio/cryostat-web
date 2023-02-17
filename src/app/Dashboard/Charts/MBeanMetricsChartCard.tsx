@@ -379,25 +379,25 @@ export const MBeanMetricsChartCardSizes: DashboardCardSizes = {
 
 export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.PRODUCTION,
-  title: 'MBean Metrics Chart',
+  title: 'CHART_CARD.MBEAN_METRICS_CARD_TITLE',
   cardSizes: MBeanMetricsChartCardSizes,
-  description: 'Display common performance metrics from current MBean data.',
-  descriptionFull: `Display a single performance metric from a list of supported MBeans.`,
+  description: 'CHART_CARD.MBEAN_METRICS_CARD_DESCRIPTION',
+  descriptionFull: `CHART_CARD.MBEAN_METRICS_CARD_DESCRIPTION_FULL`,
   component: MBeanMetricsChartCard,
   propControls: [
     {
-      name: 'Performance Metric',
+      name: 'CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.NAME',
       key: 'chartKind',
       values: chartKinds.map((k) => k.displayName),
       defaultValue: chartKinds[0].displayName,
-      description: 'Select the metric to display in this card.', // TODO should this be a function that returns a value based on the selection?
+      description: 'CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.DESCRIPTION', // TODO should this be a function that returns a value based on the selection?
       kind: 'select',
     },
     {
-      name: 'Data Window',
+      name: 'CHART_CARD.PROP_CONTROLS.DATA_WINDOW.NAME',
       key: 'duration',
       defaultValue: 60,
-      description: 'The data window width in seconds.',
+      description: 'CHART_CARD.PROP_CONTROLS.DATA_WINDOW.DESCRIPTION',
       kind: 'number',
       extras: {
         min: 1,
@@ -405,10 +405,10 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
       },
     },
     {
-      name: 'Refresh Period',
+      name: 'CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.NAME',
       key: 'period',
       defaultValue: 5,
-      description: 'The chart refresh period in seconds.',
+      description: 'CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.DESCRIPTION',
       kind: 'number',
       extras: {
         min: 1,
@@ -416,11 +416,11 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
       },
     },
     {
-      name: 'Color',
+      name: 'CHART_CARD.PROP_CONTROLS.THEME.NAME',
       key: 'themeColor',
       values: ['blue', 'cyan', 'gold', 'gray', 'green', 'orange', 'purple'],
       defaultValue: 'blue',
-      description: 'The color theme to apply to this chart.',
+      description: 'CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION',
       kind: 'select',
     },
   ],
