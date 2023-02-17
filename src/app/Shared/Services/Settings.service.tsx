@@ -114,8 +114,8 @@ export class SettingsService {
     this._featureLevel$.next(featureLevel);
   }
 
-  dashboardSlicerVersion(): string {
-    return getFromLocalStorage('DASHBOARD_CFG', {})._version;
+  dashboardConfig(): any {
+    return getFromLocalStorage('DASHBOARD_CFG', {});
   }
 
   autoRefreshEnabled(): boolean {

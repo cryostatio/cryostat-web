@@ -35,7 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Dashboard } from '@app/Dashboard/Dashboard';
+import { Dashboard, DashboardCardDescriptor, DashboardCardSizes, Sized } from '@app/Dashboard/Dashboard';
+import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
@@ -57,6 +58,47 @@ const mockFooTarget: Target = {
   },
 };
 
+// const QuickStartsTest: React.FC = (_) => {
+//   return (
+//     <>
+
+//     </>
+//   );
+// }
+// QuickStartsTest.displayName = 'QuickStartsCard';
+
+// const mockSizes: Sized<number> = {
+//   minimum: 0,
+//   default: 0,
+//   maximum: 0
+// }
+
+// const mockCardSizes: DashboardCardSizes = {
+//   span: mockSizes,
+//   height: mockSizes
+// };
+
+// const mockDescriptor: DashboardCardDescriptor = {
+//   title: 'Test',
+//   description: 'Test',
+//   component: QuickStartsTest,
+//   featureLevel: 0,
+//   propControls: [],
+//   cardSizes: mockCardSizes,
+//   descriptionFull: ''
+// };
+
+// const actual = jest.requireActual('@app/Dashboard/Quickstart/QuickStartsCard');
+// console.log('actual', actual);
+
+// jest.mock('@app/Dashboard/Quickstart/QuickStartsCard', () => (
+//   {
+//     ...actual,
+//     QuickStartsCard: (_) => QuickStartsTest,
+//     QuickStartsCardDescriptor: mockDescriptor,
+//   }
+// ));
+
 jest.mock('@app/TargetSelect/TargetSelect', () => ({
   TargetSelect: (_) => <div>Target Select</div>,
 }));
@@ -70,6 +112,9 @@ jest
   .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
   .mockReturnValueOnce(of()) //
   .mockReturnValue(of(mockFooTarget));
+
+jest.spyOn(defaultServices.settings, 'dashboardConfig').mockReturnValue({ version: '1' }); // renders correctly
+// having a undefined version will result in test errors...
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {

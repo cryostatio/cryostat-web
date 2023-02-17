@@ -298,8 +298,8 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   );
 
   React.useEffect(() => {
-    const currentVersion = serviceContext.settings.dashboardSlicerVersion();
-    if (currentVersion == undefined) {
+    const currentDashboard = serviceContext.settings.dashboardConfig();
+    if (currentDashboard.version === undefined) {
       dispatch(dashboardCardConfigFirstRunIntent());
     }
   }, [dispatch, serviceContext.settings]);
