@@ -81,12 +81,6 @@ describe('<MBeanMetricsChartCard />', () => {
   afterEach(cleanup);
   afterAll(jest.useRealTimers);
 
-  // it.each([
-  //   ['CPU Load', 120, 5],
-  //   ['Heap Usage', 90, 10],
-  //   ['Network Utilization', 60, 15],
-  //   ['File I/O', 30, 20],
-  // ])('renders grap', async (chartKind: string, duration: number, period: number) => {
   it.each([
     [
       'Process CPU Load',
