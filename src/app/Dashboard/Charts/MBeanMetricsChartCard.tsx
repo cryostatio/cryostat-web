@@ -124,7 +124,7 @@ const SimpleChart: React.FC<{
       legendPosition={'bottom'}
       themeColor={themeColor}
     >
-      <ChartAxis tickValues={samples.map((v) => v.timestamp).map(dayjs)} fixLabelOverlap />
+      <ChartAxis tickFormat={t => dayjs(t).format('LTS')} fixLabelOverlap />
       <ChartAxis dependentAxis showGrid label={units} />
       <ChartGroup>
         {keys.map((k) =>

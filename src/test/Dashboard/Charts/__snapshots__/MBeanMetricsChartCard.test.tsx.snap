@@ -175,57 +175,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         textAnchor="middle"
                         x={120}
                       >
-                        0.2
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={190}
-                      x2={190}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-1"
-                      x={190}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={190}
-                      >
-                        0.4
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -275,57 +225,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         textAnchor="middle"
                         x={260}
                       >
-                        0.6
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={330}
-                      x2={330}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-3"
-                      x={330}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={330}
-                      >
-                        0.8
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -375,7 +275,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         textAnchor="middle"
                         x={400}
                       >
-                        1
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -973,57 +873,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         textAnchor="middle"
                         x={120}
                       >
-                        0.2
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={190}
-                      x2={190}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-1"
-                      x={190}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={190}
-                      >
-                        0.4
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -1073,57 +923,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         textAnchor="middle"
                         x={260}
                       >
-                        0.6
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={330}
-                      x2={330}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-3"
-                      x={330}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={330}
-                      >
-                        0.8
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -1173,7 +973,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         textAnchor="middle"
                         x={400}
                       >
-                        1
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -1771,57 +1571,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         textAnchor="middle"
                         x={120}
                       >
-                        0.2
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={190}
-                      x2={190}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-1"
-                      x={190}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={190}
-                      >
-                        0.4
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -1871,57 +1621,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         textAnchor="middle"
                         x={260}
                       >
-                        0.6
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={330}
-                      x2={330}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-3"
-                      x={330}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={330}
-                      >
-                        0.8
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -1971,7 +1671,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         textAnchor="middle"
                         x={400}
                       >
-                        1
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -2569,57 +2269,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         textAnchor="middle"
                         x={120}
                       >
-                        0.2
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={190}
-                      x2={190}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-1"
-                      x={190}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={190}
-                      >
-                        0.4
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -2669,57 +2319,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         textAnchor="middle"
                         x={260}
                       >
-                        0.6
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={330}
-                      x2={330}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-3"
-                      x={330}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={330}
-                      >
-                        0.8
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -2769,7 +2369,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         textAnchor="middle"
                         x={400}
                       >
-                        1
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -3395,57 +2995,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         textAnchor="middle"
                         x={120}
                       >
-                        0.2
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={190}
-                      x2={190}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-1"
-                      x={190}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={190}
-                      >
-                        0.4
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -3495,57 +3045,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         textAnchor="middle"
                         x={260}
                       >
-                        0.6
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={330}
-                      x2={330}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-3"
-                      x={330}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={330}
-                      >
-                        0.8
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -3595,7 +3095,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         textAnchor="middle"
                         x={400}
                       >
-                        1
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -4430,57 +3930,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         textAnchor="middle"
                         x={120}
                       >
-                        0.2
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={190}
-                      x2={190}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-1"
-                      x={190}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={190}
-                      >
-                        0.4
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -4530,57 +3980,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         textAnchor="middle"
                         x={260}
                       >
-                        0.6
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={330}
-                      x2={330}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-3"
-                      x={330}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={330}
-                      >
-                        0.8
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -4630,7 +4030,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         textAnchor="middle"
                         x={400}
                       >
-                        1
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -5466,57 +4866,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         textAnchor="middle"
                         x={120}
                       >
-                        0.2
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={190}
-                      x2={190}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-1"
-                      x={190}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={190}
-                      >
-                        0.4
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -5566,57 +4916,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         textAnchor="middle"
                         x={260}
                       >
-                        0.6
-                      </tspan>
-                    </text>
-                  </g>
-                  <g
-                    role="presentation"
-                  >
-                    <line
-                      role="presentation"
-                      shapeRendering="auto"
-                      style={
-                        Object {
-                          "fill": "var(--pf-chart-axis--tick--Fill, transparent)",
-                          "size": 5,
-                          "stroke": "var(--pf-chart-axis--tick--stroke--Color, #d2d2d2)",
-                          "strokeLinecap": "round",
-                          "strokeLinejoin": "round",
-                          "strokeWidth": 1,
-                        }
-                      }
-                      vectorEffect="non-scaling-stroke"
-                      x1={330}
-                      x2={330}
-                      y1={250}
-                      y2={255}
-                    />
-                    <text
-                      direction="inherit"
-                      dx={0}
-                      id="chart-axis-0-ChartLabel-3"
-                      x={330}
-                      y={276.97}
-                    >
-                      <tspan
-                        dx={0}
-                        dy={0}
-                        style={
-                          Object {
-                            "fill": "var(--pf-chart-axis--tick-label--Fill, #4f5255)",
-                            "fontFamily": "\\"RedHatText\\",\\"Overpass\\",overpass,helvetica,arial,sans-serif",
-                            "fontSize": 14,
-                            "letterSpacing": "normal",
-                            "padding": 10,
-                            "stroke": "var(--pf-chart-global--label--stroke, transparent)",
-                            "textAnchor": "middle",
-                          }
-                        }
-                        textAnchor="middle"
-                        x={330}
-                      >
-                        0.8
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
@@ -5666,7 +4966,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         textAnchor="middle"
                         x={400}
                       >
-                        1
+                        7:00:00 PM
                       </tspan>
                     </text>
                   </g>
