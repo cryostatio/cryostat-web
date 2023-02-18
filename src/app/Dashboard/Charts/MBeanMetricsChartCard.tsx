@@ -48,6 +48,7 @@ import {
   ChartGroup,
   ChartLine,
   ChartVoronoiContainer,
+  getResizeObserver,
 } from '@patternfly/react-charts';
 import { Button, CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import { SyncAltIcon } from '@patternfly/react-icons';
@@ -83,16 +84,17 @@ interface MBeanMetricsChartKind {
   fields: string[];
   mapper: (metrics: MBeanMetrics) => Datapoint[];
   singleValue?: boolean;
-  visual: (themeColor: string, samples: Sample[]) => React.ReactElement;
+  visual: (themeColor: string, width: number, samples: Sample[]) => React.ReactElement;
 }
 
 const SimpleChart: React.FC<{
   themeColor?: string;
   style: 'line' | 'area';
+  width: number;
   samples: Sample[];
   units: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
-}> = ({ themeColor, style, samples, units, interpolation }) => {
+}> = ({ themeColor, style, width, samples, units, interpolation }) => {
   const [dayjs] = useDayjs();
 
   const data = React.useMemo(
@@ -123,6 +125,7 @@ const SimpleChart: React.FC<{
       legendData={keys.length > 1 ? keys.map((k) => ({ name: k.name })) : []}
       legendPosition={'bottom'}
       themeColor={themeColor}
+      width={width}
     >
       <ChartAxis tickFormat={(t) => dayjs(t).format('LTS')} fixLabelOverlap />
       <ChartAxis
@@ -151,8 +154,15 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['processCpuLoad'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'processCpuLoad', value: (metrics?.os?.processCpuLoad || 0) * 100 }],
-    visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'%'} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
+    visual: (themeColor: string, width: number, samples: Sample[]) => (
+      <SimpleChart
+        samples={samples}
+        width={width}
+        units={'%'}
+        interpolation={'monotoneX'}
+        style={'line'}
+        themeColor={themeColor}
+      />
     ),
   },
   {
@@ -160,8 +170,15 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['systemLoadAverage'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'systemLoadAverage', value: metrics?.os?.systemLoadAverage || 0 }],
-    visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} units={''} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
+    visual: (themeColor: string, width: number, samples: Sample[]) => (
+      <SimpleChart
+        samples={samples}
+        width={width}
+        units={''}
+        interpolation={'monotoneX'}
+        style={'line'}
+        themeColor={themeColor}
+      />
     ),
   },
   {
@@ -169,8 +186,8 @@ const chartKinds: MBeanMetricsChartKind[] = [
     category: 'os',
     fields: ['systemCpuLoad'],
     mapper: (metrics: MBeanMetrics) => [{ name: 'systemCpuLoad', value: (metrics?.os?.systemCpuLoad || 0) * 100 }],
-    visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'%'} style={'line'} themeColor={themeColor} />
+    visual: (themeColor: string, width: number, samples: Sample[]) => (
+      <SimpleChart samples={samples} width={width} units={'%'} style={'line'} themeColor={themeColor} />
     ),
   },
   {
@@ -190,8 +207,15 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: (metrics?.os?.totalPhysicalMemorySize || 0) / Math.pow(1024, 2),
       },
     ],
-    visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} themeColor={themeColor} />
+    visual: (themeColor: string, width: number, samples: Sample[]) => (
+      <SimpleChart
+        samples={samples}
+        width={width}
+        units={'MiB'}
+        interpolation={'step'}
+        style={'area'}
+        themeColor={themeColor}
+      />
     ),
   },
   {
@@ -204,8 +228,15 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: Math.round((metrics?.memory?.heapMemoryUsage?.used || 0) / Math.pow(1024, 2)),
       },
     ],
-    visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} themeColor={themeColor} />
+    visual: (themeColor: string, width: number, samples: Sample[]) => (
+      <SimpleChart
+        samples={samples}
+        width={width}
+        units={'MiB'}
+        interpolation={'step'}
+        style={'area'}
+        themeColor={themeColor}
+      />
     ),
   },
   {
@@ -216,7 +247,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
       { name: 'heapMemoryUsage', value: metrics?.memory?.heapMemoryUsagePercent || 0 },
     ],
     singleValue: true,
-    visual: (themeColor: string, samples: Sample[]) => {
+    visual: (themeColor: string, width: number, samples: Sample[]) => {
       let value = 0;
       if (samples?.length > 0) {
         value = samples.slice(-1)[0].datapoint.value * 100;
@@ -228,6 +259,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
           title={`${value.toFixed(2)}%`}
           labels={({ datum }) => (datum.x ? `${datum.x}: ${datum.y.toFixed(2)}%` : null)}
           themeColor={themeColor}
+          width={width}
         />
       );
     },
@@ -242,8 +274,15 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: Math.round((metrics?.memory?.nonHeapMemoryUsage?.used || 0) / Math.pow(1024, 2)),
       },
     ],
-    visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'MiB'} interpolation={'step'} style={'area'} themeColor={themeColor} />
+    visual: (themeColor: string, width: number, samples: Sample[]) => (
+      <SimpleChart
+        samples={samples}
+        width={width}
+        units={'MiB'}
+        interpolation={'step'}
+        style={'area'}
+        themeColor={themeColor}
+      />
     ),
   },
   {
@@ -260,8 +299,15 @@ const chartKinds: MBeanMetricsChartKind[] = [
         value: metrics?.thread?.threadCount || 0,
       },
     ],
-    visual: (themeColor: string, samples: Sample[]) => (
-      <SimpleChart samples={samples} units={'threads'} interpolation={'step'} style={'line'} themeColor={themeColor} />
+    visual: (themeColor: string, width: number, samples: Sample[]) => (
+      <SimpleChart
+        samples={samples}
+        width={width}
+        units={'threads'}
+        interpolation={'step'}
+        style={'line'}
+        themeColor={themeColor}
+      />
     ),
   },
 ];
@@ -278,6 +324,11 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const [samples, setSamples] = React.useState([] as Sample[]);
   const [isLoading, setLoading] = React.useState(true);
 
+  const resizeObserver = React.useRef((): void => undefined);
+  const [cardWidth, setCardWidth] = React.useState(0);
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const containerRef: React.Ref<any> = React.createRef();
+
   React.useEffect(() => {
     const kind = getChartKindByName(props.chartKind);
     addSubscription(
@@ -293,6 +344,17 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
       })
     );
   }, [addSubscription, controllerContext, props.chartKind, props.duration]);
+
+  const handleResize = React.useCallback(() => {
+    if (containerRef.current && containerRef.current.clientWidth) {
+      setCardWidth(containerRef.current.clientWidth);
+    }
+  }, [containerRef, setCardWidth]);
+
+  React.useEffect(() => {
+    resizeObserver.current = getResizeObserver(containerRef.current, handleResize);
+    return resizeObserver.current;
+  }, [resizeObserver, containerRef, handleResize]);
 
   const refresh = React.useCallback(() => {
     controllerContext.mbeanController.requestRefresh();
@@ -349,8 +411,12 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
   const chartKind = React.useMemo(() => getChartKindByName(props.chartKind), [props.chartKind]);
 
   const visual = React.useMemo(
-    () => <div className="disabled-pointer">{chartKind.visual(props.themeColor, samples)}</div>,
-    [props.themeColor, chartKind, samples]
+    () => (
+      <div ref={containerRef} style={{ height: 300 }} className="disabled-pointer">
+        {chartKind.visual(props.themeColor, cardWidth, samples)}
+      </div>
+    ),
+    [containerRef, props.themeColor, chartKind, cardWidth, samples]
   );
 
   return (
