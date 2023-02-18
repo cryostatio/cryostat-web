@@ -145,7 +145,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'Process CPU Load',
     category: 'os',
     fields: ['processCpuLoad'],
-    mapper: (metrics: MBeanMetrics) => [{ name: 'processCpuLoad', value: metrics?.os?.processCpuLoad || 0 }],
+    mapper: (metrics: MBeanMetrics) => [{ name: 'processCpuLoad', value: (metrics?.os?.processCpuLoad || 0) * 100 }],
     visual: (themeColor: string, samples: Sample[]) => (
       <SimpleChart samples={samples} units={'%'} interpolation={'monotoneX'} style={'line'} themeColor={themeColor} />
     ),
@@ -163,7 +163,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
     displayName: 'System CPU Load',
     category: 'os',
     fields: ['systemCpuLoad'],
-    mapper: (metrics: MBeanMetrics) => [{ name: 'systemCpuLoad', value: metrics?.os?.systemCpuLoad || 0 }],
+    mapper: (metrics: MBeanMetrics) => [{ name: 'systemCpuLoad', value: (metrics?.os?.systemCpuLoad || 0) * 100 }],
     visual: (themeColor: string, samples: Sample[]) => (
       <SimpleChart samples={samples} units={'%'} style={'line'} themeColor={themeColor} />
     ),
