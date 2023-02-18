@@ -126,10 +126,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={-50}
-                  y1={250}
-                  y2={250}
+                  x1={54}
+                  x2={-30}
+                  y1={240}
+                  y2={240}
                 />
                 <g
                   role="presentation"
@@ -148,17 +148,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-50}
-                    x2={-50}
-                    y1={250}
-                    y2={255}
+                    x1={-30}
+                    x2={-30}
+                    y1={240}
+                    y2={245}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-50}
-                    y={276.97}
+                    x={-30}
+                    y={266.97}
                   >
                     <tspan
                       dx={0}
@@ -175,7 +175,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         }
                       }
                       textAnchor="middle"
-                      x={-50}
+                      x={-30}
                     >
                       7:00:00 PM
                     </tspan>
@@ -198,18 +198,18 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={50}
-                  y1={50}
-                  y2={250}
+                  x1={54}
+                  x2={54}
+                  y1={10}
+                  y2={240}
                 />
                 <text
                   direction="inherit"
                   dx={0}
                   id="axis-axisLabel-0"
-                  transform="rotate(-90,10,150)"
-                  x={10}
-                  y={147.97}
+                  transform="rotate(-90,14,125)"
+                  x={14}
+                  y={122.97}
                 >
                   <tspan
                     dx={0}
@@ -226,7 +226,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     textAnchor="middle"
-                    x={10}
+                    x={14}
                   >
                     %
                   </tspan>
@@ -247,10 +247,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={-30}
+                    y1={194}
+                    y2={194}
                   />
                   <line
                     role="presentation"
@@ -266,17 +266,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={49}
+                    y1={194}
+                    y2={194}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-0"
-                    x={35}
-                    y={214.97}
+                    x={39}
+                    y={198.97}
                   >
                     <tspan
                       dx={0}
@@ -293,7 +293,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.20
                     </tspan>
@@ -315,10 +315,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={-30}
+                    y1={148}
+                    y2={148}
                   />
                   <line
                     role="presentation"
@@ -334,17 +334,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={49}
+                    y1={148}
+                    y2={148}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-1"
-                    x={35}
-                    y={174.97}
+                    x={39}
+                    y={152.97}
                   >
                     <tspan
                       dx={0}
@@ -361,7 +361,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.40
                     </tspan>
@@ -383,10 +383,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={-30}
+                    y1={102}
+                    y2={102}
                   />
                   <line
                     role="presentation"
@@ -402,17 +402,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={49}
+                    y1={102}
+                    y2={102}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-2"
-                    x={35}
-                    y={134.97}
+                    x={39}
+                    y={106.97}
                   >
                     <tspan
                       dx={0}
@@ -429,7 +429,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.60
                     </tspan>
@@ -451,10 +451,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={-30}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <line
                     role="presentation"
@@ -470,17 +470,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={49}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-3"
-                    x={35}
-                    y={94.96999999999998}
+                    x={39}
+                    y={60.969999999999985}
                   >
                     <tspan
                       dx={0}
@@ -497,7 +497,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.80
                     </tspan>
@@ -519,10 +519,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={-30}
+                    y1={10}
+                    y2={10}
                   />
                   <line
                     role="presentation"
@@ -538,17 +538,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={49}
+                    y1={10}
+                    y2={10}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-4"
-                    x={35}
-                    y={54.97}
+                    x={39}
+                    y={14.969999999999999}
                   >
                     <tspan
                       dx={0}
@@ -565,7 +565,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       1.0
                     </tspan>
@@ -586,7 +586,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                   vectorEffect="non-scaling-stroke"
                   width={0}
                   x={0}
-                  y={282}
+                  y={272}
                 />
               </g>
             </svg>
@@ -753,10 +753,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={-50}
-                  y1={250}
-                  y2={250}
+                  x1={54}
+                  x2={-30}
+                  y1={240}
+                  y2={240}
                 />
                 <g
                   role="presentation"
@@ -775,17 +775,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-50}
-                    x2={-50}
-                    y1={250}
-                    y2={255}
+                    x1={-30}
+                    x2={-30}
+                    y1={240}
+                    y2={245}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-50}
-                    y={276.97}
+                    x={-30}
+                    y={266.97}
                   >
                     <tspan
                       dx={0}
@@ -802,7 +802,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         }
                       }
                       textAnchor="middle"
-                      x={-50}
+                      x={-30}
                     >
                       7:00:00 PM
                     </tspan>
@@ -825,10 +825,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={50}
-                  y1={50}
-                  y2={250}
+                  x1={54}
+                  x2={54}
+                  y1={10}
+                  y2={240}
                 />
                 <g
                   role="presentation"
@@ -846,10 +846,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={-30}
+                    y1={194}
+                    y2={194}
                   />
                   <line
                     role="presentation"
@@ -865,17 +865,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={49}
+                    y1={194}
+                    y2={194}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-0"
-                    x={35}
-                    y={214.97}
+                    x={39}
+                    y={198.97}
                   >
                     <tspan
                       dx={0}
@@ -892,7 +892,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.20
                     </tspan>
@@ -914,10 +914,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={-30}
+                    y1={148}
+                    y2={148}
                   />
                   <line
                     role="presentation"
@@ -933,17 +933,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={49}
+                    y1={148}
+                    y2={148}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-1"
-                    x={35}
-                    y={174.97}
+                    x={39}
+                    y={152.97}
                   >
                     <tspan
                       dx={0}
@@ -960,7 +960,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.40
                     </tspan>
@@ -982,10 +982,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={-30}
+                    y1={102}
+                    y2={102}
                   />
                   <line
                     role="presentation"
@@ -1001,17 +1001,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={49}
+                    y1={102}
+                    y2={102}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-2"
-                    x={35}
-                    y={134.97}
+                    x={39}
+                    y={106.97}
                   >
                     <tspan
                       dx={0}
@@ -1028,7 +1028,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.60
                     </tspan>
@@ -1050,10 +1050,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={-30}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <line
                     role="presentation"
@@ -1069,17 +1069,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={49}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-3"
-                    x={35}
-                    y={94.96999999999998}
+                    x={39}
+                    y={60.969999999999985}
                   >
                     <tspan
                       dx={0}
@@ -1096,7 +1096,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.80
                     </tspan>
@@ -1118,10 +1118,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={-30}
+                    y1={10}
+                    y2={10}
                   />
                   <line
                     role="presentation"
@@ -1137,17 +1137,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={49}
+                    y1={10}
+                    y2={10}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-4"
-                    x={35}
-                    y={54.97}
+                    x={39}
+                    y={14.969999999999999}
                   >
                     <tspan
                       dx={0}
@@ -1164,7 +1164,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       1.0
                     </tspan>
@@ -1185,7 +1185,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                   vectorEffect="non-scaling-stroke"
                   width={0}
                   x={0}
-                  y={282}
+                  y={272}
                 />
               </g>
             </svg>
@@ -1352,10 +1352,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={-50}
-                  y1={250}
-                  y2={250}
+                  x1={54}
+                  x2={-30}
+                  y1={240}
+                  y2={240}
                 />
                 <g
                   role="presentation"
@@ -1374,17 +1374,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-50}
-                    x2={-50}
-                    y1={250}
-                    y2={255}
+                    x1={-30}
+                    x2={-30}
+                    y1={240}
+                    y2={245}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-50}
-                    y={276.97}
+                    x={-30}
+                    y={266.97}
                   >
                     <tspan
                       dx={0}
@@ -1401,7 +1401,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         }
                       }
                       textAnchor="middle"
-                      x={-50}
+                      x={-30}
                     >
                       7:00:00 PM
                     </tspan>
@@ -1424,18 +1424,18 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={50}
-                  y1={50}
-                  y2={250}
+                  x1={54}
+                  x2={54}
+                  y1={10}
+                  y2={240}
                 />
                 <text
                   direction="inherit"
                   dx={0}
                   id="axis-axisLabel-0"
-                  transform="rotate(-90,10,150)"
-                  x={10}
-                  y={147.97}
+                  transform="rotate(-90,14,125)"
+                  x={14}
+                  y={122.97}
                 >
                   <tspan
                     dx={0}
@@ -1452,7 +1452,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     textAnchor="middle"
-                    x={10}
+                    x={14}
                   >
                     %
                   </tspan>
@@ -1473,10 +1473,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={-30}
+                    y1={194}
+                    y2={194}
                   />
                   <line
                     role="presentation"
@@ -1492,17 +1492,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={49}
+                    y1={194}
+                    y2={194}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-0"
-                    x={35}
-                    y={214.97}
+                    x={39}
+                    y={198.97}
                   >
                     <tspan
                       dx={0}
@@ -1519,7 +1519,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.20
                     </tspan>
@@ -1541,10 +1541,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={-30}
+                    y1={148}
+                    y2={148}
                   />
                   <line
                     role="presentation"
@@ -1560,17 +1560,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={49}
+                    y1={148}
+                    y2={148}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-1"
-                    x={35}
-                    y={174.97}
+                    x={39}
+                    y={152.97}
                   >
                     <tspan
                       dx={0}
@@ -1587,7 +1587,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.40
                     </tspan>
@@ -1609,10 +1609,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={-30}
+                    y1={102}
+                    y2={102}
                   />
                   <line
                     role="presentation"
@@ -1628,17 +1628,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={49}
+                    y1={102}
+                    y2={102}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-2"
-                    x={35}
-                    y={134.97}
+                    x={39}
+                    y={106.97}
                   >
                     <tspan
                       dx={0}
@@ -1655,7 +1655,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.60
                     </tspan>
@@ -1677,10 +1677,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={-30}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <line
                     role="presentation"
@@ -1696,17 +1696,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={49}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-3"
-                    x={35}
-                    y={94.96999999999998}
+                    x={39}
+                    y={60.969999999999985}
                   >
                     <tspan
                       dx={0}
@@ -1723,7 +1723,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.80
                     </tspan>
@@ -1745,10 +1745,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={-30}
+                    y1={10}
+                    y2={10}
                   />
                   <line
                     role="presentation"
@@ -1764,17 +1764,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={49}
+                    y1={10}
+                    y2={10}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-4"
-                    x={35}
-                    y={54.97}
+                    x={39}
+                    y={14.969999999999999}
                   >
                     <tspan
                       dx={0}
@@ -1791,7 +1791,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       1.0
                     </tspan>
@@ -1812,7 +1812,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                   vectorEffect="non-scaling-stroke"
                   width={0}
                   x={0}
-                  y={282}
+                  y={272}
                 />
               </g>
             </svg>
@@ -1979,10 +1979,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={-50}
-                  y1={250}
-                  y2={250}
+                  x1={54}
+                  x2={-30}
+                  y1={240}
+                  y2={240}
                 />
                 <g
                   role="presentation"
@@ -2001,17 +2001,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-50}
-                    x2={-50}
-                    y1={250}
-                    y2={255}
+                    x1={-30}
+                    x2={-30}
+                    y1={240}
+                    y2={245}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-50}
-                    y={276.97}
+                    x={-30}
+                    y={266.97}
                   >
                     <tspan
                       dx={0}
@@ -2028,7 +2028,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         }
                       }
                       textAnchor="middle"
-                      x={-50}
+                      x={-30}
                     >
                       7:00:00 PM
                     </tspan>
@@ -2051,18 +2051,18 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={50}
-                  y1={50}
-                  y2={250}
+                  x1={54}
+                  x2={54}
+                  y1={10}
+                  y2={240}
                 />
                 <text
                   direction="inherit"
                   dx={0}
                   id="axis-axisLabel-0"
-                  transform="rotate(-90,10,150)"
-                  x={10}
-                  y={147.97}
+                  transform="rotate(-90,14,125)"
+                  x={14}
+                  y={122.97}
                 >
                   <tspan
                     dx={0}
@@ -2079,7 +2079,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     textAnchor="middle"
-                    x={10}
+                    x={14}
                   >
                     MiB
                   </tspan>
@@ -2100,10 +2100,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={-30}
+                    y1={194}
+                    y2={194}
                   />
                   <line
                     role="presentation"
@@ -2119,17 +2119,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={49}
+                    y1={194}
+                    y2={194}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-0"
-                    x={35}
-                    y={214.97}
+                    x={39}
+                    y={198.97}
                   >
                     <tspan
                       dx={0}
@@ -2146,7 +2146,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.20
                     </tspan>
@@ -2168,10 +2168,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={-30}
+                    y1={148}
+                    y2={148}
                   />
                   <line
                     role="presentation"
@@ -2187,17 +2187,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={49}
+                    y1={148}
+                    y2={148}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-1"
-                    x={35}
-                    y={174.97}
+                    x={39}
+                    y={152.97}
                   >
                     <tspan
                       dx={0}
@@ -2214,7 +2214,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.40
                     </tspan>
@@ -2236,10 +2236,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={-30}
+                    y1={102}
+                    y2={102}
                   />
                   <line
                     role="presentation"
@@ -2255,17 +2255,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={49}
+                    y1={102}
+                    y2={102}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-2"
-                    x={35}
-                    y={134.97}
+                    x={39}
+                    y={106.97}
                   >
                     <tspan
                       dx={0}
@@ -2282,7 +2282,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.60
                     </tspan>
@@ -2304,10 +2304,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={-30}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <line
                     role="presentation"
@@ -2323,17 +2323,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={49}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-3"
-                    x={35}
-                    y={94.96999999999998}
+                    x={39}
+                    y={60.969999999999985}
                   >
                     <tspan
                       dx={0}
@@ -2350,7 +2350,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.80
                     </tspan>
@@ -2372,10 +2372,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={-30}
+                    y1={10}
+                    y2={10}
                   />
                   <line
                     role="presentation"
@@ -2391,17 +2391,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={49}
+                    y1={10}
+                    y2={10}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-4"
-                    x={35}
-                    y={54.97}
+                    x={39}
+                    y={14.969999999999999}
                   >
                     <tspan
                       dx={0}
@@ -2418,7 +2418,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       1.0
                     </tspan>
@@ -2439,7 +2439,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                   vectorEffect="non-scaling-stroke"
                   width={0}
                   x={0}
-                  y={282}
+                  y={272}
                 />
               </g>
             </svg>
@@ -2606,10 +2606,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={-50}
-                  y1={250}
-                  y2={250}
+                  x1={54}
+                  x2={-30}
+                  y1={240}
+                  y2={240}
                 />
                 <g
                   role="presentation"
@@ -2628,17 +2628,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-50}
-                    x2={-50}
-                    y1={250}
-                    y2={255}
+                    x1={-30}
+                    x2={-30}
+                    y1={240}
+                    y2={245}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-50}
-                    y={276.97}
+                    x={-30}
+                    y={266.97}
                   >
                     <tspan
                       dx={0}
@@ -2655,7 +2655,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         }
                       }
                       textAnchor="middle"
-                      x={-50}
+                      x={-30}
                     >
                       7:00:00 PM
                     </tspan>
@@ -2678,18 +2678,18 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={50}
-                  y1={50}
-                  y2={250}
+                  x1={54}
+                  x2={54}
+                  y1={10}
+                  y2={240}
                 />
                 <text
                   direction="inherit"
                   dx={0}
                   id="axis-axisLabel-0"
-                  transform="rotate(-90,10,150)"
-                  x={10}
-                  y={147.97}
+                  transform="rotate(-90,14,125)"
+                  x={14}
+                  y={122.97}
                 >
                   <tspan
                     dx={0}
@@ -2706,7 +2706,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     textAnchor="middle"
-                    x={10}
+                    x={14}
                   >
                     MiB
                   </tspan>
@@ -2727,10 +2727,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={-30}
+                    y1={194}
+                    y2={194}
                   />
                   <line
                     role="presentation"
@@ -2746,17 +2746,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={49}
+                    y1={194}
+                    y2={194}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-0"
-                    x={35}
-                    y={214.97}
+                    x={39}
+                    y={198.97}
                   >
                     <tspan
                       dx={0}
@@ -2773,7 +2773,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.20
                     </tspan>
@@ -2795,10 +2795,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={-30}
+                    y1={148}
+                    y2={148}
                   />
                   <line
                     role="presentation"
@@ -2814,17 +2814,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={49}
+                    y1={148}
+                    y2={148}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-1"
-                    x={35}
-                    y={174.97}
+                    x={39}
+                    y={152.97}
                   >
                     <tspan
                       dx={0}
@@ -2841,7 +2841,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.40
                     </tspan>
@@ -2863,10 +2863,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={-30}
+                    y1={102}
+                    y2={102}
                   />
                   <line
                     role="presentation"
@@ -2882,17 +2882,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={49}
+                    y1={102}
+                    y2={102}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-2"
-                    x={35}
-                    y={134.97}
+                    x={39}
+                    y={106.97}
                   >
                     <tspan
                       dx={0}
@@ -2909,7 +2909,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.60
                     </tspan>
@@ -2931,10 +2931,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={-30}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <line
                     role="presentation"
@@ -2950,17 +2950,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={49}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-3"
-                    x={35}
-                    y={94.96999999999998}
+                    x={39}
+                    y={60.969999999999985}
                   >
                     <tspan
                       dx={0}
@@ -2977,7 +2977,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.80
                     </tspan>
@@ -2999,10 +2999,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={-30}
+                    y1={10}
+                    y2={10}
                   />
                   <line
                     role="presentation"
@@ -3018,17 +3018,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={49}
+                    y1={10}
+                    y2={10}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-4"
-                    x={35}
-                    y={54.97}
+                    x={39}
+                    y={14.969999999999999}
                   >
                     <tspan
                       dx={0}
@@ -3045,7 +3045,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       1.0
                     </tspan>
@@ -3066,7 +3066,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                   vectorEffect="non-scaling-stroke"
                   width={0}
                   x={0}
-                  y={282}
+                  y={272}
                 />
               </g>
             </svg>
@@ -3443,10 +3443,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={-50}
-                  y1={250}
-                  y2={250}
+                  x1={54}
+                  x2={-30}
+                  y1={240}
+                  y2={240}
                 />
                 <g
                   role="presentation"
@@ -3465,17 +3465,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-50}
-                    x2={-50}
-                    y1={250}
-                    y2={255}
+                    x1={-30}
+                    x2={-30}
+                    y1={240}
+                    y2={245}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-50}
-                    y={276.97}
+                    x={-30}
+                    y={266.97}
                   >
                     <tspan
                       dx={0}
@@ -3492,7 +3492,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         }
                       }
                       textAnchor="middle"
-                      x={-50}
+                      x={-30}
                     >
                       7:00:00 PM
                     </tspan>
@@ -3515,18 +3515,18 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={50}
-                  y1={50}
-                  y2={250}
+                  x1={54}
+                  x2={54}
+                  y1={10}
+                  y2={240}
                 />
                 <text
                   direction="inherit"
                   dx={0}
                   id="axis-axisLabel-0"
-                  transform="rotate(-90,10,150)"
-                  x={10}
-                  y={147.97}
+                  transform="rotate(-90,14,125)"
+                  x={14}
+                  y={122.97}
                 >
                   <tspan
                     dx={0}
@@ -3543,7 +3543,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     textAnchor="middle"
-                    x={10}
+                    x={14}
                   >
                     MiB
                   </tspan>
@@ -3564,10 +3564,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={-30}
+                    y1={194}
+                    y2={194}
                   />
                   <line
                     role="presentation"
@@ -3583,17 +3583,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={49}
+                    y1={194}
+                    y2={194}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-0"
-                    x={35}
-                    y={214.97}
+                    x={39}
+                    y={198.97}
                   >
                     <tspan
                       dx={0}
@@ -3610,7 +3610,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.20
                     </tspan>
@@ -3632,10 +3632,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={-30}
+                    y1={148}
+                    y2={148}
                   />
                   <line
                     role="presentation"
@@ -3651,17 +3651,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={49}
+                    y1={148}
+                    y2={148}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-1"
-                    x={35}
-                    y={174.97}
+                    x={39}
+                    y={152.97}
                   >
                     <tspan
                       dx={0}
@@ -3678,7 +3678,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.40
                     </tspan>
@@ -3700,10 +3700,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={-30}
+                    y1={102}
+                    y2={102}
                   />
                   <line
                     role="presentation"
@@ -3719,17 +3719,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={49}
+                    y1={102}
+                    y2={102}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-2"
-                    x={35}
-                    y={134.97}
+                    x={39}
+                    y={106.97}
                   >
                     <tspan
                       dx={0}
@@ -3746,7 +3746,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.60
                     </tspan>
@@ -3768,10 +3768,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={-30}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <line
                     role="presentation"
@@ -3787,17 +3787,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={49}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-3"
-                    x={35}
-                    y={94.96999999999998}
+                    x={39}
+                    y={60.969999999999985}
                   >
                     <tspan
                       dx={0}
@@ -3814,7 +3814,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.80
                     </tspan>
@@ -3836,10 +3836,10 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={-30}
+                    y1={10}
+                    y2={10}
                   />
                   <line
                     role="presentation"
@@ -3855,17 +3855,17 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={49}
+                    y1={10}
+                    y2={10}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-4"
-                    x={35}
-                    y={54.97}
+                    x={39}
+                    y={14.969999999999999}
                   >
                     <tspan
                       dx={0}
@@ -3882,7 +3882,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       1.0
                     </tspan>
@@ -3903,7 +3903,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                   vectorEffect="non-scaling-stroke"
                   width={0}
                   x={0}
-                  y={282}
+                  y={272}
                 />
               </g>
             </svg>
@@ -4281,10 +4281,10 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={-50}
-                  y1={250}
-                  y2={250}
+                  x1={54}
+                  x2={-30}
+                  y1={240}
+                  y2={240}
                 />
                 <g
                   role="presentation"
@@ -4303,17 +4303,17 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={-50}
-                    x2={-50}
-                    y1={250}
-                    y2={255}
+                    x1={-30}
+                    x2={-30}
+                    y1={240}
+                    y2={245}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-0-ChartLabel-4"
-                    x={-50}
-                    y={276.97}
+                    x={-30}
+                    y={266.97}
                   >
                     <tspan
                       dx={0}
@@ -4330,7 +4330,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         }
                       }
                       textAnchor="middle"
-                      x={-50}
+                      x={-30}
                     >
                       7:00:00 PM
                     </tspan>
@@ -4353,18 +4353,18 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                     }
                   }
                   vectorEffect="non-scaling-stroke"
-                  x1={50}
-                  x2={50}
-                  y1={50}
-                  y2={250}
+                  x1={54}
+                  x2={54}
+                  y1={10}
+                  y2={240}
                 />
                 <text
                   direction="inherit"
                   dx={0}
                   id="axis-axisLabel-0"
-                  transform="rotate(-90,10,150)"
-                  x={10}
-                  y={147.97}
+                  transform="rotate(-90,14,125)"
+                  x={14}
+                  y={122.97}
                 >
                   <tspan
                     dx={0}
@@ -4381,7 +4381,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     textAnchor="middle"
-                    x={10}
+                    x={14}
                   >
                     %
                   </tspan>
@@ -4402,10 +4402,10 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={-30}
+                    y1={194}
+                    y2={194}
                   />
                   <line
                     role="presentation"
@@ -4421,17 +4421,17 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={210}
-                    y2={210}
+                    x1={54}
+                    x2={49}
+                    y1={194}
+                    y2={194}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-0"
-                    x={35}
-                    y={214.97}
+                    x={39}
+                    y={198.97}
                   >
                     <tspan
                       dx={0}
@@ -4448,7 +4448,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.20
                     </tspan>
@@ -4470,10 +4470,10 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={-30}
+                    y1={148}
+                    y2={148}
                   />
                   <line
                     role="presentation"
@@ -4489,17 +4489,17 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={170}
-                    y2={170}
+                    x1={54}
+                    x2={49}
+                    y1={148}
+                    y2={148}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-1"
-                    x={35}
-                    y={174.97}
+                    x={39}
+                    y={152.97}
                   >
                     <tspan
                       dx={0}
@@ -4516,7 +4516,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.40
                     </tspan>
@@ -4538,10 +4538,10 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={-30}
+                    y1={102}
+                    y2={102}
                   />
                   <line
                     role="presentation"
@@ -4557,17 +4557,17 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={130}
-                    y2={130}
+                    x1={54}
+                    x2={49}
+                    y1={102}
+                    y2={102}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-2"
-                    x={35}
-                    y={134.97}
+                    x={39}
+                    y={106.97}
                   >
                     <tspan
                       dx={0}
@@ -4584,7 +4584,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.60
                     </tspan>
@@ -4606,10 +4606,10 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={-30}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <line
                     role="presentation"
@@ -4625,17 +4625,17 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={89.99999999999999}
-                    y2={89.99999999999999}
+                    x1={54}
+                    x2={49}
+                    y1={55.999999999999986}
+                    y2={55.999999999999986}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-3"
-                    x={35}
-                    y={94.96999999999998}
+                    x={39}
+                    y={60.969999999999985}
                   >
                     <tspan
                       dx={0}
@@ -4652,7 +4652,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       0.80
                     </tspan>
@@ -4674,10 +4674,10 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={-50}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={-30}
+                    y1={10}
+                    y2={10}
                   />
                   <line
                     role="presentation"
@@ -4693,17 +4693,17 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       }
                     }
                     vectorEffect="non-scaling-stroke"
-                    x1={50}
-                    x2={45}
-                    y1={50}
-                    y2={50}
+                    x1={54}
+                    x2={49}
+                    y1={10}
+                    y2={10}
                   />
                   <text
                     direction="inherit"
                     dx={0}
                     id="chart-axis-1-ChartLabel-4"
-                    x={35}
-                    y={54.97}
+                    x={39}
+                    y={14.969999999999999}
                   >
                     <tspan
                       dx={0}
@@ -4720,7 +4720,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                         }
                       }
                       textAnchor="end"
-                      x={35}
+                      x={39}
                     >
                       1.0
                     </tspan>
@@ -4741,7 +4741,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                   vectorEffect="non-scaling-stroke"
                   width={0}
                   x={0}
-                  y={282}
+                  y={272}
                 />
               </g>
             </svg>

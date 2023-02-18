@@ -126,6 +126,12 @@ const SimpleChart: React.FC<{
       legendPosition={'bottom'}
       themeColor={themeColor}
       width={width}
+      padding={{
+        left: 54,
+        right: 30,
+        top: 10,
+        bottom: 60,
+      }}
     >
       <ChartAxis tickFormat={(t) => dayjs(t).format('LTS')} fixLabelOverlap />
       <ChartAxis
