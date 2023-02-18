@@ -476,7 +476,7 @@ export const MBeanMetricsChartCardDescriptor: DashboardCardDescriptor = {
     {
       name: 'CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.NAME',
       key: 'period',
-      defaultValue: 5,
+      defaultValue: 10, // TODO this is set equal to the default Settings value for minimum refresh period, but should instead be set dynamically equal to that actual value.
       description: 'CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.DESCRIPTION',
       kind: 'number',
       extras: {
