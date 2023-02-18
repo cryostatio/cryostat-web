@@ -126,7 +126,6 @@ const SimpleChart: React.FC<{
       legendPosition={'bottom'}
       themeColor={themeColor}
       width={width}
-      animate={true}
     >
       <ChartAxis tickFormat={(t) => dayjs(t).format('LTS')} fixLabelOverlap />
       <ChartAxis
@@ -261,7 +260,6 @@ const chartKinds: MBeanMetricsChartKind[] = [
           labels={({ datum }) => (datum.x ? `${datum.x}: ${datum.y.toFixed(2)}%` : null)}
           themeColor={themeColor}
           width={width}
-          animate={true}
         />
       );
     },
