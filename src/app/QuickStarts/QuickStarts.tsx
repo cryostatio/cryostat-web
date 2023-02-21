@@ -49,7 +49,7 @@ import {
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { allQuickStarts as quickstarts } from './all-quickstarts';
+import { allQuickStarts } from './all-quickstarts';
 
 export interface QuickStartsProps {}
 
@@ -58,21 +58,13 @@ const QuickStarts: React.FunctionComponent<QuickStartsProps> = (_) => {
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
   const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
 
-  const [loading, setLoading] = React.useState(true);
-  const [quickStarts, setQuickStarts] = React.useState<QuickStart[]>([]);
-  React.useEffect(() => {
-    setQuickStarts(quickstarts);
-    setLoading(false);
-  }, []);
-
   const drawerProps: QuickStartContainerProps = {
-    quickStarts,
+    quickStarts: allQuickStarts,
     activeQuickStartID,
     allQuickStartStates,
     setActiveQuickStartID,
     setAllQuickStartStates,
     language: i18n.language,
-    loading,
     alwaysShowTaskReview: true,
     markdown: {
       extensions: [
@@ -88,16 +80,14 @@ const QuickStarts: React.FunctionComponent<QuickStartsProps> = (_) => {
   };
   return (
     <React.Suspense fallback={<LoadingView />}>
-      <FeatureFlag level={FeatureLevel.BETA}>
-        <QuickStartContainer {...drawerProps}>
-          <QuickStartCatalogPage
-            title={t('QuickStarts.CATALOG_PAGE.TITLE')}
-            hint={t('QuickStarts.CATALOG_PAGE.HINT')}
-            showTitle
-            showFilter
-          />
-        </QuickStartContainer>
-      </FeatureFlag>
+      <QuickStartContainer {...drawerProps}>
+        <QuickStartCatalogPage
+          title={t('QuickStarts.CATALOG_PAGE.TITLE')}
+          hint={t('QuickStarts.CATALOG_PAGE.HINT')}
+          showTitle
+          showFilter
+        />
+      </QuickStartContainer>
     </React.Suspense>
   );
 };

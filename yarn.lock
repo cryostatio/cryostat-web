@@ -993,6 +993,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/patternfly@npm:4.222.4":
+  version: 4.222.4
+  resolution: "@patternfly/patternfly@npm:4.222.4"
+  checksum: ec11c737fcacdc3d919cf4a6c8a8dab00e62e0948f0d8ec32dfb3d802c5c11d9e6fe7e2cb3c7db61c0a57ae0450c7b662e42347285408013ff7b96c1559d8e5c
+  languageName: node
+  linkType: hard
+
 "@patternfly/patternfly@npm:^4.224.2":
   version: 4.224.2
   resolution: "@patternfly/patternfly@npm:4.224.2"
@@ -1017,6 +1024,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@patternfly/react-catalog-view-extension@npm:4.93.15":
+  version: 4.93.15
+  resolution: "@patternfly/react-catalog-view-extension@npm:4.93.15"
+  dependencies:
+    "@patternfly/patternfly": 4.222.4
+    "@patternfly/react-core": ^4.267.6
+    "@patternfly/react-styles": ^4.92.3
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 5b7b834d12ed45566914f643bdd3d37f31dfd47ac91f972b8bb7c65324fc1462f86ea1492a3a1a308f74a0a2a6510d880a7830ff583ab9b5c88d2a7e9dbecd36
+  languageName: node
+  linkType: hard
+
 "@patternfly/react-catalog-view-extension@npm:^4.93.15":
   version: 4.96.0
   resolution: "@patternfly/react-catalog-view-extension@npm:4.96.0"
@@ -1028,6 +1049,24 @@ __metadata:
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
   checksum: c03fc63ab6d969245fae02da07c2142af221e2e6fdbaa7e8e21d4f562f6dede28738ee1955afaaa4d4a790b787e60414c6b6582204f498e1a2bcc535636c79b7
+  languageName: node
+  linkType: hard
+
+"@patternfly/react-core@npm:4.267.6":
+  version: 4.267.6
+  resolution: "@patternfly/react-core@npm:4.267.6"
+  dependencies:
+    "@patternfly/react-icons": ^4.93.3
+    "@patternfly/react-styles": ^4.92.3
+    "@patternfly/react-tokens": ^4.94.3
+    focus-trap: 6.9.2
+    react-dropzone: 9.0.0
+    tippy.js: 5.1.2
+    tslib: ^2.0.0
+  peerDependencies:
+    react: ^16.8 || ^17 || ^18
+    react-dom: ^16.8 || ^17 || ^18
+  checksum: 79837420945fa185636c76bbe94832d25a67fc30269a3a6c95639b4239019808de807ab68ed0a70940e1d53d39bf4f8fa8f1032ff30fc13ac7567dbbf6d2bdf7
   languageName: node
   linkType: hard
 
@@ -1049,7 +1088,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-icons@npm:^4.93.6":
+"@patternfly/react-icons@npm:^4.93.3, @patternfly/react-icons@npm:^4.93.6":
   version: 4.93.6
   resolution: "@patternfly/react-icons@npm:4.93.6"
   peerDependencies:
@@ -1059,7 +1098,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-styles@npm:^4.92.6":
+"@patternfly/react-styles@npm:^4.92.3, @patternfly/react-styles@npm:^4.92.6":
   version: 4.92.6
   resolution: "@patternfly/react-styles@npm:4.92.6"
   checksum: fef3317cf2c6f79afea3c1903372ac62a0e753b239f360c4c9896dbdbe98a2d72abd62e047cd29b6569a1c7d3654110cd3f3934a2268d01d1891855eeff2b72a
@@ -1083,7 +1122,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-tokens@npm:^4.94.6":
+"@patternfly/react-tokens@npm:^4.94.3, @patternfly/react-tokens@npm:^4.94.6":
   version: 4.94.6
   resolution: "@patternfly/react-tokens@npm:4.94.6"
   checksum: a643b76c3bf74bfeccea024a09b7fbc390e2119e234886c90a5ed64d02c93f4267a1bc1007bf6be86b0cabc8e2a175696b114cf4778fda48866ec529e9ce27c1
@@ -3428,7 +3467,8 @@ __metadata:
   resolution: "cryostat-web@workspace:."
   dependencies:
     "@patternfly/quickstarts": ^2.3.3
-    "@patternfly/react-core": ^4.267.6
+    "@patternfly/react-catalog-view-extension": 4.93.15
+    "@patternfly/react-core": 4.267.6
     "@patternfly/react-icons": ^4.93.6
     "@patternfly/react-styles": ^4.92.6
     "@patternfly/react-table": ^4.112.39

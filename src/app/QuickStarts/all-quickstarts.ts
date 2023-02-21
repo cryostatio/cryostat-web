@@ -37,7 +37,8 @@
  */
 import { QuickStart } from '@patternfly/quickstarts';
 import { AddCardQuickStart } from './quickstarts/add-card-quickstart';
-import { GenericQuickStart } from './quickstarts/generic-quickstart';
+// import { GenericQuickStart } from './quickstarts/generic-quickstart';
 import { SampleQuickStart } from './quickstarts/my-quickstart';
 
-export const allQuickStarts: QuickStart[] = [GenericQuickStart, SampleQuickStart, AddCardQuickStart];
+// Add your quick start here e.g. [GenericQuickStart, SampleQuickStart, AddCardQuickStart]
+export const allQuickStarts: QuickStart[] = [SampleQuickStart, AddCardQuickStart];

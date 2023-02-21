@@ -38,7 +38,7 @@
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import { QuickStart } from '@patternfly/quickstarts';
 
-// TODO: Add quickstarts
+// TODO: Add quickstarts based on the following example:
 export const GenericQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {

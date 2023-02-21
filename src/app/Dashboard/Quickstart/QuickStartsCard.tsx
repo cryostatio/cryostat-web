@@ -49,7 +49,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
-import { allQuickStarts as exampleQuickStarts } from './dashboard-quickstarts';
+import { allQuickStarts } from './dashboard-quickstarts';
 
 export interface QuickStartsCardProps extends DashboardCardProps {}
 
@@ -58,21 +58,13 @@ const QuickStartsCard: React.FunctionComponent<QuickStartsCardProps> = (props) =
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
   const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
 
-  const [loading, setLoading] = React.useState(true);
-  const [quickStarts, setQuickStarts] = React.useState<QuickStart[]>([]);
-  React.useEffect(() => {
-    setQuickStarts(exampleQuickStarts);
-    setLoading(false);
-  }, []);
-
   const drawerProps: QuickStartContainerProps = {
-    quickStarts,
+    quickStarts: allQuickStarts,
     activeQuickStartID,
     allQuickStartStates,
     setActiveQuickStartID,
     setAllQuickStartStates,
     language: i18n.language,
-    loading,
     alwaysShowTaskReview: true,
     markdown: {
       extensions: [
