@@ -48,14 +48,14 @@ import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { CardActions, CardBody, CardHeader, ContextSelector, ContextSelectorItem, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { filter, map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
 import { ChartContext } from './Charts/ChartContext';
@@ -375,7 +375,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
       console.log('layout not found ' + layout);
     }
     setIsSelectorOpen(false);
-  }, [addSubscription, serviceContext.settings, dispatch, setLayout, setIsSelectorOpen]);
+  }, [addSubscription, dispatch, serviceContext.settings, setLayout, setIsSelectorOpen, layouts]);
 
   const onToggle = React.useCallback((_evt: any, isOpen: boolean) => {
     setIsSelectorOpen(isOpen);

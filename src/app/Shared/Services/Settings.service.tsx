@@ -40,11 +40,8 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
-<<<<<<< HEAD
 import { DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlicer';
-=======
 import { CardConfig, DashboardLayout } from '../Redux/Configurations/DashboardConfigSlicer';
->>>>>>> 67dcdc5e (init commit)
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
