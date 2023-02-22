@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
 jest.mock('@app/Dashboard/Charts/MBeanMetricsChartController');
 
 import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
@@ -53,7 +54,6 @@ import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { from, of } from 'rxjs';
 
-jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
