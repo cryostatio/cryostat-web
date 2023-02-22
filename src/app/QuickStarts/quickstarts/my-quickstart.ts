@@ -37,6 +37,7 @@
  */
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import { QuickStart } from '@patternfly/quickstarts';
+
 export const SampleQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {

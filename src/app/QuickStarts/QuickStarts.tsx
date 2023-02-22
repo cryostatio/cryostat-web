@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import build from '@app/build.json';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import {
   QuickStartCatalogPage,
@@ -63,17 +62,6 @@ const QuickStarts: React.FunctionComponent<QuickStartsProps> = (_) => {
     setAllQuickStartStates,
     language: i18n.language,
     alwaysShowTaskReview: true,
-    markdown: {
-      extensions: [
-        {
-          type: 'output',
-          filter: function (html) {
-            html = html.replace(/\[PRODUCT\]/g, build.productName);
-            return html;
-          },
-        },
-      ],
-    },
   };
   return (
     <React.Suspense fallback={<LoadingView />}>

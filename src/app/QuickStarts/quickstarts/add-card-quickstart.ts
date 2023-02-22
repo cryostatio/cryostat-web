@@ -36,7 +36,9 @@
  * SOFTWARE.
  */
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
+
 export const AddCardQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
@@ -46,12 +48,12 @@ export const AddCardQuickStart: QuickStart = {
     displayName: 'Adding/Removing Cards',
     durationMinutes: 1,
     icon: cryostatLogo,
-    description: 'Add and remove cards from the [PRODUCT] Dashboard.',
+    description: `Add and remove cards from the ${build.productName} Dashboard.`,
     introduction: '### This is a sample quickstart.',
     tasks: [
       {
         title: 'Add a Card',
-        description: `### We will add a card to the [PRODUCT] Dashboard.
+        description: `### We will add a card to the ${build.productName} Dashboard.
 1. Go to the bottom of this page, and press the **Add** button on the 'Add Card' card.
 2. Select a card type.
 3. Press **Finish** to add the card to the dashboard.`,
@@ -68,7 +70,7 @@ export const AddCardQuickStart: QuickStart = {
       },
       {
         title: 'Remove a Card',
-        description: `### We will remove a card to the [PRODUCT] Dashboard.
+        description: `### We will remove a card to the ${build.productName} Dashboard.
 1. Find the card was created in Step 1.
 2. Press the kebab on the top right of that card's header.
 3. Press **Remove Card**.`,

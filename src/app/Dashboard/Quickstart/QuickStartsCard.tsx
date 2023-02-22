@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import {
   QuickStartCatalogPage,
@@ -65,17 +64,6 @@ const QuickStartsCard: React.FunctionComponent<QuickStartsCardProps> = (props) =
     setAllQuickStartStates,
     language: i18n.language,
     alwaysShowTaskReview: true,
-    markdown: {
-      extensions: [
-        {
-          type: 'output',
-          filter: function (html) {
-            html = html.replace(/\[PRODUCT\]/g, build.productName);
-            return html;
-          },
-        },
-      ],
-    },
   };
   return (
     <DashboardCard

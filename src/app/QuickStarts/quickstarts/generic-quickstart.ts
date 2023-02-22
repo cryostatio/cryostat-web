@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
 
 // TODO: Add quickstarts based on the following example:
@@ -48,7 +49,7 @@ export const GenericQuickStart: QuickStart = {
     displayName: 'Getting Started with',
     durationMinutes: 1,
     icon: cryostatLogo,
-    description: 'Get started with [PRODUCT].',
+    description: `Get started with ${build.productName}.`,
     introduction: '### This is a generic quickstart.',
     tasks: [
       {
@@ -57,9 +58,9 @@ export const GenericQuickStart: QuickStart = {
 1. Press the bell icon.`,
       },
     ],
-    conclusion: `You finished **Getting Started with [PRODUCT]**!
+    conclusion: `You finished **Getting Started with ${build.productName}**!
     
-Learn more about [[PRODUCT]](https://cryostat.io) from our website.
+Learn more about [${build.productName}](https://cryostat.io) from our website.
 `,
     type: {
       text: 'Introduction',
