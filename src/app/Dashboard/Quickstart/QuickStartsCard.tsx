@@ -38,7 +38,6 @@
 import build from '@app/build.json';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import {
-  QuickStart,
   QuickStartCatalogPage,
   QuickStartContainer,
   QuickStartContainerProps,

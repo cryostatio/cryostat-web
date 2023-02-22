@@ -37,10 +37,7 @@
  */
 import build from '@app/build.json';
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import {
-  QuickStart,
   QuickStartCatalogPage,
   QuickStartContainer,
   QuickStartContainerProps,

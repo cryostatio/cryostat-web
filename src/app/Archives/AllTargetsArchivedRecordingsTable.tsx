@@ -216,7 +216,7 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   );
 
   const handleSearchInput = React.useCallback(
-    (_evt: React.FormEvent<HTMLInputElement>, searchInput: string) => {
+    (searchInput: string) => {
       setSearchText(searchInput);
     },
     [setSearchText]

@@ -100,7 +100,7 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }, [addSubscription, context.api, setIsLoading, handleDirectoriesAndCounts]);
 
   const handleSearchInput = React.useCallback(
-    (_evt: React.FormEvent<HTMLInputElement>, searchInput: string) => {
+    (searchInput: string) => {
       setSearchText(searchInput);
     },
     [setSearchText]

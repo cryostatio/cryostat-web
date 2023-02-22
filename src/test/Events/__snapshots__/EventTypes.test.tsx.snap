@@ -399,7 +399,7 @@ Array [
             aria-label="Details"
             aria-labelledby="simple-node0 expandable-event-type-row-00"
             className="pf-c-button pf-m-plain"
-            data-ouia-component-id="OUIA-Generated-Button-plain-5"
+            data-ouia-component-id="OUIA-Generated-Button-plain-1"
             data-ouia-component-type="PF4/Button"
             data-ouia-safe={true}
             disabled={false}
