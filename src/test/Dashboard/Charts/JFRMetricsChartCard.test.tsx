@@ -38,9 +38,10 @@
 
 jest.mock('@app/Dashboard/Charts/JFRMetricsChartController');
 
-import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/JFRMetricsChartCard';
 import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
+import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/JFRMetricsChartCard';
 import { JFRMetricsChartController, ControllerState } from '@app/Dashboard/Charts/JFRMetricsChartController';
+import { MBeanMetricsChartController } from '@app/Dashboard/Charts/MBeanMetricsChartController';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
@@ -52,7 +53,6 @@ import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import { renderWithProvidersAndRedux } from '../../Common';
-import { MBeanMetricsChartController } from '@app/Dashboard/Charts/MBeanMetricsChartController';
 
 let history: MemoryHistory = createMemoryHistory({ initialEntries: ['/'] });
 jest.mock('react-router-dom', () => ({
