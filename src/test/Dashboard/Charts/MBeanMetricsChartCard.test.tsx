@@ -53,7 +53,6 @@ import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { from, of } from 'rxjs';
 
-jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
@@ -78,8 +77,14 @@ const mockChartContext = {
 const MB = Math.pow(1024, 2);
 
 describe('<MBeanMetricsChartCard />', () => {
-  afterEach(cleanup);
-  afterAll(jest.useRealTimers);
+  beforeEach(() => {
+    jest.useFakeTimers('modern').setSystemTime(new Date('14 Feb 2023 00:00:00 UTC'));
+  });
+
+  afterEach(() => {
+    cleanup();
+    jest.useRealTimers();
+  });
 
   it.each([
     [
