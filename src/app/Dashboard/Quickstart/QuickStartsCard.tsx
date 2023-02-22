@@ -102,7 +102,7 @@ const QuickStartsCardSizes = {
 } as DashboardCardSizes;
 
 export const QuickStartsCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.PRODUCTION,
+  featureLevel: FeatureLevel.BETA,
   title: 'Quick Starts',
   cardSizes: QuickStartsCardSizes,
   description: 'Cryostat Dashboard quick start tutorial.',

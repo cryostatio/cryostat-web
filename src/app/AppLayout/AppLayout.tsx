@@ -339,6 +339,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <DropdownItem key={'About'} onClick={handleOpenAboutModal}>
         About
       </DropdownItem>,
+      <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
+        <DropdownItem key={'Quickstarts'}>
+          <NavLink style={{ textDecoration: 'none', color: 'inherit' }} to="/quickstarts">
+            Quick Starts
+          </NavLink>
+        </DropdownItem>
+      </FeatureFlag>,
     ],
     [handleOpenDocumentation, handleOpenDiscussion, handleOpenAboutModal]
   );

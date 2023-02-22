@@ -97,7 +97,6 @@ const routes: IAppRoute[] = [
     path: '/quickstarts',
     title: 'Quick Starts',
     description: 'Get started with Cryostat.',
-    navGroup: OVERVIEW,
     featureLevel: FeatureLevel.BETA,
   },
   {
