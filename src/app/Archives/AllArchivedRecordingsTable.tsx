@@ -100,15 +100,15 @@ export const AllArchivedRecordingsTable: React.FC<AllArchivedRecordingsTableProp
   }, [addSubscription, context.api, setIsLoading, handleDirectoriesAndCounts]);
 
   const handleSearchInput = React.useCallback(
-    (searchInput) => {
+    (_evt: React.FormEvent<HTMLInputElement>, searchInput: string) => {
       setSearchText(searchInput);
     },
     [setSearchText]
   );
 
   const handleSearchInputClear = React.useCallback(() => {
-    handleSearchInput('');
-  }, [handleSearchInput]);
+    setSearchText('');
+  }, [setSearchText]);
 
   React.useEffect(() => {
     refreshDirectoriesAndCounts();
