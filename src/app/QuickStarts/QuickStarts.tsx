@@ -35,31 +35,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@patternfly/quickstarts/dist/quickstarts.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { LoadingView } from '@app/LoadingView/LoadingView';
+import {
+  QuickStartCatalogPage,
+  QuickStartContainer,
+  QuickStartContainerProps,
+  useLocalStorage,
+} from '@patternfly/quickstarts';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
+import { allQuickStarts } from './all-quickstarts';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
+export interface QuickStartsProps {}
 
-export { App };
+const QuickStarts: React.FunctionComponent<QuickStartsProps> = (_) => {
+  const { t, i18n } = useTranslation();
+  const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
+  const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
+
+  const drawerProps: QuickStartContainerProps = {
+    quickStarts: allQuickStarts,
+    activeQuickStartID,
+    allQuickStartStates,
+    setActiveQuickStartID,
+    setAllQuickStartStates,
+    language: i18n.language,
+    alwaysShowTaskReview: true,
+  };
+  return (
+    <React.Suspense fallback={<LoadingView />}>
+      <QuickStartContainer {...drawerProps}>
+        <QuickStartCatalogPage
+          title={t('QuickStarts.CATALOG_PAGE.TITLE')}
+          hint={t('QuickStarts.CATALOG_PAGE.HINT')}
+          showTitle
+          showFilter
+        />
+      </QuickStartContainer>
+    </React.Suspense>
+  );
+};
+
+export default withRouter(QuickStarts);

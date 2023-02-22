@@ -35,31 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@patternfly/quickstarts/dist/quickstarts.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { AddCardQuickStart } from '@app/QuickStarts/quickstarts/add-card-quickstart';
+import { SampleQuickStart } from '@app/QuickStarts/quickstarts/my-quickstart';
+import { QuickStart } from '@patternfly/quickstarts';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
-
-export { App };
+export const allQuickStarts: QuickStart[] = [SampleQuickStart, AddCardQuickStart];

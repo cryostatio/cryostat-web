@@ -36,9 +36,10 @@
  * SOFTWARE.
  */
 
+import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
 import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createAction, createReducer, nanoid } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
 const _version = '3';
@@ -49,6 +50,7 @@ export enum DashboardConfigAction {
   CARD_REMOVE = 'dashboard-card-config/remove',
   CARD_REORDER = 'dashboard-card-config/reorder',
   CARD_RESIZE = 'dashboard-card-config/resize',
+  FIRST_RUN = 'dashboard-card-config/first-run',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -56,6 +58,7 @@ export const enumValues = new Set(Object.values(DashboardConfigAction));
 export interface DashboardAddConfigActionPayload {
   id: string;
   name: string;
+  span: gridSpans;
   props: object;
 }
 
@@ -65,7 +68,7 @@ export interface DashboardDeleteConfigActionPayload {
 
 export interface DashboardResizeConfigActionPayload {
   idx: number;
-  span: number;
+  span: gridSpans;
 }
 
 export interface DashboardOrderConfigActionPayload {
@@ -73,6 +76,8 @@ export interface DashboardOrderConfigActionPayload {
   nextOrder: number;
   swap: boolean;
 }
+
+export interface DashboardFirstRunActionPayload {}
 
 export const dashboardCardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
@@ -113,6 +118,10 @@ export const dashboardCardConfigReorderCardIntent = createAction(
   })
 );
 
+export const dashboardCardConfigFirstRunIntent = createAction(DashboardConfigAction.FIRST_RUN, () => ({
+  payload: {} as DashboardFirstRunActionPayload,
+}));
+
 export interface CardConfig {
   id: string;
   name: string;
@@ -120,9 +129,30 @@ export interface CardConfig {
   props: object;
 }
 
-const INITIAL_STATE = getPersistedState('DASHBOARD_CFG', _version, {
+export interface DashboardConfigState {
+  list: CardConfig[];
+  _version: string;
+}
+
+const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
 });
+
+const firstRunDashboard: CardConfig[] = [
+  {
+    id: `${QuickStartsCardDescriptor.component.name}-${nanoid()}`,
+    name: `${QuickStartsCardDescriptor.component.name}`,
+    span: QuickStartsCardDescriptor.cardSizes.span.default,
+    props: {},
+  },
+  {
+    // Metrics Card  // TODO replace with config props
+    id: `MetricsCard-${nanoid()}`,
+    name: `MetricsCard`,
+    span: 3,
+    props: {},
+  },
+];
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
@@ -141,6 +171,9 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       } else {
         moveDashboardCard(state.list, payload.prevOrder, payload.nextOrder);
       }
+    })
+    .addCase(dashboardCardConfigFirstRunIntent, (state) => {
+      state.list = firstRunDashboard;
     });
 });
 

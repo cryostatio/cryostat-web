@@ -37,6 +37,9 @@
  */
 import '@app/app.css';
 import { IAppRoute, routes, flatten } from '@app/routes';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Button,
   EmptyState,
@@ -53,8 +56,17 @@ import { NotFoundCard } from './NotFoundCard';
 export interface NotFoundProps {}
 
 export const NotFound: React.FunctionComponent<NotFoundProps> = (_) => {
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
+  const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
+
+  React.useLayoutEffect(() => {
+    addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
+  }, [addSubscription, context.settings, setActiveLevel]);
+
   const cards = flatten(routes)
     .filter((route: IAppRoute): boolean => !!route.description)
+    .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
     .sort((a: IAppRoute, b: IAppRoute): number => a.title.localeCompare(b.title))
     .map((route: IAppRoute) => (
       <NotFoundCard

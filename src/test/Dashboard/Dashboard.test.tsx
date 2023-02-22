@@ -57,6 +57,47 @@ const mockFooTarget: Target = {
   },
 };
 
+// const QuickStartsTest: React.FC = (_) => {
+//   return (
+//     <>
+
+//     </>
+//   );
+// }
+// QuickStartsTest.displayName = 'QuickStartsCard';
+
+// const mockSizes: Sized<number> = {
+//   minimum: 0,
+//   default: 0,
+//   maximum: 0
+// }
+
+// const mockCardSizes: DashboardCardSizes = {
+//   span: mockSizes,
+//   height: mockSizes
+// };
+
+// const mockDescriptor: DashboardCardDescriptor = {
+//   title: 'Test',
+//   description: 'Test',
+//   component: QuickStartsTest,
+//   featureLevel: 0,
+//   propControls: [],
+//   cardSizes: mockCardSizes,
+//   descriptionFull: ''
+// };
+
+// const actual = jest.requireActual('@app/Dashboard/Quickstart/QuickStartsCard');
+// console.log('actual', actual);
+
+// jest.mock('@app/Dashboard/Quickstart/QuickStartsCard', () => (
+//   {
+//     ...actual,
+//     QuickStartsCard: (_) => QuickStartsTest,
+//     QuickStartsCardDescriptor: mockDescriptor,
+//   }
+// ));
+
 jest.mock('@app/TargetSelect/TargetSelect', () => ({
   TargetSelect: (_) => <div>Target Select</div>,
 }));
@@ -70,6 +111,12 @@ jest
   .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
   .mockReturnValueOnce(of()) //
   .mockReturnValue(of(mockFooTarget));
+
+jest.spyOn(defaultServices.settings, 'dashboardConfig').mockReturnValue({
+  _version: 'validVersion',
+  list: [],
+}); // renders correctly
+// having a undefined version will result in test errors...
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {

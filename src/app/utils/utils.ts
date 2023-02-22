@@ -36,6 +36,8 @@
  * SOFTWARE.
  */
 
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+
 const SECOND_MILLIS = 1000;
 const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 const HOUR_MILLIS = 60 * MINUTE_MILLIS;
@@ -44,7 +46,7 @@ const DAY_MILLIS = 24 * HOUR_MILLIS;
 // [     0,    1,    2,    3     ] array
 //       0     1     2     3       indexes
 // {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
-export function moveDashboardCard(arr: [], from: number, gapIndex: number) {
+export function moveDashboardCard(arr: CardConfig[], from: number, gapIndex: number) {
   if (gapIndex > from) {
     gapIndex--;
   }
@@ -52,7 +54,7 @@ export function moveDashboardCard(arr: [], from: number, gapIndex: number) {
   return arr;
 }
 
-export function swapDashboardCard(arr: [], from: number, to: number) {
+export function swapDashboardCard(arr: CardConfig[], from: number, to: number) {
   arr[from] = arr.splice(to, 1, arr[from])[0];
   return arr;
 }

@@ -42,6 +42,7 @@ import { LastLocationProvider, useLastLocation } from 'react-router-last-locatio
 import { LoadingView } from './LoadingView/LoadingView';
 import { SessionState } from './Shared/Services/Login.service';
 import { ServiceContext } from './Shared/Services/Services';
+import { FeatureLevel } from './Shared/Services/Settings.service';
 import { useDocumentTitle } from './utils/useDocumentTitle';
 import { useSubscriptions } from './utils/useSubscriptions';
 import { accessibleRouteChangeHandler } from './utils/utils';
@@ -54,6 +55,7 @@ const Login = lazy(() => import('@app/Login/Login'));
 const NotFound = lazy(() => import('@app/NotFound/NotFound'));
 const Recordings = lazy(() => import('@app/Recordings/Recordings'));
 const CreateRule = lazy(() => import('@app/Rules/CreateRule'));
+const QuickStarts = lazy(() => import('@app/QuickStarts/QuickStarts'));
 const Rules = lazy(() => import('@app/Rules/Rules'));
 const Settings = lazy(() => import('@app/Settings/Settings'));
 const SecurityPanel = lazy(() => import('@app/SecurityPanel/SecurityPanel'));
@@ -75,6 +77,7 @@ export interface IAppRoute {
   description?: string; // non-empty description is used to filter routes for the NotFound page
   isAsync?: boolean;
   navGroup?: string;
+  featureLevel?: FeatureLevel;
   children?: IAppRoute[];
 }
 
@@ -86,6 +89,15 @@ const routes: IAppRoute[] = [
     path: '/',
     title: 'Dashboard',
     navGroup: OVERVIEW,
+  },
+  {
+    component: QuickStarts,
+    exact: true,
+    label: 'Quick Starts',
+    path: '/quickstarts',
+    title: 'Quick Starts',
+    description: 'Get started with Cryostat.',
+    featureLevel: FeatureLevel.BETA,
   },
   {
     component: About,
@@ -227,6 +239,7 @@ const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [loggedIn, setLoggedIn] = React.useState(false);
+  const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
 
   React.useEffect(() => {
     addSubscription(
@@ -236,12 +249,17 @@ const AppRoutes: React.FunctionComponent<AppRoutesProps> = (_) => {
     );
   }, [addSubscription, context.login, setLoggedIn]);
 
+  React.useLayoutEffect(() => {
+    addSubscription(context.settings.featureLevel().subscribe((featureLevel) => setActiveLevel(featureLevel)));
+  }, [addSubscription, context.settings, setActiveLevel]);
+
   return (
     <LastLocationProvider>
       <Suspense fallback={<LoadingView />}>
         <Switch>
           {flatten(routes)
             .filter((r) => (loggedIn ? r.component !== Login : r.anonymous))
+            .filter((r) => r.featureLevel === undefined || r.featureLevel >= activeLevel)
             .map(({ path, exact, component, title, isAsync }, idx) => (
               <RouteWithTitleUpdates
                 path={path}

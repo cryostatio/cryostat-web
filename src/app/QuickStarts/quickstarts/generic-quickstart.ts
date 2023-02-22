@@ -35,31 +35,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@patternfly/quickstarts/dist/quickstarts.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import build from '@app/build.json';
+import { QuickStart } from '@patternfly/quickstarts';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
-
-export { App };
+// TODO: Add quickstarts based on the following example:
+export const GenericQuickStart: QuickStart = {
+  apiVersion: 'v2.3.0',
+  metadata: {
+    name: 'generic-quickstart',
+  },
+  spec: {
+    displayName: 'Getting Started with',
+    durationMinutes: 1,
+    icon: cryostatLogo,
+    description: `Get started with ${build.productName}.`,
+    introduction: '### This is a generic quickstart.',
+    tasks: [
+      {
+        title: 'Get started',
+        description: `### We will press the notifications bell icon on the top right.
+1. Press the bell icon.`,
+      },
+    ],
+    conclusion: `You finished **Getting Started with ${build.productName}**!
+    
+Learn more about [${build.productName}](https://cryostat.io) from our website.
+`,
+    type: {
+      text: 'Introduction',
+      color: 'green',
+    },
+  },
+};

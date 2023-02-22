@@ -35,31 +35,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@patternfly/quickstarts/dist/quickstarts.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import build from '@app/build.json';
+import { QuickStart } from '@patternfly/quickstarts';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
-
-export { App };
+export const AddCardQuickStart: QuickStart = {
+  apiVersion: 'v2.3.0',
+  metadata: {
+    name: 'add-card-quickstart',
+  },
+  spec: {
+    displayName: 'Adding/Removing Cards',
+    durationMinutes: 1,
+    icon: cryostatLogo,
+    description: `Add and remove cards from the ${build.productName} Dashboard.`,
+    introduction: '### This is a sample quickstart.',
+    tasks: [
+      {
+        title: 'Add a Card',
+        description: `### We will add a card to the ${build.productName} Dashboard.
+1. Go to the bottom of this page, and press the **Add** button on the 'Add Card' card.
+2. Select a card type.
+3. Press **Finish** to add the card to the dashboard.`,
+        review: {
+          instructions: `#### To verify the card was added:
+1. Notice the new card located on the Dashboard.
+                    `,
+          failedTaskHelp: 'Try the steps again.',
+        },
+        summary: {
+          success: 'You have successfully added a card.',
+          failed: 'Try the steps again.',
+        },
+      },
+      {
+        title: 'Remove a Card',
+        description: `### We will remove a card to the ${build.productName} Dashboard.
+1. Find the card was created in Step 1.
+2. Press the kebab on the top right of that card's header.
+3. Press **Remove Card**.`,
+        summary: {
+          success: 'You have successfully removed a card.',
+          failed: 'Try the steps again.',
+        },
+      },
+    ],
+    prerequisites: ['Complete the **Sample Quickstart** quick start.'],
+    conclusion: 'You have completed this quickstart on adding and removing cards.',
+  },
+};

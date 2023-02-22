@@ -37,11 +37,13 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
+import { CardConfig, dashboardCardConfigFirstRunIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import {
-  CardConfig,
+  dashboardCardConfigDeleteCardIntent,
   dashboardCardConfigResizeCardIntent,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+  RootState,
+  StateDispatch,
+} from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
@@ -58,6 +60,7 @@ import { ChartContext } from './Charts/ChartContext';
 import { ChartController } from './Charts/ChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
+import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
 
 export interface Sized<T> {
   minimum: T;
@@ -238,6 +241,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
     ChartCardDescriptor,
     NonePlaceholderCardDescriptor,
     AllPlaceholderCardDescriptor,
+    QuickStartsCardDescriptor,
   ];
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };
@@ -291,6 +295,13 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
       serviceContext.settings
     )
   );
+
+  React.useEffect(() => {
+    const currentDashboard = serviceContext.settings.dashboardConfig();
+    if (currentDashboard._version === undefined) {
+      dispatch(dashboardCardConfigFirstRunIntent());
+    }
+  }, [dispatch, serviceContext.settings]);
 
   const chartContext = React.useMemo(() => {
     return {

@@ -216,15 +216,15 @@ export const AllTargetsArchivedRecordingsTable: React.FC<AllTargetsArchivedRecor
   );
 
   const handleSearchInput = React.useCallback(
-    (searchInput) => {
+    (searchInput: string) => {
       setSearchText(searchInput);
     },
     [setSearchText]
   );
 
   const handleSearchInputClear = React.useCallback(() => {
-    handleSearchInput('');
-  }, [handleSearchInput]);
+    setSearchText('');
+  }, [setSearchText]);
 
   React.useEffect(() => {
     refreshTargetsAndCounts();

@@ -40,6 +40,7 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlicer';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -112,6 +113,10 @@ export class SettingsService {
 
   setFeatureLevel(featureLevel: FeatureLevel): void {
     this._featureLevel$.next(featureLevel);
+  }
+
+  dashboardConfig(): DashboardConfigState {
+    return getFromLocalStorage('DASHBOARD_CFG', {});
   }
 
   autoRefreshEnabled(): boolean {
