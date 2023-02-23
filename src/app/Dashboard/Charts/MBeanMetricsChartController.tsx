@@ -189,7 +189,7 @@ export class MBeanMetricsChartController {
   }
 }
 
-export interface MemoryMetric {
+export interface MemoryUsage {
   init: number;
   used: number;
   committed: number;
@@ -209,8 +209,8 @@ export interface MBeanMetrics {
     freePhysicalMemorySize?: number;
   };
   memory?: {
-    heapMemoryUsage?: MemoryMetric;
-    nonHeapMemoryUsage?: MemoryMetric;
+    heapMemoryUsage?: MemoryUsage;
+    nonHeapMemoryUsage?: MemoryUsage;
     heapMemoryUsagePercent?: number;
   };
   // runtime: {};
