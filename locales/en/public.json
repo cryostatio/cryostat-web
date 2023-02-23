@@ -159,6 +159,19 @@
     },
     "SELECTED_DATETIME": "Selected DateTime"
   },
+  "JvmDetailsCard": {
+    "CARD_DESCRIPTION": "Display details about the selected target JVM.",
+    "CARD_DESCRIPTION_FULL": "View information such as the connection URL, labels, and annotations belonging to the selected target JVM.",
+    "CARD_TITLE": "Target JVM Details",
+    "terms": {
+      "ALIAS": "Alias",
+      "CONNECTION_URL": "Connection URL",
+      "CRYOSTAT_ANNOTATIONS": "Cryostat Annotations",
+      "JVM_ID": "JVM Hash ID",
+      "LABELS": "Platform Labels",
+      "PLATFORM_ANNOTATIONS": "Platform Annotations"
+    }
+  },
   "MeridiemPicker": {
     "ARIA_LABELS": {
       "LISTBOX": "Select AM or PM"

@@ -35,33 +35,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * t('JvmDetailsCard.CARD_TITLE')
- * t('JvmDetailsCard.CARD_DESCRIPTION')
- * t('JvmDetailsCard.CARD_DESCRIPTION_FULL')
- * t('AutomatedAnalysisCard.CARD_TITLE')
- * t('AutomatedAnalysisCard.CARD_DESCRIPTION')
- * t('AutomatedAnalysisCard.CARD_DESCRIPTION_FULL')
- * t('CHART_CARD.JFR_METRICS_CARD_TITLE')
- * t('CHART_CARD.JFR_METRICS_CARD_DESCRIPTION')
- * t('CHART_CARD.JFR_METRICS_CARD_DESCRIPTION_FULL')
- * t('CHART_CARD.MBEAN_METRICS_CARD_TITLE')
- * t('CHART_CARD.MBEAN_METRICS_CARD_DESCRIPTION')
- * t('CHART_CARD.MBEAN_METRICS_CARD_DESCRIPTION_FULL')
- * t('CHART_CARD.PROP_CONTROLS.THEME.NAME')
- * t('CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION')
- * t('CHART_CARD.PROP_CONTROLS.THEME_COLOR.NAME')
- * t('CHART_CARD.PROP_CONTROLS.THEME_COLOR.DESCRIPTION')
- * t('CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.NAME')
- * t('CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.DESCRIPTION')
- * t('CHART_CARD.PROP_CONTROLS.DATA_WINDOW.NAME')
- * t('CHART_CARD.PROP_CONTROLS.DATA_WINDOW.DESCRIPTION')
- * t('CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.NAME')
- * t('CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.DESCRIPTION')
- * t('NonePlaceholderCard.CARD_TITLE')
- * t('NonePlaceholderCard.CARD_DESCRIPTION')
- * t('NonePlaceholderCard.CARD_DESCRIPTION_FULL')
- * t('AllPlaceholderCard.CARD_TITLE')
- * t('AllPlaceholderCard.CARD_DESCRIPTION')
- * t('AllPlaceholderCard.CARD_DESCRIPTION_FULL')
- **/
+
+import { JvmDetailsCard } from '@app/Dashboard/JvmDetails/JvmDetailsCard';
+import { store } from '@app/Shared/Redux/ReduxStore';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import React from 'react';
+import { Provider } from 'react-redux';
+import renderer, { act } from 'react-test-renderer';
+import { of } from 'rxjs';
+import '@i18n/config';
+
+const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+
+describe('<JvmDetailsCard />', () => {
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <Provider store={store}>
+            <JvmDetailsCard span={6} dashboardId={1} />
+          </Provider>
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+});
