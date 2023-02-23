@@ -95,7 +95,7 @@ const SimpleChart: React.FC<{
   units: string;
   interpolation?: 'linear' | 'step' | 'monotoneX';
 }> = ({ themeColor, style, width, samples, units, interpolation }) => {
-  const [dayjs] = useDayjs();
+  const [dayjs, dateTimeFormat] = useDayjs();
 
   const data = React.useMemo(
     () => samples.map((v) => ({ x: v.timestamp, y: v.datapoint.value, name: v.datapoint.name })),
@@ -119,9 +119,9 @@ const SimpleChart: React.FC<{
       containerComponent={
         <ChartVoronoiContainer
           labels={({ datum }) =>
-            `${dayjs(datum.x).format('LLLL')}: ${typeof datum.y === 'number' ? datum.y.toFixed(2) : datum.y} ${
-              units || ''
-            }`
+            `${dayjs(datum.x).tz(dateTimeFormat.timeZone.full).format('LLLL')}: ${
+              typeof datum.y === 'number' ? datum.y.toFixed(2) : datum.y
+            } ${units || ''}`
           }
           constrainToVisibleArea
         />
@@ -137,7 +137,7 @@ const SimpleChart: React.FC<{
         bottom: 60,
       }}
     >
-      <ChartAxis tickFormat={(t) => dayjs(t).format('LTS')} fixLabelOverlap />
+      <ChartAxis tickFormat={(t) => dayjs(t).tz(dateTimeFormat.timeZone.full).format('LTS')} fixLabelOverlap />
       <ChartAxis
         tickFormat={(t) => (typeof t !== 'number' ? t : t.toPrecision(2))}
         dependentAxis
