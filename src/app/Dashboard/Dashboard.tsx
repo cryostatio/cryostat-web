@@ -55,9 +55,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
-import { ChartCardDescriptor } from './Charts/ChartCard';
 import { ChartContext } from './Charts/ChartContext';
-import { ChartController } from './Charts/ChartController';
+import { JFRMetricsChartCardDescriptor } from './Charts/jfr/JFRMetricsChartCard';
+import { JFRMetricsChartController } from './Charts/jfr/JFRMetricsChartController';
+import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChartCard';
+import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
@@ -238,7 +240,8 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
 ) => {
   const cards = [
     AutomatedAnalysisCardDescriptor,
-    ChartCardDescriptor,
+    JFRMetricsChartCardDescriptor,
+    MBeanMetricsChartCardDescriptor,
     NonePlaceholderCardDescriptor,
     AllPlaceholderCardDescriptor,
     QuickStartsCardDescriptor,
@@ -287,13 +290,16 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const dispatch = useDispatch<StateDispatch>();
   const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
   const { t } = useTranslation();
-  const chartController = React.useRef(
-    new ChartController(
+  const jfrChartController = React.useRef(
+    new JFRMetricsChartController(
       serviceContext.api,
       serviceContext.target,
       serviceContext.notificationChannel,
       serviceContext.settings
     )
+  );
+  const mbeanChartController = React.useRef(
+    new MBeanMetricsChartController(serviceContext.api, serviceContext.target, serviceContext.settings)
   );
 
   React.useEffect(() => {
@@ -305,14 +311,17 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   const chartContext = React.useMemo(() => {
     return {
-      controller: chartController.current,
+      jfrController: jfrChartController.current,
+      mbeanController: mbeanChartController.current,
     };
-  }, [chartController]);
+  }, [jfrChartController, mbeanChartController]);
 
   React.useEffect(() => {
-    const controller = chartController.current;
+    const jfrController = jfrChartController.current;
+    const mbeanController = mbeanChartController.current;
     return () => {
-      controller._tearDown();
+      jfrController._tearDown();
+      mbeanController._tearDown();
     };
   }, []);
 

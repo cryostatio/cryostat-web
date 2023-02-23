@@ -67,7 +67,7 @@ export enum ControllerState {
   READY = 2,
 }
 
-export class ChartController {
+export class JFRMetricsChartController {
   private readonly _state$ = new BehaviorSubject<ControllerState>(ControllerState.UNKNOWN);
   private readonly _refCount$ = new BehaviorSubject<number>(0);
   private readonly _updates$ = new ReplaySubject<void>(1);
@@ -126,7 +126,7 @@ export class ChartController {
     this._stop();
     this._attach = merge(
       merge(
-        this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh)),
+        this._updates$.pipe(throttleTime(this._settings.chartControllerConfig().minRefresh * 1000)),
         this._notifications.messages(NotificationCategory.ActiveRecordingCreated),
         this._notifications.messages(NotificationCategory.ActiveRecordingDeleted),
         this._notifications.messages(NotificationCategory.ActiveRecordingStopped)

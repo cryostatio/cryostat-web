@@ -38,17 +38,24 @@
 
 import { defaultServices } from '@app/Shared/Services/Services';
 import * as React from 'react';
-import { ChartController } from './ChartController';
+import { JFRMetricsChartController } from './jfr/JFRMetricsChartController';
+import { MBeanMetricsChartController } from './mbean/MBeanMetricsChartController';
 
 export interface Controllers {
-  controller: ChartController;
+  jfrController: JFRMetricsChartController;
+  mbeanController: MBeanMetricsChartController;
 }
 
 const ChartContext: React.Context<Controllers> = React.createContext({
-  controller: new ChartController(
+  jfrController: new JFRMetricsChartController(
     defaultServices.api,
     defaultServices.target,
     defaultServices.notificationChannel,
+    defaultServices.settings
+  ),
+  mbeanController: new MBeanMetricsChartController(
+    defaultServices.api,
+    defaultServices.target,
     defaultServices.settings
   ),
 });

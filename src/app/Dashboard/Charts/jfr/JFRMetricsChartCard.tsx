@@ -60,12 +60,12 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { interval } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
-import { DashboardCard } from '../DashboardCard';
-import { ChartContext } from './ChartContext';
-import { ControllerState, RECORDING_NAME } from './ChartController';
+import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
+import { DashboardCard } from '../../DashboardCard';
+import { ChartContext } from './../ChartContext';
+import { ControllerState, RECORDING_NAME } from './JFRMetricsChartController';
 
-export interface ChartCardProps extends DashboardCardProps {
+export interface JFRMetricsChartCardProps extends DashboardCardProps {
   theme: string;
   chartKind: string;
   duration: number;
@@ -73,7 +73,7 @@ export interface ChartCardProps extends DashboardCardProps {
 }
 
 // TODO these need to be localized
-export enum ChartKind {
+export enum JFRMetricsChartKind {
   'Core Count' = 1,
   'Thread Count' = 2,
   'CPU Load' = 3,
@@ -101,10 +101,10 @@ export enum ChartKind {
 }
 
 export function kindToId(kind: string): number {
-  return ChartKind[kind];
+  return JFRMetricsChartKind[kind];
 }
 
-export const ChartCard: React.FC<ChartCardProps> = (props) => {
+export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) => {
   const [t] = useTranslation();
   const serviceContext = React.useContext(ServiceContext);
   const controllerContext = React.useContext(ChartContext);
@@ -143,11 +143,11 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   }, [dashboardUrl, setControllerState, props.theme, props.chartKind, props.duration, props.period, setChartSrc]);
 
   React.useEffect(() => {
-    addSubscription(controllerContext.controller.attach().subscribe(setControllerState));
+    addSubscription(controllerContext.jfrController.attach().subscribe(setControllerState));
   }, [addSubscription, controllerContext, setControllerState]);
 
   const refresh = React.useCallback(() => {
-    controllerContext.controller.requestRefresh();
+    controllerContext.jfrController.requestRefresh();
   }, [controllerContext]);
 
   React.useEffect(() => {
@@ -251,7 +251,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
     <DashboardCard
       id={props.chartKind + '-chart-card'}
       dashboardId={props.dashboardId}
-      cardSizes={ChartCardSizes}
+      cardSizes={JFRMetricsChartCardSizes}
       isCompact
       style={cardStyle}
       cardHeader={header}
@@ -293,7 +293,7 @@ export const ChartCard: React.FC<ChartCardProps> = (props) => {
   );
 };
 
-export const ChartCardSizes: DashboardCardSizes = {
+export const JFRMetricsChartCardSizes: DashboardCardSizes = {
   span: {
     minimum: 3,
     default: 4,
@@ -307,13 +307,13 @@ export const ChartCardSizes: DashboardCardSizes = {
   },
 };
 
-export const ChartCardDescriptor: DashboardCardDescriptor = {
+export const JFRMetricsChartCardDescriptor: DashboardCardDescriptor = {
   featureLevel: FeatureLevel.BETA,
-  title: 'CHART_CARD.CARD_TITLE',
-  cardSizes: ChartCardSizes,
-  description: 'CHART_CARD.CARD_DESCRIPTION',
-  descriptionFull: 'CHART_CARD.CARD_DESCRIPTION_FULL',
-  component: ChartCard,
+  title: 'CHART_CARD.JFR_METRICS_CARD_TITLE',
+  cardSizes: JFRMetricsChartCardSizes,
+  description: 'CHART_CARD.JFR_METRICS_CARD_DESCRIPTION',
+  descriptionFull: 'CHART_CARD.JFR_METRICS_CARD_DESCRIPTION_FULL',
+  component: JFRMetricsChartCard,
   propControls: [
     {
       name: 'CHART_CARD.PROP_CONTROLS.THEME.NAME',
@@ -326,9 +326,9 @@ export const ChartCardDescriptor: DashboardCardDescriptor = {
     {
       name: 'CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.NAME',
       key: 'chartKind',
-      values: Object.values(ChartKind).filter((v) => typeof v === 'string'),
-      defaultValue: Object.values(ChartKind).filter((v) => typeof v === 'string')[0],
       description: 'CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.DESCRIPTION', // TODO should this be a function that returns a value based on the selection?
+      values: Object.values(JFRMetricsChartKind).filter((v) => typeof v === 'string'),
+      defaultValue: Object.values(JFRMetricsChartKind).filter((v) => typeof v === 'string')[0],
       kind: 'select',
     },
     {

@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
 import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
@@ -138,22 +139,6 @@ const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _
   list: [] as CardConfig[],
 });
 
-const firstRunDashboard: CardConfig[] = [
-  {
-    id: `${QuickStartsCardDescriptor.component.name}-${nanoid()}`,
-    name: `${QuickStartsCardDescriptor.component.name}`,
-    span: QuickStartsCardDescriptor.cardSizes.span.default,
-    props: {},
-  },
-  {
-    // Metrics Card  // TODO replace with config props
-    id: `MetricsCard-${nanoid()}`,
-    name: `MetricsCard`,
-    span: 3,
-    props: {},
-  },
-];
-
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
     .addCase(dashboardCardConfigAddCardIntent, (state, { payload }) => {
@@ -173,7 +158,47 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       }
     })
     .addCase(dashboardCardConfigFirstRunIntent, (state) => {
-      state.list = firstRunDashboard;
+      state.list = [
+        {
+          id: `${QuickStartsCardDescriptor.component.name}-${nanoid()}`,
+          name: QuickStartsCardDescriptor.component.name,
+          span: QuickStartsCardDescriptor.cardSizes.span.default,
+          props: {},
+        },
+        {
+          id: `${MBeanMetricsChartCardDescriptor.component.name}-1`,
+          name: MBeanMetricsChartCardDescriptor.component.name,
+          span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
+          props: {
+            themeColor: 'blue',
+            chartKind: 'Process CPU Load',
+            duration: 60,
+            period: 10,
+          },
+        },
+        {
+          id: `${MBeanMetricsChartCardDescriptor.component.name}-2`,
+          name: MBeanMetricsChartCardDescriptor.component.name,
+          span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
+          props: {
+            themeColor: 'purple',
+            chartKind: 'Heap Memory Usage',
+            duration: 60,
+            period: 10,
+          },
+        },
+        {
+          id: `${MBeanMetricsChartCardDescriptor.component.name}-3`,
+          name: MBeanMetricsChartCardDescriptor.component.name,
+          span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
+          props: {
+            themeColor: 'green',
+            chartKind: 'Threads',
+            duration: 60,
+            period: 10,
+          },
+        },
+      ];
     });
 });
 
