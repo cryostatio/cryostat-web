@@ -177,7 +177,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 1`] = `
                       textAnchor="middle"
                       x={-30}
                     >
-                      7:00:00 PM
+                      12:00:00 AM
                     </tspan>
                   </text>
                 </g>
@@ -804,7 +804,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 2`] = `
                       textAnchor="middle"
                       x={-30}
                     >
-                      7:00:00 PM
+                      12:00:00 AM
                     </tspan>
                   </text>
                 </g>
@@ -1403,7 +1403,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 3`] = `
                       textAnchor="middle"
                       x={-30}
                     >
-                      7:00:00 PM
+                      12:00:00 AM
                     </tspan>
                   </text>
                 </g>
@@ -2030,7 +2030,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 4`] = `
                       textAnchor="middle"
                       x={-30}
                     >
-                      7:00:00 PM
+                      12:00:00 AM
                     </tspan>
                   </text>
                 </g>
@@ -2657,7 +2657,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 5`] = `
                       textAnchor="middle"
                       x={-30}
                     >
-                      7:00:00 PM
+                      12:00:00 AM
                     </tspan>
                   </text>
                 </g>
@@ -3494,7 +3494,7 @@ exports[`<MBeanMetricsChartCard /> renders correctly: with-content 7`] = `
                       textAnchor="middle"
                       x={-30}
                     >
-                      7:00:00 PM
+                      12:00:00 AM
                     </tspan>
                   </text>
                 </g>
@@ -4332,7 +4332,7 @@ exports[`<MBeanMetricsChartCard /> renders loading state correctly: loading-view
                       textAnchor="middle"
                       x={-30}
                     >
-                      7:00:00 PM
+                      12:00:00 AM
                     </tspan>
                   </text>
                 </g>

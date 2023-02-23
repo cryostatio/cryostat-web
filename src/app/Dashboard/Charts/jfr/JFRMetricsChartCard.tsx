@@ -60,9 +60,9 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { interval } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
-import { DashboardCard } from '../DashboardCard';
-import { ChartContext } from './ChartContext';
+import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
+import { DashboardCard } from '../../DashboardCard';
+import { ChartContext } from './../ChartContext';
 import { ControllerState, RECORDING_NAME } from './JFRMetricsChartController';
 
 export interface JFRMetricsChartCardProps extends DashboardCardProps {

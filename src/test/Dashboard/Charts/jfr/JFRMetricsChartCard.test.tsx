@@ -36,12 +36,12 @@
  * SOFTWARE.
  */
 
-jest.mock('@app/Dashboard/Charts/JFRMetricsChartController');
+jest.mock('@app/Dashboard/Charts/jfr/JFRMetricsChartController');
 
 import { ChartContext } from '@app/Dashboard/Charts/ChartContext';
-import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/JFRMetricsChartCard';
-import { JFRMetricsChartController, ControllerState } from '@app/Dashboard/Charts/JFRMetricsChartController';
-import { MBeanMetricsChartController } from '@app/Dashboard/Charts/MBeanMetricsChartController';
+import { JFRMetricsChartCard, kindToId } from '@app/Dashboard/Charts/jfr/JFRMetricsChartCard';
+import { JFRMetricsChartController, ControllerState } from '@app/Dashboard/Charts/jfr/JFRMetricsChartController';
+import { MBeanMetricsChartController } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartController';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
@@ -52,7 +52,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import { renderWithProvidersAndRedux } from '../../Common';
+import { renderWithProvidersAndRedux } from '../../../Common';
 
 let history: MemoryHistory = createMemoryHistory({ initialEntries: ['/'] });
 jest.mock('react-router-dom', () => ({

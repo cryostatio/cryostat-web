@@ -38,8 +38,8 @@
 
 import { defaultServices } from '@app/Shared/Services/Services';
 import * as React from 'react';
-import { JFRMetricsChartController } from './JFRMetricsChartController';
-import { MBeanMetricsChartController } from './MBeanMetricsChartController';
+import { JFRMetricsChartController } from './jfr/JFRMetricsChartController';
+import { MBeanMetricsChartController } from './mbean/MBeanMetricsChartController';
 
 export interface Controllers {
   jfrController: JFRMetricsChartController;

@@ -56,9 +56,9 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { interval } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
-import { DashboardCard } from '../DashboardCard';
-import { ChartContext } from './ChartContext';
+import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
+import { DashboardCard } from '../../DashboardCard';
+import { ChartContext } from './../ChartContext';
 import { MBeanMetrics } from './MBeanMetricsChartController';
 
 export interface MBeanMetricsChartCardProps extends DashboardCardProps {
