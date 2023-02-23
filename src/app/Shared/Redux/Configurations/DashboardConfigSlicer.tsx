@@ -145,13 +145,7 @@ const firstRunDashboard: CardConfig[] = [
     span: QuickStartsCardDescriptor.cardSizes.span.default,
     props: {},
   },
-  {
-    // Metrics Card  // TODO replace with config props
-    id: `MetricsCard-${nanoid()}`,
-    name: `MetricsCard`,
-    span: 3,
-    props: {},
-  },
+  // TODO add MBeanMetricsChartCards
 ];
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
