@@ -92,7 +92,7 @@ export class SettingsService {
     getFromLocalStorage('DATETIME_FORMAT', defaultDatetimeFormat)
   );
 
-  private readonly _dashboardLayouts$ = new BehaviorSubject<DashboardLayout[]>(
+  private readonly _dashboardLayouts$ = new BehaviorSubject<DashboardConfigState[]>(
     getFromLocalStorage('DASHBOARD_LAYOUTS', [])
   );
 
@@ -102,14 +102,14 @@ export class SettingsService {
       saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
     );
     this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
-    this._dashboardLayouts$.subscribe((layouts: DashboardLayout[]) => saveToLocalStorage('DASHBOARD_LAYOUTS', layouts));
+    this._dashboardLayouts$.subscribe((layouts: DashboardConfigState[]) => saveToLocalStorage('DASHBOARD_LAYOUTS', layouts));
   }
 
-  dashboardLayouts(): Observable<DashboardLayout[]> {
+  dashboardLayouts(): Observable<DashboardConfigState[]> {
     return this._dashboardLayouts$.asObservable();
   }
 
-  setDashboardLayouts(layout: DashboardLayout): void {
+  setDashboardLayouts(layout: DashboardConfigState): void {
     const layouts = this._dashboardLayouts$.getValue();
     layouts.push(layout);
     this._dashboardLayouts$.next(layouts);

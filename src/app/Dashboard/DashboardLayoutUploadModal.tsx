@@ -39,7 +39,7 @@ import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploa
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import {
   CardConfig,
-  DashboardLayout,
+  DashboardConfigState,
   dashboardLayoutConfigReplaceCardIntent,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -56,12 +56,12 @@ export interface DashboardLayoutUploadModalProps {
   onClose: () => void;
 }
 
-const validateDashboardLayout = (obj: any): obj is DashboardLayout => {
-  const layout = obj as DashboardLayout;
-  if (layout.name === undefined || layout.name === undefined || !Array.isArray(layout.cards)) {
+const validateDashboardLayout = (obj: any): obj is DashboardConfigState => {
+  const layout = obj as DashboardConfigState;
+  if (layout.name === undefined || !Array.isArray(layout.list)) {
     return false;
   }
-  for (const cardConfig of layout.cards as CardConfig[]) {
+  for (const cardConfig of layout.list as CardConfig[]) {
     if (
       Object.keys(cardConfig).length !== 3 ||
       cardConfig.name === undefined ||
@@ -74,7 +74,7 @@ const validateDashboardLayout = (obj: any): obj is DashboardLayout => {
   return true;
 };
 
-export const parseCardConfig = (file: File): Observable<DashboardLayout> => {
+export const parseCardConfig = (file: File): Observable<DashboardConfigState> => {
   return from(
     file.text().then((content) => {
       const obj = JSON.parse(content);

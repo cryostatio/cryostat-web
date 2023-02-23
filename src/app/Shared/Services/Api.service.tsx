@@ -45,7 +45,7 @@ import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
-import { DashboardLayout } from '../Redux/Configurations/DashboardConfigSlicer';
+import { DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlicer';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';
@@ -1154,12 +1154,21 @@ export class ApiService {
     );
   }
   
-  downloadDashboardLayout(layoutName: string, dashboardConfig: DashboardLayout): void {
-    const filename = `${layoutName}.json`;
-    const file = new File([JSON.stringify(dashboardConfig)], filename);
+  downloadDashboardLayout(layout: DashboardConfigState): void {
+    const serializedLayout = this.getSerializedDashboardLayout(layout);
+    const filename = `${layout.name}.json`;
+    const file = new File([serializedLayout], filename);
     const resourceUrl = URL.createObjectURL(file);
     this.downloadFile(resourceUrl, filename);
     setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
+  }
+
+  private getSerializedDashboardLayout(layout: DashboardConfigState): string {
+    const download = { // ignore _version
+      list: layout.list,
+      name: layout.name
+    };
+    return JSON.stringify(download);
   }
 
   private downloadFile(url: string, filename: string, download = true): void {

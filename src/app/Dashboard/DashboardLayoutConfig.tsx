@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Button,
@@ -46,6 +47,7 @@ import {
 } from '@patternfly/react-core';
 import { DownloadIcon, UploadIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { DashboardLayoutUploadModal } from './DashboardLayoutUploadModal';
 
 export interface DashboardLayoutConfigProps {
@@ -54,6 +56,7 @@ export interface DashboardLayoutConfigProps {
 
 export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfigProps> = (props) => {
   const context = React.useContext(ServiceContext);
+  const layout = useSelector((state: RootState) => state.dashboardConfigs);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [downloading, setDownloading] = React.useState(false);
 
@@ -68,11 +71,11 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       setDownloading(true);
       setTimeout(() => {
-        context.api.downloadDashboardLayout();
+        context.api.downloadDashboardLayout(layout);
         setDownloading(false);
-      }, 2000);
+      }, 500);
     },
-    [setDownloading]
+    [context.api, setDownloading, layout]
   );
 
   const submitButtonLoadingProps = React.useMemo(

@@ -138,10 +138,6 @@ export const dashboardLayoutConfigReplaceCardIntent = createAction(
   })
 );
 
-export interface DashboardLayout {
-  name: string;
-  cards: CardConfig[];
-}
 export interface CardConfig {
   id: string;
   name: string;
@@ -149,13 +145,27 @@ export interface CardConfig {
   props: object;
 }
 
+<<<<<<< HEAD
 export interface DashboardConfigState {
   list: CardConfig[];
   _version: string;
 }
 
+=======
+export type SerialCardConfig = Omit<CardConfig, 'id'>;
+
+export interface DashboardConfigState {
+  name: string;
+  list: CardConfig[];
+  readonly _version: string;
+}
+
+export type SerialDashboardConfig = Omit<DashboardConfigState, '_version'>;
+
+>>>>>>> 75e589b2 (before rebase)
 const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _version, {
   list: [] as CardConfig[],
+  name: 'default',
 });
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
