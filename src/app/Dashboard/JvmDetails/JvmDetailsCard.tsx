@@ -36,9 +36,10 @@
  * SOFTWARE.
  */
 
+import { MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { Target } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   CardActions,
@@ -54,8 +55,10 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { map, mergeMap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
+import useDayjs from '@app/utils/useDayjs';
 
 export interface JvmDetailsCardProps extends DashboardCardProps {}
 
@@ -63,11 +66,52 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const { t } = useTranslation();
+  const [dayjs, dateTimeFormat] = useDayjs();
 
-  const [target, setTarget] = React.useState(NO_TARGET);
+  const [target, setTarget] = React.useState(undefined as EnhancedTarget | undefined);
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(setTarget));
+    addSubscription(
+      context.target
+        .target()
+        .pipe(
+          mergeMap((plain) =>
+            context.api
+              .graphql<MBeanMetricsResponse>(
+                `
+          query MBeanMXMetricsForTarget($connectUrl: String) {
+            targetNodes(filter: { name: $connectUrl }) {
+              mbeanMetrics {
+                runtime {
+                  startTime
+                  vmVendor
+                  vmVersion
+                }
+                os {
+                  version
+                  arch
+                  availableProcessors
+                }
+              }
+            }
+          }`,
+                { connectUrl: plain.connectUrl }
+              )
+              .pipe(
+                map((resp) => ({
+                  ...plain,
+                  startTime: resp.data.targetNodes[0].mbeanMetrics?.runtime?.startTime || 0,
+                  vmVendor: resp.data.targetNodes[0].mbeanMetrics?.runtime?.vmVendor || 'unknown',
+                  vmVersion: resp.data.targetNodes[0].mbeanMetrics?.runtime?.vmVersion || 'unknown',
+                  arch: resp.data.targetNodes[0].mbeanMetrics?.os?.arch || 'unknown',
+                  osVersion: resp.data.targetNodes[0].mbeanMetrics?.os?.version || 'unknown',
+                  availableProcessors: resp.data.targetNodes[0].mbeanMetrics?.os?.availableProcessors || -1,
+                }))
+              )
+          )
+        )
+        .subscribe(setTarget)
+    );
   }, [addSubscription, context.target, setTarget]);
 
   return (
@@ -84,20 +128,26 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
       }
     >
       <CardBody>
-        <DescriptionList>
+        <DescriptionList isCompact isHorizontal isFluid>
           <DescriptionListGroup>
             <DescriptionListTerm>{t('JvmDetailsCard.terms.CONNECTION_URL')}</DescriptionListTerm>
-            <DescriptionListDescription>{target.connectUrl}</DescriptionListDescription>
+            <DescriptionListDescription>{target?.connectUrl}</DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
             <DescriptionListTerm>{t('JvmDetailsCard.terms.ALIAS')}</DescriptionListTerm>
-            <DescriptionListDescription>{target.alias}</DescriptionListDescription>
+            <DescriptionListDescription>{target?.alias}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{t('JvmDetailsCard.terms.START_TIME')}</DescriptionListTerm>
+            <DescriptionListDescription>
+              {dayjs(target?.startTime).tz(dateTimeFormat.timeZone.full).format('LLLL')}
+            </DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
             <DescriptionListTerm>{t('JvmDetailsCard.terms.LABELS')}</DescriptionListTerm>
             <DescriptionListDescription>
               <LabelGroup>
-                {Object.entries(target.labels || {}).map(([key, value]) => (
+                {Object.entries(target?.labels || {}).map(([key, value]) => (
                   <Label key={'label-' + key} color="blue">
                     {key}={value}
                   </Label>
@@ -109,7 +159,7 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
             <DescriptionListTerm>{t('JvmDetailsCard.terms.PLATFORM_ANNOTATIONS')}</DescriptionListTerm>
             <DescriptionListDescription>
               <LabelGroup>
-                {Object.entries(target.annotations?.platform || {}).map(([key, value]) => (
+                {Object.entries(target?.annotations?.platform || {}).map(([key, value]) => (
                   <Label key={'platform-annotation-' + key} color="cyan">
                     {key}={value}
                   </Label>
@@ -121,7 +171,7 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
             <DescriptionListTerm>{t('JvmDetailsCard.terms.CRYOSTAT_ANNOTATIONS')}</DescriptionListTerm>
             <DescriptionListDescription>
               <LabelGroup>
-                {Object.entries(target.annotations?.cryostat || {}).map(([key, value]) => (
+                {Object.entries(target?.annotations?.cryostat || {}).map(([key, value]) => (
                   <Label key={'cryostat-annotation-' + key} color="green">
                     {key}={value}
                   </Label>
@@ -130,14 +180,43 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
             </DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
+            <DescriptionListTerm>{t('JvmDetailsCard.terms.VM_VERSION')}</DescriptionListTerm>
+            <DescriptionListDescription>{target?.vmVersion}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{t('JvmDetailsCard.terms.VM_VENDOR')}</DescriptionListTerm>
+            <DescriptionListDescription>{target?.vmVendor}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{t('JvmDetailsCard.terms.OS_ARCH')}</DescriptionListTerm>
+            <DescriptionListDescription>{target?.arch}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{t('JvmDetailsCard.terms.OS_VERSION')}</DescriptionListTerm>
+            <DescriptionListDescription>{target?.osVersion}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{t('JvmDetailsCard.terms.AVAILABLE_PROCESSORS')}</DescriptionListTerm>
+            <DescriptionListDescription>{target?.availableProcessors}</DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
             <DescriptionListTerm>{t('JvmDetailsCard.terms.JVM_ID')}</DescriptionListTerm>
-            <DescriptionListDescription>{target.jvmId}</DescriptionListDescription>
+            <DescriptionListDescription>{target?.jvmId}</DescriptionListDescription>
           </DescriptionListGroup>
         </DescriptionList>
       </CardBody>
     </DashboardCard>
   );
 };
+
+interface EnhancedTarget extends Target {
+  arch: string;
+  availableProcessors: number;
+  osVersion: string;
+  startTime: number;
+  vmVendor: string;
+  vmVersion: string;
+}
 
 export const JvmDetailsCardSizes: DashboardCardSizes = {
   span: {

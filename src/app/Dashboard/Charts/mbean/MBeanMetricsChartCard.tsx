@@ -59,7 +59,7 @@ import { useTranslation } from 'react-i18next';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from './../ChartContext';
-import { MBeanMetrics } from './MBeanMetricsChartController';
+import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 
 export interface MBeanMetricsChartCardProps extends DashboardCardProps {
   themeColor: string;
