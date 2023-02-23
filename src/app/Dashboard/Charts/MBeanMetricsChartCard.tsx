@@ -119,7 +119,9 @@ const SimpleChart: React.FC<{
       containerComponent={
         <ChartVoronoiContainer
           labels={({ datum }) =>
-            `${dayjs(datum.x)}: ${typeof datum.y === 'number' ? datum.y.toFixed(2) : datum.y} ${units || ''}`
+            `${dayjs(datum.x).format('LLLL')}: ${typeof datum.y === 'number' ? datum.y.toFixed(2) : datum.y} ${
+              units || ''
+            }`
           }
           constrainToVisibleArea
         />
