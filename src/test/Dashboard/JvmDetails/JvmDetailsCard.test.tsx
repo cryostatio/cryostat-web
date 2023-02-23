@@ -47,6 +47,7 @@ import '@i18n/config';
 
 const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
+// TODO add mock GraphQL data
 
 describe('<JvmDetailsCard />', () => {
   it('renders correctly', async () => {

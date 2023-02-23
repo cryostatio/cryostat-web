@@ -68,6 +68,7 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
   const { t } = useTranslation();
   const [dayjs, dateTimeFormat] = useDayjs();
 
+  // TODO handle targets requiring credentials
   const [target, setTarget] = React.useState(undefined as EnhancedTarget | undefined);
 
   React.useEffect(() => {
