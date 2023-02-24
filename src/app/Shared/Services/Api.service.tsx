@@ -45,7 +45,7 @@ import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
-import { DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlicer';
+import { SerialCardConfig, DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlicer';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';
@@ -1164,9 +1164,19 @@ export class ApiService {
   }
 
   private getSerializedDashboardLayout(layout: DashboardConfigState): string {
-    const download = { // ignore _version
-      list: layout.list,
-      name: layout.name
+    const serialCards: SerialCardConfig[] = [];
+    for (const card of layout.list) {
+      const serialized = {
+        name: card.name,
+        span: card.span,
+        props: card.props,
+      };
+      serialCards.push(serialized);
+    }
+    const download = {
+      // ignore _version
+      list: serialCards,
+      name: layout.name,
     };
     return JSON.stringify(download);
   }

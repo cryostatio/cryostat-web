@@ -41,7 +41,6 @@ import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlicer';
-import { CardConfig, DashboardLayout } from '../Redux/Configurations/DashboardConfigSlicer';
 import {
   AutomatedAnalysisRecordingConfig,
   automatedAnalysisRecordingName,
@@ -102,7 +101,9 @@ export class SettingsService {
       saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
     );
     this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
-    this._dashboardLayouts$.subscribe((layouts: DashboardConfigState[]) => saveToLocalStorage('DASHBOARD_LAYOUTS', layouts));
+    this._dashboardLayouts$.subscribe((layouts: DashboardConfigState[]) =>
+      saveToLocalStorage('DASHBOARD_LAYOUTS', layouts)
+    );
   }
 
   dashboardLayouts(): Observable<DashboardConfigState[]> {

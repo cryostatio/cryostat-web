@@ -43,7 +43,7 @@ import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer, nanoid } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
-const _version = '3';
+export const _dashboardConfigVersion = '3';
 
 // Common action string format: "resource(s)/action"
 export enum DashboardConfigAction {
@@ -145,13 +145,6 @@ export interface CardConfig {
   props: object;
 }
 
-<<<<<<< HEAD
-export interface DashboardConfigState {
-  list: CardConfig[];
-  _version: string;
-}
-
-=======
 export type SerialCardConfig = Omit<CardConfig, 'id'>;
 
 export interface DashboardConfigState {
@@ -162,10 +155,9 @@ export interface DashboardConfigState {
 
 export type SerialDashboardConfig = Omit<DashboardConfigState, '_version'>;
 
->>>>>>> 75e589b2 (before rebase)
-const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _version, {
+const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _dashboardConfigVersion, {
   list: [] as CardConfig[],
-  name: 'default',
+  name: 'Default',
 });
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {

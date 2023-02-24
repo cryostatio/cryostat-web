@@ -59,6 +59,8 @@ export interface DashboardLayoutUploadModalProps {
 const validateDashboardLayout = (obj: any): obj is DashboardConfigState => {
   const layout = obj as DashboardConfigState;
   if (layout.name === undefined || !Array.isArray(layout.list)) {
+    console.log('Invalid layout name or list');
+
     return false;
   }
   for (const cardConfig of layout.list as CardConfig[]) {
@@ -68,6 +70,13 @@ const validateDashboardLayout = (obj: any): obj is DashboardConfigState => {
       cardConfig.span === undefined ||
       cardConfig.props === undefined
     ) {
+      console.log('Invalid card config');
+      // console log all the things im checking
+      console.log(Object.keys(cardConfig).length);
+      console.log(cardConfig.name);
+      console.log(cardConfig.span);
+      console.log(cardConfig.props);
+
       return false;
     }
   }
@@ -107,7 +116,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
       context.settings.dashboardLayouts().subscribe((layouts) => {
         if (layouts.length > 0) {
           const latest = layouts[layouts.length - 1];
-          dispatch(dashboardLayoutConfigReplaceCardIntent(latest.name, latest.cards));
+          dispatch(dashboardLayoutConfigReplaceCardIntent(latest.name, latest.list));
         }
       });
     }

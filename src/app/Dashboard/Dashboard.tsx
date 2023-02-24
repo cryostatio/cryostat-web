@@ -37,19 +37,30 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { CardConfig, dashboardCardConfigFirstRunIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import {
   dashboardCardConfigDeleteCardIntent,
   dashboardCardConfigResizeCardIntent,
-  DashboardLayout,
   dashboardLayoutConfigReplaceCardIntent,
+  dashboardCardConfigFirstRunIntent,
+  CardConfig,
+  DashboardConfigState,
 } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { dashboardCardConfigDeleteCardIntent, RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { RootState, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { CardActions, CardBody, CardHeader, ContextSelector, ContextSelectorItem, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
+import {
+  CardActions,
+  CardBody,
+  CardHeader,
+  ContextSelector,
+  ContextSelectorItem,
+  Grid,
+  GridItem,
+  gridSpans,
+  Text,
+} from '@patternfly/react-core';
 import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -65,9 +76,9 @@ import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChar
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
+import { DashboardLayoutConfig } from './DashboardLayoutConfig';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
-import { DashboardLayoutConfig } from './DashboardLayoutConfig';
 
 export interface Sized<T> {
   minimum: T;
@@ -297,7 +308,6 @@ export function getConfigByTitle(title: string, t: TFunction): DashboardCardDesc
 export const Dashboard: React.FC<DashboardProps> = (_) => {
   const history = useHistory();
   const serviceContext = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
   const dispatch = useDispatch<StateDispatch>();
   const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
   const { t } = useTranslation();
@@ -319,10 +329,6 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
       dispatch(dashboardCardConfigFirstRunIntent());
     }
   }, [dispatch, serviceContext.settings]);
-
-  const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
-  const [layout, setLayout] = React.useState<string>('default');
-  const [layouts, setLayouts] = React.useState<DashboardLayout[]>([]);
 
   const chartContext = React.useMemo(() => {
     return {
@@ -358,44 +364,9 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     [dispatch, cardConfigs]
   );
 
-  React.useEffect(() => {
-    addSubscription(
-      serviceContext.settings.dashboardLayouts().subscribe((layouts) => {
-        setLayouts(layouts);
-      })
-    );
-  }, [addSubscription, serviceContext.settings]);
-
-  const onLayoutSelect = React.useCallback((_evt: any, layout: React.ReactNode) => {
-    setLayout(layout as string);
-    const found = layouts.find((l) => l.name === layout);
-    if (found) {
-        dispatch(dashboardLayoutConfigReplaceCardIntent(found.name, found.cards));
-    } else {
-      console.log('layout not found ' + layout);
-    }
-    setIsSelectorOpen(false);
-  }, [addSubscription, dispatch, serviceContext.settings, setLayout, setIsSelectorOpen, layouts]);
-
-  const onToggle = React.useCallback((_evt: any, isOpen: boolean) => {
-    setIsSelectorOpen(isOpen);
-  }, [setIsSelectorOpen]);
-
   return (
     <TargetView pageTitle={t('Dashboard.PAGE_TITLE')}>
       <DashboardLayoutConfig />
-      <ContextSelector
-        toggleText={layout}
-        isOpen={isSelectorOpen}
-        onToggle={onToggle}
-        onSelect={onLayoutSelect}
-        isPlain
-        isText
-      >
-        {layouts.map((l) => (
-          <ContextSelectorItem key={l.name}>{l.name}</ContextSelectorItem>
-        ))}
-      </ContextSelector>
       <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
           {cardConfigs
