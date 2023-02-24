@@ -50,7 +50,25 @@ import { Target } from '@app/Shared/Services/Target.service';
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
-const mockTarget: Target = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+const mockTarget: Target = {
+  connectUrl: 'service:jmx:rmi://someUrl',
+  alias: 'fooTarget',
+  jvmId: 'mockHashId123',
+  labels: {
+    testLabel1: 'hello',
+    testLabel2: 'world',
+  },
+  annotations: {
+    cryostat: {
+      PORT: '9999',
+      HOST: 'example.com,'
+    },
+    platform: {
+      'kubernetes.io/app': 'myapp',
+      'cryostat.io/example': 'enabled',
+    },
+  },
+};
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 
 const mockGraphQlResponse: MBeanMetricsResponse = {

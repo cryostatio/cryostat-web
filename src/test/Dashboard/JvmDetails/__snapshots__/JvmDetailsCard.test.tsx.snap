@@ -126,7 +126,53 @@ exports[`<JvmDetailsCard /> renders correctly 1`] = `
             >
               <div
                 className="pf-c-description-list__text"
-              />
+              >
+                <div
+                  className="pf-c-label-group"
+                >
+                  <div
+                    className="pf-c-label-group__main"
+                  >
+                    
+                    <ul
+                      aria-label="Label group category"
+                      className="pf-c-label-group__list"
+                      role="list"
+                    >
+                      <li
+                        className="pf-c-label-group__list-item"
+                      >
+                        <span
+                          className="pf-c-label pf-m-blue"
+                        >
+                          <span
+                            className="pf-c-label__content"
+                          >
+                            testLabel1
+                            =
+                            hello
+                          </span>
+                        </span>
+                      </li>
+                      <li
+                        className="pf-c-label-group__list-item"
+                      >
+                        <span
+                          className="pf-c-label pf-m-blue"
+                        >
+                          <span
+                            className="pf-c-label__content"
+                          >
+                            testLabel2
+                            =
+                            world
+                          </span>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </dd>
           </div>
           <div
@@ -146,7 +192,53 @@ exports[`<JvmDetailsCard /> renders correctly 1`] = `
             >
               <div
                 className="pf-c-description-list__text"
-              />
+              >
+                <div
+                  className="pf-c-label-group"
+                >
+                  <div
+                    className="pf-c-label-group__main"
+                  >
+                    
+                    <ul
+                      aria-label="Label group category"
+                      className="pf-c-label-group__list"
+                      role="list"
+                    >
+                      <li
+                        className="pf-c-label-group__list-item"
+                      >
+                        <span
+                          className="pf-c-label pf-m-cyan"
+                        >
+                          <span
+                            className="pf-c-label__content"
+                          >
+                            kubernetes.io/app
+                            =
+                            myapp
+                          </span>
+                        </span>
+                      </li>
+                      <li
+                        className="pf-c-label-group__list-item"
+                      >
+                        <span
+                          className="pf-c-label pf-m-cyan"
+                        >
+                          <span
+                            className="pf-c-label__content"
+                          >
+                            cryostat.io/example
+                            =
+                            enabled
+                          </span>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </dd>
           </div>
           <div
@@ -166,7 +258,53 @@ exports[`<JvmDetailsCard /> renders correctly 1`] = `
             >
               <div
                 className="pf-c-description-list__text"
-              />
+              >
+                <div
+                  className="pf-c-label-group"
+                >
+                  <div
+                    className="pf-c-label-group__main"
+                  >
+                    
+                    <ul
+                      aria-label="Label group category"
+                      className="pf-c-label-group__list"
+                      role="list"
+                    >
+                      <li
+                        className="pf-c-label-group__list-item"
+                      >
+                        <span
+                          className="pf-c-label pf-m-green"
+                        >
+                          <span
+                            className="pf-c-label__content"
+                          >
+                            PORT
+                            =
+                            9999
+                          </span>
+                        </span>
+                      </li>
+                      <li
+                        className="pf-c-label-group__list-item"
+                      >
+                        <span
+                          className="pf-c-label pf-m-green"
+                        >
+                          <span
+                            className="pf-c-label__content"
+                          >
+                            HOST
+                            =
+                            example.com,
+                          </span>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </dd>
           </div>
           <div
@@ -296,7 +434,9 @@ exports[`<JvmDetailsCard /> renders correctly 1`] = `
             >
               <div
                 className="pf-c-description-list__text"
-              />
+              >
+                mockHashId123
+              </div>
             </dd>
           </div>
         </dl>
