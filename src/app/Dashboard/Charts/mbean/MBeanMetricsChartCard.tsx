@@ -37,6 +37,7 @@
  */
 
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
+import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import useDayjs from '@app/utils/useDayjs';
@@ -59,7 +60,6 @@ import { useTranslation } from 'react-i18next';
 import { interval } from 'rxjs';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from './../ChartContext';
-import { MBeanMetrics } from '@app/Shared/Services/Api.service';
 
 export interface MBeanMetricsChartCardProps extends DashboardCardProps {
   themeColor: string;

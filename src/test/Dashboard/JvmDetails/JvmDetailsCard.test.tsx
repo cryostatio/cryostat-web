@@ -38,15 +38,15 @@
 
 import { JvmDetailsCard } from '@app/Dashboard/JvmDetails/JvmDetailsCard';
 import { store } from '@app/Shared/Redux/ReduxStore';
+import { MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
+import '@i18n/config';
+import { defaultDatetimeFormat } from '@i18n/datetime';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
-import '@i18n/config';
-import { defaultDatetimeFormat } from '@i18n/datetime';
-import { MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
-import { Target } from '@app/Shared/Services/Target.service';
 
 jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
 
@@ -61,7 +61,7 @@ const mockTarget: Target = {
   annotations: {
     cryostat: {
       PORT: '9999',
-      HOST: 'example.com,'
+      HOST: 'example.com,',
     },
     platform: {
       'kubernetes.io/app': 'myapp',

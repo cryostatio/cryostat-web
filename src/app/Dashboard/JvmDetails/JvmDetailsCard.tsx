@@ -40,6 +40,7 @@ import { MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Target } from '@app/Shared/Services/Target.service';
+import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   CardActions,
@@ -58,7 +59,6 @@ import { useTranslation } from 'react-i18next';
 import { map, mergeMap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
-import useDayjs from '@app/utils/useDayjs';
 
 export interface JvmDetailsCardProps extends DashboardCardProps {}
 
@@ -113,7 +113,7 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
         )
         .subscribe(setTarget)
     );
-  }, [addSubscription, context.target, setTarget]);
+  }, [addSubscription, context.target, context.api, setTarget]);
 
   return (
     <DashboardCard
