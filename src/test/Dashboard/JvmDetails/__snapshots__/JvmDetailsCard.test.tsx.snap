@@ -41,7 +41,7 @@ exports[`<JvmDetailsCard /> renders correctly 1`] = `
         className="pf-c-card__body"
       >
         <dl
-          className="pf-c-description-list"
+          className="pf-c-description-list pf-m-horizontal pf-m-compact pf-m-fluid"
         >
           <div
             className="pf-c-description-list__group"
@@ -84,6 +84,28 @@ exports[`<JvmDetailsCard /> renders correctly 1`] = `
                 className="pf-c-description-list__text"
               >
                 fooTarget
+              </div>
+            </dd>
+          </div>
+          <div
+            className="pf-c-description-list__group"
+          >
+            <dt
+              className="pf-c-description-list__term"
+            >
+              <span
+                className="pf-c-description-list__text"
+              >
+                Start Time
+              </span>
+            </dt>
+            <dd
+              className="pf-c-description-list__description"
+            >
+              <div
+                className="pf-c-description-list__text"
+              >
+                Friday, February 24, 2023 12:00 AM
               </div>
             </dd>
           </div>
@@ -145,6 +167,116 @@ exports[`<JvmDetailsCard /> renders correctly 1`] = `
               <div
                 className="pf-c-description-list__text"
               />
+            </dd>
+          </div>
+          <div
+            className="pf-c-description-list__group"
+          >
+            <dt
+              className="pf-c-description-list__term"
+            >
+              <span
+                className="pf-c-description-list__text"
+              >
+                Version
+              </span>
+            </dt>
+            <dd
+              className="pf-c-description-list__description"
+            >
+              <div
+                className="pf-c-description-list__text"
+              >
+                17
+              </div>
+            </dd>
+          </div>
+          <div
+            className="pf-c-description-list__group"
+          >
+            <dt
+              className="pf-c-description-list__term"
+            >
+              <span
+                className="pf-c-description-list__text"
+              >
+                Vendor
+              </span>
+            </dt>
+            <dd
+              className="pf-c-description-list__description"
+            >
+              <div
+                className="pf-c-description-list__text"
+              >
+                Test Vendor
+              </div>
+            </dd>
+          </div>
+          <div
+            className="pf-c-description-list__group"
+          >
+            <dt
+              className="pf-c-description-list__term"
+            >
+              <span
+                className="pf-c-description-list__text"
+              >
+                Operating System Architecture
+              </span>
+            </dt>
+            <dd
+              className="pf-c-description-list__description"
+            >
+              <div
+                className="pf-c-description-list__text"
+              >
+                amd64
+              </div>
+            </dd>
+          </div>
+          <div
+            className="pf-c-description-list__group"
+          >
+            <dt
+              className="pf-c-description-list__term"
+            >
+              <span
+                className="pf-c-description-list__text"
+              >
+                Operating System Version
+              </span>
+            </dt>
+            <dd
+              className="pf-c-description-list__description"
+            >
+              <div
+                className="pf-c-description-list__text"
+              >
+                6.1.12-200.fc37.x86_64
+              </div>
+            </dd>
+          </div>
+          <div
+            className="pf-c-description-list__group"
+          >
+            <dt
+              className="pf-c-description-list__term"
+            >
+              <span
+                className="pf-c-description-list__text"
+              >
+                Available Processors
+              </span>
+            </dt>
+            <dd
+              className="pf-c-description-list__description"
+            >
+              <div
+                className="pf-c-description-list__text"
+              >
+                8
+              </div>
             </dd>
           </div>
           <div

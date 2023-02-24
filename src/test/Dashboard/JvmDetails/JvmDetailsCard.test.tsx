@@ -44,10 +44,36 @@ import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
 import { of } from 'rxjs';
 import '@i18n/config';
+import { defaultDatetimeFormat } from '@i18n/datetime';
+import { MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
+import { Target } from '@app/Shared/Services/Target.service';
 
-const mockTarget = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
+jest.spyOn(defaultServices.settings, 'datetimeFormat').mockReturnValue(of(defaultDatetimeFormat));
+
+const mockTarget: Target = { connectUrl: 'service:jmx:rmi://someUrl', alias: 'fooTarget' };
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
-// TODO add mock GraphQL data
+
+const mockGraphQlResponse: MBeanMetricsResponse = {
+  data: {
+    targetNodes: [
+      {
+        mbeanMetrics: {
+          runtime: {
+            startTime: +new Date('2023-02-24'),
+            vmVendor: 'Test Vendor',
+            vmVersion: '17',
+          },
+          os: {
+            version: '6.1.12-200.fc37.x86_64',
+            arch: 'amd64',
+            availableProcessors: 8,
+          },
+        },
+      },
+    ],
+  },
+};
+jest.spyOn(defaultServices.api, 'graphql').mockReturnValue(of(mockGraphQlResponse));
 
 describe('<JvmDetailsCard />', () => {
   it('renders correctly', async () => {
