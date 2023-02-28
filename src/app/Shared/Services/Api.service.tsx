@@ -45,7 +45,7 @@ import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
-import { SerialCardConfig, DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlicer';
+import { SerialCardConfig, DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlice';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';

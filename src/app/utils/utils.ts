@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import _ from 'lodash';
 
 const SECOND_MILLIS = 1000;

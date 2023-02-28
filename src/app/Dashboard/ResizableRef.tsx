@@ -35,10 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {
-  CardConfig,
-  dashboardCardConfigResizeCardIntent,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { CardConfig, dashboardCardConfigResizeCardIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { gridSpans } from '@patternfly/react-core';
 import _ from 'lodash';

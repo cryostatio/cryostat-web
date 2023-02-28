@@ -41,26 +41,25 @@ import {
   CardConfig,
   DashboardConfigState,
   dashboardLayoutConfigReplaceCardIntent,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { ServiceContext } from '@app/Shared/Services/Services';
+} from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { layoutConfigAddLayoutIntent, layoutConfigUpdateLayoutIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap, defaultIfEmpty, first, map, tap } from 'rxjs/operators';
+import { concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
 
 export interface DashboardLayoutUploadModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
-const validateDashboardLayout = (obj: any): obj is DashboardConfigState => {
+const validateDashboardLayout = (obj: object): obj is DashboardConfigState => {
   const layout = obj as DashboardConfigState;
   if (layout.name === undefined || !Array.isArray(layout.list)) {
     console.log('Invalid layout name or list');
-
     return false;
   }
   for (const cardConfig of layout.list as CardConfig[]) {
@@ -70,13 +69,6 @@ const validateDashboardLayout = (obj: any): obj is DashboardConfigState => {
       cardConfig.span === undefined ||
       cardConfig.props === undefined
     ) {
-      console.log('Invalid card config');
-      // console log all the things im checking
-      console.log(Object.keys(cardConfig).length);
-      console.log(cardConfig.name);
-      console.log(cardConfig.span);
-      console.log(cardConfig.props);
-
       return false;
     }
   }
@@ -99,7 +91,8 @@ export const parseCardConfig = (file: File): Observable<DashboardConfigState> =>
 export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
   const dispatch = useDispatch();
-  const context = React.useContext(ServiceContext);
+  const layouts = useSelector((state: RootState) => state.layoutConfigs.list);
+  const currLayout = useSelector((state: RootState) => state.dashboardConfigs);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
 
@@ -113,14 +106,13 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
 
   React.useEffect(() => {
     if (allOks && numOfFiles) {
-      context.settings.dashboardLayouts().subscribe((layouts) => {
-        if (layouts.length > 0) {
-          const latest = layouts[layouts.length - 1];
-          dispatch(dashboardLayoutConfigReplaceCardIntent(latest.name, latest.list));
-        }
-      });
+      if (layouts.length > 0) {
+        const latest = layouts[layouts.length - 1];
+        dispatch(dashboardLayoutConfigReplaceCardIntent(latest.name, latest.list));
+        dispatch(layoutConfigUpdateLayoutIntent(currLayout));
+      }
     }
-  }, [context.settings, dispatch, allOks, numOfFiles]);
+  }, [dispatch, allOks, numOfFiles, layouts, currLayout]);
 
   const reset = React.useCallback(() => {
     setNumOfFiles(0);
@@ -137,7 +129,10 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
   }, [uploading, reset, onClose]);
 
   const onFileSubmit = React.useCallback(
-    (fileUploads: FUpload[], { getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks) => {
+    (
+      fileUploads: FUpload[],
+      { getProgressUpdateCallback: _getProgressUpdateCallback, onSingleSuccess, onSingleFailure }: UploadCallbacks
+    ) => {
       setUploading(true);
 
       const tasks: Observable<boolean>[] = [];
@@ -147,17 +142,13 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           parseCardConfig(fileUpload.file).pipe(
             first(),
             concatMap((layout) => {
-              return context.settings.dashboardLayouts().pipe(
-                map((layouts) => layouts.filter((l) => l.name === layout.name)),
-                concatMap((found) => {
-                  if (found.length > 0) {
-                    return throwError(() => new Error(`Dashboard layout with name ${layout.name} already exists.`));
-                  }
-                  context.settings.setDashboardLayouts(layout);
-                  return of(true);
-                }),
-                first()
-              );
+              // check if layouts includes layout.name
+              if (layouts.some((l) => l.name === layout.name)) {
+                return throwError(() => new Error(`Dashboard layout with name ${layout.name} already exists.`));
+              } else {
+                dispatch(layoutConfigAddLayoutIntent(layout));
+                return of(true);
+              }
             }),
             tap({
               next: (_) => {
@@ -166,8 +157,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
               error: (err) => {
                 onSingleFailure(fileUpload.file.name, err);
               },
-            }),
-            catchError((_) => of(false))
+            })
           )
         );
       });
@@ -181,7 +171,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           })
       );
     },
-    [setUploading, context.settings, addSubscription, setAllOks]
+    [addSubscription, dispatch, setUploading, setAllOks, layouts]
   );
 
   const handleSubmit = React.useCallback(() => {

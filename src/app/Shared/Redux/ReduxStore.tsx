@@ -37,8 +37,13 @@
  */
 
 import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
+<<<<<<< HEAD
 import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlicer';
 import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlicer';
+=======
+import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlice';
+import layoutConfigReducer, * as layoutConfigSlice from './Configurations/LayoutConfigSlice';
+>>>>>>> 98ee6fae (persist layout configurations)
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
 import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyFilterSlice';
@@ -50,7 +55,11 @@ export const {
   dashboardCardConfigDeleteCardIntent,
   dashboardCardConfigReorderCardIntent,
   dashboardCardConfigResizeCardIntent,
+  dashboardCardConfigFirstRunIntent,
+  dashboardLayoutConfigReplaceCardIntent,
 } = dashboardConfigSlice;
+export const { layoutConfigAddLayoutIntent, layoutConfigDeleteLayoutIntent, layoutConfigUpdateLayoutIntent } =
+  layoutConfigSlice;
 export const {
   recordingAddFilterIntent,
   recordingDeleteFilterIntent,
@@ -84,6 +93,7 @@ export const {
 
 export const rootReducer = combineReducers({
   dashboardConfigs: dashboardConfigReducer,
+  layoutConfigs: layoutConfigReducer,
   recordingFilters: recordingFilterReducer,
   automatedAnalysisFilters: automatedAnalysisFilterReducer,
   topologyConfigs: topologyConfigReducer,

@@ -35,23 +35,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import {
-  CardConfig,
   DashboardConfigState,
   dashboardLayoutConfigReplaceCardIntent,
   _dashboardConfigVersion,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover, TextInput } from '@patternfly/react-core';
-import { HelpIcon } from '@patternfly/react-icons';
-import { set } from 'immer/dist/internal';
+} from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { layoutConfigAddLayoutIntent, RootState } from '@app/Shared/Redux/ReduxStore';
+import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { forkJoin, from, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap, defaultIfEmpty, first, map, tap } from 'rxjs/operators';
+import { useDispatch, useSelector } from 'react-redux';
+import { DEFAULT_LAYOUT } from './DashboardLayoutConfig';
 
 export interface DashboardLayoutCreateModalProps {
   visible: boolean;
@@ -59,9 +52,8 @@ export interface DashboardLayoutCreateModalProps {
 }
 
 export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProps> = ({ onClose, ...props }) => {
-  const addSubscription = useSubscriptions();
   const dispatch = useDispatch();
-  const context = React.useContext(ServiceContext);
+  const layouts = useSelector((state: RootState) => state.layoutConfigs.list);
 
   const [validated, setValidated] = React.useState<'default' | 'success' | 'warning' | 'error' | undefined>('default');
   const [name, setName] = React.useState<string>('');
@@ -72,18 +64,14 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       if (value.length === 0) {
         setValidated('error');
       } else {
-        addSubscription(
-          context.settings.dashboardLayouts().subscribe((layouts) => {
-            if (layouts.some((layout) => layout.name === value)) {
-              setValidated('error');
-            } else {
-              setValidated('success');
-            }
-          })
-        );
+        if (layouts.some((layout) => layout.name === value) || value === DEFAULT_LAYOUT) {
+          setValidated('error');
+        } else {
+          setValidated('success');
+        }
       }
     },
-    [context.settings, setName, setValidated]
+    [setName, setValidated, layouts]
   );
 
   const handleClose = React.useCallback(() => {
@@ -96,9 +84,10 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       list: [],
       _version: _dashboardConfigVersion,
     };
-    context.settings.setDashboardLayouts(newLayout);
+    dispatch(layoutConfigAddLayoutIntent(newLayout));
     dispatch(dashboardLayoutConfigReplaceCardIntent(name, []));
     onClose();
+    setName('');
   }, [dispatch, onClose, name]);
 
   return (

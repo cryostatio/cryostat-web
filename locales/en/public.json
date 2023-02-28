@@ -195,6 +195,9 @@
     }
   },
   "QuickStartsCard": {
+    "CARD_DESCRIPTION": "Cryostat Dashboard quick start tutorial.",
+    "CARD_DESCRIPTION_FULL": "Quick start tutorials to learn some basic features and configurations for the Cryostat Dashboard.",
+    "CARD_TITLE": "Quick Starts",
     "CATALOG_PAGE": {
       "HINT": "Quick start tutorials to learn some basic features and configurations for the Cryostat Dashboard.",
       "TITLE": "Dashboard Quick Starts"
