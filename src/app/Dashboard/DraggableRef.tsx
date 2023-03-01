@@ -35,10 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { dashboardCardConfigReorderCardIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { dashboardConfigReorderCardIntent } from '@app/Shared/Redux/ReduxStore';
 import { css } from '@patternfly/react-styles';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { DRAGGABLE_REF_KLAZZ } from './DashboardUtils';
 import { handleDisabledElements } from './ResizableRef';
 
 const getOverlapScales = (dragIndex: number, hoverIndex: number): [number, number] => {
@@ -136,13 +137,13 @@ const resetDroppableItem = (di: DroppableItem) => {
     if (ev.propertyName !== 'transform') {
       return;
     }
-    di.node.classList.remove(`${draggableRefKlazz}-wrapper__reset`);
+    di.node.classList.remove(`${DRAGGABLE_REF_KLAZZ}-wrapper__reset`);
     di.node.removeEventListener('transitionend', onTransitionEnd);
   }
   if (
     di.node.className
       .split(/\s+/)
-      .some((c) => c.startsWith(`${draggableRefKlazz}-wrapper__`) && c !== `${draggableRefKlazz}-wrapper__reset`)
+      .some((c) => c.startsWith(`${DRAGGABLE_REF_KLAZZ}-wrapper__`) && c !== `${DRAGGABLE_REF_KLAZZ}-wrapper__reset`)
   ) {
     setDroppableItem(di, 'reset');
     di.node.addEventListener('transitionend', onTransitionEnd);
@@ -152,17 +153,15 @@ const resetDroppableItem = (di: DroppableItem) => {
 
 const setDroppableItem = (di: DroppableItem, transition: Transition) => {
   for (const tr of transitions) {
-    di.node.classList.remove(`${draggableRefKlazz}-wrapper__${tr}`);
+    di.node.classList.remove(`${DRAGGABLE_REF_KLAZZ}-wrapper__${tr}`);
   }
-  di.node.classList.add(`${draggableRefKlazz}-wrapper__${transition}`);
+  di.node.classList.add(`${DRAGGABLE_REF_KLAZZ}-wrapper__${transition}`);
 };
 
 export interface DraggableRefProps {
   children: React.ReactNode;
   dashboardId: number;
 }
-
-export const draggableRefKlazz = `draggable-ref`;
 
 export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   children,
@@ -205,7 +204,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       if (insertPosition.current !== undefined) {
         setIsDragging(false);
         setRefStyle(INIT_STYLE);
-        dispatch(dashboardCardConfigReorderCardIntent(dashboardId, insertPosition.current, swap.current));
+        dispatch(dashboardConfigReorderCardIntent(dashboardId, insertPosition.current, swap.current));
       } else {
         setRefStyle({
           transition: 'transform 0.5s cubic-bezier(0.2, 1, 0.1, 1) 0s',
@@ -354,7 +353,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
       const dragging = ev.target as HTMLElement;
       const rect = dragging.getBoundingClientRect();
 
-      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${draggableRefKlazz}-wrapper`));
+      const draggableNodes: HTMLElement[] = Array.from(document.querySelectorAll(`div.${DRAGGABLE_REF_KLAZZ}-wrapper`));
       const droppableItems: DroppableItem[] = draggableNodes.map((node, index) => {
         const isDraggingHost = node.contains(dragging);
         const droppableItem: DroppableItem = {
@@ -391,7 +390,7 @@ export const DraggableRef: React.FunctionComponent<DraggableRefProps> = ({
   return (
     <div
       ref={wrapperRef}
-      className={css(`${draggableRefKlazz}-wrapper`)}
+      className={css(`${DRAGGABLE_REF_KLAZZ}-wrapper`)}
       onDragStart={onDragStart}
       onTransitionEnd={onTransitionEnd}
       style={{ ...refStyle }}

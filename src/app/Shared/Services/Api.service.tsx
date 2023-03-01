@@ -42,10 +42,11 @@ import { Rule } from '@app/Rules/Rules';
 import { EnvironmentNode } from '@app/Topology/typings';
 import { createBlobURL } from '@app/utils/utils';
 import _ from 'lodash';
+import { nanoid } from 'nanoid';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
-import { SerialCardConfig, DashboardConfigState } from '../Redux/Configurations/DashboardConfigSlice';
+import { DashboardLayout, SerialCardConfig } from '../Redux/Configurations/DashboardConfigSlice';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
 import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';
@@ -1156,16 +1157,16 @@ export class ApiService {
   
   downloadDashboardLayout(layout: DashboardConfigState): void {
     const serializedLayout = this.getSerializedDashboardLayout(layout);
-    const filename = `${layout.name}.json`;
+    const filename = `${layout.name}${nanoid(5)}.json`;
     const file = new File([serializedLayout], filename);
     const resourceUrl = URL.createObjectURL(file);
     this.downloadFile(resourceUrl, filename);
     setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
   }
 
-  private getSerializedDashboardLayout(layout: DashboardConfigState): string {
+  private getSerializedDashboardLayout(layout: DashboardLayout): string {
     const serialCards: SerialCardConfig[] = [];
-    for (const card of layout.list) {
+    for (const card of layout.cards) {
       const serialized = {
         name: card.name,
         span: card.span,
@@ -1664,3 +1665,5 @@ export const defaultChartControllerConfig: ChartControllerConfig = {
 // New target specific archived recording apis now enforce a non-empty target field
 // The placeholder targetId for uploaded (non-target) recordings is "uploads"
 export const UPLOADS_SUBDIRECTORY = 'uploads';
+
+export const DashboardLayoutNamePattern = /^[a-zA-Z0-9_.-]+$/;

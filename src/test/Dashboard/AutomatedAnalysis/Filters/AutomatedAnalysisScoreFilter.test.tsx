@@ -57,7 +57,7 @@ describe('<AutomatedAnalysisScoreFilter />', () => {
   beforeEach(() => {
     preloadedState = {
       dashboardConfigs: {
-        list: [],
+        layouts: [],
       },
       recordingFilters: {
         list: [

@@ -144,6 +144,11 @@
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
   },
+  "DashboardLayoutUploadModal": {
+    "ERRORS": {
+      "INVALID_CONFIG": "Card configurations are invalid"
+    }
+  },
   "DatetimeFilter": {
     "ARIA_LABELS": {
       "DATETIME_INPUT": "Input a datetime",

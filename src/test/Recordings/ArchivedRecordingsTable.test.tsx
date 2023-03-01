@@ -180,7 +180,7 @@ describe('<ArchivedRecordingsTable />', () => {
     history.go(-history.length);
     preloadedState = {
       dashboardConfigs: {
-        list: [],
+        layouts: [],
       },
       recordingFilters: {
         list: [

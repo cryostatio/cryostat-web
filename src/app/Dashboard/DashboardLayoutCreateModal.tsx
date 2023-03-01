@@ -35,16 +35,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
-  DashboardConfigState,
-  dashboardLayoutConfigReplaceCardIntent,
-  _dashboardConfigVersion,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
-import { layoutConfigAddLayoutIntent, RootState } from '@app/Shared/Redux/ReduxStore';
+  dashboardConfigAddLayoutIntent,
+  dashboardConfigReplaceLayoutIntent,
+  RootState,
+} from '@app/Shared/Redux/ReduxStore';
+import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DEFAULT_LAYOUT } from './DashboardLayoutConfig';
+import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
 
 export interface DashboardLayoutCreateModalProps {
   visible: boolean;
@@ -53,9 +54,10 @@ export interface DashboardLayoutCreateModalProps {
 
 export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProps> = ({ onClose, ...props }) => {
   const dispatch = useDispatch();
-  const layouts = useSelector((state: RootState) => state.layoutConfigs.list);
+  const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
 
   const [validated, setValidated] = React.useState<'default' | 'success' | 'warning' | 'error' | undefined>('default');
+  const [errorMessage, setErrorMessage] = React.useState<string>('');
   const [name, setName] = React.useState<string>('');
 
   const handleNameChange = React.useCallback(
@@ -63,15 +65,20 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       setName(value);
       if (value.length === 0) {
         setValidated('error');
+        setErrorMessage('Name is required.');
+      } else if (dashboardConfigs.layouts.some((layout) => layout.name === value) || value === DEFAULT_DASHBOARD_NAME) {
+        setValidated('error');
+        setErrorMessage('Name is already in use.');
       } else {
-        if (layouts.some((layout) => layout.name === value) || value === DEFAULT_LAYOUT) {
-          setValidated('error');
-        } else {
+        if (DashboardLayoutNamePattern.test(value)) {
           setValidated('success');
+        } else {
+          setValidated('error');
+          setErrorMessage('Name must be alphanumeric and may contain underscores, dashes, and periods.');
         }
       }
     },
-    [setName, setValidated, layouts]
+    [setName, setValidated, dashboardConfigs, setErrorMessage]
   );
 
   const handleClose = React.useCallback(() => {
@@ -79,13 +86,12 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   }, [onClose]);
 
   const handleSubmit = React.useCallback(() => {
-    const newLayout: DashboardConfigState = {
+    const newLayout: DashboardLayout = {
       name: name,
-      list: [],
-      _version: _dashboardConfigVersion,
+      cards: [],
     };
-    dispatch(layoutConfigAddLayoutIntent(newLayout));
-    dispatch(dashboardLayoutConfigReplaceCardIntent(name, []));
+    dispatch(dashboardConfigAddLayoutIntent(newLayout));
+    dispatch(dashboardConfigReplaceLayoutIntent(name));
     onClose();
     setName('');
   }, [dispatch, onClose, name]);
@@ -103,7 +109,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
           label="Name"
           fieldId="name"
           helperText="Enter a name for the new dashboard layout."
-          helperTextInvalid="Name must be unique."
+          helperTextInvalid={errorMessage}
           isRequired
           validated={validated}
         >
@@ -118,7 +124,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
           />
         </FormGroup>
         <ActionGroup>
-          <Button variant="primary" onClick={handleSubmit} isDisabled={validated !== 'success'}>
+          <Button variant="primary" onClick={handleSubmit} isAriaDisabled={validated !== 'success'}>
             Submit
           </Button>
           <Button variant="link" onClick={handleClose}>

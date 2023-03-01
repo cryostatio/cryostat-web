@@ -37,62 +37,58 @@
  */
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { CardConfig, DashboardLayout, SerialCardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
-  CardConfig,
-  DashboardConfigState,
-  dashboardLayoutConfigReplaceCardIntent,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
-import { layoutConfigAddLayoutIntent, layoutConfigUpdateLayoutIntent, RootState } from '@app/Shared/Redux/ReduxStore';
+  dashboardConfigAddLayoutIntent,
+  dashboardConfigReplaceLayoutIntent,
+  RootState,
+} from '@app/Shared/Redux/ReduxStore';
+import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { forkJoin, from, Observable, of, throwError } from 'rxjs';
-import { concatMap, defaultIfEmpty, first, tap } from 'rxjs/operators';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
+import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
 
 export interface DashboardLayoutUploadModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
-const validateDashboardLayout = (obj: object): obj is DashboardConfigState => {
-  const layout = obj as DashboardConfigState;
-  if (layout.name === undefined || !Array.isArray(layout.list)) {
-    console.log('Invalid layout name or list');
-    return false;
-  }
-  for (const cardConfig of layout.list as CardConfig[]) {
-    if (
-      Object.keys(cardConfig).length !== 3 ||
-      cardConfig.name === undefined ||
-      cardConfig.span === undefined ||
-      cardConfig.props === undefined
-    ) {
-      return false;
-    }
-  }
-  return true;
-};
-
-export const parseCardConfig = (file: File): Observable<DashboardConfigState> => {
+export const parseDashboardLayoutFile = (file: File): Observable<DashboardLayout> => {
   return from(
     file.text().then((content) => {
-      const obj = JSON.parse(content);
-      if (validateDashboardLayout(obj)) {
-        return obj;
-      } else {
+      const layout = JSON.parse(content) as DashboardLayout;
+      if (layout.name === undefined || layout.name === DEFAULT_DASHBOARD_NAME) {
+        throw new Error(`Dashboard layout name [${layout.name}] is invalid.`);
+      }
+      if (!Array.isArray(layout.cards)) {
         throw new Error('Card configurations are invalid.');
       }
+      for (const cardConfig of layout.cards as CardConfig[]) {
+        if (
+          Object.keys(cardConfig).length !== 3 ||
+          cardConfig.name === undefined ||
+          cardConfig.span === undefined ||
+          cardConfig.props === undefined
+        ) {
+          throw new Error('Card configurations are invalid.');
+        }
+      }
+      return layout;
     })
   );
 };
 
 export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
+  const { t } = useTranslation();
   const dispatch = useDispatch();
-  const layouts = useSelector((state: RootState) => state.layoutConfigs.list);
-  const currLayout = useSelector((state: RootState) => state.dashboardConfigs);
+  const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
 
@@ -100,19 +96,48 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
   const [allOks, setAllOks] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
 
-  // TODO: allow user to pick which layout to use from the uploaded file(s)
-  const [_config, _setConfig] = React.useState<CardConfig[]>([]);
-  const [_layoutName, _setLayoutName] = React.useState(null);
-
   React.useEffect(() => {
     if (allOks && numOfFiles) {
-      if (layouts.length > 0) {
-        const latest = layouts[layouts.length - 1];
-        dispatch(dashboardLayoutConfigReplaceCardIntent(latest.name, latest.list));
-        dispatch(layoutConfigUpdateLayoutIntent(currLayout));
-      }
+      const latest = dashboardConfigs.layouts[dashboardConfigs.layouts.length - 1];
+      dispatch(dashboardConfigReplaceLayoutIntent(latest.name));
     }
-  }, [dispatch, allOks, numOfFiles, layouts, currLayout]);
+  }, [dispatch, dashboardConfigs, allOks, numOfFiles]);
+
+  const parseDashboardLayoutFile = React.useCallback(
+    (file: File): Observable<DashboardLayout> => {
+      return from(
+        file.text().then((content) => {
+          const layout = JSON.parse(content) as DashboardLayout;
+          if (layout.name === undefined || layout.name === DEFAULT_DASHBOARD_NAME) {
+            console.error(layout);
+            throw new Error(`Dashboard name [${layout.name}] is invalid.`);
+          }
+          if (!DashboardLayoutNamePattern.test(layout.name)) {
+            throw new Error(`Dashboard name must be alphanumeric and may contain underscores, dashes, and periods.`);
+          }
+          if (!Array.isArray(layout.cards)) {
+            console.error(layout);
+
+            throw new Error(t('DashboardLayoutUploadModal.ERRORS.INVALID_CONFIG'));
+          }
+          for (const cardConfig of layout.cards as SerialCardConfig[]) {
+            if (
+              Object.keys(cardConfig).length !== 3 ||
+              cardConfig.name === undefined ||
+              cardConfig.span === undefined ||
+              cardConfig.props === undefined
+            ) {
+              console.error(layout);
+
+              throw new Error(t('DashboardLayoutUploadModal.ERRORS.INVALID_CONFIG'));
+            }
+          }
+          return layout;
+        })
+      );
+    },
+    [t]
+  );
 
   const reset = React.useCallback(() => {
     setNumOfFiles(0);
@@ -139,24 +164,27 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
 
       fileUploads.forEach((fileUpload) => {
         tasks.push(
-          parseCardConfig(fileUpload.file).pipe(
+          parseDashboardLayoutFile(fileUpload.file).pipe(
             first(),
             concatMap((layout) => {
               // check if layouts includes layout.name
-              if (layouts.some((l) => l.name === layout.name)) {
-                return throwError(() => new Error(`Dashboard layout with name ${layout.name} already exists.`));
+              if (dashboardConfigs.layouts.some((l) => l.name === layout.name)) {
+                onSingleFailure(
+                  fileUpload.file.name,
+                  new Error(`Dashboard layout with name ${layout.name} already exists.`)
+                );
+                return of(false);
               } else {
-                dispatch(layoutConfigAddLayoutIntent(layout));
+                dispatch(dashboardConfigAddLayoutIntent(layout));
+                onSingleSuccess(fileUpload.file.name);
                 return of(true);
               }
             }),
-            tap({
-              next: (_) => {
-                onSingleSuccess(fileUpload.file.name);
-              },
-              error: (err) => {
-                onSingleFailure(fileUpload.file.name, err);
-              },
+            catchError((err) => {
+              console.log('Error parsing card config: ', err);
+
+              onSingleFailure(fileUpload.file.name, err);
+              return of(false);
             })
           )
         );
@@ -171,7 +199,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           })
       );
     },
-    [addSubscription, dispatch, setUploading, setAllOks, layouts]
+    [addSubscription, dispatch, parseDashboardLayoutFile, setUploading, setAllOks, dashboardConfigs]
   );
 
   const handleSubmit = React.useCallback(() => {

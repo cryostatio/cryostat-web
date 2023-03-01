@@ -36,12 +36,7 @@
  * SOFTWARE.
  */
 import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
-import {
-  dashboardCardConfigAddCardIntent,
-  layoutConfigUpdateLayoutIntent,
-  RootState,
-  StateDispatch,
-} from '@app/Shared/Redux/ReduxStore';
+import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -78,7 +73,7 @@ import { nanoid } from 'nanoid';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Observable, of } from 'rxjs';
 import { getConfigByTitle, getDashboardCards, PropControl } from './Dashboard';
 
@@ -88,7 +83,6 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
   const addSubscription = useSubscriptions();
   const settingsContext = useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
-  const currLayout = useSelector((state: RootState) => state.dashboardConfigs);
   const { t } = useTranslation();
 
   const [showWizard, setShowWizard] = React.useState(false);
@@ -135,9 +129,8 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
       span: config.cardSizes.span.default,
       props: propsConfig,
     };
-    dispatch(dashboardCardConfigAddCardIntent(cardConfig.id, cardConfig.name, cardConfig.span, cardConfig.props));
-    dispatch(layoutConfigUpdateLayoutIntent(currLayout));
-  }, [dispatch, t, setShowWizard, currLayout, selection, propsConfig]);
+    dispatch(dashboardConfigAddCardIntent(cardConfig.id, cardConfig.name, cardConfig.span, cardConfig.props));
+  }, [dispatch, t, setShowWizard, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {
     setShowWizard(true);

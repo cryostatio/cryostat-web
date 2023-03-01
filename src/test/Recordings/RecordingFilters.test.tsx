@@ -133,7 +133,7 @@ describe('<RecordingFilters />', () => {
 
     preloadedState = {
       dashboardConfigs: {
-        list: [],
+        layouts: [],
       },
       recordingFilters: {
         list: [

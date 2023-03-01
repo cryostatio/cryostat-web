@@ -37,13 +37,9 @@
  */
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Middleware } from '@reduxjs/toolkit';
-<<<<<<< HEAD
-import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlicer';
-import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlicer';
-=======
 import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlice';
+import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlicer';
 import { enumValues as LayoutConfigActions } from '../Configurations/LayoutConfigSlice';
->>>>>>> 98ee6fae (persist layout configurations)
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
 import { enumValues as TopologyFilterActions } from '../Filters/TopologyFilterSlice';
@@ -63,15 +59,12 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);
     } else if (DashboardConfigActions.has(action.type)) {
       saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
-<<<<<<< HEAD
     } else if (TopologyConfigActions.has(action.type)) {
       saveToLocalStorage('TOPOLOGY_CONFIG', rootState.topologyConfigs);
     } else if (TopologyFilterActions.has(action.type)) {
       saveToLocalStorage('TOPOLOGY_FILTERS', rootState.topologyFilters);
-=======
     } else if (LayoutConfigActions.has(action.type)) {
       saveToLocalStorage('DASHBOARD_LAYOUTS', rootState.layoutConfigs);
->>>>>>> 98ee6fae (persist layout configurations)
     } else {
       console.warn(`Action ${action.type} does not persist state.`);
     }

@@ -35,11 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { dashboardLayoutConfigReplaceCardIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
-  layoutConfigDeleteLayoutIntent,
-  layoutConfigUpdateLayoutIntent,
+  dashboardConfigDeleteLayoutIntent,
+  dashboardConfigReplaceLayoutIntent,
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
@@ -58,22 +56,21 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutUploadModal } from './DashboardLayoutUploadModal';
+import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
 
 export interface DashboardLayoutConfigProps {
   children?: React.ReactNode;
 }
 
-export const DEFAULT_LAYOUT = 'Default';
-
 export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfigProps> = (_props) => {
   const dispatch = useDispatch<StateDispatch>();
   const context = React.useContext(ServiceContext);
-  const currLayout = useSelector((state: RootState) => state.dashboardConfigs);
-  const layouts = useSelector((state: RootState) => state.layoutConfigs);
+  const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
-  const [downloading, setDownloading] = React.useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
+
+  const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
   const handleUploadLayout = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -91,51 +88,31 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
 
   const handleDownloadLayout = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      setDownloading(true);
-      setTimeout(() => {
-        context.api.downloadDashboardLayout(currLayout);
-        setDownloading(false);
-      }, 500);
+      context.api.downloadDashboardLayout(currLayout);
     },
-    [context.api, setDownloading, currLayout]
+    [context.api, currLayout]
   );
 
   const handleDeleteLayout = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      dispatch(layoutConfigDeleteLayoutIntent(currLayout.name));
-      const defaultLayout = layouts.list.find((l) => l.name === DEFAULT_LAYOUT);
-      if (defaultLayout) {
-        dispatch(dashboardLayoutConfigReplaceCardIntent(defaultLayout.name, defaultLayout.list));
-      } else {
-        console.error('default layout not found');
-      }
+      dispatch(dashboardConfigDeleteLayoutIntent(currLayout.name));
+      dispatch(dashboardConfigReplaceLayoutIntent(DEFAULT_DASHBOARD_NAME));
     },
-    [dispatch, currLayout.name, layouts.list]
-  );
-
-  const submitButtonLoadingProps = React.useMemo(
-    () =>
-      ({
-        spinnerAriaValueText: 'Downloading dashboard layouts',
-        spinnerAriaLabel: 'downloading-dashboard-layouts',
-        isLoading: downloading,
-      } as LoadingPropsType),
-    [downloading]
+    [dispatch, currLayout.name]
   );
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const onLayoutSelect = React.useCallback(
     (_evt: any, selected: React.ReactNode) => {
-      const found = layouts.list.find((l) => l.name === selected);
+      const found = dashboardConfigs.layouts.find((l) => l.name === selected);
       if (found) {
-        dispatch(layoutConfigUpdateLayoutIntent(currLayout));
-        dispatch(dashboardLayoutConfigReplaceCardIntent(found.name, found.list));
+        dispatch(dashboardConfigReplaceLayoutIntent(found.name));
       } else {
         console.error('layout not found ' + selected);
       }
       setIsSelectorOpen(false);
     },
-    [dispatch, setIsSelectorOpen, layouts, currLayout]
+    [dispatch, setIsSelectorOpen, dashboardConfigs]
   );
 
   const onToggle = React.useCallback(
@@ -172,7 +149,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
               onSelect={onLayoutSelect}
               isText
             >
-              {layouts.list.map((l) => (
+              {dashboardConfigs.layouts.map((l) => (
                 <ContextSelectorItem key={l.name}>{l.name}</ContextSelectorItem>
               ))}
             </ContextSelector>
@@ -185,7 +162,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
               onClick={handleUploadLayout}
               icon={<UploadIcon />}
             >
-              Upload layout
+              Upload
             </Button>
           </ToolbarItem>
           <ToolbarItem>
@@ -195,16 +172,15 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
               aria-label="Download layout"
               onClick={handleDownloadLayout}
               icon={<DownloadIcon />}
-              {...submitButtonLoadingProps}
             >
-              Download layout
+              Download
             </Button>
           </ToolbarItem>
           <ToolbarItem>
             <Button
               key="delete"
               variant="danger"
-              isAriaDisabled={currLayout.name === DEFAULT_LAYOUT}
+              isAriaDisabled={currLayout.name === DEFAULT_DASHBOARD_NAME}
               aria-label="Delete layout"
               onClick={handleDeleteLayout}
               icon={<TrashIcon />}
