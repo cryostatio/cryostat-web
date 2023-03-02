@@ -121,8 +121,6 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     (oldName: string) => {
       setOldName(oldName);
       setIsCreateModalOpen(true);
-      console.log('rename');
-      console.log('oldName: ' + oldName);
     },
     [setOldName, setIsCreateModalOpen]
   );
@@ -254,8 +252,16 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         itemId={l.name}
         actions={
           <>
-            <MenuItemAction icon={<PencilAltIcon />} actionId="rename" aria-label={t('DashboardLayoutConfig.RENAME.LABEL')} />
-            <MenuItemAction icon={<TrashIcon />} actionId="delete" aria-label={t('DashboardLayoutConfig.DELETE.LABEL')} />
+            <MenuItemAction
+              icon={<PencilAltIcon />}
+              actionId="rename"
+              aria-label={t('DashboardLayoutConfig.RENAME.LABEL')}
+            />
+            <MenuItemAction
+              icon={<TrashIcon />}
+              actionId="delete"
+              aria-label={t('DashboardLayoutConfig.DELETE.LABEL')}
+            />
           </>
         }
       >

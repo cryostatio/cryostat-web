@@ -39,6 +39,9 @@ Array [
           className="pf-l-grid pf-m-gutter"
           id="dashboard-grid"
         >
+          <div>
+            Dashboard Layout Config
+          </div>
           <div
             className="pf-l-grid__item"
             style={

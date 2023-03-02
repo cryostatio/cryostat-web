@@ -37,9 +37,10 @@
  */
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { store } from '@app/Shared/Redux/ReduxStore';
+import { RootState, setupStore, store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
@@ -65,11 +66,24 @@ jest.mock('@app/Dashboard/AddCard', () => ({
   AddCard: (_) => <div>Add Card</div>,
 }));
 
-jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockFooTarget));
-jest.spyOn(defaultServices.settings, 'dashboardConfig').mockReturnValue({
-  _version: 'validVersion', // having a undefined version will result in test errors.
-  list: [],
-});
+jest.mock('@app/Dashboard/DashboardLayoutConfig', () => ({
+  DashboardLayoutConfig: (_) => <div>Dashboard Layout Config</div>,
+}));
+
+// Mock the local storage such that the first run config is not shown
+jest.mock('@app/utils/LocalStorage', () => ({
+  getFromLocalStorage: jest.fn(() => {
+    return {
+      _version: '0',
+    };
+  }),
+}));
+
+jest
+  .spyOn(defaultServices.target, 'target')
+  .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
+  .mockReturnValueOnce(of()) //
+  .mockReturnValue(of(mockFooTarget));
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {
