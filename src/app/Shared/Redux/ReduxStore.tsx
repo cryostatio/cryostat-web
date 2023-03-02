@@ -54,6 +54,7 @@ export const {
   dashboardConfigFirstRunIntent,
   dashboardConfigAddLayoutIntent,
   dashboardConfigDeleteLayoutIntent,
+  dashboardConfigRenameLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
 } = dashboardConfigSlice;
 export const {

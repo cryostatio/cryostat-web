@@ -38,6 +38,7 @@
 import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigAddLayoutIntent,
+  dashboardConfigRenameLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
@@ -48,6 +49,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
 
 export interface DashboardLayoutCreateModalProps {
+  oldName?: string;
   visible: boolean;
   onClose: () => void;
 }
@@ -58,7 +60,15 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
 
   const [validated, setValidated] = React.useState<'default' | 'success' | 'warning' | 'error' | undefined>('default');
   const [errorMessage, setErrorMessage] = React.useState<string>('');
-  const [name, setName] = React.useState<string>('');
+  const [name, setName] = React.useState<string>(props.oldName ?? '');
+
+  React.useEffect(() => {
+    if (props.oldName !== undefined) setName(props.oldName);
+  }, [props.oldName]);
+
+  const isCreateModal = React.useMemo((): boolean => {
+    return props.oldName === undefined;
+  }, [props.oldName]);
 
   const handleNameChange = React.useCallback(
     (value: string) => {
@@ -90,11 +100,51 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       name: name,
       cards: [],
     };
-    dispatch(dashboardConfigAddLayoutIntent(newLayout));
+    if (isCreateModal) {
+      dispatch(dashboardConfigAddLayoutIntent(newLayout));
+    } else {
+      if (props.oldName !== undefined) dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
+    }
     dispatch(dashboardConfigReplaceLayoutIntent(name));
     onClose();
     setName('');
-  }, [dispatch, onClose, name]);
+  }, [dispatch, onClose, name, isCreateModal, props.oldName]);
+
+  const formGroup = React.useMemo(() => {
+    return (
+      <FormGroup
+        label="Name"
+        fieldId="name"
+        helperText="Enter a name for the dashboard layout."
+        helperTextInvalid={errorMessage}
+        isRequired
+        validated={validated}
+      >
+        <TextInput
+          isRequired
+          type="text"
+          id="name"
+          name="name"
+          aria-describedby="name-helper"
+          value={name}
+          onChange={handleNameChange}
+        />
+      </FormGroup>
+    );
+  }, [validated, errorMessage, name, handleNameChange]);
+
+  const actionGroup = React.useMemo(() => {
+    return (
+      <ActionGroup>
+        <Button variant="primary" onClick={handleSubmit} isAriaDisabled={validated !== 'success'}>
+          Submit
+        </Button>
+        <Button variant="link" onClick={handleClose}>
+          Cancel
+        </Button>
+      </ActionGroup>
+    );
+  }, [handleSubmit, validated, handleClose]);
 
   return (
     <Modal
@@ -102,35 +152,11 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title="Create Dashboard Layout"
+      title={isCreateModal ? 'Create Dashboard Layout' : 'Rename Dashboard Layout'}
     >
       <Form>
-        <FormGroup
-          label="Name"
-          fieldId="name"
-          helperText="Enter a name for the new dashboard layout."
-          helperTextInvalid={errorMessage}
-          isRequired
-          validated={validated}
-        >
-          <TextInput
-            isRequired
-            type="text"
-            id="name"
-            name="name"
-            aria-describedby="name-helper"
-            value={name}
-            onChange={handleNameChange}
-          />
-        </FormGroup>
-        <ActionGroup>
-          <Button variant="primary" onClick={handleSubmit} isAriaDisabled={validated !== 'success'}>
-            Submit
-          </Button>
-          <Button variant="link" onClick={handleClose}>
-            Cancel
-          </Button>
-        </ActionGroup>
+        {formGroup}
+        {actionGroup}
       </Form>
     </Modal>
   );

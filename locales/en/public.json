@@ -144,6 +144,26 @@
   "DashboardCardActionMenu": {
     "RESET_SIZE": "Reset Size"
   },
+  "DashboardLayoutConfig": {
+    "DELETE": {
+      "LABEL": "Delete layout"
+    },
+    "DOWNLOAD": {
+      "LABEL": "Download layout"
+    },
+    "MENU": {
+      "LABEL": "Layout menu"
+    },
+    "NEW": {
+      "LABEL": "New layout"
+    },
+    "RENAME": {
+      "LABEL": "Rename layout"
+    },
+    "UPLOAD": {
+      "LABEL": "Upload layout"
+    }
+  },
   "DashboardLayoutUploadModal": {
     "ERRORS": {
       "INVALID_CONFIG": "Card configurations are invalid"

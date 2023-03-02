@@ -36,6 +36,8 @@
  * SOFTWARE.
  */
 
+import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
+import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
 import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
@@ -52,6 +54,7 @@ export enum DashboardConfigAction {
   FIRST_RUN = 'dashboard-card-config/first-run',
   LAYOUT_ADD = 'layout-config/add',
   LAYOUT_REMOVE = 'layout-config/remove',
+  LAYOUT_RENAME = 'layout-config/rename',
   LAYOUT_REPLACE = 'layout-config/replace',
 }
 
@@ -89,6 +92,10 @@ export interface DashboardDeleteLayoutActionPayload {
   name: string;
 }
 
+export interface DashboardRenameLayoutActionPayload {
+  oldName: string;
+  newName: string;
+}
 export interface DashboardReplaceLayoutActionPayload {
   newLayoutName: string;
 }
@@ -151,6 +158,16 @@ export const dashboardConfigDeleteLayoutIntent = createAction(DashboardConfigAct
   } as DashboardDeleteLayoutActionPayload,
 }));
 
+export const dashboardConfigRenameLayoutIntent = createAction(
+  DashboardConfigAction.LAYOUT_RENAME,
+  (oldName: string, newName: string) => ({
+    payload: {
+      oldName,
+      newName,
+    } as DashboardRenameLayoutActionPayload,
+  })
+);
+
 export const dashboardConfigReplaceLayoutIntent = createAction(
   DashboardConfigAction.LAYOUT_REPLACE,
   (name: string) => ({
@@ -209,12 +226,59 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
         moveDashboardCard(state.layouts[state.current].cards, payload.prevOrder, payload.nextOrder);
       }
     })
+    .addCase(dashboardConfigFirstRunIntent, (state) => {
+      state.layouts[state.current].cards = [
+        {
+          id: `${QuickStartsCardDescriptor.component.name}-1}`,
+          name: QuickStartsCardDescriptor.component.name,
+          span: QuickStartsCardDescriptor.cardSizes.span.default,
+          props: {},
+        },
+        {
+          id: `${MBeanMetricsChartCardDescriptor.component.name}-1`,
+          name: MBeanMetricsChartCardDescriptor.component.name,
+          span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
+          props: {
+            themeColor: 'blue',
+            chartKind: 'Process CPU Load',
+            duration: 60,
+            period: 10,
+          },
+        },
+        {
+          id: `${MBeanMetricsChartCardDescriptor.component.name}-2`,
+          name: MBeanMetricsChartCardDescriptor.component.name,
+          span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
+          props: {
+            themeColor: 'purple',
+            chartKind: 'Heap Memory Usage',
+            duration: 60,
+            period: 10,
+          },
+        },
+        {
+          id: `${MBeanMetricsChartCardDescriptor.component.name}-3`,
+          name: MBeanMetricsChartCardDescriptor.component.name,
+          span: MBeanMetricsChartCardDescriptor.cardSizes.span.default,
+          props: {
+            themeColor: 'green',
+            chartKind: 'Threads',
+            duration: 60,
+            period: 10,
+          },
+        },
+      ];
+    })
     .addCase(dashboardConfigAddLayoutIntent, (state, { payload }) => {
       state.layouts.push(payload.layout);
     })
     .addCase(dashboardConfigDeleteLayoutIntent, (state, { payload }) => {
       const idx = state.layouts.findIndex((layout) => layout.name === payload.name);
       state.layouts.splice(idx || 0, 1);
+    })
+    .addCase(dashboardConfigRenameLayoutIntent, (state, { payload }) => {
+      const idx = state.layouts.findIndex((layout) => layout.name === payload.oldName);
+      state.layouts[idx].name = payload.newName;
     })
     .addCase(dashboardConfigReplaceLayoutIntent, (state, { payload }) => {
       state.current = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName) || 0;

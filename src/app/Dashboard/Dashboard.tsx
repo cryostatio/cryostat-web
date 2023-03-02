@@ -318,9 +318,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   React.useEffect(() => {
     const layouts = getFromLocalStorage('DASHBOARD_CFG', {}) as DashboardConfigState;
-    console.log(layouts);
     if (layouts._version === undefined) {
-      console.log('first run');
       dispatch(dashboardConfigFirstRunIntent());
     }
   }, [dispatch]);

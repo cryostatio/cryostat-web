@@ -44,15 +44,20 @@ import {
 import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Button,
-  ContextSelector,
-  ContextSelectorItem,
+  Dropdown,
+  DropdownToggle,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuItemAction,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { DownloadIcon, PlusCircleIcon, TrashIcon, UploadIcon } from '@patternfly/react-icons';
+import { DownloadIcon, PencilAltIcon, PlusCircleIcon, TrashIcon, UploadIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { DashboardLayoutCreateModal } from './DashboardLayoutCreateModal';
 import { DashboardLayoutUploadModal } from './DashboardLayoutUploadModal';
@@ -65,26 +70,25 @@ export interface DashboardLayoutConfigProps {
 export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfigProps> = (_props) => {
   const dispatch = useDispatch<StateDispatch>();
   const context = React.useContext(ServiceContext);
+  const { t } = useTranslation();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
+  const [oldName, setOldName] = React.useState<string | undefined>(undefined);
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
-  const handleUploadLayout = React.useCallback(
+  const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       setIsUploadModalOpen(true);
     },
     [setIsUploadModalOpen]
   );
 
-  const handleCreateLayout = React.useCallback(
-    (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      setIsCreateModalOpen(true);
-    },
-    [setIsCreateModalOpen]
-  );
+  const handleUploadModalClose = React.useCallback(() => {
+    setIsUploadModalOpen(false);
+  }, [setIsUploadModalOpen]);
 
   const handleDownloadLayout = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -93,105 +97,208 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     [context.api, currLayout]
   );
 
-  const handleDeleteLayout = React.useCallback(
+  const handleCreateModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      dispatch(dashboardConfigDeleteLayoutIntent(currLayout.name));
-      dispatch(dashboardConfigReplaceLayoutIntent(DEFAULT_DASHBOARD_NAME));
+      setOldName(undefined);
+      setIsCreateModalOpen(true);
     },
-    [dispatch, currLayout.name]
+    [setOldName, setIsCreateModalOpen]
   );
-
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const onLayoutSelect = React.useCallback(
-    (_evt: any, selected: React.ReactNode) => {
-      const found = dashboardConfigs.layouts.find((l) => l.name === selected);
-      if (found) {
-        dispatch(dashboardConfigReplaceLayoutIntent(found.name));
-      } else {
-        console.error('layout not found ' + selected);
-      }
-      setIsSelectorOpen(false);
-    },
-    [dispatch, setIsSelectorOpen, dashboardConfigs]
-  );
-
-  const onToggle = React.useCallback(
-    (_evt: any, isOpen: boolean) => {
-      setIsSelectorOpen(isOpen);
-    },
-    [setIsSelectorOpen]
-  );
-  /* eslint-enable  @typescript-eslint/no-explicit-any */
-
-  const handleUploadModalClose = React.useCallback(() => {
-    setIsUploadModalOpen(false);
-  }, [setIsUploadModalOpen]);
 
   const handleCreateModalClose = React.useCallback(() => {
     setIsCreateModalOpen(false);
   }, [setIsCreateModalOpen]);
 
-  return (
-    <Toolbar style={{ zIndex: '9999' }}>
+  const handleDeleteLayout = React.useCallback(
+    (layoutName: string) => {
+      dispatch(dashboardConfigDeleteLayoutIntent(layoutName));
+      dispatch(dashboardConfigReplaceLayoutIntent(DEFAULT_DASHBOARD_NAME));
+    },
+    [dispatch]
+  );
+
+  const handleRenameLayout = React.useCallback(
+    (oldName: string) => {
+      setOldName(oldName);
+      setIsCreateModalOpen(true);
+      console.log('rename');
+      console.log('oldName: ' + oldName);
+    },
+    [setOldName, setIsCreateModalOpen]
+  );
+
+  const onFocus = React.useCallback(() => {
+    const element = document.getElementById('dashboard-layout-dropdown-toggle');
+    if (element) element.focus();
+  }, []);
+
+  const onLayoutSelect = React.useCallback(
+    (_event: React.MouseEvent<Element, MouseEvent> | undefined, itemId: number | string | undefined) => {
+      const found = dashboardConfigs.layouts.find((l) => l.name === itemId);
+      if (found) {
+        dispatch(dashboardConfigReplaceLayoutIntent(found.name));
+      } else {
+        console.error('layout not found ' + itemId);
+      }
+      onFocus();
+      setIsSelectorOpen(false);
+    },
+    [dispatch, onFocus, setIsSelectorOpen, dashboardConfigs]
+  );
+
+  const onActionClick = React.useCallback(
+    (_evt: React.MouseEvent<HTMLButtonElement, MouseEvent>, itemId: string, actionId: string) => {
+      if (actionId === 'rename') {
+        handleRenameLayout(itemId);
+      } else if (actionId === 'delete') {
+        handleDeleteLayout(itemId);
+      } else {
+        console.error('unknown action ' + actionId);
+      }
+    },
+    [handleRenameLayout, handleDeleteLayout]
+  );
+
+  const onToggle = React.useCallback(() => {
+    setIsSelectorOpen((open) => !open);
+  }, [setIsSelectorOpen]);
+
+  const newButton = React.useMemo(
+    () => (
+      <Button
+        key="new"
+        variant="primary"
+        aria-label={t('DashboardLayoutConfig.NEW.LABEL')}
+        onClick={handleCreateModalOpen}
+        icon={<PlusCircleIcon />}
+      >
+        {t('NEW', { ns: 'common' })}
+      </Button>
+    ),
+    [t, handleCreateModalOpen]
+  );
+
+  const renameButton = React.useMemo(
+    () => (
+      <Button
+        key="rename"
+        variant="plain"
+        isAriaDisabled={currLayout.name === DEFAULT_DASHBOARD_NAME}
+        aria-label={t('DashboardLayoutConfig.RENAME.LABEL')}
+        onClick={() => handleRenameLayout(currLayout.name)}
+        icon={<PencilAltIcon />}
+      />
+    ),
+    [t, handleRenameLayout, currLayout.name]
+  );
+
+  const uploadButton = React.useMemo(
+    () => (
+      <Button
+        key="upload"
+        variant="secondary"
+        aria-label={t('DashboardLayoutConfig.UPLOAD.LABEL')}
+        onClick={handleUploadModalOpen}
+        icon={<UploadIcon />}
+      >
+        {t('UPLOAD', { ns: 'common' })}
+      </Button>
+    ),
+    [t, handleUploadModalOpen]
+  );
+
+  const downloadButton = React.useMemo(
+    () => (
+      <Button
+        key="download"
+        variant="secondary"
+        aria-label={t('DashboardLayoutConfig.DOWNLOAD.LABEL')}
+        onClick={handleDownloadLayout}
+        icon={<DownloadIcon />}
+      >
+        {t('DOWNLOAD', { ns: 'common' })}
+      </Button>
+    ),
+    [t, handleDownloadLayout]
+  );
+
+  const deleteButton = React.useMemo(
+    () => (
+      <Button
+        key="delete"
+        variant="danger"
+        isAriaDisabled={currLayout.name === DEFAULT_DASHBOARD_NAME}
+        aria-label={t('DashboardLayoutConfig.DELETE.LABEL')}
+        onClick={() => handleDeleteLayout(currLayout.name)}
+        icon={<TrashIcon />}
+      >
+        {t('DELETE', { ns: 'common' })}
+      </Button>
+    ),
+    [t, handleDeleteLayout, currLayout.name]
+  );
+
+  const menuToggle = React.useMemo(
+    () => (
+      <DropdownToggle id="dashboard-layout-dropdown-toggle" onToggle={onToggle}>
+        {currLayout.name}
+      </DropdownToggle>
+    ),
+    [onToggle, currLayout.name]
+  );
+
+  const menuItems = React.useMemo(() => {
+    return dashboardConfigs.layouts.map((l) => (
+      <MenuItem
+        key={l.name}
+        itemId={l.name}
+        actions={
+          <>
+            <MenuItemAction icon={<PencilAltIcon />} actionId="rename" aria-label={t('DashboardLayoutConfig.RENAME.LABEL')} />
+            <MenuItemAction icon={<TrashIcon />} actionId="delete" aria-label={t('DashboardLayoutConfig.DELETE.LABEL')} />
+          </>
+        }
+      >
+        {l.name}
+      </MenuItem>
+    ));
+  }, [dashboardConfigs.layouts]);
+
+  const menuDropdown = React.useMemo(() => {
+    return (
+      <Dropdown id="dashboard-layout-dropdown" isOpen={isSelectorOpen} toggle={menuToggle}>
+        <Menu
+          aria-label={t('DashboardLayoutConfig.MENU.LABEL')}
+          isScrollable
+          onSelect={onLayoutSelect}
+          onActionClick={onActionClick}
+        >
+          <MenuContent maxMenuHeight="10em">{menuItems}</MenuContent>
+        </Menu>
+      </Dropdown>
+    );
+  }, [t, onLayoutSelect, onActionClick, menuToggle, menuItems, isSelectorOpen]);
+
+  const toolbarContent = React.useMemo(() => {
+    return (
       <ToolbarContent>
         <ToolbarGroup>
-          <ToolbarItem>
-            <Button key="new" variant="primary" aria-label="New" onClick={handleCreateLayout} icon={<PlusCircleIcon />}>
-              New
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <ContextSelector
-              menuAppendTo={'parent'}
-              toggleText={currLayout.name}
-              isOpen={isSelectorOpen}
-              onToggle={onToggle}
-              onSelect={onLayoutSelect}
-              isText
-            >
-              {dashboardConfigs.layouts.map((l) => (
-                <ContextSelectorItem key={l.name}>{l.name}</ContextSelectorItem>
-              ))}
-            </ContextSelector>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button
-              key="upload"
-              variant="secondary"
-              aria-label="Upload"
-              onClick={handleUploadLayout}
-              icon={<UploadIcon />}
-            >
-              Upload
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button
-              key="download"
-              variant="secondary"
-              aria-label="Download layout"
-              onClick={handleDownloadLayout}
-              icon={<DownloadIcon />}
-            >
-              Download
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button
-              key="delete"
-              variant="danger"
-              isAriaDisabled={currLayout.name === DEFAULT_DASHBOARD_NAME}
-              aria-label="Delete layout"
-              onClick={handleDeleteLayout}
-              icon={<TrashIcon />}
-            >
-              Delete
-            </Button>
-          </ToolbarItem>
+          <ToolbarItem>{newButton}</ToolbarItem>
+          <ToolbarItem spacer={{ default: 'spacerNone' }}>{menuDropdown}</ToolbarItem>
+          <ToolbarItem spacer={{ default: 'spacerNone' }}>{renameButton}</ToolbarItem>
+          <ToolbarItem>{uploadButton}</ToolbarItem>
+          <ToolbarItem>{downloadButton}</ToolbarItem>
+          <ToolbarItem>{deleteButton}</ToolbarItem>
         </ToolbarGroup>
       </ToolbarContent>
+    );
+  }, [newButton, menuDropdown, renameButton, uploadButton, downloadButton, deleteButton]);
+
+  return (
+    <Toolbar style={{ zIndex: '9999' }}>
+      {toolbarContent}
       <DashboardLayoutUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />
-      <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} />
+      <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />
     </Toolbar>
   );
 };
