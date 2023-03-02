@@ -9,6 +9,12 @@
   "CANCEL": "Cancel",
   "CARD_TYPE": "Card type",
   "CLEAR_FILTERS": "Clear all filters",
+<<<<<<< HEAD
+=======
+  "CLOSE": "Close",
+  "CREATE": "Create",
+  "CRITICAL": "CRITICAL",
+>>>>>>> d465b201 (localization)
   "CREATE": "Create",
   "CREATING": "Creating",
   "CRITICAL": "CRITICAL",
@@ -19,6 +25,7 @@
   "DEVELOPMENT": "DEVELOPMENT",
   "DOWNLOAD": "Download",
   "FILTER_NAME": "Name",
+  "HELP": "Help",
   "HOUR": "Hour",
   "HOUR_one": "Hour",
   "HOUR_other": "Hours",
@@ -38,7 +45,6 @@
   "OK": "OK",
   "PRODUCTION": "PRODUCTION",
   "REMOVE": "Remove",
-  "RENAME": "Rename",
   "RESET": "Reset",
   "RETRY": "Retry",
   "SCORE": "Score",
@@ -48,10 +54,13 @@
   "SELECT": "Select",
   "SHOW_LESS": "Show less",
   "SHOW_MORE": "Show more",
+  "SUBMIT": "Submit",
+  "SUBMITTING": "Submitting",
   "TEMPLATE": "Template",
   "TEMPLATE_HELPER_TEXT_INVALID": "Template must be selected",
   "TIME": "Time",
   "UPLOAD": "Upload",
   "VIEW": "View",
-  "WARNING": "WARNING"
+  "WARNING": "WARNING",
+  "WHATS_THIS": "What's this?"
 }

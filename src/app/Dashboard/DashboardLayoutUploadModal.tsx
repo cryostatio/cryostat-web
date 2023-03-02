@@ -37,7 +37,7 @@
  */
 import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploads';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
-import { CardConfig, DashboardLayout, SerialCardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { DashboardLayout, SerialCardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigAddLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
@@ -59,36 +59,11 @@ export interface DashboardLayoutUploadModalProps {
   onClose: () => void;
 }
 
-export const parseDashboardLayoutFile = (file: File): Observable<DashboardLayout> => {
-  return from(
-    file.text().then((content) => {
-      const layout = JSON.parse(content) as DashboardLayout;
-      if (layout.name === undefined || layout.name === DEFAULT_DASHBOARD_NAME) {
-        throw new Error(`Dashboard layout name [${layout.name}] is invalid.`);
-      }
-      if (!Array.isArray(layout.cards)) {
-        throw new Error('Card configurations are invalid.');
-      }
-      for (const cardConfig of layout.cards as CardConfig[]) {
-        if (
-          Object.keys(cardConfig).length !== 3 ||
-          cardConfig.name === undefined ||
-          cardConfig.span === undefined ||
-          cardConfig.props === undefined
-        ) {
-          throw new Error('Card configurations are invalid.');
-        }
-      }
-      return layout;
-    })
-  );
-};
-
 export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProps> = ({ onClose, ...props }) => {
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
   const dispatch = useDispatch();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
+  const { t } = useTranslation();
   const submitRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to submit trigger div
   const abortRef = React.useRef<HTMLDivElement>(null); // Use ref to refer to abort trigger div
 
@@ -107,18 +82,23 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
     (file: File): Observable<DashboardLayout> => {
       return from(
         file.text().then((content) => {
-          const layout = JSON.parse(content) as DashboardLayout;
-          if (layout.name === undefined || layout.name === DEFAULT_DASHBOARD_NAME) {
-            console.error(layout);
-            throw new Error(`Dashboard name [${layout.name}] is invalid.`);
+          let layout: DashboardLayout;
+          try {
+            layout = JSON.parse(content) as DashboardLayout;
+          } catch (err) {
+            throw new Error(t('DashboardLayoutUploadModal.ERROR.PARSE'));
+          }
+          if (!layout.name || layout.name === DEFAULT_DASHBOARD_NAME) {
+            throw new Error(t('DashboardLayoutUploadModal.ERROR.NAME_INVALID.1', { name: layout.name }));
           }
           if (!DashboardLayoutNamePattern.test(layout.name)) {
-            throw new Error(`Dashboard name must be alphanumeric and may contain underscores, dashes, and periods.`);
+            throw new Error(t('DashboardLayoutUploadModal.ERROR.NAME_INVALID.2'));
+          }
+          if (dashboardConfigs.layouts.some((l) => l.name === layout.name)) {
+            throw new Error(t('DashboardLayoutUploadModal.ERROR.NAME_TAKEN', { name: layout.name }));
           }
           if (!Array.isArray(layout.cards)) {
-            console.error(layout);
-
-            throw new Error(t('DashboardLayoutUploadModal.ERRORS.INVALID_CONFIG'));
+            throw new Error(t('DashboardLayoutUploadModal.ERROR.CONFIG_INVALID'));
           }
           for (const cardConfig of layout.cards as SerialCardConfig[]) {
             if (
@@ -127,16 +107,14 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
               cardConfig.span === undefined ||
               cardConfig.props === undefined
             ) {
-              console.error(layout);
-
-              throw new Error(t('DashboardLayoutUploadModal.ERRORS.INVALID_CONFIG'));
+              throw new Error(t('DashboardLayoutUploadModal.ERROR.CONFIG_INVALID'));
             }
           }
           return layout;
         })
       );
     },
-    [t]
+    [t, dashboardConfigs.layouts]
   );
 
   const reset = React.useCallback(() => {
@@ -167,22 +145,11 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           parseDashboardLayoutFile(fileUpload.file).pipe(
             first(),
             concatMap((layout) => {
-              // check if layouts includes layout.name
-              if (dashboardConfigs.layouts.some((l) => l.name === layout.name)) {
-                onSingleFailure(
-                  fileUpload.file.name,
-                  new Error(`Dashboard layout with name ${layout.name} already exists.`)
-                );
-                return of(false);
-              } else {
-                dispatch(dashboardConfigAddLayoutIntent(layout));
-                onSingleSuccess(fileUpload.file.name);
-                return of(true);
-              }
+              dispatch(dashboardConfigAddLayoutIntent(layout));
+              onSingleSuccess(fileUpload.file.name);
+              return of(true);
             }),
             catchError((err) => {
-              console.log('Error parsing card config: ', err);
-
               onSingleFailure(fileUpload.file.name, err);
               return of(false);
             })
@@ -199,7 +166,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           })
       );
     },
-    [addSubscription, dispatch, parseDashboardLayoutFile, setUploading, setAllOks, dashboardConfigs]
+    [addSubscription, dispatch, parseDashboardLayoutFile, setUploading, setAllOks]
   );
 
   const handleSubmit = React.useCallback(() => {
@@ -217,11 +184,11 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
   const submitButtonLoadingProps = React.useMemo(
     () =>
       ({
-        spinnerAriaValueText: 'Submitting',
+        spinnerAriaValueText: t('SUBMITTING', { ns: 'common' }),
         spinnerAriaLabel: 'submitting-dashboard-layouts',
         isLoading: uploading,
       } as LoadingPropsType),
-    [uploading]
+    [t, uploading]
   );
 
   return (
@@ -231,11 +198,14 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
         variant={ModalVariant.large}
         showClose={true}
         onClose={handleClose}
-        title="Upload Dashboard Layout"
-        description="Select Dashboard Layout configuration file(s) to upload. File(s) must be in valid JSON format."
+        title={t('DashboardLayoutUploadModal.TITLE')}
+        description={t(`DashboardLayoutUploadModal.DESCRIPTION`)}
         help={
-          <Popover headerContent={<div>What&quot;s this?</div>} bodyContent={<div>Something</div>}>
-            <Button variant="plain" aria-label="Help">
+          <Popover
+            headerContent={<div>{t('WHATS_THIS', { ns: 'common' })}</div>}
+            bodyContent={<div>{t(`DashboardLayoutUploadModal.HELP.CONTENT`)}</div>}
+          >
+            <Button variant="plain" aria-label={t('HELP', { ns: 'common' })}>
               <HelpIcon />
             </Button>
           </Popover>
@@ -256,7 +226,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           <ActionGroup>
             {allOks && numOfFiles ? (
               <Button variant="primary" onClick={handleClose}>
-                Close
+                {t('CLOSE', { ns: 'common' })}
               </Button>
             ) : (
               <>
@@ -266,10 +236,10 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
                   isDisabled={!numOfFiles || uploading}
                   {...submitButtonLoadingProps}
                 >
-                  Submit
+                  {t('SUBMIT', { ns: 'common' })}
                 </Button>
                 <Button variant="link" onClick={handleClose}>
-                  Cancel
+                  {t('CANCEL', { ns: 'common' })}
                 </Button>
               </>
             )}

@@ -37,10 +37,9 @@
  */
 import { Dashboard } from '@app/Dashboard/Dashboard';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { RootState, setupStore, store } from '@app/Shared/Redux/ReduxStore';
+import { store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';

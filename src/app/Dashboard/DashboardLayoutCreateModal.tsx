@@ -45,6 +45,7 @@ import {
 import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
 
@@ -56,11 +57,11 @@ export interface DashboardLayoutCreateModalProps {
 
 export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProps> = ({ onClose, ...props }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
-
   const [validated, setValidated] = React.useState<'default' | 'success' | 'warning' | 'error' | undefined>('default');
   const [errorMessage, setErrorMessage] = React.useState<string>('');
-  const [name, setName] = React.useState<string>(props.oldName ?? '');
+  const [name, setName] = React.useState<string>('');
 
   React.useEffect(() => {
     if (props.oldName !== undefined) setName(props.oldName);
@@ -75,20 +76,20 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       setName(value);
       if (value.length === 0) {
         setValidated('error');
-        setErrorMessage('Name is required.');
+        setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_REQUIRED'));
       } else if (dashboardConfigs.layouts.some((layout) => layout.name === value) || value === DEFAULT_DASHBOARD_NAME) {
         setValidated('error');
-        setErrorMessage('Name is already in use.');
+        setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_TAKEN'));
       } else {
         if (DashboardLayoutNamePattern.test(value)) {
           setValidated('success');
         } else {
           setValidated('error');
-          setErrorMessage('Name must be alphanumeric and may contain underscores, dashes, and periods.');
+          setErrorMessage(t('DashboardLayoutCreateModal.ERROR.NAME_INVALID'));
         }
       }
     },
-    [setName, setValidated, dashboardConfigs, setErrorMessage]
+    [t, setName, setValidated, setErrorMessage, dashboardConfigs]
   );
 
   const handleClose = React.useCallback(() => {
@@ -113,9 +114,9 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   const formGroup = React.useMemo(() => {
     return (
       <FormGroup
-        label="Name"
+        label={t('DashboardLayoutCreateModal.NAME.LABEL')}
         fieldId="name"
-        helperText="Enter a name for the dashboard layout."
+        helperText={t('DashboardLayoutCreateModal.NAME.HELPER_TEXT')}
         helperTextInvalid={errorMessage}
         isRequired
         validated={validated}
@@ -125,7 +126,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
           type="text"
           id="name"
           name="name"
-          aria-describedby="name-helper"
+          aria-describedby={'name-helper'}
           value={name}
           onChange={handleNameChange}
         />
@@ -137,10 +138,10 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     return (
       <ActionGroup>
         <Button variant="primary" onClick={handleSubmit} isAriaDisabled={validated !== 'success'}>
-          Submit
+          {t('CREATE', { ns: 'common' })}
         </Button>
         <Button variant="link" onClick={handleClose}>
-          Cancel
+          {t('CANCEL', { ns: 'common' })}
         </Button>
       </ActionGroup>
     );
@@ -152,7 +153,9 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       variant={ModalVariant.large}
       showClose={true}
       onClose={handleClose}
-      title={isCreateModal ? 'Create Dashboard Layout' : 'Rename Dashboard Layout'}
+      title={
+        isCreateModal ? t('DashboardLayoutCreateModal.CREATE_LAYOUT') : t('DashboardLayoutCreateModal.RENAME_LAYOUT')
+      }
     >
       <Form>
         {formGroup}

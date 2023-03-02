@@ -268,7 +268,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         {l.name}
       </MenuItem>
     ));
-  }, [dashboardConfigs.layouts]);
+  }, [t, dashboardConfigs.layouts]);
 
   const menuDropdown = React.useMemo(() => {
     return (
