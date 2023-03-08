@@ -43,7 +43,7 @@ import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -67,8 +67,8 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
-import { iif } from 'rxjs';
-import { filter, first, mergeMap, toArray } from 'rxjs/operators';
+import { BehaviorSubject, iif } from 'rxjs';
+import { first, map, mergeMap } from 'rxjs/operators';
 import { Rule } from './Rules';
 
 // FIXME check if this is correct/matches backend name validation
@@ -100,6 +100,15 @@ const Comp: React.FC = () => {
   const [preservedArchives, setPreservedArchives] = React.useState(0);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+
+  const targetSubject = React.useRef(new BehaviorSubject(NO_TARGET)).current;
+
+  const handleTargetChange = React.useCallback(
+    (target: Target) => {
+      targetSubject.next(target);
+    },
+    [targetSubject]
+  );
 
   const handleNameChange = React.useCallback(
     (name) => {
@@ -233,18 +242,19 @@ const Comp: React.FC = () => {
 
   const refreshTemplateList = React.useCallback(() => {
     addSubscription(
-      context.target
-        .target()
+      targetSubject
         .pipe(
           mergeMap((target) =>
             iif(
               () => target !== NO_TARGET,
               context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
-              context.api.doGet<EventTemplate[]>(`targets/localhost:0/templates`).pipe(
-                mergeMap((x) => x),
-                filter((template) => template.provider !== 'Cryostat' || template.name !== 'Cryostat'),
-                toArray()
-              )
+              context.api
+                .doGet<EventTemplate[]>(`targets/localhost:0/templates`)
+                .pipe(
+                  map((templates) =>
+                    templates.filter((template) => template.provider !== 'Cryostat' || template.name !== 'Cryostat')
+                  )
+                )
             )
           ),
           first()
@@ -254,12 +264,14 @@ const Comp: React.FC = () => {
           error: handleError,
         })
     );
-  }, [addSubscription, context.api, context.target, handleError, handleTemplateList]);
+  }, [addSubscription, context.api, targetSubject, handleError, handleTemplateList]);
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(refreshTemplateList));
-  }, [addSubscription, context.target, refreshTemplateList]);
+    addSubscription(targetSubject.subscribe(refreshTemplateList));
+  }, [addSubscription, targetSubject, refreshTemplateList]);
 
+  // Note: authFailure can be reused
+  // since no operation on global target selection is done here.
   React.useEffect(() => {
     addSubscription(
       context.target.authFailure().subscribe(() => {
@@ -368,6 +380,11 @@ const Comp: React.FC = () => {
                       type="text"
                       id="rule-matchexpr"
                       aria-describedby="rule-matchexpr-helper"
+                      placeholder={
+                        targetSubject.value === NO_TARGET
+                          ? undefined
+                          : `target.connectUrl == '${targetSubject.value.connectUrl}'`
+                      }
                       onChange={setMatchExpression}
                       validated={matchExpressionValid}
                     />
@@ -580,6 +597,7 @@ const Comp: React.FC = () => {
                 inlineHint
                 matchExpression={matchExpression}
                 onChange={setMatchExpressionValid}
+                onTargetChange={handleTargetChange}
               />
             </CardBody>
           </Card>

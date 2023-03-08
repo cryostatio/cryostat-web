@@ -38,8 +38,10 @@
 import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Middleware } from '@reduxjs/toolkit';
 import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlicer';
+import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlicer';
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
+import { enumValues as TopologyFilterActions } from '../Filters/TopologyFilterSlice';
 import { RootState } from '../ReduxStore';
 
 /* eslint-disable-next-line  @typescript-eslint/ban-types*/
@@ -56,6 +58,10 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('TARGET_RECORDING_FILTERS', rootState.recordingFilters);
     } else if (DashboardConfigActions.has(action.type)) {
       saveToLocalStorage('DASHBOARD_CFG', rootState.dashboardConfigs);
+    } else if (TopologyConfigActions.has(action.type)) {
+      saveToLocalStorage('TOPOLOGY_CONFIG', rootState.topologyConfigs);
+    } else if (TopologyFilterActions.has(action.type)) {
+      saveToLocalStorage('TOPOLOGY_FILTERS', rootState.topologyFilters);
     } else {
       console.warn(`Action ${action.type} does not persist state.`);
     }

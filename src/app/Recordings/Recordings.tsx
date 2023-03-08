@@ -40,14 +40,23 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, CardTitle, Tab, Tabs, TabTitleText } from '@patternfly/react-core';
 import * as React from 'react';
+import { StaticContext } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ActiveRecordingsTable } from './ActiveRecordingsTable';
 import { ArchivedRecordingsTable } from './ArchivedRecordingsTable';
 
-export interface RecordingsProps {}
+export type SupportedTab = 'active' | 'archived';
 
-export const Recordings: React.FunctionComponent<RecordingsProps> = (_) => {
+export interface RecordingsProps {
+  tab?: SupportedTab;
+}
+
+export const Recordings: React.FC<RouteComponentProps<Record<string, never>, StaticContext, RecordingsProps>> = ({
+  location,
+  ..._props
+}) => {
   const context = React.useContext(ServiceContext);
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = React.useState(location?.state?.tab || 'active');
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
   const addSubscription = useSubscriptions();
 
@@ -55,17 +64,20 @@ export const Recordings: React.FunctionComponent<RecordingsProps> = (_) => {
     addSubscription(context.api.isArchiveEnabled().subscribe(setArchiveEnabled));
   }, [context.api, addSubscription, setArchiveEnabled]);
 
-  const onTabSelect = React.useCallback((_, idx) => setActiveTab(Number(idx)), [setActiveTab]);
+  const onTabSelect = React.useCallback(
+    (_, key: string | number) => setActiveTab(`${key}` as SupportedTab),
+    [setActiveTab]
+  );
 
   const targetAsObs = React.useMemo(() => context.target.target(), [context.target]);
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
       <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
-        <Tab id="active-recordings" eventKey={0} title={<TabTitleText>Active Recordings</TabTitleText>}>
+        <Tab id="active-recordings" eventKey={'active'} title={<TabTitleText>Active Recordings</TabTitleText>}>
           <ActiveRecordingsTable archiveEnabled={true} />
         </Tab>
-        <Tab id="archived-recordings" eventKey={1} title={<TabTitleText>Archived Recordings</TabTitleText>}>
+        <Tab id="archived-recordings" eventKey={'archived'} title={<TabTitleText>Archived Recordings</TabTitleText>}>
           <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
         </Tab>
       </Tabs>
@@ -86,4 +98,4 @@ export const Recordings: React.FunctionComponent<RecordingsProps> = (_) => {
   );
 };
 
-export default Recordings;
+export default withRouter(Recordings);

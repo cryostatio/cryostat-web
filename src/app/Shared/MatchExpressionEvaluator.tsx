@@ -36,10 +36,8 @@
  * SOFTWARE.
  */
 import { SerializedTarget } from '@app/Shared/SerializedTarget';
-import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
-import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   ClipboardCopyButton,
   CodeBlock,
@@ -67,25 +65,21 @@ export interface MatchExpressionEvaluatorProps {
   inlineHint?: boolean;
   matchExpression?: string;
   onChange?: (validated: ValidatedOptions) => void;
+  onTargetChange?: (target: Target) => void;
 }
 
 export const MatchExpressionEvaluator: React.FC<MatchExpressionEvaluatorProps> = ({
   inlineHint,
   matchExpression,
   onChange,
+  onTargetChange,
 }) => {
-  const context = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const [target, setTarget] = React.useState(undefined as Target | undefined);
+  const [target, setTarget] = React.useState(NO_TARGET);
   const [valid, setValid] = React.useState(ValidatedOptions.default);
   const [copied, setCopied] = React.useState(false);
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(setTarget));
-  }, [addSubscription, context.target, setTarget]);
-
-  React.useEffect(() => {
-    if (!matchExpression || !target?.connectUrl) {
+    if (!matchExpression || !target.connectUrl) {
       setValid(ValidatedOptions.default);
       return;
     }
@@ -110,6 +104,10 @@ export const MatchExpressionEvaluator: React.FC<MatchExpressionEvaluatorProps> =
     }
   }, [onChange, valid]);
 
+  React.useEffect(() => {
+    onTargetChange && onTargetChange(target);
+  }, [onTargetChange, target]);
+
   const statusLabel = React.useMemo(() => {
     switch (valid) {
       case ValidatedOptions.success:
@@ -131,7 +129,7 @@ export const MatchExpressionEvaluator: React.FC<MatchExpressionEvaluatorProps> =
           </Label>
         );
       default:
-        if (!target?.connectUrl) {
+        if (!target.connectUrl) {
           return (
             <Label color="grey" icon={<InfoCircleIcon />}>
               No Target Selected
@@ -144,14 +142,14 @@ export const MatchExpressionEvaluator: React.FC<MatchExpressionEvaluatorProps> =
           </Label>
         );
     }
-  }, [valid, target?.connectUrl]);
+  }, [valid, target.connectUrl]);
 
   const exampleExpression = React.useMemo(() => {
     let body: string;
-    if (!target || !target?.alias || !target?.connectUrl) {
+    if (!target || !target.alias || !target.connectUrl) {
       body = 'true';
     } else {
-      body = `target.alias == '${target?.alias}' || target.annotations.cryostat['PORT'] == ${target?.annotations?.cryostat['PORT']}`;
+      body = `target.alias == '${target.alias}' || target.annotations.cryostat['PORT'] == ${target.annotations?.cryostat['PORT']}`;
     }
     body = JSON.stringify(body, null, 2);
     body = body.substring(1, body.length - 1);
@@ -188,7 +186,7 @@ export const MatchExpressionEvaluator: React.FC<MatchExpressionEvaluatorProps> =
     <>
       <Stack hasGutter>
         <StackItem>
-          <TargetSelect simple />
+          <TargetSelect simple onSelect={setTarget} />
         </StackItem>
         <StackItem>
           <Split hasGutter isWrappable>

@@ -37,9 +37,9 @@
  */
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
-import { CUSTOM_TARGETS_REALM, TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import '@testing-library/jest-dom';
-import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of } from 'rxjs';
@@ -47,10 +47,11 @@ import { renderWithServiceContext } from '../Common';
 
 const mockFooConnectUrl = 'service:jmx:rmi://someFooUrl';
 const mockBarConnectUrl = 'service:jmx:rmi://someBarUrl';
-const mockBazConnectUrl = 'service:jmx:rmi://someBazUrl';
+
+const CUSTOM_TARGET_REALM = 'Custom Targets';
 
 const cryostatAnnotation = {
-  REALM: CUSTOM_TARGETS_REALM,
+  REALM: CUSTOM_TARGET_REALM,
 };
 const mockFooTarget: Target = {
   jvmId: 'abcd',
@@ -62,7 +63,6 @@ const mockFooTarget: Target = {
   },
 };
 const mockBarTarget: Target = { ...mockFooTarget, jvmId: 'efgh', connectUrl: mockBarConnectUrl, alias: 'barTarget' };
-const mockBazTarget: Target = { connectUrl: mockBazConnectUrl, alias: 'bazTarget' };
 
 const history = createMemoryHistory();
 
@@ -80,11 +80,6 @@ jest
   .spyOn(defaultServices.target, 'target')
   .mockReturnValueOnce(of()) // contains the correct information
   .mockReturnValueOnce(of()) // renders empty state when expanded
-  .mockReturnValueOnce(of(mockFooTarget)) // renders serialized target when expanded
-  .mockReturnValueOnce(of(mockFooTarget)) // renders dropdown of multiple discovered targets
-  .mockReturnValueOnce(of(mockFooTarget)) // creates a target if user completes modal
-  .mockReturnValueOnce(of(mockFooTarget)) // deletes target when delete button clicked
-  .mockReturnValueOnce(of(mockBazTarget)) // does nothing when trying to delete non-custom targets
   .mockReturnValue(of(mockFooTarget)); // other tests
 
 jest
@@ -95,19 +90,7 @@ jest
   .mockReturnValueOnce(of([mockFooTarget, mockBarTarget])) // renders dropdown of multiple discovered targets
   .mockReturnValue(of([mockFooTarget, mockBarTarget])); // other tests
 
-jest.spyOn(defaultServices.api, 'createTarget').mockReturnValue(of(true));
-
-jest.spyOn(defaultServices.api, 'deleteTarget').mockReturnValue(of(true));
-
-jest
-  .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true) // renders empty state when expanded
-  .mockReturnValueOnce(true) // renders serialized target when expanded
-  .mockReturnValueOnce(true) // contains the correct information
-  .mockReturnValueOnce(true) // renders dropdown of multiple discovered targets
-  .mockReturnValueOnce(true) // creates a target if user completes modal
-  .mockReturnValueOnce(false) // deletes target when delete button clicked
-  .mockReturnValue(true); // other tests
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
 
 describe('<TargetSelect />', () => {
   afterEach(cleanup);
@@ -117,10 +100,6 @@ describe('<TargetSelect />', () => {
 
     expect(screen.getByText('Target JVM')).toBeInTheDocument();
     expect(screen.getByText(`Select target...`)).toBeInTheDocument();
-
-    expect(screen.getByLabelText('Create target')).toBeInTheDocument();
-    expect(screen.getByLabelText('Delete target')).toBeInTheDocument();
-    expect(screen.getByLabelText('Options menu')).toBeInTheDocument();
   });
 
   it('renders empty state when expanded', async () => {
@@ -143,6 +122,10 @@ describe('<TargetSelect />', () => {
   it('renders serialized target when expanded', async () => {
     const { container, user } = renderWithServiceContext(<TargetSelect />);
 
+    // Select a target first
+    await user.click(screen.getByText('Select target...'));
+    await user.click(screen.getByText('fooTarget (service:jmx:rmi://someFooUrl)'));
+
     const expandButton = screen.getByLabelText('Details');
     await user.click(expandButton);
 
@@ -158,103 +141,17 @@ describe('<TargetSelect />', () => {
   it('renders dropdown of multiple discovered targets', async () => {
     const { user } = renderWithServiceContext(<TargetSelect />);
 
-    expect(screen.getByText(`fooTarget`)).toBeInTheDocument();
-
     await user.click(screen.getByLabelText('Options menu'));
-    expect(screen.getByLabelText('Select Target')).toBeInTheDocument();
-    expect(screen.getByText(`Select target...`)).toBeInTheDocument();
-    expect(screen.getByText(`fooTarget (service:jmx:rmi://someFooUrl)`)).toBeInTheDocument();
-    expect(screen.getByText(`barTarget (service:jmx:rmi://someBarUrl)`)).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument(); // Number of discoverable targets
-  });
 
-  it('creates a target if user completes modal', async () => {
-    const createTargetRequestSpy = jest.spyOn(defaultServices.api, 'createTarget');
-    const { user } = renderWithServiceContext(<TargetSelect />);
-
-    const createButton = screen.getByLabelText('Create target');
-    await user.click(createButton);
-
-    const textBoxes = screen.getAllByRole('textbox');
-
-    await user.type(textBoxes[0], 'service:jmx:rmi://someBazUrl');
-    await user.type(textBoxes[1], 'bazTarget');
-
-    await user.click(screen.getByText('Create'));
-
-    expect(createTargetRequestSpy).toBeCalledTimes(1);
-    expect(createTargetRequestSpy).toBeCalledWith(mockBazTarget);
-  });
-
-  it('deletes target when delete button clicked', async () => {
-    const { user } = renderWithServiceContext(<TargetSelect />);
-
-    const deleteButton = screen.getByLabelText('Delete target');
-    await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-    await user.click(deleteButton);
-
-    const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
-    expect(deleteTargetRequestSpy).toBeCalledTimes(1);
-    expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
-  });
-
-  it('does nothing when trying to delete non-custom targets', async () => {
-    const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
-    const { user } = renderWithServiceContext(<TargetSelect />);
-
-    const deleteButton = screen.getByLabelText('Delete target');
-    await user.click(deleteButton);
-
-    expect(deleteTargetRequestSpy).toBeCalledTimes(0);
-    expect(deleteButton).toBeDisabled();
-  });
-
-  it('deletes target when warning modal is accepted', async () => {
-    const deleteTargetRequestSpy = jest.spyOn(defaultServices.api, 'deleteTarget');
-    const { user } = renderWithServiceContext(<TargetSelect />);
-
-    const deleteButton = screen.getByLabelText('Delete target');
-    expect(deleteButton).toBeInTheDocument();
-    expect(deleteButton).toBeVisible();
-
-    await waitFor(() => expect(deleteButton).not.toBeDisabled());
-
-    await user.click(deleteButton);
-
-    const warningDialog = await screen.findByRole('dialog');
-    expect(warningDialog).toBeInTheDocument();
-    expect(warningDialog).toBeVisible();
-
-    const acceptDeleteButton = within(warningDialog).getByText('Delete');
-    expect(acceptDeleteButton).toBeInTheDocument();
-    expect(acceptDeleteButton).toBeVisible();
-
-    await user.click(acceptDeleteButton);
-
-    expect(deleteTargetRequestSpy).toBeCalledTimes(1);
-    expect(deleteTargetRequestSpy).toBeCalledWith(mockFooTarget);
-  });
-
-  it('does not create a target if user leaves connectUrl empty', async () => {
-    const createTargetRequestSpy = jest.spyOn(defaultServices.api, 'createTarget');
-    const { user } = renderWithServiceContext(<TargetSelect />);
-
-    const createButton = screen.getByLabelText('Create target');
-    await user.click(createButton);
-
-    const confirmButton = screen.getByText('Create');
-    expect(confirmButton).toBeInTheDocument();
-    expect(confirmButton).toBeVisible();
-    expect(confirmButton).toBeDisabled();
-
-    const connectUrlInput = screen.getByLabelText('Connection URL') as HTMLInputElement;
-    expect(connectUrlInput).toBeInTheDocument();
-    expect(connectUrlInput).toBeVisible();
-
-    connectUrlInput.focus();
-
-    await user.keyboard('{Enter}');
-    expect(createTargetRequestSpy).toBeCalledTimes(0);
+    [
+      CUSTOM_TARGET_REALM,
+      'fooTarget (service:jmx:rmi://someFooUrl)',
+      'barTarget (service:jmx:rmi://someBarUrl)',
+      '2', // Number of discoverable targets
+    ].forEach((str) => {
+      const element = screen.getByText(str);
+      expect(element).toBeInTheDocument();
+      expect(element).toBeVisible();
+    });
   });
 });

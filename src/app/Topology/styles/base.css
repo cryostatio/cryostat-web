@@ -1,0 +1,353 @@
+/*
+Copyright The Cryostat Authors
+
+The Universal Permissive License (UPL), Version 1.0
+
+Subject to the condition set forth below, permission is hereby granted to any
+person obtaining a copy of this software, associated documentation and/or data
+(collectively the "Software"), free of charge and under any and all copyright
+rights in the Software, and any and all patent rights owned or freely
+licensable by each licensor hereunder covering either (i) the unmodified
+Software as contributed to or provided by such licensor, or (ii) the Larger
+Works (as defined below), to deal in both
+
+(a) the Software, and
+(b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
+one is included with the Software (each a "Larger Work" to which the Software
+is contributed by such licensors),
+
+without restriction, including without limitation the rights to copy, create
+derivative works of, display, perform, and distribute the Software and make,
+use, sell, offer for sale, import, export, have made, and have sold the
+Software and the Larger Work(s), and to sublicense the foregoing rights on
+either these or other terms.
+
+This license is subject to the following condition:
+The above copyright notice and either this complete permission notice or at
+a minimum a reference to the UPL must be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+/*
+Below CSS rules only apply to Topology components
+*/
+
+.topology__view-switcher {
+  font-size: 1.8em !important;
+}
+
+.sample-node-donut__node-wrapper {
+  position: relative;
+  width: 12em;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--pf-global--palette--black-300);
+  background-color: #fff;
+  margin: 1em;
+}
+
+.sample-node-donut__node-wrapper .sample-node-donut__node-icon {
+  position: absolute;
+  width: 90%;
+  aspect-ratio: 1;
+  top: 50%;
+  left: 50%;
+  margin: -45% 0 0 -45%; /* Ensure true center */
+  border-radius: 50%;
+  padding: 1em;
+  border: 0.8em solid var(--pf-global--palette--blue-400);
+}
+
+.sample-node-donut__node-wrapper.active:hover {
+  cursor: pointer;
+  box-shadow: 0 0.25rem 0.5rem 0rem rgba(3, 3, 3, 0.25), 0 0 0.25rem 0 rgba(3, 3, 3, 0.06);
+}
+
+
+.sample-node-donut__node-wrapper .sample-node-donut__node-icon.success {
+  border: 0.8em solid var(--pf-global--success-color--100);
+}
+
+.sample-node-donut__node-wrapper .sample-node-donut__node-icon.error {
+  border: 0.8em solid var(--pf-global--danger-color--100);
+}
+
+.sample-node-donut__node-wrapper .sample-node-donut__status-indicator {
+  position: absolute;
+  width: 25%;
+  aspect-ratio: 1;
+  height: fit-content;
+  border-radius: 50%;
+  top: 75%;
+  left: 10%;
+  border: 1px solid var(--pf-global--palette--black-300);
+  background-color: #fff; 
+}
+
+.sample-node-donut__node-wrapper .sample-node-donut__status-indicator svg {
+  position: absolute;
+  font-size: 1.8em;
+  top: 18.35%;
+  left: 18.35%;
+}
+
+.sample-node-donut__node-label {
+  width: fit-content;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 0.25rem 0.5rem 0rem rgba(3, 3, 3, 0.16), 0 0 0.25rem 0 rgba(3, 3, 3, 0.06);
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.sample-node-donut__node-label-badge {
+  position: relative;
+  background-color: var(--pf-global--palette--blue-500);
+  color: #fff;
+  padding: 2px 12px 2px 12px;
+  margin-right: 8px;
+  text-align: center;
+  border-radius: 500px;
+}
+
+.entity-overview__wrapper {
+  padding: 1.6em;
+  padding-right: 0.6em;
+}
+
+.entity-overview .pf-c-tabs__item-text {
+  font-size: 1.1em;
+}
+
+.entity-overview .pf-c-tabs__item.pf-m-current .pf-c-tabs__item-text {
+  color: var(--pf-global--palette--blue-400);
+}
+
+.entity-overview__displayed-labels-wrapper {
+  border: 1px solid var(--pf-global--palette--black-200);
+  padding: 4px;
+  width: fit-content;
+}
+
+.entity-overview__displayed-annotations {
+  margin-bottom: 0.5em;
+}
+
+.empty-text {
+  color: var(--pf-global--palette--black-400)
+}
+
+.entity-overview__entity-title-wrapper {
+  font-weight: 700;
+  font-size: 1.2em;
+  color:  var(--pf-global--palette--blue-500);
+}
+
+.entity-overview__entity-title-badge {
+  background-color: var(--pf-global--palette--blue-500);
+  color: #fff;
+  padding: 2px 12px 2px 12px;
+  margin-right: 8px;
+  text-align: center;
+  border-radius: 500px;
+}
+
+.entity-overview__entity-close-button {
+  margin-bottom: 0.6em;
+}
+
+.entity-overview__entity-close-button svg {
+  transform: translate(1em, 0);
+}
+
+.entity-overview__alert-banner {
+  margin-top: 1em;
+}
+
+.entity-overview__header {
+  margin: 0em 0em 1em 1em;
+}
+
+.topology-listview__realm-title {
+  font-size: 1.2em;
+  color:  var(--pf-global--palette--blue-500);
+  margin-right: 0.5em;
+}
+
+.topology__help-icon {
+  color: var(--pf-global--palette--blue-400);
+}
+
+.topology__help-icon-button {
+  margin-left: -1em;
+}
+
+.topology__shortcut-command {
+  border: 1px solid var(--pf-global--palette--black-300);
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: var(--pf-global--palette--black-600);
+}
+
+.topology__shortcut-command-icon {
+  margin-right: 0.5em;
+}
+
+.topology__shortcut-command-plus {
+  margin: 0 0.5em
+}
+
+.topology__node-badge text {
+  fill: #fff;
+  font-weight: 700;
+}
+
+.topology__hint-banner {
+  position: relative;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 0.2em 0 0.2em 0;
+  background-color: var(--pf-global--palette--blue-400) ;
+  color: #fff;
+  font-size: 0.9em;
+  margin-bottom: -1em;
+}
+
+.topology__hint-banner a {
+  color: #fff;
+  text-decoration: solid underline #fff 1px;
+}
+
+.topology__hint-banner .close-icon {
+  position: relative;
+  float: right;
+  font-size: 1em;
+  margin-right: 1em;
+  transform: translateY(calc(50% - 0.25em));
+  cursor: pointer;
+}
+
+.topology__main-container .topology__target-node {
+  cursor: pointer;
+}
+
+.topology__main-container .topology__target-node.search-inactive {
+  opacity: 0.4;
+}
+
+.topology__main-container .pf-topology__group {
+  cursor: pointer;
+}
+
+.topology__main-container .topology__realm-group path {
+  fill: #d2d2d2;
+  fill-opacity: 0.5;
+}
+
+.topology__display-option-menu {
+  width: max-content;
+}
+
+.topology__display-option-menu-item {
+  margin-top: var(--pf-c-select__menu-group-title--PaddingTop);
+  margin-right: var(--pf-c-select__menu-group-title--PaddingRight);
+  margin-bottom: var(--pf-c-select__menu-group-title--PaddingBottom);
+  margin-left: var(--pf-c-select__menu-group-title--PaddingLeft);
+}
+
+.topology__display-option_badge {
+  background-color: var(--pf-global--palette--blue-500);
+  color: #fff;
+  padding: 2px 12px 2px 12px;
+  margin-right: 8px;
+  text-align: center;
+  border-radius: 500px;
+  font-size: 0.9em;
+}
+
+.topology__visualization-container {
+  padding: 1em;
+}
+
+.topology__toolbar-container {
+  padding: 0.5em 0 0.5em 0 !important;
+}
+
+/*
+  Filter chips are appended as the last child
+*/
+.topology__toolbar-container .pf-c-toolbar__content:last-child{
+  margin-top: -1em;
+}
+
+.topology__quicksearch__tab-icon {
+  width: 2.5em;
+  height: 2.5em;
+  box-sizing: border-box;
+  border-radius: 8px;
+  padding: 4px;
+  background-color: #fff;
+}
+
+.topology__quicksearch__tab-text {
+  font-weight: 700;
+}
+
+.topology__quicksearch__tab {
+  margin: 0 !important;
+}
+
+.topology__quicksearch__tab.pf-m-current {
+  background-color: var(--pf-global--BackgroundColor--200);
+}
+
+.topology__quicksearch__tab-content-title {
+  margin-bottom: -1em;
+  font-weight: 700;
+  font-size: 1.5em;
+}
+
+.topology__quicksearch__tab-content-description-short {
+  color: #737373;
+  font-size: 1em;
+}
+
+.topology__quick-search__context-menu {
+  position: absolute;
+  display: none;
+  z-index: 9999;
+}
+
+.topology__quick-search-modal .quick-search-icon {
+  font-size: 0.8em !important;
+}
+
+.quick-search-icon {
+  font-size: 1.1em !important;
+}
+
+.topology__quick-search-button {
+  padding: 0;
+}
+
+.topology__list-view__entity-details {
+  background-color: #fff;
+  padding: 1em;
+}
+
+.topology__treeview-container {
+  padding: 1em;
+}
+
+/* tree node container should span entire width */
+.topology__treeview-container .pf-c-tree-view__node-content {
+  width: 100%;
+}

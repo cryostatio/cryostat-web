@@ -37,6 +37,7 @@
  */
 
 import { CreateRecordingProps } from '@app/CreateRecording/CreateRecording';
+import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
@@ -60,7 +61,6 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { interval } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from './../ChartContext';
 import { ControllerState, RECORDING_NAME } from './JFRMetricsChartController';

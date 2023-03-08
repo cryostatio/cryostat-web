@@ -37,18 +37,23 @@
  */
 
 import { AutomatedAnalysisConfigForm } from '@app/Dashboard/AutomatedAnalysis/AutomatedAnalysisConfigForm';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { Stack, StackItem } from '@patternfly/react-core';
 import * as React from 'react';
+import { of } from 'rxjs';
 import { UserSetting } from './Settings';
 
 const Component = () => {
+  const [target, setTarget] = React.useState(NO_TARGET);
+  const _targetAsObs = React.useMemo(() => of(target), [target]);
+
   return (
     <Stack hasGutter>
       <StackItem>
-        <TargetSelect simple />
+        <TargetSelect simple onSelect={setTarget} />
       </StackItem>
-      <AutomatedAnalysisConfigForm />
+      <AutomatedAnalysisConfigForm targetObs={_targetAsObs} />
     </Stack>
   );
 };

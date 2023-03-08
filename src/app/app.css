@@ -442,3 +442,67 @@ input[type=number].datetime-picker__number-input {
 .settings__content.active {
   display: block;
 }
+
+.expandable-form__accordion-toggle-block {
+  padding-left: 0 !important;
+}
+
+.expandable-form__accordion-toggle-block.pf-c-accordion__toggle.pf-m-expanded {
+  --pf-c-accordion__toggle--before--BackgroundColor: transparent;
+}
+
+.expandable-form__title {
+  font-weight: 600 !important;
+}
+
+.expandable-form__help-block {
+  font-size: var(--pf-global--FontSize--sm);
+  white-space: pre-line;
+  color: #737373;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.console-form-group .pf-c-form__group {
+  margin: 2vh 0 2vh 0;
+}
+
+.console-form-group .pf-c-form__group:first-child {
+  margin: 0 0 2vh 0;
+}
+
+.console-form-group .pf-c-form__group:last-child {
+  margin: 2vh 0 0 0;
+}
+
+.expandable-form__form-group.pf-c-form__group .pf-c-form__label-text {
+  color: #000000;
+}
+
+.target-context-selector__wrapper {
+  padding: 0.3em 0.3em 0.3em 1em;
+  max-width: fit-content;
+}
+
+.target-context-selector__search-input {
+  padding: 0.3em 1em 0.3em 1em;
+}
+
+.linear-dot-spinner{
+  width: 2em;
+  aspect-ratio: 4;
+  background: radial-gradient(circle closest-side, var(--pf-global--palette--blue-200) 90%,#0000) 0/calc(100%/3) 100% space;
+  clip-path: inset(0 100% 0 0);
+  animation: linear-dot-spinner-animate 1s steps(4) infinite;
+}
+
+@keyframes linear-dot-spinner-animate {to {clip-path: inset(0 -34% 0 0)}}
+
+.target-context-selector__linear-dot-spinner {
+  width: 2em;
+}
+
+/* TODO: Remove when css orders are fixed */
+.pf-c-skip-to-content {
+  position: absolute !important;
+}

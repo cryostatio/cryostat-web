@@ -59,6 +59,8 @@ const QuickStarts = lazy(() => import('@app/QuickStarts/QuickStarts'));
 const Rules = lazy(() => import('@app/Rules/Rules'));
 const Settings = lazy(() => import('@app/Settings/Settings'));
 const SecurityPanel = lazy(() => import('@app/SecurityPanel/SecurityPanel'));
+const Topology = lazy(() => import('@app/Topology/Topology'));
+const CreateTarget = lazy(() => import('@app/Topology/Actions/CreateTarget'));
 
 let routeFocusTimer: number;
 const OVERVIEW = 'Overview';
@@ -83,6 +85,15 @@ export interface IAppRoute {
 
 const routes: IAppRoute[] = [
   {
+    component: About,
+    exact: true,
+    label: 'About',
+    path: '/about',
+    title: 'About',
+    description: 'Get information, help, or support for Cryostat.',
+    navGroup: OVERVIEW,
+  },
+  {
     component: Dashboard,
     exact: true,
     label: 'Dashboard',
@@ -100,13 +111,20 @@ const routes: IAppRoute[] = [
     featureLevel: FeatureLevel.BETA,
   },
   {
-    component: About,
+    component: Topology,
     exact: true,
-    label: 'About',
-    path: '/about',
-    title: 'About',
-    description: 'Get information, help, or support for Cryostat.',
+    label: 'Topology',
+    path: '/topology',
+    title: 'Topology',
     navGroup: OVERVIEW,
+    children: [
+      {
+        component: CreateTarget,
+        exact: true,
+        path: '/topology/create-custom-target',
+        title: 'Create Custom Target',
+      },
+    ],
   },
   {
     component: Rules,

@@ -16,10 +16,12 @@
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "strictFunctionTypes": false,
     "strict": true,
     "resolveJsonModule": true,
     "paths": {
       "@app/*": ["src/app/*"],
+      "@test/*": ["src/test/*"],
       "@i18n/*": ["src/i18n/*"],
       "@assets/*": ["node_modules/@patternfly/react-core/dist/styles/assets/*"]
     }

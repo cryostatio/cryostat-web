@@ -38,6 +38,7 @@
 import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
 import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   FormGroup,
@@ -66,6 +67,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [loading, setLoading] = React.useState(false);
+  const [target, setTarget] = React.useState(NO_TARGET);
 
   const onSave = React.useCallback(
     (username: string, password: string) => {
@@ -94,7 +96,11 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
         when attempting to open JMX connections to the target."
     >
       <JmxAuthForm onSave={onSave} onDismiss={onDismiss} focus={false} loading={loading}>
-        <MatchExpressionEvaluator matchExpression={matchExpression} onChange={setMatchExpressionValid} />
+        <MatchExpressionEvaluator
+          matchExpression={matchExpression}
+          onChange={setMatchExpressionValid}
+          onTargetChange={setTarget}
+        />
         <FormGroup
           label="Match Expression"
           isRequired
@@ -115,6 +121,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
             type="text"
             id="rule-matchexpr"
             aria-describedby="rule-matchexpr-helper"
+            placeholder={target === NO_TARGET ? undefined : `target.connectUrl == '${target.connectUrl}'`}
             onChange={setMatchExpression}
             validated={matchExpressionValid}
             autoFocus
