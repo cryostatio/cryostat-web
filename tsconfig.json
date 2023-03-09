@@ -31,7 +31,7 @@
     "src/**/*.tsx",
     "src/**/*.jsx",
     "src/**/*.js",
-    "src/**/*.json"  
+    "src/**/*.json"
   ],
   "exclude": ["node_modules", "dist"]
 }

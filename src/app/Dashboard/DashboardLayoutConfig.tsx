@@ -301,7 +301,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   }, [newButton, menuDropdown, renameButton, uploadButton, downloadButton, deleteButton]);
 
   return (
-    <Toolbar style={{ zIndex: '9999' }}>
+    <Toolbar style={{ zIndex: '9000' }}>
       {toolbarContent}
       <DashboardLayoutUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />
       <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />
