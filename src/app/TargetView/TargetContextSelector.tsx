@@ -214,7 +214,7 @@ export const TargetContextSelector: React.FC<{ className?: string }> = ({ classN
   );
 
   const selectionPrefix = React.useMemo(
-    () => (selectedTarget !== NO_TARGET ? <>Target:</> : undefined),
+    () => (selectedTarget !== NO_TARGET ? <span style={{ fontWeight: 700 }}>Target:</span> : undefined),
     [selectedTarget]
   );
 
