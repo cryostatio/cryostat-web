@@ -198,7 +198,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
   const groupInputs = React.useMemo(() => {
     return allowedGroupFilters.map((cat) => {
       const isShown = isGroup && groupFilters.category === cat;
-      const ariaLabel = `Filter by ${cat}...`;
+      const ariaLabel = `Filter by ${getDisplayFieldName(cat)}...`;
 
       const optionGroup = groupNodeTypes
         .map((type) => ({
@@ -270,7 +270,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
   const targetInputs = React.useMemo(() => {
     return allowedTargetFilters.map((cat) => {
       const isShown = !isGroup && targetFilters.category === cat;
-      const ariaLabel = `Filter by ${cat}...`;
+      const ariaLabel = `Filter by ${getDisplayFieldName(cat)}...`;
 
       const optionGroup = targetNodeTypes
         .map((type) => ({

@@ -41,6 +41,7 @@ import {
   topologyDeleteCategoryFiltersIntent,
   topologyDeleteFilterIntent,
 } from '@app/Shared/Redux/ReduxStore';
+import { getDisplayFieldName } from '@app/utils/utils';
 import { Chip, ChipGroup } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -117,7 +118,7 @@ export const TopologyFilterChip: React.FC<TopologyFilterChipProps> = ({
   return (
     <ChipGroup
       {...props}
-      categoryName={`${nodeType}/${category}`}
+      categoryName={`${nodeType}/${getDisplayFieldName(category)}`}
       isClosable
       onClick={handleDeleteChipGroup}
       className={className}

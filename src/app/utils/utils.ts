@@ -151,7 +151,7 @@ export const splitWordsOnUppercase = (str: string, capitalizeFirst?: boolean): s
   return words;
 };
 
-const needUppercase = /(url|id)/i;
+const needUppercase = /(url|id|jvm)/i;
 
 export const getDisplayFieldName = (fieldName: string) => {
   return splitWordsOnUppercase(fieldName)
