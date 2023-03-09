@@ -366,7 +366,7 @@ export const TargetResourceItem: React.FC<{
         },
       })
     );
-  }, [setLoading, addSubscription, setResources, targetNode, resourceType, services.api, targetSubject]);
+  }, [setLoading, addSubscription, setResources, resourceType, services.api, targetSubject]);
 
   React.useEffect(() => {
     addSubscription(
