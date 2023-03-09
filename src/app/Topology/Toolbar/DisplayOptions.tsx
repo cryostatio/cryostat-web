@@ -88,6 +88,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
         id={`${option.toLowerCase()}-mode`}
         className={'topology__display-option-menu-item'}
         label={option}
+        isDisabled={key === 'collapseSingles' && groupings.realmOnly}
         isChecked={groupings[key]}
         onChange={getChangeHandler('groupings', key)}
       />,

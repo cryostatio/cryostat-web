@@ -72,7 +72,9 @@ export interface TopologySetViewModeActionPayload {
 }
 
 export interface TopologySetDisplayOptionsActionPayload {
-  displayOptions: DisplayOptions;
+  category: string;
+  key: string;
+  value: boolean;
 }
 
 export const topologyConfigSetViewModeIntent = createAction(
@@ -91,7 +93,7 @@ export const topologyDisplayOpionsSetIntent = createAction(
       category,
       key,
       value,
-    },
+    } as TopologySetDisplayOptionsActionPayload,
   })
 );
 
@@ -121,10 +123,10 @@ export const groupingOptions: [string, string][] = Object.keys(defaultDisplayOpt
   return [getDisplayFieldName(k), k];
 });
 
-const INITIAL_STATE = getPersistedState('TOPOLOGY_CONFIG', _version, {
+const INITIAL_STATE: TopologyConfig = getPersistedState('TOPOLOGY_CONFIG', _version, {
   viewMode: 'graph',
   displayOptions: defaultDisplayOptions,
-} as TopologyConfig);
+});
 
 export const topologyConfigReducer: ReducerWithInitialState<TopologyConfig> = createReducer(
   INITIAL_STATE,
@@ -140,6 +142,14 @@ export const topologyConfigReducer: ReducerWithInitialState<TopologyConfig> = cr
         state.displayOptions[category] = {
           [key]: value,
         };
+      }
+
+      // Special case for groupings
+      // If realmOnly is true, singleGroups should also be true
+      if (category === 'groupings' && key === 'realmOnly') {
+        if (value) {
+          state.displayOptions.groupings.collapseSingles = true;
+        }
       }
     });
   }
