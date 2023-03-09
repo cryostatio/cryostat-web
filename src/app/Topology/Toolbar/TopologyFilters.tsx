@@ -43,8 +43,6 @@ import {
 import {
   RootState,
   topologyAddFilterIntent,
-  topologyDeleteCategoryFiltersIntent,
-  topologyDeleteFilterIntent,
   topologyUpdateCategoryIntent,
   topologyUpdateCategoryTypeIntent,
 } from '@app/Shared/Redux/ReduxStore';
@@ -66,9 +64,8 @@ import {
 import { FilterIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { flattenTree } from '../Shared/utils';
-import { DiscoveryTreeContext } from '../Topology';
-import { EnvironmentNode, isTargetNode, NodeType, TargetNode } from '../typings';
+import { DiscoveryTreeContext, flattenTree, getUniqueNodeTypes } from '../Shared/utils';
+import { EnvironmentNode, isTargetNode, TargetNode } from '../typings';
 
 export interface TopologyFiltersProps {
   breakpoint?: 'md' | 'lg' | 'xl' | '2xl';
@@ -179,40 +176,20 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
 
   const flattenedTree = React.useMemo(() => flattenTree(discoveryTree), [discoveryTree]);
 
+  const groupNodeTypes = React.useMemo(
+    () => getUniqueNodeTypes(flattenedTree.filter((n) => !isTargetNode(n))),
+    [flattenedTree]
+  );
+
+  const targetNodeTypes = React.useMemo(
+    () => getUniqueNodeTypes(flattenedTree.filter((n) => isTargetNode(n))),
+    [flattenedTree]
+  );
+
   const generateOnSelect = React.useCallback(
-    (
-      isGroup: boolean,
-      nodeType: NodeType,
-      category: string // key
-    ) => {
-      return (_, value) => {
+    (isGroup: boolean) => {
+      return (_, { value, nodeType, category }) => {
         dispatch(topologyAddFilterIntent(isGroup, nodeType, category, value));
-      };
-    },
-    [dispatch]
-  );
-
-  const generateDeleteChip = React.useCallback(
-    (
-      isGroup: boolean,
-      nodeType: NodeType,
-      category: string // key
-    ) => {
-      return (_, chip) => {
-        dispatch(topologyDeleteFilterIntent(isGroup, nodeType, category, chip));
-      };
-    },
-    [dispatch]
-  );
-
-  const generateDeleteChipGroup = React.useCallback(
-    (
-      isGroup: boolean,
-      nodeType: NodeType,
-      category: string // key
-    ) => {
-      return () => {
-        dispatch(topologyDeleteCategoryFiltersIntent(isGroup, nodeType, category));
       };
     },
     [dispatch]
@@ -220,156 +197,153 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
 
   const groupInputs = React.useMemo(() => {
     return allowedGroupFilters.map((cat) => {
-      const category = `Group/${cat}`;
       const isShown = isGroup && groupFilters.category === cat;
       const ariaLabel = `Filter by ${cat}...`;
-      const options = Array.from(
-        new Set( // Removing duplicates
-          flattenedTree
-            .filter((node) => !isTargetNode(node))
-            .map((groupNode: EnvironmentNode) => fieldValueToStrings(groupNode[categoryToNodeField(cat)]))
-            .reduce((prev, curr) => prev.concat(curr))
-            .filter((val) => {
-              const criteria: string[] = groupFilters.filters[cat];
-              return !criteria || !criteria.includes(val);
-            })
-        )
-      ).map((value) => {
+
+      const optionGroup = groupNodeTypes
+        .map((type) => ({
+          groupLabel: type,
+          options: Array.from(
+            new Set(
+              flattenedTree
+                .filter((n) => n.nodeType === type)
+                .map((groupNode: EnvironmentNode) => fieldValueToStrings(groupNode[categoryToNodeField(cat)]))
+                .reduce((prev, curr) => prev.concat(curr))
+                .filter((val) => {
+                  const filters = groupFilters.filters[type] || {};
+                  if (filters) {
+                    const criteria = filters[cat] || [];
+                    return !criteria || !criteria.includes(val);
+                  }
+                  return true;
+                })
+            )
+          ),
+        }))
+        .filter((group) => group.options && group.options.length); // Do show show empty groups
+
+      const selectOptions = optionGroup.map(({ options, groupLabel }) => {
         return (
-          <SelectOption key={value} value={value}>
-            {isLabelOrAnnotation(cat) ? <Label color="grey">{value}</Label> : value}
-          </SelectOption>
+          <SelectGroup key={groupLabel} label={groupLabel}>
+            {options.map((opt) => (
+              <SelectOption
+                key={opt}
+                value={{
+                  toString: () => opt,
+                  compareTo: (other) => other.value === opt,
+                  ...{
+                    nodeType: groupLabel,
+                    value: opt,
+                    category: cat,
+                  },
+                }}
+              >
+                {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
+              </SelectOption>
+            ))}
+          </SelectGroup>
         );
       });
 
       return (
         <ToolbarFilter
-          key={`${category}-filter`}
-          categoryName={category}
+          key={`Group/${cat}`}
           showToolbarItem={isShown}
-          chips={groupFilters.filters[cat]}
-          deleteChip={generateDeleteChip(true, cat)}
-          deleteChipGroup={generateDeleteChipGroup(true, cat)}
+          categoryName={`Group/${cat}`} // Ignored. No chips specified here.
         >
-          <TopologySelect
+          <TopologyFilterSelect
             isDisabled={isDisabled}
             placeholderText={ariaLabel}
             aria-label={ariaLabel}
             typeAheadAriaLabel={ariaLabel}
             maxHeight="16em"
-            onSelect={generateOnSelect(isGroup, cat)}
+            isGrouped
+            onSelect={generateOnSelect(isGroup)}
           >
-            {options}
-          </TopologySelect>
+            {selectOptions}
+          </TopologyFilterSelect>
         </ToolbarFilter>
       );
     });
-  }, [isGroup, groupFilters, flattenedTree, isDisabled, generateOnSelect, generateDeleteChip, generateDeleteChipGroup]);
+  }, [isGroup, groupFilters, flattenedTree, groupNodeTypes, isDisabled, generateOnSelect]);
 
   const targetInputs = React.useMemo(() => {
     return allowedTargetFilters.map((cat) => {
-      const category = `Target/${cat}`;
       const isShown = !isGroup && targetFilters.category === cat;
       const ariaLabel = `Filter by ${cat}...`;
 
-      const targetNodes = flattenedTree.filter((node) => isTargetNode(node));
+      const optionGroup = targetNodeTypes
+        .map((type) => ({
+          groupLabel: type,
+          options: Array.from(
+            new Set(
+              flattenedTree
+                .filter((n) => n.nodeType === type)
+                .map(({ target }: TargetNode) => {
+                  const value = target[categoryToNodeField(cat)];
+                  if (isAnnotation(cat)) {
+                    return [...fieldValueToStrings(value['platform']), ...fieldValueToStrings(value['cryostat'])];
+                  }
+                  return fieldValueToStrings(value);
+                })
+                .reduce((prev, curr) => prev.concat(curr))
+                .filter((val) => {
+                  const filters = targetFilters.filters[type] || {};
+                  if (filters) {
+                    const criteria = filters[cat] || [];
+                    return !criteria || !criteria.includes(val);
+                  }
+                  return true;
+                })
+            )
+          ),
+        }))
+        .filter((group) => group.options && group.options.length); // Do show show empty groups;
 
-      let options: JSX.Element[];
-      if (isAnnotation(cat)) {
-        const anntationGroups = targetNodes
-          .map(({ target }: TargetNode) => {
-            const anntations = target[categoryToNodeField(cat)] || {};
-            return Object.entries(anntations).map(([k, v]) => ({
-              groupLabel: k,
-              values: fieldValueToStrings(v).filter((val) => {
-                const criteria: string[] = targetFilters.filters[cat];
-                return !criteria || !criteria.includes(val);
-              }),
-            }));
-          })
-          .reduce((prev, curr) => prev.concat(curr));
-
-        // This is a shortcut while assuming only these 2 types are supported
-        options = [
-          {
-            groupLabel: 'cryostat',
-            matched: anntationGroups.filter((grp) => grp.groupLabel === 'cryostat'),
-          },
-          {
-            groupLabel: 'platform',
-            matched: anntationGroups.filter((grp) => grp.groupLabel === 'platform'),
-          },
-        ].map(({ matched, groupLabel }) => {
-          const allOptions = Array.from(
-            new Set(matched.reduce((prev, curr) => prev.concat(curr.values), [] as string[]))
-          );
-
-          if (!allOptions.length) {
-            return <React.Fragment key={`empty-${groupLabel}`} />; // Do not show empty group
-          }
-
-          return (
-            <SelectGroup key={groupLabel} label={groupLabel}>
-              {allOptions.map((val) => (
-                <SelectOption key={val} value={val}>
-                  {isLabelOrAnnotation(cat) ? <Label color="grey">{val}</Label> : val}
-                </SelectOption>
-              ))}
-            </SelectGroup>
-          );
-        });
-      } else {
-        options = Array.from(
-          new Set( // Removing duplicates
-            targetNodes
-              .map(({ target }: TargetNode) => fieldValueToStrings(target[categoryToNodeField(cat)]))
-              .reduce((prev, curr) => prev.concat(curr))
-              .filter((val) => {
-                const criteria: string[] = targetFilters.filters[cat];
-                return !criteria || !criteria.includes(val);
-              })
-          )
-        ).map((value) => {
-          return (
-            <SelectOption key={value} value={value}>
-              {isLabelOrAnnotation(cat) ? <Label color="grey">{value}</Label> : value}
-            </SelectOption>
-          );
-        });
-      }
+      const selectOptions = optionGroup.map(({ options, groupLabel }) => {
+        return (
+          <SelectGroup key={groupLabel} label={groupLabel}>
+            {options.map((opt) => (
+              <SelectOption
+                key={opt}
+                value={{
+                  toString: () => opt,
+                  compareTo: (other) => other.value === opt,
+                  ...{
+                    nodeType: groupLabel,
+                    value: opt,
+                    category: cat,
+                  },
+                }}
+              >
+                {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
+              </SelectOption>
+            ))}
+          </SelectGroup>
+        );
+      });
 
       return (
         <ToolbarFilter
-          key={`${category}-filter`}
-          categoryName={category}
+          key={`Target/${cat}`}
+          categoryName={`Target/${cat}`} // Ignored.
           showToolbarItem={isShown}
-          chips={targetFilters.filters[cat]}
-          deleteChip={generateDeleteChip(false, cat)}
-          deleteChipGroup={generateDeleteChipGroup(false, cat)}
         >
-          <TopologySelect
+          <TopologyFilterSelect
             isDisabled={isDisabled}
             placeholderText={ariaLabel}
             aria-label={ariaLabel}
             typeAheadAriaLabel={ariaLabel}
             maxHeight="16em"
-            isGrouped={isAnnotation(cat)}
-            onSelect={generateOnSelect(false, cat)}
+            isGrouped
+            onSelect={generateOnSelect(false)}
           >
-            {options}
-          </TopologySelect>
+            {selectOptions}
+          </TopologyFilterSelect>
         </ToolbarFilter>
       );
     });
-  }, [
-    isGroup,
-    targetFilters,
-    flattenedTree,
-    isDisabled,
-    generateOnSelect,
-    generateDeleteChip,
-    generateDeleteChipGroup,
-  ]);
+  }, [isGroup, targetNodeTypes, targetFilters, flattenedTree, isDisabled, generateOnSelect]);
 
   return (
     <div {...props}>
@@ -379,7 +353,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
   );
 };
 
-export const TopologySelect: React.FC<Omit<SelectProps, 'onToggle' | 'selections' | 'variant'>> = ({
+export const TopologyFilterSelect: React.FC<Omit<SelectProps, 'onToggle' | 'selections' | 'variant'>> = ({
   children: options,
   onSelect,
   isDisabled,

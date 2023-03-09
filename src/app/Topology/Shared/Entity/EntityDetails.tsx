@@ -407,6 +407,7 @@ export const TargetResourceItem: React.FC<{
   }, [
     addSubscription,
     setLoading,
+    services.api,
     isOwned,
     targetSubject,
     resourceType,
@@ -450,7 +451,16 @@ export const TargetResourceItem: React.FC<{
           }
         })
     );
-  }, [addSubscription, isOwned, targetSubject, resourceType, services.notificationChannel, setResources, setError]);
+  }, [
+    addSubscription,
+    services.api,
+    isOwned,
+    targetSubject,
+    resourceType,
+    services.notificationChannel,
+    setResources,
+    setError,
+  ]);
 
   React.useEffect(() => {
     targetSubject.next(targetNode);

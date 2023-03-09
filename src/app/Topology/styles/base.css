@@ -278,14 +278,15 @@ Below CSS rules only apply to Topology components
 }
 
 .topology__toolbar-container {
-  padding: 0.5em 0 0.5em 0 !important;
+  padding: 0.4em 0 0.2em 0 !important;
 }
 
-/*
-  Filter chips are appended as the last child
-*/
-.topology__toolbar-container .pf-c-toolbar__content:last-child{
-  margin-top: -1em;
+.topology__toolbar-chip-content {
+  padding: 0 0.5em 0.4em 1em; /* Subtract 0.5em chip group right margin */
+}
+
+.topology__filter-chip-group {
+  margin-right: 0.5em;
 }
 
 .topology__quicksearch__tab-icon {

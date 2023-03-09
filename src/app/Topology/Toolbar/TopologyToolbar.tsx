@@ -47,6 +47,7 @@ import { DisplayOptions } from './DisplayOptions';
 import { FindByMatchExpression } from './FindByMatchExpression';
 import { HelpButton } from './HelpButton';
 import { QuickSearchButton } from './QuickSearchButton';
+import { TopologyFilterChips } from './TopologyFilterChips';
 import { TopologyFilters } from './TopologyFilters';
 
 export enum TopologyToolbarVariant {
@@ -165,7 +166,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
         className="topology__toolbar-container"
         clearAllFilters={handleClearAllFilters}
       >
-        <ToolbarContent className="topology__toolbar-main-content">
+        <ToolbarContent className="topology__toolbar-main-content" key={'main-content'}>
           <ToolbarItem>
             <QuickSearchButton onClick={handleQuickSearch} />
           </ToolbarItem>
@@ -187,6 +188,7 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
           <ToolbarItem alignment={isDisabled ? { default: 'alignRight' } : undefined}>{actionIcon}</ToolbarItem>
         </ToolbarContent>
       </Toolbar>
+      <TopologyFilterChips className="topology__toolbar-chip-content" />
       <QuickSearchModal isOpen={quicksearchOpen} onClose={() => setQuicksearchOpen(false)} />
     </>
   );

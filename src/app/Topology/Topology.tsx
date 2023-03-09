@@ -55,10 +55,12 @@ import { Link, withRouter } from 'react-router-dom';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { TopologyListView } from './ListView/TopologyListView';
 import { HintBanner } from './Shared/HintBanner';
-import { defaultSearchExpression as defaultSearchExprService, SearchExprServiceContext } from './Shared/utils';
+import {
+  defaultSearchExpression as defaultSearchExprService,
+  DiscoveryTreeContext,
+  SearchExprServiceContext,
+} from './Shared/utils';
 import { DEFAULT_EMPTY_UNIVERSE } from './typings';
-
-export const DiscoveryTreeContext = React.createContext(DEFAULT_EMPTY_UNIVERSE);
 
 export interface TopologyProps {}
 

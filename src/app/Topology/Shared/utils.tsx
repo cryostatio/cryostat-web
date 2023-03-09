@@ -43,7 +43,9 @@ import * as React from 'react';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, nodeActions } from '../Actions/NodeActions';
 import { WarningResolverAsCredModal } from '../Actions/WarningResolver';
-import { EnvironmentNode, TargetNode, isTargetNode, NodeType } from '../typings';
+import { EnvironmentNode, TargetNode, isTargetNode, NodeType, DEFAULT_EMPTY_UNIVERSE } from '../typings';
+
+export const DiscoveryTreeContext = React.createContext(DEFAULT_EMPTY_UNIVERSE);
 
 export const nodeTypeToAbbr = (type: NodeType): string => {
   // Keep uppercases (or uppercase whole word if none) and retain first 4 charaters.
@@ -74,6 +76,10 @@ export const flattenTree = (
   }
 
   return [node, ...allChildren];
+};
+
+export const getUniqueNodeTypes = (nodes: (EnvironmentNode | TargetNode)[]): NodeType[] => {
+  return Array.from(new Set(nodes.map((n) => n.nodeType)));
 };
 
 export interface TransformConfig {
@@ -158,44 +164,49 @@ export const isGroupNodeFiltered = (
   groupNode: EnvironmentNode,
   filters?: TopologyFilters['groupFilters']['filters']
 ) => {
-  if (!filters) {
+  if (!filters || !filters[groupNode.nodeType]) {
     return true;
   }
+  const filter = filters[groupNode.nodeType];
   let matched = true;
-  if (filters.Name && filters.Name.length) {
-    matched = matched && filters.Name.includes(groupNode.name);
+  if (filter.Name && filter.Name.length) {
+    matched = matched && filter.Name.includes(groupNode.name);
   }
-  if (filters.Label && filters.Label.length) {
+  if (filter.Label && filter.Label.length) {
     matched =
-      matched && Object.entries(groupNode.labels).filter(([k, v]) => filters.Label.includes(`${k}=${v}`)).length > 0;
+      matched && Object.entries(groupNode.labels).filter(([k, v]) => filter.Label.includes(`${k}=${v}`)).length > 0;
   }
   return matched;
 };
 
-export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyFilters['targetFilters']['filters']) => {
-  if (!filters) {
+export const isTargetNodeFiltered = (
+  { target, nodeType }: TargetNode,
+  filters?: TopologyFilters['targetFilters']['filters']
+) => {
+  if (!filters || !filters[nodeType]) {
     return true;
   }
+  const filter = filters[nodeType];
   let matched = true;
-  if (filters.Alias && filters.Alias.length) {
-    matched = matched && filters.Alias.includes(target.alias);
+  if (filter.Alias && filter.Alias.length) {
+    matched = matched && filter.Alias.includes(target.alias);
   }
-  if (filters.ConnectionUrl && filters.ConnectionUrl.length) {
-    matched = matched && filters.ConnectionUrl.includes(target.connectUrl);
+  if (filter.ConnectionUrl && filter.ConnectionUrl.length) {
+    matched = matched && filter.ConnectionUrl.includes(target.connectUrl);
   }
-  if (filters.JvmId && filters.JvmId.length) {
-    matched = matched && target.jvmId !== undefined && filters.JvmId.includes(target.jvmId);
+  if (filter.JvmId && filter.JvmId.length) {
+    matched = matched && target.jvmId !== undefined && filter.JvmId.includes(target.jvmId);
   }
-  if (filters.Label && filters.Label.length) {
+  if (filter.Label && filter.Label.length) {
     matched =
-      matched && Object.entries(target.labels || {}).filter(([k, v]) => filters.Label.includes(`${k}=${v}`)).length > 0;
+      matched && Object.entries(target.labels || {}).filter(([k, v]) => filter.Label.includes(`${k}=${v}`)).length > 0;
   }
-  if (filters.Annotation && filters.Annotation.length) {
+  if (filter.Annotation && filter.Annotation.length) {
     const annotations = target.annotations;
     matched =
       matched &&
       [...Object.entries(annotations?.cryostat || {}), ...Object.entries(annotations?.platform || {})].filter(
-        ([k, v]) => filters.Annotation.includes(`${k}=${v}`)
+        ([k, v]) => filter.Annotation.includes(`${k}=${v}`)
       ).length > 0;
   }
   return matched;

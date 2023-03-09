@@ -62,10 +62,9 @@ import { QuickSearchContextMenu } from '../Actions/QuickSearchPanel';
 import EntityDetails from '../Shared/Entity/EntityDetails';
 import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
 import { TopologyExceedLimitState } from '../Shared/TopologyExceedLimitState';
-import { TransformConfig } from '../Shared/utils';
+import { DiscoveryTreeContext, TransformConfig } from '../Shared/utils';
 import { TopologySideBar } from '../SideBar/TopologySideBar';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
-import { DiscoveryTreeContext } from '../Topology';
 import { TopologyControlBar } from './TopologyControlBar';
 import { componentFactory, getNodeById, layoutFactory, transformData } from './UtilsFactory';
 

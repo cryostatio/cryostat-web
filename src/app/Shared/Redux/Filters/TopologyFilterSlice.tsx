@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { EnvironmentNode, TargetNode } from '@app/Topology/typings';
+import { EnvironmentNode, NodeType, TargetNode } from '@app/Topology/typings';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { ReducerWithInitialState } from '@reduxjs/toolkit/dist/createReducer';
 import { getPersistedState } from '../utils';
@@ -75,9 +75,10 @@ export const topologyUpdateCategoryIntent = createAction(
 
 export const topologyAddFilterIntent = createAction(
   TopologyFilterAction.FILTER_ADD,
-  (isGroup: boolean, category: string, value: string) => ({
+  (isGroup: boolean, nodeType: NodeType, category: string, value: string) => ({
     payload: {
       isGroup,
+      nodeType,
       category,
       value,
     },
@@ -86,9 +87,10 @@ export const topologyAddFilterIntent = createAction(
 
 export const topologyDeleteFilterIntent = createAction(
   TopologyFilterAction.FILTER_DELETE,
-  (isGroup: boolean, category: string, value: string) => ({
+  (isGroup: boolean, nodeType: NodeType, category: string, value: string) => ({
     payload: {
       isGroup,
+      nodeType,
       category,
       value,
     },
@@ -101,9 +103,10 @@ export const topologyDeleteAllFiltersIntent = createAction(TopologyFilterAction.
 
 export const topologyDeleteCategoryFiltersIntent = createAction(
   TopologyFilterAction.CATEGORY_FILTERS_DELETE,
-  (isGroup: boolean, category: string) => ({
+  (isGroup: boolean, nodeType: NodeType, category: string) => ({
     payload: {
       isGroup,
+      nodeType,
       category,
     },
   })
@@ -114,18 +117,23 @@ export interface TopologyFilters {
   groupFilters: {
     category: string;
     filters: {
-      Name: string[];
-      Label: string[];
+      [nodeType: string]: {
+        Name: string[];
+        Label: string[];
+      };
     };
   };
   targetFilters: {
     category: string;
     filters: {
-      Alias: string[];
-      ConnectionUrl: string[];
-      JvmId: string[];
-      Label: string[];
-      Annotation: string[];
+      [nodeType: string]: {
+        Alias: string[];
+        ConnectionUrl: string[];
+        s;
+        JvmId: string[];
+        Label: string[];
+        Annotation: string[];
+      };
     };
   };
 }
@@ -167,11 +175,11 @@ export const defaultTopologyFilters: TopologyFilters = {
   isGroup: false,
   groupFilters: {
     category: 'Name',
-    filters: defaultEmptyGroupFilters,
+    filters: {},
   },
   targetFilters: {
     category: 'Alias',
-    filters: defaultEmptyTargetFilters,
+    filters: {},
   },
 };
 
@@ -197,43 +205,49 @@ export const topologyFilterReducer: ReducerWithInitialState<TopologyFilters> = c
       }
     });
     builder.addCase(topologyAddFilterIntent, (state, { payload }) => {
-      const { isGroup, category, value } = payload;
+      const { isGroup, category, value, nodeType } = payload;
       if (isGroup) {
-        state.groupFilters.filters = {
-          ...state.groupFilters.filters,
-          [category]: [...state.groupFilters.filters[category], value],
+        const old = state.groupFilters.filters[nodeType] || defaultEmptyGroupFilters;
+        state.groupFilters.filters[nodeType] = {
+          ...old,
+          [category]: [...old[category], value],
         };
       } else {
-        state.targetFilters.filters = {
-          ...state.targetFilters.filters,
-          [category]: [...state.targetFilters.filters[category], value],
+        const old = state.targetFilters.filters[nodeType] || defaultEmptyTargetFilters;
+        state.targetFilters.filters[nodeType] = {
+          ...old,
+          [category]: [...old[category], value],
         };
       }
     });
     builder.addCase(topologyDeleteFilterIntent, (state, { payload }) => {
-      const { isGroup, category, value } = payload;
+      const { isGroup, category, value, nodeType } = payload;
       if (isGroup) {
-        state.groupFilters.filters = {
-          ...state.groupFilters.filters,
-          [category]: state.groupFilters.filters[category].filter((val) => val !== value),
+        const old = state.groupFilters.filters[nodeType] || defaultEmptyGroupFilters;
+        state.groupFilters.filters[nodeType] = {
+          ...old,
+          [category]: old[category].filter((val: string) => val !== value),
         };
       } else {
-        state.targetFilters.filters = {
-          ...state.targetFilters.filters,
-          [category]: state.targetFilters.filters[category].filter((val) => val !== value),
+        const old = state.targetFilters.filters[nodeType] || defaultEmptyTargetFilters;
+        state.targetFilters.filters[nodeType] = {
+          ...old,
+          [category]: old[category].filter((val: string) => val !== value),
         };
       }
     });
     builder.addCase(topologyDeleteCategoryFiltersIntent, (state, { payload }) => {
-      const { isGroup, category } = payload;
+      const { isGroup, category, nodeType } = payload;
       if (isGroup) {
-        state.groupFilters.filters = {
-          ...state.groupFilters.filters,
+        const old = state.groupFilters.filters[nodeType] || defaultEmptyGroupFilters;
+        state.groupFilters.filters[nodeType] = {
+          ...old,
           [category]: [],
         };
       } else {
-        state.targetFilters.filters = {
-          ...state.targetFilters.filters,
+        const old = state.targetFilters.filters[nodeType] || defaultEmptyTargetFilters;
+        state.targetFilters.filters[nodeType] = {
+          ...old,
           [category]: [],
         };
       }
@@ -241,12 +255,12 @@ export const topologyFilterReducer: ReducerWithInitialState<TopologyFilters> = c
     builder.addCase(topologyDeleteAllFiltersIntent, (state, _) => {
       state.groupFilters = {
         category: state.groupFilters.category,
-        filters: defaultEmptyGroupFilters,
+        filters: {},
       };
 
       state.targetFilters = {
         category: state.targetFilters.category,
-        filters: defaultEmptyTargetFilters,
+        filters: {},
       };
     });
   }

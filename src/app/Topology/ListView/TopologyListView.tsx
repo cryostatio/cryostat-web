@@ -40,9 +40,8 @@ import { Divider, Stack, StackItem, TreeView, TreeViewDataItem } from '@patternf
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
-import { TransformConfig } from '../Shared/utils';
+import { DiscoveryTreeContext, TransformConfig } from '../Shared/utils';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
-import { DiscoveryTreeContext } from '../Topology';
 import { transformData } from './UtilsFactory';
 
 export interface TopologyListViewProps {
