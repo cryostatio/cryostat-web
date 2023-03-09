@@ -1114,10 +1114,17 @@ export class ApiService {
     body.append('matchExpression', matchExpression);
     body.append('targets', JSON.stringify([target]));
 
-    return this.sendRequest('beta', 'matchExpressions', {
-      method: 'POST',
-      body: body,
-    }).pipe(
+    return this.sendRequest(
+      'beta',
+      'matchExpressions',
+      {
+        method: 'POST',
+        body: body,
+      },
+      undefined,
+      true,
+      true
+    ).pipe(
       concatMap((resp: Response) => resp.json()),
       map((body) => {
         const matchedTargets: Target[] = body.data.result.targets || [];
