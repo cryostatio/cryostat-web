@@ -60,7 +60,7 @@ export interface QuickSearchItem {
   }[];
   descriptionShort?: string;
   descriptionFull?: string;
-  featureLevel?: FeatureLevel;
+  featureLevel: FeatureLevel;
   disabled?: boolean;
   actionText?: React.ReactNode;
   createAction?: (utils: ActionUtils, track: (sub: Subscription) => void) => void;

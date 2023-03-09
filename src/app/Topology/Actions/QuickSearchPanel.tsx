@@ -206,16 +206,17 @@ export const QuickSearchPanel: React.FC<QuickSearchPanelProps> = ({ ...props }) 
                 onSelect={handleTabChange}
                 role={'region'}
               >
-                {filteredItems.map((qs, index) => (
-                  <Tab
-                    className={css('topology__quicksearch__tab')}
-                    eventKey={qs.id}
-                    key={index}
-                    hidden={qs.featureLevel != undefined && qs.featureLevel < activeLevel}
-                    isDisabled={qs.disabled}
-                    title={<QuickSearchTabTitle item={qs} />}
-                  />
-                ))}
+                {filteredItems
+                  .filter((qs) => activeLevel <= qs.featureLevel)
+                  .map((qs, index) => (
+                    <Tab
+                      className={css('topology__quicksearch__tab')}
+                      eventKey={qs.id}
+                      key={index}
+                      isDisabled={qs.disabled}
+                      title={<QuickSearchTabTitle item={qs} />}
+                    />
+                  ))}
               </Tabs>
             </SidebarPanel>
             <SidebarContent>
