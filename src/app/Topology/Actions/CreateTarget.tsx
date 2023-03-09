@@ -286,7 +286,7 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
                   <Alert
                     variant="info"
                     title={
-                      'Note: If the target requires authentications, use JMX Credential Options to provide credentials.'
+                      'Note: If the target requires authentication, use JMX Credential Options to provide credentials.'
                     }
                     aria-live="polite"
                     isInline
