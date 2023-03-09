@@ -62,7 +62,7 @@ export enum NodeType {
 }
 
 export interface NodeLabels {
-  [key: string]: any;
+  readonly [key: string]: any;
 }
 
 interface _AbstractNode {

@@ -68,7 +68,7 @@ import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { flattenTree } from '../Shared/utils';
 import { DiscoveryTreeContext } from '../Topology';
-import { EnvironmentNode, isTargetNode, TargetNode } from '../typings';
+import { EnvironmentNode, isTargetNode, NodeType, TargetNode } from '../typings';
 
 export interface TopologyFiltersProps {
   breakpoint?: 'md' | 'lg' | 'xl' | '2xl';
@@ -182,10 +182,11 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
   const generateOnSelect = React.useCallback(
     (
       isGroup: boolean,
+      nodeType: NodeType,
       category: string // key
     ) => {
       return (_, value) => {
-        dispatch(topologyAddFilterIntent(isGroup, category, value));
+        dispatch(topologyAddFilterIntent(isGroup, nodeType, category, value));
       };
     },
     [dispatch]
@@ -194,10 +195,11 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
   const generateDeleteChip = React.useCallback(
     (
       isGroup: boolean,
+      nodeType: NodeType,
       category: string // key
     ) => {
       return (_, chip) => {
-        dispatch(topologyDeleteFilterIntent(isGroup, category, chip));
+        dispatch(topologyDeleteFilterIntent(isGroup, nodeType, category, chip));
       };
     },
     [dispatch]
@@ -206,10 +208,11 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
   const generateDeleteChipGroup = React.useCallback(
     (
       isGroup: boolean,
+      nodeType: NodeType,
       category: string // key
     ) => {
       return () => {
-        dispatch(topologyDeleteCategoryFiltersIntent(isGroup, category));
+        dispatch(topologyDeleteCategoryFiltersIntent(isGroup, nodeType, category));
       };
     },
     [dispatch]
@@ -298,7 +301,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
           },
         ].map(({ matched, groupLabel }) => {
           const allOptions = Array.from(
-            new Set(matched.map((grp) => grp.values).reduce((prev, curr) => prev.concat(curr)))
+            new Set(matched.reduce((prev, curr) => prev.concat(curr.values), [] as string[]))
           );
 
           if (!allOptions.length) {
@@ -334,6 +337,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
           );
         });
       }
+
       return (
         <ToolbarFilter
           key={`${category}-filter`}
