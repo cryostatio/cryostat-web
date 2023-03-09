@@ -129,7 +129,6 @@ export interface TopologyFilters {
       [nodeType: string]: {
         Alias: string[];
         ConnectionUrl: string[];
-        s;
         JvmId: string[];
         Label: string[];
         Annotation: string[];
