@@ -41,15 +41,21 @@ import * as React from 'react';
 import EntityDetails from '../Shared/Entity/EntityDetails';
 import {
   COLLAPSE_EXEMPTS,
+  getAllLeaves,
   getUniqueGroupId,
   getUniqueTargetId,
   isGroupNodeFiltered,
+  isTargetMatched,
   isTargetNodeFiltered,
   TransformConfig,
 } from '../Shared/utils';
 import { EnvironmentNode, isTargetNode, NodeType, TargetNode } from '../typings';
 
-const _transformDataGroupedByTopLevel = (universe: EnvironmentNode, filters?: TopologyFilters): TreeViewDataItem[] => {
+const _transformDataGroupedByTopLevel = (
+  universe: EnvironmentNode,
+  filters?: TopologyFilters,
+  searchExpression = ''
+): TreeViewDataItem[] => {
   return universe.children
     .filter((realm: EnvironmentNode) => isGroupNodeFiltered(realm, filters?.groupFilters.filters))
     .map((realm: EnvironmentNode) => {
@@ -66,8 +72,12 @@ const _transformDataGroupedByTopLevel = (universe: EnvironmentNode, filters?: To
               ))}
           </LabelGroup>
         ),
-        children: realm.children
-          .filter((child: TargetNode) => isTargetNodeFiltered(child, filters?.targetFilters.filters))
+        children: getAllLeaves(realm)
+          .filter(
+            (child: TargetNode) =>
+              isTargetNodeFiltered(child, filters?.targetFilters.filters) &&
+              (searchExpression === '' || isTargetMatched(child, searchExpression))
+          )
           .map((child: TargetNode) => ({
             id: `${child.name}-wrapper`,
             name: null,
@@ -110,12 +120,17 @@ const _transformDataGroupedByTopLevel = (universe: EnvironmentNode, filters?: To
 const _buildFullData = (
   node: EnvironmentNode | TargetNode,
   expandMode = true,
-  filters?: TopologyFilters
+  filters?: TopologyFilters,
+  searchExpression = ''
 ): TreeViewDataItem[] => {
   if (isTargetNode(node)) {
-    if (!isTargetNodeFiltered(node, filters?.targetFilters.filters)) {
+    if (
+      !isTargetNodeFiltered(node, filters?.targetFilters.filters) ||
+      (searchExpression !== '' && !isTargetMatched(node, searchExpression))
+    ) {
       return [];
     }
+
     return [
       {
         id: `${node.name}-wrapper`,
@@ -144,7 +159,10 @@ const _buildFullData = (
   }
 
   const INIT: TreeViewDataItem[] = [];
-  const children = node.children.reduce((prev, curr) => prev.concat(_buildFullData(curr, expandMode, filters)), INIT);
+  const children = node.children.reduce(
+    (prev, curr) => prev.concat(_buildFullData(curr, expandMode, filters, searchExpression)),
+    INIT
+  );
 
   // Do show empty or filtered-out groups
   if (
@@ -189,18 +207,20 @@ const _buildFullData = (
 const _transformDataFull = (
   root: EnvironmentNode,
   expandMode = true,
-  filters?: TopologyFilters
+  filters?: TopologyFilters,
+  searchExpression = ''
 ): TreeViewDataItem[] => {
-  const _transformedRoot = _buildFullData(root, expandMode, filters)[0];
+  const _transformedRoot = _buildFullData(root, expandMode, filters, searchExpression)[0];
   return _transformedRoot && _transformedRoot.children ? _transformedRoot.children : [];
 };
 
 export const transformData = (
   universe: EnvironmentNode,
   { showOnlyTopGroup = false, expandMode = true }: TransformConfig = {},
-  filters?: TopologyFilters
+  filters?: TopologyFilters,
+  searchExpression = ''
 ): TreeViewDataItem[] => {
   return showOnlyTopGroup
-    ? _transformDataGroupedByTopLevel(universe, filters)
-    : _transformDataFull(universe, expandMode, filters);
+    ? _transformDataGroupedByTopLevel(universe, filters, searchExpression)
+    : _transformDataFull(universe, expandMode, filters, searchExpression);
 };

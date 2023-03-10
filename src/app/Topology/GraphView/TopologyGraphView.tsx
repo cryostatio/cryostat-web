@@ -263,7 +263,7 @@ export const TopologyGraphView: React.FC<TopologyGraphViewProps> = ({ transformC
           <TopologyToolbar
             variant={TopologyToolbarVariant.Graph}
             visualization={visualization}
-            isDisabled={isEmptyGraph || (exceedLimit && !showGraphAnyway)}
+            isDisabled={exceedLimit && !showGraphAnyway}
           />
         </StackItem>
         <StackItem>

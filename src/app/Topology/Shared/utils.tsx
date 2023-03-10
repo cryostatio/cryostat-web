@@ -40,7 +40,7 @@ import { hashCode } from '@app/utils/utils';
 import { Button } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, Observable, Subscription } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, nodeActions } from '../Actions/NodeActions';
 import { WarningResolverAsCredModal } from '../Actions/WarningResolver';
 import { EnvironmentNode, TargetNode, isTargetNode, NodeType, DEFAULT_EMPTY_UNIVERSE } from '../typings';
@@ -224,15 +224,15 @@ export const defaultSearchExpression = new SearchExprService();
 
 export const SearchExprServiceContext = React.createContext(defaultSearchExpression);
 
-export const useSearchExpression = (): [string, (expr: string) => void] => {
+export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => void] => {
   const [expr, setExpr] = React.useState('');
   const exprSvc = React.useContext(SearchExprServiceContext);
   const _subRef = React.useRef<Subscription>();
 
   React.useEffect(() => {
-    _subRef.current = exprSvc.searchExpression().subscribe(setExpr);
+    _subRef.current = exprSvc.searchExpression().pipe(debounceTime(debounceMs)).subscribe(setExpr);
     return () => _subRef.current?.unsubscribe();
-  }, [_subRef, setExpr, exprSvc]);
+  }, [_subRef, setExpr, exprSvc, debounceMs]);
 
   const handleChange = React.useCallback(
     (value: string) => {

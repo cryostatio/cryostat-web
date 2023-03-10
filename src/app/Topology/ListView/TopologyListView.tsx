@@ -40,7 +40,7 @@ import { Divider, Stack, StackItem, TreeView, TreeViewDataItem } from '@patternf
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { TopologyEmptyState } from '../Shared/TopologyEmptyState';
-import { DiscoveryTreeContext, TransformConfig } from '../Shared/utils';
+import { DiscoveryTreeContext, TransformConfig, useSearchExpression } from '../Shared/utils';
 import { TopologyToolbar, TopologyToolbarVariant } from '../Toolbar/TopologyToolbar';
 import { transformData } from './UtilsFactory';
 
@@ -53,20 +53,19 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
 
   const filters = useSelector((state: RootState) => state.topologyFilters);
 
+  const [expression] = useSearchExpression(100);
+
   const _treeViewData: TreeViewDataItem[] = React.useMemo(
-    () => transformData(discoveryTree, transformConfig, filters),
-    [discoveryTree, transformConfig, filters]
+    () => transformData(discoveryTree, transformConfig, filters, expression),
+    [discoveryTree, transformConfig, filters, expression]
   );
 
-  const isEmptyList = React.useMemo(
-    () => !_treeViewData.length || !_treeViewData.some((grp) => grp.children?.length),
-    [_treeViewData]
-  );
+  const isEmptyList = React.useMemo(() => !_treeViewData.length, [_treeViewData]);
 
   return (
     <Stack {...props}>
       <StackItem>
-        <TopologyToolbar variant={TopologyToolbarVariant.List} isDisabled={isEmptyList} />
+        <TopologyToolbar variant={TopologyToolbarVariant.List} />
       </StackItem>
       <StackItem>
         <Divider />
@@ -75,7 +74,13 @@ export const TopologyListView: React.FC<TopologyListViewProps> = ({ transformCon
         {isEmptyList ? (
           <TopologyEmptyState />
         ) : (
-          <TreeView className="topology__treeview-container" data={_treeViewData} variant="compact" hasGuides={true} />
+          <TreeView
+            className="topology__treeview-container"
+            data={_treeViewData}
+            variant="compact"
+            hasGuides
+            allExpanded={expression !== ''}
+          />
         )}
       </StackItem>
     </Stack>
