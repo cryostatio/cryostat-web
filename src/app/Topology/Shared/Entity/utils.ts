@@ -272,7 +272,6 @@ export const getResourceListPatchFn = (
         return apiService.isTargetMatched(rule.matchExpression, target).pipe(
           map((ok) => {
             if (ok) {
-              // return apiService.isTargetMatched(credential.matchExpression, )
               let newArr = arr.filter((r) => r.name !== rule.name);
               if (!removed) {
                 newArr = newArr.concat([rule]);

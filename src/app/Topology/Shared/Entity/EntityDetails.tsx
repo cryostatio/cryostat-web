@@ -369,90 +369,53 @@ export const TargetResourceItem: React.FC<{
   }, [setLoading, addSubscription, setResources, resourceType, services.api, targetSubject]);
 
   React.useEffect(() => {
-    addSubscription(
-      targetSubject
-        .pipe(
-          switchMap((tn) =>
-            combineLatest([
-              of(tn),
-              merge(...getResourceAddedEvents(resourceType).map((cat) => services.notificationChannel.messages(cat))),
-            ])
+    const patchEventConfig = [
+      {
+        categories: getResourceAddedEvents(resourceType),
+      },
+      {
+        categories: getResourceRemovedEvents(resourceType),
+        deleted: true,
+      },
+    ];
+
+    patchEventConfig.forEach(({ categories, deleted }) => {
+      addSubscription(
+        targetSubject
+          .pipe(
+            switchMap((tn) =>
+              combineLatest([of(tn), merge(...categories.map((cat) => services.notificationChannel.messages(cat)))])
+            )
           )
-        )
-        .subscribe(([targetNode, event]) => {
-          const extractedUrl = extraTargetConnectUrlFromEvent(event);
-          if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
-            setLoading(true);
-            setResources((old) => {
-              // Avoid accessing state directly, which
-              // causes the effect to run every time
-              addSubscription(
-                getResourceListPatchFn(resourceType, targetNode, services.api)(old, event, false).subscribe({
-                  next: (rs) => {
-                    setLoading(false);
-                    setError(undefined);
-                    setResources(rs);
-                  },
-                  error: (error) => {
-                    setLoading(false);
-                    setError(error);
-                  },
-                })
-              );
-              return old;
-            });
-          }
-        })
-    );
+          .subscribe(([targetNode, event]) => {
+            const extractedUrl = extraTargetConnectUrlFromEvent(event);
+            if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
+              setLoading(true);
+              setResources((old) => {
+                // Avoid accessing state directly, which
+                // causes the effect to run every time
+                addSubscription(
+                  getResourceListPatchFn(resourceType, targetNode, services.api)(old, event, deleted).subscribe({
+                    next: (rs) => {
+                      setLoading(false);
+                      setError(undefined);
+                      setResources(rs);
+                    },
+                    error: (error) => {
+                      setLoading(false);
+                      setError(error);
+                    },
+                  })
+                );
+                return old;
+              });
+            }
+          })
+      );
+    });
   }, [
     addSubscription,
     setLoading,
-    services.api,
-    isOwned,
-    targetSubject,
-    resourceType,
-    services.notificationChannel,
-    setResources,
-    setError,
-  ]);
-
-  React.useEffect(() => {
-    addSubscription(
-      targetSubject
-        .pipe(
-          switchMap((tn) =>
-            combineLatest([
-              of(tn),
-              merge(...getResourceRemovedEvents(resourceType).map((cat) => services.notificationChannel.messages(cat))),
-            ])
-          )
-        )
-        .subscribe(([targetNode, event]) => {
-          const extractedUrl = extraTargetConnectUrlFromEvent(event);
-          if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
-            setResources((old) => {
-              // Avoid accessing state directly, which
-              // causes the effect to run every time
-              addSubscription(
-                getResourceListPatchFn(resourceType, targetNode, services.api)(old, event, true).subscribe({
-                  next: (rs) => {
-                    setLoading(false);
-                    setError(undefined);
-                    setResources(rs);
-                  },
-                  error: (error) => {
-                    setLoading(false);
-                    setError(error);
-                  },
-                })
-              );
-              return old;
-            });
-          }
-        })
-    );
-  }, [
-    addSubscription,
     services.api,
     isOwned,
     targetSubject,
