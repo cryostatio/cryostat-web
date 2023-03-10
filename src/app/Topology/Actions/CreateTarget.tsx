@@ -482,7 +482,7 @@ export const SampleNodeDonut: React.FC<SampleNodeDonutProps> = ({
             content={
               _actionEnabled
                 ? `Click to test${validation.option !== ValidatedOptions.default ? ' again' : ''}.`
-                : 'Please provide a valid connection URL.'
+                : 'Please provide a valid Connection URL.'
             }
           >
             <div

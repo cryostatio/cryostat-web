@@ -141,7 +141,7 @@ export const nodeActions: NodeAction[] = [
   {
     action: (element, { services }, track) => {
       const targetNode: TargetNode = element.getData();
-      track(services.api.deleteTarget(targetNode.target).subscribe(() => console.log('DONE')));
+      track(services.api.deleteTarget(targetNode.target).subscribe(() => undefined));
     },
     title: 'Delete Target',
     includeList: [NodeType.CUSTOM_TARGET],
