@@ -427,8 +427,7 @@ export const TargetResourceItem: React.FC<{
 
   React.useEffect(() => {
     targetSubject.next(targetNode);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetNode]);
+  }, [targetNode, targetSubject]);
 
   const switchTarget = React.useCallback(
     () => services.target.setTarget(targetNode.target),
