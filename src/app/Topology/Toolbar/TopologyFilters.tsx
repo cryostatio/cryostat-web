@@ -292,7 +292,10 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
             key={opt}
             value={{
               toString: () => opt,
-              compareTo: (other) => other.value === opt,
+              compareTo: (other) => {
+                const regex = new RegExp(typeof other === 'string' ? other : other.value, 'i');
+                return regex.test(opt);
+              },
               ...{
                 nodeType: 'Target', // Ignored by reducer
                 value: opt,
@@ -317,7 +320,6 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
             aria-label={ariaLabel}
             typeAheadAriaLabel={ariaLabel}
             maxHeight="16em"
-            isGrouped
             onSelect={generateOnSelect(false)}
           >
             {selectOptions}
