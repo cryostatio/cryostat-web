@@ -179,34 +179,30 @@ export const isGroupNodeFiltered = (
   return matched;
 };
 
-export const isTargetNodeFiltered = (
-  { target, nodeType }: TargetNode,
-  filters?: TopologyFilters['targetFilters']['filters']
-) => {
-  if (!filters || !filters[nodeType]) {
+export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyFilters['targetFilters']['filters']) => {
+  if (!filters) {
     return true;
   }
-  const filter = filters[nodeType];
   let matched = true;
-  if (filter.Alias && filter.Alias.length) {
-    matched = matched && filter.Alias.includes(target.alias);
+  if (filters.Alias && filters.Alias.length) {
+    matched = matched && filters.Alias.includes(target.alias);
   }
-  if (filter.ConnectionUrl && filter.ConnectionUrl.length) {
-    matched = matched && filter.ConnectionUrl.includes(target.connectUrl);
+  if (filters.ConnectionUrl && filters.ConnectionUrl.length) {
+    matched = matched && filters.ConnectionUrl.includes(target.connectUrl);
   }
-  if (filter.JvmId && filter.JvmId.length) {
-    matched = matched && target.jvmId !== undefined && filter.JvmId.includes(target.jvmId);
+  if (filters.JvmId && filters.JvmId.length) {
+    matched = matched && target.jvmId !== undefined && filters.JvmId.includes(target.jvmId);
   }
-  if (filter.Label && filter.Label.length) {
+  if (filters.Label && filters.Label.length) {
     matched =
-      matched && Object.entries(target.labels || {}).filter(([k, v]) => filter.Label.includes(`${k}=${v}`)).length > 0;
+      matched && Object.entries(target.labels || {}).filter(([k, v]) => filters.Label.includes(`${k}=${v}`)).length > 0;
   }
-  if (filter.Annotation && filter.Annotation.length) {
+  if (filters.Annotation && filters.Annotation.length) {
     const annotations = target.annotations;
     matched =
       matched &&
       [...Object.entries(annotations?.cryostat || {}), ...Object.entries(annotations?.platform || {})].filter(
-        ([k, v]) => filter.Annotation.includes(`${k}=${v}`)
+        ([k, v]) => filters.Annotation.includes(`${k}=${v}`)
       ).length > 0;
   }
   return matched;

@@ -181,11 +181,6 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
     [flattenedTree]
   );
 
-  const targetNodeTypes = React.useMemo(
-    () => getUniqueNodeTypes(flattenedTree.filter((n) => isTargetNode(n))),
-    [flattenedTree]
-  );
-
   const generateOnSelect = React.useCallback(
     (isGroup: boolean) => {
       return (_, { value, nodeType, category }) => {
@@ -272,54 +267,40 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
       const isShown = !isGroup && targetFilters.category === cat;
       const ariaLabel = `Filter by ${getDisplayFieldName(cat)}...`;
 
-      const optionGroup = targetNodeTypes
-        .map((type) => ({
-          groupLabel: type,
-          options: Array.from(
-            new Set(
-              flattenedTree
-                .filter((n) => n.nodeType === type)
-                .map(({ target }: TargetNode) => {
-                  const value = target[categoryToNodeField(cat)];
-                  if (isAnnotation(cat)) {
-                    return [...fieldValueToStrings(value['platform']), ...fieldValueToStrings(value['cryostat'])];
-                  }
-                  return fieldValueToStrings(value);
-                })
-                .reduce((prev, curr) => prev.concat(curr))
-                .filter((val) => {
-                  const filters = targetFilters.filters[type] || {};
-                  if (filters) {
-                    const criteria = filters[cat] || [];
-                    return !criteria || !criteria.includes(val);
-                  }
-                  return true;
-                })
-            )
-          ),
-        }))
-        .filter((group) => group.options && group.options.length); // Do show show empty groups;
+      const options = Array.from(
+        new Set(
+          flattenedTree
+            .map(({ target }: TargetNode) => {
+              const value = target[categoryToNodeField(cat)];
+              if (isAnnotation(cat)) {
+                return [...fieldValueToStrings(value['platform']), ...fieldValueToStrings(value['cryostat'])];
+              }
+              return fieldValueToStrings(value);
+            })
+            .reduce((prev, curr) => prev.concat(curr))
+            .filter((val) => {
+              const criteria: string[] = targetFilters.filters[cat];
+              return !criteria || !criteria.includes(val);
+            })
+        )
+      );
 
-      const selectOptions = optionGroup.map(({ options, groupLabel }) => {
+      const selectOptions = options.map((opt) => {
         return (
-          <SelectGroup key={groupLabel} label={groupLabel}>
-            {options.map((opt) => (
-              <SelectOption
-                key={opt}
-                value={{
-                  toString: () => opt,
-                  compareTo: (other) => other.value === opt,
-                  ...{
-                    nodeType: groupLabel,
-                    value: opt,
-                    category: cat,
-                  },
-                }}
-              >
-                {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
-              </SelectOption>
-            ))}
-          </SelectGroup>
+          <SelectOption
+            key={opt}
+            value={{
+              toString: () => opt,
+              compareTo: (other) => other.value === opt,
+              ...{
+                nodeType: '', // Ignored by reducer
+                value: opt,
+                category: cat,
+              },
+            }}
+          >
+            {isLabelOrAnnotation(cat) ? <Label color="grey">{opt}</Label> : opt}
+          </SelectOption>
         );
       });
 
@@ -343,7 +324,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
         </ToolbarFilter>
       );
     });
-  }, [isGroup, targetNodeTypes, targetFilters, flattenedTree, isDisabled, generateOnSelect]);
+  }, [isGroup, targetFilters, flattenedTree, isDisabled, generateOnSelect]);
 
   return (
     <div {...props}>

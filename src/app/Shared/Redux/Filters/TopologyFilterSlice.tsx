@@ -126,13 +126,11 @@ export interface TopologyFilters {
   targetFilters: {
     category: string;
     filters: {
-      [nodeType: string]: {
-        Alias: string[];
-        ConnectionUrl: string[];
-        JvmId: string[];
-        Label: string[];
-        Annotation: string[];
-      };
+      Alias: string[];
+      ConnectionUrl: string[];
+      JvmId: string[];
+      Label: string[];
+      Annotation: string[];
     };
   };
 }
@@ -178,7 +176,7 @@ export const defaultTopologyFilters: TopologyFilters = {
   },
   targetFilters: {
     category: 'Alias',
-    filters: {},
+    filters: defaultEmptyTargetFilters,
   },
 };
 
@@ -212,11 +210,8 @@ export const topologyFilterReducer: ReducerWithInitialState<TopologyFilters> = c
           [category]: [...old[category], value],
         };
       } else {
-        const old = state.targetFilters.filters[nodeType] || defaultEmptyTargetFilters;
-        state.targetFilters.filters[nodeType] = {
-          ...old,
-          [category]: [...old[category], value],
-        };
+        const old: string[] = state.targetFilters.filters[category];
+        state.targetFilters.filters[category] = [...old.filter((val: string) => val !== value), value];
       }
     });
     builder.addCase(topologyDeleteFilterIntent, (state, { payload }) => {
@@ -228,11 +223,8 @@ export const topologyFilterReducer: ReducerWithInitialState<TopologyFilters> = c
           [category]: old[category].filter((val: string) => val !== value),
         };
       } else {
-        const old = state.targetFilters.filters[nodeType] || defaultEmptyTargetFilters;
-        state.targetFilters.filters[nodeType] = {
-          ...old,
-          [category]: old[category].filter((val: string) => val !== value),
-        };
+        const old: string[] = state.targetFilters.filters[category];
+        state.targetFilters.filters[category] = old.filter((val: string) => val !== value);
       }
     });
     builder.addCase(topologyDeleteCategoryFiltersIntent, (state, { payload }) => {
@@ -244,11 +236,7 @@ export const topologyFilterReducer: ReducerWithInitialState<TopologyFilters> = c
           [category]: [],
         };
       } else {
-        const old = state.targetFilters.filters[nodeType] || defaultEmptyTargetFilters;
-        state.targetFilters.filters[nodeType] = {
-          ...old,
-          [category]: [],
-        };
+        state.targetFilters.filters[category] = [];
       }
     });
     builder.addCase(topologyDeleteAllFiltersIntent, (state, _) => {
@@ -259,7 +247,7 @@ export const topologyFilterReducer: ReducerWithInitialState<TopologyFilters> = c
 
       state.targetFilters = {
         category: state.targetFilters.category,
-        filters: {},
+        filters: defaultEmptyTargetFilters,
       };
     });
   }

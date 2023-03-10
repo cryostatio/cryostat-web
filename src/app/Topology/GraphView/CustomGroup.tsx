@@ -86,7 +86,7 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
   const { badge: showBadge } = displayOptions.show;
 
   const collapsedContent = React.useMemo(
-    () => <g id={'realm-visual-collapsed-icon'}>{renderIcon(collapsedWidth, collapsedHeight)}</g>,
+    () => <g id={'topology-visual-collapsed-icon'}>{renderIcon(collapsedWidth, collapsedHeight)}</g>,
     [collapsedWidth, collapsedHeight]
   );
 
@@ -95,7 +95,7 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
   });
 
   return (
-    <g id={'realm-visual-group'}>
+    <g id={'topology-visual-group'}>
       {React.createElement(
         DefaultGroup,
         {
