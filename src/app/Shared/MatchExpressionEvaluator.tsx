@@ -59,6 +59,7 @@ import {
   InfoCircleIcon,
   WarningTriangleIcon,
 } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 
 export interface MatchExpressionEvaluatorProps {
@@ -85,7 +86,7 @@ export const MatchExpressionEvaluator: React.FC<MatchExpressionEvaluatorProps> =
     }
     try {
       const f = new Function('target', `return ${matchExpression}`);
-      const res = f(target);
+      const res = f(_.cloneDeep(target));
       if (typeof res === 'boolean') {
         setValid(res ? ValidatedOptions.success : ValidatedOptions.warning);
         return;

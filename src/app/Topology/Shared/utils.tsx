@@ -39,6 +39,7 @@ import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { hashCode } from '@app/utils/utils';
 import { Button } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
+import _ from 'lodash';
 import * as React from 'react';
 import { BehaviorSubject, debounceTime, Observable, Subscription } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, nodeActions } from '../Actions/NodeActions';
@@ -246,7 +247,7 @@ export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => 
 export const isTargetMatched = ({ target }: TargetNode, matchExpression: string): boolean => {
   try {
     const f = new Function('target', `return ${matchExpression}`);
-    const res = f(target);
+    const res = f(_.cloneDeep(target));
 
     if (typeof res === 'boolean') {
       return res;
