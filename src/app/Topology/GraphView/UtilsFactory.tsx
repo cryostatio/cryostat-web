@@ -169,7 +169,7 @@ const _transformDataGroupedByTopLevel = (root: EnvironmentNode, filters?: Topolo
 
   // First layer of internal nodes
   const groupNodes = root.children
-    .filter((realm: EnvironmentNode) => isGroupNodeFiltered(realm, filters?.groupFilters.filters)) // Do not empty groups
+    .filter((realm: EnvironmentNode) => isGroupNodeFiltered(realm, filters?.groupFilters.filters)) // Do not show filtered-out groups
     .map((group) => {
       const realmNode: NodeModel = {
         id: getUniqueGroupId(group as EnvironmentNode),
@@ -213,7 +213,7 @@ const _transformDataGroupedByTopLevel = (root: EnvironmentNode, filters?: Topolo
     leafNodes = leafNodes.concat(_tNodes);
   });
 
-  nodes = nodes.concat(groupNodes.filter((gn) => gn.children && gn.children.length));
+  nodes = nodes.concat(groupNodes.filter((gn) => gn.children && gn.children.length)); // Do not empty groups
   nodes = nodes.concat(leafNodes);
 
   return {
