@@ -121,8 +121,7 @@ const CustomNode: React.FC<CustomNodeProps> = ({
 
   return (
     <Layer id={contextMenuOpen ? TOP_LAYER : DEFAULT_LAYER}>
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <g className={classNames} id={'target-node-visual-group'} ref={hoverRef as any}>
+      <g className={classNames} id={'target-node-visual-group'} ref={hoverRef as React.LegacyRef<SVGGElement>}>
         <DefaultNode
           element={element}
           onSelect={onSelect}

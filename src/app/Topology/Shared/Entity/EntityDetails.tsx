@@ -194,7 +194,7 @@ export const TargetDetails: React.FC<{
         title: 'JVM ID',
         helperTitle: 'JVM ID',
         helperDescription: 'The ID of the current JVM.',
-        content: serviceRef.jvmId || <EmptyText text="No Jvm ID" />,
+        content: serviceRef.jvmId || <EmptyText text="No JVM ID" />,
       },
       {
         key: 'Labels',

@@ -56,20 +56,35 @@ export const TopologyFilterChips: React.FC<TopologyFilterChipsProps> = ({ classN
 
   const generateChip = React.useCallback(
     ({ filters }: TopologyFilters['groupFilters'] | TopologyFilters['targetFilters'], isGroupCategory: boolean) => {
-      return Object.entries(filters).map(([nodeType, filter]) => {
-        return Object.entries(filter).map(([category, values]) => {
+      if (isGroupCategory) {
+        return Object.entries(filters).map(([nodeType, filter]) => {
+          return Object.entries(filter).map(([category, values]) => {
+            return (
+              <TopologyFilterChip
+                key={`${nodeType}-${category}`}
+                isGroupCategory={isGroupCategory}
+                category={category}
+                chipValues={values as string[]}
+                nodeType={nodeType as NodeType}
+                className="topology__filter-chip-group"
+              />
+            );
+          });
+        });
+      } else {
+        return Object.entries(filters).map(([category, values]) => {
           return (
             <TopologyFilterChip
-              key={`${nodeType}-${category}`}
+              key={`Target-${category}`}
               isGroupCategory={isGroupCategory}
               category={category}
               chipValues={values as string[]}
-              nodeType={nodeType as NodeType}
+              nodeType={'Target'} // Ignored by reducer, just for display
               className="topology__filter-chip-group"
             />
           );
         });
-      });
+      }
     },
     []
   );
@@ -89,7 +104,7 @@ export const TopologyFilterChips: React.FC<TopologyFilterChipsProps> = ({ classN
 export interface TopologyFilterChipProps {
   isGroupCategory: boolean;
   category: string;
-  nodeType: NodeType;
+  nodeType: string;
   chipValues: string[];
   className?: string;
 }

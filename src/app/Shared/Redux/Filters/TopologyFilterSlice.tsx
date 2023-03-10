@@ -87,7 +87,7 @@ export const topologyAddFilterIntent = createAction(
 
 export const topologyDeleteFilterIntent = createAction(
   TopologyFilterAction.FILTER_DELETE,
-  (isGroup: boolean, nodeType: NodeType, category: string, value: string) => ({
+  (isGroup: boolean, nodeType: string, category: string, value: string) => ({
     payload: {
       isGroup,
       nodeType,
@@ -103,7 +103,7 @@ export const topologyDeleteAllFiltersIntent = createAction(TopologyFilterAction.
 
 export const topologyDeleteCategoryFiltersIntent = createAction(
   TopologyFilterAction.CATEGORY_FILTERS_DELETE,
-  (isGroup: boolean, nodeType: NodeType, category: string) => ({
+  (isGroup: boolean, nodeType: string, category: string) => ({
     payload: {
       isGroup,
       nodeType,

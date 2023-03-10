@@ -270,6 +270,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
       const options = Array.from(
         new Set(
           flattenedTree
+            .filter((n) => isTargetNode(n))
             .map(({ target }: TargetNode) => {
               const value = target[categoryToNodeField(cat)];
               if (isAnnotation(cat)) {
@@ -293,7 +294,7 @@ export const TopologyFilter: React.FC<{ isDisabled?: boolean }> = ({ isDisabled,
               toString: () => opt,
               compareTo: (other) => other.value === opt,
               ...{
-                nodeType: '', // Ignored by reducer
+                nodeType: 'Target', // Ignored by reducer
                 value: opt,
                 category: cat,
               },
