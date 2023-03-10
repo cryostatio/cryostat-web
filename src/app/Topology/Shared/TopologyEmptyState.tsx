@@ -37,7 +37,9 @@
  */
 import {
   Bullseye,
+  Button,
   EmptyState,
+  EmptyStateBody,
   EmptyStateIcon,
   EmptyStateSecondaryActions,
   EmptyStateVariant,
@@ -46,21 +48,45 @@ import {
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+import { DiscoveryTreeContext, getAllLeaves } from './utils';
 
 export interface TopologyEmptyStateProps {}
 
 export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props }) => {
+  const discoveryTree = React.useContext(DiscoveryTreeContext);
+
+  const isTruelyEmpty = React.useMemo(() => {
+    return !getAllLeaves(discoveryTree).length;
+  }, [discoveryTree]);
+
+  const emptyStateContent = React.useMemo(() => {
+    if (isTruelyEmpty) {
+      return (
+        <EmptyStateSecondaryActions>
+          Start launching a Java application or define a{' '}
+          <Link to={'/topology/create-custom-target'}>Custom Target</Link>.
+        </EmptyStateSecondaryActions>
+      );
+    }
+    return (
+      <>
+        <EmptyStateBody>Adjust your filters/searches and try again.</EmptyStateBody>
+        <EmptyStateSecondaryActions>
+          <Button variant={'link'}>Clear Filters</Button>
+          <Button variant={'link'}>Clear Search</Button>
+        </EmptyStateSecondaryActions>
+      </>
+    );
+  }, [isTruelyEmpty]);
+
   return (
     <Bullseye {...props}>
       <EmptyState variant={EmptyStateVariant.full}>
         <EmptyStateIcon variant="container" component={TopologyIcon} />
         <Title headingLevel="h3" size="lg">
-          No Targets Found.
+          No Targets Found
         </Title>
-        <EmptyStateSecondaryActions>
-          Start launching a Java application or define a{' '}
-          <Link to={'/topology/create-custom-target'}>Custom Target</Link>.
-        </EmptyStateSecondaryActions>
+        {emptyStateContent}
       </EmptyState>
     </Bullseye>
   );
