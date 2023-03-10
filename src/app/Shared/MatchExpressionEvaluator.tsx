@@ -38,6 +38,7 @@
 import { SerializedTarget } from '@app/Shared/SerializedTarget';
 import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { TargetSelect } from '@app/TargetSelect/TargetSelect';
+import { evaluateTargetWithExpr } from '@app/utils/utils';
 import {
   ClipboardCopyButton,
   CodeBlock,
@@ -85,8 +86,7 @@ export const MatchExpressionEvaluator: React.FC<MatchExpressionEvaluatorProps> =
       return;
     }
     try {
-      const f = new Function('target', `return ${matchExpression}`);
-      const res = f(_.cloneDeep(target));
+      const res = evaluateTargetWithExpr(target, matchExpression);
       if (typeof res === 'boolean') {
         setValid(res ? ValidatedOptions.success : ValidatedOptions.warning);
         return;

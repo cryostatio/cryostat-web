@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
-import { hashCode } from '@app/utils/utils';
+import { evaluateTargetWithExpr, hashCode } from '@app/utils/utils';
 import { Button } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import _ from 'lodash';
@@ -246,9 +246,7 @@ export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => 
 
 export const isTargetMatched = ({ target }: TargetNode, matchExpression: string): boolean => {
   try {
-    const f = new Function('target', `return ${matchExpression}`);
-    const res = f(_.cloneDeep(target));
-
+    const res = evaluateTargetWithExpr(target, matchExpression);
     if (typeof res === 'boolean') {
       return res;
     }

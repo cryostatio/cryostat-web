@@ -163,3 +163,8 @@ export const getDisplayFieldName = (fieldName: string) => {
     })
     .join(' ');
 };
+
+export const evaluateTargetWithExpr = (target: unknown, matchExpression: string) => {
+  const f = new Function('target', `return ${matchExpression}`);
+  return f(_.cloneDeep(target));
+};
