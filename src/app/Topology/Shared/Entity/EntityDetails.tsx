@@ -318,8 +318,10 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
               <TableComposable variant="compact" borders={false}>
                 <Thead>
                   <Tr>
-                    {columns.map((col) => (
-                      <Th key={col}>{col}</Th>
+                    {columns.map((col, idx) => (
+                      <Th key={col} textCenter={idx > 0}>
+                        {col}
+                      </Th>
                     ))}
                   </Tr>
                 </Thead>
