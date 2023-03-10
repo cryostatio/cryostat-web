@@ -71,6 +71,7 @@ import {
   Td,
 } from '@patternfly/react-table';
 import * as React from 'react';
+import { combineLatest } from 'rxjs';
 import { AboutAgentCard } from './AboutAgentCard';
 
 export type LiveProbeActions = 'REMOVE';
@@ -200,7 +201,13 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
 
   React.useEffect(() => {
     addSubscription(
-      context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied).subscribe((e) => {
+      combineLatest([
+        context.target.target(),
+        context.notificationChannel.messages(NotificationCategory.ProbeTemplateApplied),
+      ]).subscribe(([currentTarget, e]) => {
+        if (currentTarget.connectUrl != e.message.targetId) {
+          return;
+        }
         setProbes((old) => {
           const probes = e.message.events as EventProbe[];
           const probeIds = probes.map((p) => p.id);
@@ -211,7 +218,7 @@ export const AgentLiveProbes: React.FC<AgentLiveProbesProps> = (_) => {
         });
       })
     );
-  }, [addSubscription, context, context.notificationChannel, setProbes]);
+  }, [addSubscription, context, context.notificationChannel, context.target, setProbes]);
 
   React.useEffect(() => {
     addSubscription(
