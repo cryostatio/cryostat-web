@@ -223,7 +223,9 @@ export const TargetDetails: React.FC<{
               <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
             </Popover>
           </DescriptionListTermHelpText>
-          <DescriptionListDescription style={{ userSelect: 'text' }}>{d.content}</DescriptionListDescription>
+          <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>
+            {d.content}
+          </DescriptionListDescription>
         </DescriptionListGroup>
       ))}
     </DescriptionList>
