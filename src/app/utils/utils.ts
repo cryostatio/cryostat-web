@@ -37,6 +37,7 @@
  */
 
 import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import _ from 'lodash';
 
 const SECOND_MILLIS = 1000;
 const MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -139,4 +140,31 @@ export const calculateAnalysisTimer = (reportTime: number): AutomatedAnalysisTim
     unit: timerUnits,
     interval: interval,
   } as AutomatedAnalysisTimerObject;
+};
+
+export const splitWordsOnUppercase = (str: string, capitalizeFirst?: boolean): string[] => {
+  const words = str.split(/(?=[A-Z])/);
+  if (capitalizeFirst && words.length) {
+    const first = words[0];
+    words[0] = first.substring(0, 1).toUpperCase() + first.slice(1);
+  }
+  return words;
+};
+
+const needUppercase = /(url|id|jvm)/i;
+
+export const getDisplayFieldName = (fieldName: string) => {
+  return splitWordsOnUppercase(fieldName)
+    .map((word) => {
+      if (needUppercase.test(word)) {
+        return _.upperCase(word);
+      }
+      return _.capitalize(word);
+    })
+    .join(' ');
+};
+
+export const evaluateTargetWithExpr = (target: unknown, matchExpression: string) => {
+  const f = new Function('target', `return ${matchExpression}`);
+  return f(_.cloneDeep(target));
 };

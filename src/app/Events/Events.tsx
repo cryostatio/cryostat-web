@@ -43,17 +43,29 @@ import { TargetView } from '@app/TargetView/TargetView';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, Stack, StackItem, Tab, Tabs, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
+import { StaticContext } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { concatMap, filter } from 'rxjs';
 import { EventTemplates } from './EventTemplates';
 import { EventTypes } from './EventTypes';
 
-export interface EventsProps {}
+export type SupportedEventTab = 'templates' | 'types';
 
-export const Events: React.FC<EventsProps> = (_) => {
+export type SupportedAgentTab = 'templates' | 'probes';
+
+export interface EventsProps {
+  eventTab?: SupportedEventTab;
+  agentTab?: SupportedAgentTab;
+}
+
+export const Events: React.FC<RouteComponentProps<Record<string, never>, StaticContext, EventsProps>> = ({
+  location,
+  ...props
+}) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [eventActiveTab, setEventActiveTab] = React.useState(0);
-  const [probeActiveTab, setProbeActiveTab] = React.useState(0);
+  const [eventActiveTab, setEventActiveTab] = React.useState(location?.state?.eventTab || 'templates');
+  const [probeActiveTab, setProbeActiveTab] = React.useState(location?.state?.agentTab || 'templates');
   const [agentDetected, setAgentDetected] = React.useState(false);
 
   React.useEffect(() => {
@@ -68,9 +80,15 @@ export const Events: React.FC<EventsProps> = (_) => {
     );
   }, [addSubscription, context.target, context.api, setAgentDetected]);
 
-  const handleEventTabSelect = React.useCallback((evt, idx) => setEventActiveTab(idx), [setEventActiveTab]);
+  const handleEventTabSelect = React.useCallback(
+    (evt, key: string | number) => setEventActiveTab(`${key}` as SupportedEventTab),
+    [setEventActiveTab]
+  );
 
-  const handleProbeTabSelect = React.useCallback((evt, idx) => setProbeActiveTab(idx), [setProbeActiveTab]);
+  const handleProbeTabSelect = React.useCallback(
+    (evt, key: string | number) => setProbeActiveTab(`${key}` as SupportedAgentTab),
+    [setProbeActiveTab]
+  );
 
   return (
     <>
@@ -80,10 +98,10 @@ export const Events: React.FC<EventsProps> = (_) => {
             <Card>
               <CardBody>
                 <Tabs activeKey={eventActiveTab} onSelect={handleEventTabSelect}>
-                  <Tab eventKey={0} title="Event Templates">
+                  <Tab eventKey={'templates'} title="Event Templates">
                     <EventTemplates />
                   </Tab>
-                  <Tab eventKey={1} title="Event Types">
+                  <Tab eventKey={'types'} title="Event Types">
                     <EventTypes />
                   </Tab>
                 </Tabs>
@@ -94,11 +112,11 @@ export const Events: React.FC<EventsProps> = (_) => {
             <Card>
               <CardBody>
                 <Tabs activeKey={probeActiveTab} onSelect={handleProbeTabSelect}>
-                  <Tab eventKey={0} title="Probe Templates">
+                  <Tab eventKey={'templates'} title="Probe Templates">
                     <AgentProbeTemplates agentDetected={agentDetected} />
                   </Tab>
                   <Tab
-                    eventKey={1}
+                    eventKey={'probes'}
                     title="Live Configuration"
                     isAriaDisabled={!agentDetected}
                     tooltip={
@@ -119,4 +137,4 @@ export const Events: React.FC<EventsProps> = (_) => {
   );
 };
 
-export default Events;
+export default withRouter(Events);

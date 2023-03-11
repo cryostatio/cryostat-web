@@ -44,10 +44,11 @@ import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Card, CardBody, EmptyState, EmptyStateIcon, Tab, Tabs, TabTitleText, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { StaticContext } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { of } from 'rxjs';
 import { AllArchivedRecordingsTable } from './AllArchivedRecordingsTable';
 import { AllTargetsArchivedRecordingsTable } from './AllTargetsArchivedRecordingsTable';
-
 /*
   This specific target is used as the "source" for the Uploads version of the ArchivedRecordingsTable.
   The connectUrl is the 'uploads' because for actions performed on uploaded archived recordings,
@@ -60,12 +61,19 @@ export const uploadAsTarget: Target = {
   alias: '',
 };
 
-export interface ArchivesProps {}
+export type SupportedTab = 'all-archives' | 'all-targets' | 'uploads';
 
-export const Archives: React.FC<ArchivesProps> = (_) => {
+export interface ArchivesProps {
+  tab?: SupportedTab;
+}
+
+export const Archives: React.FC<RouteComponentProps<Record<string, never>, StaticContext, ArchivesProps>> = ({
+  location,
+  ..._props
+}) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [activeTab, setActiveTab] = React.useState(location?.state?.tab || 'all-archives');
   const [archiveEnabled, setArchiveEnabled] = React.useState(false);
 
   React.useEffect(() => {
@@ -76,14 +84,14 @@ export const Archives: React.FC<ArchivesProps> = (_) => {
 
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
-      <Tabs id="archives" activeKey={activeTab} onSelect={(evt, idx) => setActiveTab(Number(idx))}>
-        <Tab id="all-targets" eventKey={0} title={<TabTitleText>All Targets</TabTitleText>}>
+      <Tabs id="archives" activeKey={activeTab} onSelect={(evt, key) => setActiveTab(`${key}` as SupportedTab)}>
+        <Tab id="all-targets" eventKey={'all-archives'} title={<TabTitleText>All Targets</TabTitleText>}>
           <AllTargetsArchivedRecordingsTable />
         </Tab>
-        <Tab id="all-archives" eventKey={1} title={<TabTitleText>All Archives</TabTitleText>}>
+        <Tab id="all-archives" eventKey={'all-targets'} title={<TabTitleText>All Archives</TabTitleText>}>
           <AllArchivedRecordingsTable />
         </Tab>
-        <Tab id="uploads" eventKey={2} title={<TabTitleText>Uploads</TabTitleText>}>
+        <Tab id="uploads" eventKey={'uploads'} title={<TabTitleText>Uploads</TabTitleText>}>
           <ArchivedRecordingsTable target={uploadTargetAsObs} isUploadsTable={true} isNestedTable={false} />
         </Tab>
       </Tabs>
@@ -106,4 +114,4 @@ export const Archives: React.FC<ArchivesProps> = (_) => {
   );
 };
 
-export default Archives;
+export default withRouter(Archives);

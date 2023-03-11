@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import useDayjs from '@app/utils/useDayjs';
@@ -56,7 +57,6 @@ import _ from 'lodash';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { interval } from 'rxjs';
-import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '@app/Dashboard/Dashboard';
 import { DashboardCard } from '../../DashboardCard';
 import { ChartContext } from './../ChartContext';
 import { MBeanMetrics } from './MBeanMetricsChartController';

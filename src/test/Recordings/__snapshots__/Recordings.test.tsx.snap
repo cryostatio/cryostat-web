@@ -31,12 +31,12 @@ exports[`<Recordings /> renders correctly 1`] = `
             role="presentation"
           >
             <button
-              aria-controls="pf-tab-section-0-active-recordings"
+              aria-controls="pf-tab-section-active-active-recordings"
               aria-selected={true}
               className="pf-c-tabs__link"
               data-ouia-component-type="PF4/TabButton"
               data-ouia-safe={true}
-              id="pf-tab-0-active-recordings"
+              id="pf-tab-active-active-recordings"
               onClick={[Function]}
               role="tab"
               type="button"
@@ -57,7 +57,7 @@ exports[`<Recordings /> renders correctly 1`] = `
               className="pf-c-tabs__link"
               data-ouia-component-type="PF4/TabButton"
               data-ouia-safe={true}
-              id="pf-tab-1-archived-recordings"
+              id="pf-tab-archived-archived-recordings"
               onClick={[Function]}
               role="tab"
               type="button"
@@ -72,12 +72,12 @@ exports[`<Recordings /> renders correctly 1`] = `
         </ul>
       </div>
       <section
-        aria-labelledby="pf-tab-0-active-recordings"
+        aria-labelledby="pf-tab-active-active-recordings"
         className="pf-c-tab-content"
         data-ouia-component-type="PF4/TabContent"
         data-ouia-safe={true}
         hidden={false}
-        id="pf-tab-section-0-active-recordings"
+        id="pf-tab-section-active-active-recordings"
         role="tabpanel"
         tabIndex={0}
       >

@@ -38,15 +38,14 @@
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
-import { TargetSelect } from '@app/TargetSelect/TargetSelect';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Grid, GridItem, gridSpans } from '@patternfly/react-core';
 import * as React from 'react';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 import { NoTargetSelected } from './NoTargetSelected';
+import { TargetContextSelector } from './TargetContextSelector';
 
 interface TargetViewProps {
   pageTitle: string;
-  compactSelect?: boolean;
   breadcrumbs?: BreadcrumbTrail[];
   children: React.ReactNode;
 }
@@ -58,38 +57,21 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe((target) => {
-        setHasSelection(target !== NO_TARGET);
-      })
+      context.target
+        .target()
+        .pipe(
+          map((target) => target !== NO_TARGET),
+          distinctUntilChanged()
+        )
+        .subscribe(setHasSelection)
     );
   }, [context.target, addSubscription, setHasSelection]);
 
-  const compact = React.useMemo(
-    () => (props.compactSelect == null ? true : props.compactSelect),
-    [props.compactSelect]
-  );
-
-  const responsiveSpans = React.useMemo(
-    () =>
-      ({
-        sm: 12,
-        md: 12,
-        lg: compact ? 6 : 12,
-        xl: compact ? 6 : 12,
-        xl2: compact ? 6 : 12,
-      } as Record<'sm' | 'md' | 'lg' | 'xl' | 'xl2', gridSpans>),
-    [compact]
-  );
-
   return (
     <>
+      <TargetContextSelector />
       <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
-        <Grid hasGutter>
-          <GridItem {...responsiveSpans}>
-            <TargetSelect />
-          </GridItem>
-          <GridItem>{hasSelection ? props.children : <NoTargetSelected />}</GridItem>
-        </Grid>
+        {hasSelection ? props.children : <NoTargetSelected />}
       </BreadcrumbPage>
     </>
   );

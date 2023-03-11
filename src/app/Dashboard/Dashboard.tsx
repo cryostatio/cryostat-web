@@ -344,7 +344,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   );
 
   return (
-    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} compactSelect={false}>
+    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')}>
       <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
           {cardConfigs

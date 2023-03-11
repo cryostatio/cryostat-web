@@ -38,7 +38,6 @@
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { CreateRule } from '@app/Rules/CreateRule';
 import { Rule } from '@app/Rules/Rules';
-import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { defaultServices, Services } from '@app/Shared/Services/Services';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import '@testing-library/jest-dom';
@@ -67,6 +66,7 @@ const mockEventTemplate: EventTemplate = {
   provider: 'some provider',
   description: 'some description',
 };
+
 const mockRule: Rule = {
   name: 'mockRule',
   description: 'A mock rule',
@@ -80,17 +80,6 @@ const mockRule: Rule = {
   maxSizeBytes: 0,
 };
 
-const mockNewTarget: Target = {
-  connectUrl: 'service:jmx:rmi://someUrl1',
-  alias: 'someAlias',
-};
-
-const mockTargetFoundNotification = {
-  message: {
-    event: { kind: 'FOUND', serviceRef: mockNewTarget },
-  },
-} as NotificationMessage;
-
 const history = createMemoryHistory({ initialEntries: ['/rules'] });
 
 jest.mock('react-router-dom', () => ({
@@ -99,10 +88,12 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
+jest.mock('@app/Shared/Services/Target.service', () => ({
+  ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
+}));
+
 const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
-jest.spyOn(defaultServices.notificationChannel, 'messages').mockReturnValue(of(mockTargetFoundNotification));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
-jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockTarget));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
 jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
@@ -205,6 +196,10 @@ describe('<CreateRule />', () => {
   it('should show error helper text if rule form inputs are invalid', async () => {
     const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
 
+    // Select a target first
+    await user.click(screen.getByText('Select target...'));
+    await user.click(screen.getByText('io.cryostat.Cryostat (service:jmx:rmi://someUrl)'));
+
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();
     expect(nameInput).toBeVisible();
@@ -219,9 +214,9 @@ describe('<CreateRule />', () => {
     expect(matchExpressionInput).toBeInTheDocument();
     expect(matchExpressionInput).toBeVisible();
 
-    await user.type(matchExpressionInput, 'abc');
+    await user.type(matchExpressionInput, 'somethingwrong');
 
-    const exphelperText = screen.getByText('Invalid Match Expression.');
+    const exphelperText = await screen.findByText('Invalid Match Expression.');
     expect(exphelperText).toBeInTheDocument();
     expect(exphelperText).toBeVisible();
   });

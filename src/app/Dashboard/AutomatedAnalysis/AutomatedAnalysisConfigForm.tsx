@@ -44,7 +44,7 @@ import {
   TemplateType,
 } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET } from '@app/Shared/Services/Target.service';
+import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
@@ -64,12 +64,17 @@ import {
 } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { concatMap, filter, first } from 'rxjs';
+import { concatMap, filter, first, Observable } from 'rxjs';
+
 interface AutomatedAnalysisConfigFormProps {
   useTitle?: boolean;
+  targetObs?: Observable<Target>;
 }
 
-export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({ useTitle = false }) => {
+export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormProps> = ({
+  useTitle = false,
+  targetObs,
+}) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const { t } = useTranslation();
@@ -103,8 +108,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   const refreshTemplates = React.useCallback(() => {
     setIsLoading(true);
     addSubscription(
-      context.target
-        .target()
+      (targetObs ? targetObs : context.target.target())
         .pipe(
           filter((target) => target !== NO_TARGET),
           first(),
@@ -125,7 +129,7 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
           },
         })
     );
-  }, [addSubscription, context.target, context.api, setErrorMessage, setTemplates, setIsLoading]);
+  }, [addSubscription, context.target, context.api, setErrorMessage, setTemplates, setIsLoading, targetObs]);
 
   React.useEffect(() => {
     addSubscription(
@@ -139,12 +143,12 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
 
   React.useEffect(() => {
     addSubscription(
-      context.target.target().subscribe(() => {
+      (targetObs ? targetObs : context.target.target()).subscribe(() => {
         refreshTemplates();
         setIsLoading(false);
       })
     );
-  }, [addSubscription, context.target, refreshTemplates, setIsLoading]);
+  }, [addSubscription, targetObs, refreshTemplates, setIsLoading, context.target]);
 
   const getEventString = React.useCallback((templateName: string, templateType: string) => {
     let str = '';
@@ -340,13 +344,11 @@ export const AutomatedAnalysisConfigForm: React.FC<AutomatedAnalysisConfigFormPr
   if (isLoading) {
     return <LoadingView />;
   }
-  return (
+  return useTitle ? (
     <Form>
-      {useTitle ? (
-        <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
-      ) : (
-        formContent
-      )}
+      <FormSection title={t('AutomatedAnalysisConfigForm.FORM_TITLE')}>{formContent}</FormSection>
     </Form>
+  ) : (
+    formContent
   );
 };

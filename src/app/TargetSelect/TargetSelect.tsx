@@ -35,211 +35,149 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
-import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
-import { NotificationsContext } from '@app/Notifications/Notifications';
-import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { SerializedTarget } from '@app/Shared/SerializedTarget';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { isEqualTarget, NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { includesTarget, NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { NoTargetSelected } from '@app/TargetView/NoTargetSelected';
-import { getFromLocalStorage, removeFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
-  Button,
   Card,
-  CardActions,
   CardBody,
   CardExpandableContent,
   CardHeader,
   CardTitle,
+  Divider,
   Select,
+  SelectGroup,
   SelectOption,
   SelectVariant,
 } from '@patternfly/react-core';
-import { ContainerNodeIcon, PlusCircleIcon, TrashIcon } from '@patternfly/react-icons';
+import { ContainerNodeIcon } from '@patternfly/react-icons';
 import * as React from 'react';
-import { CreateTargetModal } from './CreateTargetModal';
-
-export const CUSTOM_TARGETS_REALM = 'Custom Targets';
 
 export interface TargetSelectProps {
   // display a simple, non-expandable component. set this if the view elsewhere
   // contains a <SerializedTarget /> or other repeated components
   simple?: boolean;
+  onSelect?: (target: Target) => void;
 }
 
-export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) => {
-  const notifications = React.useContext(NotificationsContext);
+export const TargetSelect: React.FunctionComponent<TargetSelectProps> = ({ onSelect, simple, ...props }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
+  const firstLoadRef = React.useRef(false);
 
   const [isExpanded, setExpanded] = React.useState(false);
-  const [selected, setSelected] = React.useState(NO_TARGET);
+  const [selected, setSelected] = React.useState<Target>(NO_TARGET);
   const [targets, setTargets] = React.useState([] as Target[]);
   const [isDropdownOpen, setDropdownOpen] = React.useState(false);
   const [isLoading, setLoading] = React.useState(false);
-  const [isModalOpen, setModalOpen] = React.useState(false);
-  const [warningModalOpen, setWarningModalOpen] = React.useState(false);
-
-  const setCachedTargetSelection = React.useCallback(
-    (targetConnectUrl: string, errorCallback?: () => void) =>
-      saveToLocalStorage('TARGET', targetConnectUrl, errorCallback),
-    []
-  );
-
-  const removeCachedTargetSelection = React.useCallback(() => removeFromLocalStorage('TARGET'), []);
-
-  const getCachedTargetSelection = React.useCallback(() => getFromLocalStorage('TARGET', NO_TARGET.connectUrl), []);
-
-  const resetTargetSelection = React.useCallback(() => {
-    context.target.setTarget(NO_TARGET);
-    removeCachedTargetSelection();
-  }, [context.target, removeCachedTargetSelection]);
 
   const onExpand = React.useCallback(() => {
     setExpanded((v) => !v);
   }, [setExpanded]);
 
-  const onSelect = React.useCallback(
-    // ATTENTION: do not add onSelect as deps for effect hook as it updates with selected states
-    (_, selection, isPlaceholder) => {
-      if (isPlaceholder) {
-        resetTargetSelection();
-      } else {
-        if (!isEqualTarget(selection as Target, selected)) {
-          context.target.setTarget(selection);
-          setCachedTargetSelection((selection as Target).connectUrl, () => {
-            notifications.danger('Cannot set target');
-            context.target.setTarget(NO_TARGET);
-          });
-        }
-      }
-      setDropdownOpen(false);
-    },
-    [context.target, notifications, setDropdownOpen, setCachedTargetSelection, resetTargetSelection, selected]
-  );
-
-  const selectTargetFromCache = React.useCallback(
-    (targets: Target[]) => {
-      if (!targets.length) {
-        // Ignore first emitted value
-        return;
-      }
-      const cachedTargetConnectUrl = getCachedTargetSelection();
-      const matchedTarget = targets.find((t) => t.connectUrl === cachedTargetConnectUrl);
-      if (matchedTarget) {
-        context.target.setTarget(matchedTarget);
-      } else {
-        resetTargetSelection();
-      }
-    },
-    [context.target, getCachedTargetSelection, resetTargetSelection]
-  );
-
-  React.useEffect(() => {
+  const _refreshTargetList = React.useCallback(() => {
+    setLoading(true);
     addSubscription(
-      context.targets.targets().subscribe((targets) => {
-        // Target Discovery notifications will trigger an event here.
-        setTargets(targets);
-        selectTargetFromCache(targets);
+      context.targets.queryForTargets().subscribe(() => {
+        // Reset loading and context.targets.targets will emit
+        setLoading(false);
       })
     );
-  }, [addSubscription, context.targets, setTargets, selectTargetFromCache]);
+  }, [addSubscription, context.targets, setLoading]);
+
+  const handleSelect = React.useCallback(
+    (_, selection, isPlaceholder) => {
+      setDropdownOpen(false);
+      const toSelect: Target = isPlaceholder ? NO_TARGET : selection;
+      onSelect && onSelect(toSelect);
+      setSelected(toSelect);
+    },
+    [setDropdownOpen, onSelect, setSelected]
+  );
 
   React.useEffect(() => {
-    addSubscription(context.target.target().subscribe(setSelected));
-  }, [addSubscription, context.target, setSelected]);
-
-  const refreshTargetList = React.useCallback(() => {
-    setLoading(true);
-    addSubscription(context.targets.queryForTargets().subscribe(() => setLoading(false)));
-  }, [addSubscription, context.targets, setLoading]);
+    addSubscription(context.targets.targets().subscribe(setTargets));
+  }, [addSubscription, context.targets, setTargets]);
 
   React.useEffect(() => {
     if (!context.settings.autoRefreshEnabled()) {
       return;
     }
     const id = window.setInterval(
-      () => refreshTargetList(),
+      () => _refreshTargetList(),
       context.settings.autoRefreshPeriod() * context.settings.autoRefreshUnits()
     );
     return () => window.clearInterval(id);
-  }, [context.settings, refreshTargetList]);
+  }, [context.settings, _refreshTargetList]);
 
-  const showCreateTargetModal = React.useCallback(() => {
-    setModalOpen(true);
-  }, [setModalOpen]);
-
-  const closeCreateTargetModal = React.useCallback(() => {
-    setModalOpen(false);
-  }, [setModalOpen]);
-
-  const deleteTarget = React.useCallback(() => {
-    setLoading(true);
-    addSubscription(
-      context.api.deleteTarget(selected).subscribe((ok) => {
-        setLoading(false);
-        if (!ok) {
-          const id =
-            !selected.alias || selected.alias === selected.connectUrl
-              ? selected.connectUrl
-              : `${selected.alias} [${selected.connectUrl}]`;
-          notifications.danger('Target Deletion Failed', `The selected target (${id}) could not be deleted`);
-        }
-      })
-    );
-  }, [addSubscription, context.api, notifications, selected, setLoading]);
-
-  const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteCustomTargets),
-    [context.settings]
-  );
-
-  const handleDeleteButton = React.useCallback(() => {
-    if (deletionDialogsEnabled) {
-      setWarningModalOpen(true);
-    } else {
-      deleteTarget();
+  React.useEffect(() => {
+    if (selected !== NO_TARGET && !includesTarget(targets, selected)) {
+      handleSelect(undefined, undefined, true);
     }
-  }, [deletionDialogsEnabled, setWarningModalOpen, deleteTarget]);
+    if (targets.length && !firstLoadRef.current) {
+      firstLoadRef.current = true;
+      const cachedUrl = getFromLocalStorage('TARGET', undefined);
+      const matched = targets.find((tn) => tn.connectUrl === cachedUrl);
+      if (matched) {
+        handleSelect(undefined, matched, false);
+      }
+    }
+  }, [handleSelect, targets, selected, firstLoadRef]);
 
-  const handleWarningModalClose = React.useCallback(() => {
-    setWarningModalOpen(false);
-  }, [setWarningModalOpen]);
+  const selectOptions = React.useMemo(() => {
+    let options = [
+      <SelectOption key="placeholder" value="Select target..." isPlaceholder={true} itemCount={targets.length} />,
+      <Divider key={'placeholder-divider'} />,
+    ];
 
-  const handleCreateModalClose = React.useCallback(() => {
-    setModalOpen(false);
-  }, [setModalOpen]);
+    const groupNames = new Set<string>();
+    targets.forEach((t) => groupNames.add(t.annotations?.cryostat['REALM'] || 'Others'));
 
-  const deleteArchivedWarningModal = React.useMemo(() => {
-    return (
-      <DeleteWarningModal
-        warningType={DeleteOrDisableWarningType.DeleteCustomTargets}
-        visible={warningModalOpen}
-        onAccept={deleteTarget}
-        onClose={handleWarningModalClose}
-      />
-    );
-  }, [warningModalOpen, deleteTarget, handleWarningModalClose]);
-
-  const selectOptions = React.useMemo(
-    () =>
-      [
-        <SelectOption key="placeholder" value="Select target..." isPlaceholder={true} itemCount={targets.length} />,
-      ].concat(
-        targets.map((t: Target) => (
-          <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>
-            {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}
-          </SelectOption>
+    options = options.concat(
+      Array.from(groupNames)
+        .map((name) => (
+          <SelectGroup key={name} label={name}>
+            {targets
+              .filter((t) => (t.annotations?.cryostat['REALM'] || 'Others') === name)
+              .map((t: Target) => (
+                <SelectOption key={t.connectUrl} value={t} isPlaceholder={false}>
+                  {!t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`}
+                </SelectOption>
+              ))}
+          </SelectGroup>
         ))
-      ),
-    [targets]
+        .sort((a, b) => `${a.props['label']}`.localeCompare(`${b.props['label']}`))
+    );
+    return options;
+  }, [targets]);
+
+  const handleTargetFilter = React.useCallback(
+    (_, value: string) => {
+      if (!value) {
+        return selectOptions;
+      }
+      const matchExp = new RegExp(value, 'i');
+      return selectOptions
+        .filter((grp) => grp.props.children)
+        .map((grp) =>
+          React.cloneElement(grp, {
+            children: grp.props.children.filter(
+              (option) => matchExp.test(option.props.value.connectUrl) || matchExp.test(option.props.value.alias)
+            ),
+          })
+        )
+        .filter((grp) => grp.props.children.length > 0);
+    },
+    [selectOptions]
   );
 
   const cardHeaderProps = React.useMemo(
     () =>
-      props.simple
+      simple
         ? {}
         : {
             onExpand: onExpand,
@@ -250,71 +188,45 @@ export const TargetSelect: React.FunctionComponent<TargetSelectProps> = (props) 
               'aria-expanded': isExpanded,
             },
           },
-    [props.simple, onExpand, isExpanded]
-  );
-
-  const deleteButtonLoadingProps = React.useMemo(
-    () =>
-      ({
-        spinnerAriaValueText: 'Deleting',
-        spinnerAriaLabel: 'deleting-custom-target',
-        isLoading: isLoading,
-      } as LoadingPropsType),
-    [isLoading]
+    [simple, onExpand, isExpanded]
   );
 
   return (
-    <>
-      <Card isRounded isCompact isExpanded={isExpanded}>
-        <CardHeader {...cardHeaderProps}>
-          <CardTitle>Target JVM</CardTitle>
-          <CardActions>
-            <Button
-              aria-label="Create target"
-              isDisabled={isLoading}
-              onClick={showCreateTargetModal}
-              variant="plain"
-              icon={<PlusCircleIcon />}
-            />
-            <Button
-              aria-label="Delete target"
-              isDisabled={
-                isLoading || selected == NO_TARGET || selected.annotations?.cryostat['REALM'] !== CUSTOM_TARGETS_REALM
-              }
-              onClick={handleDeleteButton}
-              variant="plain"
-              icon={<TrashIcon />}
-              {...deleteButtonLoadingProps}
-            />
-          </CardActions>
-        </CardHeader>
-        <CardBody>
-          <Select
-            toggleIcon={<ContainerNodeIcon />}
-            variant={SelectVariant.single}
-            onSelect={onSelect}
-            onToggle={setDropdownOpen}
-            selections={selected.alias || selected.connectUrl}
-            isDisabled={isLoading}
-            isFlipEnabled={true}
-            menuAppendTo="parent"
-            maxHeight="16em"
-            isOpen={isDropdownOpen}
-            aria-label="Select Target"
-          >
-            {selectOptions}
-          </Select>
-        </CardBody>
-        <CardExpandableContent>
-          <CardBody>{selected === NO_TARGET ? <NoTargetSelected /> : <SerializedTarget target={selected} />}</CardBody>
-        </CardExpandableContent>
-      </Card>
-      <CreateTargetModal
-        visible={isModalOpen}
-        onSuccess={closeCreateTargetModal}
-        onDismiss={handleCreateModalClose}
-      ></CreateTargetModal>
-      {deleteArchivedWarningModal}
-    </>
+    <Card {...props} isRounded isCompact isExpanded={isExpanded}>
+      <CardHeader {...cardHeaderProps}>
+        <CardTitle>Target JVM</CardTitle>
+      </CardHeader>
+      {isLoading ? (
+        <LoadingView />
+      ) : (
+        <>
+          <CardBody>
+            <Select
+              toggleIcon={<ContainerNodeIcon />}
+              variant={SelectVariant.single}
+              hasInlineFilter
+              inlineFilterPlaceholderText="Filter by target"
+              isGrouped
+              onFilter={handleTargetFilter}
+              onSelect={handleSelect}
+              onToggle={setDropdownOpen}
+              selections={selected.alias || selected.connectUrl}
+              isFlipEnabled={true}
+              menuAppendTo="parent"
+              maxHeight="16em"
+              isOpen={isDropdownOpen}
+              aria-label="Select Target"
+            >
+              {selectOptions}
+            </Select>
+          </CardBody>
+          <CardExpandableContent>
+            <CardBody>
+              {selected === NO_TARGET ? <NoTargetSelected /> : <SerializedTarget target={selected} />}
+            </CardBody>
+          </CardExpandableContent>
+        </>
+      )}
+    </Card>
   );
 };

@@ -39,6 +39,7 @@
 import { Notifications } from '@app/Notifications/Notifications';
 import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
+import { EnvironmentNode } from '@app/Topology/typings';
 import { createBlobURL } from '@app/utils/utils';
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
@@ -46,7 +47,7 @@ import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { AuthMethod, LoginService, SessionState } from './Login.service';
 import { NotificationCategory } from './NotificationChannel.service';
-import { NO_TARGET, Target, TargetService } from './Target.service';
+import { includesTarget, NO_TARGET, Target, TargetService } from './Target.service';
 
 type ApiVersion = 'v1' | 'v2' | 'v2.1' | 'v2.2' | 'beta';
 
@@ -192,7 +193,7 @@ export class ApiService {
   createTarget(target: Target): Observable<boolean> {
     const form = new window.FormData();
     form.append('connectUrl', target.connectUrl);
-    if (!!target.alias && !!target.alias.trim()) {
+    if (target.alias && target.alias.trim()) {
       form.append('alias', target.alias);
     }
     return this.sendRequest('v2', `targets`, {
@@ -202,6 +203,44 @@ export class ApiService {
       map((resp) => resp.ok),
       catchError(() => of(false)),
       first()
+    );
+  }
+
+  testTarget(
+    target: Target,
+    credentials?: { username?: string; password?: string },
+    abortSignal?: AbortSignal
+  ): Observable<{ status: number; body: object }> {
+    const form = new window.FormData();
+    form.append('connectUrl', target.connectUrl);
+    if (!!target.alias && !!target.alias.trim()) {
+      form.append('alias', target.alias);
+    }
+    credentials?.username && form.append('username', credentials.username);
+    credentials?.password && form.append('password', credentials.password);
+
+    return this.sendRequest(
+      'v2',
+      `targets`,
+      {
+        method: 'POST',
+        body: form,
+        signal: abortSignal,
+      },
+      new URLSearchParams({ dryrun: 'true' }),
+      true,
+      true
+    ).pipe(
+      first(),
+      concatMap((resp) => resp.json().then((body) => ({ status: resp.status, body: body as object }))),
+      catchError((err: Error) => {
+        if (isHttpError(err)) {
+          return from(
+            err.httpResponse.json().then((body) => ({ status: err.httpResponse.status, body: body as object }))
+          );
+        }
+        return of({ status: 0, body: { data: { reason: err.message } } }); // Status 0 -> request is not completed
+      })
     );
   }
 
@@ -669,8 +708,14 @@ export class ApiService {
     return this.grafanaDashboardUrlSubject.asObservable();
   }
 
-  doGet<T>(path: string, apiVersion: ApiVersion = 'v1'): Observable<T> {
-    return this.sendRequest(apiVersion, path, { method: 'GET' }).pipe(
+  doGet<T>(
+    path: string,
+    apiVersion: ApiVersion = 'v1',
+    params?: URLSearchParams,
+    suppressNotifications?: boolean,
+    skipStatusCheck?: boolean
+  ): Observable<T> {
+    return this.sendRequest(apiVersion, path, { method: 'GET' }, params, suppressNotifications, skipStatusCheck).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first()
@@ -705,17 +750,50 @@ export class ApiService {
     );
   }
 
-  graphql<T>(query: string, variables?: unknown): Observable<T> {
+  getActiveProbesForTarget(
+    target: Target,
+    suppressNotifications = false,
+    skipStatusCheck = false
+  ): Observable<EventProbe[]> {
+    return this.sendRequest(
+      'v2',
+      `targets/${encodeURIComponent(target.connectUrl)}/probes`,
+      {
+        method: 'GET',
+      },
+      undefined,
+      suppressNotifications,
+      skipStatusCheck
+    ).pipe(
+      concatMap((resp) => resp.json()),
+      map((response: EventProbesResponse) => response.data.result),
+      first()
+    );
+  }
+
+  graphql<T>(
+    query: string,
+    variables?: unknown,
+    suppressNotifications?: boolean,
+    skipStatusCheck?: boolean
+  ): Observable<T> {
     const headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    return this.sendRequest('v2.2', 'graphql', {
-      method: 'POST',
-      body: JSON.stringify({
-        query: query.replace(/[\s]+/g, ' '),
-        variables,
-      }),
-      headers,
-    }).pipe(
+    return this.sendRequest(
+      'v2.2',
+      'graphql',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          query: query.replace(/[\s]+/g, ' '),
+          variables,
+        }),
+        headers,
+      },
+      undefined,
+      suppressNotifications,
+      skipStatusCheck
+    ).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first()
@@ -978,10 +1056,17 @@ export class ApiService {
     );
   }
 
-  getCredentials(): Observable<StoredCredential[]> {
-    return this.sendRequest('v2.2', `credentials`, {
-      method: 'GET',
-    }).pipe(
+  getCredentials(suppressNotifications = false, skipStatusCheck = false): Observable<StoredCredential[]> {
+    return this.sendRequest(
+      'v2.2',
+      `credentials`,
+      {
+        method: 'GET',
+      },
+      undefined,
+      suppressNotifications,
+      skipStatusCheck
+    ).pipe(
       concatMap((resp) => resp.json()),
       map((response: CredentialsResponse) => response.data.result),
       first()
@@ -997,12 +1082,54 @@ export class ApiService {
     );
   }
 
-  getRules(): Observable<Rule[]> {
-    return this.sendRequest('v2', 'rules', {
+  getRules(suppressNotifications = false, skipStatusCheck = false): Observable<Rule[]> {
+    return this.sendRequest(
+      'v2',
+      'rules',
+      {
+        method: 'GET',
+      },
+      undefined,
+      suppressNotifications,
+      skipStatusCheck
+    ).pipe(
+      concatMap((resp) => resp.json()),
+      map((response: RulesResponse) => response.data.result),
+      first()
+    );
+  }
+
+  getDiscoveryTree(): Observable<EnvironmentNode> {
+    return this.sendRequest('v2.1', 'discovery', {
       method: 'GET',
     }).pipe(
       concatMap((resp) => resp.json()),
-      map((response: RulesResponse) => response.data.result),
+      map((body: DiscoveryResponse) => body.data.result as EnvironmentNode),
+      first()
+    );
+  }
+
+  isTargetMatched(matchExpression: string, target: Target): Observable<boolean> {
+    const body = new window.FormData();
+    body.append('matchExpression', matchExpression);
+    body.append('targets', JSON.stringify([target]));
+
+    return this.sendRequest(
+      'beta',
+      'matchExpressions',
+      {
+        method: 'POST',
+        body: body,
+      },
+      undefined,
+      true,
+      true
+    ).pipe(
+      concatMap((resp: Response) => resp.json()),
+      map((body) => {
+        const matchedTargets: Target[] = body.data.result.targets || [];
+        return includesTarget(matchedTargets, target);
+      }),
       first()
     );
   }
@@ -1255,6 +1382,12 @@ interface RuleResponse extends ApiV2Response {
 interface RulesResponse extends ApiV2Response {
   data: {
     result: Rule[];
+  };
+}
+
+interface DiscoveryResponse extends ApiV2Response {
+  data: {
+    result: object;
   };
 }
 

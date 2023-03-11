@@ -38,8 +38,10 @@
 
 import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
 import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlicer';
+import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlicer';
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
+import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyFilterSlice';
 import { persistMiddleware } from './Middlewares/PersistMiddleware';
 
 // Export actions
@@ -69,10 +71,23 @@ export const {
   automatedAnalysisUpdateCategoryIntent,
 } = automatedAnalysisFilterSlice;
 
+export const { topologyConfigSetViewModeIntent, topologyDisplayOpionsSetIntent } = topologyConfigSlice;
+
+export const {
+  topologyUpdateCategoryTypeIntent,
+  topologyUpdateCategoryIntent,
+  topologyAddFilterIntent,
+  topologyDeleteAllFiltersIntent,
+  topologyDeleteCategoryFiltersIntent,
+  topologyDeleteFilterIntent,
+} = topologyFilterSlice;
+
 export const rootReducer = combineReducers({
   dashboardConfigs: dashboardConfigReducer,
   recordingFilters: recordingFilterReducer,
   automatedAnalysisFilters: automatedAnalysisFilterReducer,
+  topologyConfigs: topologyConfigReducer,
+  topologyFilters: topologyFilterReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) =>

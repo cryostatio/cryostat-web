@@ -57,6 +57,9 @@ export const indexOfTarget = (arr: Target[], target: Target): number => {
   return index;
 };
 
+export const getTargetRepresentation = (t: Target) =>
+  !t.alias || t.alias === t.connectUrl ? `${t.connectUrl}` : `${t.alias} (${t.connectUrl})`;
+
 export interface Target {
   jvmId?: string; // present in responses, but we do not need to provide it in requests
   connectUrl: string;
