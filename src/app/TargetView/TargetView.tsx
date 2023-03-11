@@ -36,15 +36,18 @@
  * SOFTWARE.
  */
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { DashboardLayoutConfig } from '@app/Dashboard/DashboardLayoutConfig';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { ExpandableSection } from '@patternfly/react-core';
 import * as React from 'react';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { NoTargetSelected } from './NoTargetSelected';
 import { TargetContextSelector } from './TargetContextSelector';
 
 interface TargetViewProps {
+  appendDashboard?: boolean;
   pageTitle: string;
   breadcrumbs?: BreadcrumbTrail[];
   children: React.ReactNode;
@@ -70,6 +73,11 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   return (
     <>
       <TargetContextSelector />
+      {
+        props.appendDashboard && (
+            <DashboardLayoutConfig />
+        )
+      }
       <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
         {hasSelection ? props.children : <NoTargetSelected />}
       </BreadcrumbPage>

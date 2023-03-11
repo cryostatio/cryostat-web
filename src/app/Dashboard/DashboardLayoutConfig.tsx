@@ -76,6 +76,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
   const [oldName, setOldName] = React.useState<string | undefined>(undefined);
+  const [favorites, setFavorites] = React.useState<string[]>([]);
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
@@ -287,7 +288,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
 
   const toolbarContent = React.useMemo(() => {
     return (
-      <ToolbarContent>
+      <ToolbarContent style={{paddingLeft: '24px'}}>
         <ToolbarGroup>
           <ToolbarItem>{newButton}</ToolbarItem>
           <ToolbarItem spacer={{ default: 'spacerNone' }}>{menuDropdown}</ToolbarItem>

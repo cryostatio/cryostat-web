@@ -39,7 +39,6 @@ import { saveToLocalStorage } from '@app/utils/LocalStorage';
 import { Middleware } from '@reduxjs/toolkit';
 import { enumValues as DashboardConfigActions } from '../Configurations/DashboardConfigSlice';
 import { enumValues as TopologyConfigActions } from '../Configurations/TopologyConfigSlicer';
-import { enumValues as LayoutConfigActions } from '../Configurations/LayoutConfigSlice';
 import { enumValues as AutomatedAnalysisFilterActions } from '../Filters/AutomatedAnalysisFilterSlice';
 import { enumValues as RecordingFilterActions } from '../Filters/RecordingFilterSlice';
 import { enumValues as TopologyFilterActions } from '../Filters/TopologyFilterSlice';
@@ -63,8 +62,6 @@ export const persistMiddleware: Middleware<{}, RootState> =
       saveToLocalStorage('TOPOLOGY_CONFIG', rootState.topologyConfigs);
     } else if (TopologyFilterActions.has(action.type)) {
       saveToLocalStorage('TOPOLOGY_FILTERS', rootState.topologyFilters);
-    } else if (LayoutConfigActions.has(action.type)) {
-      saveToLocalStorage('DASHBOARD_LAYOUTS', rootState.layoutConfigs);
     } else {
       console.warn(`Action ${action.type} does not persist state.`);
     }

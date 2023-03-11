@@ -67,7 +67,6 @@ import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChar
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
-import { DashboardLayoutConfig } from './DashboardLayoutConfig';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
 
@@ -315,36 +314,9 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     new MBeanMetricsChartController(serviceContext.api, serviceContext.target, serviceContext.settings)
   );
 
-  function useClientRect() {
-    const [rect, setRect] = React.useState(null);
-    const ref = React.useCallback(node => {
-      if (node !== null) {
-        setRect(node.getBoundingClientRect());
-      }
-    }, []);
-    return [rect, ref];
-  }
-
   const currLayout = React.useMemo(() => {
     return dashboardConfigs.layouts[dashboardConfigs.current];
   }, [dashboardConfigs]);
-
-  const [rect, ref] = useClientRect();
-
-  const focusedButton = React.useMemo(() => {
-    return (
-      <Button
-        onClick={
-          () => {
-            const root = document.getElementById('root');
-            if (root) root.style.backgroundColor = 'red';
-          }
-        }
-      >
-        Button
-      </Button>
-    );
-  }, []);
 
   React.useEffect(() => {
     const layouts = getFromLocalStorage('DASHBOARD_CFG', {}) as DashboardConfigState;
@@ -403,8 +375,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
 
   return (
-    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')}>
-      <DashboardLayoutConfig />
+    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} appendDashboard>
       <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
           {currLayout.cards
