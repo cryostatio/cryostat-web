@@ -39,7 +39,6 @@ import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
 import { evaluateTargetWithExpr, hashCode } from '@app/utils/utils';
 import { Button } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
-import _ from 'lodash';
 import * as React from 'react';
 import { BehaviorSubject, debounceTime, Observable, Subscription } from 'rxjs';
 import { ContextMenuItem, MenuItemVariant, nodeActions } from '../Actions/NodeActions';

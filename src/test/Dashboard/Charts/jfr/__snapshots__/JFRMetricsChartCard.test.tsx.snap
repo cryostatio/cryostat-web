@@ -18,7 +18,7 @@ exports[`<JFRMetricsChartCard /> renders correctly: with-content 1`] = `
       id="CPU Load-chart-card"
       style={
         Object {
-          "height": 380,
+          "height": "380px",
         }
       }
     >

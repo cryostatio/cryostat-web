@@ -165,17 +165,20 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
     if (controllerState !== ControllerState.READY) {
       return {};
     }
-    let height: number;
+    if (props.isFullHeight) {
+      return { height: '100%' };
+    }
+    let height: string;
     switch (props.chartKind) {
       case 'Core Count':
-        height = 250;
+        height = '250px';
         break;
       default:
-        height = 380;
+        height = `380px`;
         break;
     }
     return { height };
-  }, [controllerState, props.chartKind]);
+  }, [controllerState, props.chartKind, props.isFullHeight]);
 
   const resyncButton = React.useMemo(() => {
     return (
@@ -255,6 +258,9 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
       isCompact
       style={cardStyle}
       cardHeader={header}
+      isDraggable={props.isDraggable}
+      isResizable={props.isResizable}
+      isFullHeight={props.isFullHeight}
     >
       <CardBody>
         {controllerState === ControllerState.UNKNOWN ? (

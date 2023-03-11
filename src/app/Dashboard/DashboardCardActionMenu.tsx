@@ -41,10 +41,16 @@ import { useTranslation } from 'react-i18next';
 
 export interface DashboardCardActionProps {
   onRemove: () => void;
+  onView: () => void;
   onResetSize: () => void;
 }
 
-export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = (props) => {
+export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActionProps> = ({
+  onRemove,
+  onResetSize,
+  onView,
+  ...props
+}) => {
   const [isOpen, setOpen] = React.useState(false);
 
   const [t] = useTranslation();
@@ -59,6 +65,7 @@ export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActio
   return (
     <>
       <Dropdown
+        {...props}
         isPlain
         isFlipEnabled
         menuAppendTo={'parent'}
@@ -67,10 +74,13 @@ export const DashboardCardActionMenu: React.FunctionComponent<DashboardCardActio
         toggle={<KebabToggle onToggle={setOpen} />}
         onSelect={onSelect}
         dropdownItems={[
-          <DropdownItem key="Remove" onClick={props.onRemove}>
+          <DropdownItem key="View" onClick={onView}>
+            {t('VIEW', { ns: 'common' })}
+          </DropdownItem>,
+          <DropdownItem key="Remove" onClick={onRemove}>
             {t('REMOVE', { ns: 'common' })}
           </DropdownItem>,
-          <DropdownItem key="Reset Size" onClick={props.onResetSize}>
+          <DropdownItem key="Reset Size" onClick={onResetSize}>
             {t('DashboardCardActionMenu.RESET_SIZE')}
           </DropdownItem>,
         ]}

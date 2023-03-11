@@ -60,7 +60,6 @@ import {
   InfoCircleIcon,
   WarningTriangleIcon,
 } from '@patternfly/react-icons';
-import _ from 'lodash';
 import * as React from 'react';
 
 export interface MatchExpressionEvaluatorProps {

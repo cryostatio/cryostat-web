@@ -69,6 +69,9 @@ const QuickStartsCard: React.FunctionComponent<QuickStartsCardProps> = (props) =
     <DashboardCard
       dashboardId={props.dashboardId}
       cardSizes={QuickStartsCardSizes}
+      isDraggable={props.isDraggable}
+      isResizable={props.isResizable}
+      isFullHeight={props.isFullHeight}
       cardHeader={
         <CardHeader>
           <CardTitle component="h2">{t('QuickStartsCard.TITLE')}</CardTitle>

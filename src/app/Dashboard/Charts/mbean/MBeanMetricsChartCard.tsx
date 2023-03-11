@@ -130,6 +130,7 @@ const SimpleChart: React.FC<{
       legendPosition={'bottom'}
       themeColor={themeColor}
       width={width}
+      height={width / 2} // Aspect radio: 2:1
       padding={{
         left: 54,
         right: 30,
@@ -270,6 +271,7 @@ const chartKinds: MBeanMetricsChartKind[] = [
           labels={({ datum }) => (datum.x ? `${datum.x}: ${datum.y.toFixed(2)}%` : null)}
           themeColor={themeColor}
           width={width}
+          height={width / 2} // Aspect radio: 2:1
         />
       );
     },
@@ -422,11 +424,11 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
 
   const visual = React.useMemo(
     () => (
-      <div ref={containerRef} style={{ height: 300 }} className="disabled-pointer">
+      <div ref={containerRef} style={{ height: props.isFullHeight ? '100%' : '300px' }} className="disabled-pointer">
         {chartKind.visual(props.themeColor, cardWidth, samples)}
       </div>
     ),
-    [containerRef, props.themeColor, chartKind, cardWidth, samples]
+    [containerRef, props.themeColor, props.isFullHeight, chartKind, cardWidth, samples]
   );
 
   return (
@@ -435,6 +437,9 @@ export const MBeanMetricsChartCard: React.FC<MBeanMetricsChartCardProps> = (prop
       dashboardId={props.dashboardId}
       cardSizes={MBeanMetricsChartCardSizes}
       isCompact
+      isDraggable={props.isDraggable}
+      isResizable={props.isResizable}
+      isFullHeight={props.isFullHeight}
       cardHeader={header}
     >
       <CardBody>{visual}</CardBody>

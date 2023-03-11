@@ -49,6 +49,8 @@ export interface DashboardCardProps extends CardProps {
   dashboardId: number;
   cardSizes: DashboardCardSizes;
   cardHeader: React.ReactNode;
+  isDraggable?: boolean;
+  isResizable?: boolean;
   children?: React.ReactNode;
 }
 
@@ -56,7 +58,10 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   children = null,
   cardHeader = null,
   dashboardId,
+  isDraggable = true,
+  isResizable = true,
   cardSizes,
+
   ...props
 }: DashboardCardProps) => {
   const cardRef = React.useRef<HTMLDivElement>(null);
@@ -73,25 +78,41 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
     }
   }, []);
 
-  return (
-    <DashboardCardContext.Provider value={cardRef}>
-      <DraggableRef dashboardId={dashboardId}>
-        <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
-          <Card className="dashboard-card" isRounded {...props}>
-            <div
-              className={css(`${draggableRefKlazz}__grip`)}
-              onMouseEnter={onMouseEnter}
-              onMouseLeave={onMouseLeave}
-              draggable // draggable is required for drag events to fire
-            >
-              {cardHeader}
-            </div>
+  const resizeBar = React.useMemo(() => {
+    return isResizable ? <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} /> : null;
+  }, [isResizable, cardSizes, dashboardId]);
+
+  const content = React.useMemo(
+    () =>
+      isDraggable ? (
+        <DraggableRef dashboardId={dashboardId}>
+          <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
+            <Card className="dashboard-card" isRounded {...props}>
+              <div
+                className={css(`${draggableRefKlazz}__grip`)}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                draggable // draggable is required for drag events to fire
+              >
+                {cardHeader}
+              </div>
+              {children}
+            </Card>
+            {resizeBar}
+          </div>
+        </DraggableRef>
+      ) : (
+        <>
+          <Card isRounded {...props}>
+            {cardHeader}
             {children}
           </Card>
-          <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} />
-        </div>
-      </DraggableRef>
-    </DashboardCardContext.Provider>
+          {resizeBar}
+        </>
+      ),
+    [cardRef, props, onMouseEnter, onMouseLeave, cardHeader, children, isDraggable, dashboardId, resizeBar]
   );
+
+  return <DashboardCardContext.Provider value={cardRef}>{content}</DashboardCardContext.Provider>;
 };
 DashboardCard.displayName = 'DashboardCard';

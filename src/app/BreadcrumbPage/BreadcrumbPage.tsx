@@ -80,5 +80,5 @@ export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = (props) => {
 export const isItemFilled = (item: React.ReactNode): boolean => {
   if (!item) return false;
   const toCheck = item['props'] ? item['props'] : item;
-  return toCheck['isFilled'] || toCheck['isFullHeight'];
+  return toCheck['isFilled'] || toCheck['isFullHeight'] || toCheck['data-full-height'];
 };
