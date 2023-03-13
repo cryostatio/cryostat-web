@@ -9,9 +9,9 @@
   "CANCEL": "Cancel",
   "CARD_TYPE": "Card type",
   "CLEAR_FILTERS": "Clear all filters",
-  "CRITICAL": "CRITICAL",
   "CREATE": "Create",
   "CREATING": "Creating",
+  "CRITICAL": "CRITICAL",
   "CRYOSTAT_TRADEMARK": "Copyright The Cryostat Authors, The Universal Permissive License (UPL), Version 1.0",
   "DATE": "Date",
   "DESCRIPTION": "Description",
@@ -47,5 +47,6 @@
   "TEMPLATE": "Template",
   "TEMPLATE_HELPER_TEXT_INVALID": "Template must be selected",
   "TIME": "Time",
+  "VIEW": "View",
   "WARNING": "WARNING"
 }

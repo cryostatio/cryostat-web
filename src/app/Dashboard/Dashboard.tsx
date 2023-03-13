@@ -52,6 +52,7 @@ import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { Observable, of } from 'rxjs';
 import { AddCard } from './AddCard';
 import { AutomatedAnalysisCardDescriptor } from './AutomatedAnalysis/AutomatedAnalysisCard';
@@ -101,6 +102,9 @@ export interface DashboardProps {}
 export interface DashboardCardProps {
   span: number;
   dashboardId: number;
+  isDraggable?: boolean;
+  isResizable?: boolean;
+  isFullHeight?: boolean;
   actions?: JSX.Element[];
 }
 
@@ -286,6 +290,7 @@ export function getConfigByTitle(title: string, t: TFunction): DashboardCardDesc
 }
 
 export const Dashboard: React.FC<DashboardProps> = (_) => {
+  const history = useHistory();
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
   const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
@@ -361,6 +366,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
                         key={`${cfg.name}-actions`}
                         onRemove={() => handleRemove(idx)}
                         onResetSize={() => handleResetSize(idx)}
+                        onView={() => history.push(`/d-solo?cardId=${cfg.id}`)}
                       />,
                     ],
                   })}

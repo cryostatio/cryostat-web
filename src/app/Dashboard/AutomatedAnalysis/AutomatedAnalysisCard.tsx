@@ -850,6 +850,9 @@ export const AutomatedAnalysisCard: React.FC<AutomatedAnalysisCardProps> = (prop
       cardSizes={AutomatedAnalysisCardSizes}
       id="automated-analysis-card"
       isCompact
+      isDraggable={props.isDraggable}
+      isResizable={props.isResizable}
+      isFullHeight={props.isFullHeight}
       isExpanded={isCardExpanded}
       cardHeader={header}
     >
