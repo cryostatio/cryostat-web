@@ -366,7 +366,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
                         key={`${cfg.name}-actions`}
                         onRemove={() => handleRemove(idx)}
                         onResetSize={() => handleResetSize(idx)}
-                        onView={() => history.push(`/d-solo?cardId=${cardConfigs[idx].id}`)}
+                        onView={() => history.push(`/d-solo?cardId=${cfg.id}`)}
                       />,
                     ],
                   })}

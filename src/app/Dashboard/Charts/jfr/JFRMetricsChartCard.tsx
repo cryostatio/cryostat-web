@@ -162,11 +162,8 @@ export const JFRMetricsChartCard: React.FC<JFRMetricsChartCardProps> = (props) =
   }, [chartSrc, dashboardUrl]);
 
   const cardStyle = React.useMemo(() => {
-    if (controllerState !== ControllerState.READY) {
+    if (controllerState !== ControllerState.READY || props.isFullHeight) {
       return {};
-    }
-    if (props.isFullHeight) {
-      return { height: '100%' };
     }
     let height: string;
     switch (props.chartKind) {
