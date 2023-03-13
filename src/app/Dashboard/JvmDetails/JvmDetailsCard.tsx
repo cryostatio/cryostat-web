@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 
-import { MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Target } from '@app/Shared/Services/Target.service';
@@ -45,7 +44,6 @@ import { NodeType, TargetNode } from '@app/Topology/typings';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
 import * as React from 'react';
-import { map, mergeMap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import '@app/Topology/styles/base.css';
@@ -56,51 +54,10 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  // TODO handle targets requiring credentials
-  const [target, setTarget] = React.useState(undefined as EnhancedTarget | undefined);
+  const [target, setTarget] = React.useState(undefined as Target | undefined);
 
   React.useEffect(() => {
-    addSubscription(
-      context.target
-        .target()
-        .pipe(
-          mergeMap((plain) =>
-            context.api
-              .graphql<MBeanMetricsResponse>(
-                `
-          query MBeanMXMetricsForTarget($connectUrl: String) {
-            targetNodes(filter: { name: $connectUrl }) {
-              mbeanMetrics {
-                runtime {
-                  startTime
-                  vmVendor
-                  vmVersion
-                }
-                os {
-                  version
-                  arch
-                  availableProcessors
-                }
-              }
-            }
-          }`,
-                { connectUrl: plain.connectUrl }
-              )
-              .pipe(
-                map((resp) => ({
-                  ...plain,
-                  startTime: resp.data.targetNodes[0].mbeanMetrics?.runtime?.startTime || 0,
-                  vmVendor: resp.data.targetNodes[0].mbeanMetrics?.runtime?.vmVendor || 'unknown',
-                  vmVersion: resp.data.targetNodes[0].mbeanMetrics?.runtime?.vmVersion || 'unknown',
-                  arch: resp.data.targetNodes[0].mbeanMetrics?.os?.arch || 'unknown',
-                  osVersion: resp.data.targetNodes[0].mbeanMetrics?.os?.version || 'unknown',
-                  availableProcessors: resp.data.targetNodes[0].mbeanMetrics?.os?.availableProcessors || -1,
-                }))
-              )
-          )
-        )
-        .subscribe(setTarget)
-    );
+    addSubscription(context.target.target().subscribe(setTarget));
   }, [addSubscription, context.target, context.api, setTarget]);
 
   const wrappedTarget = React.useMemo((): TargetNode | undefined => {
@@ -133,15 +90,6 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
     </DashboardCard>
   );
 };
-
-interface EnhancedTarget extends Target {
-  arch: string;
-  availableProcessors: number;
-  osVersion: string;
-  startTime: number;
-  vmVendor: string;
-  vmVersion: string;
-}
 
 export const JvmDetailsCardSizes: DashboardCardSizes = {
   span: {
