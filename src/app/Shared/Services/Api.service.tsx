@@ -190,44 +190,27 @@ export class ApiService {
       });
   }
 
-  createTarget(target: Target): Observable<boolean> {
+  createTarget(
+    target: Target,
+    credentials?: { username?: string; password?: string },
+    storeCredentials = false,
+    dryrun = false
+  ): Observable<{ status: number; body: object }> {
     const form = new window.FormData();
     form.append('connectUrl', target.connectUrl);
     if (target.alias && target.alias.trim()) {
       form.append('alias', target.alias);
     }
-    return this.sendRequest('v2', `targets`, {
-      method: 'POST',
-      body: form,
-    }).pipe(
-      map((resp) => resp.ok),
-      catchError(() => of(false)),
-      first()
-    );
-  }
-
-  testTarget(
-    target: Target,
-    credentials?: { username?: string; password?: string },
-    abortSignal?: AbortSignal
-  ): Observable<{ status: number; body: object }> {
-    const form = new window.FormData();
-    form.append('connectUrl', target.connectUrl);
-    if (!!target.alias && !!target.alias.trim()) {
-      form.append('alias', target.alias);
-    }
     credentials?.username && form.append('username', credentials.username);
     credentials?.password && form.append('password', credentials.password);
-
     return this.sendRequest(
       'v2',
       `targets`,
       {
         method: 'POST',
         body: form,
-        signal: abortSignal,
       },
-      new URLSearchParams({ dryrun: 'true' }),
+      new URLSearchParams({ storeCredentials: `${storeCredentials}`, dryrun: `${dryrun}` }),
       true,
       true
     ).pipe(

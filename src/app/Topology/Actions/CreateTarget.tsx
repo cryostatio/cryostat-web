@@ -38,12 +38,14 @@
 
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
+import { Locations } from '@app/Settings/CredentialsStorage';
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { isHttpOk } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import '@app/Topology/styles/base.css';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Accordion,
@@ -187,20 +189,32 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
 
   const handleSubmit = React.useCallback(() => {
     setLoading(true);
+    // Get storage location
+    const locationKey = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
     addSubscription(
       context.api
-        .createTarget({
-          connectUrl: connectUrl,
-          alias: alias.trim() || connectUrl,
-        })
-        .subscribe((success) => {
+        .createTarget(
+          {
+            connectUrl: connectUrl,
+            alias: alias.trim() || connectUrl,
+          },
+          credentials,
+          locationKey === Locations.BACKEND.key
+        )
+        .subscribe(({ status, body }) => {
           setLoading(false);
-          if (success) {
+          const option = isHttpOk(status) ? ValidatedOptions.success : ValidatedOptions.error;
+          if (option === ValidatedOptions.success) {
             history.push('/topology');
+          } else {
+            setValidation({
+              option: option,
+              errorMessage: body['data']['reason'],
+            });
           }
         })
     );
-  }, [setLoading, addSubscription, context.api, connectUrl, alias, history]);
+  }, [setLoading, setValidation, addSubscription, context.api, connectUrl, alias, history, credentials]);
 
   const testTarget = React.useCallback(() => {
     if (!isValidTargetConnectURL(connectUrl)) {
@@ -208,12 +222,14 @@ export const CreateTarget: React.FC<CreateTargetProps> = ({ prefilled, ..._props
     }
     addSubscription(
       context.api
-        .testTarget(
+        .createTarget(
           {
             connectUrl: connectUrl,
             alias: alias.trim() || connectUrl,
           },
-          credentials
+          credentials,
+          false,
+          true
         )
         .subscribe(({ status, body }) => {
           setTesting(false);
