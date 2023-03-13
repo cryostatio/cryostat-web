@@ -40,33 +40,21 @@ import { MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Target } from '@app/Shared/Services/Target.service';
-import useDayjs from '@app/utils/useDayjs';
+import EntityDetails from '@app/Topology/Shared/Entity/EntityDetails';
+import { NodeType, TargetNode } from '@app/Topology/typings';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import {
-  CardActions,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
-  Label,
-  LabelGroup,
-} from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import { map, mergeMap } from 'rxjs';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
+import '@app/Topology/styles/base.css';
 
 export interface JvmDetailsCardProps extends DashboardCardProps {}
 
 export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
-  const { t } = useTranslation();
-  const [dayjs, dateTimeFormat] = useDayjs();
 
   // TODO handle targets requiring credentials
   const [target, setTarget] = React.useState(undefined as EnhancedTarget | undefined);
@@ -115,6 +103,18 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
     );
   }, [addSubscription, context.target, context.api, setTarget]);
 
+  const wrappedTarget = React.useMemo((): TargetNode | undefined => {
+    if (!target) {
+      return undefined;
+    }
+    return {
+      name: target.alias,
+      target,
+      nodeType: NodeType.JVM,
+      labels: {},
+    };
+  }, [target]);
+
   return (
     <DashboardCard
       id={`${props.dashboardId}`}
@@ -124,87 +124,11 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
       cardHeader={
         <CardHeader>
           <CardActions>{...props.actions || []}</CardActions>
-          <CardTitle component="h4">{t('JvmDetailsCard.CARD_TITLE')}</CardTitle>
         </CardHeader>
       }
     >
       <CardBody>
-        <DescriptionList isCompact isHorizontal isFluid>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.CONNECTION_URL')}</DescriptionListTerm>
-            <DescriptionListDescription>{target?.connectUrl}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.ALIAS')}</DescriptionListTerm>
-            <DescriptionListDescription>{target?.alias}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.START_TIME')}</DescriptionListTerm>
-            <DescriptionListDescription>
-              {dayjs(target?.startTime).tz(dateTimeFormat.timeZone.full).format('LLLL')}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.LABELS')}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <LabelGroup>
-                {Object.entries(target?.labels || {}).map(([key, value]) => (
-                  <Label key={'label-' + key} color="blue">
-                    {key}={value}
-                  </Label>
-                ))}
-              </LabelGroup>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.PLATFORM_ANNOTATIONS')}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <LabelGroup>
-                {Object.entries(target?.annotations?.platform || {}).map(([key, value]) => (
-                  <Label key={'platform-annotation-' + key} color="cyan">
-                    {key}={value}
-                  </Label>
-                ))}
-              </LabelGroup>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.CRYOSTAT_ANNOTATIONS')}</DescriptionListTerm>
-            <DescriptionListDescription>
-              <LabelGroup>
-                {Object.entries(target?.annotations?.cryostat || {}).map(([key, value]) => (
-                  <Label key={'cryostat-annotation-' + key} color="green">
-                    {key}={value}
-                  </Label>
-                ))}
-              </LabelGroup>
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.VM_VERSION')}</DescriptionListTerm>
-            <DescriptionListDescription>{target?.vmVersion}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.VM_VENDOR')}</DescriptionListTerm>
-            <DescriptionListDescription>{target?.vmVendor}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.OS_ARCH')}</DescriptionListTerm>
-            <DescriptionListDescription>{target?.arch}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.OS_VERSION')}</DescriptionListTerm>
-            <DescriptionListDescription>{target?.osVersion}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.AVAILABLE_PROCESSORS')}</DescriptionListTerm>
-            <DescriptionListDescription>{target?.availableProcessors}</DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>{t('JvmDetailsCard.terms.JVM_ID')}</DescriptionListTerm>
-            <DescriptionListDescription>{target?.jvmId}</DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
+        <EntityDetails entity={{ getData: () => wrappedTarget }} />
       </CardBody>
     </DashboardCard>
   );
