@@ -98,16 +98,24 @@ import {
 } from './utils';
 import useDayjs from '@app/utils/useDayjs';
 import { MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
+import { NodeAction } from '@app/Topology/Actions/NodeActions';
 
 export interface EntityDetailsProps {
   entity?: GraphElement | ListElement;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
   className?: string;
+  actionFilter?: (_: NodeAction) => boolean;
 }
 
 type _supportedTab = 'details' | 'resources';
 
-export const EntityDetails: React.FC<EntityDetailsProps> = ({ entity, className, columnModifier, ...props }) => {
+export const EntityDetails: React.FC<EntityDetailsProps> = ({
+  entity,
+  className,
+  columnModifier,
+  actionFilter,
+  ...props
+}) => {
   const [activeTab, setActiveTab] = React.useState<_supportedTab>('details');
   const [actionOpen, setActionOpen] = React.useState(false);
 
@@ -117,7 +125,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({ entity, className,
       const isTarget = isTargetNode(data);
       const titleContent = isTarget ? data.target.alias : data.name;
 
-      const _actions = actionFactory(entity, 'dropdownItem');
+      const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
 
       return (
         <div {...props}>

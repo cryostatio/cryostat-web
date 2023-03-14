@@ -91,7 +91,16 @@ export const ContextMenuItem: React.FC<ContextMenuItemProps> = ({ children, elem
   );
 };
 
+export type NodeActionKey =
+  | 'VIEW_DASHBOARD'
+  | 'VIEW_RECORDINGS'
+  | 'CREATE_RECORDINGS'
+  | 'CREATE_RULES'
+  | 'DELETE_TARGET'
+  | '';
+
 export interface NodeAction {
+  key: NodeActionKey;
   action?: NodeActionFunction;
   title?: React.ReactNode;
   isSeparator?: boolean;
@@ -101,6 +110,7 @@ export interface NodeAction {
 
 export const nodeActions: NodeAction[] = [
   {
+    key: 'VIEW_DASHBOARD',
     action: (element, { history, services }, _) => {
       const targetNode: TargetNode = element.getData();
 
@@ -110,6 +120,7 @@ export const nodeActions: NodeAction[] = [
     title: 'View Dashboard',
   },
   {
+    key: 'VIEW_RECORDINGS',
     action: (element, { history, services }, _) => {
       const targetNode: TargetNode = element.getData();
 
@@ -118,8 +129,9 @@ export const nodeActions: NodeAction[] = [
     },
     title: 'View Recordings',
   },
-  { isSeparator: true },
+  { key: '', isSeparator: true },
   {
+    key: 'CREATE_RECORDINGS',
     action: (element, { history, services }, _) => {
       const targetNode: TargetNode = element.getData();
 
@@ -129,6 +141,7 @@ export const nodeActions: NodeAction[] = [
     title: 'Create Recordings',
   },
   {
+    key: 'CREATE_RULES',
     action: (element, { history, services }, _) => {
       const targetNode: TargetNode = element.getData();
 
@@ -137,8 +150,9 @@ export const nodeActions: NodeAction[] = [
     },
     title: 'Create Automated Rules',
   },
-  { isSeparator: true },
+  { key: '', isSeparator: true },
   {
+    key: 'DELETE_TARGET',
     action: (element, { services }, track) => {
       const targetNode: TargetNode = element.getData();
       track(services.api.deleteTarget(targetNode.target).subscribe(() => undefined));

@@ -47,6 +47,7 @@ import * as React from 'react';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import '@app/Topology/styles/base.css';
+import { NodeAction } from '@app/Topology/Actions/NodeActions';
 
 export interface JvmDetailsCardProps extends DashboardCardProps {}
 
@@ -74,6 +75,10 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
     };
   }, [target]);
 
+  const actionFilter = React.useCallback((action: NodeAction): boolean => {
+    return action.key !== 'VIEW_DASHBOARD';
+  }, []);
+
   return (
     <DashboardCard
       id={`${props.dashboardId}`}
@@ -87,7 +92,7 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
       {...props}
     >
       <CardBody>
-        <EntityDetails entity={wrappedTarget} />
+        <EntityDetails entity={wrappedTarget} actionFilter={actionFilter} />
       </CardBody>
     </DashboardCard>
   );
