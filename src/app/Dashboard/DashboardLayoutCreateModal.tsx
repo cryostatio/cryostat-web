@@ -65,8 +65,8 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   const [name, setName] = React.useState<string>('');
 
   React.useEffect(() => {
-    if (props.oldName !== undefined) setName(props.oldName);
-  }, [props.oldName]);
+    setName(props.oldName || '');
+  }, [setName, props.oldName]);
 
   const isCreateModal = React.useMemo((): boolean => {
     return props.oldName === undefined;
@@ -94,8 +94,10 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
   );
 
   const handleClose = React.useCallback(() => {
+    setName(props.oldName || '');
+    setValidated('default');
     onClose();
-  }, [onClose]);
+  }, [setName, setValidated, onClose, props.oldName]);
 
   const handleSubmit = React.useCallback(() => {
     const newLayout: DashboardLayout = {
@@ -117,9 +119,9 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
       }
     }
     dispatch(dashboardConfigReplaceLayoutIntent(name));
-    onClose();
     setName('');
-  }, [dispatch, onClose, name, isCreateModal, props.oldName]);
+    onClose();
+  }, [dispatch, setName, onClose, name, isCreateModal, props.oldName]);
 
   const formGroup = React.useMemo(() => {
     return (
