@@ -57,6 +57,7 @@ import {
   Divider,
   Dropdown,
   DropdownToggle,
+  ExpandableSection,
   Flex,
   FlexItem,
   Popover,
@@ -73,7 +74,7 @@ import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-tab
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { catchError, combineLatest, concatMap, merge, of, Subject, switchMap } from 'rxjs';
+import { catchError, combineLatest, concatMap, map, merge, of, Subject, switchMap } from 'rxjs';
 import { isRenderable } from '../../GraphView/UtilsFactory';
 import { EnvironmentNode, isTargetNode, TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
@@ -95,6 +96,8 @@ import {
   TargetRelatedResourceType,
   TargetRelatedResourceTypeAsArray,
 } from './utils';
+import useDayjs from '@app/utils/useDayjs';
+import { MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 
 export interface EntityDetailsProps {
   entity?: GraphElement | ListElement;
@@ -171,7 +174,40 @@ export const TargetDetails: React.FC<{
   targetNode: TargetNode;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
 }> = ({ targetNode, columnModifier, ...props }) => {
+  const context = React.useContext(ServiceContext);
+  const [dayjs, dateTimeFormat] = useDayjs();
+  const addSubscription = useSubscriptions();
   const serviceRef = React.useMemo(() => targetNode.target, [targetNode]);
+  const [isExpanded, setExpanded] = React.useState(false);
+  const [mbeanMetrics, setMbeanMetrics] = React.useState({} as MBeanMetrics);
+
+  React.useEffect(() => {
+    addSubscription(
+      context.api
+        .graphql<MBeanMetricsResponse>(
+          `
+          query MBeanMXMetricsForTarget($connectUrl: String) {
+            targetNodes(filter: { name: $connectUrl }) {
+              mbeanMetrics {
+                runtime {
+                  startTime
+                  vmVendor
+                  vmVersion
+                }
+                os {
+                  version
+                  arch
+                  availableProcessors
+                }
+              }
+            }
+          }`,
+          { connectUrl: serviceRef.connectUrl }
+        )
+        .pipe(map((resp) => resp.data.targetNodes[0].mbeanMetrics))
+        .subscribe(setMbeanMetrics)
+    );
+  }, [addSubscription, serviceRef, context.api, setMbeanMetrics]);
 
   const _transformedData = React.useMemo(() => {
     return [
@@ -214,20 +250,80 @@ export const TargetDetails: React.FC<{
     ];
   }, [serviceRef]);
 
+  const _collapsedData = React.useMemo(() => {
+    return [
+      {
+        key: 'Start Time',
+        title: 'Start Time',
+        helperTitle: 'Start Time',
+        helperDescription: 'The time when this JVM process started.',
+        content: dayjs(mbeanMetrics?.runtime?.startTime || 0)
+          .tz(dateTimeFormat.timeZone.full)
+          .format('LLLL'),
+      },
+      {
+        key: 'JVM Version',
+        title: 'JVM Version',
+        helperTitle: 'JVM Version',
+        helperDescription: 'The version of the JVM.',
+        content: mbeanMetrics.runtime?.vmVersion,
+      },
+      {
+        key: 'JVM Vendor',
+        title: 'JVM Vendor',
+        helperTitle: 'JVM Vendor',
+        helperDescription: 'The vendor who supplied this JVM',
+        content: mbeanMetrics.runtime?.vmVendor,
+      },
+      {
+        key: 'Operating System Architecture',
+        title: 'Operating System Architecture',
+        helperTitle: 'Operating System Architecture',
+        helperDescription: 'The CPU architecture of the host system.',
+        content: mbeanMetrics.os?.arch,
+      },
+      {
+        key: 'Operating System Version',
+        title: 'Operating System Version',
+        helperTitle: 'Operating System Version',
+        helperDescription: 'The version of the host operating system.',
+        content: mbeanMetrics.os?.version,
+      },
+      {
+        key: 'Available Processors',
+        title: 'Available Processors',
+        helperTitle: 'Available Processors',
+        helperDescription: 'The count of total processors available to the JVM process on its host.',
+        content: mbeanMetrics.os?.availableProcessors,
+      },
+    ];
+  }, [mbeanMetrics]);
+
+  const onToggle = React.useCallback(() => setExpanded((v) => !v), [setExpanded]);
+
+  const mapSection = (d) => (
+    <DescriptionListGroup key={d.key}>
+      <DescriptionListTermHelpText>
+        <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
+          <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
+        </Popover>
+      </DescriptionListTermHelpText>
+      <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>
+        {d.content}
+      </DescriptionListDescription>
+    </DescriptionListGroup>
+  );
+
   return (
     <DescriptionList {...props} columnModifier={columnModifier}>
-      {_transformedData.map((d) => (
-        <DescriptionListGroup key={d.key}>
-          <DescriptionListTermHelpText>
-            <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
-              <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
-            </Popover>
-          </DescriptionListTermHelpText>
-          <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>
-            {d.content}
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-      ))}
+      {_transformedData.map(mapSection)}
+      <ExpandableSection
+        toggleText={isExpanded ? 'Show less' : 'Show more'}
+        onToggle={onToggle}
+        isExpanded={isExpanded}
+      >
+        {_collapsedData.map(mapSection)}
+      </ExpandableSection>
     </DescriptionList>
   );
 };
