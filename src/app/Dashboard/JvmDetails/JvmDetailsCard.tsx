@@ -40,7 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Target } from '@app/Shared/Services/Target.service';
 import EntityDetails from '@app/Topology/Shared/Entity/EntityDetails';
-import { NodeType, TargetNode } from '@app/Topology/typings';
+import { NodeType } from '@app/Topology/typings';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { CardActions, CardBody, CardHeader } from '@patternfly/react-core';
 import * as React from 'react';
@@ -54,28 +54,29 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
 
-  const [target, setTarget] = React.useState(undefined as Target | undefined);
+  const [target, setTarget] = React.useState<Target>();
 
   React.useEffect(() => {
     addSubscription(context.target.target().subscribe(setTarget));
   }, [addSubscription, context.target, context.api, setTarget]);
 
-  const wrappedTarget = React.useMemo((): TargetNode | undefined => {
+  const wrappedTarget = React.useMemo(() => {
     if (!target) {
       return undefined;
     }
     return {
-      name: target.alias,
-      target,
-      nodeType: NodeType.JVM,
-      labels: {},
+      getData: () => ({
+        name: target.alias,
+        target,
+        nodeType: NodeType.JVM,
+        labels: {},
+      }),
     };
   }, [target]);
 
   return (
     <DashboardCard
       id={`${props.dashboardId}`}
-      dashboardId={props.dashboardId}
       cardSizes={JvmDetailsCardSizes}
       isCompact
       cardHeader={
@@ -83,9 +84,10 @@ export const JvmDetailsCard: React.FC<JvmDetailsCardProps> = (props) => {
           <CardActions>{...props.actions || []}</CardActions>
         </CardHeader>
       }
+      {...props}
     >
       <CardBody>
-        <EntityDetails entity={{ getData: () => wrappedTarget }} />
+        <EntityDetails entity={wrappedTarget} />
       </CardBody>
     </DashboardCard>
   );
