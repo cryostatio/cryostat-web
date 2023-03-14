@@ -80,7 +80,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
   }, []);
 
   const resizeBar = React.useMemo(() => {
-    return isResizable ? <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} /> : null;
+    return isResizable ? <ResizableRef cardId={dashboardId} cardSizes={cardSizes} /> : null;
   }, [isResizable, cardSizes, dashboardId]);
 
   const content = React.useMemo(
