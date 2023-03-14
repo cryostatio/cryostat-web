@@ -42,7 +42,6 @@ import { Rule } from '@app/Rules/Rules';
 import { EnvironmentNode } from '@app/Topology/typings';
 import { createBlobURL } from '@app/utils/utils';
 import _ from 'lodash';
-import { nanoid } from 'nanoid';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, filter, first, map, mergeMap, tap } from 'rxjs/operators';
@@ -1157,7 +1156,7 @@ export class ApiService {
   
   downloadDashboardLayout(layout: DashboardConfigState): void {
     const serializedLayout = this.getSerializedDashboardLayout(layout);
-    const filename = `${layout.name}${nanoid(5)}.json`;
+    const filename = `cryostat-dashboard-${layout.name}.json`;
     const file = new File([serializedLayout], filename);
     const resourceUrl = URL.createObjectURL(file);
     this.downloadFile(resourceUrl, filename);

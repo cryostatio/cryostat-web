@@ -5,6 +5,9 @@ Array [
   <div>
     Target Context Selector
   </div>,
+  <div>
+    Dashboard Layout Config
+  </div>,
   <section
     className="pf-c-page__main-section"
   >
@@ -39,9 +42,6 @@ Array [
           className="pf-l-grid pf-m-gutter"
           id="dashboard-grid"
         >
-          <div>
-            Dashboard Layout Config
-          </div>
           <div
             className="pf-l-grid__item"
             style={

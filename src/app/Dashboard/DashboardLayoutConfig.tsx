@@ -47,7 +47,6 @@ import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage
 import {
   Button,
   Divider,
-  DropdownToggle,
   Menu,
   MenuContent,
   MenuGroup,
@@ -149,7 +148,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   }, []);
 
   const onLayoutSelect = React.useCallback(
-    (_event: React.MouseEvent<Element, MouseEvent> | undefined, itemId: number | string | undefined) => {
+    (_ev: React.MouseEvent<Element, MouseEvent> | undefined, itemId: number | string | undefined) => {
       const found = dashboardConfigs.layouts.find((l) => l.name === itemId);
       if (found) {
         dispatch(dashboardConfigReplaceLayoutIntent(found.name));
@@ -162,7 +161,8 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   );
 
   const onActionClick = React.useCallback(
-    (_evt: React.MouseEvent<HTMLButtonElement, MouseEvent>, itemId: string, actionId: string) => {
+    (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>, itemId: string, actionId: string) => {
+      ev.stopPropagation(); // prevent the dropdown from closing
       if (actionId === 'rename') {
         handleRenameLayout(itemId);
       } else if (actionId === 'delete') {
@@ -295,13 +295,9 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     return (
       <Dropdown
         isOpen={isSelectorOpen}
+        onOpenChange={onToggle}
         toggle={(toggleRef) => (
-          <MenuToggle
-            ref={toggleRef}
-            id="dashboard-layout-dropdown-toggle"
-            onClick={onToggle}
-            isExpanded={isSelectorOpen}
-          >
+          <MenuToggle ref={toggleRef} id="dashboard-layout-dropdown-toggle" onClick={onToggle}>
             {currLayout.name}
           </MenuToggle>
         )}
@@ -312,7 +308,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
           onSelect={onLayoutSelect}
           onActionClick={onActionClick}
         >
-          <MenuContent maxMenuHeight="16em" id="dashboard-layout-menu-content" style={{ overflow: 'unset' }}>
+          <MenuContent maxMenuHeight="16em" id="dashboard-layout-menu-content">
             {menuGroups(t('DashboardLayoutConfig.MENU.FAVORITES'), true, (l) => favorites.includes(l.name))}
             <Divider />
             {menuGroups(t('DashboardLayoutConfig.MENU.OTHERS'), false, (l) => !favorites.includes(l.name))}
