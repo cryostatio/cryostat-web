@@ -152,7 +152,9 @@
       "LABEL": "Download layout"
     },
     "MENU": {
-      "LABEL": "Layout menu"
+      "FAVORITES": "Favorites",
+      "LABEL": "Layout menu",
+      "OTHERS": "Layouts"
     },
     "NEW": {
       "LABEL": "New layout"

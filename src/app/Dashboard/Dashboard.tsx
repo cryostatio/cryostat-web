@@ -51,7 +51,7 @@ import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
 import { TargetView } from '@app/TargetView/TargetView';
 import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { Button, CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
+import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -299,7 +299,6 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const history = useHistory();
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
-  const addSubscription = useSubscriptions();
   const { t } = useTranslation();
   const dashboardConfigs: DashboardConfigState = useSelector((state: RootState) => state.dashboardConfigs);
   const jfrChartController = React.useRef(
@@ -322,20 +321,6 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     const layouts = getFromLocalStorage('DASHBOARD_CFG', {}) as DashboardConfigState;
     if (layouts._version === undefined) {
       dispatch(dashboardConfigFirstRunIntent());
-      addSubscription(
-        serviceContext.target.target().subscribe((target) => {
-          if (target === NO_TARGET) {
-            console.log("haven't connected to a target yet");
-            const mockTarget: Target = {
-              connectUrl: 'http://localhost:8080',
-              alias: "Tutorial Target",
-            };
-            serviceContext.target.setTarget(mockTarget);
-          } else {
-            console.log('connected to a target, loading dashboard config');  
-          }
-        })
-      )
     }
   }, [dispatch]);
 
@@ -372,7 +357,6 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     },
     [dispatch, currLayout]
   );
-
 
   return (
     <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} appendDashboard>

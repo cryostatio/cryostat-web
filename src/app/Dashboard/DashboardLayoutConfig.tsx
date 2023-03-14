@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigDeleteLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
@@ -42,19 +43,24 @@ import {
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import {
   Button,
-  Dropdown,
+  Divider,
   DropdownToggle,
   Menu,
   MenuContent,
+  MenuGroup,
   MenuItem,
   MenuItemAction,
+  MenuList,
+  MenuToggle,
   Toolbar,
   ToolbarContent,
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
+import { Dropdown } from '@patternfly/react-core/dist/js/next';
 import { DownloadIcon, PencilAltIcon, PlusCircleIcon, TrashIcon, UploadIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,7 +82,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
   const [oldName, setOldName] = React.useState<string | undefined>(undefined);
-  const [favorites, setFavorites] = React.useState<string[]>([]);
+  const [favorites, setFavorites] = React.useState<string[]>(getFromLocalStorage('LAYOUT_FAVORITES', ['Default']));
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
@@ -126,6 +132,17 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     [setOldName, setIsCreateModalOpen]
   );
 
+  const handleFavoriteLayout = React.useCallback(
+    (layoutName: string) => {
+      setFavorites((old) => {
+        const newFavs = old.includes(layoutName) ? old.filter((f) => f !== layoutName) : [...old, layoutName];
+        saveToLocalStorage('LAYOUT_FAVORITES', newFavs);
+        return newFavs;
+      });
+    },
+    [setFavorites]
+  );
+
   const onFocus = React.useCallback(() => {
     const element = document.getElementById('dashboard-layout-dropdown-toggle');
     if (element) element.focus();
@@ -140,9 +157,8 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         console.error('layout not found ' + itemId);
       }
       onFocus();
-      setIsSelectorOpen(false);
     },
-    [dispatch, onFocus, setIsSelectorOpen, dashboardConfigs]
+    [dispatch, onFocus, dashboardConfigs]
   );
 
   const onActionClick = React.useCallback(
@@ -151,11 +167,11 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         handleRenameLayout(itemId);
       } else if (actionId === 'delete') {
         handleDeleteLayout(itemId);
-      } else {
-        console.error('unknown action ' + actionId);
+      } else if (actionId === 'fav') {
+        handleFavoriteLayout(itemId);
       }
     },
-    [handleRenameLayout, handleDeleteLayout]
+    [handleRenameLayout, handleDeleteLayout, handleFavoriteLayout]
   );
 
   const onToggle = React.useCallback(() => {
@@ -237,58 +253,78 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     [t, handleDeleteLayout, currLayout.name]
   );
 
-  const menuToggle = React.useMemo(
-    () => (
-      <DropdownToggle id="dashboard-layout-dropdown-toggle" onToggle={onToggle}>
-        {currLayout.name}
-      </DropdownToggle>
-    ),
-    [onToggle, currLayout.name]
+  const menuGroups = React.useCallback(
+    (label: string, isFavorited: boolean, filter: (l: DashboardLayout) => boolean) => {
+      return (
+        <MenuGroup label={label} labelHeadingLevel="h3">
+          <MenuList>
+            {dashboardConfigs.layouts.filter(filter).map((l) => (
+              <MenuItem
+                key={l.name}
+                itemId={l.name}
+                isSelected={l.name === currLayout.name}
+                isFavorited={isFavorited}
+                actions={
+                  <>
+                    <MenuItemAction
+                      icon={<PencilAltIcon />}
+                      actionId="rename"
+                      isDisabled={l.name === DEFAULT_DASHBOARD_NAME}
+                      aria-label={t('DashboardLayoutConfig.RENAME.LABEL')}
+                    />
+                    <MenuItemAction
+                      icon={<TrashIcon />}
+                      actionId="delete"
+                      isDisabled={l.name === DEFAULT_DASHBOARD_NAME}
+                      aria-label={t('DashboardLayoutConfig.DELETE.LABEL')}
+                    />
+                  </>
+                }
+              >
+                {l.name}
+              </MenuItem>
+            ))}
+          </MenuList>
+        </MenuGroup>
+      );
+    },
+    [dashboardConfigs.layouts, t, currLayout.name]
   );
-
-  const menuItems = React.useMemo(() => {
-    return dashboardConfigs.layouts.map((l) => (
-      <MenuItem
-        key={l.name}
-        itemId={l.name}
-        actions={
-          <>
-            <MenuItemAction
-              icon={<PencilAltIcon />}
-              actionId="rename"
-              aria-label={t('DashboardLayoutConfig.RENAME.LABEL')}
-            />
-            <MenuItemAction
-              icon={<TrashIcon />}
-              actionId="delete"
-              aria-label={t('DashboardLayoutConfig.DELETE.LABEL')}
-            />
-          </>
-        }
-      >
-        {l.name}
-      </MenuItem>
-    ));
-  }, [t, dashboardConfigs.layouts]);
 
   const menuDropdown = React.useMemo(() => {
     return (
-      <Dropdown id="dashboard-layout-dropdown" isOpen={isSelectorOpen} toggle={menuToggle}>
+      <Dropdown
+        isOpen={isSelectorOpen}
+        toggle={(toggleRef) => (
+          <MenuToggle
+            ref={toggleRef}
+            id="dashboard-layout-dropdown-toggle"
+            onClick={onToggle}
+            isExpanded={isSelectorOpen}
+          >
+            {currLayout.name}
+          </MenuToggle>
+        )}
+      >
         <Menu
           aria-label={t('DashboardLayoutConfig.MENU.LABEL')}
           isScrollable
           onSelect={onLayoutSelect}
           onActionClick={onActionClick}
         >
-          <MenuContent maxMenuHeight="10em">{menuItems}</MenuContent>
+          <MenuContent maxMenuHeight="16em" id="dashboard-layout-menu-content" style={{ overflow: 'unset' }}>
+            {menuGroups(t('DashboardLayoutConfig.MENU.FAVORITES'), true, (l) => favorites.includes(l.name))}
+            <Divider />
+            {menuGroups(t('DashboardLayoutConfig.MENU.OTHERS'), false, (l) => !favorites.includes(l.name))}
+          </MenuContent>
         </Menu>
       </Dropdown>
     );
-  }, [t, onLayoutSelect, onActionClick, menuToggle, menuItems, isSelectorOpen]);
+  }, [t, onLayoutSelect, onActionClick, onToggle, menuGroups, favorites, isSelectorOpen, currLayout.name]);
 
   const toolbarContent = React.useMemo(() => {
     return (
-      <ToolbarContent style={{paddingLeft: '24px'}}>
+      <ToolbarContent style={{ paddingLeft: '24px' }}>
         <ToolbarGroup>
           <ToolbarItem>{newButton}</ToolbarItem>
           <ToolbarItem spacer={{ default: 'spacerNone' }}>{menuDropdown}</ToolbarItem>
@@ -302,7 +338,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   }, [newButton, menuDropdown, renameButton, uploadButton, downloadButton, deleteButton]);
 
   return (
-    <Toolbar style={{ zIndex: '9000' }}>
+    <Toolbar>
       {toolbarContent}
       <DashboardLayoutUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />
       <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />

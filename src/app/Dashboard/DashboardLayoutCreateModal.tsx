@@ -43,6 +43,7 @@ import {
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
 import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
+import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -104,7 +105,16 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     if (isCreateModal) {
       dispatch(dashboardConfigAddLayoutIntent(newLayout));
     } else {
-      if (props.oldName !== undefined) dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
+      if (props.oldName !== undefined) {
+        dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
+        const oldFavs = getFromLocalStorage('LAYOUT_FAVORITES', []) as string[];
+        if (oldFavs.includes(props.oldName)) {
+          saveToLocalStorage(
+            'LAYOUT_FAVORITES',
+            oldFavs.map((fav) => (fav === props.oldName ? name : fav))
+          );
+        }
+      }
     }
     dispatch(dashboardConfigReplaceLayoutIntent(name));
     onClose();
@@ -132,7 +142,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
         />
       </FormGroup>
     );
-  }, [validated, errorMessage, name, handleNameChange]);
+  }, [t, validated, errorMessage, name, handleNameChange]);
 
   const actionGroup = React.useMemo(() => {
     return (
@@ -145,7 +155,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
         </Button>
       </ActionGroup>
     );
-  }, [handleSubmit, validated, handleClose]);
+  }, [t, handleSubmit, validated, handleClose]);
 
   return (
     <Modal

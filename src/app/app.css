@@ -78,17 +78,12 @@ html, body, #root {
   height: 32rem;
 }
 
-#dashboard-layout-dropdown {
-  width: 15em;
-}
-
-#dashboard-layout-dropdown .pf-c-dropdown__menu {
-  padding-bottom: 0%;
-  max-width: 100%;
-}
-
 #dashboard-layout-dropdown-toggle {
-  width: 100%;
+  width: 20em;
+}
+
+#dashboard-layout-menu-content {
+  overflow-y: auto;
 }
 
 .automated-analysis-grid-item {
