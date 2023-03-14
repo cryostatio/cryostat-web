@@ -281,7 +281,10 @@ const MBeanDetails: React.FC<{
             }`,
             { connectUrl }
           )
-          .pipe(map((resp) => resp.data.targetNodes[0].mbeanMetrics))
+          .pipe(
+            map((resp) => resp.data.targetNodes[0].mbeanMetrics),
+            catchError((_) => of({}))
+          )
           .subscribe(setMbeanMetrics)
       );
     }
