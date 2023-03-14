@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { groupingOptions, OptionCategory, showOptions } from '@app/Shared/Redux/Configurations/TopologyConfigSlicer';
+import { groupingOptions, OptionCategory, showOptions } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState, topologyDisplayOpionsSetIntent } from '@app/Shared/Redux/ReduxStore';
 import { Checkbox, Divider, Select, Stack, StackItem, Switch } from '@patternfly/react-core';
 import * as React from 'react';

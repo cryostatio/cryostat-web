@@ -50,7 +50,7 @@ const About = lazy(() => import('@app/About/About'));
 const Archives = lazy(() => import('@app/Archives/Archives'));
 const CreateRecording = lazy(() => import('@app/CreateRecording/CreateRecording'));
 const Dashboard = lazy(() => import('@app/Dashboard/Dashboard'));
-const DashboardSolo = lazy(() => import('./Dashboard/DashBoardSolo'));
+const DashboardSolo = lazy(() => import('./Dashboard/DashboardSolo'));
 const Events = lazy(() => import('@app/Events/Events'));
 const Login = lazy(() => import('@app/Login/Login'));
 const NotFound = lazy(() => import('@app/NotFound/NotFound'));

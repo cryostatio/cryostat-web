@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Bullseye, Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/react-core';
@@ -51,7 +51,12 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
   const { search } = useLocation();
   const history = useHistory();
 
-  const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
+
+  const cardConfigs: CardConfig[] = React.useMemo(
+    () => dashboardConfigs.layouts[dashboardConfigs.current].cards,
+    [dashboardConfigs]
+  );
 
   const cardConfig = React.useMemo(() => {
     const cardId = new URLSearchParams(search).get('cardId');
