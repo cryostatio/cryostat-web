@@ -297,44 +297,47 @@ const MBeanDetails: React.FC<{
         title: 'Start Time',
         helperTitle: 'Start Time',
         helperDescription: 'The time when this JVM process started.',
-        content: dayjs(mbeanMetrics?.runtime?.startTime || 0)
-          .tz(dateTimeFormat.timeZone.full)
-          .format('LLLL'),
+        content:
+          (mbeanMetrics?.runtime?.startTime || 0) > 0 ? (
+            dayjs(mbeanMetrics?.runtime?.startTime).tz(dateTimeFormat.timeZone.full).format('LLLL')
+          ) : (
+            <EmptyText text="Unknown start time" />
+          ),
       },
       {
         key: 'JVM Version',
         title: 'JVM Version',
         helperTitle: 'JVM Version',
         helperDescription: 'The version of the JVM.',
-        content: mbeanMetrics.runtime?.vmVersion,
+        content: mbeanMetrics.runtime?.vmVersion || <EmptyText text="Unknown JVM version" />,
       },
       {
         key: 'JVM Vendor',
         title: 'JVM Vendor',
         helperTitle: 'JVM Vendor',
         helperDescription: 'The vendor who supplied this JVM',
-        content: mbeanMetrics.runtime?.vmVendor,
+        content: mbeanMetrics.runtime?.vmVendor || <EmptyText text="Unknown JVM vendor" />,
       },
       {
         key: 'Operating System Architecture',
         title: 'Operating System Architecture',
         helperTitle: 'Operating System Architecture',
         helperDescription: 'The CPU architecture of the host system.',
-        content: mbeanMetrics.os?.arch,
+        content: mbeanMetrics.os?.arch || <EmptyText text="Unknown operating system architecture" />,
       },
       {
         key: 'Operating System Version',
         title: 'Operating System Version',
         helperTitle: 'Operating System Version',
         helperDescription: 'The version of the host operating system.',
-        content: mbeanMetrics.os?.version,
+        content: mbeanMetrics.os?.version || <EmptyText text="Unknown operating system version" />,
       },
       {
         key: 'Available Processors',
         title: 'Available Processors',
         helperTitle: 'Available Processors',
         helperDescription: 'The count of total processors available to the JVM process on its host.',
-        content: mbeanMetrics.os?.availableProcessors,
+        content: mbeanMetrics.os?.availableProcessors || <EmptyText text="Unknown number of processors" />,
       },
     ];
   }, [mbeanMetrics]);
