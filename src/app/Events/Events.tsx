@@ -60,7 +60,7 @@ export interface EventsProps {
 
 export const Events: React.FC<RouteComponentProps<Record<string, never>, StaticContext, EventsProps>> = ({
   location,
-  ...props
+  ..._props
 }) => {
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
