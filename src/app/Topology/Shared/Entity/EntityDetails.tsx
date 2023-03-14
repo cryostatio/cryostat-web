@@ -232,8 +232,10 @@ export const TargetDetails: React.FC<{
   const onToggle = React.useCallback(() => setExpanded((v) => !v), [setExpanded]);
 
   return (
-    <DescriptionList {...props} columnModifier={columnModifier}>
-      {_transformedData.map(mapSection)}
+    <>
+      <DescriptionList {...props} columnModifier={columnModifier}>
+        {_transformedData.map(mapSection)}
+      </DescriptionList>
       <ExpandableSection
         toggleText={isExpanded ? 'Show less' : 'Show more'}
         onToggle={onToggle}
@@ -241,11 +243,15 @@ export const TargetDetails: React.FC<{
       >
         <MBeanDetails isExpanded={isExpanded} connectUrl={serviceRef.connectUrl} />
       </ExpandableSection>
-    </DescriptionList>
+    </>
   );
 };
 
-const MBeanDetails: React.FC<{ isExpanded: boolean; connectUrl: string }> = ({ isExpanded, connectUrl }) => {
+const MBeanDetails: React.FC<{
+  isExpanded: boolean;
+  connectUrl: string;
+  columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
+}> = ({ isExpanded, connectUrl, columnModifier }) => {
   const context = React.useContext(ServiceContext);
   const [dayjs, dateTimeFormat] = useDayjs();
   const addSubscription = useSubscriptions();
@@ -330,7 +336,7 @@ const MBeanDetails: React.FC<{ isExpanded: boolean; connectUrl: string }> = ({ i
     ];
   }, [mbeanMetrics]);
 
-  return <DescriptionList>{_collapsedData.map(mapSection)}</DescriptionList>;
+  return <DescriptionList columnModifier={columnModifier}>{_collapsedData.map(mapSection)}</DescriptionList>;
 };
 
 export const GroupDetails: React.FC<{
