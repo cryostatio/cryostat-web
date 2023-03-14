@@ -170,7 +170,15 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({ entity, className,
   return <div className={css(className)}>{viewContent}</div>;
 };
 
-const mapSection = (d) => (
+type DescriptionConfig = {
+  key: React.Key;
+  title: React.ReactNode;
+  helperTitle: React.ReactNode;
+  helperDescription: React.ReactNode;
+  content: React.ReactNode;
+};
+
+const mapSection = (d: DescriptionConfig) => (
   <DescriptionListGroup key={d.key}>
     <DescriptionListTermHelpText>
       <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
@@ -188,7 +196,7 @@ export const TargetDetails: React.FC<{
   const serviceRef = React.useMemo(() => targetNode.target, [targetNode]);
   const [isExpanded, setExpanded] = React.useState(false);
 
-  const _transformedData = React.useMemo(() => {
+  const _transformedData = React.useMemo((): DescriptionConfig[] => {
     return [
       {
         key: 'Connection URL',
@@ -290,7 +298,7 @@ const MBeanDetails: React.FC<{
     }
   }, [isExpanded, addSubscription, connectUrl, context.api, setMbeanMetrics]);
 
-  const _collapsedData = React.useMemo(() => {
+  const _collapsedData = React.useMemo((): DescriptionConfig[] => {
     return [
       {
         key: 'Start Time',
