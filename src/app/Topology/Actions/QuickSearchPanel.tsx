@@ -332,7 +332,13 @@ export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ is
   }, [quicksearches, history, services, notifications, addSubscription]);
 
   return isShow || hover ? (
-    <Menu {...props} id={`quick-searches-menu`} key={`quick-searches-menu`} isScrollable ref={hoverRef as React.Ref<HTMLDivElement>}>
+    <Menu
+      {...props}
+      id={`quick-searches-menu`}
+      key={`quick-searches-menu`}
+      isScrollable
+      ref={hoverRef as React.Ref<HTMLDivElement>}
+    >
       <MenuContent>
         <MenuList>{items}</MenuList>
       </MenuContent>
