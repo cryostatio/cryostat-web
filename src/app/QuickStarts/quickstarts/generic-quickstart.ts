@@ -46,10 +46,12 @@ export const GenericQuickStart: QuickStart = {
     name: 'generic-quickstart',
   },
   spec: {
+    version: 2.3,
     displayName: 'Getting Started with',
     durationMinutes: 1,
     icon: cryostatLogo,
     description: `Get started with ${build.productName}.`,
+    prerequisites: [''],
     introduction: '### This is a generic quickstart.',
     tasks: [
       {

@@ -35,8 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { AddCardQuickStart } from '@app/QuickStarts/quickstarts/add-card-quickstart';
 import { SampleQuickStart } from '@app/QuickStarts/quickstarts/my-quickstart';
 import { QuickStart } from '@patternfly/quickstarts';
+import { AddCardQuickStart } from './dashboard-quickstarts/add-card-quickstart';
 
 export const allQuickStarts: QuickStart[] = [SampleQuickStart, AddCardQuickStart];

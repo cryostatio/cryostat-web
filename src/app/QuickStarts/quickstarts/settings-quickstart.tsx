@@ -39,6 +39,7 @@ import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import { CogIcon } from '@patternfly/react-icons';
 import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
+import React from 'react';
 
 // TODO: Add quickstarts based on the following example:
 export const SettingsQuickStart: QuickStart = {
@@ -47,16 +48,68 @@ export const SettingsQuickStart: QuickStart = {
     name: 'settings-quickstart',
   },
   spec: {
+    version: 2.3,
     displayName: 'Using Settings',
-    durationMinutes: 1,
+    durationMinutes: 5,
     icon: <CogIcon />,
     description: `Learn about the settings page in ${build.productName} and how to use it.`,
-    introduction: '### This is a generic quickstart.',
+    prerequisites: [''],
+    introduction: `
+  <div style="padding-bottom: 1rem">
+    <p>
+    <h1>Using Settings</h1>
+      Cryostat has a settings page that allows you to configure the application. This quick start will show you how to use the settings page.
+      <h3>
+      There are various settings that can be configured:
+      </h3>
+      <ul style="font-weight: bold;">
+        <li>Connectivity</li>
+        <li>Languages & Region</li>
+        <li>Notification & Messages</li>    
+        <li>Dashboard</li>
+        <li>Advanced</li>
+      </ul>
+      We will go over each of these settings in detail.
+    </p>
+  </div>
+    `,
     tasks: [
       {
-        title: 'Get started',
-        description: `### We will press the notifications bell icon on the top right.
-1. Press the bell icon.`,
+        title: 'Navigate to the Settings page',
+        description: `
+  1. Press the Settings cog icon.`,
+      },
+      {
+        title: 'Go to the Connectivity tab',
+        description: `
+  1. Here you can configure the WebSocket connection to the Cryostat backend.
+  2. You can also configure Auto-Refresh period for content-views.`,
+      },
+      {
+        title: 'Go to the Languages & Region tab',
+        description: `
+  1. Here you can configure the language and region settings for the Cryostat UI.
+  2. You can also configure the date and time format.`,
+        
+      },
+      {
+        title: 'Go to the Notification & Messages tab',
+        description: `
+  1. Here you can configure the notification settings for the Cryostat UI.
+  2. You can also configure the message settings.`,
+        
+      },
+      {
+        title: 'Go to the Dashboard tab',
+        description: `
+  1. Here you can configure the dashboard settings for the Cryostat UI.
+  2. You can also configure the default dashboard.`,
+      },
+      {
+        title: 'Go to the Advanced tab',
+        description: `
+  1. Here you can configure the advanced settings for the Cryostat UI.
+  2. You can also configure the default dashboard.`,
       },
     ],
     conclusion: `You finished **Getting Started with ${build.productName}**!

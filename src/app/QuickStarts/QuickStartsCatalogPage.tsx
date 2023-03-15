@@ -47,9 +47,9 @@ import { useTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 import { allQuickStarts } from './all-quickstarts';
 
-export interface QuickStartsProps {}
+export interface QuickStartsCatalogPageProps {}
 
-const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsProps> = (_) => {
+const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsCatalogPageProps> = (_) => {
   const { t } = useTranslation();
 
   return (

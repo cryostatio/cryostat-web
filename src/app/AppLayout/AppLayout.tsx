@@ -99,6 +99,9 @@ import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
 import { GlobalQuickStartDrawer } from './QuickStartDrawer';
 import { SslErrorModal } from './SslErrorModal';
+import Joyride from 'react-joyride';
+import { CryostatJoyride } from './CryostatJoyride';
+import ReactJoyride from 'react-joyride';
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -561,36 +564,67 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     [handleCloseNotificationCenter]
   );
 
+  const steps = [
+    {
+        target: "pf-c-page__main-sectionk",
+        content: "Welcome to Cryostat! This is a quick tour of the UI.",
+    },
+    {
+        target: ".pf-c-page__header-brand-link",
+        content: "This is the Cryostat logo. Clicking it will take you to the home page.",
+        disableBeacon: true,
+    },
+    {
+        target: ".pf-c-page__header-tools",
+        content: "This is the toolbar. It contains the settings cog, the help icon, and the user menu.",
+        disableBeacon: true,
+    },
+    {
+        target: ".pf-c-page__header-tools",
+        content: "Clicking the settings cog will take you to the settings page.",
+        disableBeacon: true,
+    },
+];
+
   return (
+
     <GlobalQuickStartDrawer>
-      <AlertGroup appendTo={portalRoot} isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
-        {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
-          <Alert
-            isLiveRegion
-            variant={variant}
-            key={title}
-            title={title}
-            actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
-            timeout={true}
-            onTimeout={handleTimeout(key)}
-          >
-            {message?.toString()}
-          </Alert>
-        ))}
-      </AlertGroup>
-      <Page
-        mainContainerId="primary-app-container"
-        header={Header}
-        sidebar={Sidebar}
-        notificationDrawer={NotificationDrawer}
-        isNotificationDrawerExpanded={isNotificationDrawerExpanded}
-        onPageResize={onPageResize}
-        skipToContent={PageSkipToContent}
-      >
-        {children}
-      </Page>
-      <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
-      <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
+      <ReactJoyride
+            steps={steps}
+            continuous={true}
+            showSkipButton={true}
+            showProgress={true}
+            run={true}
+        />
+      <CryostatJoyride />
+        <AlertGroup appendTo={portalRoot} isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
+          {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
+            <Alert
+              isLiveRegion
+              variant={variant}
+              key={title}
+              title={title}
+              actionClose={<AlertActionCloseButton onClose={handleMarkNotificationRead(key)} />}
+              timeout={true}
+              onTimeout={handleTimeout(key)}
+            >
+              {message?.toString()}
+            </Alert>
+          ))}
+        </AlertGroup>
+        <Page
+          mainContainerId="primary-app-container"
+          header={Header}
+          sidebar={Sidebar}
+          notificationDrawer={NotificationDrawer}
+          isNotificationDrawerExpanded={isNotificationDrawerExpanded}
+          onPageResize={onPageResize}
+          skipToContent={PageSkipToContent}
+        >
+          {children}
+        </Page>
+        <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
+        <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
     </GlobalQuickStartDrawer>
   );
 };
