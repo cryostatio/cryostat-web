@@ -289,7 +289,6 @@ export const getResourceListPatchFn = (
         return apiService.isTargetMatched(credential.matchExpression, target).pipe(
           map((ok) => {
             if (ok) {
-              // return apiService.isTargetMatched(credential.matchExpression, )
               let newArr = arr.filter((r) => r.id !== credential.id);
               if (!removed) {
                 newArr = newArr.concat([credential]);
@@ -331,6 +330,6 @@ export const getLinkPropsForTargetResource = (
   }
 };
 
-export const extraTargetConnectUrlFromEvent = (event: NotificationMessage): string | undefined => {
+export const getConnectUrlFromEvent = (event: NotificationMessage): string | undefined => {
   return event.message.target || event.message.targetId;
 };

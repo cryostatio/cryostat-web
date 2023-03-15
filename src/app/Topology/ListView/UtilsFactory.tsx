@@ -36,10 +36,12 @@
  * SOFTWARE.
  */
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
-import { Badge, Label, LabelGroup, TreeViewDataItem } from '@patternfly/react-core';
+import { Badge, Flex, FlexItem, Label, LabelGroup, TreeViewDataItem } from '@patternfly/react-core';
 import * as React from 'react';
+import { ActionDropdown } from '../Actions/NodeActions';
 import EntityDetails from '../Shared/Entity/EntityDetails';
 import {
+  actionFactory,
   COLLAPSE_EXEMPTS,
   getAllLeaves,
   getUniqueGroupId,
@@ -105,12 +107,20 @@ const _transformDataGroupedByTopLevel = (
       return {
         ...base,
         title: (
-          <>
-            <span className="topology-listview__realm-title">
-              {realm.nodeType}: {realm.name}
-            </span>
-            <Badge>{base.children.length}</Badge>
-          </>
+          <Flex>
+            <FlexItem flex={{ default: 'flex_1' }}>
+              <span className="topology-listview__realm-title">
+                {realm.nodeType}: {realm.name}
+              </span>
+              <Badge>{base.children.length}</Badge>
+            </FlexItem>
+            <FlexItem>
+              <ActionDropdown
+                className="entity-overview__action-menu"
+                actions={actionFactory({ getData: () => realm }, 'dropdownItem')}
+              />
+            </FlexItem>
+          </Flex>
         ),
       };
     })
@@ -181,12 +191,20 @@ const _buildFullData = (
     {
       id: getUniqueGroupId(node),
       title: (
-        <>
-          <span className="topology-listview__realm-title">
-            {node.nodeType}: {node.name}
-          </span>
-          <Badge>{children.length}</Badge>
-        </>
+        <Flex>
+          <FlexItem flex={{ default: 'flex_1' }}>
+            <span className="topology-listview__realm-title">
+              {node.nodeType}: {node.name}
+            </span>
+            <Badge>{children.length}</Badge>
+          </FlexItem>
+          <FlexItem>
+            <ActionDropdown
+              className="entity-overview__action-menu"
+              actions={actionFactory({ getData: () => node }, 'dropdownItem')}
+            />
+          </FlexItem>
+        </Flex>
       ),
       name: (
         <LabelGroup categoryName="Labels">

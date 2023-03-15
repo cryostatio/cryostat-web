@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { TopologyFilters } from '@app/Shared/Redux/Filters/TopologyFilterSlice';
-import { evaluateTargetWithExpr, hashCode } from '@app/utils/utils';
+import { evaluateTargetWithExpr } from '@app/utils/utils';
 import { Button } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
@@ -88,11 +88,11 @@ export interface TransformConfig {
 }
 
 export const getUniqueGroupId = (group: EnvironmentNode) => {
-  return `${group.name}-${hashCode(JSON.stringify(group.labels))}-${hashCode(JSON.stringify(group.children))}`;
+  return `${group.id}`;
 };
 
 export const getUniqueTargetId = (target: TargetNode) => {
-  return target.name;
+  return `${target.id}`;
 };
 
 export type StatusExtra = { title?: string; description?: string; callForAction?: React.ReactNode[] };
@@ -125,9 +125,11 @@ export const actionFactory = (
   actionFilter = (_: NodeAction) => true
 ) => {
   const data: TargetNode = element.getData();
+  const isGroup = !isTargetNode(data);
   let filtered = nodeActions.filter((action) => {
     return (
       actionFilter(action) &&
+      (action.isGroup || false) === isGroup &&
       (!action.includeList || action.includeList.includes(data.nodeType)) &&
       (!action.blockList || !action.blockList.includes(data.nodeType))
     );
@@ -142,12 +144,12 @@ export const actionFactory = (
   }
   filtered = stop >= 0 ? filtered.slice(0, stop + 1) : [];
 
-  return filtered.map(({ isSeparator, title, action }, index) => {
+  return filtered.map(({ isSeparator, key, title, isDisabled, action }, index) => {
     if (isSeparator) {
       return <ContextMenuSeparator key={`separator-${index}`} />;
     }
     return (
-      <ContextMenuItem key={`${title}-${index}`} element={element} onClick={action} variant={variant}>
+      <ContextMenuItem key={key} element={element} onClick={action} variant={variant} isDisabled={isDisabled}>
         {title}
       </ContextMenuItem>
     );

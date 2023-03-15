@@ -103,7 +103,6 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
           },
           error: (err) => {
             setError(err);
-            console.log(err);
           },
         })
       );

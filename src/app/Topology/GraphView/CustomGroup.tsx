@@ -37,7 +37,14 @@
  */
 import openjdkSvg from '@app/assets/openjdk.svg';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
-import { DefaultGroup, Node, observer, WithDragNodeProps, WithSelectionProps } from '@patternfly/react-topology';
+import {
+  DefaultGroup,
+  Node,
+  observer,
+  WithContextMenuProps,
+  WithDragNodeProps,
+  WithSelectionProps,
+} from '@patternfly/react-topology';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { EnvironmentNode, NodeType } from '../typings';
@@ -64,7 +71,7 @@ export const renderIcon = (width: number, height: number): React.ReactNode => {
   );
 };
 
-export interface CustomGroupProps extends Partial<WithSelectionProps & WithDragNodeProps> {
+export interface CustomGroupProps extends Partial<WithSelectionProps & WithDragNodeProps & WithContextMenuProps> {
   element: Node;
   collapsedWidth?: number;
   collapsedHeight?: number;
@@ -75,6 +82,8 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
   onSelect,
   selected,
   dragNodeRef,
+  contextMenuOpen,
+  onContextMenu,
   collapsedHeight = DEFAULT_NODE_COLLAPSED_DIAMETER,
   collapsedWidth = DEFAULT_NODE_COLLAPSED_DIAMETER,
   ...props
@@ -114,6 +123,8 @@ const CustomGroup: React.FC<CustomGroupProps> = ({
           collapsedWidth: collapsedWidth,
           badge: showBadge ? data.nodeType : undefined,
           showLabel: true,
+          contextMenuOpen: contextMenuOpen,
+          onContextMenu: onContextMenu,
         } as React.ComponentProps<typeof DefaultGroup>,
         element.isCollapsed() ? collapsedContent : null
       )}

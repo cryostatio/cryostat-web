@@ -265,8 +265,10 @@ export const layoutFactory: LayoutFactory = (type: string, graph: Graph): Layout
 export const componentFactory: ComponentFactory = (kind: ModelKind, type: string) => {
   switch (type) {
     case 'group':
-      return withDragNode(nodeDragSourceSpec('group', false, false))(
-        withSelection({ multiSelect: false, controlled: true })(CustomGroup)
+      return withContextMenu(actionFactory)(
+        withDragNode(nodeDragSourceSpec('group', false, false))(
+          withSelection({ multiSelect: false, controlled: true })(CustomGroup)
+        )
       );
     default:
       switch (kind) {
