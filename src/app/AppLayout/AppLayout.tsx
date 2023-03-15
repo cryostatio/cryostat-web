@@ -40,6 +40,7 @@ import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import build from '@app/build.json';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
+import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { selectTab } from '@app/Settings/Settings';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
@@ -49,6 +50,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { openTabForUrl, portalRoot } from '@app/utils/utils';
+import { QuickStartCatalogPage, QuickStartDrawer } from '@patternfly/quickstarts';
 import {
   Alert,
   AlertActionCloseButton,
@@ -95,6 +97,7 @@ import * as React from 'react';
 import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
+import { GlobalQuickStartDrawer } from './QuickStartDrawer';
 import { SslErrorModal } from './SslErrorModal';
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -340,10 +343,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         About
       </DropdownItem>,
       <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
-        <DropdownItem key={'Quickstarts'}>
-          <NavLink style={{ textDecoration: 'none', color: 'inherit' }} to="/quickstarts">
+        <DropdownItem key={'Quickstarts'} component={
+          <NavLink to="/quickstarts">
             Quick Starts
           </NavLink>
+        }>
         </DropdownItem>
       </FeatureFlag>,
     ],
@@ -558,14 +562,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   );
 
   return (
-    <>
-      <AlertGroup
-        appendTo={portalRoot}
-        isToast
-        isLiveRegion
-        overflowMessage={overflowMessage}
-        onOverflowClick={handleOpenNotificationCenter}
-      >
+    <GlobalQuickStartDrawer>
+      <AlertGroup appendTo={portalRoot} isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
         {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
           <Alert
             isLiveRegion
@@ -593,7 +591,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       </Page>
       <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
       <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
-    </>
+    </GlobalQuickStartDrawer>
   );
 };
 

@@ -35,33 +35,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
-import {
-  QuickStartCatalogPage,
-  QuickStartContainer,
-  QuickStartContainerProps,
-  useLocalStorage,
-} from '@patternfly/quickstarts';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
-import { allQuickStarts } from './all-quickstarts';
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import { CogIcon } from '@patternfly/react-icons';
+import build from '@app/build.json';
+import { QuickStart } from '@patternfly/quickstarts';
 
-export interface QuickStartsProps {}
-
-const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsProps> = (_) => {
-  const { t } = useTranslation();
-
-  return (
-    <React.Suspense fallback={<LoadingView />}>
-      <QuickStartCatalogPage
-        title={t('QuickStarts.CATALOG_PAGE.TITLE')}
-        hint={t('QuickStarts.CATALOG_PAGE.HINT')}
-        showTitle
-        showFilter
-      />
-    </React.Suspense>
-  );
+// TODO: Add quickstarts based on the following example:
+export const SettingsQuickStart: QuickStart = {
+  apiVersion: 'v2.3.0',
+  metadata: {
+    name: 'settings-quickstart',
+  },
+  spec: {
+    displayName: 'Using Settings',
+    durationMinutes: 1,
+    icon: <CogIcon />,
+    description: `Learn about the settings page in ${build.productName} and how to use it.`,
+    introduction: '### This is a generic quickstart.',
+    tasks: [
+      {
+        title: 'Get started',
+        description: `### We will press the notifications bell icon on the top right.
+1. Press the bell icon.`,
+      },
+    ],
+    conclusion: `You finished **Getting Started with ${build.productName}**!
+    
+Learn more about [${build.productName}](https://cryostat.io) from our website.
+`,
+    type: {
+      text: 'Featured',
+      color: 'blue',
+    },
+  },
 };
-
-export default withRouter(QuickStartsCatalogPage);
