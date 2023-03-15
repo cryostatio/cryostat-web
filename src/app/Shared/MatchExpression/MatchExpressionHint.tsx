@@ -35,32 +35,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/Topology/styles/base.css';
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@patternfly/quickstarts/dist/quickstarts.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
+import { ClipboardCopyButton, CodeBlock, CodeBlockAction, CodeBlockCode } from '@patternfly/react-core';
 import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { Target } from '../Services/Target.service';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
+export interface MatchExpressionHintProps {
+  target?: Target;
+}
 
-export { App };
+export const MatchExpressionHint: React.FC<MatchExpressionHintProps> = ({ target, ...props }) => {
+  const [copied, setCopied] = React.useState(false);
+
+  const exampleExpression = React.useMemo(() => {
+    let body: string;
+    if (!target || !target.alias || !target.connectUrl) {
+      body = 'true';
+    } else {
+      body = `target.alias == '${target.alias}' || target.annotations.cryostat['PORT'] == ${target.annotations?.cryostat['PORT']}`;
+    }
+    body = JSON.stringify(body, null, 2);
+    body = body.substring(1, body.length - 1);
+    return body;
+  }, [target]);
+
+  const onSaveToClipboard = React.useCallback(() => {
+    setCopied(true);
+    navigator.clipboard.writeText(exampleExpression);
+  }, [setCopied, exampleExpression]);
+
+  const actions = React.useMemo(() => {
+    return (
+      <CodeBlockAction>
+        <ClipboardCopyButton
+          id="match-expression-copy-button"
+          textId="match-expression-code-content"
+          aria-label="Copy to clipboard"
+          onClick={onSaveToClipboard}
+          exitDelay={copied ? 1500 : 600}
+          maxWidth="110px"
+          variant="plain"
+          onTooltipHidden={() => setCopied(false)}
+        >
+          {copied ? 'Copied!' : 'Click to copy to clipboard'}
+        </ClipboardCopyButton>
+      </CodeBlockAction>
+    );
+  }, [copied, onSaveToClipboard, setCopied]);
+
+  return (
+    <CodeBlock {...props} actions={actions}>
+      <CodeBlockCode>{exampleExpression}</CodeBlockCode>
+    </CodeBlock>
+  );
+};

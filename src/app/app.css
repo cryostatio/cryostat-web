@@ -514,3 +514,8 @@ input[type=number].datetime-picker__number-input {
 .pf-c-skip-to-content {
   position: absolute !important;
 }
+
+.add-credential-modal {
+  width: 80% !important;
+  height: 80%;
+}

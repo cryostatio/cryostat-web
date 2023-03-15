@@ -59,6 +59,8 @@ export enum NodeType {
   REPLICATIONCONTROLLER = 'ReplicationController',
   POD = 'Pod',
   ENDPOINT = 'Endpoint',
+  // Standalone targets
+  TARGET = 'Target',
 }
 
 export interface NodeLabels {

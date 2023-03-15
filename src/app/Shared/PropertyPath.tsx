@@ -35,32 +35,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '@app/Topology/styles/base.css';
-import '@app/app.css';
-import '@patternfly/react-core/dist/styles/base.css';
-import '@patternfly/quickstarts/dist/quickstarts.css';
-import '@i18n/config';
-import { AppLayout } from '@app/AppLayout/AppLayout';
-import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { AppRoutes } from '@app/routes';
-import { store } from '@app/Shared/Redux/ReduxStore';
-import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
-import * as React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
+import _ from 'lodash';
+import React from 'react';
 
-const App: React.FunctionComponent = () => (
-  <ServiceContext.Provider value={defaultServices}>
-    <NotificationsContext.Provider value={NotificationsInstance}>
-      <Provider store={store}>
-        <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
-        </Router>
-      </Provider>
-    </NotificationsContext.Provider>
-  </ServiceContext.Provider>
-);
+export interface PropertyPathProps {
+  kind: string;
+  path: string | string[];
+}
 
-export { App };
+export const PropertyPath: React.FC<PropertyPathProps> = ({ kind, path, ...props }) => {
+  const pathArray: string[] = _.toPath(path);
+
+  return (
+    <Breadcrumb {...props}>
+      <BreadcrumbItem>{kind}</BreadcrumbItem>
+      {pathArray.map((property, i) => {
+        return (
+          <BreadcrumbItem key={`${property}-${i}`} isActive={i === pathArray.length - 1}>
+            {property}
+          </BreadcrumbItem>
+        );
+      })}
+    </Breadcrumb>
+  );
+};

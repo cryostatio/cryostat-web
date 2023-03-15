@@ -48,54 +48,65 @@ import { CollapseIcon } from '../Shared/CollapseIcon';
 
 export interface TopologyControlBarProps {
   visualization: Visualization;
+  noCollapse?: boolean;
   className?: string;
 }
 
-export const TopologyControlBar: React.FC<TopologyControlBarProps> = ({ visualization, className, ...props }) => {
+export const TopologyControlBar: React.FC<TopologyControlBarProps> = ({
+  visualization,
+  noCollapse,
+  className,
+  ...props
+}) => {
+  const buttonConfigs = React.useMemo(() => {
+    const base = [
+      ...createTopologyControlButtons({
+        ...defaultControlButtonsOptions,
+        zoomInCallback: action(() => {
+          visualization.getGraph().scaleBy(4 / 3);
+        }),
+        zoomInTip: 'Zoom in',
+        zoomInAriaLabel: 'Zoom in',
+        zoomOutCallback: action(() => {
+          visualization.getGraph().scaleBy(3 / 4);
+        }),
+        zoomOutTip: 'Zoom out',
+        zoomOutAriaLabel: 'Zoom out',
+        fitToScreenCallback: action(() => {
+          visualization.getGraph().fit(120);
+        }),
+        fitToScreenTip: 'Fit to screen',
+        fitToScreenAriaLabel: 'Fit to screen',
+        resetViewCallback: action(() => {
+          visualization.getGraph().reset();
+          visualization.getGraph().layout();
+        }),
+        resetViewTip: 'Reset view',
+        resetViewAriaLabel: 'Reset view',
+        legend: false,
+      }),
+    ];
+
+    if (!noCollapse) {
+      base.push({
+        id: 'collapse-all-group',
+        icon: <CollapseIcon />,
+        tooltip: 'Collapse all groups',
+        callback: action(() => {
+          // Close top-level groups
+          visualization
+            .getGraph()
+            .getNodes()
+            .forEach((n) => n.setCollapsed(true));
+        }),
+      });
+    }
+    return base;
+  }, [visualization, noCollapse]);
+
   return (
     <div className={css('topology-control-bar', className)}>
-      <PFTopologyControlBar
-        {...props}
-        controlButtons={[
-          ...createTopologyControlButtons({
-            ...defaultControlButtonsOptions,
-            zoomInCallback: action(() => {
-              visualization.getGraph().scaleBy(4 / 3);
-            }),
-            zoomInTip: 'Zoom in',
-            zoomInAriaLabel: 'Zoom in',
-            zoomOutCallback: action(() => {
-              visualization.getGraph().scaleBy(3 / 4);
-            }),
-            zoomOutTip: 'Zoom out',
-            zoomOutAriaLabel: 'Zoom out',
-            fitToScreenCallback: action(() => {
-              visualization.getGraph().fit(120);
-            }),
-            fitToScreenTip: 'Fit to screen',
-            fitToScreenAriaLabel: 'Fit to screen',
-            resetViewCallback: action(() => {
-              visualization.getGraph().reset();
-              visualization.getGraph().layout();
-            }),
-            resetViewTip: 'Reset view',
-            resetViewAriaLabel: 'Reset view',
-            legend: false,
-          }),
-          {
-            id: 'collapse-all-group',
-            icon: <CollapseIcon />,
-            tooltip: 'Collapse all groups',
-            callback: action(() => {
-              // Close top-level groups
-              visualization
-                .getGraph()
-                .getNodes()
-                .forEach((n) => n.setCollapsed(true));
-            }),
-          },
-        ]}
-      />
+      <PFTopologyControlBar {...props} controlButtons={buttonConfigs} />
     </div>
   );
 };

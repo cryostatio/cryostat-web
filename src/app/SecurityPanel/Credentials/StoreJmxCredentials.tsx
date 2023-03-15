@@ -63,7 +63,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { concatMap, forkJoin, Observable, of } from 'rxjs';
 import { SecurityCard } from '../SecurityPanel';
-import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
+import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 const enum Actions {
@@ -453,7 +453,7 @@ export const StoreJmxCredentials = () => {
     <>
       <TargetCredentialsToolbar />
       {content}
-      <CreateJmxCredentialModal
+      <CreateCredentialModal
         visible={showAuthModal}
         onDismiss={handleAuthModalClose}
         onPropsSave={handleAuthModalClose}
@@ -463,14 +463,14 @@ export const StoreJmxCredentials = () => {
 };
 
 export const StoreJmxCredentialsCard: SecurityCard = {
-  title: 'Store JMX Credentials',
+  title: 'Store Credentials',
   description: (
     <Text>
-      Credentials that Cryostat uses to connect to target JVMs over JMX are stored here. These are stored in encrypted
-      storage managed by the Cryostat backend. These credentials may be used for manually managing recordings and event
-      templates on target JVMs, as well as for Automated Rules which run in the background and open unattended target
-      connections. Any locally-stored client credentials held by your browser session are not displayed here. See{' '}
-      <Link to="/settings">Settings</Link> to configure locally-stored credentials.
+      Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored here. These are
+      stored in encrypted storage managed by the Cryostat backend. These credentials may be used for manually managing
+      recordings and event templates on target JVMs, as well as for Automated Rules which run in the background and open
+      unattended target connections. Any locally-stored client credentials held by your browser session are not
+      displayed here. See <Link to="/settings">Settings</Link> to configure locally-stored credentials.
     </Text>
   ),
   content: StoreJmxCredentials,

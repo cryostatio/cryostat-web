@@ -215,7 +215,7 @@ export const isTargetNodeFiltered = ({ target }: TargetNode, filters?: TopologyF
   return matched;
 };
 
-class SearchExprService {
+export class SearchExprService {
   private readonly _state$ = new BehaviorSubject<string>('');
 
   searchExpression(): Observable<string> {
@@ -227,9 +227,7 @@ class SearchExprService {
   }
 }
 
-export const defaultSearchExpression = new SearchExprService();
-
-export const SearchExprServiceContext = React.createContext(defaultSearchExpression);
+export const SearchExprServiceContext = React.createContext(new SearchExprService());
 
 export const useSearchExpression = (debounceMs = 0): [string, (expr: string) => void] => {
   const [expr, setExpr] = React.useState('');

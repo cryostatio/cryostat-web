@@ -37,6 +37,7 @@
  */
 
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
+import { PropertyPath } from '@app/Shared/PropertyPath';
 import { MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown, NodeAction } from '@app/Topology/Actions/NodeActions';
@@ -124,7 +125,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
 
       return (
-        <div {...props}>
+        <div {...props} style={{ height: '100%' }}>
           <EntityDetailHeader
             titleContent={titleContent}
             badge={nodeTypeToAbbr(data.nodeType)}
@@ -161,7 +162,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   return <div className={css(className)}>{viewContent}</div>;
 };
 
-type DescriptionConfig = {
+export type DescriptionConfig = {
   key: React.Key;
   title: React.ReactNode;
   helperTitle: React.ReactNode;
@@ -169,7 +170,7 @@ type DescriptionConfig = {
   content: React.ReactNode;
 };
 
-const mapSection = (d: DescriptionConfig) => (
+export const mapSection = (d: DescriptionConfig) => (
   <DescriptionListGroup key={d.key}>
     <DescriptionListTermHelpText>
       <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
@@ -179,6 +180,17 @@ const mapSection = (d: DescriptionConfig) => (
     <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>{d.content}</DescriptionListDescription>
   </DescriptionListGroup>
 );
+
+export const constructHelperDescription = (description: React.ReactNode, kind: string, path: string | string[]) => {
+  return (
+    <Stack hasGutter>
+      <StackItem>{description}</StackItem>
+      <StackItem>
+        <PropertyPath kind={kind} path={path} />
+      </StackItem>
+    </Stack>
+  );
+};
 
 export const TargetDetails: React.FC<{
   targetNode: TargetNode;
@@ -193,36 +205,47 @@ export const TargetDetails: React.FC<{
         key: 'Connection URL',
         title: 'Connection URL',
         helperTitle: 'Connection URL',
-        helperDescription: 'JMX Service URL',
+        helperDescription: constructHelperDescription('JMX Service URL.', 'Target', ['connectUrl']),
         content: serviceRef.connectUrl,
       },
       {
         key: 'Alias',
         title: 'Alias',
         helperTitle: 'Alias',
-        helperDescription: 'Connection Nickname (same as Connection URL if not specified).',
+        helperDescription: constructHelperDescription(
+          'Connection Nickname (same as Connection URL if not specified).',
+          'Target',
+          ['alias']
+        ),
         content: serviceRef.alias,
       },
       {
         key: 'JVM ID',
         title: 'JVM ID',
         helperTitle: 'JVM ID',
-        helperDescription: 'The ID of the current JVM.',
+        helperDescription: constructHelperDescription('The ID of the current JVM.', 'Target', ['jvmId']),
         content: serviceRef.jvmId || <EmptyText text="No JVM ID" />,
       },
       {
         key: 'Labels',
         title: 'Labels',
         helperTitle: 'Labels',
-        helperDescription: 'Map of string keys and values that can be used to organize and categorize targets.',
+        helperDescription: constructHelperDescription(
+          'Map of string keys and values that can be used to organize and categorize targets.',
+          'Target',
+          ['labels']
+        ),
         content: <EntityLabels labels={serviceRef.labels} maxDisplay={3} />,
       },
       {
         key: 'Annotations',
         title: 'Annotations',
         helperTitle: 'Annotations',
-        helperDescription:
+        helperDescription: constructHelperDescription(
           'Annotations is an unstructured key value map stored with a target that may be set by external tools.',
+          'Target',
+          ['annotations']
+        ),
         content: <EntityAnnotations annotations={serviceRef.annotations} maxDisplay={3} />,
       },
     ];
@@ -281,7 +304,7 @@ const MBeanDetails: React.FC<{
             { connectUrl }
           )
           .pipe(
-            map((resp) => resp.data.targetNodes[0].mbeanMetrics),
+            map((resp) => resp.data.targetNodes[0].mbeanMetrics || {}),
             catchError((_) => of({}))
           )
           .subscribe(setMbeanMetrics)
