@@ -52,7 +52,6 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, defaultIfEmpty, first } from 'rxjs/operators';
-import { DEFAULT_DASHBOARD_NAME } from './DashboardUtils';
 
 export interface DashboardLayoutUploadModalProps {
   visible: boolean;
@@ -88,7 +87,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           } catch (err) {
             throw new Error(t('DashboardLayoutUploadModal.ERROR.PARSE'));
           }
-          if (!layout.name || layout.name === DEFAULT_DASHBOARD_NAME) {
+          if (!layout.name) {
             throw new Error(t('DashboardLayoutUploadModal.ERROR.NAME_INVALID.1', { name: layout.name }));
           }
           if (!DashboardLayoutNamePattern.test(layout.name)) {

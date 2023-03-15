@@ -1175,7 +1175,7 @@ export class ApiService {
     }
     const download = {
       // ignore _version
-      list: serialCards,
+      cards: serialCards,
       name: layout.name,
     };
     return JSON.stringify(download);
