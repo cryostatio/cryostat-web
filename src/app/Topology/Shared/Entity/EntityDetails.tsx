@@ -257,7 +257,7 @@ export const TargetDetails: React.FC<{
         onToggle={onToggle}
         isExpanded={isExpanded}
       >
-        <MBeanDetails isExpanded={isExpanded} connectUrl={serviceRef.connectUrl} />
+        <MBeanDetails isExpanded={isExpanded} connectUrl={serviceRef.connectUrl} columnModifier={columnModifier} />
       </ExpandableSection>
     </>
   );
