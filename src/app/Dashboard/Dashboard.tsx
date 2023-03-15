@@ -63,6 +63,7 @@ import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChar
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
+import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
 
 export interface Sized<T> {
@@ -243,6 +244,7 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
   featureLevel = FeatureLevel.DEVELOPMENT
 ) => {
   const cards = [
+    JvmDetailsCardDescriptor,
     AutomatedAnalysisCardDescriptor,
     JFRMetricsChartCardDescriptor,
     MBeanMetricsChartCardDescriptor,

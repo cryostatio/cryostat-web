@@ -41,7 +41,7 @@ import { Button } from '@patternfly/react-core';
 import { ContextMenuSeparator, GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { BehaviorSubject, debounceTime, Observable, Subscription } from 'rxjs';
-import { ContextMenuItem, MenuItemVariant, nodeActions } from '../Actions/NodeActions';
+import { ContextMenuItem, MenuItemVariant, NodeAction, nodeActions } from '../Actions/NodeActions';
 import { WarningResolverAsCredModal } from '../Actions/WarningResolver';
 import { EnvironmentNode, TargetNode, isTargetNode, NodeType, DEFAULT_EMPTY_UNIVERSE } from '../typings';
 
@@ -119,10 +119,15 @@ export const getStatusTargetNode = (node: TargetNode | EnvironmentNode): [NodeSt
   return [];
 };
 
-export const actionFactory = (element: GraphElement | ListElement, variant: MenuItemVariant = 'contextMenuItem') => {
+export const actionFactory = (
+  element: GraphElement | ListElement,
+  variant: MenuItemVariant = 'contextMenuItem',
+  actionFilter = (_: NodeAction) => true
+) => {
   const data: TargetNode = element.getData();
   let filtered = nodeActions.filter((action) => {
     return (
+      actionFilter(action) &&
       (!action.includeList || action.includeList.includes(data.nodeType)) &&
       (!action.blockList || !action.blockList.includes(data.nodeType))
     );

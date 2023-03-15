@@ -36,6 +36,9 @@
  * SOFTWARE.
  */
 /**
+ * t('JvmDetailsCard.CARD_TITLE')
+ * t('JvmDetailsCard.CARD_DESCRIPTION')
+ * t('JvmDetailsCard.CARD_DESCRIPTION_FULL')
  * t('AutomatedAnalysisCard.CARD_TITLE')
  * t('AutomatedAnalysisCard.CARD_DESCRIPTION')
  * t('AutomatedAnalysisCard.CARD_DESCRIPTION_FULL')

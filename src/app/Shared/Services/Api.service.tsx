@@ -1413,6 +1413,60 @@ interface HealthGetResponse {
   reportsAvailable: boolean;
 }
 
+export interface MemoryUsage {
+  init: number;
+  used: number;
+  committed: number;
+  max: number;
+}
+
+export interface MBeanMetrics {
+  thread?: {
+    threadCount?: number;
+    daemonThreadCount?: number;
+  };
+  os?: {
+    arch?: string;
+    availableProcessors?: number;
+    version?: string;
+    systemCpuLoad?: number;
+    systemLoadAverage?: number;
+    processCpuLoad?: number;
+    totalPhysicalMemorySize?: number;
+    freePhysicalMemorySize?: number;
+  };
+  memory?: {
+    heapMemoryUsage?: MemoryUsage;
+    nonHeapMemoryUsage?: MemoryUsage;
+    heapMemoryUsagePercent?: number;
+  };
+  runtime?: {
+    bootClassPath?: string;
+    classPath?: string;
+    inputArguments?: string[];
+    libraryPath?: string;
+    managementSpecVersion?: string;
+    name?: string;
+    specName?: string;
+    specVendor?: string;
+    startTime?: number;
+    // systemProperties?: Object
+    uptime?: number;
+    vmName?: string;
+    vmVendor?: string;
+    vmVersion?: string;
+    bootClassPathSupported?: boolean;
+  };
+}
+
+export interface MBeanMetricsResponse {
+  data: {
+    targetNodes: {
+      mbeanMetrics: MBeanMetrics;
+    }[];
+  };
+}
+
 export interface RecordingDirectory {
   connectUrl: string;
   jvmId: string;

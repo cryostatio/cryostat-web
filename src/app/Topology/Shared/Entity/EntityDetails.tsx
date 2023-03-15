@@ -57,6 +57,7 @@ import {
   Divider,
   Dropdown,
   DropdownToggle,
+  ExpandableSection,
   Flex,
   FlexItem,
   Popover,
@@ -73,7 +74,7 @@ import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-tab
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { catchError, combineLatest, concatMap, merge, of, Subject, switchMap } from 'rxjs';
+import { catchError, combineLatest, concatMap, map, merge, of, Subject, switchMap } from 'rxjs';
 import { isRenderable } from '../../GraphView/UtilsFactory';
 import { EnvironmentNode, isTargetNode, TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
@@ -95,16 +96,26 @@ import {
   TargetRelatedResourceType,
   TargetRelatedResourceTypeAsArray,
 } from './utils';
+import useDayjs from '@app/utils/useDayjs';
+import { MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
+import { NodeAction } from '@app/Topology/Actions/NodeActions';
 
 export interface EntityDetailsProps {
   entity?: GraphElement | ListElement;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
   className?: string;
+  actionFilter?: (_: NodeAction) => boolean;
 }
 
 type _supportedTab = 'details' | 'resources';
 
-export const EntityDetails: React.FC<EntityDetailsProps> = ({ entity, className, columnModifier, ...props }) => {
+export const EntityDetails: React.FC<EntityDetailsProps> = ({
+  entity,
+  className,
+  columnModifier,
+  actionFilter,
+  ...props
+}) => {
   const [activeTab, setActiveTab] = React.useState<_supportedTab>('details');
   const [actionOpen, setActionOpen] = React.useState(false);
 
@@ -114,7 +125,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({ entity, className,
       const isTarget = isTargetNode(data);
       const titleContent = isTarget ? data.target.alias : data.name;
 
-      const _actions = actionFactory(entity, 'dropdownItem');
+      const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
 
       return (
         <div {...props}>
@@ -167,13 +178,33 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({ entity, className,
   return <div className={css(className)}>{viewContent}</div>;
 };
 
+type DescriptionConfig = {
+  key: React.Key;
+  title: React.ReactNode;
+  helperTitle: React.ReactNode;
+  helperDescription: React.ReactNode;
+  content: React.ReactNode;
+};
+
+const mapSection = (d: DescriptionConfig) => (
+  <DescriptionListGroup key={d.key}>
+    <DescriptionListTermHelpText>
+      <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
+        <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
+      </Popover>
+    </DescriptionListTermHelpText>
+    <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>{d.content}</DescriptionListDescription>
+  </DescriptionListGroup>
+);
+
 export const TargetDetails: React.FC<{
   targetNode: TargetNode;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
 }> = ({ targetNode, columnModifier, ...props }) => {
   const serviceRef = React.useMemo(() => targetNode.target, [targetNode]);
+  const [isExpanded, setExpanded] = React.useState(false);
 
-  const _transformedData = React.useMemo(() => {
+  const _transformedData = React.useMemo((): DescriptionConfig[] => {
     return [
       {
         key: 'Connection URL',
@@ -214,22 +245,120 @@ export const TargetDetails: React.FC<{
     ];
   }, [serviceRef]);
 
+  const onToggle = React.useCallback(() => setExpanded((v) => !v), [setExpanded]);
+
   return (
-    <DescriptionList {...props} columnModifier={columnModifier}>
-      {_transformedData.map((d) => (
-        <DescriptionListGroup key={d.key}>
-          <DescriptionListTermHelpText>
-            <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
-              <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
-            </Popover>
-          </DescriptionListTermHelpText>
-          <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>
-            {d.content}
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-      ))}
-    </DescriptionList>
+    <>
+      <DescriptionList {...props} columnModifier={columnModifier}>
+        {_transformedData.map(mapSection)}
+      </DescriptionList>
+      <ExpandableSection
+        toggleText={isExpanded ? 'Show less' : 'Show more'}
+        onToggle={onToggle}
+        isExpanded={isExpanded}
+      >
+        <MBeanDetails isExpanded={isExpanded} connectUrl={serviceRef.connectUrl} columnModifier={columnModifier} />
+      </ExpandableSection>
+    </>
   );
+};
+
+const MBeanDetails: React.FC<{
+  isExpanded: boolean;
+  connectUrl: string;
+  columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
+}> = ({ isExpanded, connectUrl, columnModifier }) => {
+  const context = React.useContext(ServiceContext);
+  const [dayjs, dateTimeFormat] = useDayjs();
+  const addSubscription = useSubscriptions();
+  const [mbeanMetrics, setMbeanMetrics] = React.useState({} as MBeanMetrics);
+
+  React.useEffect(() => {
+    if (isExpanded) {
+      addSubscription(
+        context.api
+          .graphql<MBeanMetricsResponse>(
+            `
+            query MBeanMXMetricsForTarget($connectUrl: String) {
+              targetNodes(filter: { name: $connectUrl }) {
+                mbeanMetrics {
+                  runtime {
+                    startTime
+                    vmVendor
+                    vmVersion
+                  }
+                  os {
+                    version
+                    arch
+                    availableProcessors
+                  }
+                }
+              }
+            }`,
+            { connectUrl }
+          )
+          .pipe(
+            map((resp) => resp.data.targetNodes[0].mbeanMetrics),
+            catchError((_) => of({}))
+          )
+          .subscribe(setMbeanMetrics)
+      );
+    }
+  }, [isExpanded, addSubscription, connectUrl, context.api, setMbeanMetrics]);
+
+  const _collapsedData = React.useMemo((): DescriptionConfig[] => {
+    return [
+      {
+        key: 'Start Time',
+        title: 'Start Time',
+        helperTitle: 'Start Time',
+        helperDescription: 'The time when this JVM process started.',
+        content:
+          (mbeanMetrics?.runtime?.startTime || 0) > 0 ? (
+            dayjs(mbeanMetrics?.runtime?.startTime).tz(dateTimeFormat.timeZone.full).format('LLLL')
+          ) : (
+            <EmptyText text="Unknown start time" />
+          ),
+      },
+      {
+        key: 'JVM Version',
+        title: 'JVM Version',
+        helperTitle: 'JVM Version',
+        helperDescription: 'The version of the JVM.',
+        content: mbeanMetrics.runtime?.vmVersion || <EmptyText text="Unknown JVM version" />,
+      },
+      {
+        key: 'JVM Vendor',
+        title: 'JVM Vendor',
+        helperTitle: 'JVM Vendor',
+        helperDescription: 'The vendor who supplied this JVM',
+        content: mbeanMetrics.runtime?.vmVendor || <EmptyText text="Unknown JVM vendor" />,
+      },
+      {
+        key: 'Operating System Architecture',
+        title: 'Operating System Architecture',
+        helperTitle: 'Operating System Architecture',
+        helperDescription: 'The CPU architecture of the host system.',
+        content: mbeanMetrics.os?.arch || <EmptyText text="Unknown operating system architecture" />,
+      },
+      {
+        key: 'Operating System Version',
+        title: 'Operating System Version',
+        helperTitle: 'Operating System Version',
+        helperDescription: 'The version of the host operating system.',
+        content: mbeanMetrics.os?.version || <EmptyText text="Unknown operating system version" />,
+      },
+      {
+        key: 'Available Processors',
+        title: 'Available Processors',
+        helperTitle: 'Available Processors',
+        helperDescription: 'The count of total processors available to the JVM process on its host.',
+        content: mbeanMetrics.os?.availableProcessors || <EmptyText text="Unknown number of processors" />,
+      },
+    ];
+  }, [mbeanMetrics]);
+
+  return <DescriptionList columnModifier={columnModifier}>{_collapsedData.map(mapSection)}</DescriptionList>;
 };
 
 export const GroupDetails: React.FC<{

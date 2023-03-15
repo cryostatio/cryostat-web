@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 
-import { ApiService } from '@app/Shared/Services/Api.service';
+import { ApiService, MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { SettingsService } from '@app/Shared/Services/Settings.service';
 import { Target, TargetService } from '@app/Shared/Services/Target.service';
 import {
@@ -187,39 +187,4 @@ export class MBeanMetricsChartController {
         catchError((_) => of({}))
       );
   }
-}
-
-export interface MemoryUsage {
-  init: number;
-  used: number;
-  committed: number;
-  max: number;
-}
-
-export interface MBeanMetrics {
-  thread?: {
-    threadCount?: number;
-    daemonThreadCount?: number;
-  };
-  os?: {
-    systemCpuLoad?: number;
-    systemLoadAverage?: number;
-    processCpuLoad?: number;
-    totalPhysicalMemorySize?: number;
-    freePhysicalMemorySize?: number;
-  };
-  memory?: {
-    heapMemoryUsage?: MemoryUsage;
-    nonHeapMemoryUsage?: MemoryUsage;
-    heapMemoryUsagePercent?: number;
-  };
-  // runtime: {};
-}
-
-export interface MBeanMetricsResponse {
-  data: {
-    targetNodes: {
-      mbeanMetrics: MBeanMetrics;
-    }[];
-  };
 }
