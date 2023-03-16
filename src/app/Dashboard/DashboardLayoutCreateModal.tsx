@@ -44,6 +44,7 @@ import {
 } from '@app/Shared/Redux/ReduxStore';
 import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
+import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -123,6 +124,15 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     onClose();
   }, [dispatch, setName, onClose, name, isCreateModal, props.oldName]);
 
+  const handleKeyUp = React.useCallback(
+    (event: React.KeyboardEvent): void => {
+      if (event.code === 'Enter' && validated === 'success') {
+        handleSubmit();
+      }
+    },
+    [handleSubmit, validated]
+  );
+
   const formGroup = React.useMemo(() => {
     return (
       <FormGroup
@@ -141,10 +151,13 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
           aria-describedby={'name-helper'}
           value={name}
           onChange={handleNameChange}
+          onKeyUp={handleKeyUp}
+          autoFocus={true}
+          autoComplete="on"
         />
       </FormGroup>
     );
-  }, [t, validated, errorMessage, name, handleNameChange]);
+  }, [t, validated, errorMessage, name, handleNameChange, handleKeyUp]);
 
   const actionGroup = React.useMemo(() => {
     return (
@@ -161,6 +174,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
 
   return (
     <Modal
+      appendTo={portalRoot}
       isOpen={props.visible}
       variant={ModalVariant.large}
       showClose={true}
@@ -169,7 +183,7 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
         isCreateModal ? t('DashboardLayoutCreateModal.CREATE_LAYOUT') : t('DashboardLayoutCreateModal.RENAME_LAYOUT')
       }
     >
-      <Form>
+      <Form onSubmit={(e) => e.preventDefault()}>
         {formGroup}
         {actionGroup}
       </Form>

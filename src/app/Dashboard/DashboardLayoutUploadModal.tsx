@@ -45,6 +45,7 @@ import {
 } from '@app/Shared/Redux/ReduxStore';
 import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -191,60 +192,59 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
   );
 
   return (
-    <>
-      <Modal
-        isOpen={props.visible}
-        variant={ModalVariant.large}
-        showClose={true}
-        onClose={handleClose}
-        title={t('DashboardLayoutUploadModal.TITLE')}
-        description={t(`DashboardLayoutUploadModal.DESCRIPTION`)}
-        help={
-          <Popover
-            headerContent={<div>{t('WHATS_THIS', { ns: 'common' })}</div>}
-            bodyContent={<div>{t(`DashboardLayoutUploadModal.HELP.CONTENT`)}</div>}
-          >
-            <Button variant="plain" aria-label={t('HELP', { ns: 'common' })}>
-              <HelpIcon />
+    <Modal
+      appendTo={portalRoot}
+      isOpen={props.visible}
+      variant={ModalVariant.large}
+      showClose={true}
+      onClose={handleClose}
+      title={t('DashboardLayoutUploadModal.TITLE')}
+      description={t(`DashboardLayoutUploadModal.DESCRIPTION`)}
+      help={
+        <Popover
+          headerContent={<div>{t('WHATS_THIS', { ns: 'common' })}</div>}
+          bodyContent={<div>{t(`DashboardLayoutUploadModal.HELP.CONTENT`)}</div>}
+        >
+          <Button variant="plain" aria-label={t('HELP', { ns: 'common' })}>
+            <HelpIcon />
+          </Button>
+        </Popover>
+      }
+    >
+      <Form>
+        <FormGroup label="JSON File" isRequired fieldId="file">
+          <MultiFileUpload
+            submitRef={submitRef}
+            abortRef={abortRef}
+            uploading={uploading}
+            dropZoneAccepts={['application/json']}
+            displayAccepts={['JSON']}
+            onFileSubmit={onFileSubmit}
+            onFilesChange={onFilesChange}
+          />
+        </FormGroup>
+        <ActionGroup>
+          {allOks && numOfFiles ? (
+            <Button variant="primary" onClick={handleClose}>
+              {t('CLOSE', { ns: 'common' })}
             </Button>
-          </Popover>
-        }
-      >
-        <Form>
-          <FormGroup label="JSON File" isRequired fieldId="file">
-            <MultiFileUpload
-              submitRef={submitRef}
-              abortRef={abortRef}
-              uploading={uploading}
-              dropZoneAccepts={['application/json']}
-              displayAccepts={['JSON']}
-              onFileSubmit={onFileSubmit}
-              onFilesChange={onFilesChange}
-            />
-          </FormGroup>
-          <ActionGroup>
-            {allOks && numOfFiles ? (
-              <Button variant="primary" onClick={handleClose}>
-                {t('CLOSE', { ns: 'common' })}
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                isDisabled={!numOfFiles || uploading}
+                {...submitButtonLoadingProps}
+              >
+                {t('SUBMIT', { ns: 'common' })}
               </Button>
-            ) : (
-              <>
-                <Button
-                  variant="primary"
-                  onClick={handleSubmit}
-                  isDisabled={!numOfFiles || uploading}
-                  {...submitButtonLoadingProps}
-                >
-                  {t('SUBMIT', { ns: 'common' })}
-                </Button>
-                <Button variant="link" onClick={handleClose}>
-                  {t('CANCEL', { ns: 'common' })}
-                </Button>
-              </>
-            )}
-          </ActionGroup>
-        </Form>
-      </Modal>
-    </>
+              <Button variant="link" onClick={handleClose}>
+                {t('CANCEL', { ns: 'common' })}
+              </Button>
+            </>
+          )}
+        </ActionGroup>
+      </Form>
+    </Modal>
   );
 };

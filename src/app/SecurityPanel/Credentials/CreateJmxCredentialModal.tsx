@@ -40,6 +40,7 @@ import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import {
   FormGroup,
   Modal,
@@ -86,6 +87,7 @@ export const CreateJmxCredentialModal: React.FunctionComponent<CreateJmxCredenti
 
   return (
     <Modal
+      appendTo={portalRoot}
       isOpen={visible}
       variant={ModalVariant.large}
       showClose={!loading}

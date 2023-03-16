@@ -48,7 +48,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { openTabForUrl } from '@app/utils/utils';
+import { openTabForUrl, portalRoot } from '@app/utils/utils';
 import {
   Alert,
   AlertActionCloseButton,
@@ -559,7 +559,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   return (
     <>
-      <AlertGroup isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
+      <AlertGroup
+        appendTo={portalRoot}
+        isToast
+        isLiveRegion
+        overflowMessage={overflowMessage}
+        onOverflowClick={handleOpenNotificationCenter}
+      >
         {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
           <Alert
             isLiveRegion

@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { portalRoot } from '@app/utils/utils';
 import { Button, Modal } from '@patternfly/react-core';
 import * as React from 'react';
 
@@ -50,6 +51,7 @@ export interface CancelUploadModalProps {
 export const CancelUploadModal: React.FunctionComponent<CancelUploadModalProps> = (props) => {
   return (
     <Modal
+      appendTo={portalRoot}
       width={'40%'}
       isOpen={props.visible}
       showClose={true}

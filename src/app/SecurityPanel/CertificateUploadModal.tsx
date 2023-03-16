@@ -39,6 +39,7 @@ import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploa
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant } from '@patternfly/react-core';
 import * as React from 'react';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -136,6 +137,7 @@ export const CertificateUploadModal: React.FunctionComponent<CertificateUploadMo
 
   return (
     <Modal
+      appendTo={portalRoot}
       isOpen={visible}
       variant={ModalVariant.large}
       showClose={true}

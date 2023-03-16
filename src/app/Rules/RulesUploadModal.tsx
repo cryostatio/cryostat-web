@@ -39,6 +39,7 @@ import { FUpload, MultiFileUpload, UploadCallbacks } from '@app/Shared/FileUploa
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, Popover } from '@patternfly/react-core';
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
@@ -149,67 +150,66 @@ export const RuleUploadModal: React.FC<RuleUploadModalProps> = ({ onClose, ...pr
   );
 
   return (
-    <>
-      <Modal
-        isOpen={props.visible}
-        variant={ModalVariant.large}
-        showClose={true}
-        onClose={handleClose}
-        title="Upload Automated Rules"
-        description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
-        help={
-          <Popover
-            headerContent={<div>What&quot;s this?</div>}
-            bodyContent={
-              <div>
-                Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
-                target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
-                much data should be kept in the application recording buffer, and how frequently Cryostat should copy
-                the application recording buffer into Cryostat&quot;s own archived storage.
-              </div>
-            }
-          >
-            <Button variant="plain" aria-label="Help">
-              <HelpIcon />
+    <Modal
+      appendTo={portalRoot}
+      isOpen={props.visible}
+      variant={ModalVariant.large}
+      showClose={true}
+      onClose={handleClose}
+      title="Upload Automated Rules"
+      description="Select an Automated Rules definition file to upload. File must be in valid JSON format."
+      help={
+        <Popover
+          headerContent={<div>What&quot;s this?</div>}
+          bodyContent={
+            <div>
+              Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching
+              target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how
+              much data should be kept in the application recording buffer, and how frequently Cryostat should copy the
+              application recording buffer into Cryostat&quot;s own archived storage.
+            </div>
+          }
+        >
+          <Button variant="plain" aria-label="Help">
+            <HelpIcon />
+          </Button>
+        </Popover>
+      }
+    >
+      <Form>
+        <FormGroup label="JSON File" isRequired fieldId="file">
+          <MultiFileUpload
+            submitRef={submitRef}
+            abortRef={abortRef}
+            uploading={uploading}
+            dropZoneAccepts={['application/json']}
+            displayAccepts={['JSON']}
+            onFileSubmit={onFileSubmit}
+            onFilesChange={onFilesChange}
+          />
+        </FormGroup>
+        <ActionGroup>
+          {allOks && numOfFiles ? (
+            <Button variant="primary" onClick={handleClose}>
+              Close
             </Button>
-          </Popover>
-        }
-      >
-        <Form>
-          <FormGroup label="JSON File" isRequired fieldId="file">
-            <MultiFileUpload
-              submitRef={submitRef}
-              abortRef={abortRef}
-              uploading={uploading}
-              dropZoneAccepts={['application/json']}
-              displayAccepts={['JSON']}
-              onFileSubmit={onFileSubmit}
-              onFilesChange={onFilesChange}
-            />
-          </FormGroup>
-          <ActionGroup>
-            {allOks && numOfFiles ? (
-              <Button variant="primary" onClick={handleClose}>
-                Close
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                onClick={handleSubmit}
+                isDisabled={!numOfFiles || uploading}
+                {...submitButtonLoadingProps}
+              >
+                Submit
               </Button>
-            ) : (
-              <>
-                <Button
-                  variant="primary"
-                  onClick={handleSubmit}
-                  isDisabled={!numOfFiles || uploading}
-                  {...submitButtonLoadingProps}
-                >
-                  Submit
-                </Button>
-                <Button variant="link" onClick={handleClose}>
-                  Cancel
-                </Button>
-              </>
-            )}
-          </ActionGroup>
-        </Form>
-      </Modal>
-    </>
+              <Button variant="link" onClick={handleClose}>
+                Cancel
+              </Button>
+            </>
+          )}
+        </ActionGroup>
+      </Form>
+    </Modal>
   );
 };
