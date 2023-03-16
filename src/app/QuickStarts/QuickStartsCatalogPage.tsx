@@ -36,16 +36,10 @@
  * SOFTWARE.
  */
 import { LoadingView } from '@app/LoadingView/LoadingView';
-import {
-  QuickStartCatalogPage,
-  QuickStartContainer,
-  QuickStartContainerProps,
-  useLocalStorage,
-} from '@patternfly/quickstarts';
+import { QuickStartCatalogPage } from '@patternfly/quickstarts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
-import { allQuickStarts } from './all-quickstarts';
 
 export interface QuickStartsCatalogPageProps {}
 

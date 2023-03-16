@@ -39,6 +39,13 @@ html, body, #root {
   height: 100%;
 }
 
+:root {
+  --cryostat-indigo: #1B4965;
+  --cryostat-picton-blue: #5FA8D3;
+  --cryostat-baby-blue: #95C9E9;
+  --cryostat-white: #FFFFFF;
+}
+
 .pf-c-card-not-found {
   text-align: left;
   margin-left: 1rem;

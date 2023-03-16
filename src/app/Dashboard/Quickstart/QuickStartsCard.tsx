@@ -105,7 +105,7 @@ const QuickStartsCardSizes = {
 } as DashboardCardSizes;
 
 export const QuickStartsCardDescriptor: DashboardCardDescriptor = {
-  featureLevel: FeatureLevel.BETA,
+  featureLevel: FeatureLevel.PRODUCTION,
   title: 'QuickStartsCard.CARD_TITLE',
   cardSizes: QuickStartsCardSizes,
   description: 'QuickStartsCard.CARD_DESCRIPTION',

@@ -35,7 +35,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Breadcrumb, BreadcrumbHeading, BreadcrumbItem, PageSection, Stack, StackItem } from '@patternfly/react-core';
+import {
+  Breadcrumb,
+  BreadcrumbHeading,
+  BreadcrumbItem,
+  PageGroup,
+  PageSection,
+  Stack,
+  StackItem,
+} from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -52,7 +60,7 @@ export interface BreadcrumbTrail {
 
 export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = (props) => {
   return (
-    <>
+    <PageGroup>
       <PageSection>
         <Breadcrumb>
           {(props.breadcrumbs || []).map(({ title, path }) => (
@@ -68,7 +76,7 @@ export const BreadcrumbPage: React.FC<BreadcrumbPageProps> = (props) => {
           ))}
         </Stack>
       </PageSection>
-    </>
+    </PageGroup>
   );
 };
 

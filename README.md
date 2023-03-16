@@ -90,3 +90,9 @@ The extraction tool is [`i18next-parser`](https://www.npmjs.com/package/i18next-
 ).
 
 To workaround this, specify static values in `i18n.ts` file under any top-level directory below `src/app`. For example, `src/app/Settings/i18n.ts`.
+
+## COLOR PALETTE
+
+The color palette for Cryostat is defined in `src/app/app.css` in `:root`. The colors are defined as variables and can be used throughout the application.
+
+![Palette](./src/app/assets/palette.svg)

@@ -35,10 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
-import { CogIcon } from '@patternfly/react-icons';
 import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
+import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 // TODO: Add quickstarts based on the following example:
@@ -90,14 +89,12 @@ export const SettingsQuickStart: QuickStart = {
         description: `
   1. Here you can configure the language and region settings for the Cryostat UI.
   2. You can also configure the date and time format.`,
-        
       },
       {
         title: 'Go to the Notification & Messages tab',
         description: `
   1. Here you can configure the notification settings for the Cryostat UI.
   2. You can also configure the message settings.`,
-        
       },
       {
         title: 'Go to the Dashboard tab',

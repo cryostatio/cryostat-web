@@ -56,12 +56,15 @@ import {
   AlertActionCloseButton,
   AlertGroup,
   AlertVariant,
+  ApplicationLauncher,
+  ApplicationLauncherItem,
   Brand,
   Button,
   Dropdown,
   DropdownGroup,
   DropdownItem,
   DropdownToggle,
+  Icon,
   Label,
   Masthead,
   MastheadBrand,
@@ -74,6 +77,8 @@ import {
   NavList,
   NotificationBadge,
   Page,
+  PageGroup,
+  PageSection,
   PageSidebar,
   PageToggleButton,
   SkipToContent,
@@ -88,6 +93,7 @@ import {
   CaretDownIcon,
   CogIcon,
   ExternalLinkAltIcon,
+  HelpIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
   UserIcon,
@@ -99,9 +105,10 @@ import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
 import { GlobalQuickStartDrawer } from './QuickStartDrawer';
 import { SslErrorModal } from './SslErrorModal';
-import Joyride from 'react-joyride';
-import { CryostatJoyride } from './CryostatJoyride';
+import Joyride, { CallBackProps, STATUS } from 'react-joyride';
+import CryostatJoyride from './CryostatJoyride';
 import ReactJoyride from 'react-joyride';
+import { useTranslation } from 'react-i18next';
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -111,6 +118,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const notificationsContext = React.useContext(NotificationsContext);
   const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
+  const { t } = useTranslation();
 
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
@@ -128,6 +136,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
+  const [joyrideRun, setJoyrideRun] = React.useState(false);
   const location = useLocation();
 
   React.useEffect(() => {
@@ -332,39 +341,37 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     openTabForUrl(build.discussionUrl);
   }, []);
 
-  const helpItems = React.useMemo(
-    () => [
-      <DropdownItem key={'documentation'} onClick={handleOpenDocumentation}>
-        <span>Documentation</span>
-        <ExternalLinkAltIcon color="grey" className="xsm-icon" style={{ marginLeft: '2ch' }} />
-      </DropdownItem>,
-      <DropdownItem key={'Help'} onClick={handleOpenDiscussion}>
-        <span>Help</span>
-        <ExternalLinkAltIcon color="grey" className="xsm-icon" style={{ marginLeft: '2ch' }} />
-      </DropdownItem>,
-      <DropdownItem key={'About'} onClick={handleOpenAboutModal}>
-        About
-      </DropdownItem>,
-      <FeatureFlag level={FeatureLevel.BETA} key={'language-preferences-feature-flag'}>
-        <DropdownItem key={'Quickstarts'} component={
-          <NavLink to="/quickstarts">
-            Quick Starts
-          </NavLink>
-        }>
-        </DropdownItem>
-      </FeatureFlag>,
-    ],
-    [handleOpenDocumentation, handleOpenDiscussion, handleOpenAboutModal]
-  );
+  const handleOpenGuidedTour = React.useCallback(() => {
+    console.log('handleOpenGuidedTour');
+    setJoyrideRun(true);
+  }, [setJoyrideRun]);
 
-  const HelpToggle = React.useMemo(
-    () => (
-      <DropdownToggle onToggle={handleHelpToggle} toggleIndicator={null}>
-        <QuestionCircleIcon />
-      </DropdownToggle>
-    ),
-    [handleHelpToggle]
-  );
+  const helpItems = React.useMemo(() => {
+    return [
+      <ApplicationLauncherItem
+        key={'Quickstarts'}
+        component={<NavLink to="/quickstarts">{t('AppLayout.APP_LAUNCHER.QUICKSTARTS')}</NavLink>}
+      ></ApplicationLauncherItem>,
+      <ApplicationLauncherItem key={'Documentation'} onClick={handleOpenDocumentation}>
+        <span>{t('AppLayout.APP_LAUNCHER.DOCUMENTATION')}</span>
+        <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
+          <ExternalLinkAltIcon color="grey" />
+        </Icon>
+      </ApplicationLauncherItem>,
+      <ApplicationLauncherItem key={'Guided tour'} onClick={handleOpenGuidedTour}>
+        {t('AppLayout.APP_LAUNCHER.GUIDED_TOUR')}
+      </ApplicationLauncherItem>,
+      <ApplicationLauncherItem key={'Help'} onClick={handleOpenDiscussion}>
+        {t('AppLayout.APP_LAUNCHER.HELP')}
+        <Icon isInline size="lg" iconSize="sm" style={{ marginLeft: 'auto', paddingLeft: '1ch' }}>
+          <ExternalLinkAltIcon color="grey" />
+        </Icon>
+      </ApplicationLauncherItem>,
+      <ApplicationLauncherItem key={'About'} onClick={handleOpenAboutModal}>
+        {t('AppLayout.APP_LAUNCHER.ABOUT')}
+      </ApplicationLauncherItem>,
+    ];
+  }, [t, handleOpenDocumentation, handleOpenGuidedTour, handleOpenDiscussion, handleOpenAboutModal]);
 
   const levelBadge = React.useCallback((level: FeatureLevel) => {
     return (
@@ -408,19 +415,22 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </ToolbarItem>
                 <ToolbarItem>
                   <Button
+                    id="settings-button"
                     onClick={handleSettingsButtonClick}
                     variant="link"
-                    icon={<CogIcon color="white " size="sm" />}
+                    icon={<CogIcon color="white" size="sm" />}
                   />
                 </ToolbarItem>
                 <ToolbarItem>
-                  <Dropdown
-                    isPlain
-                    onSelect={() => setShowHelpDropdown(false)}
-                    position="right"
+                  <ApplicationLauncher
+                    onSelect={handleHelpToggle}
+                    onToggle={handleHelpToggle}
                     isOpen={showHelpDropdown}
-                    toggle={HelpToggle}
-                    dropdownItems={helpItems}
+                    items={helpItems}
+                    position="right"
+                    toggleIcon={<QuestionCircleIcon />}
+                    data-tour-id="help-dropdown"
+                    data-quickstart-id="help-dropdown"
                   />
                 </ToolbarItem>
               </ToolbarGroup>
@@ -445,14 +455,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       errorNotificationsCount,
       handleNotificationCenterToggle,
       handleSettingsButtonClick,
-      setShowHelpDropdown,
+      handleHelpToggle,
       setShowUserInfoDropdown,
       showUserIcon,
       showUserInfoDropdown,
       showHelpDropdown,
       UserInfoToggle,
       userInfoItems,
-      HelpToggle,
       helpItems,
     ]
   );
@@ -564,40 +573,28 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     [handleCloseNotificationCenter]
   );
 
-  const steps = [
-    {
-        target: "pf-c-page__main-sectionk",
-        content: "Welcome to Cryostat! This is a quick tour of the UI.",
+  const handleJoyrideCallback = React.useCallback(
+    (data: CallBackProps) => {
+      console.log(data);
+      if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(data.status)) {
+        setJoyrideRun(false);
+      } else if (data.action === 'close' && data.type === 'step:before') {
+        setJoyrideRun(false);
+      }
     },
-    {
-        target: ".pf-c-page__header-brand-link",
-        content: "This is the Cryostat logo. Clicking it will take you to the home page.",
-        disableBeacon: true,
-    },
-    {
-        target: ".pf-c-page__header-tools",
-        content: "This is the toolbar. It contains the settings cog, the help icon, and the user menu.",
-        disableBeacon: true,
-    },
-    {
-        target: ".pf-c-page__header-tools",
-        content: "Clicking the settings cog will take you to the settings page.",
-        disableBeacon: true,
-    },
-];
+    [setJoyrideRun]
+  );
 
   return (
-
     <GlobalQuickStartDrawer>
-      <ReactJoyride
-            steps={steps}
-            continuous={true}
-            showSkipButton={true}
-            showProgress={true}
-            run={true}
-        />
-      <CryostatJoyride />
-        <AlertGroup appendTo={portalRoot} isToast isLiveRegion overflowMessage={overflowMessage} onOverflowClick={handleOpenNotificationCenter}>
+      <CryostatJoyride run={joyrideRun} callback={handleJoyrideCallback}>
+        <AlertGroup
+          appendTo={portalRoot}
+          isToast
+          isLiveRegion
+          overflowMessage={overflowMessage}
+          onOverflowClick={handleOpenNotificationCenter}
+        >
           {notificationsToDisplay.slice(0, visibleNotificationsCount).map(({ key, title, message, variant }) => (
             <Alert
               isLiveRegion
@@ -625,6 +622,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </Page>
         <AuthModal visible={showAuthModal} onDismiss={dismissAuthModal} onSave={authModalOnSave} />
         <SslErrorModal visible={showSslErrorModal} onDismiss={dismissSslErrorModal} />
+      </CryostatJoyride>
     </GlobalQuickStartDrawer>
   );
 };

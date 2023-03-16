@@ -41,4 +41,4 @@ import { SampleQuickStart } from './quickstarts/my-quickstart';
 import { SettingsQuickStart } from './quickstarts/settings-quickstart';
 
 // Add your quick start here e.g. [GenericQuickStart, SampleQuickStart, AddCardQuickStart]
-export const allQuickStarts: QuickStart[] = [SampleQuickStart, SettingsQuickStart ];
+export const allQuickStarts: QuickStart[] = [SampleQuickStart, SettingsQuickStart];
