@@ -56,6 +56,7 @@ export enum DashboardConfigAction {
   LAYOUT_REMOVE = 'layout-config/remove',
   LAYOUT_RENAME = 'layout-config/rename',
   LAYOUT_REPLACE = 'layout-config/replace',
+  LAYOUT_FAVORITE = 'layout-config/favorite',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -98,6 +99,10 @@ export interface DashboardRenameLayoutActionPayload {
 }
 export interface DashboardReplaceLayoutActionPayload {
   newLayoutName: string;
+}
+
+export interface DashboardFavoriteLayoutActionPayload {
+  name: string;
 }
 
 export const dashboardConfigAddCardIntent = createAction(
@@ -177,6 +182,15 @@ export const dashboardConfigReplaceLayoutIntent = createAction(
   })
 );
 
+export const dashboardConfigFavoriteLayoutIntent = createAction(
+  DashboardConfigAction.LAYOUT_FAVORITE,
+  (name: string) => ({
+    payload: {
+      newLayoutName: name,
+    } as DashboardReplaceLayoutActionPayload,
+  })
+);
+
 export interface CardConfig {
   id: string;
   name: string;
@@ -189,7 +203,10 @@ export type SerialCardConfig = Omit<CardConfig, 'id'>;
 export interface DashboardLayout {
   name: string;
   cards: CardConfig[];
+  favorite: boolean;
 }
+
+export type SerialDashboardLayout = Omit<DashboardLayout, 'cards'> & { cards: SerialCardConfig[] };
 
 export interface DashboardConfigState {
   layouts: DashboardLayout[];
@@ -202,8 +219,9 @@ const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _
     {
       name: 'Default',
       cards: [],
+      favorite: true,
     },
-  ],
+  ] as DashboardLayout[],
   current: 0,
 });
 
@@ -282,6 +300,10 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardConfigReplaceLayoutIntent, (state, { payload }) => {
       state.current = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName) || 0;
+    })
+    .addCase(dashboardConfigFavoriteLayoutIntent, (state, { payload }) => {
+      const idx = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName);
+      state.layouts[idx].favorite = !state.layouts[idx].favorite;
     });
 });
 

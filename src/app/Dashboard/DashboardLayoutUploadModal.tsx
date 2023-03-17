@@ -110,6 +110,9 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
               throw new Error(t('DashboardLayoutUploadModal.ERROR.CONFIG_INVALID'));
             }
           }
+          if (layout.favorite === undefined) {
+            layout.favorite = false;
+          }
           return layout;
         })
       );
@@ -122,14 +125,18 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
     setUploading(false);
   }, [setNumOfFiles, setUploading]);
 
-  const handleClose = React.useCallback(() => {
-    if (uploading) {
-      abortRef.current && abortRef.current.click();
-    } else {
-      reset();
-      onClose();
-    }
-  }, [uploading, reset, onClose]);
+  const handleClose = React.useCallback(
+    (ev?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      ev && ev.stopPropagation();
+      if (uploading) {
+        abortRef.current && abortRef.current.click();
+      } else {
+        reset();
+        onClose();
+      }
+    },
+    [uploading, reset, onClose]
+  );
 
   const onFileSubmit = React.useCallback(
     (

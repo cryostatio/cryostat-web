@@ -55,6 +55,7 @@ export const {
   dashboardConfigDeleteLayoutIntent,
   dashboardConfigRenameLayoutIntent,
   dashboardConfigReplaceLayoutIntent,
+  dashboardConfigFavoriteLayoutIntent,
 } = dashboardConfigSlice;
 export const {
   recordingAddFilterIntent,
@@ -76,7 +77,7 @@ export const {
   automatedAnalysisUpdateCategoryIntent,
 } = automatedAnalysisFilterSlice;
 
-export const { topologyConfigSetViewModeIntent, topologyDisplayOpionsSetIntent } = topologyConfigSlice;
+export const { topologyConfigSetViewModeIntent, topologyDisplayOptionsSetIntent } = topologyConfigSlice;
 
 export const {
   topologyUpdateCategoryTypeIntent,

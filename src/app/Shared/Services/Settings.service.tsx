@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 
-import { DEFAULT_DASHBOARD_NAME } from '@app/Dashboard/DashboardUtils';
 import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { DatetimeFormat, defaultDatetimeFormat } from '@i18n/datetime';
@@ -91,25 +90,12 @@ export class SettingsService {
     getFromLocalStorage('DATETIME_FORMAT', defaultDatetimeFormat)
   );
 
-  private readonly _layoutFavorites = new BehaviorSubject<string[]>(
-    getFromLocalStorage('LAYOUT_FAVORITES', [DEFAULT_DASHBOARD_NAME])
-  );
-
   constructor() {
     this._featureLevel$.subscribe((featureLevel: FeatureLevel) => saveToLocalStorage('FEATURE_LEVEL', featureLevel));
     this._visibleNotificationsCount$.subscribe((count: number) =>
       saveToLocalStorage('VISIBLE_NOTIFICATIONS_COUNT', count)
     );
     this._datetimeFormat$.subscribe((format: DatetimeFormat) => saveToLocalStorage('DATETIME_FORMAT', format));
-    this._layoutFavorites.subscribe((favorites: string[]) => saveToLocalStorage('LAYOUT_FAVORITES', favorites));
-  }
-
-  layoutFavorites(): Observable<string[]> {
-    return this._layoutFavorites.asObservable();
-  }
-
-  setLayoutFavorites(favorites: string[]): void {
-    this._layoutFavorites.next(favorites);
   }
 
   datetimeFormat(): Observable<DatetimeFormat> {

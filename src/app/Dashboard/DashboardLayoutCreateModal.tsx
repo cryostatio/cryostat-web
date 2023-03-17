@@ -43,7 +43,6 @@ import {
   RootState,
 } from '@app/Shared/Redux/ReduxStore';
 import { DashboardLayoutNamePattern } from '@app/Shared/Services/Api.service';
-import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { portalRoot } from '@app/utils/utils';
 import { ActionGroup, Button, Form, FormGroup, Modal, ModalVariant, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
@@ -94,38 +93,41 @@ export const DashboardLayoutCreateModal: React.FC<DashboardLayoutCreateModalProp
     [t, setName, setValidated, setErrorMessage, dashboardConfigs]
   );
 
-  const handleClose = React.useCallback(() => {
-    setName(props.oldName || '');
-    setValidated('default');
-    onClose();
-  }, [setName, setValidated, onClose, props.oldName]);
+  const handleClose = React.useCallback(
+    (ev?: React.MouseEvent) => {
+      ev && ev.stopPropagation();
+      setName(props.oldName || '');
+      setValidated('default');
+      onClose();
+    },
+    [setName, setValidated, onClose, props.oldName]
+  );
 
-  const handleSubmit = React.useCallback(() => {
-    const newLayout: DashboardLayout = {
-      name: name,
-      cards: [],
-    };
-    if (isCreateModal) {
-      dispatch(dashboardConfigAddLayoutIntent(newLayout));
-    } else {
-      if (props.oldName !== undefined) {
-        dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
-        const oldFavs = getFromLocalStorage('LAYOUT_FAVORITES', []) as string[];
-        if (oldFavs.includes(props.oldName)) {
-          saveToLocalStorage(
-            'LAYOUT_FAVORITES',
-            oldFavs.map((fav) => (fav === props.oldName ? name : fav))
-          );
+  const handleSubmit = React.useCallback(
+    (ev?: React.MouseEvent) => {
+      ev && ev.stopPropagation();
+      const newLayout: DashboardLayout = {
+        name: name,
+        cards: [],
+        favorite: false,
+      };
+      if (isCreateModal) {
+        dispatch(dashboardConfigAddLayoutIntent(newLayout));
+      } else {
+        if (props.oldName !== undefined) {
+          dispatch(dashboardConfigRenameLayoutIntent(props.oldName, name));
         }
       }
-    }
-    dispatch(dashboardConfigReplaceLayoutIntent(name));
-    setName('');
-    onClose();
-  }, [dispatch, setName, onClose, name, isCreateModal, props.oldName]);
+      dispatch(dashboardConfigReplaceLayoutIntent(name));
+      setName('');
+      onClose();
+    },
+    [dispatch, setName, onClose, name, isCreateModal, props.oldName]
+  );
 
   const handleKeyUp = React.useCallback(
     (event: React.KeyboardEvent): void => {
+      event.stopPropagation();
       if (event.code === 'Enter' && validated === 'success') {
         handleSubmit();
       }

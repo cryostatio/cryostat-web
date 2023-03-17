@@ -35,16 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { Dashboard } from '@app/Dashboard/Dashboard';
 import { DashboardLayoutConfig } from '@app/Dashboard/DashboardLayoutConfig';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
 import { store } from '@app/Shared/Redux/ReduxStore';
 import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { act } from 'react-test-renderer';
-import { of } from 'rxjs';
 import '../Common';
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
