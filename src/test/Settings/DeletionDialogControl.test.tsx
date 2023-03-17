@@ -106,7 +106,7 @@ describe('<DeletionDialogControl/>', () => {
     expect(enableSwitch).toBeVisible();
     expect(enableSwitch).toBeChecked();
 
-    const expandButton = screen.getByText(testT('SHOW_MORE', 'common'));
+    const expandButton = screen.getByText(testT('SHOW_MORE'));
     expect(expandButton).toBeInTheDocument();
     expect(expandButton).toBeVisible();
 
