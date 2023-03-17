@@ -35,6 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { DeleteWarningModal } from '@app/Modal/DeleteWarningModal';
+import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { DashboardLayout } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
   dashboardConfigDeleteLayoutIntent,
@@ -79,11 +81,20 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
+  const [isDeleteWarningModalOpen, setIsDeleteWarningModalOpen] = React.useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = React.useState(false);
   const [oldName, setOldName] = React.useState<string | undefined>(undefined);
   const [favorites, setFavorites] = React.useState<string[]>(getFromLocalStorage('LAYOUT_FAVORITES', ['Default']));
+  const [selectDelete, setSelectDelete] = React.useState<string>('');
+
+  const deleteRef = React.useRef<HTMLButtonElement>(null);
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
+
+  const deletionDialogsEnabled = React.useMemo(
+    () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteDashboardLayout),
+    [context.settings]
+  );
 
   const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -115,12 +126,34 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     setIsCreateModalOpen(false);
   }, [setIsCreateModalOpen]);
 
-  const handleDeleteLayout = React.useCallback(
-    (layoutName: string) => {
-      dispatch(dashboardConfigDeleteLayoutIntent(layoutName));
-      dispatch(dashboardConfigReplaceLayoutIntent(DEFAULT_DASHBOARD_NAME));
+  const handleDeleteWarningModalOpen = React.useCallback(
+    (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>, layout: string) => {
+      setSelectDelete(layout);
+      setIsDeleteWarningModalOpen(true);
     },
-    [dispatch]
+    [setSelectDelete, setIsDeleteWarningModalOpen]
+  );
+
+  const handleDeleteWarningModalClose = React.useCallback(() => {
+    setIsDeleteWarningModalOpen(false);
+  }, [setIsDeleteWarningModalOpen]);
+
+  const handleDeleteLayout = React.useCallback(() => {
+    dispatch(dashboardConfigDeleteLayoutIntent(selectDelete));
+    dispatch(dashboardConfigReplaceLayoutIntent(DEFAULT_DASHBOARD_NAME));
+  }, [dispatch, selectDelete]);
+
+  const handleDeleteButton = React.useCallback(
+    (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>, layout: string) => {
+      if (deletionDialogsEnabled) {
+        handleDeleteWarningModalOpen(ev, layout);
+      } else {
+        setSelectDelete(layout);
+        handleDeleteLayout();
+      }
+      if (deleteRef.current) deleteRef.current.blur();
+    },
+    [handleDeleteWarningModalOpen, setSelectDelete, handleDeleteLayout, deletionDialogsEnabled]
   );
 
   const handleRenameLayout = React.useCallback(
@@ -166,12 +199,12 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
       if (actionId === 'rename') {
         handleRenameLayout(itemId);
       } else if (actionId === 'delete') {
-        handleDeleteLayout(itemId);
+        handleDeleteButton(ev, itemId);
       } else if (actionId === 'fav') {
         handleFavoriteLayout(itemId);
       }
     },
-    [handleRenameLayout, handleDeleteLayout, handleFavoriteLayout]
+    [handleRenameLayout, handleDeleteButton, handleFavoriteLayout]
   );
 
   const onToggle = React.useCallback(() => {
@@ -240,21 +273,23 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   const deleteButton = React.useMemo(
     () => (
       <Button
+        ref={deleteRef}
         key="delete"
         variant="danger"
         isAriaDisabled={currLayout.name === DEFAULT_DASHBOARD_NAME}
         aria-label={t('DashboardLayoutConfig.DELETE.LABEL')}
-        onClick={() => handleDeleteLayout(currLayout.name)}
+        onClick={(ev) => handleDeleteButton(ev, currLayout.name)}
         icon={<TrashIcon />}
       >
         {t('DELETE', { ns: 'common' })}
       </Button>
     ),
-    [t, handleDeleteLayout, currLayout.name]
+    [t, handleDeleteButton, currLayout.name]
   );
 
   const menuGroups = React.useCallback(
-    (label: string, isFavorited: boolean, filter: (l: DashboardLayout) => boolean) => {
+    (label: string, favoriteGroup: boolean) => {
+      const filter = favoriteGroup ? (l: DashboardLayout) => favorites.includes(l.name) : () => true;
       return (
         <MenuGroup label={label} labelHeadingLevel="h3">
           <MenuList>
@@ -263,7 +298,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
                 key={l.name}
                 itemId={l.name}
                 isSelected={l.name === currLayout.name}
-                isFavorited={isFavorited}
+                isFavorited={favorites.includes(l.name)}
                 actions={
                   <>
                     <MenuItemAction
@@ -288,7 +323,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         </MenuGroup>
       );
     },
-    [dashboardConfigs.layouts, t, currLayout.name]
+    [t, currLayout.name, dashboardConfigs.layouts, favorites]
   );
 
   const menuDropdown = React.useMemo(() => {
@@ -309,14 +344,14 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
           onActionClick={onActionClick}
         >
           <MenuContent maxMenuHeight="16em" id="dashboard-layout-menu-content">
-            {menuGroups(t('DashboardLayoutConfig.MENU.FAVORITES'), true, (l) => favorites.includes(l.name))}
+            {menuGroups(t('DashboardLayoutConfig.MENU.FAVORITES'), true)}
             <Divider />
-            {menuGroups(t('DashboardLayoutConfig.MENU.OTHERS'), false, (l) => !favorites.includes(l.name))}
+            {menuGroups(t('DashboardLayoutConfig.MENU.OTHERS'), false)}
           </MenuContent>
         </Menu>
       </Dropdown>
     );
-  }, [t, onLayoutSelect, onActionClick, onToggle, menuGroups, favorites, isSelectorOpen, currLayout.name]);
+  }, [t, onLayoutSelect, onActionClick, onToggle, menuGroups, isSelectorOpen, currLayout.name]);
 
   const toolbarContent = React.useMemo(() => {
     return (
@@ -333,11 +368,23 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
     );
   }, [newButton, menuDropdown, renameButton, uploadButton, downloadButton, deleteButton]);
 
+  const deleteWarningModal = React.useMemo(() => {
+    return (
+      <DeleteWarningModal
+        warningType={DeleteOrDisableWarningType.DeleteDashboardLayout}
+        visible={isDeleteWarningModalOpen}
+        onClose={handleDeleteWarningModalClose}
+        onAccept={handleDeleteLayout}
+      />
+    );
+  }, [isDeleteWarningModalOpen, handleDeleteWarningModalClose, handleDeleteLayout]);
+
   return (
     <Toolbar>
       {toolbarContent}
       <DashboardLayoutUploadModal visible={isUploadModalOpen} onClose={handleUploadModalClose} />
       <DashboardLayoutCreateModal visible={isCreateModalOpen} onClose={handleCreateModalClose} oldName={oldName} />
+      {deleteWarningModal}
     </Toolbar>
   );
 };
