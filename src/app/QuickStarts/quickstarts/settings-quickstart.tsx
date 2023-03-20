@@ -76,42 +76,47 @@ export const SettingsQuickStart: QuickStart = {
       {
         title: 'Navigate to the Settings page',
         description: `
-  1. Press the Settings cog icon.`,
+1. Press the [Settings]{{highlight settings-link}} cog icon.`,
       },
       {
-        title: 'Go to the Connectivity tab',
+        title: 'Navigate to the Connectivity settings tab',
         description: `
-  1. Here you can configure the WebSocket connection to the Cryostat backend.
-  2. You can also configure Auto-Refresh period for content-views.`,
+1. Go to the [Connectivity]{{highlight settings-connectivity-tab}} tab.
+2. Here you can configure the WebSocket connection to the Cryostat backend.
+3. You can also configure Auto-Refresh period for content-views.`,
       },
       {
-        title: 'Go to the Languages & Region tab',
+        title: 'Navigate to the Languages & Region settings tab',
         description: `
-  1. Here you can configure the language and region settings for the Cryostat UI.
-  2. You can also configure the date and time format.`,
+1. Go to the [Languages & Region]{{highlight settings-language&region-tab}} tab
+2. Here you can configure the language and region settings for the Cryostat UI.
+3. You can also configure the date and time format.`,
       },
       {
-        title: 'Go to the Notification & Messages tab',
+        title: 'Go to the Notifications & Messages tab',
         description: `
-  1. Here you can configure the notification settings for the Cryostat UI.
-  2. You can also configure the message settings.`,
+1. Go to the [Notifications & Messages]{{highlight settings-notifications&messages-tab}} tab.
+1. Here you can configure the notification settings for the Cryostat UI.
+2. You can also configure the message settings.`,
       },
       {
         title: 'Go to the Dashboard tab',
         description: `
-  1. Here you can configure the dashboard settings for the Cryostat UI.
-  2. You can also configure the default dashboard.`,
+1. Go to the [Dashboard]{{highlight settings-dashboard-tab}} tab.
+1. Here you can configure the dashboard settings for the Cryostat UI.
+2. You can also configure the default dashboard.`,
       },
       {
         title: 'Go to the Advanced tab',
         description: `
-  1. Here you can configure the advanced settings for the Cryostat UI.
-  2. You can also configure the default dashboard.`,
+1. Go to the [Advanced]{{highlight settings-advanced-tab}} tab.
+1. Here you can configure the advanced settings for the Cryostat UI.
+2. You can also configure the default dashboard.`,
       },
     ],
-    conclusion: `You finished **Getting Started with ${build.productName}**!
+    conclusion: `You finished **Using Settings**!
     
-Learn more about [${build.productName}](https://cryostat.io) from our website.
+Learn more about the **Settings** page from our guides at <https://cryostat.io/guides/>.
 `,
     type: {
       text: 'Featured',

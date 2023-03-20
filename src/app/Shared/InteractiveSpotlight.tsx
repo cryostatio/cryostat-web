@@ -35,51 +35,65 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
-import { HIGHLIGHT_REGEXP } from '@app/Shared/highlight-consts';
-import {
-  QuickStartContext,
-  QuickStartDrawer,
-  useLocalStorage,
-  useValuesForQuickStartContext,
-} from '@patternfly/quickstarts';
+import { PopperOptions } from 'popper.js';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import './spotlight.css';
+import Popper from './popper/Popper';
 
-export interface GlobalQuickStartDrawerProps {
-  children: React.ReactNode;
-}
+type InteractiveSpotlightProps = {
+  element: Element;
+};
 
-export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
-  const { t, i18n } = useTranslation();
-
-  const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
-  const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
-  const valuesForQuickStartContext = useValuesForQuickStartContext({
-    allQuickStarts,
-    activeQuickStartID,
-    setActiveQuickStartID,
-    allQuickStartStates,
-    setAllQuickStartStates,
-    language: i18n.language,
-    markdown: {
-      // markdown extension for spotlighting elements from links
-      extensions: [
-        {
-          type: 'lang',
-          regex: HIGHLIGHT_REGEXP,
-          replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
-            if (!linkLabel || !linkType || !linkId) return text;
-            return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
-          },
-        },
-      ],
-    },
-  });
-
+const isInViewport = (elementToCheck: Element) => {
+  const rect = elementToCheck.getBoundingClientRect();
   return (
-    <QuickStartContext.Provider value={valuesForQuickStartContext}>
-      <QuickStartDrawer>{children}</QuickStartDrawer>
-    </QuickStartContext.Provider>
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   );
 };
+
+const popperOptions: PopperOptions = {
+  modifiers: {
+    preventOverflow: {
+      enabled: false,
+    },
+    flip: {
+      enabled: false,
+    },
+  },
+};
+
+const InteractiveSpotlight: React.FC<InteractiveSpotlightProps> = ({ element }) => {
+  const { height, width } = element.getBoundingClientRect();
+  const style: React.CSSProperties = {
+    height,
+    width,
+  };
+  const [clicked, setClicked] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!clicked) {
+      if (!isInViewport(element)) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      }
+      const handleClick = () => setClicked(true);
+      document.addEventListener('click', handleClick);
+      return () => {
+        document.removeEventListener('click', handleClick);
+      };
+    }
+    return () => {};
+  }, [element, clicked]);
+
+  if (clicked) return null;
+
+  return (
+    <Popper reference={element} placement="top-start" popperOptions={popperOptions}>
+      <div className="ocs-spotlight ocs-spotlight__element-highlight-animate" style={style} />
+    </Popper>
+  );
+};
+
+export default InteractiveSpotlight;

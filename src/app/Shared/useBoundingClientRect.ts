@@ -35,51 +35,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
-import { HIGHLIGHT_REGEXP } from '@app/Shared/highlight-consts';
-import {
-  QuickStartContext,
-  QuickStartDrawer,
-  useLocalStorage,
-  useValuesForQuickStartContext,
-} from '@patternfly/quickstarts';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 
-export interface GlobalQuickStartDrawerProps {
-  children: React.ReactNode;
-}
+type BoundingClientRect = ClientRect | null;
 
-export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
-  const { t, i18n } = useTranslation();
+export const useResizeObserver = (callback: ResizeObserverCallback, targetElement?: HTMLElement | null): void => {
+  const element = React.useMemo(() => targetElement ?? document.querySelector('body'), [targetElement]);
+  React.useEffect(() => {
+    const observer = new ResizeObserver(callback);
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+    };
+  }, [callback, element]);
+};
 
-  const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
-  const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
-  const valuesForQuickStartContext = useValuesForQuickStartContext({
-    allQuickStarts,
-    activeQuickStartID,
-    setActiveQuickStartID,
-    allQuickStartStates,
-    setAllQuickStartStates,
-    language: i18n.language,
-    markdown: {
-      // markdown extension for spotlighting elements from links
-      extensions: [
-        {
-          type: 'lang',
-          regex: HIGHLIGHT_REGEXP,
-          replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
-            if (!linkLabel || !linkType || !linkId) return text;
-            return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
-          },
-        },
-      ],
-    },
-  });
-
-  return (
-    <QuickStartContext.Provider value={valuesForQuickStartContext}>
-      <QuickStartDrawer>{children}</QuickStartDrawer>
-    </QuickStartContext.Provider>
+export const useBoundingClientRect = (targetElement: HTMLElement | null): BoundingClientRect => {
+  const [clientRect, setClientRect] = React.useState<BoundingClientRect>(() =>
+    targetElement ? targetElement.getBoundingClientRect() : null
   );
+
+  const observerCallback = React.useCallback(() => {
+    setClientRect(targetElement ? targetElement.getBoundingClientRect() : null);
+  }, [targetElement]);
+
+  useResizeObserver(observerCallback);
+
+  return clientRect;
 };

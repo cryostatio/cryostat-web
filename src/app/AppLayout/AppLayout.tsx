@@ -38,9 +38,9 @@
 import { AboutCryostatModal } from '@app/About/AboutCryostatModal';
 import cryostatLogo from '@app/assets/cryostat_logo_hori_rgb_reverse.svg';
 import build from '@app/build.json';
+import { useJoyride } from '@app/Joyride/JoyrideProvider';
 import { NotificationCenter } from '@app/Notifications/NotificationCenter';
 import { Notification, NotificationsContext } from '@app/Notifications/Notifications';
-import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
 import { IAppRoute, navGroups, routes } from '@app/routes';
 import { selectTab } from '@app/Settings/Settings';
 import { DynamicFeatureFlag, FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
@@ -77,8 +77,6 @@ import {
   NavList,
   NotificationBadge,
   Page,
-  PageGroup,
-  PageSection,
   PageSidebar,
   PageToggleButton,
   SkipToContent,
@@ -93,22 +91,19 @@ import {
   CaretDownIcon,
   CogIcon,
   ExternalLinkAltIcon,
-  HelpIcon,
   PlusCircleIcon,
   QuestionCircleIcon,
   UserIcon,
 } from '@patternfly/react-icons';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
+import CryostatJoyride from './CryostatJoyride';
 import { GlobalQuickStartDrawer } from './QuickStartDrawer';
 import { SslErrorModal } from './SslErrorModal';
-import Joyride, { CallBackProps, STATUS } from 'react-joyride';
-import CryostatJoyride from './CryostatJoyride';
-import ReactJoyride from 'react-joyride';
-import { useTranslation } from 'react-i18next';
 interface AppLayoutProps {
   children: React.ReactNode;
 }
@@ -119,6 +114,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
   const { t } = useTranslation();
+  const joyride = useJoyride();
 
   const [isNavOpen, setIsNavOpen] = React.useState(true);
   const [isMobileView, setIsMobileView] = React.useState(true);
@@ -136,7 +132,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [unreadNotificationsCount, setUnreadNotificationsCount] = React.useState(0);
   const [errorNotificationsCount, setErrorNotificationsCount] = React.useState(0);
   const [activeLevel, setActiveLevel] = React.useState(FeatureLevel.PRODUCTION);
-  const [joyrideRun, setJoyrideRun] = React.useState(false);
   const location = useLocation();
 
   React.useEffect(() => {
@@ -343,8 +338,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const handleOpenGuidedTour = React.useCallback(() => {
     console.log('handleOpenGuidedTour');
-    setJoyrideRun(true);
-  }, [setJoyrideRun]);
+    joyride.setState({ run: true });
+  }, [joyride]);
 
   const helpItems = React.useMemo(() => {
     return [
@@ -415,10 +410,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </ToolbarItem>
                 <ToolbarItem>
                   <Button
-                    id="settings-button"
                     onClick={handleSettingsButtonClick}
                     variant="link"
                     icon={<CogIcon color="white" size="sm" />}
+                    data-tour-id="settings-link"
+                    data-quickstart-id="settings-link"
                   />
                 </ToolbarItem>
                 <ToolbarItem>
@@ -429,8 +425,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     items={helpItems}
                     position="right"
                     toggleIcon={<QuestionCircleIcon />}
-                    data-tour-id="help-dropdown"
-                    data-quickstart-id="help-dropdown"
+                    data-tour-id="application-launcher"
+                    data-quickstart-id="application-launcher"
                   />
                 </ToolbarItem>
               </ToolbarGroup>
@@ -573,21 +569,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     [handleCloseNotificationCenter]
   );
 
-  const handleJoyrideCallback = React.useCallback(
-    (data: CallBackProps) => {
-      console.log(data);
-      if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(data.status)) {
-        setJoyrideRun(false);
-      } else if (data.action === 'close' && data.type === 'step:before') {
-        setJoyrideRun(false);
-      }
-    },
-    [setJoyrideRun]
-  );
-
   return (
     <GlobalQuickStartDrawer>
-      <CryostatJoyride run={joyrideRun} callback={handleJoyrideCallback}>
+      <CryostatJoyride>
         <AlertGroup
           appendTo={portalRoot}
           isToast

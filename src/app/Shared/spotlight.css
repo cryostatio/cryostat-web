@@ -1,0 +1,97 @@
+/*
+Copyright The Cryostat Authors
+
+The Universal Permissive License (UPL), Version 1.0
+
+Subject to the condition set forth below, permission is hereby granted to any
+person obtaining a copy of this software, associated documentation and/or data
+(collectively the "Software"), free of charge and under any and all copyright
+rights in the Software, and any and all patent rights owned or freely
+licensable by each licensor hereunder covering either (i) the unmodified
+Software as contributed to or provided by such licensor, or (ii) the Larger
+Works (as defined below), to deal in both
+
+(a) the Software, and
+(b) any piece of software and/or hardware listed in the lrgrwrks.txt file if
+one is included with the Software (each a "Larger Work" to which the Software
+is contributed by such licensors),
+
+without restriction, including without limitation the rights to copy, create
+derivative works of, display, perform, and distribute the Software and make,
+use, sell, offer for sale, import, export, have made, and have sold the
+Software and the Larger Work(s), and to sublicense the foregoing rights on
+either these or other terms.
+
+This license is subject to the following condition:
+The above copyright notice and either this complete permission notice or at
+a minimum a reference to the UPL must be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+@keyframes ocs-spotlight-expand {
+    0% {
+        outline-offset: -4px;
+        outline-width: 4px;
+        opacity: 1;
+   }
+    100% {
+        outline-offset: 21px;
+        outline-width: 12px;
+        opacity: 0;
+   }
+}
+@keyframes ocs-spotlight-fade-in {
+    0% {
+        opacity: 0;
+   }
+    100% {
+        opacity: 1;
+   }
+}
+@keyframes ocs-spotlight-fade-out {
+    0% {
+        opacity: 1;
+   }
+    100% {
+        opacity: 0;
+   }
+}
+.ocs-spotlight {
+    pointer-events: none;
+    position: absolute;
+}
+.ocs-spotlight__with-backdrop {
+    mix-blend-mode: hard-light;
+}
+.ocs-spotlight__element-highlight-noanimate {
+    border: var(--pf-global--BorderWidth--xl) solid var(--pf-global--palette--blue-100);
+    background-color: var(--pf-global--palette--black-500);
+    z-index: 9999;
+}
+.ocs-spotlight__element-highlight-animate {
+    pointer-events: none;
+    position: absolute;
+    box-shadow: inset 0px 0px 0px 4px var(--pf-global--palette--blue-200);
+    opacity: 0;
+    animation: 0.4s ocs-spotlight-fade-in 0s ease-in-out, 5s ocs-spotlight-fade-out 12.8s ease-in-out;
+    animation-fill-mode: forwards;
+}
+.ocs-spotlight__element-highlight-animate::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    animation: 1.2s ocs-spotlight-expand 1.6s ease-out;
+    animation-fill-mode: forwards;
+    outline: 4px solid var(--pf-global--palette--blue-200);
+    outline-offset: -4px;
+}

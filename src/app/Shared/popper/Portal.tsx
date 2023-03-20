@@ -35,51 +35,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
-import { HIGHLIGHT_REGEXP } from '@app/Shared/highlight-consts';
-import {
-  QuickStartContext,
-  QuickStartDrawer,
-  useLocalStorage,
-  useValuesForQuickStartContext,
-} from '@patternfly/quickstarts';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import * as ReactDOM from 'react-dom';
 
-export interface GlobalQuickStartDrawerProps {
+type GetContainer = Element | null | undefined | (() => Element);
+
+type PortalProps = {
   children: React.ReactNode;
-}
-
-export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
-  const { t, i18n } = useTranslation();
-
-  const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
-  const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
-  const valuesForQuickStartContext = useValuesForQuickStartContext({
-    allQuickStarts,
-    activeQuickStartID,
-    setActiveQuickStartID,
-    allQuickStartStates,
-    setAllQuickStartStates,
-    language: i18n.language,
-    markdown: {
-      // markdown extension for spotlighting elements from links
-      extensions: [
-        {
-          type: 'lang',
-          regex: HIGHLIGHT_REGEXP,
-          replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
-            if (!linkLabel || !linkType || !linkId) return text;
-            return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
-          },
-        },
-      ],
-    },
-  });
-
-  return (
-    <QuickStartContext.Provider value={valuesForQuickStartContext}>
-      <QuickStartDrawer>{children}</QuickStartDrawer>
-    </QuickStartContext.Provider>
-  );
+  container?: GetContainer;
 };
+
+const getContainer = (container: GetContainer): Element | null | undefined =>
+  typeof container === 'function' ? container() : container;
+
+const Portal: React.FC<PortalProps> = ({ children, container }) => {
+  const [containerNode, setContainerNode] = React.useState<Element>();
+
+  React.useLayoutEffect(() => {
+    setContainerNode(getContainer(container) || document.body);
+  }, [container]);
+
+  return containerNode ? ReactDOM.createPortal(children, containerNode) : null;
+};
+
+export default Portal;

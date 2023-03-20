@@ -35,51 +35,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
-import { HIGHLIGHT_REGEXP } from '@app/Shared/highlight-consts';
-import {
-  QuickStartContext,
-  QuickStartDrawer,
-  useLocalStorage,
-  useValuesForQuickStartContext,
-} from '@patternfly/quickstarts';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+export const LINK_LABEL = '[\\d\\w\\s-()$!&]+';
+export const HIGHLIGHT_ACTIONS = ['highlight'];
+export const SELECTOR_ID = `[\\w-&]+`;
 
-export interface GlobalQuickStartDrawerProps {
-  children: React.ReactNode;
-}
-
-export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
-  const { t, i18n } = useTranslation();
-
-  const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
-  const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
-  const valuesForQuickStartContext = useValuesForQuickStartContext({
-    allQuickStarts,
-    activeQuickStartID,
-    setActiveQuickStartID,
-    allQuickStartStates,
-    setAllQuickStartStates,
-    language: i18n.language,
-    markdown: {
-      // markdown extension for spotlighting elements from links
-      extensions: [
-        {
-          type: 'lang',
-          regex: HIGHLIGHT_REGEXP,
-          replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
-            if (!linkLabel || !linkType || !linkId) return text;
-            return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
-          },
-        },
-      ],
-    },
-  });
-
-  return (
-    <QuickStartContext.Provider value={valuesForQuickStartContext}>
-      <QuickStartDrawer>{children}</QuickStartDrawer>
-    </QuickStartContext.Provider>
-  );
-};
+// [linkLabel]{{action id}}
+export const HIGHLIGHT_REGEXP = new RegExp(
+  `\\[(${LINK_LABEL})]{{(${HIGHLIGHT_ACTIONS.join('|')}) (${SELECTOR_ID})}}`,
+  'g'
+);

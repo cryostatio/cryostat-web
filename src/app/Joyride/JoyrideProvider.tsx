@@ -35,51 +35,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
-import { HIGHLIGHT_REGEXP } from '@app/Shared/highlight-consts';
-import {
-  QuickStartContext,
-  QuickStartDrawer,
-  useLocalStorage,
-  useValuesForQuickStartContext,
-} from '@patternfly/quickstarts';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import useSetState from '@app/utils/useSetState';
+import React from 'react';
+import { Step } from 'react-joyride';
 
-export interface GlobalQuickStartDrawerProps {
-  children: React.ReactNode;
+export interface JoyrideState {
+  run: boolean;
+  stepIndex: number;
+  steps: Step[];
+  tourActive: boolean;
 }
 
-export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
-  const { t, i18n } = useTranslation();
+const defaultState = {
+  run: false,
+  stepIndex: 0,
+  steps: [] as Step[],
+  tourActive: false,
+};
 
-  const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
-  const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
-  const valuesForQuickStartContext = useValuesForQuickStartContext({
-    allQuickStarts,
-    activeQuickStartID,
-    setActiveQuickStartID,
-    allQuickStartStates,
-    setAllQuickStartStates,
-    language: i18n.language,
-    markdown: {
-      // markdown extension for spotlighting elements from links
-      extensions: [
-        {
-          type: 'lang',
-          regex: HIGHLIGHT_REGEXP,
-          replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
-            if (!linkLabel || !linkType || !linkId) return text;
-            return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
-          },
-        },
-      ],
-    },
-  });
+export const JoyrideContext = React.createContext({
+  state: defaultState,
+  setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => {},
+});
 
+export const JoyrideProvider: React.FC<{ children }> = (props) => {
+  const [state, setState] = useSetState(defaultState);
+  const value = React.useMemo(() => ({ state, setState }), [state, setState]);
   return (
-    <QuickStartContext.Provider value={valuesForQuickStartContext}>
-      <QuickStartDrawer>{children}</QuickStartDrawer>
-    </QuickStartContext.Provider>
+    <JoyrideContext.Provider value={value} {...props}>
+      {props.children}
+    </JoyrideContext.Provider>
   );
+};
+
+export const useJoyride = (): {
+  setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => void;
+  state: JoyrideState;
+} => {
+  const context = React.useContext(JoyrideContext);
+  if (context === undefined) {
+    throw new Error('useCryostatJoyride must be used within a CryostatJoyrideProvider');
+  }
+  return context;
 };

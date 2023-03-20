@@ -39,7 +39,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { hashCode } from '@app/utils/utils';
+import { cleanQSDataId, hashCode } from '@app/utils/utils';
 import {
   Card,
   Form,
@@ -279,9 +279,16 @@ interface SettingTabProps extends TabProps {
 
 // Workaround to the Tabs component requiring children to be React.FC<TabProps>
 const SettingTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, title, children }) => {
+  const { t } = useTranslation();
+
   return (
     <FeatureFlag level={featureLevelConfig.level} strict={featureLevelConfig.strict}>
-      <Tab eventKey={eventKey} title={title} id={`${hashCode(`${eventKey}`)}`}>
+      <Tab
+        eventKey={t(eventKey.toString())}
+        title={title}
+        id={`${hashCode(`${eventKey}`)}`}
+        data-quickstart-id={cleanQSDataId(`settings-${t(eventKey.toString())}-tab`)}
+      >
         {children}
       </Tab>
     </FeatureFlag>

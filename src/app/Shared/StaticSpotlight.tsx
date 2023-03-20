@@ -35,51 +35,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
-import { HIGHLIGHT_REGEXP } from '@app/Shared/highlight-consts';
-import {
-  QuickStartContext,
-  QuickStartDrawer,
-  useLocalStorage,
-  useValuesForQuickStartContext,
-} from '@patternfly/quickstarts';
+import { portalRoot } from '@app/utils/utils';
 import * as React from 'react';
-import { useTranslation } from 'react-i18next';
+import ReactDOM from 'react-dom';
+import './spotlight.css';
+import { useBoundingClientRect } from './useBoundingClientRect';
 
-export interface GlobalQuickStartDrawerProps {
-  children: React.ReactNode;
-}
-
-export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
-  const { t, i18n } = useTranslation();
-
-  const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
-  const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
-  const valuesForQuickStartContext = useValuesForQuickStartContext({
-    allQuickStarts,
-    activeQuickStartID,
-    setActiveQuickStartID,
-    allQuickStartStates,
-    setAllQuickStartStates,
-    language: i18n.language,
-    markdown: {
-      // markdown extension for spotlighting elements from links
-      extensions: [
-        {
-          type: 'lang',
-          regex: HIGHLIGHT_REGEXP,
-          replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
-            if (!linkLabel || !linkType || !linkId) return text;
-            return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
-          },
-        },
-      ],
-    },
-  });
-
-  return (
-    <QuickStartContext.Provider value={valuesForQuickStartContext}>
-      <QuickStartDrawer>{children}</QuickStartDrawer>
-    </QuickStartContext.Provider>
-  );
+type StaticSpotlightProps = {
+  element: Element | HTMLElement;
 };
+
+const StaticSpotlight: React.FC<StaticSpotlightProps> = ({ element }) => {
+  const clientRect = useBoundingClientRect(element as HTMLElement);
+  React.useEffect(() => {
+    console.log('clientRect', clientRect);
+  }, [clientRect]);
+
+  const style: React.CSSProperties = clientRect
+    ? {
+        top: clientRect.top,
+        left: clientRect.left,
+        height: clientRect.height,
+        width: clientRect.width,
+      }
+    : {};
+  return clientRect
+    ? ReactDOM.createPortal(
+        <div className="pf-c-backdrop ocs-spotlight__with-backdrop">
+          <div className="ocs-spotlight ocs-spotlight__element-highlight-noanimate" style={style} />
+        </div>,
+        portalRoot
+      )
+    : null;
+};
+
+export default StaticSpotlight;

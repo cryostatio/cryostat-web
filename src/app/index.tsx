@@ -49,15 +49,18 @@ import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { JoyrideProvider } from './Joyride/JoyrideProvider';
 
 const App: React.FunctionComponent = () => (
   <ServiceContext.Provider value={defaultServices}>
     <NotificationsContext.Provider value={NotificationsInstance}>
       <Provider store={store}>
         <Router>
-          <AppLayout>
-            <AppRoutes />
-          </AppLayout>
+          <JoyrideProvider>
+            <AppLayout>
+              <AppRoutes />
+            </AppLayout>
+          </JoyrideProvider>
         </Router>
       </Provider>
     </NotificationsContext.Provider>
