@@ -183,6 +183,7 @@
     "DESCRIPTION": "Select Dashboard Layout configuration file(s) to upload. File(s) must be in valid JSON format.",
     "ERROR": {
       "CONFIG_INVALID": "Card configurations are invalid.",
+      "DUPLICATE_UPLOAD": "A previously uploaded file has the same name as the current file: \"{{name}}\".",
       "NAME_INVALID": {
         "1": "Dashboard name \"{{name}}\" is invalid.",
         "2": "Dashboard name must be alphanumeric and may contain underscores, dashes, and periods."

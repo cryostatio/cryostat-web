@@ -152,9 +152,15 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           parseDashboardLayoutFile(fileUpload.file).pipe(
             first(),
             concatMap((layout) => {
-              dispatch(dashboardConfigAddLayoutIntent(layout));
-              onSingleSuccess(fileUpload.file.name);
-              return of(layout);
+              try {
+                dispatch(dashboardConfigAddLayoutIntent(layout));
+                onSingleSuccess(fileUpload.file.name);
+                return of(layout);
+              } catch (err) {
+                // layout name already taken from previous layout upload
+                onSingleFailure(fileUpload.file.name, new Error(t('DashboardLayoutUploadModal.ERROR.DUPLICATE_UPLOAD', { name: layout.name })));
+                return of(null);
+              }
             }),
             catchError((err) => {
               onSingleFailure(fileUpload.file.name, err);
