@@ -1087,7 +1087,7 @@ export class ApiService {
       method: 'GET',
     }).pipe(
       concatMap((resp) => resp.json()),
-      map((body: DiscoveryResponse) => body.data.result as EnvironmentNode),
+      map((body: DiscoveryResponse) => body.data.result),
       first()
     );
   }
@@ -1117,6 +1117,42 @@ export class ApiService {
     );
   }
 
+  groupHasRecording(group: EnvironmentNode, recordingName: string): Observable<boolean> {
+    return this.graphql<any>(
+      `
+    query GetRecordingForGroup ($groupFilter: EnvironmentNodeFilterInput, $recordingFilter: ActiveRecordingFilterInput){
+      environmentNodes(filter: $groupFilter) {
+        name
+        descendantTargets {
+          name
+          recordings {
+              active(filter: $recordingFilter) {
+                  data {
+                    name
+                  }
+              }
+          }
+        }
+      }
+    }
+    `,
+      {
+        groupFilter: { id: group.id },
+        recordingFilter: { name: recordingName },
+      }
+    ).pipe(
+      first(),
+      map((body) =>
+        body.data.environmentNodes[0].descendantTargets.reduce(
+          (acc: Partial<ActiveRecording>[], curr) => acc.concat(curr.recordings?.active?.data || []),
+          [] as Partial<ActiveRecording>[]
+        )
+      ),
+      catchError((_) => of([])),
+      map((recs: Partial<ActiveRecording>[]) => recs.length > 0) // At least one
+    );
+  }
+
   private downloadFile(url: string, filename: string, download = true): void {
     const anchor = document.createElement('a');
     anchor.setAttribute('style', 'display: none; visibility: hidden;');
@@ -1129,7 +1165,7 @@ export class ApiService {
     anchor.remove();
   }
 
-  private stringifyRecordingLabels(labels: RecordingLabel[]): string {
+  stringifyRecordingLabels(labels: RecordingLabel[]): string {
     return JSON.stringify(labels).replace(/"([^"]+)":/g, '$1:');
   }
 
@@ -1370,7 +1406,7 @@ interface RulesResponse extends ApiV2Response {
 
 interface DiscoveryResponse extends ApiV2Response {
   data: {
-    result: object;
+    result: EnvironmentNode;
   };
 }
 

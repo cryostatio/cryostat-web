@@ -66,20 +66,22 @@ export interface NodeLabels {
 }
 
 interface _AbstractNode {
-  name: string;
-  nodeType: NodeType;
-  labels: NodeLabels;
+  readonly id: number;
+  readonly name: string;
+  readonly nodeType: NodeType;
+  readonly labels: NodeLabels;
 }
 
 export interface EnvironmentNode extends _AbstractNode {
-  children: (EnvironmentNode | TargetNode)[];
+  readonly children: (EnvironmentNode | TargetNode)[];
 }
 
 export interface TargetNode extends _AbstractNode {
-  target: Target;
+  readonly target: Target;
 }
 
 export const DEFAULT_EMPTY_UNIVERSE: EnvironmentNode = {
+  id: 0,
   name: 'Universe',
   nodeType: NodeType.UNIVERSE,
   labels: {},

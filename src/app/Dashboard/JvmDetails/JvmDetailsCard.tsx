@@ -39,6 +39,7 @@
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { Target } from '@app/Shared/Services/Target.service';
+import { NodeAction } from '@app/Topology/Actions/NodeActions';
 import EntityDetails from '@app/Topology/Shared/Entity/EntityDetails';
 import { NodeType } from '@app/Topology/typings';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -47,7 +48,6 @@ import * as React from 'react';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
 import '@app/Topology/styles/base.css';
-import { NodeAction } from '@app/Topology/Actions/NodeActions';
 
 export interface JvmDetailsCardProps extends DashboardCardProps {}
 

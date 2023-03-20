@@ -37,7 +37,10 @@
  */
 
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
+import { MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { ActionDropdown, NodeAction } from '@app/Topology/Actions/NodeActions';
+import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { splitWordsOnUppercase } from '@app/utils/utils';
 import {
@@ -55,8 +58,6 @@ import {
   DescriptionListTermHelpText,
   DescriptionListTermHelpTextButton,
   Divider,
-  Dropdown,
-  DropdownToggle,
   ExpandableSection,
   Flex,
   FlexItem,
@@ -83,7 +84,7 @@ import { EntityAnnotations } from './EntityAnnotations';
 import { EntityLabels } from './EntityLabels';
 import { EntityTitle } from './EntityTitle';
 import {
-  extraTargetConnectUrlFromEvent,
+  getConnectUrlFromEvent,
   getLinkPropsForTargetResource,
   getResourceAddedEvent as getResourceAddedEvents,
   getResourceListPatchFn,
@@ -96,9 +97,6 @@ import {
   TargetRelatedResourceType,
   TargetRelatedResourceTypeAsArray,
 } from './utils';
-import useDayjs from '@app/utils/useDayjs';
-import { MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
-import { NodeAction } from '@app/Topology/Actions/NodeActions';
 
 export interface EntityDetailsProps {
   entity?: GraphElement | ListElement;
@@ -117,8 +115,6 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   ...props
 }) => {
   const [activeTab, setActiveTab] = React.useState<_supportedTab>('details');
-  const [actionOpen, setActionOpen] = React.useState(false);
-
   const viewContent = React.useMemo(() => {
     if (entity && isRenderable(entity)) {
       const data: EnvironmentNode | TargetNode = entity.getData();
@@ -134,20 +130,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
             badge={nodeTypeToAbbr(data.nodeType)}
             badgeTooltipContent={data.nodeType}
             status={isTarget ? getStatusTargetNode(data) : []}
-            actionDropdown={
-              isTarget ? (
-                <Dropdown
-                  className={css('entity-overview__action-menu')}
-                  aria-label={'entity-action-menu'}
-                  position="right"
-                  menuAppendTo={'parent'}
-                  onSelect={() => setActionOpen(false)}
-                  isOpen={actionOpen}
-                  toggle={<DropdownToggle onToggle={setActionOpen}>Actions</DropdownToggle>}
-                  dropdownItems={_actions}
-                />
-              ) : null
-            }
+            actionDropdown={<ActionDropdown actions={_actions} className={'entity-overview__action-menu'} />}
           />
           <Divider />
           <Tabs
@@ -174,7 +157,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, actionOpen, setActionOpen, props, columnModifier]);
+  }, [entity, setActiveTab, activeTab, props, columnModifier, actionFilter]);
   return <div className={css(className)}>{viewContent}</div>;
 };
 
@@ -356,7 +339,7 @@ const MBeanDetails: React.FC<{
         content: mbeanMetrics.os?.availableProcessors || <EmptyText text="Unknown number of processors" />,
       },
     ];
-  }, [mbeanMetrics]);
+  }, [mbeanMetrics, dayjs, dateTimeFormat.timeZone.full]);
 
   return <DescriptionList columnModifier={columnModifier}>{_collapsedData.map(mapSection)}</DescriptionList>;
 };
@@ -483,8 +466,6 @@ export const TargetResourceItem: React.FC<{
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<Error>();
 
-  const isOwned = React.useMemo(() => isOwnedResource(resourceType), [resourceType]);
-
   React.useEffect(() => {
     addSubscription(
       targetSubject.pipe(switchMap((tn) => getTargetOwnedResources(resourceType, tn, services.api))).subscribe({
@@ -521,7 +502,8 @@ export const TargetResourceItem: React.FC<{
             )
           )
           .subscribe(([targetNode, event]) => {
-            const extractedUrl = extraTargetConnectUrlFromEvent(event);
+            const extractedUrl = getConnectUrlFromEvent(event);
+            const isOwned = isOwnedResource(resourceType);
             if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
               setLoading(true);
               setResources((old) => {
@@ -550,7 +532,6 @@ export const TargetResourceItem: React.FC<{
     addSubscription,
     setLoading,
     services.api,
-    isOwned,
     targetSubject,
     resourceType,
     services.notificationChannel,
@@ -558,6 +539,8 @@ export const TargetResourceItem: React.FC<{
     setError,
   ]);
 
+  // Need to call after registering listeners
+  // Do not reorder
   React.useEffect(() => {
     targetSubject.next(targetNode);
   }, [targetNode, targetSubject]);
