@@ -568,11 +568,6 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
 
-  const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteArchivedRecordings),
-    [context.settings]
-  );
-
   const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
   const handleWarningModalClose = React.useCallback(() => {
@@ -580,12 +575,12 @@ const ArchivedRecordingsToolbar: React.FC<ArchivedRecordingsToolbarProps> = (pro
   }, [setWarningModalOpen]);
 
   const handleDeleteButton = React.useCallback(() => {
-    if (deletionDialogsEnabled) {
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteArchivedRecordings)) {
       setWarningModalOpen(true);
     } else {
       props.handleDeleteRecordings();
     }
-  }, [deletionDialogsEnabled, setWarningModalOpen, props]);
+  }, [context.settings, setWarningModalOpen, props]);
 
   const deleteArchivedWarningModal = React.useMemo(() => {
     return (

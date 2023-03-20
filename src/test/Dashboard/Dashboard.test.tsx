@@ -78,11 +78,7 @@ jest.mock('@app/utils/LocalStorage', () => ({
   }),
 }));
 
-jest
-  .spyOn(defaultServices.target, 'target')
-  .mockReturnValueOnce(of(mockFooTarget)) // renders correctly
-  .mockReturnValueOnce(of()) //
-  .mockReturnValue(of(mockFooTarget));
+jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockFooTarget));
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {

@@ -90,11 +90,6 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
 
   const currLayout = React.useMemo(() => dashboardConfigs.layouts[dashboardConfigs.current], [dashboardConfigs]);
 
-  const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteDashboardLayout),
-    [context.settings]
-  );
-
   const handleUploadModalOpen = React.useCallback(
     (_ev: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       setIsUploadModalOpen(true);
@@ -135,16 +130,18 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
 
   const handleDeleteWarningModalClose = React.useCallback(() => {
     setIsDeleteWarningModalOpen(false);
+    setSelectDelete('');
   }, [setIsDeleteWarningModalOpen]);
 
   const handleDeleteLayout = React.useCallback(() => {
     dispatch(dashboardConfigDeleteLayoutIntent(selectDelete));
     dispatch(dashboardConfigReplaceLayoutIntent(DEFAULT_DASHBOARD_NAME));
+    setSelectDelete('');
   }, [dispatch, selectDelete]);
 
   const handleDeleteButton = React.useCallback(
     (ev: React.MouseEvent<HTMLButtonElement, MouseEvent>, layout: string) => {
-      if (deletionDialogsEnabled) {
+      if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteDashboardLayout)) {
         handleDeleteWarningModalOpen(ev, layout);
       } else {
         setSelectDelete(layout);
@@ -152,7 +149,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
       }
       if (deleteRef.current) deleteRef.current.blur();
     },
-    [handleDeleteWarningModalOpen, setSelectDelete, handleDeleteLayout, deletionDialogsEnabled]
+    [context.settings, handleDeleteWarningModalOpen, setSelectDelete, handleDeleteLayout]
   );
 
   const handleRenameLayout = React.useCallback(
@@ -287,11 +284,14 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
 
   const menuGroups = React.useCallback(
     (label: string, favoriteGroup: boolean) => {
-      const filter = favoriteGroup ? (l: DashboardLayout) => l.favorite : () => true;
+      const layouts = dashboardConfigs.layouts.filter(favoriteGroup ? (l: DashboardLayout) => l.favorite : () => true);
+      if (layouts.length === 0) {
+        return null;
+      }
       return (
         <MenuGroup label={label} labelHeadingLevel="h3">
           <MenuList>
-            {dashboardConfigs.layouts.filter(filter).map((l) => (
+            {layouts.map((l) => (
               <MenuItem
                 key={l.name}
                 itemId={l.name}
@@ -364,10 +364,12 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
   const toolbarContent = React.useMemo(() => {
     return (
       <ToolbarContent style={{ paddingLeft: '24px' }}>
+        <ToolbarItem>{newButton}</ToolbarItem>
         <ToolbarGroup>
-          <ToolbarItem>{newButton}</ToolbarItem>
           <ToolbarItem spacer={{ default: 'spacerNone' }}>{menuDropdown}</ToolbarItem>
-          <ToolbarItem spacer={{ default: 'spacerNone' }}>{renameButton}</ToolbarItem>
+          <ToolbarItem>{renameButton}</ToolbarItem>
+        </ToolbarGroup>
+        <ToolbarGroup variant="button-group">
           <ToolbarItem>{uploadButton}</ToolbarItem>
           <ToolbarItem>{downloadButton}</ToolbarItem>
           <ToolbarItem>{deleteButton}</ToolbarItem>

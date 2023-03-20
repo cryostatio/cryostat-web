@@ -145,7 +145,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
     ) => {
       setUploading(true);
 
-      const tasks: Observable<boolean>[] = [];
+      const tasks: Observable<DashboardLayout | null>[] = [];
 
       fileUploads.forEach((fileUpload) => {
         tasks.push(
@@ -154,11 +154,11 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
             concatMap((layout) => {
               dispatch(dashboardConfigAddLayoutIntent(layout));
               onSingleSuccess(fileUpload.file.name);
-              return of(true);
+              return of(layout);
             }),
             catchError((err) => {
               onSingleFailure(fileUpload.file.name, err);
-              return of(false);
+              return of(null);
             })
           )
         );
@@ -166,10 +166,14 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
 
       addSubscription(
         forkJoin(tasks)
-          .pipe(defaultIfEmpty([true]))
+          .pipe(defaultIfEmpty([null]))
           .subscribe((oks) => {
             setUploading(false);
-            setAllOks(oks.reduce((prev, curr, _) => prev && curr, true));
+            setAllOks(oks.every((o) => o !== null));
+            const validLayouts = oks.filter((o) => o !== null) as DashboardLayout[];
+            if (validLayouts.length > 0) {
+              dispatch(dashboardConfigReplaceLayoutIntent(validLayouts[validLayouts.length - 1].name));
+            }
           })
       );
     },

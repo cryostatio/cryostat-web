@@ -1157,23 +1157,20 @@ export class ApiService {
   downloadDashboardLayout(layout: DashboardConfigState): void {
     const serializedLayout = this.getSerializedDashboardLayout(layout);
     const filename = `cryostat-dashboard-${layout.name}.json`;
-    const file = new File([serializedLayout], filename);
-    const resourceUrl = URL.createObjectURL(file);
+    const resourceUrl = createBlobURL(serializedLayout, 'application/json');
     this.downloadFile(resourceUrl, filename);
-    setTimeout(() => URL.revokeObjectURL(resourceUrl), 1000);
   }
 
   private getSerializedDashboardLayout(layout: DashboardLayout): string {
-    const serialCards: SerialCardConfig[] = [];
-    for (const card of layout.cards) {
-      const serialized = {
+    const serialCards: SerialCardConfig[] = layout.cards.map((card) => {
+      return {
         // ignore id
         name: card.name,
         span: card.span,
         props: card.props,
       };
-      serialCards.push(serialized);
-    }
+    });
+
     const download: SerialDashboardLayout = {
       name: layout.name,
       cards: serialCards,

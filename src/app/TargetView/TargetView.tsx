@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
-import { DashboardLayoutConfig } from '@app/Dashboard/DashboardLayoutConfig';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -46,7 +45,7 @@ import { NoTargetSelected } from './NoTargetSelected';
 import { TargetContextSelector } from './TargetContextSelector';
 
 interface TargetViewProps {
-  appendDashboard?: boolean;
+  attachments?: React.ReactNode;
   pageTitle: string;
   breadcrumbs?: BreadcrumbTrail[];
   children: React.ReactNode;
@@ -72,7 +71,7 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   return (
     <>
       <TargetContextSelector />
-      {props.appendDashboard && <DashboardLayoutConfig />}
+      {props.attachments}
       <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
         {hasSelection ? props.children : <NoTargetSelected />}
       </BreadcrumbPage>

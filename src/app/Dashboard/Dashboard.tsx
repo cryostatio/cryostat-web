@@ -65,6 +65,7 @@ import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChar
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
+import { DashboardLayoutConfig } from './DashboardLayoutConfig';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
 
@@ -357,7 +358,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   );
 
   return (
-    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} appendDashboard>
+    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} attachments={<DashboardLayoutConfig />}>
       <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
           {currLayout.cards
@@ -374,7 +375,7 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
                         key={`${cfg.name}-actions`}
                         onRemove={() => handleRemove(idx)}
                         onResetSize={() => handleResetSize(idx)}
-                        onView={() => history.push(`/d-solo?cardId=${cfg.id}`)}
+                        onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
                       />,
                     ],
                   })}

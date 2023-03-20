@@ -53,9 +53,15 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
 
   const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
 
+  const layout = React.useMemo(() => {
+    return new URLSearchParams(search).get('layout');
+  }, [search]);
+
   const cardConfigs: CardConfig[] = React.useMemo(
-    () => dashboardConfigs.layouts[dashboardConfigs.current].cards,
-    [dashboardConfigs]
+    () =>
+      (dashboardConfigs.layouts.find((l) => l.name === layout) ?? dashboardConfigs.layouts[dashboardConfigs.current])
+        .cards,
+    [dashboardConfigs, layout]
   );
 
   const cardConfig = React.useMemo(() => {
@@ -73,7 +79,8 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
               Dashboard card not found
             </Title>
             <EmptyStateBody>
-              Provide a valid <code style={{ color: '#000' }}>cardId</code> query parameter and try again.
+              Provide valid <code style={{ color: '#000' }}>layout</code> and{' '}
+              <code style={{ color: '#000' }}>cardId</code> query parameters and try again.
             </EmptyStateBody>
             <Button variant="primary" onClick={() => history.push('/')}>
               Back to Dashboard

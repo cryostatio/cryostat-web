@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import _ from 'lodash';
 
 const SECOND_MILLIS = 1000;
@@ -47,17 +46,17 @@ const DAY_MILLIS = 24 * HOUR_MILLIS;
 // [     0,    1,    2,    3     ] array
 //       0     1     2     3       indexes
 // {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
-export function moveDashboardCard(cards: CardConfig[], from: number, gapIndex: number) {
+export function move(arr: any[], from: number, gapIndex: number) {
   if (gapIndex > from) {
     gapIndex--;
   }
-  cards.splice(gapIndex, 0, cards.splice(from, 1)[0]);
-  return cards;
+  arr.splice(gapIndex, 0, arr.splice(from, 1)[0]);
+  return arr;
 }
 
-export function swapDashboardCard(cards: CardConfig[], from: number, to: number) {
-  cards[from] = cards.splice(to, 1, cards[from])[0];
-  return cards;
+export function swap(arr: any[], from: number, to: number) {
+  arr[from] = arr.splice(to, 1, arr[from])[0];
+  return arr;
 }
 
 export const openTabForUrl = (url: string) => {

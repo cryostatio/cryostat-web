@@ -38,7 +38,7 @@
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
-import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
+import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
@@ -239,15 +239,15 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardConfigReorderCardIntent, (state, { payload }) => {
       if (payload.swap) {
-        swapDashboardCard(state.layouts[state.current].cards, payload.prevOrder, payload.nextOrder);
+        swap(state.layouts[state.current].cards, payload.prevOrder, payload.nextOrder);
       } else {
-        moveDashboardCard(state.layouts[state.current].cards, payload.prevOrder, payload.nextOrder);
+        move(state.layouts[state.current].cards, payload.prevOrder, payload.nextOrder);
       }
     })
     .addCase(dashboardConfigFirstRunIntent, (state) => {
       state.layouts[state.current].cards = [
         {
-          id: `${QuickStartsCardDescriptor.component.name}-1}`,
+          id: `${QuickStartsCardDescriptor.component.name}-1`,
           name: QuickStartsCardDescriptor.component.name,
           span: QuickStartsCardDescriptor.cardSizes.span.default,
           props: {},
@@ -288,6 +288,9 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
       ];
     })
     .addCase(dashboardConfigAddLayoutIntent, (state, { payload }) => {
+      if (state.layouts.find((layout) => layout.name === payload.layout.name)) {
+        throw new Error(`Layout with name ${payload.layout.name} already exists.`);
+      }
       state.layouts.push(payload.layout);
     })
     .addCase(dashboardConfigDeleteLayoutIntent, (state, { payload }) => {
