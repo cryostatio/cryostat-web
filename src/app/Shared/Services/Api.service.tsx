@@ -1153,8 +1153,8 @@ export class ApiService {
       map((recs: Partial<ActiveRecording>[]) => recs.length > 0) // At least one
     );
   }
-  
-  downloadDashboardLayout(layout: DashboardConfigState): void {
+
+  downloadDashboardLayout(layout: DashboardLayout): void {
     const serializedLayout = this.getSerializedDashboardLayout(layout);
     const filename = `cryostat-dashboard-${layout.name}.json`;
     const resourceUrl = createBlobURL(serializedLayout, 'application/json');
