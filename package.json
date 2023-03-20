@@ -95,7 +95,7 @@
   },
   "dependencies": {
     "@patternfly/quickstarts": "^2.3.3",
-    "@patternfly/react-catalog-view-extension": "4.93.15",
+    "@patternfly/react-catalog-view-extension": "4.95.1",
     "@patternfly/react-charts": "^6.94.18",
     "@patternfly/react-core": "4.267.6",
     "@patternfly/react-icons": "^4.93.6",

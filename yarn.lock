@@ -1035,9 +1035,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@patternfly/react-catalog-view-extension@npm:4.93.15":
-  version: 4.93.15
-  resolution: "@patternfly/react-catalog-view-extension@npm:4.93.15"
+"@patternfly/react-catalog-view-extension@npm:4.95.1":
+  version: 4.95.1
+  resolution: "@patternfly/react-catalog-view-extension@npm:4.95.1"
   dependencies:
     "@patternfly/patternfly": 4.222.4
     "@patternfly/react-core": ^4.267.6
@@ -1045,7 +1045,7 @@ __metadata:
   peerDependencies:
     react: ^16.8 || ^17 || ^18
     react-dom: ^16.8 || ^17 || ^18
-  checksum: 5b7b834d12ed45566914f643bdd3d37f31dfd47ac91f972b8bb7c65324fc1462f86ea1492a3a1a308f74a0a2a6510d880a7830ff583ab9b5c88d2a7e9dbecd36
+  checksum: 8c284f265aba4be556382c2832533c0a1c12b247d8284d684a3fa34fb96cdc40ec211df82909012a2e226c99e95b6ecb1b814c22a16baae7c328232073da50ca
   languageName: node
   linkType: hard
 
@@ -3920,7 +3920,7 @@ __metadata:
   resolution: "cryostat-web@workspace:."
   dependencies:
     "@patternfly/quickstarts": ^2.3.3
-    "@patternfly/react-catalog-view-extension": 4.93.15
+    "@patternfly/react-catalog-view-extension": 4.95.1
     "@patternfly/react-charts": ^6.94.18
     "@patternfly/react-core": 4.267.6
     "@patternfly/react-icons": ^4.93.6
