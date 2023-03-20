@@ -158,7 +158,10 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
                 return of(layout);
               } catch (err) {
                 // layout name already taken from previous layout upload
-                onSingleFailure(fileUpload.file.name, new Error(t('DashboardLayoutUploadModal.ERROR.DUPLICATE_UPLOAD', { name: layout.name })));
+                onSingleFailure(
+                  fileUpload.file.name,
+                  new Error(t('DashboardLayoutUploadModal.ERROR.DUPLICATE_UPLOAD', { name: layout.name }))
+                );
                 return of(null);
               }
             }),
@@ -183,7 +186,7 @@ export const DashboardLayoutUploadModal: React.FC<DashboardLayoutUploadModalProp
           })
       );
     },
-    [addSubscription, dispatch, parseDashboardLayoutFile, setUploading, setAllOks]
+    [addSubscription, dispatch, t, parseDashboardLayoutFile, setUploading, setAllOks]
   );
 
   const handleSubmit = React.useCallback(() => {
