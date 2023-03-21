@@ -134,7 +134,9 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
             badge={nodeTypeToAbbr(data.nodeType)}
             badgeTooltipContent={data.nodeType}
             status={isTarget ? getStatusTargetNode(data) : []}
-            actionDropdown={<ActionDropdown actions={_actions} className={'entity-overview__action-menu'} />}
+            actionDropdown={
+              _actions.length ? <ActionDropdown actions={_actions} className={'entity-overview__action-menu'} /> : null
+            }
           />
           <Divider />
           <Tabs
