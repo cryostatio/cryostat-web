@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { topologyDeleteAllFiltersIntent } from '@app/Shared/Redux/ReduxStore';
 import {
   Bullseye,
   Button,
@@ -47,13 +48,16 @@ import {
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { DiscoveryTreeContext, getAllLeaves } from './utils';
+import { DiscoveryTreeContext, getAllLeaves, SearchExprServiceContext } from './utils';
 
 export interface TopologyEmptyStateProps {}
 
 export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props }) => {
   const discoveryTree = React.useContext(DiscoveryTreeContext);
+  const dispatch = useDispatch();
+  const searchExprService = React.useContext(SearchExprServiceContext);
 
   const isTruelyEmpty = React.useMemo(() => {
     return !getAllLeaves(discoveryTree).length;
@@ -72,12 +76,16 @@ export const TopologyEmptyState: React.FC<TopologyEmptyStateProps> = ({ ...props
       <>
         <EmptyStateBody>Adjust your filters/searches and try again.</EmptyStateBody>
         <EmptyStateSecondaryActions>
-          <Button variant={'link'}>Clear Filters</Button>
-          <Button variant={'link'}>Clear Search</Button>
+          <Button variant={'link'} onClick={() => dispatch(topologyDeleteAllFiltersIntent())}>
+            Clear Filters
+          </Button>
+          <Button variant={'link'} onClick={() => searchExprService.setSearchExpression('')}>
+            Clear Searches
+          </Button>
         </EmptyStateSecondaryActions>
       </>
     );
-  }, [isTruelyEmpty]);
+  }, [isTruelyEmpty, searchExprService, dispatch]);
 
   return (
     <Bullseye {...props}>
