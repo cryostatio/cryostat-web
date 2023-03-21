@@ -257,9 +257,12 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
                     )
                 )
               ).pipe(
-                map((allTemplates) =>
-                  allTemplates.filter((ts) => ts.length).reduce((acc, curr) => _.intersectionWith(acc, curr, _.isEqual))
-                )
+                map((allTemplates) => {
+                  const allFiltered = allTemplates.filter((ts) => ts.length);
+                  return allFiltered.length
+                    ? allFiltered.reduce((acc, curr) => _.intersectionWith(acc, curr, _.isEqual))
+                    : [];
+                })
               ),
               of([])
             )
@@ -293,6 +296,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
     }
     setMatchExpressionValid(validation);
     matchedTargets.next(matches);
+    console.log(matchExpression);
   }, [matchExpression, targets, matchedTargets, setMatchExpressionValid, setTemplateName]);
 
   const createButtonLoadingProps = React.useMemo(
