@@ -40,8 +40,7 @@ import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-// TODO: Add quickstarts based on the following example:
-export const SettingsQuickStart: QuickStart = {
+const SettingsQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'settings-quickstart',
@@ -51,7 +50,7 @@ export const SettingsQuickStart: QuickStart = {
     displayName: 'Using Settings',
     durationMinutes: 5,
     icon: <CogIcon />,
-    description: `Learn about the settings page in ${build.productName} and how to use it.`,
+    description: `Learn about the settings page in **${build.productName}** and how to use it.`,
     prerequisites: [''],
     introduction: `
   <div style="padding-bottom: 1rem">
@@ -114,7 +113,7 @@ export const SettingsQuickStart: QuickStart = {
 2. You can also configure the default dashboard.`,
       },
     ],
-    conclusion: `You finished **Using Settings**!
+    conclusion: `You completed the **Using Settings** quick start!
     
 Learn more about the **Settings** page from our guides at <https://cryostat.io/guides/>.
 `,
@@ -124,3 +123,5 @@ Learn more about the **Settings** page from our guides at <https://cryostat.io/g
     },
   },
 };
+
+export default SettingsQuickStart;

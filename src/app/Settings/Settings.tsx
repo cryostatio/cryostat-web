@@ -284,7 +284,7 @@ const SettingTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, t
   return (
     <FeatureFlag level={featureLevelConfig.level} strict={featureLevelConfig.strict}>
       <Tab
-        eventKey={t(eventKey.toString())}
+        eventKey={eventKey}
         title={title}
         id={`${hashCode(`${eventKey}`)}`}
         data-quickstart-id={cleanQSDataId(`settings-${t(eventKey.toString())}-tab`)}

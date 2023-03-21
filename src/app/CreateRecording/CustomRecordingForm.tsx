@@ -418,6 +418,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             aria-describedby="recording-name-helper"
             onChange={handleRecordingNameChange}
             validated={nameValid}
+            data-quickstart-id="crf-name"
           />
           <Checkbox
             label="Restart if recording already exists"
@@ -442,6 +443,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
               : 'Time before the recording is automatically stopped'
           }
           helperTextInvalid="A recording may only have a positive integer duration"
+          data-quickstart-id="crf-duration"
         >
           <Split hasGutter>
             <SplitItem>
@@ -491,7 +493,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             onSelect={handleTemplateChange}
           />
         </FormGroup>
-        <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options">
+        <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options" data-quickstart-id="crf-metadata-opt">
           <FormGroup
             label="Labels"
             fieldId="labels"
@@ -522,7 +524,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             />
           </FormGroup>
         </ExpandableSection>
-        <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options">
+        <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options" data-quickstart-id="crf-advanced-opt">
           <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
           <FormGroup
             fieldId="To Disk"
@@ -603,6 +605,7 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             onClick={handleSubmit}
             isDisabled={isFormInvalid || loading}
             {...createButtonLoadingProps}
+            data-quickstart-id="crf-create-btn"
           >
             {loading ? 'Creating' : 'Create'}
           </Button>

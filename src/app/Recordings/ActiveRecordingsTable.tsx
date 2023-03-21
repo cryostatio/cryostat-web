@@ -663,7 +663,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
     let arr = [
       {
         default: (
-          <Button variant="primary" onClick={props.handleCreateRecording}>
+          <Button variant="primary" onClick={props.handleCreateRecording} data-quickstart-id="recordings-create-btn">
             Create
           </Button>
         ),
@@ -682,6 +682,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
             variant="secondary"
             onClick={props.handleArchiveRecordings}
             isDisabled={!props.checkedIndices.length || props.actionLoadings['ARCHIVE']}
+            data-quickstart-id="recordings-archive-btn"
             {...actionLoadingProps['ARCHIVE']}
           >
             {props.actionLoadings['ARCHIVE'] ? 'Archiving' : 'Archive'}
@@ -699,7 +700,8 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
       ...arr,
       {
         default: (
-          <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length}>
+          <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length} data-quickstart-id="recordings-labels-btn"
+          >
             Edit Labels
           </Button>
         ),
@@ -716,6 +718,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
             variant="tertiary"
             onClick={props.handleStopRecordings}
             isDisabled={isStopDisabled}
+            data-quickstart-id="recordings-stop-btn"
             {...actionLoadingProps['STOP']}
           >
             {props.actionLoadings['STOP'] ? 'Stopping' : 'Stop'}
@@ -734,6 +737,7 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
             variant="danger"
             onClick={handleDeleteButton}
             isDisabled={!props.checkedIndices.length || props.actionLoadings['DELETE']}
+            data-quickstart-id="recordings-delete-btn"
             {...actionLoadingProps['DELETE']}
           >
             {props.actionLoadings['DELETE'] ? 'Deleting' : 'Delete'}

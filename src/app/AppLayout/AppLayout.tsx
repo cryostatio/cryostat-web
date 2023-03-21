@@ -49,8 +49,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { openTabForUrl, portalRoot } from '@app/utils/utils';
-import { QuickStartCatalogPage, QuickStartDrawer } from '@patternfly/quickstarts';
+import { cleanQSDataId, openTabForUrl, portalRoot } from '@app/utils/utils';
 import {
   Alert,
   AlertActionCloseButton,
@@ -472,6 +471,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               aria-label="Navigation"
               isNavOpen={isNavOpen}
               onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
+              data-quickstart-id="nav-toggle-btn"
             >
               <BarsIcon />
             </PageToggleButton>
@@ -537,7 +537,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                           id={`${route.label}-${idx}`}
                           isActive={isActiveRoute(route)}
                         >
-                          <NavLink exact to={route.path} activeClassName="pf-m-current">
+                          <NavLink exact to={route.path} activeClassName="pf-m-current" data-quickstart-id={`nav-${cleanQSDataId(route.label)}-tab`}>
                             {route.label}
                             {route.featureLevel !== undefined && levelBadge(route.featureLevel)}
                           </NavLink>
