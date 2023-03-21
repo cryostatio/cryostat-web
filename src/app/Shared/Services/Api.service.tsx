@@ -41,6 +41,7 @@ import { RecordingLabel } from '@app/RecordingMetadata/RecordingLabel';
 import { Rule } from '@app/Rules/Rules';
 import { EnvironmentNode } from '@app/Topology/typings';
 import { createBlobURL } from '@app/utils/utils';
+import { Base64 } from 'js-base64';
 import _ from 'lodash';
 import { EMPTY, forkJoin, from, Observable, ObservableInput, of, ReplaySubject, shareReplay, throwError } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
@@ -697,9 +698,17 @@ export class ApiService {
     apiVersion: ApiVersion = 'v1',
     params?: URLSearchParams,
     suppressNotifications?: boolean,
-    skipStatusCheck?: boolean
+    skipStatusCheck?: boolean,
+    headers?: HeadersInit
   ): Observable<T> {
-    return this.sendRequest(apiVersion, path, { method: 'GET' }, params, suppressNotifications, skipStatusCheck).pipe(
+    return this.sendRequest(
+      apiVersion,
+      path,
+      { method: 'GET', headers },
+      params,
+      suppressNotifications,
+      skipStatusCheck
+    ).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first()
@@ -1151,6 +1160,32 @@ export class ApiService {
       ),
       catchError((_) => of([])),
       map((recs: Partial<ActiveRecording>[]) => recs.length > 0) // At least one
+    );
+  }
+
+  checkCredentialsForTarget(
+    target: Target,
+    credentials: { username: string; password: string }
+  ): Observable<Error | undefined> {
+    const headers = new window.Headers();
+    const basic = `${credentials.username}:${credentials.password}`;
+    headers.set('X-JMX-Authorization', `Basic ${Base64.encode(basic)}`);
+    return this.doGet<ActiveRecording[]>(
+      `targets/${encodeURIComponent(target.connectUrl)}/recordings`,
+      'v1',
+      undefined,
+      true,
+      true,
+      headers
+    ).pipe(
+      first(),
+      map((_) => undefined),
+      catchError((err) => {
+        if (isHttpError(err)) {
+          return err.httpResponse.text().then((detail) => new Error(detail));
+        }
+        return of(err);
+      })
     );
   }
 

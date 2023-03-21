@@ -37,6 +37,7 @@
  */
 
 import _ from 'lodash';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 const SECOND_MILLIS = 1000;
 const MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -169,3 +170,19 @@ export const evaluateTargetWithExpr = (target: unknown, matchExpression: string)
 };
 
 export const portalRoot = document.getElementById('portal-root') || document.body;
+
+export class StreamOf<T> {
+  private readonly _stream$: BehaviorSubject<T>;
+
+  constructor(first: T) {
+    this._stream$ = new BehaviorSubject<T>(first);
+  }
+
+  get(): Observable<T> {
+    return this._stream$.asObservable();
+  }
+
+  set(value: T): void {
+    this._stream$.next(value);
+  }
+}
