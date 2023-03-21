@@ -86,7 +86,7 @@ export const topologyConfigSetViewModeIntent = createAction(
   })
 );
 
-export const topologyDisplayOpionsSetIntent = createAction(
+export const topologyDisplayOptionsSetIntent = createAction(
   TopologyConfigAction.DISPLAY_OPTION_SET,
   (category: OptionCategory, key: string, value: boolean) => ({
     payload: {
@@ -134,7 +134,7 @@ export const topologyConfigReducer: ReducerWithInitialState<TopologyConfig> = cr
     builder.addCase(topologyConfigSetViewModeIntent, (state, { payload }) => {
       state.viewMode = payload.viewMode;
     });
-    builder.addCase(topologyDisplayOpionsSetIntent, (state, { payload }) => {
+    builder.addCase(topologyDisplayOptionsSetIntent, (state, { payload }) => {
       const { category, key, value } = payload;
       if (state.displayOptions[category]) {
         state.displayOptions[category][key] = value;

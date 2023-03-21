@@ -45,6 +45,7 @@ import { ProbeTemplate } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -452,6 +453,7 @@ export const AgentProbeTemplateUploadModal: React.FC<AgentProbeTemplateUploadMod
 
   return (
     <Modal
+      appendTo={portalRoot}
       isOpen={props.isOpen}
       variant={ModalVariant.large}
       showClose={true}

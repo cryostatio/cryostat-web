@@ -35,8 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { groupingOptions, OptionCategory, showOptions } from '@app/Shared/Redux/Configurations/TopologyConfigSlicer';
-import { RootState, topologyDisplayOpionsSetIntent } from '@app/Shared/Redux/ReduxStore';
+import { groupingOptions, OptionCategory, showOptions } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
+import { RootState, topologyDisplayOptionsSetIntent } from '@app/Shared/Redux/ReduxStore';
 import { Checkbox, Divider, Select, Stack, StackItem, Switch } from '@patternfly/react-core';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -59,7 +59,7 @@ export const DisplayOptions: React.FC<DisplayOptionsProps> = ({
   const getChangeHandler = React.useCallback(
     (group: OptionCategory, key: string) => {
       return (checked: boolean, _) => {
-        dispatch(topologyDisplayOpionsSetIntent(group, key, checked));
+        dispatch(topologyDisplayOptionsSetIntent(group, key, checked));
       };
     },
     [dispatch]

@@ -5,6 +5,9 @@ Array [
   <div>
     Target Context Selector
   </div>,
+  <div>
+    Dashboard Layout Config
+  </div>,
   <section
     className="pf-c-page__main-section"
   >

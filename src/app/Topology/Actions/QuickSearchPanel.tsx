@@ -40,6 +40,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useFeatureLevel } from '@app/utils/useFeatureLevel';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import {
   Bullseye,
   Button,
@@ -260,6 +261,7 @@ export const QuickSearchModal: React.FC<QuickSearchModalProps> = ({
   }, [activeLevel]);
   return (
     <Modal
+      appendTo={portalRoot}
       isOpen={isOpen}
       onClose={onClose}
       variant={variant}
@@ -332,7 +334,13 @@ export const QuickSearchFlyoutMenu: React.FC<QuickSearchFlyoutMenuProps> = ({ is
   }, [quicksearches, history, services, notifications, addSubscription]);
 
   return isShow || hover ? (
-    <Menu {...props} id={`quick-searches-menu`} key={`quick-searches-menu`} isScrollable ref={hoverRef as any}>
+    <Menu
+      {...props}
+      id={`quick-searches-menu`}
+      key={`quick-searches-menu`}
+      isScrollable
+      ref={hoverRef as React.Ref<HTMLDivElement>}
+    >
       <MenuContent>
         <MenuList>{items}</MenuList>
       </MenuContent>

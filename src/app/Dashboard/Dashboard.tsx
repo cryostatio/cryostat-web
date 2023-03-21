@@ -37,16 +37,18 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
-import { CardConfig, dashboardCardConfigFirstRunIntent } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { DashboardConfigState } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import {
-  dashboardCardConfigDeleteCardIntent,
-  dashboardCardConfigResizeCardIntent,
+  dashboardConfigDeleteCardIntent,
+  dashboardConfigFirstRunIntent,
+  dashboardConfigResizeCardIntent,
   RootState,
   StateDispatch,
 } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { TargetView } from '@app/TargetView/TargetView';
+import { getFromLocalStorage } from '@app/utils/LocalStorage';
 import { CardActions, CardBody, CardHeader, Grid, GridItem, gridSpans, Text } from '@patternfly/react-core';
 import { TFunction } from 'i18next';
 import * as React from 'react';
@@ -63,6 +65,7 @@ import { MBeanMetricsChartCardDescriptor } from './Charts/mbean/MBeanMetricsChar
 import { MBeanMetricsChartController } from './Charts/mbean/MBeanMetricsChartController';
 import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
+import { DashboardLayoutConfig } from './DashboardLayoutConfig';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
 import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
 
@@ -295,8 +298,8 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
   const history = useHistory();
   const serviceContext = React.useContext(ServiceContext);
   const dispatch = useDispatch<StateDispatch>();
-  const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
   const { t } = useTranslation();
+  const dashboardConfigs: DashboardConfigState = useSelector((state: RootState) => state.dashboardConfigs);
   const jfrChartController = React.useRef(
     new JFRMetricsChartController(
       serviceContext.api,
@@ -309,12 +312,16 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
     new MBeanMetricsChartController(serviceContext.api, serviceContext.target, serviceContext.settings)
   );
 
+  const currLayout = React.useMemo(() => {
+    return dashboardConfigs.layouts[dashboardConfigs.current];
+  }, [dashboardConfigs]);
+
   React.useEffect(() => {
-    const currentDashboard = serviceContext.settings.dashboardConfig();
-    if (currentDashboard._version === undefined) {
-      dispatch(dashboardCardConfigFirstRunIntent());
+    const layouts = getFromLocalStorage('DASHBOARD_CFG', {}) as DashboardConfigState;
+    if (layouts._version === undefined) {
+      dispatch(dashboardConfigFirstRunIntent());
     }
-  }, [dispatch, serviceContext.settings]);
+  }, [dispatch]);
 
   const chartContext = React.useMemo(() => {
     return {
@@ -334,27 +341,27 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
 
   const handleRemove = React.useCallback(
     (idx: number) => {
-      dispatch(dashboardCardConfigDeleteCardIntent(idx));
+      dispatch(dashboardConfigDeleteCardIntent(idx));
     },
     [dispatch]
   );
 
   const handleResetSize = React.useCallback(
     (idx: number) => {
-      const defaultSpan = getConfigByName(cardConfigs[idx].name).cardSizes.span.default;
-      if (defaultSpan === cardConfigs[idx].span) {
+      const defaultSpan = getConfigByName(currLayout.cards[idx].name).cardSizes.span.default;
+      if (defaultSpan === currLayout.cards[idx].span) {
         return;
       }
-      dispatch(dashboardCardConfigResizeCardIntent(idx, defaultSpan));
+      dispatch(dashboardConfigResizeCardIntent(idx, defaultSpan));
     },
-    [dispatch, cardConfigs]
+    [dispatch, currLayout]
   );
 
   return (
-    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')}>
+    <TargetView pageTitle={t('Dashboard.PAGE_TITLE')} attachments={<DashboardLayoutConfig />}>
       <ChartContext.Provider value={chartContext}>
         <Grid id={'dashboard-grid'} hasGutter>
-          {cardConfigs
+          {currLayout.cards
             .filter((cfg) => hasConfigByName(cfg.name))
             .map((cfg, idx) => (
               <FeatureFlag level={getConfigByName(cfg.name).featureLevel} key={`${cfg.id}-wrapper`}>
@@ -368,14 +375,14 @@ export const Dashboard: React.FC<DashboardProps> = (_) => {
                         key={`${cfg.name}-actions`}
                         onRemove={() => handleRemove(idx)}
                         onResetSize={() => handleResetSize(idx)}
-                        onView={() => history.push(`/d-solo?cardId=${cfg.id}`)}
+                        onView={() => history.push(`/d-solo?layout=${currLayout.name}&cardId=${cfg.id}`)}
                       />,
                     ],
                   })}
                 </GridItem>
               </FeatureFlag>
             ))}
-          <GridItem key={cardConfigs.length} order={{ default: cardConfigs.length.toString() }}>
+          <GridItem key={currLayout.cards.length} order={{ default: currLayout.cards.length.toString() }}>
             <AddCard />
           </GridItem>
         </Grid>

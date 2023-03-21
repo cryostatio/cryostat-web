@@ -78,6 +78,14 @@ html, body, #root {
   height: 32rem;
 }
 
+#dashboard-layout-dropdown-toggle {
+  width: 20em;
+}
+
+#dashboard-layout-menu-content {
+  overflow-y: auto;
+}
+
 .automated-analysis-grid-item {
   padding: 0.25em;
 }

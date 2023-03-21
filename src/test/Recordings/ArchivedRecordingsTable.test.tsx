@@ -132,12 +132,6 @@ jest.spyOn(defaultServices.api, 'uploadArchivedRecordingToGrafana').mockReturnVa
 
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
   .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
   .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
   .mockReturnValue(true);
@@ -180,7 +174,7 @@ describe('<ArchivedRecordingsTable />', () => {
     history.go(-history.length);
     preloadedState = {
       dashboardConfigs: {
-        list: [],
+        layouts: [],
       },
       recordingFilters: {
         list: [
@@ -207,7 +201,7 @@ describe('<ArchivedRecordingsTable />', () => {
           },
         },
       },
-    };
+    } as any;
   });
 
   afterEach(cleanup);

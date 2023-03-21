@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { portalRoot } from '@app/utils/utils';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import * as React from 'react';
 import { useState } from 'react';
@@ -72,6 +73,7 @@ export const RuleDeleteWarningModal = ({
 
   return (
     <Modal
+      appendTo={portalRoot}
       title={warningContents?.title}
       description={warningContents?.description}
       aria-label={warningContents?.ariaLabel}

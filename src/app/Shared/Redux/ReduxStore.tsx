@@ -37,8 +37,8 @@
  */
 
 import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit';
-import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlicer';
-import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlicer';
+import dashboardConfigReducer, * as dashboardConfigSlice from './Configurations/DashboardConfigSlice';
+import topologyConfigReducer, * as topologyConfigSlice from './Configurations/TopologyConfigSlice';
 import automatedAnalysisFilterReducer, * as automatedAnalysisFilterSlice from './Filters/AutomatedAnalysisFilterSlice';
 import recordingFilterReducer, * as recordingFilterSlice from './Filters/RecordingFilterSlice';
 import topologyFilterReducer, * as topologyFilterSlice from './Filters/TopologyFilterSlice';
@@ -46,10 +46,16 @@ import { persistMiddleware } from './Middlewares/PersistMiddleware';
 
 // Export actions
 export const {
-  dashboardCardConfigAddCardIntent,
-  dashboardCardConfigDeleteCardIntent,
-  dashboardCardConfigReorderCardIntent,
-  dashboardCardConfigResizeCardIntent,
+  dashboardConfigAddCardIntent,
+  dashboardConfigDeleteCardIntent,
+  dashboardConfigReorderCardIntent,
+  dashboardConfigResizeCardIntent,
+  dashboardConfigFirstRunIntent,
+  dashboardConfigAddLayoutIntent,
+  dashboardConfigDeleteLayoutIntent,
+  dashboardConfigRenameLayoutIntent,
+  dashboardConfigReplaceLayoutIntent,
+  dashboardConfigFavoriteLayoutIntent,
 } = dashboardConfigSlice;
 export const {
   recordingAddFilterIntent,
@@ -71,7 +77,7 @@ export const {
   automatedAnalysisUpdateCategoryIntent,
 } = automatedAnalysisFilterSlice;
 
-export const { topologyConfigSetViewModeIntent, topologyDisplayOpionsSetIntent } = topologyConfigSlice;
+export const { topologyConfigSetViewModeIntent, topologyDisplayOptionsSetIntent } = topologyConfigSlice;
 
 export const {
   topologyUpdateCategoryTypeIntent,

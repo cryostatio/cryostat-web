@@ -45,6 +45,7 @@ import { NoTargetSelected } from './NoTargetSelected';
 import { TargetContextSelector } from './TargetContextSelector';
 
 interface TargetViewProps {
+  attachments?: React.ReactNode;
   pageTitle: string;
   breadcrumbs?: BreadcrumbTrail[];
   children: React.ReactNode;
@@ -70,6 +71,7 @@ export const TargetView: React.FunctionComponent<TargetViewProps> = (props) => {
   return (
     <>
       <TargetContextSelector />
+      {props.attachments}
       <BreadcrumbPage pageTitle={props.pageTitle} breadcrumbs={props.breadcrumbs}>
         {hasSelection ? props.children : <NoTargetSelected />}
       </BreadcrumbPage>

@@ -557,11 +557,6 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
   const [warningModalOpen, setWarningModalOpen] = React.useState(false);
   const [actionToggleOpen, setActionToggleOpen] = React.useState(false);
 
-  const deletionDialogsEnabled = React.useMemo(
-    () => context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteActiveRecordings),
-    [context.settings]
-  );
-
   const handleActionToggle = React.useCallback(() => setActionToggleOpen((old) => !old), [setActionToggleOpen]);
 
   const handleWarningModalClose = React.useCallback(() => {
@@ -569,12 +564,12 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
   }, [setWarningModalOpen]);
 
   const handleDeleteButton = React.useCallback(() => {
-    if (deletionDialogsEnabled) {
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteActiveRecordings)) {
       setWarningModalOpen(true);
     } else {
       props.handleDeleteRecordings();
     }
-  }, [deletionDialogsEnabled, setWarningModalOpen, props]);
+  }, [context.settings, setWarningModalOpen, props]);
 
   const isStopDisabled = React.useMemo(() => {
     if (!props.checkedIndices.length || props.actionLoadings['STOP']) {

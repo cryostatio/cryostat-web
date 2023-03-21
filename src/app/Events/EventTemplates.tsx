@@ -47,6 +47,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { portalRoot } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -505,6 +506,7 @@ export const EventTemplatesUploadModal: React.FunctionComponent<EventTemplatesUp
 
   return (
     <Modal
+      appendTo={portalRoot}
       isOpen={props.isOpen}
       variant={ModalVariant.large}
       showClose={true}

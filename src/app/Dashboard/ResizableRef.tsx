@@ -35,11 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import {
-  CardConfig,
-  dashboardCardConfigResizeCardIntent,
-} from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
-import { RootState } from '@app/Shared/Redux/ReduxStore';
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { dashboardConfigResizeCardIntent, RootState } from '@app/Shared/Redux/ReduxStore';
 import { gridSpans } from '@patternfly/react-core';
 import _ from 'lodash';
 import React from 'react';
@@ -48,7 +45,7 @@ import { DashboardCardSizes } from './Dashboard';
 import { DashboardCardContext } from './DashboardCard';
 
 export interface ResizableRefProps {
-  dashboardId: number;
+  cardId: number;
   cardSizes: DashboardCardSizes;
 }
 
@@ -65,11 +62,13 @@ export function handleDisabledElements(disabled: boolean): void {
 }
 
 export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
-  dashboardId,
+  cardId: dashboardId,
   cardSizes,
   ..._props
 }: ResizableRefProps) => {
-  const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const cardConfigs: CardConfig[] = useSelector(
+    (state: RootState) => state.dashboardConfigs.layouts[state.dashboardConfigs.current].cards
+  );
   const dispatch = useDispatch();
 
   const cardRef = React.useContext(DashboardCardContext);
@@ -118,7 +117,7 @@ export const ResizableRef: React.FunctionComponent<ResizableRefProps> = ({
           cardSizes.span.maximum
         ) as gridSpans;
 
-        dispatch(dashboardCardConfigResizeCardIntent(dashboardId, gridSpan));
+        dispatch(dashboardConfigResizeCardIntent(dashboardId, gridSpan));
       } else {
         console.error('cardRef.current is undefined');
       }

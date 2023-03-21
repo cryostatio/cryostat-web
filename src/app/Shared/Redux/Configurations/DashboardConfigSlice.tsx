@@ -38,12 +38,12 @@
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
 import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
-import { moveDashboardCard, swapDashboardCard } from '@app/utils/utils';
+import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
-import { createAction, createReducer, nanoid } from '@reduxjs/toolkit';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { getPersistedState } from '../utils';
 
-const _version = '3';
+export const _dashboardConfigVersion = '4';
 
 // Common action string format: "resource(s)/action"
 export enum DashboardConfigAction {
@@ -52,6 +52,11 @@ export enum DashboardConfigAction {
   CARD_REORDER = 'dashboard-card-config/reorder',
   CARD_RESIZE = 'dashboard-card-config/resize',
   FIRST_RUN = 'dashboard-card-config/first-run',
+  LAYOUT_ADD = 'layout-config/add',
+  LAYOUT_REMOVE = 'layout-config/remove',
+  LAYOUT_RENAME = 'layout-config/rename',
+  LAYOUT_REPLACE = 'layout-config/replace',
+  LAYOUT_FAVORITE = 'layout-config/favorite',
 }
 
 export const enumValues = new Set(Object.values(DashboardConfigAction));
@@ -80,7 +85,27 @@ export interface DashboardOrderConfigActionPayload {
 
 export interface DashboardFirstRunActionPayload {}
 
-export const dashboardCardConfigAddCardIntent = createAction(
+export interface DashboardAddLayoutActionPayload {
+  layout: DashboardLayout;
+}
+
+export interface DashboardDeleteLayoutActionPayload {
+  name: string;
+}
+
+export interface DashboardRenameLayoutActionPayload {
+  oldName: string;
+  newName: string;
+}
+export interface DashboardReplaceLayoutActionPayload {
+  newLayoutName: string;
+}
+
+export interface DashboardFavoriteLayoutActionPayload {
+  name: string;
+}
+
+export const dashboardConfigAddCardIntent = createAction(
   DashboardConfigAction.CARD_ADD,
   (id: string, name: string, span: gridSpans, props: object) => ({
     payload: {
@@ -92,13 +117,13 @@ export const dashboardCardConfigAddCardIntent = createAction(
   })
 );
 
-export const dashboardCardConfigDeleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
+export const dashboardConfigDeleteCardIntent = createAction(DashboardConfigAction.CARD_REMOVE, (idx: number) => ({
   payload: {
     idx,
   } as DashboardDeleteConfigActionPayload,
 }));
 
-export const dashboardCardConfigResizeCardIntent = createAction(
+export const dashboardConfigResizeCardIntent = createAction(
   DashboardConfigAction.CARD_RESIZE,
   (idx: number, span: gridSpans) => ({
     payload: {
@@ -108,7 +133,7 @@ export const dashboardCardConfigResizeCardIntent = createAction(
   })
 );
 
-export const dashboardCardConfigReorderCardIntent = createAction(
+export const dashboardConfigReorderCardIntent = createAction(
   DashboardConfigAction.CARD_REORDER,
   (prevOrder: number, nextOrder: number, swap = false) => ({
     payload: {
@@ -119,9 +144,52 @@ export const dashboardCardConfigReorderCardIntent = createAction(
   })
 );
 
-export const dashboardCardConfigFirstRunIntent = createAction(DashboardConfigAction.FIRST_RUN, () => ({
+export const dashboardConfigFirstRunIntent = createAction(DashboardConfigAction.FIRST_RUN, () => ({
   payload: {} as DashboardFirstRunActionPayload,
 }));
+
+export const dashboardConfigAddLayoutIntent = createAction(
+  DashboardConfigAction.LAYOUT_ADD,
+  (layout: DashboardLayout) => ({
+    payload: {
+      layout,
+    } as DashboardAddLayoutActionPayload,
+  })
+);
+
+export const dashboardConfigDeleteLayoutIntent = createAction(DashboardConfigAction.LAYOUT_REMOVE, (name: string) => ({
+  payload: {
+    name,
+  } as DashboardDeleteLayoutActionPayload,
+}));
+
+export const dashboardConfigRenameLayoutIntent = createAction(
+  DashboardConfigAction.LAYOUT_RENAME,
+  (oldName: string, newName: string) => ({
+    payload: {
+      oldName,
+      newName,
+    } as DashboardRenameLayoutActionPayload,
+  })
+);
+
+export const dashboardConfigReplaceLayoutIntent = createAction(
+  DashboardConfigAction.LAYOUT_REPLACE,
+  (name: string) => ({
+    payload: {
+      newLayoutName: name,
+    } as DashboardReplaceLayoutActionPayload,
+  })
+);
+
+export const dashboardConfigFavoriteLayoutIntent = createAction(
+  DashboardConfigAction.LAYOUT_FAVORITE,
+  (name: string) => ({
+    payload: {
+      newLayoutName: name,
+    } as DashboardReplaceLayoutActionPayload,
+  })
+);
 
 export interface CardConfig {
   id: string;
@@ -130,37 +198,56 @@ export interface CardConfig {
   props: object;
 }
 
-export interface DashboardConfigState {
-  list: CardConfig[];
-  _version: string;
+export type SerialCardConfig = Omit<CardConfig, 'id'>;
+
+export interface DashboardLayout {
+  name: string;
+  cards: CardConfig[];
+  favorite: boolean;
 }
 
-const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _version, {
-  list: [] as CardConfig[],
+export type SerialDashboardLayout = Omit<DashboardLayout, 'cards'> & { cards: SerialCardConfig[] };
+
+export interface DashboardConfigState {
+  layouts: DashboardLayout[];
+  current: number;
+  readonly _version: string;
+}
+
+const INITIAL_STATE: DashboardConfigState = getPersistedState('DASHBOARD_CFG', _dashboardConfigVersion, {
+  layouts: [
+    {
+      name: 'Default',
+      cards: [],
+      favorite: true,
+    },
+  ] as DashboardLayout[],
+  current: 0,
 });
 
 export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
-    .addCase(dashboardCardConfigAddCardIntent, (state, { payload }) => {
-      state.list.push(payload);
+
+    .addCase(dashboardConfigAddCardIntent, (state, { payload }) => {
+      state.layouts[state.current].cards.push(payload);
     })
-    .addCase(dashboardCardConfigDeleteCardIntent, (state, { payload }) => {
-      state.list.splice(payload.idx || 0, 1);
+    .addCase(dashboardConfigDeleteCardIntent, (state, { payload }) => {
+      state.layouts[state.current].cards.splice(payload.idx || 0, 1);
     })
-    .addCase(dashboardCardConfigResizeCardIntent, (state, { payload }) => {
-      state.list[payload.idx].span = payload.span;
+    .addCase(dashboardConfigResizeCardIntent, (state, { payload }) => {
+      state.layouts[state.current].cards[payload.idx].span = payload.span;
     })
-    .addCase(dashboardCardConfigReorderCardIntent, (state, { payload }) => {
+    .addCase(dashboardConfigReorderCardIntent, (state, { payload }) => {
       if (payload.swap) {
-        swapDashboardCard(state.list, payload.prevOrder, payload.nextOrder);
+        swap(state.layouts[state.current].cards, payload.prevOrder, payload.nextOrder);
       } else {
-        moveDashboardCard(state.list, payload.prevOrder, payload.nextOrder);
+        move(state.layouts[state.current].cards, payload.prevOrder, payload.nextOrder);
       }
     })
-    .addCase(dashboardCardConfigFirstRunIntent, (state) => {
-      state.list = [
+    .addCase(dashboardConfigFirstRunIntent, (state) => {
+      state.layouts[state.current].cards = [
         {
-          id: `${QuickStartsCardDescriptor.component.name}-${nanoid()}`,
+          id: `${QuickStartsCardDescriptor.component.name}-1`,
           name: QuickStartsCardDescriptor.component.name,
           span: QuickStartsCardDescriptor.cardSizes.span.default,
           props: {},
@@ -199,6 +286,27 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
           },
         },
       ];
+    })
+    .addCase(dashboardConfigAddLayoutIntent, (state, { payload }) => {
+      if (state.layouts.find((layout) => layout.name === payload.layout.name)) {
+        throw new Error(`Layout with name ${payload.layout.name} already exists.`);
+      }
+      state.layouts.push(payload.layout);
+    })
+    .addCase(dashboardConfigDeleteLayoutIntent, (state, { payload }) => {
+      const idx = state.layouts.findIndex((layout) => layout.name === payload.name);
+      state.layouts.splice(idx || 0, 1);
+    })
+    .addCase(dashboardConfigRenameLayoutIntent, (state, { payload }) => {
+      const idx = state.layouts.findIndex((layout) => layout.name === payload.oldName);
+      state.layouts[idx].name = payload.newName;
+    })
+    .addCase(dashboardConfigReplaceLayoutIntent, (state, { payload }) => {
+      state.current = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName) || 0;
+    })
+    .addCase(dashboardConfigFavoriteLayoutIntent, (state, { payload }) => {
+      const idx = state.layouts.findIndex((layout) => layout.name === payload.newLayoutName);
+      state.layouts[idx].favorite = !state.layouts[idx].favorite;
     });
 });
 

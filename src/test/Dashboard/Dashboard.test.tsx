@@ -65,11 +65,20 @@ jest.mock('@app/Dashboard/AddCard', () => ({
   AddCard: (_) => <div>Add Card</div>,
 }));
 
+jest.mock('@app/Dashboard/DashboardLayoutConfig', () => ({
+  DashboardLayoutConfig: (_) => <div>Dashboard Layout Config</div>,
+}));
+
+// Mock the local storage such that the first run config is not shown
+jest.mock('@app/utils/LocalStorage', () => ({
+  getFromLocalStorage: jest.fn(() => {
+    return {
+      _version: '0',
+    };
+  }),
+}));
+
 jest.spyOn(defaultServices.target, 'target').mockReturnValue(of(mockFooTarget));
-jest.spyOn(defaultServices.settings, 'dashboardConfig').mockReturnValue({
-  _version: 'validVersion', // having a undefined version will result in test errors.
-  list: [],
-});
 
 describe('<Dashboard />', () => {
   it('renders correctly', async () => {

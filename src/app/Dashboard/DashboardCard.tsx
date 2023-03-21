@@ -40,7 +40,8 @@ import { Card, CardProps } from '@patternfly/react-core';
 import { css } from '@patternfly/react-styles';
 import * as React from 'react';
 import { DashboardCardSizes } from './Dashboard';
-import { draggableRefKlazz, DraggableRef } from './DraggableRef';
+import { DRAGGABLE_REF_KLAZZ } from './DashboardUtils';
+import { DraggableRef } from './DraggableRef';
 import { ResizableRef } from './ResizableRef';
 
 export const DashboardCardContext = React.createContext<React.RefObject<HTMLDivElement>>(React.createRef());
@@ -68,18 +69,18 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
 
   const onMouseEnter = React.useCallback((_e: React.MouseEvent<HTMLDivElement>) => {
     if (cardRef.current) {
-      cardRef.current.classList.add(`${draggableRefKlazz}-hover`);
+      cardRef.current.classList.add(`${DRAGGABLE_REF_KLAZZ}-hover`);
     }
   }, []);
 
   const onMouseLeave = React.useCallback((_e: React.MouseEvent<HTMLDivElement>) => {
     if (cardRef.current) {
-      cardRef.current.classList.remove(`${draggableRefKlazz}-hover`);
+      cardRef.current.classList.remove(`${DRAGGABLE_REF_KLAZZ}-hover`);
     }
   }, []);
 
   const resizeBar = React.useMemo(() => {
-    return isResizable ? <ResizableRef dashboardId={dashboardId} cardSizes={cardSizes} /> : null;
+    return isResizable ? <ResizableRef cardId={dashboardId} cardSizes={cardSizes} /> : null;
   }, [isResizable, cardSizes, dashboardId]);
 
   const content = React.useMemo(
@@ -89,7 +90,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
           <div className={'dashboard-card-resizable-wrapper'} ref={cardRef}>
             <Card className="dashboard-card" isRounded {...props}>
               <div
-                className={css(`${draggableRefKlazz}__grip`)}
+                className={css(`${DRAGGABLE_REF_KLAZZ}__grip`)}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
                 draggable // draggable is required for drag events to fire

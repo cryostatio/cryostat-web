@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { TargetView } from '@app/TargetView/TargetView';
 import { Bullseye, Button, EmptyState, EmptyStateBody, EmptyStateIcon, Title } from '@patternfly/react-core';
@@ -51,7 +51,18 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
   const { search } = useLocation();
   const history = useHistory();
 
-  const cardConfigs: CardConfig[] = useSelector((state: RootState) => state.dashboardConfigs.list);
+  const dashboardConfigs = useSelector((state: RootState) => state.dashboardConfigs);
+
+  const layout = React.useMemo(() => {
+    return new URLSearchParams(search).get('layout');
+  }, [search]);
+
+  const cardConfigs: CardConfig[] = React.useMemo(
+    () =>
+      (dashboardConfigs.layouts.find((l) => l.name === layout) ?? dashboardConfigs.layouts[dashboardConfigs.current])
+        .cards,
+    [dashboardConfigs, layout]
+  );
 
   const cardConfig = React.useMemo(() => {
     const cardId = new URLSearchParams(search).get('cardId');
@@ -68,7 +79,8 @@ const DashboardSolo: React.FC<DashboardSoloProps> = ({ ..._props }) => {
               Dashboard card not found
             </Title>
             <EmptyStateBody>
-              Provide a valid <code style={{ color: '#000' }}>cardId</code> query parameter and try again.
+              Provide valid <code style={{ color: '#000' }}>layout</code> and{' '}
+              <code style={{ color: '#000' }}>cardId</code> query parameters and try again.
             </EmptyStateBody>
             <Button variant="primary" onClick={() => history.push('/')}>
               Back to Dashboard

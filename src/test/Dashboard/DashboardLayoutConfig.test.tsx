@@ -35,36 +35,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/**
- * t('JvmDetailsCard.CARD_TITLE')
- * t('JvmDetailsCard.CARD_DESCRIPTION')
- * t('JvmDetailsCard.CARD_DESCRIPTION_FULL')
- * t('AutomatedAnalysisCard.CARD_TITLE')
- * t('AutomatedAnalysisCard.CARD_DESCRIPTION')
- * t('AutomatedAnalysisCard.CARD_DESCRIPTION_FULL')
- * t('CHART_CARD.JFR_METRICS_CARD_TITLE')
- * t('CHART_CARD.JFR_METRICS_CARD_DESCRIPTION')
- * t('CHART_CARD.JFR_METRICS_CARD_DESCRIPTION_FULL')
- * t('CHART_CARD.MBEAN_METRICS_CARD_TITLE')
- * t('CHART_CARD.MBEAN_METRICS_CARD_DESCRIPTION')
- * t('CHART_CARD.MBEAN_METRICS_CARD_DESCRIPTION_FULL')
- * t('CHART_CARD.PROP_CONTROLS.THEME.NAME')
- * t('CHART_CARD.PROP_CONTROLS.THEME.DESCRIPTION')
- * t('CHART_CARD.PROP_CONTROLS.THEME_COLOR.NAME')
- * t('CHART_CARD.PROP_CONTROLS.THEME_COLOR.DESCRIPTION')
- * t('CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.NAME')
- * t('CHART_CARD.PROP_CONTROLS.PERFORMANCE_METRIC.DESCRIPTION')
- * t('CHART_CARD.PROP_CONTROLS.DATA_WINDOW.NAME')
- * t('CHART_CARD.PROP_CONTROLS.DATA_WINDOW.DESCRIPTION')
- * t('CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.NAME')
- * t('CHART_CARD.PROP_CONTROLS.REFRESH_PERIOD.DESCRIPTION')
- * t('QuickStartsCard.CARD_TITLE')
- * t('QuickStartsCard.CARD_DESCRIPTION')
- * t('QuickStartsCard.CARD_DESCRIPTION_FULL')
- * t('NonePlaceholderCard.CARD_TITLE')
- * t('NonePlaceholderCard.CARD_DESCRIPTION')
- * t('NonePlaceholderCard.CARD_DESCRIPTION_FULL')
- * t('AllPlaceholderCard.CARD_TITLE')
- * t('AllPlaceholderCard.CARD_DESCRIPTION')
- * t('AllPlaceholderCard.CARD_DESCRIPTION_FULL')
- **/
+import { DashboardLayoutConfig } from '@app/Dashboard/DashboardLayoutConfig';
+import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
+import { store } from '@app/Shared/Redux/ReduxStore';
+import { defaultServices, ServiceContext } from '@app/Shared/Services/Services';
+import React from 'react';
+import { Provider } from 'react-redux';
+import renderer, { act } from 'react-test-renderer';
+import '../Common';
+
+jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValue(true);
+
+describe('<DashboardLayoutConfig />', () => {
+  it('renders correctly', async () => {
+    let tree;
+    await act(async () => {
+      tree = renderer.create(
+        <ServiceContext.Provider value={defaultServices}>
+          <NotificationsContext.Provider value={NotificationsInstance}>
+            <Provider store={store}>
+              <DashboardLayoutConfig />
+            </Provider>
+          </NotificationsContext.Provider>
+        </ServiceContext.Provider>
+      );
+    });
+    expect(tree.toJSON()).toMatchSnapshot();
+  });
+});

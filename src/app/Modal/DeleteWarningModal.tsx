@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { portalRoot } from '@app/utils/utils';
 import { Modal, ModalVariant, Button, Checkbox, Stack, Split } from '@patternfly/react-core';
 import * as React from 'react';
 import { useState } from 'react';
@@ -54,16 +55,29 @@ export const DeleteWarningModal = ({ onAccept, onClose, ...props }: DeleteWarnin
 
   const realWarningType = getFromWarningMap(props.warningType);
 
-  const onAcceptClose = React.useCallback(() => {
-    onAccept();
-    onClose();
-    if (doNotAsk && !!realWarningType) {
-      context.settings.setDeletionDialogsEnabledFor(realWarningType.id, false);
-    }
-  }, [context.settings, onAccept, onClose, doNotAsk, realWarningType]);
+  const onAcceptClose = React.useCallback(
+    (ev: React.MouseEvent) => {
+      ev.stopPropagation();
+      onAccept();
+      onClose();
+      if (doNotAsk && !!realWarningType) {
+        context.settings.setDeletionDialogsEnabledFor(realWarningType.id, false);
+      }
+    },
+    [context.settings, onAccept, onClose, doNotAsk, realWarningType]
+  );
+
+  const onInnerClose = React.useCallback(
+    (ev?: React.MouseEvent) => {
+      ev && ev.stopPropagation();
+      onClose();
+    },
+    [onClose]
+  );
 
   return (
     <Modal
+      appendTo={portalRoot}
       title={`${realWarningType?.title}`}
       description={realWarningType?.description}
       aria-label={realWarningType?.ariaLabel}
@@ -71,14 +85,14 @@ export const DeleteWarningModal = ({ onAccept, onClose, ...props }: DeleteWarnin
       variant={ModalVariant.medium}
       isOpen={props.visible}
       showClose
-      onClose={onClose}
+      onClose={onInnerClose}
       actions={[
         <Stack hasGutter key="modal-footer-stack">
           <Split key="modal-footer-split">
             <Button variant="danger" onClick={onAcceptClose}>
               Delete
             </Button>
-            <Button variant="link" onClick={onClose}>
+            <Button variant="link" onClick={onInnerClose}>
               Cancel
             </Button>
           </Split>

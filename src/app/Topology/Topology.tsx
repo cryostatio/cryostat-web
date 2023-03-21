@@ -40,7 +40,7 @@ import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { ErrorView } from '@app/ErrorView/ErrorView';
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
-import { ViewMode } from '@app/Shared/Redux/Configurations/TopologyConfigSlicer';
+import { ViewMode } from '@app/Shared/Redux/Configurations/TopologyConfigSlice';
 import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';

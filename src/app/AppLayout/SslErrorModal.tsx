@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { portalRoot } from '@app/utils/utils';
 import { Button, Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -54,6 +55,7 @@ export const SslErrorModal: React.FC<SslErrorModalProps> = (props) => {
 
   return (
     <Modal
+      appendTo={portalRoot}
       isOpen={props.visible}
       variant={ModalVariant.medium}
       showClose={true}

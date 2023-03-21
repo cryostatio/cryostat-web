@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 
-import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlicer';
 import _ from 'lodash';
 
 const SECOND_MILLIS = 1000;
@@ -47,7 +46,7 @@ const DAY_MILLIS = 24 * HOUR_MILLIS;
 // [     0,    1,    2,    3     ] array
 //       0     1     2     3       indexes
 // {  0  |  1  |  2  |  3  |  4  } gap indices (drop zones)
-export function moveDashboardCard(arr: CardConfig[], from: number, gapIndex: number) {
+export function move(arr: any[], from: number, gapIndex: number) {
   if (gapIndex > from) {
     gapIndex--;
   }
@@ -55,7 +54,7 @@ export function moveDashboardCard(arr: CardConfig[], from: number, gapIndex: num
   return arr;
 }
 
-export function swapDashboardCard(arr: CardConfig[], from: number, to: number) {
+export function swap(arr: any[], from: number, to: number) {
   arr[from] = arr.splice(to, 1, arr[from])[0];
   return arr;
 }
@@ -168,3 +167,5 @@ export const evaluateTargetWithExpr = (target: unknown, matchExpression: string)
   const f = new Function('target', `return ${matchExpression}`);
   return f(_.cloneDeep(target));
 };
+
+export const portalRoot = document.getElementById('portal-root') || document.body;

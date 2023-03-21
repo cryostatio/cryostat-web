@@ -35,7 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { dashboardCardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
+import { CardConfig } from '@app/Shared/Redux/Configurations/DashboardConfigSlice';
+import { dashboardConfigAddCardIntent, StateDispatch } from '@app/Shared/Redux/ReduxStore';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -122,14 +123,13 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
   const handleAdd = React.useCallback(() => {
     setShowWizard(false);
     const config = getConfigByTitle(selection, t);
-    dispatch(
-      dashboardCardConfigAddCardIntent(
-        `${config.component.name}-${nanoid()}`,
-        config.component.name,
-        config.cardSizes.span.default,
-        propsConfig
-      )
-    );
+    const cardConfig: CardConfig = {
+      id: `${config.component.name}-${nanoid()}`,
+      name: config.component.name,
+      span: config.cardSizes.span.default,
+      props: propsConfig,
+    };
+    dispatch(dashboardConfigAddCardIntent(cardConfig.id, cardConfig.name, cardConfig.span, cardConfig.props));
   }, [dispatch, t, setShowWizard, selection, propsConfig]);
 
   const handleStart = React.useCallback(() => {

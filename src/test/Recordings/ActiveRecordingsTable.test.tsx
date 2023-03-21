@@ -122,16 +122,6 @@ jest.spyOn(defaultServices.reports, 'delete').mockReturnValue(void 0);
 
 jest
   .spyOn(defaultServices.settings, 'deletionDialogsEnabledFor')
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
-  .mockReturnValueOnce(true)
   .mockReturnValueOnce(true) // shows a popup when Delete is clicked and then deletes the recording after clicking confirmation Delete
   .mockReturnValueOnce(false) // deletes the recording when Delete is clicked w/o popup warning
   .mockReturnValue(true);
@@ -190,7 +180,7 @@ describe('<ActiveRecordingsTable />', () => {
     history.go(-history.length);
     preloadedState = {
       dashboardConfigs: {
-        list: [],
+        layouts: [],
       },
       recordingFilters: {
         list: [
@@ -217,7 +207,7 @@ describe('<ActiveRecordingsTable />', () => {
           },
         },
       },
-    };
+    } as any;
   });
 
   afterAll(() => {
