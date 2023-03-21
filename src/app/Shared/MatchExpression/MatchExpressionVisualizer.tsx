@@ -54,6 +54,7 @@ import {
   DataListItemRow,
   DataListToggle,
   EmptyState,
+  EmptyStateBody,
   EmptyStateIcon,
   EmptyStateSecondaryActions,
   EmptyStateVariant,
@@ -254,7 +255,7 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
 const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
-  const [matchExpression, setMatchExpression] = useSearchExpression();
+  const [matchExpression] = useSearchExpression();
   const [targets, setTargets] = React.useState<Target[]>([]);
 
   const [expanded, setExpanded] = React.useState<string[]>([]);
@@ -306,9 +307,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
               No Targets Matched
             </Title>
             <EmptyStateSecondaryActions>
-              <Button variant={'link'} onClick={() => setMatchExpression('')}>
-                Clear Match Expression
-              </Button>
+              <EmptyStateBody>Clear Match Expression and try again.</EmptyStateBody>
             </EmptyStateSecondaryActions>
           </EmptyState>
         </Bullseye>
@@ -352,7 +351,11 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
         </DataListItem>
       );
     });
-  }, [filtered, expanded, toggleExpand, setMatchExpression, props, alertOptions]);
+  }, [filtered, expanded, toggleExpand, props, alertOptions]);
 
-  return <DataList aria-label={'Target List'}>{content}</DataList>;
+  return (
+    <DataList aria-label={'Target List'} style={{ height: '100%' }}>
+      {content}
+    </DataList>
+  );
 };
