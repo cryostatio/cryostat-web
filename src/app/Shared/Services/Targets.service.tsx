@@ -79,7 +79,7 @@ export class TargetsService {
             const idx = _.findIndex(this._targets$.getValue(), (t) => t.connectUrl === evt.serviceRef.connectUrl);
             if (idx >= 0) {
               this._targets$.getValue().splice(idx, 1, evt.serviceRef);
-              this._targets$.next(this._targets$.getValue());
+              this._targets$.next([...this._targets$.getValue()]);
             }
           }
           break;

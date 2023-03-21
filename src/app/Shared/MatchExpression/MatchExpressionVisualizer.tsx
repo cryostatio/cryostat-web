@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
+import { getNodeById } from '@app/Topology/GraphView/UtilsFactory';
 import EntityDetails, { AlertOptions } from '@app/Topology/Shared/Entity/EntityDetails';
 import { useSearchExpression } from '@app/Topology/Shared/utils';
 import { TopologySideBar } from '@app/Topology/SideBar/TopologySideBar';
@@ -204,6 +205,19 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
     const _id = setTimeout(action(() => visualization.getGraph().fit()));
     return () => clearTimeout(_id);
   }, [_transformedData, targetNodes, visualization]);
+
+  // Note: Do not reorder. Must be called after registering model
+  React.useEffect(() => {
+    // Clear selection when discovery tree is updated and entity (target) is lost
+    setSelectedIds((old) => {
+      if (!getNodeById(_transformedData.nodes, old[0])) {
+        setSelectedEntity(undefined);
+        return [];
+      }
+      setSelectedEntity(old[0] ? visualization.getElementById(old[0]) : undefined);
+      return old;
+    });
+  }, [setSelectedIds, setSelectedEntity, _transformedData, visualization]);
 
   const handleDrawerClose = React.useCallback(() => setSelectedIds([]), [setSelectedIds]);
 
