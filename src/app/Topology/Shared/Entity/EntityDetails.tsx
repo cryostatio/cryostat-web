@@ -103,6 +103,7 @@ export interface EntityDetailsProps {
   entity?: GraphElement | ListElement;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
   className?: string;
+  alertOptions?: AlertOptions;
   actionFilter?: (_: NodeAction) => boolean;
 }
 
@@ -113,6 +114,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   className,
   columnModifier,
   actionFilter,
+  alertOptions,
   ...props
 }) => {
   const [activeTab, setActiveTab] = React.useState<_supportedTab>('details');
@@ -128,6 +130,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
         <div {...props} style={{ height: '100%' }}>
           <EntityDetailHeader
             titleContent={titleContent}
+            alertOptions={alertOptions}
             badge={nodeTypeToAbbr(data.nodeType)}
             badgeTooltipContent={data.nodeType}
             status={isTarget ? getStatusTargetNode(data) : []}
@@ -158,7 +161,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, props, columnModifier, actionFilter]);
+  }, [entity, setActiveTab, activeTab, props, columnModifier, actionFilter, alertOptions]);
   return <div className={css(className)}>{viewContent}</div>;
 };
 
@@ -644,12 +647,17 @@ export const GroupResources: React.FC<{ envNode: EnvironmentNode }> = ({ envNode
   );
 };
 
+export interface AlertOptions {
+  hideActions?: boolean;
+}
+
 export interface EntityDetailHeaderProps {
   titleContent: React.ReactNode;
   badgeTooltipContent?: React.ReactNode;
   badge?: ReturnType<typeof nodeTypeToAbbr>;
   actionDropdown?: React.ReactNode;
   status: [NodeStatus?, StatusExtra?];
+  alertOptions?: AlertOptions;
 }
 
 export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
@@ -658,6 +666,7 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
   badgeTooltipContent,
   actionDropdown,
   status: statusContent,
+  alertOptions = {},
   ...props
 }) => {
   const [status, extra] = statusContent;
@@ -680,7 +689,7 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
         >
           <Stack hasGutter>
             <StackItem key={'alert-description'}>{extra?.description}</StackItem>
-            {extra?.callForAction ? (
+            {extra?.callForAction && !alertOptions.hideActions ? (
               <StackItem key={'alert-call-for-action'}>
                 <Flex>
                   {extra.callForAction.map((action, index) => (

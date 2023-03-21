@@ -74,6 +74,8 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
   const matchExpreRef = React.useRef(new SearchExprService());
   const [inProgress, setInProgress] = React.useState(false);
 
+  const alertOptions = React.useMemo(() => ({ hideActions: true }), []);
+
   return (
     <SearchExprServiceContext.Provider value={matchExpreRef.current}>
       <Modal
@@ -106,7 +108,7 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
           <GridItem xl={8}>
             <Card isFullHeight isFlat>
               <CardBody style={{ overflow: 'auto' }}>
-                <MatchExpressionVisualizer />
+                <MatchExpressionVisualizer alertOptions={alertOptions} />
               </CardBody>
             </Card>
           </GridItem>

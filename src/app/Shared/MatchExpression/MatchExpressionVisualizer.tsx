@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
-import EntityDetails from '@app/Topology/Shared/Entity/EntityDetails';
+import EntityDetails, { AlertOptions } from '@app/Topology/Shared/Entity/EntityDetails';
 import { useSearchExpression } from '@app/Topology/Shared/utils';
 import { TopologySideBar } from '@app/Topology/SideBar/TopologySideBar';
 import { NodeType } from '@app/Topology/typings';
@@ -85,16 +85,20 @@ import { ServiceContext } from '../Services/Services';
 import { Target } from '../Services/Target.service';
 import { componentFactory, createTargetNode, layoutFactory, transformData } from './utils';
 
-export interface MatchExpressionVisualizerProps {}
+export interface MatchExpressionVisualizerProps {
+  alertOptions?: AlertOptions;
+}
 
-export const MatchExpressionVisualizer: React.FC<MatchExpressionVisualizerProps> = ({ ...props }) => {
+export const MatchExpressionVisualizer: React.FC<MatchExpressionVisualizerProps> = ({ alertOptions, ...props }) => {
   const [isGraph, setIsGraph] = React.useState(true);
   return (
     <Stack {...props} hasGutter>
       <StackItem>
         <LayoutRadioGroup onChange={setIsGraph} />
       </StackItem>
-      <StackItem isFilled>{isGraph ? <GraphView /> : <ListView />}</StackItem>
+      <StackItem isFilled>
+        {isGraph ? <GraphView alertOptions={alertOptions} /> : <ListView alertOptions={alertOptions} />}
+      </StackItem>
     </Stack>
   );
 };
@@ -141,7 +145,7 @@ const LayoutRadioGroup: React.FC<LayoutRadioGroupProps> = ({ onChange, ...props 
   );
 };
 
-const GraphView: React.FC = ({ ...props }) => {
+const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
 
@@ -209,10 +213,10 @@ const GraphView: React.FC = ({ ...props }) => {
     }
     return (
       <TopologySideBar onClose={handleDrawerClose}>
-        <EntityDetails entity={selectedEntity} />
+        <EntityDetails entity={selectedEntity} alertOptions={alertOptions} />
       </TopologySideBar>
     );
-  }, [handleDrawerClose, selectedEntity]);
+  }, [handleDrawerClose, selectedEntity, alertOptions]);
 
   return (
     <TopologyView
@@ -233,7 +237,7 @@ const GraphView: React.FC = ({ ...props }) => {
   );
 };
 
-const ListView: React.FC = ({ ...props }) => {
+const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
   const [matchExpression, setMatchExpression] = useSearchExpression();
@@ -324,13 +328,17 @@ const ListView: React.FC = ({ ...props }) => {
               id={`${connectUrl}-expand`}
               isHidden={!expanded.includes(connectUrl)}
             >
-              <EntityDetails entity={{ getData: () => tn }} columnModifier={{ default: '3Col' }} />
+              <EntityDetails
+                entity={{ getData: () => tn }}
+                columnModifier={{ default: '3Col' }}
+                alertOptions={alertOptions}
+              />
             </DataListContent>
           ) : null}
         </DataListItem>
       );
     });
-  }, [filtered, expanded, toggleExpand, setMatchExpression, props]);
+  }, [filtered, expanded, toggleExpand, setMatchExpression, props, alertOptions]);
 
   return <DataList aria-label={'Target List'}>{content}</DataList>;
 };
