@@ -87,9 +87,7 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
         className="add-credential-modal"
         onClose={onDismiss}
         title="Store Credentials"
-        description="Creates stored credentials for target JVMs according to various properties.
-        If a Target JVM requires JMX authentication, Cryostat will use stored credentials
-        when attempting to open JMX connections to the target."
+        description="Create stored credentials for target JVMs. Cryostat will use these credentials to connect to Cryostat agents or target JVMs over JMX (if required)."
       >
         <Grid hasGutter style={{ height: '100%' }}>
           <GridItem xl={4}>
