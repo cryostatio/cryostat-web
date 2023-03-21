@@ -43,7 +43,7 @@ export enum DeleteOrDisableWarningType {
   DeleteEventTemplates = 'DeleteEventTemplates',
   DeleteProbeTemplates = 'DeleteProbeTemplates',
   DeleteActiveProbes = 'DeleteActiveProbes',
-  DeleteJMXCredentials = 'DeleteJMXCredentials',
+  DeleteCredentials = 'DeleteCredentials',
   DeleteCustomTargets = 'DeleteCustomTargets',
   DeleteDashboardLayout = 'DeleteDashboardLayout',
 }
@@ -112,12 +112,12 @@ export const DeleteActiveProbes: DeleteOrDisableWarning = {
   ariaLabel: 'Active Probes remove warning',
 };
 
-export const DeleteJMXCredentials: DeleteOrDisableWarning = {
-  id: DeleteOrDisableWarningType.DeleteJMXCredentials,
-  title: 'Permanently delete JMX Credentials?',
-  label: 'Delete JMX Credentials',
+export const DeleteCredentials: DeleteOrDisableWarning = {
+  id: DeleteOrDisableWarningType.DeleteCredentials,
+  title: 'Permanently delete Credentials?',
+  label: 'Delete Credentials',
   description: `Credential data for this target will be lost.`,
-  ariaLabel: 'JMX Credentials delete warning',
+  ariaLabel: 'Credentials delete warning',
 };
 
 export const DeleteCustomTargets: DeleteOrDisableWarning = {
@@ -144,7 +144,7 @@ export const DeleteWarningKinds: DeleteOrDisableWarning[] = [
   DeleteEventTemplates,
   DeleteProbeTemplates,
   DeleteActiveProbes,
-  DeleteJMXCredentials,
+  DeleteCredentials,
   DeleteCustomTargets,
   DeleteDashboardLayout,
 ];

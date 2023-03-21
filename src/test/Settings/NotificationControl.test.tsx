@@ -54,7 +54,9 @@ const notiCountSubj = new BehaviorSubject<number>(defaultNumOfNotifications);
 
 jest.spyOn(defaultServices.settings, 'notificationsEnabled').mockReturnValue(defaults);
 jest.spyOn(defaultServices.settings, 'visibleNotificationsCount').mockReturnValue(notiCountSubj.asObservable());
-jest.spyOn(defaultServices.settings, 'setVisibleNotificationCount').mockImplementation((c) => notiCountSubj.next(c));
+jest
+  .spyOn(defaultServices.settings, 'setVisibleNotificationCount')
+  .mockImplementation((c) => doAct(() => notiCountSubj.next(c)));
 
 describe('<NotificationControl/>', () => {
   beforeEach(() => {

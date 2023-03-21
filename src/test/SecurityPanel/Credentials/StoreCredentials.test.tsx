@@ -35,10 +35,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { DeleteJMXCredentials, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
+import { DeleteCredentials, DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { NotificationsContext, NotificationsInstance } from '@app/Notifications/Notifications';
-import { CreateJmxCredentialModalProps } from '@app/SecurityPanel/Credentials/CreateJmxCredentialModal';
-import { StoreJmxCredentials } from '@app/SecurityPanel/Credentials/StoreJmxCredentials';
+import { CreateCredentialModalProps } from '@app/SecurityPanel/Credentials/CreateCredentialModal';
+import { StoreCredentials } from '@app/SecurityPanel/Credentials/StoreCredentials';
 import { MatchedCredential, StoredCredential } from '@app/Shared/Services/Api.service';
 import { NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext, defaultServices } from '@app/Shared/Services/Services';
@@ -93,18 +93,18 @@ const mockFoundTargetNotification = {
   message: { event: { kind: 'FOUND', serviceRef: mockYetAnotherMatchingTarget } },
 } as NotificationMessage;
 
-jest.mock('@app/SecurityPanel/Credentials/CreateJmxCredentialModal', () => {
+jest.mock('@app/SecurityPanel/Credentials/CreateCredentialModal', () => {
   return {
-    CreateJmxCredentialModal: jest.fn((props: CreateJmxCredentialModalProps) => {
+    CreateCredentialModal: jest.fn((props: CreateCredentialModalProps) => {
       return (
         <Modal
           isOpen={props.visible}
           variant={ModalVariant.large}
           showClose={true}
           onClose={props.onDismiss}
-          title="CreateJmxCredentialModal"
+          title="CreateCredentialModal"
         >
-          Jmx Auth Form
+          Auth Form + Match Expression Visualizer
         </Modal>
       );
     }),
@@ -165,7 +165,7 @@ jest
 
   .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'increments the correct count and updates the correct nested table when a found target notification is received'
 
-  .mockReturnValueOnce(of([])) // 'opens the JMX auth modal when Add is clicked'
+  .mockReturnValueOnce(of([])) // 'opens the auth modal when Add is clicked'
 
   .mockReturnValueOnce(of([mockCredential, mockAnotherCredential])) // 'shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete'
 
@@ -188,7 +188,7 @@ jest
 
 jest.spyOn(defaultServices.settings, 'deletionDialogsEnabledFor').mockReturnValueOnce(true);
 
-describe('<StoreJmxCredentials />', () => {
+describe('<StoreCredentials />', () => {
   afterEach(cleanup);
 
   it('renders correctly', async () => {
@@ -198,7 +198,7 @@ describe('<StoreJmxCredentials />', () => {
       tree = renderer.create(
         <ServiceContext.Provider value={defaultServices}>
           <NotificationsContext.Provider value={NotificationsInstance}>
-            <StoreJmxCredentials />
+            <StoreCredentials />
           </NotificationsContext.Provider>
         </ServiceContext.Provider>
       );
@@ -210,7 +210,7 @@ describe('<StoreJmxCredentials />', () => {
 
   it('adds the correct table entry when a stored notification is received', async () => {
     const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
-    renderWithServiceContext(<StoreJmxCredentials />);
+    renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
     expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();
@@ -219,7 +219,7 @@ describe('<StoreJmxCredentials />', () => {
 
   it('removes the correct table entry when a deletion notification is received', async () => {
     const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
-    renderWithServiceContext(<StoreJmxCredentials />);
+    renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.queryByText(mockCredential.numMatchingTargets)).not.toBeInTheDocument();
@@ -230,7 +230,7 @@ describe('<StoreJmxCredentials />', () => {
 
   it('renders an empty table after receiving deletion notifications for all credentials', async () => {
     const apiRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
-    renderWithServiceContext(<StoreJmxCredentials />);
+    renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.queryByText(mockCredential.matchExpression)).not.toBeInTheDocument();
     expect(screen.queryByText(mockCredential.numMatchingTargets)).not.toBeInTheDocument();
@@ -241,7 +241,7 @@ describe('<StoreJmxCredentials />', () => {
   });
 
   it('expands to show the correct nested targets', async () => {
-    const { user } = renderWithServiceContext(<StoreJmxCredentials />);
+    const { user } = renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.queryByText('Target')).not.toBeInTheDocument();
     expect(screen.queryByText(`${mockTarget.alias} (${mockTarget.connectUrl})`)).not.toBeInTheDocument();
@@ -270,7 +270,7 @@ describe('<StoreJmxCredentials />', () => {
   });
 
   it('decrements the correct count and updates the correct nested table when a lost target notification is received', async () => {
-    const { user } = renderWithServiceContext(<StoreJmxCredentials />);
+    const { user } = renderWithServiceContext(<StoreCredentials />);
 
     // both counts should now be equal to 1
     const counts = screen.getAllByText(mockAnotherCredential.numMatchingTargets - 1);
@@ -292,7 +292,7 @@ describe('<StoreJmxCredentials />', () => {
   });
 
   it('increments the correct count and updates the correct nested table when a found target notification is received', async () => {
-    const { user } = renderWithServiceContext(<StoreJmxCredentials />);
+    const { user } = renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();
     expect(screen.getByText(mockAnotherCredential.numMatchingTargets + 1)).toBeInTheDocument();
@@ -317,20 +317,20 @@ describe('<StoreJmxCredentials />', () => {
     ).toBeInTheDocument();
   });
 
-  it('opens the JMX auth modal when Add is clicked', async () => {
-    const { user } = renderWithServiceContext(<StoreJmxCredentials />);
+  it('opens the auth modal when Add is clicked', async () => {
+    const { user } = renderWithServiceContext(<StoreCredentials />);
 
     await user.click(screen.getByText('Add'));
-    expect(screen.getByText('CreateJmxCredentialModal')).toBeInTheDocument();
+    expect(screen.getByText('CreateCredentialModal')).toBeInTheDocument();
 
     await user.click(screen.getByLabelText('Close'));
-    expect(screen.queryByText('CreateJmxCredentialModal')).not.toBeInTheDocument();
+    expect(screen.queryByText('CreateCredentialModal')).not.toBeInTheDocument();
   });
 
   it('shows a popup when Delete is clicked and makes a delete request when deleting one credential after confirming Delete', async () => {
     const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
-    const { user } = renderWithServiceContext(<StoreJmxCredentials />);
+    const { user } = renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
     expect(screen.getByText(mockAnotherCredential.matchExpression)).toBeInTheDocument();
@@ -338,14 +338,14 @@ describe('<StoreJmxCredentials />', () => {
     await user.click(screen.getByLabelText('credentials-table-row-0-check'));
     await user.click(screen.getByText('Delete'));
 
-    expect(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).toBeInTheDocument();
+    expect(screen.getByLabelText(DeleteCredentials.ariaLabel)).toBeInTheDocument();
 
     const dialogWarningSpy = jest.spyOn(defaultServices.settings, 'setDeletionDialogsEnabledFor');
     await user.click(screen.getByLabelText("Don't ask me again"));
-    await user.click(within(screen.getByLabelText(DeleteJMXCredentials.ariaLabel)).getByText('Delete'));
+    await user.click(within(screen.getByLabelText(DeleteCredentials.ariaLabel)).getByText('Delete'));
 
     expect(dialogWarningSpy).toBeCalledTimes(1);
-    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteJMXCredentials, false);
+    expect(dialogWarningSpy).toBeCalledWith(DeleteOrDisableWarningType.DeleteCredentials, false);
     expect(queryRequestSpy).toHaveBeenCalledTimes(1);
     expect(deleteRequestSpy).toHaveBeenCalledTimes(1);
   });
@@ -353,7 +353,7 @@ describe('<StoreJmxCredentials />', () => {
   it('makes multiple delete requests when all credentials are deleted at once w/o popup warning', async () => {
     const queryRequestSpy = jest.spyOn(defaultServices.api, 'getCredentials');
     const deleteRequestSpy = jest.spyOn(defaultServices.api, 'deleteCredentials');
-    const { user } = renderWithServiceContext(<StoreJmxCredentials />);
+    const { user } = renderWithServiceContext(<StoreCredentials />);
 
     expect(screen.getByText(mockCredential.matchExpression)).toBeInTheDocument();
     expect(screen.getByText(mockCredential.numMatchingTargets)).toBeInTheDocument();

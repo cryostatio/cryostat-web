@@ -59,13 +59,13 @@ import {
 import { HelpIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 
-export interface CreateJmxCredentialModalProps {
+export interface CreateCredentialModalProps {
   visible: boolean;
   onDismiss: () => void;
   onPropsSave: () => void;
 }
 
-export const CreateCredentialModal: React.FunctionComponent<CreateJmxCredentialModalProps> = ({
+export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModalProps> = ({
   visible,
   onDismiss,
   onPropsSave,
@@ -116,7 +116,7 @@ export const CreateCredentialModal: React.FunctionComponent<CreateJmxCredentialM
   );
 };
 
-interface AuthFormProps extends CreateJmxCredentialModalProps {
+interface AuthFormProps extends CreateCredentialModalProps {
   progressChange?: (inProgress: boolean) => void;
 }
 

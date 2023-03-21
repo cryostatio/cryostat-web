@@ -391,15 +391,15 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
             data-ouia-component-id="OUIA-Generated-Switch-9"
             data-ouia-component-type="PF4/Switch"
             data-ouia-safe={true}
-            htmlFor="DeleteJMXCredentials"
+            htmlFor="DeleteCredentials"
           >
             <input
               aria-label=""
-              aria-labelledby="DeleteJMXCredentials-on"
+              aria-labelledby="DeleteCredentials-on"
               checked={true}
               className="pf-c-switch__input"
               disabled={false}
-              id="DeleteJMXCredentials"
+              id="DeleteCredentials"
               onChange={[Function]}
               type="checkbox"
             />
@@ -409,16 +409,16 @@ exports[`<DeletionDialogControl/> renders correctly 1`] = `
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-on"
-              id="DeleteJMXCredentials-on"
+              id="DeleteCredentials-on"
             >
-              Delete JMX Credentials
+              Delete Credentials
             </span>
             <span
               aria-hidden="true"
               className="pf-c-switch__label pf-m-off"
-              id="DeleteJMXCredentials-off"
+              id="DeleteCredentials-off"
             >
-              Delete JMX Credentials
+              Delete Credentials
             </span>
           </label>
         </div>

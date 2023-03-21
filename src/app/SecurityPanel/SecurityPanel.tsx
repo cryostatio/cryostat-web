@@ -38,13 +38,13 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { Card, CardBody, CardTitle, Text, TextVariants } from '@patternfly/react-core';
 import * as React from 'react';
-import { StoreJmxCredentialsCard } from './Credentials/StoreJmxCredentials';
+import { StoreCredentialsCard } from './Credentials/StoreCredentials';
 import { ImportCertificate } from './ImportCertificate';
 
 export interface SecurityPanelProps {}
 
 export const SecurityPanel: React.FunctionComponent<SecurityPanelProps> = (_) => {
-  const securityCards = [ImportCertificate, StoreJmxCredentialsCard].map((c) => ({
+  const securityCards = [ImportCertificate, StoreCredentialsCard].map((c) => ({
     title: c.title,
     description: c.description,
     element: React.createElement(c.content, null),

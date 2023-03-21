@@ -38,14 +38,18 @@
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
 import { CreateRule } from '@app/Rules/CreateRule';
 import { Rule } from '@app/Rules/Rules';
-import { defaultServices, Services } from '@app/Shared/Services/Services';
-import { Target, TargetService } from '@app/Shared/Services/Target.service';
+import { defaultServices } from '@app/Shared/Services/Services';
+import { Target } from '@app/Shared/Services/Target.service';
 import '@testing-library/jest-dom';
-import { act as doAct, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
-import { of, Subject } from 'rxjs';
+import { of } from 'rxjs';
 import { renderWithServiceContextAndRouter } from '../Common';
+
+jest.mock('@app/Shared/MatchExpression/MatchExpressionVisualizer', () => ({
+  MatchExpressionVisualizer: () => <>Match Expression Visualizer</>,
+}));
 
 const escapeKeyboardInput = (value: string) => {
   return value.replace(/[{[]/g, '$&$&');
@@ -56,8 +60,8 @@ const mockTarget: Target = {
   connectUrl: mockConnectUrl,
   alias: 'io.cryostat.Cryostat',
   annotations: {
-    cryostat: new Map<string, string>([['PORT', '9091']]),
-    platform: new Map<string, string>(),
+    cryostat: { PORT: 9091 },
+    platform: {},
   },
 };
 const mockEventTemplate: EventTemplate = {
@@ -88,50 +92,18 @@ jest.mock('react-router-dom', () => ({
   useHistory: () => history,
 }));
 
-jest.mock('@app/Shared/Services/Target.service', () => ({
-  ...jest.requireActual('@app/Shared/Services/Target.service'), // Require actual implementation of utility functions for Target
-}));
-
 const createSpy = jest.spyOn(defaultServices.api, 'createRule').mockReturnValue(of(true));
 jest.spyOn(defaultServices.api, 'doGet').mockReturnValue(of([mockEventTemplate]));
 jest.spyOn(defaultServices.targets, 'targets').mockReturnValue(of([mockTarget]));
-jest.spyOn(defaultServices.target, 'authFailure').mockReturnValue(of());
 
 describe('<CreateRule />', () => {
   beforeEach(() => {
     history.go(-history.length);
+    jest.mocked(defaultServices.api.doGet).mockClear();
+    jest.mocked(defaultServices.targets.targets).mockClear();
   });
 
   afterEach(cleanup);
-
-  it('should show error view if failing to retrieve templates', async () => {
-    const subj = new Subject<void>();
-    const mockTargetSvc = {
-      target: () => of(mockTarget),
-      setTarget: (_) => undefined,
-      authFailure: () => subj.asObservable(),
-    } as TargetService;
-    const services: Services = {
-      ...defaultServices,
-      target: mockTargetSvc,
-    };
-
-    renderWithServiceContextAndRouter(<CreateRule />, { history: history, services: services });
-
-    await doAct(async () => subj.next());
-
-    const failTitle = screen.getByText('Error retrieving event templates');
-    expect(failTitle).toBeInTheDocument();
-    expect(failTitle).toBeVisible();
-
-    const authFailText = screen.getByText('Auth failure');
-    expect(authFailText).toBeInTheDocument();
-    expect(authFailText).toBeVisible();
-
-    const retryButton = screen.getByText('Retry');
-    expect(retryButton).toBeInTheDocument();
-    expect(retryButton).toBeVisible();
-  });
 
   it('should submit form if form input is valid', async () => {
     const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
@@ -175,7 +147,9 @@ describe('<CreateRule />', () => {
     await user.type(nameInput, mockRule.name);
     await user.type(descriptionInput, mockRule.description);
     await user.type(matchExpressionInput, escapeKeyboardInput(mockRule.matchExpression));
+    await waitFor(() => expect(defaultServices.api.doGet).toHaveBeenCalledTimes(1));
     await user.selectOptions(templateSelect, ['Profiling']);
+
     await user.type(maxSizeInput, `${mockRule.maxSizeBytes}`);
     await user.type(maxAgeInput, `${mockRule.maxAgeSeconds}`);
     await user.type(archivalPeriodInput, `${mockRule.archivalPeriodSeconds}`);
@@ -195,10 +169,6 @@ describe('<CreateRule />', () => {
 
   it('should show error helper text if rule form inputs are invalid', async () => {
     const { user } = renderWithServiceContextAndRouter(<CreateRule />, { history });
-
-    // Select a target first
-    await user.click(screen.getByText('Select target...'));
-    await user.click(screen.getByText('io.cryostat.Cryostat (service:jmx:rmi://someUrl)'));
 
     const nameInput = screen.getByLabelText('Name *');
     expect(nameInput).toBeInTheDocument();

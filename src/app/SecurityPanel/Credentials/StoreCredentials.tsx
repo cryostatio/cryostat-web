@@ -174,7 +174,7 @@ const reducer = (state, action) => {
   }
 };
 
-export const StoreJmxCredentials = () => {
+export const StoreCredentials = () => {
   const context = React.useContext(ServiceContext);
   const [state, dispatch] = React.useReducer(reducer, {
     credentials: [] as StoredCredential[],
@@ -275,7 +275,7 @@ export const StoreJmxCredentials = () => {
   }, [setShowAuthModal]);
 
   const handleDeleteButton = React.useCallback(() => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteJMXCredentials)) {
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteCredentials)) {
       setWarningModalOpen(true);
     } else {
       handleDeleteCredentials();
@@ -289,13 +289,13 @@ export const StoreJmxCredentials = () => {
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
-        <Button key="add" variant="primary" aria-label="add-jmx-credential" onClick={handleAuthModalOpen}>
+        <Button key="add" variant="primary" aria-label="add-credential" onClick={handleAuthModalOpen}>
           Add
         </Button>,
         <Button
           key="delete"
           variant="danger"
-          aria-label="delete-selected-jmx-credential"
+          aria-label="delete-selected-credential"
           onClick={handleDeleteButton}
           isDisabled={!state.checkedCredentials.length}
         >
@@ -314,7 +314,7 @@ export const StoreJmxCredentials = () => {
     const deleteCredentialModal = React.useMemo(() => {
       return (
         <DeleteWarningModal
-          warningType={DeleteOrDisableWarningType.DeleteJMXCredentials}
+          warningType={DeleteOrDisableWarningType.DeleteCredentials}
           visible={warningModalOpen}
           onAccept={handleDeleteCredentials}
           onClose={handleWarningModalClose}
@@ -462,7 +462,7 @@ export const StoreJmxCredentials = () => {
   );
 };
 
-export const StoreJmxCredentialsCard: SecurityCard = {
+export const StoreCredentialsCard: SecurityCard = {
   title: 'Store Credentials',
   description: (
     <Text>
@@ -473,5 +473,5 @@ export const StoreJmxCredentialsCard: SecurityCard = {
       displayed here. See <Link to="/settings">Settings</Link> to configure locally-stored credentials.
     </Text>
   ),
-  content: StoreJmxCredentials,
+  content: StoreCredentials,
 };
