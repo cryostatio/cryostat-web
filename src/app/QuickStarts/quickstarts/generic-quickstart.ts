@@ -40,7 +40,7 @@ import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
 
 // TODO: Add quickstarts based on the following example:
-export const GenericQuickStart: QuickStart = {
+const GenericQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'generic-quickstart',
@@ -50,7 +50,7 @@ export const GenericQuickStart: QuickStart = {
     displayName: 'Getting Started with',
     durationMinutes: 1,
     icon: cryostatLogo,
-    description: `Get started with ${build.productName}.`,
+    description: `Get started with [APP]`,
     prerequisites: [''],
     introduction: '### This is a generic quickstart.',
     tasks: [
@@ -60,13 +60,20 @@ export const GenericQuickStart: QuickStart = {
 1. Press the bell icon.`,
       },
     ],
-    conclusion: `You finished **Getting Started with ${build.productName}**!
-    
-Learn more about [${build.productName}](https://cryostat.io) from our website.
-`,
+    conclusion: `
+<div>
+  <p>You completed the <strong>Start a Recording</strong> quick start!</p>
+
+  <div style="max-width: 350px">
+    <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
+  </div>
+  <p>To learn more about [APP]'s extensive features and capabilities, read our upstream guides at <a href="https://cryostat.io/guides/" target="_blank">cryostat.io</a>.</p>
+</div>`,
     type: {
-      text: 'Introduction',
-      color: 'green',
+      text: 'Featured',
+      color: 'blue',
     },
   },
 };
+
+export default GenericQuickStart;

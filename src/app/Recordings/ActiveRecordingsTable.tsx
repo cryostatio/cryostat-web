@@ -700,7 +700,11 @@ const ActiveRecordingsToolbar: React.FunctionComponent<ActiveRecordingsToolbarPr
       ...arr,
       {
         default: (
-          <Button variant="secondary" onClick={props.handleEditLabels} isDisabled={!props.checkedIndices.length} data-quickstart-id="recordings-labels-btn"
+          <Button
+            variant="secondary"
+            onClick={props.handleEditLabels}
+            isDisabled={!props.checkedIndices.length}
+            data-quickstart-id="recordings-labels-btn"
           >
             Edit Labels
           </Button>

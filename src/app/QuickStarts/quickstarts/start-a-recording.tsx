@@ -39,7 +39,6 @@ import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
 import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
 
 import { QuickStart } from '@patternfly/quickstarts';
-import build from '@app/build.json';
 
 const RecordingQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
@@ -51,48 +50,52 @@ const RecordingQuickStart: QuickStart = {
     displayName: 'Start a Recording',
     durationMinutes: 10,
     icon: cryostatLogoIcon,
-    description: `Learn how to start a recording with Java Flight Recorder (JFR) with **${build.productName}**.`,
+    description: `Learn how to start a recording with Java Flight Recorder (JFR) with [APP].`,
     prerequisites: [''],
     introduction: `
 # Start a Recording
 **Java Flight Recorder (JFR)** is a profiling tool that is built into the JVM. It allows you to record events that happen in the JVM and then analyze the recording to find performance issues.
 
-In this quick start, you will use **${build.productName}** to connect to a target JVM and start a recording of the target JVM's activity. You will then stop and download the recording to your local machine. Finally, you will view an automated analysis report of the recording with **Cryostat**'s capabilities.
+In this quick start, you will use [APP] to connect to a target JVM and start a recording of the target JVM's activity. You will then stop and download the recording to your local machine. Finally, you will view an automated analysis report of the recording with [APP]'s capabilities.
 
 ### What you'll learn
 
 - How to start/stop a JFR recording on a target JVM
-- How to download a recording from **${build.productName}** to your local machine
-- How to view an automated analysis report of a recording with **Cryostat**'s capabilities
+- How to download a recording from [APP] to your local machine
+- How to view an automated analysis report of a recording with [APP]'s capabilities
 
 ### What you'll need
 
-- A running instance of **${build.productName}** which has discovered at least one target JVM
+- A running instance of [APP] which has discovered at least one target JVM
 - JMX auth credentials for the target JVM (if required)
 
 `,
-  tasks: [
-    {
-      title: 'Go to the Recordings tab',
-      description: '1. Press the [Recordings]{{highlight nav-recordings-tab}} tab in the Cryostat console navigation bar.',
-      review: {
-        instructions: '#### Verify that you have done the task.',
-        failedTaskHelp: 'If you do not see the navigation bar, you can click the `☰` button in the [top left corner of the page]{{highlight nav-toggle-btn}}.',
+    tasks: [
+      {
+        title: 'Go to the Recordings tab',
+        description:
+          '1. Click the [Recordings]{{highlight nav-recordings-tab}} tab in the [APP] console navigation bar.',
+        review: {
+          instructions: '#### Verify that you see the Recordings page.',
+          failedTaskHelp:
+            'If you do not see the navigation bar, you can click the `☰` button in the [top left corner of the page]{{highlight nav-toggle-btn}}.',
+        },
       },
-    },
-    {
-      title: 'Select a target JVM',
-      description: `    
-Select a target JVM from the list of available targets that Cryostat has discovered.
+      {
+        title: 'Select a target JVM',
+        description: `    
+
+Select a target JVM from the list of available targets that [APP] has discovered.
 
 1. Click the [Target Select]{{highlight target-select}} dropdown menu.
 2. Select a target from the list of available targets.
 
-<sub>Note: If JMX Auth username and password is required, you will be prompted to enter them.</sub>`,
-    },
-    {
-      title: 'Start a recording',
-      description: `
+
+[If JMX Auth username and password is required, you will be prompted to enter them.]{{admonition note}}`,
+      },
+      {
+        title: 'Start a recording',
+        description: `
 There are two tabs within the Recordings page: \n
 [Active Recordings]{{highlight active-recordings-tab}} and [Archived Recordings]{{highlight archived-recordings-tab}}.\n
 Active recordings are recordings that are currently running, and Archived recordings are recordings that have been stopped.
@@ -107,56 +110,71 @@ We will start a recording while on the Active tab.
 
 After the creation of a recording, the recording will be displayed in the Active Recordings tab. You should be able to see the recording's name, start time, duration, state, and any attached labels.
 
-<sub>Note: You may also attach metadata labels to the recordings under the [Metadata]{{highlight crf-metadata-opt}} options or configure your custom recording further under the [Advanced]{{highlight crf-advanced-opt}} options.</sub>`,
-    review: {
-      instructions: '#### Verify that you see the recording within the table.',
-      failedTaskHelp: 'If you do not see the recording, try the steps again.',
-    },      
-}, 
-    {
-      title: 'Stop a recording',
-      description: `
+[You may also attach metadata labels to the recordings under the [Metadata]{{highlight crf-metadata-opt}} options or configure your custom recording further under the [Advanced]{{highlight crf-advanced-opt}} options.]{{admonition note}}`,
+        review: {
+          instructions: '#### Verify that you see the recording within the table.',
+          failedTaskHelp: 'If you do not see the recording, try the steps again.',
+        },
+      },
+      {
+        title: 'Stop a recording',
+        description: `
 Stopping a recording will cut off the recording at the time that the recording is stopped.
 
-1. Click the [Stop]{{highlight recordings-stop-btn}} button to stop the recording.`
-    },
-    {
-      title: 'Download a recording',
-      description: `
-Downloading a recording will save the recording to your local machine as a JFR file. You can then use JDK Mission Control (JMC) to analyze the recording.
-1. Open the kebab menu next to the recording that you want to download.
-2. Click the [Download]{{highlight recordings-download-btn}} button to download the recording to your local machine.
-3. Choose what to do with the file. Your browser will present you to save the file to your local machine.
-      `
-    },
-    {
-      title: 'View an analysis report',
-      description: `
-1. Click the kebab menu next to the recording that you want to view an analysis report for.
-2. Click [View Report]{{highlight recordings-view-analysis-btn}} to view an analysis report of the recording.
-`
-    },
-    {
-      title: 'Archive a recording',
-      description: `
-Archiving a recording will save the recording to Cryostat's archival storage. These recordings will show up in the target JVM's Archived Recordings tab, as well as in the [Archives]{{highlight nav-archives-tab}} view on the Cryostat console navigation bar. move the recording from the Active Recordings tab to the Archived Recordings tab. Archived recordings can be also be downloaded to your local machine.
+1. Click the [Stop]{{highlight recordings-stop-btn}} button to stop the recording.`,
+        review: {
+          instructions: '#### Verify that the STATE field of the recording has changed to STOPPED.',
+          failedTaskHelp:
+            'If you do not see the recording, try the Start a recording task again.',
+        },
+      },
+      {
+        title: 'Download a recording',
+        description: `
+Downloading a recording will save the recording to your local machine as a JFR file. You can then use **JDK Mission Control (JMC)** to analyze the recording.
+1. Open the [kebab menu]{{highlight recording-kebab}} next to the recording that you want to download.
+2. Click \`Download Recording\` to prompt your browser to open a dialog to save the recording to your local machine.
+3. Choose what to do with the file.
+      `,
+        review: {
+          instructions: '#### Verify that you have downloaded the recording to your local machine.',
+          failedTaskHelp:
+            'If you do not see the recording, try the Start a recording task again.',
+        },
+      },
+      {
+        title: 'View an analysis report',
+        description: `
+[APP] is able to generate an analysis report of a recording. This report is the same report that you would get if you were to view an automated analysis report in **JDK Mission Control**. The **JMC** rules engine analyzes your recording and looks for common problems and assigns a severity score from 0 (no problem) to 100 (potentially severe problem).
+1. Click the [kebab menu]{{highlight recording-kebab}} next to the recording that you want to view an analysis report for.
+2. Click \`View Report ...\` to view an analysis report of the recording in a new tab.
+3. Right click on the page and select \`Save Page As...\` to download the report HTML file to your local machine.
+`,
+      },
+      {
+        title: 'Archive a recording',
+        description: `
+Archiving a recording will save the recording to [APP]'s archival storage, and will persist even after [APP] is restarted. These recordings will show up in the target JVM's Archived Recordings tab, as well as in the [Archives]{{highlight nav-archives-tab}} view on the [APP] console navigation bar.
 
 1. Click the [Archive]{{highlight recordings-archive-btn}} button to archive the recording.
-2. Go to the Archived Recordings tab to see the archived recording.
+2. Go to the [Archived Recordings]{{highlight archived-recordings-tab}} tab to see the archived recording in [APP]'s storage.
 
-<sub>Note: You can also download and view an analysis report of the archived recording from the Archived Recordings tab.</sub>
-`
-    },
-
-  ],
+[You can download archived recordings and view an analysis report of the archived recording from the [Archived Recordings]{{highlight archived-recordings-tab}} tab, similar to active recordings.]{{admonition tip}}`,
+        review: {
+          instructions: '#### Verify that the recording has been archived in the Archived Recordings tab.',
+          failedTaskHelp:
+            'The recording name should have been saved like \`<jvm-alias>_<recording-name>_<timestamp>.jfr\`. If you still do not see the recording, try the proceeding tasks again.',
+        },
+      },
+    ],
     conclusion: `
 <div>
   <p>You completed the <strong>Start a Recording</strong> quick start!</p>
 
   <div style="max-width: 350px">
-    <img style="margin-top: 75px; margin-bottom: 75px" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
+    <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
   </div>
-  <p>Learn more about Cryostat from our guides at <a href="https://cryostat.io/guides/" target="_blank">cryostat.io</a>.</p>
+  <p>To learn more about [APP]'s extensive features and capabilities, read our upstream guides at <a href="https://cryostat.io/guides/" target="_blank">cryostat.io</a>.</p>
 </div>`,
     type: {
       text: 'Featured',

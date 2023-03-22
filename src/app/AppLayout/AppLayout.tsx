@@ -336,7 +336,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   }, []);
 
   const handleOpenGuidedTour = React.useCallback(() => {
-    console.log('handleOpenGuidedTour');
     joyride.setState({ run: true });
   }, [joyride]);
 
@@ -537,7 +536,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                           id={`${route.label}-${idx}`}
                           isActive={isActiveRoute(route)}
                         >
-                          <NavLink exact to={route.path} activeClassName="pf-m-current" data-quickstart-id={`nav-${cleanQSDataId(route.label)}-tab`}>
+                          <NavLink
+                            exact
+                            to={route.path}
+                            activeClassName="pf-m-current"
+                            data-quickstart-id={`nav-${cleanQSDataId(route.label)}-tab`}
+                          >
                             {route.label}
                             {route.featureLevel !== undefined && levelBadge(route.featureLevel)}
                           </NavLink>

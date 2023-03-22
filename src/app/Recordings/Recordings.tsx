@@ -74,10 +74,20 @@ export const Recordings: React.FC<RouteComponentProps<Record<string, never>, Sta
   const cardBody = React.useMemo(() => {
     return archiveEnabled ? (
       <Tabs id="recordings" activeKey={activeTab} onSelect={onTabSelect} unmountOnExit>
-        <Tab id="active-recordings" eventKey={'active'} title={<TabTitleText>Active Recordings</TabTitleText>} data-quickstart-id="active-recordings-tab">
+        <Tab
+          id="active-recordings"
+          eventKey={'active'}
+          title={<TabTitleText>Active Recordings</TabTitleText>}
+          data-quickstart-id="active-recordings-tab"
+        >
           <ActiveRecordingsTable archiveEnabled={true} />
         </Tab>
-        <Tab id="archived-recordings" eventKey={'archived'} title={<TabTitleText>Archived Recordings</TabTitleText>} data-quickstart-id="archived-recordings-tab">
+        <Tab
+          id="archived-recordings"
+          eventKey={'archived'}
+          title={<TabTitleText>Archived Recordings</TabTitleText>}
+          data-quickstart-id="archived-recordings-tab"
+        >
           <ArchivedRecordingsTable target={targetAsObs} isUploadsTable={false} isNestedTable={false} />
         </Tab>
       </Tabs>

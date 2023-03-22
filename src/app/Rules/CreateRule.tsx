@@ -330,6 +330,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         helperText="Enter a rule name."
         helperTextInvalid="A rule name may only contain letters, numbers, and underscores."
         validated={nameValid}
+        data-quickstart-id="rule-name"
       >
         <TextInput
           value={name}
@@ -346,6 +347,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         label="Description"
         fieldId="rule-description"
         helperText="Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions."
+        data-quickstart-id="rule-description"
       >
         <TextArea
           value={description}
@@ -392,6 +394,7 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
         }
         helperTextInvalid="Invalid Match Expression."
         validated={matchExpressionValid}
+        data-quickstart-id="rule-matchexpr"
       >
         <TextArea
           value={matchExpression}
@@ -433,6 +436,7 @@ enabled in the future.`}
         validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
         helperText="The Event Template to be applied by this Rule against matching target applications."
         helperTextInvalid="A Template must be selected"
+        data-quickstart-id="rule-evt-template"
       >
         <SelectTemplateSelectorForm
           selected={selectedSpecifier}
@@ -446,6 +450,7 @@ enabled in the future.`}
         label="Maximum Size"
         fieldId="maxSize"
         helperText="The maximum size of recording data retained in the target application's recording buffer."
+        data-quickstart-id="rule-max-size"
       >
         <Split hasGutter={true}>
           <SplitItem isFilled>
@@ -478,6 +483,7 @@ enabled in the future.`}
         label="Maximum Age"
         fieldId="maxAge"
         helperText="The maximum age of recording data retained in the target application's recording buffer."
+        data-quickstart-id="rule-max-age"
       >
         <Split hasGutter={true}>
           <SplitItem isFilled>
@@ -510,6 +516,7 @@ enabled in the future.`}
         label="Archival Period"
         fieldId="archivalPeriod"
         helperText="Time between copies of active recording data being pulled into Cryostat archive storage."
+        data-quickstart-id="rule-archival-period"
       >
         <Split hasGutter={true}>
           <SplitItem isFilled>
@@ -542,6 +549,7 @@ enabled in the future.`}
         label="Initial Delay"
         fieldId="initialDelay"
         helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival Period later."
+        data-quickstart-id="rule-initial-delay"
       >
         <Split hasGutter={true}>
           <SplitItem isFilled>
@@ -574,6 +582,7 @@ enabled in the future.`}
         label="Preserved Archives"
         fieldId="preservedArchives"
         helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
+        data-quickstart-id="rule-preserved-archives"
       >
         <TextInput
           value={preservedArchives}

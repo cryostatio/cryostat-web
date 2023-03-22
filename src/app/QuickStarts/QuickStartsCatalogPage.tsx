@@ -47,14 +47,12 @@ const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsCatalogPageProp
   const { t } = useTranslation();
 
   return (
-    <React.Suspense fallback={<LoadingView />}>
       <QuickStartCatalogPage
         title={t('QuickStarts.CATALOG_PAGE.TITLE')}
         hint={t('QuickStarts.CATALOG_PAGE.HINT')}
         showTitle
         showFilter
       />
-    </React.Suspense>
   );
 };
 

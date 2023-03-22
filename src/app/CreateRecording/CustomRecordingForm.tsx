@@ -493,7 +493,11 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             onSelect={handleTemplateChange}
           />
         </FormGroup>
-        <ExpandableSection toggleTextExpanded="Hide metadata options" toggleTextCollapsed="Show metadata options" data-quickstart-id="crf-metadata-opt">
+        <ExpandableSection
+          toggleTextExpanded="Hide metadata options"
+          toggleTextCollapsed="Show metadata options"
+          data-quickstart-id="crf-metadata-opt"
+        >
           <FormGroup
             label="Labels"
             fieldId="labels"
@@ -524,7 +528,11 @@ export const CustomRecordingForm: React.FC<CustomRecordingFormProps> = ({ prefil
             />
           </FormGroup>
         </ExpandableSection>
-        <ExpandableSection toggleTextExpanded="Hide advanced options" toggleTextCollapsed="Show advanced options" data-quickstart-id="crf-advanced-opt">
+        <ExpandableSection
+          toggleTextExpanded="Hide advanced options"
+          toggleTextCollapsed="Show advanced options"
+          data-quickstart-id="crf-advanced-opt"
+        >
           <Text component={TextVariants.small}>A value of 0 for maximum size or age means unbounded.</Text>
           <FormGroup
             fieldId="To Disk"

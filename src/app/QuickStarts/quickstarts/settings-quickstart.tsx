@@ -102,15 +102,13 @@ const SettingsQuickStart: QuickStart = {
         title: 'Go to the Dashboard tab',
         description: `
 1. Go to the [Dashboard]{{highlight settings-dashboard-tab}} tab.
-1. Here you can configure the dashboard settings for the Cryostat UI.
-2. You can also configure the default dashboard.`,
+1. Here you can configure the dashboard settings for the Cryostat UI.`,
       },
       {
         title: 'Go to the Advanced tab',
         description: `
 1. Go to the [Advanced]{{highlight settings-advanced-tab}} tab.
-1. Here you can configure the advanced settings for the Cryostat UI.
-2. You can also configure the default dashboard.`,
+1. Here you can configure the advanced settings for the Cryostat UI.`
       },
     ],
     conclusion: `You completed the **Using Settings** quick start!

@@ -35,8 +35,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { LoadingView } from '@app/LoadingView/LoadingView';
 import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
-import { HIGHLIGHT_REGEXP } from '@app/Shared/highlight-consts';
+import { SessionState } from '@app/Shared/Services/Login.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   QuickStartContext,
   QuickStartDrawer,
@@ -45,14 +48,26 @@ import {
 } from '@patternfly/quickstarts';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import build from '@app/build.json';
 
 export interface GlobalQuickStartDrawerProps {
   children: React.ReactNode;
 }
 
+const LINK_LABEL = '[\\d\\w\\s-()$!&]+'; // has extra '&' in matcher
+const HIGHLIGHT_ACTIONS = ['highlight']; // use native quickstarts highlight markdown extension
+const SELECTOR_ID = `[\\w-&]+`; // has extra '&'
+
+// [linkLabel]{{action id}}
+const HIGHLIGHT_REGEXP = new RegExp(
+  `\\[(${LINK_LABEL})]{{(${HIGHLIGHT_ACTIONS.join('|')}) (${SELECTOR_ID})}}`,
+  'g',
+);
+
 export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
   const { t, i18n } = useTranslation();
-
+  const context = React.useContext(ServiceContext);
+  const addSubscription = useSubscriptions();
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
   const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
   const valuesForQuickStartContext = useValuesForQuickStartContext({
@@ -63,9 +78,9 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
     setAllQuickStartStates,
     language: i18n.language,
     markdown: {
-      // markdown extension for spotlighting elements from links
       extensions: [
         {
+          // taken from patternfly/quickstarts but with extra '&' in regex matcher
           type: 'lang',
           regex: HIGHLIGHT_REGEXP,
           replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
@@ -73,13 +88,33 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
             return `<button class="pf-c-button pf-m-inline pf-m-link" data-highlight="${linkId}">${linkLabel}</button>`;
           },
         },
+        {
+          // replace [APP] with bolded productName like <strong>Cryostat</strong>
+          type: 'output',
+          regex: new RegExp(`\\[APP\\]`, 'g'),
+          replace: (_text: string): string => {
+            return `<strong>${build.productName}</strong>`;
+          },
+        },
       ],
     },
   });
 
+  React.useEffect(() => {
+    addSubscription(
+      context.login.getSessionState().subscribe((s) => {
+        if (s !== SessionState.USER_SESSION) {
+          setActiveQuickStartID('');
+        }
+      })
+    );
+  }, [addSubscription, context.login, setActiveQuickStartID]);
+
   return (
-    <QuickStartContext.Provider value={valuesForQuickStartContext}>
-      <QuickStartDrawer>{children}</QuickStartDrawer>
-    </QuickStartContext.Provider>
+    <React.Suspense fallback={<LoadingView />}>
+      <QuickStartContext.Provider value={valuesForQuickStartContext}>
+        <QuickStartDrawer>{children}</QuickStartDrawer>
+      </QuickStartContext.Provider>
+    </React.Suspense>
   );
 };

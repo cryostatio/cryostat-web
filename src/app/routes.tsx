@@ -116,7 +116,6 @@ const routes: IAppRoute[] = [
     path: '/quickstarts',
     title: 'Quick Starts',
     description: 'Get started with Cryostat.',
-    featureLevel: FeatureLevel.BETA,
   },
   {
     component: Topology,

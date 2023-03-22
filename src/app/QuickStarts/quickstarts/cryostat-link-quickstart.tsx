@@ -35,12 +35,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-export const LINK_LABEL = '[\\d\\w\\s-()$!&]+';
-export const HIGHLIGHT_ACTIONS = ['highlight'];
-export const SELECTOR_ID = `[\\w-&]+`;
+import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import { QuickStart } from '@patternfly/quickstarts';
 
-// [linkLabel]{{action id}}
-export const HIGHLIGHT_REGEXP = new RegExp(
-  `\\[(${LINK_LABEL})]{{(${HIGHLIGHT_ACTIONS.join('|')}) (${SELECTOR_ID})}}`,
-  'g'
-);
+// TODO: Put link quickstarts in a separate QuickStartCatalogSection
+const CryostatLinkQuickStart: QuickStart = {
+  apiVersion: 'v2.3.0',
+  metadata: {
+    name: 'cryostat-link-quickstart',
+    instructional: true
+  },
+  spec: {
+    version: 2.3,
+    displayName: 'Cryostat Upstream Documentation',
+    durationMinutes: 1,
+    icon: cryostatLogo,
+    description: `Link to Cryostat's upstream documentation.`,
+    prerequisites: [''],
+    introduction: '### This is a generic quickstart.',
+    link: {
+      href: 'https://cryostat.io',
+      text: 'cryostat.io',
+    },
+    type: {
+      text: 'External',
+      color: 'purple',
+    },
+  },
+};
+
+export default CryostatLinkQuickStart;
