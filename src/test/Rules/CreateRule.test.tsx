@@ -41,7 +41,7 @@ import { Rule } from '@app/Rules/Rules';
 import { defaultServices } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import * as React from 'react';
 import { of } from 'rxjs';

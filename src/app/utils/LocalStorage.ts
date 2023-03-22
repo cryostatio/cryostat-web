@@ -60,6 +60,8 @@ export enum LocalStorageKey {
   NOTIFICATIONS_ENABLED,
   WEBSOCKET_DEBOUNCE_MS,
   DATETIME_FORMAT,
+  MATCH_EXPRES_VIS_GRAPH_POSITIONS,
+  MATCH_EXPRES_VIS_NODE_POSITIONS,
 }
 
 export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;

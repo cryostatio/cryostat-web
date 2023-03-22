@@ -519,3 +519,7 @@ input[type=number].datetime-picker__number-input {
   width: 80% !important;
   height: 80%;
 }
+
+.overflow-auto {
+  overflow: auto;
+}

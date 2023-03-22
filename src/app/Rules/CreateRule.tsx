@@ -296,7 +296,6 @@ const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
     }
     setMatchExpressionValid(validation);
     matchedTargets.next(matches);
-    console.log(matchExpression);
   }, [matchExpression, targets, matchedTargets, setMatchExpressionValid, setTemplateName]);
 
   const createButtonLoadingProps = React.useMemo(
@@ -634,14 +633,14 @@ const Comp: React.FC = () => {
         <Grid hasGutter style={gridStyles}>
           <GridItem xl={5} order={{ xl: '0', default: '1' }}>
             <Card isFullHeight>
-              <CardBody style={{ overflow: 'auto' }}>
+              <CardBody className="overflow-auto">
                 <CreateRuleForm />
               </CardBody>
             </Card>
           </GridItem>
           <GridItem xl={7} order={{ xl: '1', default: '0' }}>
             <Card isFullHeight>
-              <CardBody style={{ overflow: 'auto' }}>
+              <CardBody className="overflow-auto">
                 <MatchExpressionVisualizer />
               </CardBody>
             </Card>

@@ -92,7 +92,7 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
         <Grid hasGutter style={{ height: '100%' }}>
           <GridItem xl={4}>
             <Card isFullHeight isFlat>
-              <CardBody style={{ overflow: 'auto' }}>
+              <CardBody className="overflow-auto">
                 <AuthForm
                   visible={visible}
                   onDismiss={onDismiss}
@@ -105,7 +105,7 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
           </GridItem>
           <GridItem xl={8}>
             <Card isFullHeight isFlat>
-              <CardBody style={{ overflow: 'auto' }}>
+              <CardBody className="overflow-auto">
                 <MatchExpressionVisualizer alertOptions={alertOptions} />
               </CardBody>
             </Card>

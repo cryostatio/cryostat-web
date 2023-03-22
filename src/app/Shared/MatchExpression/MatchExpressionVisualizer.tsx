@@ -36,16 +36,17 @@
  * SOFTWARE.
  */
 import { TopologyControlBar } from '@app/Topology/GraphView/TopologyControlBar';
+import { SavedGraphPosition, SavedNodePosition } from '@app/Topology/GraphView/TopologyGraphView';
 import { getNodeById } from '@app/Topology/GraphView/UtilsFactory';
 import EntityDetails, { AlertOptions } from '@app/Topology/Shared/Entity/EntityDetails';
 import { useSearchExpression } from '@app/Topology/Shared/utils';
 import { TopologySideBar } from '@app/Topology/SideBar/TopologySideBar';
 import { NodeType } from '@app/Topology/typings';
+import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { evaluateTargetWithExpr, hashCode } from '@app/utils/utils';
 import {
   Bullseye,
-  Button,
   DataList,
   DataListCell,
   DataListContent,
@@ -69,19 +70,18 @@ import { ContainerNodeIcon, SearchIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import {
   action,
-  BOTTOM_LAYER,
-  DEFAULT_LAYER,
   GraphElement,
-  GROUPS_LAYER,
+  GRAPH_POSITION_CHANGE_EVENT,
   Model,
+  NODE_POSITIONED_EVENT,
   SelectionEventListener,
   SELECTION_EVENT,
   TopologyView,
-  TOP_LAYER,
   Visualization,
   VisualizationProvider,
   VisualizationSurface,
 } from '@patternfly/react-topology';
+import _ from 'lodash';
 import * as React from 'react';
 import { ServiceContext } from '../Services/Services';
 import { Target } from '../Services/Target.service';
@@ -170,6 +170,40 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
       setSelectedEntity(ids[0] ? _newVisualization.getElementById(ids[0]) : undefined);
     });
 
+    _newVisualization.addEventListener(
+      GRAPH_POSITION_CHANGE_EVENT,
+      _.debounce(() => {
+        const { graph } = _newVisualization.toModel();
+        if (graph) {
+          const saved: SavedGraphPosition = {
+            id: graph.id,
+            type: graph.type,
+            x: graph.x,
+            y: graph.y,
+            scale: graph.scale,
+            scaleExtent: graph.scaleExtent,
+          };
+          saveToLocalStorage('MATCH_EXPRES_VIS_GRAPH_POSITIONS', saved);
+        }
+      }, 200)
+    );
+
+    _newVisualization.addEventListener(
+      NODE_POSITIONED_EVENT,
+      _.debounce(() => {
+        const { nodes } = _newVisualization.toModel();
+        if (nodes) {
+          const savedPos: SavedNodePosition[] = nodes.map((n) => ({
+            id: n.id,
+            x: n.x,
+            y: n.y,
+            collapsed: n.collapsed,
+          }));
+          saveToLocalStorage('MATCH_EXPRES_VIS_NODE_POSITIONS', savedPos);
+        }
+      }, 200)
+    );
+
     return _newVisualization;
   }, [setSelectedIds, setSelectedEntity]);
 
@@ -184,8 +218,22 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
   }, [addSubscription, context.targets, setTargets]);
 
   React.useEffect(() => {
+    const graphData: SavedGraphPosition = getFromLocalStorage('MATCH_EXPRES_VIS_GRAPH_POSITIONS', {});
+    const nodePositions: SavedNodePosition[] = getFromLocalStorage('MATCH_EXPRES_VIS_NODE_POSITIONS', []);
+
     const model: Model = {
-      nodes: _transformedData.nodes,
+      nodes: _transformedData.nodes.map((n) => {
+        const savedData = nodePositions.find((ps) => ps.id === n.id);
+        if (savedData) {
+          n = {
+            ...n,
+            x: savedData.x,
+            y: savedData.y,
+            collapsed: savedData.collapsed,
+          };
+        }
+        return n;
+      }),
       edges: _transformedData.edges,
       graph: {
         id: 'cryostat-match-expression-visualizer',
@@ -198,12 +246,23 @@ const GraphView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ..
           labels: {},
           children: targetNodes,
         },
+        x: graphData.x,
+        y: graphData.y,
+        scale: graphData.scale,
+        scaleExtent: graphData.scaleExtent,
       },
     };
 
     // Initialize the controller with model to create nodes
     visualization.fromModel(model, false);
-    const _id = setTimeout(action(() => visualization.getGraph().fit()));
+
+    const _id = setTimeout(
+      action(() => {
+        if (!graphData.id || !graphData.x || !graphData.y) {
+          visualization.getGraph().fit();
+        }
+      })
+    );
     return () => clearTimeout(_id);
   }, [_transformedData, targetNodes, visualization]);
 
