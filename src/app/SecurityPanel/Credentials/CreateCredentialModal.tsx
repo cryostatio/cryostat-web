@@ -35,7 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { JmxAuthForm } from '@app/AppLayout/JmxAuthForm';
+import { CredentialAuthForm } from '@app/AppLayout/CredentialAuthForm';
 import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpressionHint';
 import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
 import { ServiceContext } from '@app/Shared/Services/Services';
@@ -167,7 +167,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   }, [matchExpression, targets, setMatchExpressionValid]);
 
   return (
-    <JmxAuthForm {...props} onSave={onSave} onDismiss={onDismiss} focus={false} loading={loading}>
+    <CredentialAuthForm {...props} onSave={onSave} onDismiss={onDismiss} focus={false} loading={loading}>
       <FormGroup
         label="Match Expression"
         labelIcon={
@@ -222,6 +222,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
           resizeOrientation="vertical"
         />
       </FormGroup>
-    </JmxAuthForm>
+    </CredentialAuthForm>
   );
 };

@@ -39,7 +39,7 @@ import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { ActionGroup, Button, Form, FormGroup, TextInput } from '@patternfly/react-core';
 import * as React from 'react';
 
-export interface JmxAuthFormProps {
+export interface CredentialAuthFormProps {
   onDismiss: () => void;
   onSave: (username: string, password: string) => void;
   focus?: boolean;
@@ -47,7 +47,7 @@ export interface JmxAuthFormProps {
   children?: React.ReactNode;
 }
 
-export const JmxAuthForm: React.FC<JmxAuthFormProps> = ({ onDismiss, onSave, ...props }) => {
+export const CredentialAuthForm: React.FC<CredentialAuthFormProps> = ({ onDismiss, onSave, ...props }) => {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
