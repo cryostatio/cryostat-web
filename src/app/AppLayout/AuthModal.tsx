@@ -43,7 +43,7 @@ import { Modal, ModalVariant, Text } from '@patternfly/react-core';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { filter, first, map, mergeMap } from 'rxjs';
-import { JmxAuthForm } from './JmxAuthForm';
+import { CredentialAuthForm } from './CredentialAuthForm';
 
 export interface AuthModalProps {
   visible: boolean;
@@ -103,7 +103,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
         </Text>
       }
     >
-      <JmxAuthForm onSave={onSave} onDismiss={onDismiss} focus={true} loading={loading} />
+      <CredentialAuthForm onSave={onSave} onDismiss={onDismiss} focus={true} loading={loading} />
     </Modal>
   );
 };

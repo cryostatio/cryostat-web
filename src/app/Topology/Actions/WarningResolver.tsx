@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { CreateJmxCredentialModal } from '@app/SecurityPanel/Credentials/CreateJmxCredentialModal';
+import { CreateCredentialModal } from '@app/SecurityPanel/Credentials/CreateCredentialModal';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Button, ButtonProps } from '@patternfly/react-core';
@@ -82,7 +82,7 @@ export const WarningResolverAsActionButton: React.FC<WarningResolverAsActionButt
   );
 };
 
-export type ModalComponent = typeof CreateJmxCredentialModal;
+export type ModalComponent = typeof CreateCredentialModal;
 
 export interface WarningResolverAsCredModalProps {
   children?: React.ReactNode;
@@ -101,7 +101,7 @@ export const WarningResolverAsCredModal: React.FC<WarningResolverAsCredModalProp
 
   return (
     <>
-      <CreateJmxCredentialModal
+      <CreateCredentialModal
         visible={showAuthModal}
         onDismiss={handleAuthModalClose}
         onPropsSave={handleAuthModalClose}

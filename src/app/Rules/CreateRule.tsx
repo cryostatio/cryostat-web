@@ -37,15 +37,17 @@
  */
 import { BreadcrumbPage, BreadcrumbTrail } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { EventTemplate } from '@app/CreateRecording/CreateRecording';
-import { authFailMessage, ErrorView, isAuthFail } from '@app/ErrorView/ErrorView';
 import { NotificationsContext } from '@app/Notifications/Notifications';
-import { MatchExpressionEvaluator } from '@app/Shared/MatchExpressionEvaluator';
+import { MatchExpressionHint } from '@app/Shared/MatchExpression/MatchExpressionHint';
+import { MatchExpressionVisualizer } from '@app/Shared/MatchExpression/MatchExpressionVisualizer';
 import { LoadingPropsType } from '@app/Shared/ProgressIndicator';
 import { TemplateType } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { NO_TARGET, Target } from '@app/Shared/Services/Target.service';
+import { Target } from '@app/Shared/Services/Target.service';
 import { SelectTemplateSelectorForm } from '@app/TemplateSelector/SelectTemplateSelectorForm';
+import { SearchExprService, SearchExprServiceContext } from '@app/Topology/Shared/utils';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { evaluateTargetWithExpr } from '@app/utils/utils';
 import {
   ActionGroup,
   Button,
@@ -57,34 +59,42 @@ import {
   FormSelectOption,
   Grid,
   GridItem,
+  Popover,
   Split,
   SplitItem,
   Switch,
   Text,
+  TextArea,
   TextInput,
   TextVariants,
   ValidatedOptions,
 } from '@patternfly/react-core';
+import { HelpIcon } from '@patternfly/react-icons';
+import _ from 'lodash';
 import * as React from 'react';
 import { useHistory, withRouter } from 'react-router-dom';
-import { BehaviorSubject, iif } from 'rxjs';
-import { first, map, mergeMap } from 'rxjs/operators';
+import { forkJoin, iif, of, Subject } from 'rxjs';
+import { catchError, debounceTime, map, switchMap } from 'rxjs/operators';
 import { Rule } from './Rules';
 
 // FIXME check if this is correct/matches backend name validation
 export const RuleNamePattern = /^[\w_]+$/;
 
-const Comp: React.FC = () => {
+interface CreateRuleFormProps {}
+
+const CreateRuleForm: React.FC<CreateRuleFormProps> = ({ ...props }) => {
   const context = React.useContext(ServiceContext);
   const notifications = React.useContext(NotificationsContext);
   const history = useHistory();
+  // Note: Do not use useSearchExpression(). This causes the cursor to jump to the end due to async updates.
+  const matchExprService = React.useContext(SearchExprServiceContext);
+  const [matchExpression, setMatchExpression] = React.useState('');
   const addSubscription = useSubscriptions();
 
   const [name, setName] = React.useState('');
   const [nameValid, setNameValid] = React.useState(ValidatedOptions.default);
   const [description, setDescription] = React.useState('');
   const [enabled, setEnabled] = React.useState(true);
-  const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [templates, setTemplates] = React.useState([] as EventTemplate[]);
   const [templateName, setTemplateName] = React.useState<string | undefined>(undefined);
@@ -98,17 +108,11 @@ const Comp: React.FC = () => {
   const [initialDelay, setInitialDelay] = React.useState(0);
   const [initialDelayUnits, setInitialDelayUnits] = React.useState(1);
   const [preservedArchives, setPreservedArchives] = React.useState(0);
-  const [errorMessage, setErrorMessage] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [targets, setTargets] = React.useState<Target[]>([]);
 
-  const targetSubject = React.useRef(new BehaviorSubject(NO_TARGET)).current;
-
-  const handleTargetChange = React.useCallback(
-    (target: Target) => {
-      targetSubject.next(target);
-    },
-    [targetSubject]
-  );
+  const matchedTargetsRef = React.useRef(new Subject<Target[]>());
+  const matchedTargets = matchedTargetsRef.current;
 
   const handleNameChange = React.useCallback(
     (name) => {
@@ -176,8 +180,6 @@ const Comp: React.FC = () => {
     [setPreservedArchives]
   );
 
-  const handleError = React.useCallback((error) => setErrorMessage(error.message), [setErrorMessage]);
-
   const handleSubmit = React.useCallback((): void => {
     setLoading(true);
     const notificationMessages: string[] = [];
@@ -232,60 +234,69 @@ const Comp: React.FC = () => {
     maxSizeUnits,
   ]);
 
-  const handleTemplateList = React.useCallback(
-    (templates: EventTemplate[]) => {
-      setTemplates(templates);
-      setErrorMessage('');
-    },
-    [setTemplates, setErrorMessage]
-  );
-
-  const refreshTemplateList = React.useCallback(() => {
+  React.useEffect(() => {
     addSubscription(
-      targetSubject
+      matchedTargets
         .pipe(
-          mergeMap((target) =>
+          debounceTime(100),
+          switchMap((targets) =>
             iif(
-              () => target !== NO_TARGET,
-              context.api.doGet<EventTemplate[]>(`targets/${encodeURIComponent(target.connectUrl)}/templates`),
-              context.api
-                .doGet<EventTemplate[]>(`targets/localhost:0/templates`)
-                .pipe(
-                  map((templates) =>
-                    templates.filter((template) => template.provider !== 'Cryostat' || template.name !== 'Cryostat')
-                  )
+              () => targets.length > 0,
+              forkJoin(
+                targets.map((t) =>
+                  context.api
+                    .doGet<EventTemplate[]>(
+                      `targets/${encodeURIComponent(t.connectUrl)}/templates`,
+                      'v1',
+                      undefined,
+                      true,
+                      true
+                    )
+                    .pipe(
+                      catchError((_) => of<EventTemplate[]>([])) // Fail silently
+                    )
                 )
+              ).pipe(
+                map((allTemplates) => {
+                  const allFiltered = allTemplates.filter((ts) => ts.length);
+                  return allFiltered.length
+                    ? allFiltered.reduce((acc, curr) => _.intersectionWith(acc, curr, _.isEqual))
+                    : [];
+                })
+              ),
+              of([])
             )
-          ),
-          first()
+          )
         )
-        .subscribe({
-          next: handleTemplateList,
-          error: handleError,
-        })
+        .subscribe(setTemplates)
     );
-  }, [addSubscription, context.api, targetSubject, handleError, handleTemplateList]);
+  }, [addSubscription, context.api, matchedTargets]);
 
   React.useEffect(() => {
-    addSubscription(targetSubject.subscribe(refreshTemplateList));
-  }, [addSubscription, targetSubject, refreshTemplateList]);
+    addSubscription(context.targets.targets().subscribe(setTargets));
+  }, [addSubscription, context.targets, setTargets]);
 
-  // Note: authFailure can be reused
-  // since no operation on global target selection is done here.
   React.useEffect(() => {
-    addSubscription(
-      context.target.authFailure().subscribe(() => {
-        setErrorMessage(authFailMessage);
-      })
-    );
-  }, [addSubscription, context.target, setErrorMessage]);
-
-  const breadcrumbs: BreadcrumbTrail[] = [
-    {
-      title: 'Automated Rules',
-      path: '/rules',
-    },
-  ];
+    // Set validations
+    let validation: ValidatedOptions = ValidatedOptions.default;
+    let matches: Target[] = [];
+    if (matchExpression !== '' && targets.length > 0) {
+      try {
+        matches = targets.filter((t) => {
+          const res = evaluateTargetWithExpr(t, matchExpression);
+          if (typeof res === 'boolean') {
+            return res;
+          }
+          throw new Error('Invalid match expression');
+        });
+        validation = matches.length ? ValidatedOptions.success : ValidatedOptions.warning;
+      } catch (err) {
+        validation = ValidatedOptions.error;
+      }
+    }
+    setMatchExpressionValid(validation);
+    matchedTargets.next(matches);
+  }, [matchExpression, targets, matchedTargets, setMatchExpressionValid, setTemplateName]);
 
   const createButtonLoadingProps = React.useMemo(
     () =>
@@ -304,305 +315,338 @@ const Comp: React.FC = () => {
     return '';
   }, [templateName, templateType]);
 
-  const authRetry = React.useCallback(() => {
-    context.target.setAuthRetry();
-  }, [context.target]);
+  return (
+    <Form {...props}>
+      <Text component={TextVariants.small}>
+        Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on matching target JVM
+        applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be
+        kept in the application recording buffer, and how frequently Cryostat should copy the application recording
+        buffer into Cryostat&apos;s own archived storage.
+      </Text>
+      <FormGroup
+        label="Name"
+        isRequired
+        fieldId="rule-name"
+        helperText="Enter a rule name."
+        helperTextInvalid="A rule name may only contain letters, numbers, and underscores."
+        validated={nameValid}
+      >
+        <TextInput
+          value={name}
+          isDisabled={loading}
+          isRequired
+          type="text"
+          id="rule-name"
+          aria-describedby="rule-name-helper"
+          onChange={handleNameChange}
+          validated={nameValid}
+        />
+      </FormGroup>
+      <FormGroup
+        label="Description"
+        fieldId="rule-description"
+        helperText="Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions."
+      >
+        <TextArea
+          value={description}
+          isDisabled={loading}
+          type="text"
+          id="rule-description"
+          aria-describedby="rule-description-helper"
+          resizeOrientation="vertical"
+          autoResize
+          onChange={setDescription}
+        />
+      </FormGroup>
+      <FormGroup
+        label="Match Expression"
+        labelIcon={
+          <Popover
+            headerContent="Match Expression Hint"
+            bodyContent={
+              <>
+                Try an expression like:
+                <MatchExpressionHint target={targets[0]} />
+              </>
+            }
+            hasAutoWidth
+          >
+            <Button
+              variant="plain"
+              aria-label="More info for match expression field"
+              onClick={(e) => e.preventDefault()}
+              className="pf-c-form__group-label-help"
+            >
+              <HelpIcon />
+            </Button>
+          </Popover>
+        }
+        isRequired
+        fieldId="rule-matchexpr"
+        helperText={
+          matchExpressionValid === ValidatedOptions.warning
+            ? `Warning: Match expression matches no targets.`
+            : `
+  Enter a match expression. This is a Java-like code snippet that is evaluated against each target
+  application to determine whether the rule should be applied. Select a target from the dropdown
+  on the right to view the context object available within the match expression context and test
+  if the expression matches.`
+        }
+        helperTextInvalid="Invalid Match Expression."
+        validated={matchExpressionValid}
+      >
+        <TextArea
+          value={matchExpression}
+          isDisabled={loading}
+          isRequired
+          type="text"
+          id="rule-matchexpr"
+          aria-describedby="rule-matchexpr-helper"
+          resizeOrientation="vertical"
+          autoResize
+          onChange={(value) => {
+            setMatchExpression(value);
+            matchExprService.setSearchExpression(value);
+          }}
+          validated={matchExpressionValid}
+        />
+      </FormGroup>
+      <FormGroup
+        label="Enabled"
+        isRequired
+        fieldId="rule-enabled"
+        helperText={`Rules take effect when created if enabled and will be matched against all
+discovered target applications immediately. When new target applications appear they are
+checked against all enabled rules. Disabled rules have no effect but are available to be
+enabled in the future.`}
+      >
+        <Switch
+          id="rule-enabled"
+          isDisabled={loading}
+          aria-label="Apply this rule to matching targets"
+          isChecked={enabled}
+          onChange={setEnabled}
+        />
+      </FormGroup>
+      <FormGroup
+        label="Template"
+        isRequired
+        fieldId="recording-template"
+        validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+        helperText="The Event Template to be applied by this Rule against matching target applications."
+        helperTextInvalid="A Template must be selected"
+      >
+        <SelectTemplateSelectorForm
+          selected={selectedSpecifier}
+          disabled={loading}
+          validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
+          templates={templates}
+          onSelect={handleTemplateChange}
+        />
+      </FormGroup>
+      <FormGroup
+        label="Maximum Size"
+        fieldId="maxSize"
+        helperText="The maximum size of recording data retained in the target application's recording buffer."
+      >
+        <Split hasGutter={true}>
+          <SplitItem isFilled>
+            <TextInput
+              value={maxSize}
+              isDisabled={loading}
+              isRequired
+              type="number"
+              id="maxSize"
+              aria-label="max size value"
+              onChange={handleMaxSizeChange}
+              min="0"
+            />
+          </SplitItem>
+          <SplitItem>
+            <FormSelect
+              value={maxSizeUnits}
+              isDisabled={loading}
+              onChange={handleMaxSizeUnitChange}
+              aria-label="Max size units input"
+            >
+              <FormSelectOption key="1" value="1" label="B" />
+              <FormSelectOption key="2" value={1024} label="KiB" />
+              <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
+            </FormSelect>
+          </SplitItem>
+        </Split>
+      </FormGroup>
+      <FormGroup
+        label="Maximum Age"
+        fieldId="maxAge"
+        helperText="The maximum age of recording data retained in the target application's recording buffer."
+      >
+        <Split hasGutter={true}>
+          <SplitItem isFilled>
+            <TextInput
+              value={maxAge}
+              isDisabled={loading}
+              isRequired
+              type="number"
+              id="maxAge"
+              aria-label="Max age duration"
+              onChange={handleMaxAgeChange}
+              min="0"
+            />
+          </SplitItem>
+          <SplitItem>
+            <FormSelect
+              value={maxAgeUnits}
+              isDisabled={loading}
+              onChange={handleMaxAgeUnitChange}
+              aria-label="Max Age units Input"
+            >
+              <FormSelectOption key="1" value="1" label="Seconds" />
+              <FormSelectOption key="2" value={60} label="Minutes" />
+              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+            </FormSelect>
+          </SplitItem>
+        </Split>
+      </FormGroup>
+      <FormGroup
+        label="Archival Period"
+        fieldId="archivalPeriod"
+        helperText="Time between copies of active recording data being pulled into Cryostat archive storage."
+      >
+        <Split hasGutter={true}>
+          <SplitItem isFilled>
+            <TextInput
+              value={archivalPeriod}
+              isDisabled={loading}
+              isRequired
+              type="number"
+              id="archivalPeriod"
+              aria-label="archival period"
+              onChange={handleArchivalPeriodChange}
+              min="0"
+            />
+          </SplitItem>
+          <SplitItem>
+            <FormSelect
+              value={archivalPeriodUnits}
+              isDisabled={loading}
+              onChange={handleArchivalPeriodUnitsChange}
+              aria-label="archival period units input"
+            >
+              <FormSelectOption key="1" value="1" label="Seconds" />
+              <FormSelectOption key="2" value={60} label="Minutes" />
+              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+            </FormSelect>
+          </SplitItem>
+        </Split>
+      </FormGroup>
+      <FormGroup
+        label="Initial Delay"
+        fieldId="initialDelay"
+        helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival Period later."
+      >
+        <Split hasGutter={true}>
+          <SplitItem isFilled>
+            <TextInput
+              value={initialDelay}
+              isDisabled={loading}
+              isRequired
+              type="number"
+              id="initialDelay"
+              aria-label="initial delay"
+              onChange={handleInitialDelayChange}
+              min="0"
+            />
+          </SplitItem>
+          <SplitItem>
+            <FormSelect
+              value={initialDelayUnits}
+              isDisabled={loading}
+              onChange={handleInitialDelayUnitsChanged}
+              aria-label="initial delay units input"
+            >
+              <FormSelectOption key="1" value="1" label="Seconds" />
+              <FormSelectOption key="2" value={60} label="Minutes" />
+              <FormSelectOption key="3" value={60 * 60} label="Hours" />
+            </FormSelect>
+          </SplitItem>
+        </Split>
+      </FormGroup>
+      <FormGroup
+        label="Preserved Archives"
+        fieldId="preservedArchives"
+        helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
+      >
+        <TextInput
+          value={preservedArchives}
+          isDisabled={loading}
+          isRequired
+          type="number"
+          id="preservedArchives"
+          aria-label="preserved archives"
+          onChange={handlePreservedArchivesChange}
+          min="0"
+        />
+      </FormGroup>
+      <ActionGroup>
+        <Button
+          variant="primary"
+          onClick={handleSubmit}
+          isDisabled={
+            loading || nameValid !== ValidatedOptions.success || !templateName || !templateType || !matchExpression
+          }
+          {...createButtonLoadingProps}
+        >
+          {loading ? 'Creating' : 'Create'}
+        </Button>
+        <Button variant="secondary" onClick={history.goBack} isAriaDisabled={loading}>
+          Cancel
+        </Button>
+      </ActionGroup>
+    </Form>
+  );
+};
+
+const Comp: React.FC = () => {
+  const matchExpreRef = React.useRef(new SearchExprService());
+  const breadcrumbs: BreadcrumbTrail[] = React.useMemo(
+    () => [
+      {
+        title: 'Automated Rules',
+        path: '/rules',
+      },
+    ],
+    []
+  );
+
+  const gridStyles: React.CSSProperties = React.useMemo(
+    () => ({
+      // viewportHeight - masterheadHeight - pageSectionPadding - breadcrumbHeight
+      height: 'calc(100vh - 4.375rem - 48px - 1.5rem)',
+    }),
+    []
+  );
 
   return (
     <BreadcrumbPage pageTitle="Create" breadcrumbs={breadcrumbs}>
-      <Grid hasGutter>
-        <GridItem xl={7}>
-          {errorMessage ? (
-            <ErrorView
-              title={'Error retrieving event templates'}
-              message={errorMessage}
-              retry={isAuthFail(errorMessage) ? authRetry : undefined}
-            />
-          ) : (
-            <Card>
-              <CardBody>
-                <Form>
-                  <Text component={TextVariants.small}>
-                    Automated Rules are configurations that instruct Cryostat to create JDK Flight Recordings on
-                    matching target JVM applications. Each Automated Rule specifies parameters for which Event Template
-                    to use, how much data should be kept in the application recording buffer, and how frequently
-                    Cryostat should copy the application recording buffer into Cryostat&apos;s own archived storage.
-                  </Text>
-                  <FormGroup
-                    label="Name"
-                    isRequired
-                    fieldId="rule-name"
-                    helperText="Enter a rule name."
-                    helperTextInvalid="A rule name may only contain letters, numbers, and underscores."
-                    validated={nameValid}
-                  >
-                    <TextInput
-                      value={name}
-                      isDisabled={loading}
-                      isRequired
-                      type="text"
-                      id="rule-name"
-                      aria-describedby="rule-name-helper"
-                      onChange={handleNameChange}
-                      validated={nameValid}
-                    />
-                  </FormGroup>
-                  <FormGroup
-                    label="Description"
-                    fieldId="rule-description"
-                    helperText="Enter a rule description. This is only used for display purposes to aid in identifying rules and their intentions."
-                  >
-                    <TextInput
-                      value={description}
-                      isDisabled={loading}
-                      type="text"
-                      id="rule-description"
-                      aria-describedby="rule-description-helper"
-                      onChange={setDescription}
-                    />
-                  </FormGroup>
-                  <FormGroup
-                    label="Match Expression"
-                    isRequired
-                    fieldId="rule-matchexpr"
-                    helperText={`
-                      Enter a match expression. This is a Java-like code snippet that is evaluated against each target
-                      application to determine whether the rule should be applied. Select a target from the dropdown
-                      on the right to view the context object available within the match expression context and test
-                      if the expression matches.`}
-                    helperTextInvalid="Invalid Match Expression."
-                    validated={matchExpressionValid}
-                  >
-                    <TextInput
-                      value={matchExpression}
-                      isDisabled={loading}
-                      isRequired
-                      type="text"
-                      id="rule-matchexpr"
-                      aria-describedby="rule-matchexpr-helper"
-                      placeholder={
-                        targetSubject.value === NO_TARGET
-                          ? undefined
-                          : `target.connectUrl == '${targetSubject.value.connectUrl}'`
-                      }
-                      onChange={setMatchExpression}
-                      validated={matchExpressionValid}
-                    />
-                  </FormGroup>
-                  <FormGroup
-                    label="Enabled"
-                    isRequired
-                    fieldId="rule-enabled"
-                    helperText={`Rules take effect when created if enabled and will be matched against all
-                  discovered target applications immediately. When new target applications appear they are
-                  checked against all enabled rules. Disabled rules have no effect but are available to be
-                  enabled in the future.`}
-                  >
-                    <Switch
-                      id="rule-enabled"
-                      isDisabled={loading}
-                      aria-label="Apply this rule to matching targets"
-                      isChecked={enabled}
-                      onChange={setEnabled}
-                    />
-                  </FormGroup>
-                  <FormGroup
-                    label="Template"
-                    isRequired
-                    fieldId="recording-template"
-                    validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
-                    helperText="The Event Template to be applied by this Rule against matching target applications."
-                    helperTextInvalid="A Template must be selected"
-                  >
-                    <SelectTemplateSelectorForm
-                      selected={selectedSpecifier}
-                      disabled={loading}
-                      validated={!templateName ? ValidatedOptions.default : ValidatedOptions.success}
-                      templates={templates}
-                      onSelect={handleTemplateChange}
-                    />
-                  </FormGroup>
-                  <FormGroup
-                    label="Maximum Size"
-                    fieldId="maxSize"
-                    helperText="The maximum size of recording data retained in the target application's recording buffer."
-                  >
-                    <Split hasGutter={true}>
-                      <SplitItem isFilled>
-                        <TextInput
-                          value={maxSize}
-                          isDisabled={loading}
-                          isRequired
-                          type="number"
-                          id="maxSize"
-                          aria-label="max size value"
-                          onChange={handleMaxSizeChange}
-                          min="0"
-                        />
-                      </SplitItem>
-                      <SplitItem>
-                        <FormSelect
-                          value={maxSizeUnits}
-                          isDisabled={loading}
-                          onChange={handleMaxSizeUnitChange}
-                          aria-label="Max size units input"
-                        >
-                          <FormSelectOption key="1" value="1" label="B" />
-                          <FormSelectOption key="2" value={1024} label="KiB" />
-                          <FormSelectOption key="3" value={1024 * 1024} label="MiB" />
-                        </FormSelect>
-                      </SplitItem>
-                    </Split>
-                  </FormGroup>
-                  <FormGroup
-                    label="Maximum Age"
-                    fieldId="maxAge"
-                    helperText="The maximum age of recording data retained in the target application's recording buffer."
-                  >
-                    <Split hasGutter={true}>
-                      <SplitItem isFilled>
-                        <TextInput
-                          value={maxAge}
-                          isDisabled={loading}
-                          isRequired
-                          type="number"
-                          id="maxAge"
-                          aria-label="Max age duration"
-                          onChange={handleMaxAgeChange}
-                          min="0"
-                        />
-                      </SplitItem>
-                      <SplitItem>
-                        <FormSelect
-                          value={maxAgeUnits}
-                          isDisabled={loading}
-                          onChange={handleMaxAgeUnitChange}
-                          aria-label="Max Age units Input"
-                        >
-                          <FormSelectOption key="1" value="1" label="Seconds" />
-                          <FormSelectOption key="2" value={60} label="Minutes" />
-                          <FormSelectOption key="3" value={60 * 60} label="Hours" />
-                        </FormSelect>
-                      </SplitItem>
-                    </Split>
-                  </FormGroup>
-                  <FormGroup
-                    label="Archival Period"
-                    fieldId="archivalPeriod"
-                    helperText="Time between copies of active recording data being pulled into Cryostat archive storage."
-                  >
-                    <Split hasGutter={true}>
-                      <SplitItem isFilled>
-                        <TextInput
-                          value={archivalPeriod}
-                          isDisabled={loading}
-                          isRequired
-                          type="number"
-                          id="archivalPeriod"
-                          aria-label="archival period"
-                          onChange={handleArchivalPeriodChange}
-                          min="0"
-                        />
-                      </SplitItem>
-                      <SplitItem>
-                        <FormSelect
-                          value={archivalPeriodUnits}
-                          isDisabled={loading}
-                          onChange={handleArchivalPeriodUnitsChange}
-                          aria-label="archival period units input"
-                        >
-                          <FormSelectOption key="1" value="1" label="Seconds" />
-                          <FormSelectOption key="2" value={60} label="Minutes" />
-                          <FormSelectOption key="3" value={60 * 60} label="Hours" />
-                        </FormSelect>
-                      </SplitItem>
-                    </Split>
-                  </FormGroup>
-                  <FormGroup
-                    label="Initial Delay"
-                    fieldId="initialDelay"
-                    helperText="Initial delay before archiving starts. The first archived copy will be made this long after the recording is started. The second archived copy will occur one Archival Period later."
-                  >
-                    <Split hasGutter={true}>
-                      <SplitItem isFilled>
-                        <TextInput
-                          value={initialDelay}
-                          isDisabled={loading}
-                          isRequired
-                          type="number"
-                          id="initialDelay"
-                          aria-label="initial delay"
-                          onChange={handleInitialDelayChange}
-                          min="0"
-                        />
-                      </SplitItem>
-                      <SplitItem>
-                        <FormSelect
-                          value={initialDelayUnits}
-                          isDisabled={loading}
-                          onChange={handleInitialDelayUnitsChanged}
-                          aria-label="initial delay units input"
-                        >
-                          <FormSelectOption key="1" value="1" label="Seconds" />
-                          <FormSelectOption key="2" value={60} label="Minutes" />
-                          <FormSelectOption key="3" value={60 * 60} label="Hours" />
-                        </FormSelect>
-                      </SplitItem>
-                    </Split>
-                  </FormGroup>
-                  <FormGroup
-                    label="Preserved Archives"
-                    fieldId="preservedArchives"
-                    helperText="The number of archived recording copies to preserve in archives for each target application affected by this rule."
-                  >
-                    <TextInput
-                      value={preservedArchives}
-                      isDisabled={loading}
-                      isRequired
-                      type="number"
-                      id="preservedArchives"
-                      aria-label="preserved archives"
-                      onChange={handlePreservedArchivesChange}
-                      min="0"
-                    />
-                  </FormGroup>
-                  <ActionGroup>
-                    <Button
-                      variant="primary"
-                      onClick={handleSubmit}
-                      isDisabled={
-                        loading ||
-                        nameValid !== ValidatedOptions.success ||
-                        !templateName ||
-                        !templateType ||
-                        !matchExpression
-                      }
-                      {...createButtonLoadingProps}
-                    >
-                      {loading ? 'Creating' : 'Create'}
-                    </Button>
-                    <Button variant="secondary" onClick={history.goBack} isAriaDisabled={loading}>
-                      Cancel
-                    </Button>
-                  </ActionGroup>
-                </Form>
+      <SearchExprServiceContext.Provider value={matchExpreRef.current} data-full-height>
+        <Grid hasGutter style={gridStyles}>
+          <GridItem xl={5} order={{ xl: '0', default: '1' }}>
+            <Card isFullHeight>
+              <CardBody className="overflow-auto">
+                <CreateRuleForm />
               </CardBody>
             </Card>
-          )}
-        </GridItem>
-        <GridItem xl={5}>
-          <Card>
-            <CardBody>
-              <MatchExpressionEvaluator
-                inlineHint
-                matchExpression={matchExpression}
-                onChange={setMatchExpressionValid}
-                onTargetChange={handleTargetChange}
-              />
-            </CardBody>
-          </Card>
-        </GridItem>
-      </Grid>
+          </GridItem>
+          <GridItem xl={7} order={{ xl: '1', default: '0' }}>
+            <Card isFullHeight>
+              <CardBody className="overflow-auto">
+                <MatchExpressionVisualizer />
+              </CardBody>
+            </Card>
+          </GridItem>
+        </Grid>
+      </SearchExprServiceContext.Provider>
     </BreadcrumbPage>
   );
 };

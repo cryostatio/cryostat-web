@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import '@app/Topology/styles/base.css';
 import '@app/app.css';
 import '@patternfly/react-core/dist/styles/base.css';
 import '@patternfly/quickstarts/dist/quickstarts.css';

@@ -37,6 +37,7 @@
  */
 
 import { LinearDotSpinner } from '@app/Shared/LinearDotSpinner';
+import { PropertyPath } from '@app/Shared/PropertyPath';
 import { MBeanMetrics, MBeanMetricsResponse } from '@app/Shared/Services/Api.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown, NodeAction } from '@app/Topology/Actions/NodeActions';
@@ -102,6 +103,7 @@ export interface EntityDetailsProps {
   entity?: GraphElement | ListElement;
   columnModifier?: React.ComponentProps<typeof DescriptionList>['columnModifier'];
   className?: string;
+  alertOptions?: AlertOptions;
   actionFilter?: (_: NodeAction) => boolean;
 }
 
@@ -112,6 +114,7 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   className,
   columnModifier,
   actionFilter,
+  alertOptions,
   ...props
 }) => {
   const [activeTab, setActiveTab] = React.useState<_supportedTab>('details');
@@ -124,13 +127,16 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       const _actions = actionFactory(entity, 'dropdownItem', actionFilter);
 
       return (
-        <div {...props}>
+        <div {...props} style={{ height: '100%' }}>
           <EntityDetailHeader
             titleContent={titleContent}
+            alertOptions={alertOptions}
             badge={nodeTypeToAbbr(data.nodeType)}
             badgeTooltipContent={data.nodeType}
             status={isTarget ? getStatusTargetNode(data) : []}
-            actionDropdown={<ActionDropdown actions={_actions} className={'entity-overview__action-menu'} />}
+            actionDropdown={
+              _actions.length ? <ActionDropdown actions={_actions} className={'entity-overview__action-menu'} /> : null
+            }
           />
           <Divider />
           <Tabs
@@ -157,11 +163,11 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
       );
     }
     return null;
-  }, [entity, setActiveTab, activeTab, props, columnModifier, actionFilter]);
+  }, [entity, setActiveTab, activeTab, props, columnModifier, actionFilter, alertOptions]);
   return <div className={css(className)}>{viewContent}</div>;
 };
 
-type DescriptionConfig = {
+export type DescriptionConfig = {
   key: React.Key;
   title: React.ReactNode;
   helperTitle: React.ReactNode;
@@ -169,7 +175,7 @@ type DescriptionConfig = {
   content: React.ReactNode;
 };
 
-const mapSection = (d: DescriptionConfig) => (
+export const mapSection = (d: DescriptionConfig) => (
   <DescriptionListGroup key={d.key}>
     <DescriptionListTermHelpText>
       <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
@@ -179,6 +185,17 @@ const mapSection = (d: DescriptionConfig) => (
     <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>{d.content}</DescriptionListDescription>
   </DescriptionListGroup>
 );
+
+export const constructHelperDescription = (description: React.ReactNode, kind: string, path: string | string[]) => {
+  return (
+    <Stack hasGutter>
+      <StackItem>{description}</StackItem>
+      <StackItem>
+        <PropertyPath kind={kind} path={path} />
+      </StackItem>
+    </Stack>
+  );
+};
 
 export const TargetDetails: React.FC<{
   targetNode: TargetNode;
@@ -193,36 +210,47 @@ export const TargetDetails: React.FC<{
         key: 'Connection URL',
         title: 'Connection URL',
         helperTitle: 'Connection URL',
-        helperDescription: 'JMX Service URL',
+        helperDescription: constructHelperDescription('JMX Service URL.', 'Target', ['connectUrl']),
         content: serviceRef.connectUrl,
       },
       {
         key: 'Alias',
         title: 'Alias',
         helperTitle: 'Alias',
-        helperDescription: 'Connection Nickname (same as Connection URL if not specified).',
+        helperDescription: constructHelperDescription(
+          'Connection Nickname (same as Connection URL if not specified).',
+          'Target',
+          ['alias']
+        ),
         content: serviceRef.alias,
       },
       {
         key: 'JVM ID',
         title: 'JVM ID',
         helperTitle: 'JVM ID',
-        helperDescription: 'The ID of the current JVM.',
+        helperDescription: constructHelperDescription('The ID of the current JVM.', 'Target', ['jvmId']),
         content: serviceRef.jvmId || <EmptyText text="No JVM ID" />,
       },
       {
         key: 'Labels',
         title: 'Labels',
         helperTitle: 'Labels',
-        helperDescription: 'Map of string keys and values that can be used to organize and categorize targets.',
+        helperDescription: constructHelperDescription(
+          'Map of string keys and values that can be used to organize and categorize targets.',
+          'Target',
+          ['labels']
+        ),
         content: <EntityLabels labels={serviceRef.labels} maxDisplay={3} />,
       },
       {
         key: 'Annotations',
         title: 'Annotations',
         helperTitle: 'Annotations',
-        helperDescription:
+        helperDescription: constructHelperDescription(
           'Annotations is an unstructured key value map stored with a target that may be set by external tools.',
+          'Target',
+          ['annotations']
+        ),
         content: <EntityAnnotations annotations={serviceRef.annotations} maxDisplay={3} />,
       },
     ];
@@ -281,7 +309,7 @@ const MBeanDetails: React.FC<{
             { connectUrl }
           )
           .pipe(
-            map((resp) => resp.data.targetNodes[0].mbeanMetrics),
+            map((resp) => resp.data.targetNodes[0].mbeanMetrics || {}),
             catchError((_) => of({}))
           )
           .subscribe(setMbeanMetrics)
@@ -621,12 +649,17 @@ export const GroupResources: React.FC<{ envNode: EnvironmentNode }> = ({ envNode
   );
 };
 
+export interface AlertOptions {
+  hideActions?: boolean;
+}
+
 export interface EntityDetailHeaderProps {
   titleContent: React.ReactNode;
   badgeTooltipContent?: React.ReactNode;
   badge?: ReturnType<typeof nodeTypeToAbbr>;
   actionDropdown?: React.ReactNode;
   status: [NodeStatus?, StatusExtra?];
+  alertOptions?: AlertOptions;
 }
 
 export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
@@ -635,6 +668,7 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
   badgeTooltipContent,
   actionDropdown,
   status: statusContent,
+  alertOptions = {},
   ...props
 }) => {
   const [status, extra] = statusContent;
@@ -657,7 +691,7 @@ export const EntityDetailHeader: React.FC<EntityDetailHeaderProps> = ({
         >
           <Stack hasGutter>
             <StackItem key={'alert-description'}>{extra?.description}</StackItem>
-            {extra?.callForAction ? (
+            {extra?.callForAction && !alertOptions.hideActions ? (
               <StackItem key={'alert-call-for-action'}>
                 <Flex>
                   {extra.callForAction.map((action, index) => (

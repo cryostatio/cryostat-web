@@ -478,7 +478,7 @@ export const ActionDropdown: React.FC<ActionDropdownProps> = ({
       className={css(className)}
       aria-label={'entity-action-menu'}
       position={position || 'right'}
-      menuAppendTo={menuAppendTo || (() => document.getElementById('topology-card') || document.body)}
+      menuAppendTo={menuAppendTo || document.body}
       onSelect={handleClose}
       isOpen={actionOpen}
       onClick={(e) => e.stopPropagation()}

@@ -63,7 +63,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { concatMap, forkJoin, Observable, of } from 'rxjs';
 import { SecurityCard } from '../SecurityPanel';
-import { CreateJmxCredentialModal } from './CreateJmxCredentialModal';
+import { CreateCredentialModal } from './CreateCredentialModal';
 import { MatchedTargetsTable } from './MatchedTargetsTable';
 
 const enum Actions {
@@ -174,7 +174,7 @@ const reducer = (state, action) => {
   }
 };
 
-export const StoreJmxCredentials = () => {
+export const StoreCredentials = () => {
   const context = React.useContext(ServiceContext);
   const [state, dispatch] = React.useReducer(reducer, {
     credentials: [] as StoredCredential[],
@@ -275,7 +275,7 @@ export const StoreJmxCredentials = () => {
   }, [setShowAuthModal]);
 
   const handleDeleteButton = React.useCallback(() => {
-    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteJMXCredentials)) {
+    if (context.settings.deletionDialogsEnabledFor(DeleteOrDisableWarningType.DeleteCredentials)) {
       setWarningModalOpen(true);
     } else {
       handleDeleteCredentials();
@@ -289,13 +289,13 @@ export const StoreJmxCredentials = () => {
   const TargetCredentialsToolbar = () => {
     const buttons = React.useMemo(() => {
       const arr = [
-        <Button key="add" variant="primary" aria-label="add-jmx-credential" onClick={handleAuthModalOpen}>
+        <Button key="add" variant="primary" aria-label="add-credential" onClick={handleAuthModalOpen}>
           Add
         </Button>,
         <Button
           key="delete"
           variant="danger"
-          aria-label="delete-selected-jmx-credential"
+          aria-label="delete-selected-credential"
           onClick={handleDeleteButton}
           isDisabled={!state.checkedCredentials.length}
         >
@@ -314,7 +314,7 @@ export const StoreJmxCredentials = () => {
     const deleteCredentialModal = React.useMemo(() => {
       return (
         <DeleteWarningModal
-          warningType={DeleteOrDisableWarningType.DeleteJMXCredentials}
+          warningType={DeleteOrDisableWarningType.DeleteCredentials}
           visible={warningModalOpen}
           onAccept={handleDeleteCredentials}
           onClose={handleWarningModalClose}
@@ -453,7 +453,7 @@ export const StoreJmxCredentials = () => {
     <>
       <TargetCredentialsToolbar />
       {content}
-      <CreateJmxCredentialModal
+      <CreateCredentialModal
         visible={showAuthModal}
         onDismiss={handleAuthModalClose}
         onPropsSave={handleAuthModalClose}
@@ -462,16 +462,16 @@ export const StoreJmxCredentials = () => {
   );
 };
 
-export const StoreJmxCredentialsCard: SecurityCard = {
-  title: 'Store JMX Credentials',
+export const StoreCredentialsCard: SecurityCard = {
+  title: 'Store Credentials',
   description: (
     <Text>
-      Credentials that Cryostat uses to connect to target JVMs over JMX are stored here. These are stored in encrypted
-      storage managed by the Cryostat backend. These credentials may be used for manually managing recordings and event
-      templates on target JVMs, as well as for Automated Rules which run in the background and open unattended target
-      connections. Any locally-stored client credentials held by your browser session are not displayed here. See{' '}
-      <Link to="/settings">Settings</Link> to configure locally-stored credentials.
+      Credentials that Cryostat uses to connect to Cryostat agents or target JVMs over JMX are stored here. These are
+      stored in encrypted storage managed by the Cryostat backend. These credentials may be used for manually managing
+      recordings and event templates on target JVMs, as well as for Automated Rules which run in the background and open
+      unattended target connections. Any locally-stored client credentials held by your browser session are not
+      displayed here. See <Link to="/settings">Settings</Link> to configure locally-stored credentials.
     </Text>
   ),
-  content: StoreJmxCredentials,
+  content: StoreCredentials,
 };

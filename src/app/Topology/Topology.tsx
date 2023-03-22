@@ -45,7 +45,6 @@ import { RootState } from '@app/Shared/Redux/ReduxStore';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import '@app/Topology/styles/base.css';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import { Bullseye, Card, CardBody } from '@patternfly/react-core';
@@ -55,11 +54,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { TopologyGraphView } from './GraphView/TopologyGraphView';
 import { TopologyListView } from './ListView/TopologyListView';
 import { HintBanner } from './Shared/HintBanner';
-import {
-  defaultSearchExpression as defaultSearchExprService,
-  DiscoveryTreeContext,
-  SearchExprServiceContext,
-} from './Shared/utils';
+import { DiscoveryTreeContext, SearchExprService, SearchExprServiceContext } from './Shared/utils';
 import { DEFAULT_EMPTY_UNIVERSE } from './typings';
 
 export interface TopologyProps {}
@@ -67,6 +62,7 @@ export interface TopologyProps {}
 export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
   const addSubscription = useSubscriptions();
   const context = React.useContext(ServiceContext);
+  const matchExpreRef = React.useRef(new SearchExprService());
   const firstFetchRef = React.useRef(false);
   const firstFetched = firstFetchRef.current;
 
@@ -150,7 +146,7 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
     }
 
     return (
-      <SearchExprServiceContext.Provider value={defaultSearchExprService}>
+      <SearchExprServiceContext.Provider value={matchExpreRef.current}>
         {isGraphView ? (
           <TopologyGraphView transformConfig={transformConfig} />
         ) : (
@@ -158,7 +154,16 @@ export const Topology: React.FC<TopologyProps> = ({ ..._props }) => {
         )}
       </SearchExprServiceContext.Provider>
     );
-  }, [isGraphView, transformConfig, firstFetched, error, firstFetchRef, setError, _refreshDiscoveryTree]);
+  }, [
+    isGraphView,
+    transformConfig,
+    firstFetched,
+    error,
+    firstFetchRef,
+    matchExpreRef,
+    setError,
+    _refreshDiscoveryTree,
+  ]);
 
   return (
     <>

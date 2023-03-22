@@ -35,67 +35,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export enum LocalStorageKey {
-  FEATURE_LEVEL,
-  DASHBOARD_CFG,
-  AUTOMATED_ANALYSIS_FILTERS,
-  TARGET_RECORDING_FILTERS,
-  JMX_CREDENTIAL_LOCATION,
-  JMX_CREDENTIALS,
-  TARGET,
-  TARGET_FAVORITES,
-  TOPOLOGY_SHOW_BANNER,
-  TOPOLOGY_GRAPH_POSITONS,
-  TOPOLOGY_NODE_POSITIONS,
-  TOPOLOGY_CONFIG,
-  TOPOLOGY_FILTERS,
-  AUTO_REFRESH_ENABLED,
-  AUTO_REFRESH_PERIOD,
-  AUTO_REFRESH_UNITS,
-  AUTOMATED_ANALYSIS_RECORDING_CONFIG,
-  CHART_CONTROLLER_CONFIG,
-  DELETION_DIALOGS_ENABLED,
-  VISIBLE_NOTIFICATIONS_COUNT,
-  NOTIFICATIONS_ENABLED,
-  WEBSOCKET_DEBOUNCE_MS,
-  DATETIME_FORMAT,
-  MATCH_EXPRES_VIS_GRAPH_POSITIONS,
-  MATCH_EXPRES_VIS_NODE_POSITIONS,
+import { ClipboardCopyButton, CodeBlock, CodeBlockAction, CodeBlockCode } from '@patternfly/react-core';
+import * as React from 'react';
+import { Target } from '../Services/Target.service';
+
+export interface MatchExpressionHintProps {
+  target?: Target;
 }
 
-export type LocalStorageKeyStrings = keyof typeof LocalStorageKey;
+export const MatchExpressionHint: React.FC<MatchExpressionHintProps> = ({ target, ...props }) => {
+  const [copied, setCopied] = React.useState(false);
 
-export const getFromLocalStorage = (key: LocalStorageKeyStrings, defaultValue: any): any => {
-  if (typeof window === 'undefined') {
-    return defaultValue;
-  }
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    return defaultValue;
-  }
-};
-
-export const saveToLocalStorage = (key: LocalStorageKeyStrings, value: any, error?: () => void) => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(key, JSON.stringify(value));
+  const exampleExpression = React.useMemo(() => {
+    let body: string;
+    if (!target || !target.alias || !target.connectUrl) {
+      body = 'true';
+    } else {
+      body = `target.alias == '${target.alias}' || target.annotations.cryostat['PORT'] == ${target.annotations?.cryostat['PORT']}`;
     }
-  } catch (err) {
-    console.warn(err);
-    error && error();
-  }
-};
+    body = JSON.stringify(body, null, 2);
+    body = body.substring(1, body.length - 1);
+    return body;
+  }, [target]);
 
-export const removeFromLocalStorage = (key: LocalStorageKeyStrings, error?: () => void): any => {
-  try {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(key);
-    }
-  } catch (err) {
-    console.warn(err);
-    error && error();
-  }
+  const onSaveToClipboard = React.useCallback(() => {
+    setCopied(true);
+    navigator.clipboard.writeText(exampleExpression);
+  }, [setCopied, exampleExpression]);
+
+  const actions = React.useMemo(() => {
+    return (
+      <CodeBlockAction>
+        <ClipboardCopyButton
+          id="match-expression-copy-button"
+          textId="match-expression-code-content"
+          aria-label="Copy to clipboard"
+          onClick={onSaveToClipboard}
+          exitDelay={copied ? 1500 : 600}
+          maxWidth="110px"
+          variant="plain"
+          onTooltipHidden={() => setCopied(false)}
+        >
+          {copied ? 'Copied!' : 'Click to copy to clipboard'}
+        </ClipboardCopyButton>
+      </CodeBlockAction>
+    );
+  }, [copied, onSaveToClipboard, setCopied]);
+
+  return (
+    <CodeBlock {...props} actions={actions}>
+      <CodeBlockCode>{exampleExpression}</CodeBlockCode>
+    </CodeBlock>
+  );
 };
