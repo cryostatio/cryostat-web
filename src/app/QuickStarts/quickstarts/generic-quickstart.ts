@@ -36,7 +36,6 @@
  * SOFTWARE.
  */
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
-import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
 
 // TODO: Add quickstarts based on the following example:

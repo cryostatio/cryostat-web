@@ -100,8 +100,8 @@ import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { map } from 'rxjs/operators';
 import { AuthModal } from './AuthModal';
-import CryostatJoyride from './CryostatJoyride';
-import { GlobalQuickStartDrawer } from './QuickStartDrawer';
+import CryostatJoyride from '../Joyride/CryostatJoyride';
+import { GlobalQuickStartDrawer } from '../QuickStarts/QuickStartDrawer';
 import { SslErrorModal } from './SslErrorModal';
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -113,9 +113,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const addSubscription = useSubscriptions();
   const routerHistory = useHistory();
   const { t } = useTranslation();
-  const joyride = useJoyride();
+  const {
+    setState: setJoyState,
+    state: joyState,
+    isNavBarOpen: joyNavOpen,
+    setIsNavBarOpen: setJoyNavOpen,
+  } = useJoyride();
 
-  const [isNavOpen, setIsNavOpen] = React.useState(true);
+  const [isNavOpen, setIsNavOpen] = [joyNavOpen, setJoyNavOpen];
   const [isMobileView, setIsMobileView] = React.useState(true);
   const [isNavOpenMobile, setIsNavOpenMobile] = React.useState(false);
   const [showAuthModal, setShowAuthModal] = React.useState(false);
@@ -233,8 +238,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   }, [setIsNavOpenMobile]);
 
   const onNavToggle = React.useCallback(() => {
-    setIsNavOpen((isNavOpen) => !isNavOpen);
-  }, [setIsNavOpen]);
+    setIsNavOpen((isNavOpen) => {
+      if (joyState.run === true && joyState.stepIndex === 1 && !isNavOpen) {
+        setJoyState({ stepIndex: 2 });
+      }
+      return !isNavOpen;
+    });
+  }, [setIsNavOpen, joyState, setJoyState]);
 
   const onPageResize = React.useCallback(
     (props: { mobileView: boolean; windowSize: number }) => {
@@ -336,8 +346,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   }, []);
 
   const handleOpenGuidedTour = React.useCallback(() => {
-    joyride.setState({ run: true });
-  }, [joyride]);
+    setJoyState({ run: true });
+  }, [setJoyState]);
 
   const helpItems = React.useMemo(() => {
     return [
@@ -471,6 +481,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               isNavOpen={isNavOpen}
               onNavToggle={isMobileView ? onNavToggleMobile : onNavToggle}
               data-quickstart-id="nav-toggle-btn"
+              data-tour-id="nav-toggle-btn"
             >
               <BarsIcon />
             </PageToggleButton>
@@ -541,6 +552,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                             to={route.path}
                             activeClassName="pf-m-current"
                             data-quickstart-id={`nav-${cleanQSDataId(route.label)}-tab`}
+                            data-tour-id={`${cleanQSDataId(route.label)}`}
                           >
                             {route.label}
                             {route.featureLevel !== undefined && levelBadge(route.featureLevel)}

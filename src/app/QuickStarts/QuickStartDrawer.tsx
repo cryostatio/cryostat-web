@@ -35,6 +35,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import build from '@app/build.json';
 import { LoadingView } from '@app/LoadingView/LoadingView';
 import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
 import { SessionState } from '@app/Shared/Services/Login.service';
@@ -48,7 +49,6 @@ import {
 } from '@patternfly/quickstarts';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import build from '@app/build.json';
 
 export interface GlobalQuickStartDrawerProps {
   children: React.ReactNode;
@@ -59,13 +59,10 @@ const HIGHLIGHT_ACTIONS = ['highlight']; // use native quickstarts highlight mar
 const SELECTOR_ID = `[\\w-&]+`; // has extra '&'
 
 // [linkLabel]{{action id}}
-const HIGHLIGHT_REGEXP = new RegExp(
-  `\\[(${LINK_LABEL})]{{(${HIGHLIGHT_ACTIONS.join('|')}) (${SELECTOR_ID})}}`,
-  'g',
-);
+const HIGHLIGHT_REGEXP = new RegExp(`\\[(${LINK_LABEL})]{{(${HIGHLIGHT_ACTIONS.join('|')}) (${SELECTOR_ID})}}`, 'g');
 
 export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const context = React.useContext(ServiceContext);
   const addSubscription = useSubscriptions();
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');

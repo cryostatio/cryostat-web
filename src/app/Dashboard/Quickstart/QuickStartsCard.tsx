@@ -47,7 +47,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
-import { allQuickStarts } from './dashboard-quickstarts';
+import { allQuickStarts } from '../../QuickStarts/quickstarts/dashboard-quickstarts';
 
 export interface QuickStartsCardProps extends DashboardCardProps {}
 

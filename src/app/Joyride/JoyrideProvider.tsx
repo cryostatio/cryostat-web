@@ -43,24 +43,30 @@ export interface JoyrideState {
   run: boolean;
   stepIndex: number;
   steps: Step[];
-  tourActive: boolean;
 }
 
 const defaultState = {
   run: false,
   stepIndex: 0,
   steps: [] as Step[],
-  tourActive: false,
 };
 
+// eslint-disable @typescript-eslint/no-empty-function
 export const JoyrideContext = React.createContext({
   state: defaultState,
-  setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => {},
+  setState: (_patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => {},
+  setIsNavBarOpen: (_isOpen: boolean) => {},
+  isNavBarOpen: true,
 });
+// eslint-enable @typescript-eslint/no-empty-function
 
 export const JoyrideProvider: React.FC<{ children }> = (props) => {
   const [state, setState] = useSetState(defaultState);
-  const value = React.useMemo(() => ({ state, setState }), [state, setState]);
+  const [isNavBarOpen, setIsNavBarOpen] = React.useState(true);
+  const value = React.useMemo(
+    () => ({ state, setState, isNavBarOpen, setIsNavBarOpen }),
+    [state, setState, isNavBarOpen, setIsNavBarOpen]
+  );
   return (
     <JoyrideContext.Provider value={value} {...props}>
       {props.children}
@@ -71,6 +77,8 @@ export const JoyrideProvider: React.FC<{ children }> = (props) => {
 export const useJoyride = (): {
   setState: (patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => void;
   state: JoyrideState;
+  isNavBarOpen: boolean;
+  setIsNavBarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 } => {
   const context = React.useContext(JoyrideContext);
   if (context === undefined) {

@@ -35,7 +35,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { LoadingView } from '@app/LoadingView/LoadingView';
 import { QuickStartCatalogPage } from '@patternfly/quickstarts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -47,12 +46,12 @@ const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsCatalogPageProp
   const { t } = useTranslation();
 
   return (
-      <QuickStartCatalogPage
-        title={t('QuickStarts.CATALOG_PAGE.TITLE')}
-        hint={t('QuickStarts.CATALOG_PAGE.HINT')}
-        showTitle
-        showFilter
-      />
+    <QuickStartCatalogPage
+      title={t('QuickStarts.CATALOG_PAGE.TITLE')}
+      hint={t('QuickStarts.CATALOG_PAGE.HINT')}
+      showTitle
+      showFilter
+    />
   );
 };
 

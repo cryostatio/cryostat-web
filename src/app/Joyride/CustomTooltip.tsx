@@ -35,33 +35,70 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
-import { QuickStart } from '@patternfly/quickstarts';
+import {
+  ActionList,
+  ActionListGroup,
+  ActionListItem,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardTitle,
+} from '@patternfly/react-core';
+import React from 'react';
+import { TooltipRenderProps } from 'react-joyride';
 
-// TODO: Put link quickstarts in a separate QuickStartCatalogSection
-const CryostatLinkQuickStart: QuickStart = {
-  apiVersion: 'v2.3.0',
-  metadata: {
-    name: 'cryostat-link-quickstart',
-    instructional: true,
-  },
-  spec: {
-    version: 2.3,
-    displayName: 'Cryostat Upstream Documentation',
-    durationMinutes: 1,
-    icon: cryostatLogo,
-    description: `Link to Cryostat's upstream documentation.`,
-    prerequisites: [''],
-    introduction: '### This is a generic quickstart.',
-    link: {
-      href: 'https://cryostat.io',
-      text: 'cryostat.io',
-    },
-    type: {
-      text: 'External',
-      color: 'purple',
-    },
-  },
+const CustomTooltip: React.FC<TooltipRenderProps> = ({
+  backProps,
+  primaryProps,
+  skipProps,
+  tooltipProps,
+  index,
+  isLastStep,
+  step,
+}) => {
+  const { title, content } = step;
+
+  const isFirstStep = React.useMemo(() => {
+    return index == 0;
+  }, [index]);
+
+  const actionList = React.useMemo(() => {
+    return (
+      <ActionList style={{ justifyContent: 'flex-end' }}>
+        <ActionListGroup>
+          <ActionListItem>
+            {isFirstStep ? (
+              <Button {...skipProps} variant="secondary">
+                Skip tour
+              </Button>
+            ) : (
+              <Button {...backProps} variant="secondary">
+                Back
+              </Button>
+            )}
+          </ActionListItem>
+          <ActionListItem>
+            {<Button {...primaryProps}>{isLastStep ? 'Okay, got it!' : isFirstStep ? 'Get Started' : 'Next'}</Button>}
+          </ActionListItem>
+        </ActionListGroup>
+      </ActionList>
+    );
+  }, [isFirstStep, isLastStep, backProps, primaryProps, skipProps]);
+
+  return (
+    <div
+      className="joyride-tooltip"
+      {...tooltipProps}
+      style={{ maxWidth: isFirstStep || isLastStep ? '50vh' : '34vh' }}
+    >
+      <Card>
+        <CardTitle style={{ textAlign: 'center' }}>{title}</CardTitle>
+        <CardBody style={{ fontSize: '15px' }}>{content}</CardBody>
+        {index !== 1 && <CardFooter>{actionList}</CardFooter>}
+      </Card>
+    </div>
+  );
 };
 
-export default CryostatLinkQuickStart;
+export default CustomTooltip;

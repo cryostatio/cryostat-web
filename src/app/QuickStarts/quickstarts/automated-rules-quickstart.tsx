@@ -51,7 +51,7 @@ export const AutomatedRulesQuickStart: QuickStart = {
     icon: cryostatLogo,
     description: `Learn about automated rules in [APP] and how to create one.`,
     prerequisites: [''],
-    introduction:  `
+    introduction: `
 # Automated Rules
 Automated Rules are configurations that instruct [APP] to create JDK Flight Recordings on matching target JVM applications. Each Automated Rule specifies parameters for which Event Template to use, how much data should be kept in the application recording buffer, and how frequently Cryostat should copy the application recording buffer into Cryostat’s own archived storage.
 
@@ -70,29 +70,29 @@ In this quick start, you will use [APP] to create an automated rule that will st
 
     `,
     tasks: [
-        {
-            title: 'Go to the Automated Rules page',
-            description: `1. Click the [Automated Rules]{{highlight nav-automatedrules-tab}} tab in the [APP] console navigation bar.`,
-            review: {
-                instructions: '#### Verify that you see the Automated Rules page.',
-                failedTaskHelp:
-                'If you do not see the navigation bar, you can click the `☰` button in the [top left corner of the page]{{highlight nav-toggle-btn}}.',
-            },  
+      {
+        title: 'Go to the Automated Rules page',
+        description: `1. Click the [Automated Rules]{{highlight nav-automatedrules-tab}} tab in the [APP] console navigation bar.`,
+        review: {
+          instructions: '#### Verify that you see the Automated Rules page.',
+          failedTaskHelp:
+            'If you do not see the navigation bar, you can click the `☰` button in the [top left corner of the page]{{highlight nav-toggle-btn}}.',
         },
-        {
-            title: 'Create a new Automated Rule',
-            description: `
+      },
+      {
+        title: 'Create a new Automated Rule',
+        description: `
 1. Click the [Create]{{highlight create-rule-btn}} button.
 [Read the [About Automated Rules]{{highlight about-rules}} section of the for more information.]{{admonition tip}}
-` ,           review: {
-                instructions: '#### Verify that you see the Automated Rules creation form.',
-                failedTaskHelp:
-                'If you do not see the creation form, follow the previous steps again.',
-            },  
+`,
+        review: {
+          instructions: '#### Verify that you see the Automated Rules creation form.',
+          failedTaskHelp: 'If you do not see the creation form, follow the previous steps again.',
         },
-        {
-            title: 'Fill out the Automated Rule form',
-            description: `
+      },
+      {
+        title: 'Fill out the Automated Rule form',
+        description: `
 The Automated Rule creation form has several fields that you can fill out to create a new rule. Each field has helper text that explains what the field is for.
 
 **The most important field is the [Match Expression]{{highlight rule-matchexpr}} field.** This field is used to match one or more target JVMs. The match expression is a [Java regular expression]{{highlight rule-matchexpr}} that is matched against the target JVM’s. For example, if you wanted to match all discovered target JVMs, try using the match expression: \`true\`{{copy}}.
@@ -114,16 +114,16 @@ Use the match expression tester to test your match expression against the target
 
 When you are finished, click the [Create]{{highlight create-rule-btn}} button.
 
-` ,           review: {
-                instructions: '#### Verify that you see the new rule in the list of rules.',
-                failedTaskHelp:
-                `If you do not see the new rule, follow the previous steps again.
+`,
+        review: {
+          instructions: '#### Verify that you see the new rule in the list of rules.',
+          failedTaskHelp: `If you do not see the new rule, follow the previous steps again.
                 If you cannot create the rule, check that you have entered valid values for each required field.`,
-            },
         },
-        {
-            title: 'Find the recording that was created by the rule',
-            description: `
+      },
+      {
+        title: 'Find the recording that was created by the rule',
+        description: `
 The rule we just created should have created a new recording on the target JVM that we selected. Let's find the recording.
 1. Click the [Recordings]{{highlight nav-recordings-tab}} tab in the [APP] console navigation bar.
 2. Click the [Target]{{highlight recordings-target}} dropdown menu and select the target JVM that you used to create the rule, if not already selected.
@@ -134,12 +134,13 @@ This recording was created by the rule that we just created and should have a na
 
 [If you set any other attributes on the rule, you should see those attributes reflected in the recording.]{{admonition note}}
 `,
-            review: {
-                instructions: '#### Verify that you see the new recording with the correct Automated Rule recording naming scheme in the list of recordings.',
-                failedTaskHelp:
-                'If you do not see the new recording, try verifying that your rule match expression correctly matches the target JVM. Also make sure that the rule is enabled, and that the target JVM is still running, and selected in the Target dropdown menu.',
-            },
-        }
+        review: {
+          instructions:
+            '#### Verify that you see the new recording with the correct Automated Rule recording naming scheme in the list of recordings.',
+          failedTaskHelp:
+            'If you do not see the new recording, try verifying that your rule match expression correctly matches the target JVM. Also make sure that the rule is enabled, and that the target JVM is still running, and selected in the Target dropdown menu.',
+        },
+      },
     ],
     conclusion: `
 <div>

@@ -489,7 +489,12 @@ export const Rules: React.FC<RulesProps> = (_) => {
               <ToolbarContent>
                 <ToolbarGroup variant="icon-button-group">
                   <ToolbarItem>
-                    <Button key="create" variant="primary" onClick={handleCreateRule} data-quickstart-id="create-rule-btn">
+                    <Button
+                      key="create"
+                      variant="primary"
+                      onClick={handleCreateRule}
+                      data-quickstart-id="create-rule-btn"
+                    >
                       Create
                     </Button>{' '}
                     <Button key="upload" variant="secondary" aria-label="Upload" onClick={handleUploadRule}>

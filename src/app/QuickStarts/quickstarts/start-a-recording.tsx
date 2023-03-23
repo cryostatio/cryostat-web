@@ -124,8 +124,7 @@ Stopping a recording will cut off the recording at the time that the recording i
 1. Click the [Stop]{{highlight recordings-stop-btn}} button to stop the recording.`,
         review: {
           instructions: '#### Verify that the STATE field of the recording has changed to STOPPED.',
-          failedTaskHelp:
-            'If you do not see the recording, try the Start a recording task again.',
+          failedTaskHelp: 'If you do not see the recording, try the Start a recording task again.',
         },
       },
       {
@@ -138,8 +137,7 @@ Downloading a recording will save the recording to your local machine as a JFR f
       `,
         review: {
           instructions: '#### Verify that you have downloaded the recording to your local machine.',
-          failedTaskHelp:
-            'If you do not see the recording, try the Start a recording task again.',
+          failedTaskHelp: 'If you do not see the recording, try the Start a recording task again.',
         },
       },
       {
@@ -163,7 +161,7 @@ Archiving a recording will save the recording to [APP]'s archival storage, and w
         review: {
           instructions: '#### Verify that the recording has been archived in the Archived Recordings tab.',
           failedTaskHelp:
-            'The recording name should have been saved like \`<jvm-alias>_<recording-name>_<timestamp>.jfr\`. If you still do not see the recording, try the proceeding tasks again.',
+            'The recording name should have been saved like `<jvm-alias>_<recording-name>_<timestamp>.jfr`. If you still do not see the recording, try the proceeding tasks again.',
         },
       },
     ],

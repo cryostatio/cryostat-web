@@ -37,6 +37,7 @@ SOFTWARE.
 */
 html, body, #root {
   height: 100%;
+  overflow: hidden;
 }
 
 :root {
@@ -44,6 +45,10 @@ html, body, #root {
   --cryostat-picton-blue: #5FA8D3;
   --cryostat-baby-blue: #95C9E9;
   --cryostat-white: #FFFFFF;
+}
+
+.pf-c-page__sidebar.pf-m-collapsed {
+  overflow: hidden !important;
 }
 
 .pf-c-card-not-found {
