@@ -49,7 +49,7 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { cleanQSDataId, openTabForUrl, portalRoot } from '@app/utils/utils';
+import { cleanDataId, openTabForUrl, portalRoot } from '@app/utils/utils';
 import {
   Alert,
   AlertActionCloseButton,
@@ -551,8 +551,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                             exact
                             to={route.path}
                             activeClassName="pf-m-current"
-                            data-quickstart-id={`nav-${cleanQSDataId(route.label)}-tab`}
-                            data-tour-id={`${cleanQSDataId(route.label)}`}
+                            data-quickstart-id={`nav-${cleanDataId(route.label)}-tab`}
+                            data-tour-id={`${cleanDataId(route.label)}`}
                           >
                             {route.label}
                             {route.featureLevel !== undefined && levelBadge(route.featureLevel)}

@@ -48,7 +48,7 @@ export const AboutCryostatModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   return (
     <AboutModal
-      appendTo={portalRoot || document.body}
+      appendTo={portalRoot}
       productName={build.productName}
       brandImageSrc={cryostatLogo}
       brandImageAlt="Cryostat Logo"

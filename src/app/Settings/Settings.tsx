@@ -39,7 +39,7 @@
 import { BreadcrumbPage } from '@app/BreadcrumbPage/BreadcrumbPage';
 import { FeatureFlag } from '@app/Shared/FeatureFlag/FeatureFlag';
 import { FeatureLevel } from '@app/Shared/Services/Settings.service';
-import { cleanQSDataId, hashCode } from '@app/utils/utils';
+import { cleanDataId, hashCode } from '@app/utils/utils';
 import {
   Card,
   Form,
@@ -287,7 +287,7 @@ const SettingTab: React.FC<SettingTabProps> = ({ featureLevelConfig, eventKey, t
         eventKey={eventKey}
         title={title}
         id={`${hashCode(`${eventKey}`)}`}
-        data-quickstart-id={cleanQSDataId(`settings-${t(eventKey.toString())}-tab`)}
+        data-quickstart-id={cleanDataId(`settings-${t(eventKey.toString())}-tab`)}
       >
         {children}
       </Tab>

@@ -172,7 +172,7 @@ export const evaluateTargetWithExpr = (target: unknown, matchExpression: string)
 
 export const portalRoot = document.getElementById('portal-root') || document.body;
 
-export const cleanQSDataId = (key: string): string => {
+export const cleanDataId = (key: string): string => {
   return key.toLocaleLowerCase().replace(/\s+/g, '');
 };
 
