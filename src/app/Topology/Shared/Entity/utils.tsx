@@ -44,13 +44,49 @@ import {
   ArchivedRecording,
   EventProbe,
   Recording,
+  RecordingState,
   StoredCredential,
   UPLOADS_SUBDIRECTORY,
 } from '@app/Shared/Services/Api.service';
 import { NotificationCategory, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import {
+  Bullseye,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTermHelpText,
+  DescriptionListTermHelpTextButton,
+  Flex,
+  FlexItem,
+  Label,
+  LabelProps,
+  Popover,
+} from '@patternfly/react-core';
+import { BanIcon, RunningIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { concatMap, defaultIfEmpty, forkJoin, map, Observable, of } from 'rxjs';
 import { TargetNode } from '../../typings';
+import { EmptyText } from '../EmptyText';
+
+export type DescriptionConfig = {
+  key: React.Key;
+  title: React.ReactNode;
+  helperTitle: React.ReactNode;
+  helperDescription: React.ReactNode;
+  content: React.ReactNode;
+};
+
+export const mapSection = (d: DescriptionConfig) => (
+  <DescriptionListGroup key={d.key}>
+    <DescriptionListTermHelpText>
+      <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
+        <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
+      </Popover>
+    </DescriptionListTermHelpText>
+    <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>{d.content}</DescriptionListDescription>
+  </DescriptionListGroup>
+);
 
 export type ResourceTypes = Recording | EventTemplate | EventType | EventProbe | Rule | StoredCredential;
 
@@ -327,6 +363,69 @@ export const getLinkPropsForTargetResource = (
       return { to: { pathname: '/security' } };
     default:
       throw new Error(`Unsupported resource: ${resourceType}`);
+  }
+};
+
+const ActiveRecDetail: React.FC<{ resources: ActiveRecording[] }> = ({ resources, ...props }) => {
+  const stateGroupConfigs = React.useMemo(
+    () => [
+      {
+        groupLabel: 'Running',
+        color: 'green',
+        icon: <RunningIcon color="green" />,
+        items: resources.filter((rec) => rec.state === RecordingState.RUNNING),
+      },
+      {
+        groupLabel: 'Stopped',
+        color: 'orange',
+        icon: <BanIcon color="orange" />,
+        items: resources.filter((rec) => rec.state === RecordingState.STOPPED),
+      },
+    ],
+    [resources]
+  );
+
+  return (
+    <DescriptionList>
+      <DescriptionListGroup>
+        <DescriptionListTermHelpText>Recording Status</DescriptionListTermHelpText>
+        <DescriptionListDescription>
+          <Flex {...props}>
+            {stateGroupConfigs.map(({ groupLabel, items, color, icon }) => (
+              <Flex key={groupLabel}>
+                <FlexItem spacer={{ default: 'spacerSm' }}>
+                  <span style={{ fontSize: '1.1em' }}>{items.length}</span>
+                </FlexItem>
+                <FlexItem>
+                  <Label icon={icon} color={color as LabelProps['color']}>
+                    {groupLabel}
+                  </Label>
+                </FlexItem>
+              </Flex>
+            ))}
+          </Flex>
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+    </DescriptionList>
+  );
+};
+
+const Nothing: React.FC<{ resources: ResourceTypes[] }> = () => {
+  return (
+    <Bullseye>
+      <EmptyText text={'Nothing to show.'} />
+    </Bullseye>
+  );
+};
+
+export const getExpandedResourceDetails = (
+  resourceType: TargetOwnedResourceType | TargetRelatedResourceType
+): React.FC<{ resources: ResourceTypes[] }> => {
+  switch (resourceType) {
+    case 'activeRecordings':
+      return ActiveRecDetail;
+    default:
+      return Nothing;
   }
 };
 

@@ -43,7 +43,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown, NodeAction } from '@app/Topology/Actions/NodeActions';
 import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { splitWordsOnUppercase } from '@app/utils/utils';
+import { hashCode, splitWordsOnUppercase } from '@app/utils/utils';
 import {
   Alert,
   AlertActionCloseButton,
@@ -72,7 +72,7 @@ import {
 } from '@patternfly/react-core';
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
-import { TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -85,13 +85,16 @@ import { EntityAnnotations } from './EntityAnnotations';
 import { EntityLabels } from './EntityLabels';
 import { EntityTitle } from './EntityTitle';
 import {
+  DescriptionConfig,
   getConnectUrlFromEvent,
+  getExpandedResourceDetails,
   getLinkPropsForTargetResource,
   getResourceAddedEvent as getResourceAddedEvents,
   getResourceListPatchFn,
   getResourceRemovedEvent as getResourceRemovedEvents,
   getTargetOwnedResources,
   isOwnedResource,
+  mapSection,
   ResourceTypes,
   TargetOwnedResourceType,
   TargetOwnedResourceTypeAsArray,
@@ -166,25 +169,6 @@ export const EntityDetails: React.FC<EntityDetailsProps> = ({
   }, [entity, setActiveTab, activeTab, props, columnModifier, actionFilter, alertOptions]);
   return <div className={css(className)}>{viewContent}</div>;
 };
-
-export type DescriptionConfig = {
-  key: React.Key;
-  title: React.ReactNode;
-  helperTitle: React.ReactNode;
-  helperDescription: React.ReactNode;
-  content: React.ReactNode;
-};
-
-export const mapSection = (d: DescriptionConfig) => (
-  <DescriptionListGroup key={d.key}>
-    <DescriptionListTermHelpText>
-      <Popover headerContent={d.helperTitle} bodyContent={d.helperDescription}>
-        <DescriptionListTermHelpTextButton>{d.title}</DescriptionListTermHelpTextButton>
-      </Popover>
-    </DescriptionListTermHelpText>
-    <DescriptionListDescription style={{ userSelect: 'text', cursor: 'text' }}>{d.content}</DescriptionListDescription>
-  </DescriptionListGroup>
-);
 
 export const constructHelperDescription = (description: React.ReactNode, kind: string, path: string | string[]) => {
   return (
@@ -460,6 +444,7 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
               <TableComposable variant="compact" borders={false}>
                 <Thead>
                   <Tr>
+                    <Th />
                     {columns.map((col, idx) => (
                       <Th key={col} textCenter={idx > 0}>
                         {col}
@@ -467,11 +452,9 @@ export const TargetResources: React.FC<{ targetNode: TargetNode }> = ({ targetNo
                     ))}
                   </Tr>
                 </Thead>
-                <Tbody>
-                  {rowData.map((val) => (
-                    <TargetResourceItem key={val} targetNode={targetNode} resourceType={val} />
-                  ))}
-                </Tbody>
+                {rowData.map((val) => (
+                  <TargetResourceItem key={val} targetNode={targetNode} resourceType={val} />
+                ))}
               </TableComposable>
             </CardBody>
           </Card>
@@ -493,6 +476,7 @@ export const TargetResourceItem: React.FC<{
   const [resources, setResources] = React.useState<ResourceTypes[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<Error>();
+  const [expanded, setExpanded] = React.useState(false);
 
   React.useEffect(() => {
     addSubscription(
@@ -578,29 +562,48 @@ export const TargetResourceItem: React.FC<{
     [targetNode.target, services.target]
   );
 
+  const ExpandedComponent = React.useMemo(() => getExpandedResourceDetails(resourceType), [resourceType]);
+
   return (
-    <Tr {...props}>
-      <Td key={`${resourceType}-resource-name`} dataLabel={'Resource'}>
-        {
-          <Link {...getLinkPropsForTargetResource(resourceType)} onClick={switchTarget}>
-            {splitWordsOnUppercase(resourceType, true).join(' ')}
-          </Link>
-        }
-      </Td>
-      <Td key={`${resourceType}-resource-count`} dataLabel={'Total'} textCenter>
-        {loading ? (
-          <Bullseye>
-            <LinearDotSpinner />
-          </Bullseye>
-        ) : error ? (
-          <Tooltip content={error.message}>
-            <WarningTriangleIcon color="var(--pf-global--warning-color--100)" />
-          </Tooltip>
-        ) : (
-          <Badge>{resources.length}</Badge>
-        )}
-      </Td>
-    </Tr>
+    <Tbody isExpanded={ExpandedComponent !== null && expanded}>
+      <Tr {...props}>
+        <Td
+          expand={{
+            rowIndex: hashCode(`${targetNode.name}-${resourceType}`),
+            isExpanded: expanded,
+            onToggle: () => setExpanded((old) => !old),
+            expandId: `${targetNode.name}-${resourceType}-expanded-detail`,
+          }}
+        />
+        <Td key={`${resourceType}-resource-name`} dataLabel={'Resource'}>
+          {
+            <Link {...getLinkPropsForTargetResource(resourceType)} onClick={switchTarget}>
+              {splitWordsOnUppercase(resourceType, true).join(' ')}
+            </Link>
+          }
+        </Td>
+        <Td key={`${resourceType}-resource-count`} dataLabel={'Total'} textCenter>
+          {loading ? (
+            <Bullseye>
+              <LinearDotSpinner />
+            </Bullseye>
+          ) : error ? (
+            <Tooltip content={error.message}>
+              <WarningTriangleIcon color="var(--pf-global--warning-color--100)" />
+            </Tooltip>
+          ) : (
+            <Badge>{resources.length}</Badge>
+          )}
+        </Td>
+      </Tr>
+      <Tr isExpanded={expanded}>
+        <Td colSpan={3}>
+          <ExpandableRowContent>
+            <ExpandedComponent resources={resources} />
+          </ExpandableRowContent>
+        </Td>
+      </Tr>
+    </Tbody>
   );
 };
 
