@@ -76,7 +76,7 @@ import { ExpandableRowContent, TableComposable, Tbody, Td, Th, Thead, Tr } from 
 import { GraphElement, NodeStatus } from '@patternfly/react-topology';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { catchError, combineLatest, concatMap, map, merge, of, Subject, switchMap } from 'rxjs';
+import { catchError, concatMap, map, of } from 'rxjs';
 import { isRenderable } from '../../GraphView/UtilsFactory';
 import { EnvironmentNode, isTargetNode, TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
@@ -86,20 +86,14 @@ import { EntityLabels } from './EntityLabels';
 import { EntityTitle } from './EntityTitle';
 import {
   DescriptionConfig,
-  getConnectUrlFromEvent,
   getExpandedResourceDetails,
   getLinkPropsForTargetResource,
-  getResourceAddedEvent as getResourceAddedEvents,
-  getResourceListPatchFn,
-  getResourceRemovedEvent as getResourceRemovedEvents,
-  getTargetOwnedResources,
-  isOwnedResource,
   mapSection,
-  ResourceTypes,
   TargetOwnedResourceType,
   TargetOwnedResourceTypeAsArray,
   TargetRelatedResourceType,
   TargetRelatedResourceTypeAsArray,
+  useResources,
 } from './utils';
 
 export interface EntityDetailsProps {
@@ -469,93 +463,9 @@ export const TargetResourceItem: React.FC<{
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType;
 }> = ({ targetNode, resourceType, ...props }) => {
   const services = React.useContext(ServiceContext);
-  const addSubscription = useSubscriptions();
-  const targetSubjectRef = React.useRef(new Subject<TargetNode>());
-  const targetSubject = targetSubjectRef.current;
+  const { resources, error, loading } = useResources(targetNode, resourceType);
 
-  const [resources, setResources] = React.useState<ResourceTypes[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<Error>();
   const [expanded, setExpanded] = React.useState(false);
-
-  React.useEffect(() => {
-    addSubscription(
-      targetSubject.pipe(switchMap((tn) => getTargetOwnedResources(resourceType, tn, services.api))).subscribe({
-        next: (rs) => {
-          setLoading(false);
-          setError(undefined);
-          setResources(rs);
-        },
-        error: (error) => {
-          setLoading(false);
-          setError(error);
-        },
-      })
-    );
-  }, [setLoading, addSubscription, setResources, resourceType, services.api, targetSubject]);
-
-  React.useEffect(() => {
-    const patchEventConfig = [
-      {
-        categories: getResourceAddedEvents(resourceType),
-      },
-      {
-        categories: getResourceRemovedEvents(resourceType),
-        deleted: true,
-      },
-    ];
-
-    patchEventConfig.forEach(({ categories, deleted }) => {
-      addSubscription(
-        targetSubject
-          .pipe(
-            switchMap((tn) =>
-              combineLatest([of(tn), merge(...categories.map((cat) => services.notificationChannel.messages(cat)))])
-            )
-          )
-          .subscribe(([targetNode, event]) => {
-            const extractedUrl = getConnectUrlFromEvent(event);
-            const isOwned = isOwnedResource(resourceType);
-            if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
-              setLoading(true);
-              setResources((old) => {
-                // Avoid accessing state directly, which
-                // causes the effect to run every time
-                addSubscription(
-                  getResourceListPatchFn(resourceType, targetNode, services.api)(old, event, deleted).subscribe({
-                    next: (rs) => {
-                      setLoading(false);
-                      setError(undefined);
-                      setResources(rs);
-                    },
-                    error: (error) => {
-                      setLoading(false);
-                      setError(error);
-                    },
-                  })
-                );
-                return old;
-              });
-            }
-          })
-      );
-    });
-  }, [
-    addSubscription,
-    setLoading,
-    services.api,
-    targetSubject,
-    resourceType,
-    services.notificationChannel,
-    setResources,
-    setError,
-  ]);
-
-  // Need to call after registering listeners
-  // Do not reorder
-  React.useEffect(() => {
-    targetSubject.next(targetNode);
-  }, [targetNode, targetSubject]);
 
   const switchTarget = React.useCallback(
     () => services.target.setTarget(targetNode.target),

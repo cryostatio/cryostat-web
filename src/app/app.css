@@ -523,3 +523,15 @@ input[type=number].datetime-picker__number-input {
 .overflow-auto {
   overflow: auto;
 }
+
+svg.topology__node-decorator-icon.warning {
+  fill: var(--pf-global--warning-color--100);
+}
+
+svg.topology__node-decorator-icon.success {
+  fill: var(--pf-global--success-color--100);
+}
+
+svg.topology__node-decorator-icon.progress {
+  fill: var(--pf-global--info-color--100);
+}

@@ -49,6 +49,7 @@ import {
   UPLOADS_SUBDIRECTORY,
 } from '@app/Shared/Services/Api.service';
 import { NotificationCategory, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
+import { ServiceContext } from '@app/Shared/Services/Services';
 import {
   Bullseye,
   DescriptionList,
@@ -65,7 +66,19 @@ import {
 import { BanIcon, RunningIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { concatMap, defaultIfEmpty, forkJoin, map, Observable, of } from 'rxjs';
+import {
+  combineLatest,
+  concatMap,
+  defaultIfEmpty,
+  forkJoin,
+  map,
+  merge,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+  switchMap,
+} from 'rxjs';
 import { TargetNode } from '../../typings';
 import { EmptyText } from '../EmptyText';
 
@@ -431,4 +444,98 @@ export const getExpandedResourceDetails = (
 
 export const getConnectUrlFromEvent = (event: NotificationMessage): string | undefined => {
   return event.message.target || event.message.targetId;
+};
+
+export const useResources = <R = ResourceTypes,>(
+  targetNode: TargetNode,
+  resourceType: TargetOwnedResourceType | TargetRelatedResourceType
+): { resources: R[]; error?: Error; loading?: boolean } => {
+  const { api, notificationChannel } = React.useContext(ServiceContext);
+  const subListRef = React.useRef<Subscription[]>([]);
+  const subList = subListRef.current;
+
+  const [resources$, setResources$] = React.useState<ResourceTypes[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<Error>();
+
+  const targetSubjectRef = React.useRef(new Subject<TargetNode>());
+  const targetSubject = targetSubjectRef.current;
+
+  React.useEffect(() => {
+    subList.push(
+      targetSubject.pipe(switchMap((tn) => getTargetOwnedResources(resourceType, tn, api))).subscribe({
+        next: (rs) => {
+          setLoading(false);
+          setError(undefined);
+          setResources$(rs);
+        },
+        error: (error) => {
+          setLoading(false);
+          setError(error);
+        },
+      })
+    );
+  }, [setLoading, setError, setResources$, api, targetSubject, subList, resourceType]);
+
+  React.useEffect(() => {
+    const patchEventConfig = [
+      {
+        categories: getResourceAddedEvent(resourceType),
+      },
+      {
+        categories: getResourceRemovedEvent(resourceType),
+        deleted: true,
+      },
+    ];
+
+    patchEventConfig.forEach(({ categories, deleted }) => {
+      subList.push(
+        targetSubject
+          .pipe(
+            switchMap((tn) =>
+              combineLatest([of(tn), merge(...categories.map((cat) => notificationChannel.messages(cat)))])
+            )
+          )
+          .subscribe(([targetNode, event]) => {
+            const extractedUrl = getConnectUrlFromEvent(event);
+            const isOwned = isOwnedResource(resourceType);
+            if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
+              setLoading(true);
+              setResources$((old) => {
+                // Avoid accessing state directly, which
+                // causes the effect to run every time
+                subList.push(
+                  getResourceListPatchFn(resourceType, targetNode, api)(old, event, deleted).subscribe({
+                    next: (rs) => {
+                      setLoading(false);
+                      setError(undefined);
+                      setResources$(rs);
+                    },
+                    error: (error) => {
+                      setLoading(false);
+                      setError(error);
+                    },
+                  })
+                );
+                return old;
+              });
+            }
+          })
+      );
+    });
+  }, [setLoading, api, notificationChannel, targetSubject, subList, setLoading, setResources$, setError, resourceType]);
+
+  // Need to call after registering listeners
+  // Do not reorder
+  React.useEffect(() => {
+    targetSubject.next(targetNode);
+  }, [targetNode, targetSubject]);
+
+  React.useEffect(() => () => subList.forEach((sub) => sub.unsubscribe()));
+
+  return {
+    error: error,
+    loading: loading,
+    resources: resources$ as R[],
+  };
 };
