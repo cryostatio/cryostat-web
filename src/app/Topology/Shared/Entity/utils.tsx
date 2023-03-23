@@ -50,6 +50,7 @@ import {
 } from '@app/Shared/Services/Api.service';
 import { NotificationCategory, NotificationMessage } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   Bullseye,
   DescriptionList,
@@ -229,7 +230,7 @@ export const getTargetOwnedResources = (
   }
 };
 
-export const getResourceAddedEvent = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
+export const getResourceAddedEvents = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
   switch (resourceType) {
     case 'activeRecordings':
       return [NotificationCategory.ActiveRecordingCreated, NotificationCategory.SnapshotCreated];
@@ -252,7 +253,7 @@ export const getResourceAddedEvent = (resourceType: TargetOwnedResourceType | Ta
   }
 };
 
-export const getResourceRemovedEvent = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
+export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
   switch (resourceType) {
     case 'activeRecordings':
       return [NotificationCategory.ActiveRecordingDeleted, NotificationCategory.SnapshotDeleted];
@@ -451,10 +452,9 @@ export const useResources = <R = ResourceTypes,>(
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType
 ): { resources: R[]; error?: Error; loading?: boolean } => {
   const { api, notificationChannel } = React.useContext(ServiceContext);
-  const subListRef = React.useRef<Subscription[]>([]);
-  const subList = subListRef.current;
+  const addSubscription = useSubscriptions();
 
-  const [resources$, setResources$] = React.useState<ResourceTypes[]>([]);
+  const [resources, setResources] = React.useState<ResourceTypes[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<Error>();
 
@@ -462,12 +462,12 @@ export const useResources = <R = ResourceTypes,>(
   const targetSubject = targetSubjectRef.current;
 
   React.useEffect(() => {
-    subList.push(
+    addSubscription(
       targetSubject.pipe(switchMap((tn) => getTargetOwnedResources(resourceType, tn, api))).subscribe({
         next: (rs) => {
           setLoading(false);
           setError(undefined);
-          setResources$(rs);
+          setResources(rs);
         },
         error: (error) => {
           setLoading(false);
@@ -475,21 +475,21 @@ export const useResources = <R = ResourceTypes,>(
         },
       })
     );
-  }, [setLoading, setError, setResources$, api, targetSubject, subList, resourceType]);
+  }, [addSubscription, setLoading, setError, setResources, api, targetSubject, resourceType]);
 
   React.useEffect(() => {
     const patchEventConfig = [
       {
-        categories: getResourceAddedEvent(resourceType),
+        categories: getResourceAddedEvents(resourceType),
       },
       {
-        categories: getResourceRemovedEvent(resourceType),
+        categories: getResourceRemovedEvents(resourceType),
         deleted: true,
       },
     ];
 
     patchEventConfig.forEach(({ categories, deleted }) => {
-      subList.push(
+      addSubscription(
         targetSubject
           .pipe(
             switchMap((tn) =>
@@ -501,15 +501,15 @@ export const useResources = <R = ResourceTypes,>(
             const isOwned = isOwnedResource(resourceType);
             if (!isOwned || (extractedUrl && extractedUrl === targetNode.target.connectUrl)) {
               setLoading(true);
-              setResources$((old) => {
+              setResources((old) => {
                 // Avoid accessing state directly, which
                 // causes the effect to run every time
-                subList.push(
+                addSubscription(
                   getResourceListPatchFn(resourceType, targetNode, api)(old, event, deleted).subscribe({
                     next: (rs) => {
                       setLoading(false);
                       setError(undefined);
-                      setResources$(rs);
+                      setResources(rs);
                     },
                     error: (error) => {
                       setLoading(false);
@@ -523,7 +523,7 @@ export const useResources = <R = ResourceTypes,>(
           })
       );
     });
-  }, [setLoading, api, notificationChannel, targetSubject, subList, setLoading, setResources$, setError, resourceType]);
+  }, [addSubscription, setLoading, api, targetSubject, resourceType, notificationChannel, setResources, setError]);
 
   // Need to call after registering listeners
   // Do not reorder
@@ -531,11 +531,9 @@ export const useResources = <R = ResourceTypes,>(
     targetSubject.next(targetNode);
   }, [targetNode, targetSubject]);
 
-  React.useEffect(() => () => subList.forEach((sub) => sub.unsubscribe()));
-
   return {
     error: error,
     loading: loading,
-    resources: resources$ as R[],
+    resources: resources as R[],
   };
 };

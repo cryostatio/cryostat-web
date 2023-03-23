@@ -35,9 +35,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { ActiveRecording, isHttpError, RecordingState } from '@app/Shared/Services/Api.service';
+import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
 import { Tooltip } from '@patternfly/react-core';
-import { ExclamationCircleIcon, InProgressIcon, RunningIcon, WarningTriangleIcon } from '@patternfly/react-icons';
+import { InProgressIcon, RunningIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import {
   Decorator,
