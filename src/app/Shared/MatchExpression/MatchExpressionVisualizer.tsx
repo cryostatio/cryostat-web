@@ -366,7 +366,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
             </Title>
             <EmptyStateSecondaryActions>
               <EmptyStateBody>{`${
-                matchExpression === '' ? 'Enter' : 'Clear'
+                matchExpression === '' ? 'Enter another' : 'Clear'
               } Match Expression and try again.`}</EmptyStateBody>
             </EmptyStateSecondaryActions>
           </EmptyState>
@@ -411,7 +411,7 @@ const ListView: React.FC<{ alertOptions?: AlertOptions }> = ({ alertOptions, ...
         </DataListItem>
       );
     });
-  }, [filtered, expanded, toggleExpand, props, alertOptions]);
+  }, [filtered, expanded, matchExpression, toggleExpand, props, alertOptions]);
 
   return (
     <DataList aria-label={'Target List'} style={{ height: '100%' }}>

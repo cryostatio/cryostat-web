@@ -92,9 +92,6 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
   }, [addSubscription, context.targets, setTargets]);
 
   const matchedTargets = React.useMemo(() => {
-    if ((matchExpression ?? '') === '' || !targets.length) {
-      return targets;
-    }
     try {
       return targets.filter((t) => {
         const res = evaluateTargetWithExpr(t, matchExpression);
@@ -159,7 +156,9 @@ export const CredentialTestTable: React.FC<CredentialTestTableProps> = ({ ...pro
             <Title headingLevel="h3" size="lg">
               No Targets Matched
             </Title>
-            <EmptyStateBody>Enter another match expression and try again.</EmptyStateBody>
+            <EmptyStateBody>{`${
+              matchExpression === '' ? 'Enter another' : 'Clear'
+            } Match Expression and try again.`}</EmptyStateBody>
           </EmptyState>
         </Bullseye>
       )}
@@ -295,7 +294,7 @@ const CredentialToolbar: React.FC<CredentialToolbarProps> = ({ onFilter, onSearc
           <StatusFilter onChange={onFilter} />
         </ToolbarGroup>
         <ToolbarItem>
-          <Tooltip content={'Test credentials against all matching targets. This operation can be slow.'}>
+          <Tooltip content={'Test credentials against all matching targets (ignoring filters).'}>
             <Button variant="primary" onClick={handleTestAll} isAriaDisabled={disableTestButton}>
               Test All
             </Button>
