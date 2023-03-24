@@ -42,8 +42,6 @@ import { debounceTime, Subscription } from 'rxjs';
 
 export const CredentialContext = React.createContext(new StreamOf<AuthCredential>({ username: '', password: '' }));
 
-export const TestAllContext = React.createContext(new StreamOf<boolean>(false));
-
 export const useAuthCredential = (
   ignoreEmit?: boolean,
   debounceMs = 50

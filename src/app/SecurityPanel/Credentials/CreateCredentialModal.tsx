@@ -63,7 +63,7 @@ import {
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
 import { CredentialTestTable } from './CredentialTestTable';
-import { CredentialContext, TestAllContext, useAuthCredential } from './utils';
+import { CredentialContext, useAuthCredential } from './utils';
 
 export interface CreateCredentialModalProps {
   visible: boolean;
@@ -79,7 +79,6 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
 }) => {
   const matchExpreRef = React.useRef(new SearchExprService());
   const loadingRef = React.useRef(new StreamOf(false));
-  const testAllRef = React.useRef(new StreamOf(false));
   const credentialRef = React.useRef(new StreamOf<AuthCredential>({ username: '', password: '' }));
   const addSubscription = useSubscriptions();
 
@@ -103,29 +102,22 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
     >
       <SearchExprServiceContext.Provider value={matchExpreRef.current}>
         <CredentialContext.Provider value={credentialRef.current}>
-          <TestAllContext.Provider value={testAllRef.current}>
-            <Grid hasGutter style={{ height: '100%' }}>
-              <GridItem xl={4}>
-                <Card isFullHeight isFlat>
-                  <CardBody className="overflow-auto">
-                    <AuthForm
-                      {...props}
-                      onDismiss={onDismiss}
-                      onPropsSave={onPropsSave}
-                      progressChange={setInProgress}
-                    />
-                  </CardBody>
-                </Card>
-              </GridItem>
-              <GridItem xl={8}>
-                <Card isFullHeight isFlat>
-                  <CardBody className="overflow-auto">
-                    <FormHelper />
-                  </CardBody>
-                </Card>
-              </GridItem>
-            </Grid>
-          </TestAllContext.Provider>
+          <Grid hasGutter style={{ height: '100%' }}>
+            <GridItem xl={4}>
+              <Card isFullHeight isFlat>
+                <CardBody className="overflow-auto">
+                  <AuthForm {...props} onDismiss={onDismiss} onPropsSave={onPropsSave} progressChange={setInProgress} />
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem xl={8}>
+              <Card isFullHeight isFlat>
+                <CardBody className="overflow-auto">
+                  <FormHelper />
+                </CardBody>
+              </Card>
+            </GridItem>
+          </Grid>
         </CredentialContext.Provider>
       </SearchExprServiceContext.Provider>
     </Modal>

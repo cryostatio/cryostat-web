@@ -74,7 +74,7 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
-import { TestAllContext, useAuthCredential } from './utils';
+import { useAuthCredential } from './utils';
 
 export interface CredentialTestTableProps {}
 
@@ -261,7 +261,12 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
         )}
       </Td>
       <Td textCenter>
-        <Button variant="secondary" isDisabled={loading || isEmptyCredential} onClick={handleTest}>
+        <Button
+          variant="secondary"
+          className="credential__test-button"
+          isDisabled={loading || isEmptyCredential}
+          onClick={handleTest}
+        >
           Test
         </Button>
       </Td>
@@ -275,12 +280,15 @@ interface CredentialToolbarProps {
 }
 
 const CredentialToolbar: React.FC<CredentialToolbarProps> = ({ onFilter, onSearch, ...props }) => {
-  const testAllContext = React.useContext(TestAllContext);
   const [credential] = useAuthCredential();
 
   const handleTestAll = React.useCallback(() => {
-    testAllContext.set(true);
-  }, [testAllContext]);
+    const buttons = document.getElementsByClassName('credential__test-button');
+    for (let i = 0; i < buttons.length; i++) {
+      const btn = buttons[i] as HTMLElement;
+      btn.click();
+    }
+  }, []);
 
   const disableTestButton = React.useMemo(() => credential.username === '' || credential.password === '', [credential]);
 
