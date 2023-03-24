@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 
+import { ISortBy, SortByDirection } from '@patternfly/react-table';
 import _ from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -186,3 +187,24 @@ export class StreamOf<T> {
     this._stream$.next(value);
   }
 }
+
+export const getValue = (object: any, keyPath: string[]) => {
+  return keyPath.reduce((acc, key) => acc[key], object);
+};
+
+export const sortResouces = (
+  { index, direction }: ISortBy,
+  resources: any[],
+  mapper: (index?: number) => string[] | undefined
+) => {
+  const keyPaths = mapper(index);
+  if (!keyPaths || !keyPaths.length) {
+    return resources;
+  }
+  const sorted = resources.sort((a, b) => {
+    a = getValue(a, keyPaths);
+    b = getValue(b, keyPaths);
+    return a < b ? -1 : a > b ? 1 : 0;
+  });
+  return direction === SortByDirection.asc ? sorted : sorted.reverse();
+};

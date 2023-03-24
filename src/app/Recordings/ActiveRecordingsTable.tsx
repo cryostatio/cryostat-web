@@ -57,6 +57,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { NO_TARGET } from '@app/Shared/Services/Target.service';
 import { useDayjs } from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { sortResouces } from '@app/utils/utils';
 import {
   Button,
   Checkbox,
@@ -79,7 +80,7 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { ExpandableRowContent, Tbody, Td, Tr } from '@patternfly/react-table';
+import { ExpandableRowContent, ISortBy, Tbody, Td, ThProps, Tr } from '@patternfly/react-table';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -90,14 +91,46 @@ import { LabelCell } from '../RecordingMetadata/LabelCell';
 import { RecordingActions } from './RecordingActions';
 import { filterRecordings, RecordingFilters, RecordingFiltersCategories } from './RecordingFilters';
 import { RecordingLabelsPanel } from './RecordingLabelsPanel';
-import { RecordingsTable } from './RecordingsTable';
+import { ColumnConfig, RecordingsTable } from './RecordingsTable';
 import { ReportFrame } from './ReportFrame';
 
 export enum PanelContent {
   LABELS,
 }
 
-const tableColumns: string[] = ['Name', 'Start Time', 'Duration', 'State', 'Labels'];
+const tableColumns = [
+  {
+    title: 'Name',
+    keyPaths: ['name'],
+    sortable: true,
+  },
+  {
+    title: 'Start Time',
+    keyPaths: ['startTime'],
+    sortable: true,
+  },
+  {
+    title: 'Duration',
+    keyPaths: ['duration'],
+    sortable: true,
+  },
+  {
+    title: 'State',
+    keyPaths: ['state'],
+    sortable: true,
+  },
+  {
+    title: 'Labels',
+    keyPaths: ['metadata', 'labels'],
+  },
+];
+
+const mapper = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].keyPaths;
+  }
+  return undefined;
+};
 
 export interface ActiveRecordingsTableProps {
   archiveEnabled: boolean;
@@ -127,6 +160,21 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     DELETE: false,
     STOP: false,
   });
+  const [sortBy, setSortBy] = React.useState({} as ISortBy);
+
+  const getSortParams = React.useCallback(
+    (columnIndex: number): ThProps['sort'] => ({
+      sortBy: sortBy,
+      onSort: (_event, index, direction) => {
+        setSortBy({
+          index: index,
+          direction: direction,
+        });
+      },
+      columnIndex,
+    }),
+    [sortBy, setSortBy]
+  );
 
   const targetRecordingFilters = useSelector((state: RootState) => {
     const filters = state.recordingFilters.list.filter(
@@ -297,8 +345,8 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
   }, [addSubscription, context, context.notificationChannel, setRecordings]);
 
   React.useEffect(() => {
-    setFilteredRecordings(filterRecordings(recordings, targetRecordingFilters));
-  }, [recordings, targetRecordingFilters, setFilteredRecordings]);
+    setFilteredRecordings(sortResouces(sortBy, filterRecordings(recordings, targetRecordingFilters), mapper));
+  }, [sortBy, recordings, targetRecordingFilters, setFilteredRecordings]);
 
   React.useEffect(() => {
     setCheckedIndices((ci) => {
@@ -491,6 +539,14 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
     [checkedIndices, setShowDetailsPanel]
   );
 
+  const columnConfig: ColumnConfig = React.useMemo(
+    () => ({
+      columns: tableColumns,
+      onSort: getSortParams,
+    }),
+    [getSortParams]
+  );
+
   return (
     <Drawer isExpanded={showDetailsPanel} isInline id={'active-recording-drawer'}>
       <DrawerContent
@@ -501,7 +557,7 @@ export const ActiveRecordingsTable: React.FunctionComponent<ActiveRecordingsTabl
           <RecordingsTable
             tableTitle="Active Flight Recordings"
             toolbar={RecordingsToolbar}
-            tableColumns={tableColumns}
+            tableColumns={columnConfig}
             isHeaderChecked={headerChecked}
             onHeaderCheck={handleHeaderCheck}
             isEmpty={!recordings.length}
@@ -844,10 +900,10 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             onToggle: handleToggle,
           }}
         />
-        <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[0]}>
+        <Td key={`active-table-row-${index}_2`} dataLabel={tableColumns[0].title}>
           {recording.name}
         </Td>
-        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[1]}>
+        <Td key={`active-table-row-${index}_3`} dataLabel={tableColumns[1].title}>
           <Timestamp
             className="recording-table__timestamp"
             tooltip={{ variant: TimestampTooltipVariant.custom, content: dayjs(recording.startTime).toISOString() }}
@@ -855,13 +911,13 @@ export const ActiveRecordingRow: React.FC<ActiveRecordingRowProps> = ({
             {dayjs(recording.startTime).tz(datetimeContext.timeZone.full).format('L LTS z')}
           </Timestamp>
         </Td>
-        <Td key={`active-table-row-${index}_4`} dataLabel={tableColumns[2]}>
+        <Td key={`active-table-row-${index}_4`} dataLabel={tableColumns[2].title}>
           <RecordingDuration duration={recording.duration} />
         </Td>
-        <Td key={`active-table-row-${index}_5`} dataLabel={tableColumns[3]}>
+        <Td key={`active-table-row-${index}_5`} dataLabel={tableColumns[3].title}>
           {recording.state}
         </Td>
-        <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4]}>
+        <Td key={`active-table-row-${index}_6`} dataLabel={tableColumns[4].title}>
           <LabelCell
             target={currentSelectedTargetURL}
             clickableOptions={{

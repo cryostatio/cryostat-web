@@ -47,12 +47,28 @@ import {
   EmptyStateSecondaryActions,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
-import { TableComposable, Thead, Tr, Th, OuterScrollContainer, InnerScrollContainer } from '@patternfly/react-table';
+import {
+  TableComposable,
+  Thead,
+  Tr,
+  Th,
+  OuterScrollContainer,
+  InnerScrollContainer,
+  ThProps,
+} from '@patternfly/react-table';
 import * as React from 'react';
+
+export interface ColumnConfig {
+  columns: {
+    title: string;
+    sortable?: boolean;
+  }[];
+  onSort: (columnIndex: number) => ThProps['sort'];
+}
 
 export interface RecordingsTableProps {
   toolbar: React.ReactElement;
-  tableColumns: string[];
+  tableColumns: ColumnConfig;
   tableTitle: string;
   tableFooter?: string | React.ReactNode;
   isEmpty: boolean;
@@ -66,7 +82,22 @@ export interface RecordingsTableProps {
   children: React.ReactNode;
 }
 
-export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (props) => {
+export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = ({
+  toolbar,
+  tableColumns,
+  tableTitle,
+  tableFooter,
+  isEmpty,
+  isEmptyFilterResult,
+  isHeaderChecked,
+  isLoading,
+  isNestedTable,
+  errorMessage,
+  onHeaderCheck,
+  clearFilters,
+  children,
+  ...props
+}) => {
   const context = React.useContext(ServiceContext);
   let view: JSX.Element;
 
@@ -74,44 +105,44 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
     context.target.setAuthRetry();
   }, [context.target]);
 
-  const isError = React.useMemo(() => props.errorMessage != '', [props.errorMessage]);
+  const isError = React.useMemo(() => errorMessage != '', [errorMessage]);
 
   if (isError) {
     view = (
       <>
         <ErrorView
           title={'Error retrieving recordings'}
-          message={props.errorMessage}
-          retry={isAuthFail(props.errorMessage) ? authRetry : undefined}
+          message={errorMessage}
+          retry={isAuthFail(errorMessage) ? authRetry : undefined}
         />
       </>
     );
-  } else if (props.isLoading) {
+  } else if (isLoading) {
     view = <LoadingView />;
-  } else if (props.isEmpty) {
+  } else if (isEmpty) {
     view = (
       <>
         <EmptyState>
           <EmptyStateIcon icon={SearchIcon} />
           <Title headingLevel="h4" size="lg">
-            No {props.tableTitle}
+            No {tableTitle}
           </Title>
         </EmptyState>
       </>
     );
-  } else if (props.isEmptyFilterResult) {
+  } else if (isEmptyFilterResult) {
     view = (
       <>
         <EmptyState>
           <EmptyStateIcon icon={SearchIcon} />
           <Title headingLevel="h4" size="lg">
-            No {props.tableTitle} found
+            No {tableTitle} found
           </Title>
           <EmptyStateBody>
             No results match this filter criteria. Remove all filters or clear all filters to show results.
           </EmptyStateBody>
           <EmptyStateSecondaryActions>
-            <Button variant="link" onClick={() => props.clearFilters && props.clearFilters(null)}>
+            <Button variant="link" onClick={() => clearFilters && clearFilters(null)}>
               Clear all filters
             </Button>
           </EmptyStateSecondaryActions>
@@ -123,8 +154,8 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
       <>
         <TableComposable
           isStickyHeader
-          aria-label={props.tableTitle}
-          variant={props.isNestedTable ? 'compact' : undefined}
+          aria-label={tableTitle}
+          variant={isNestedTable ? 'compact' : undefined}
           style={{ zIndex: 99 }} // z-index of filters Select dropdown is 100
         >
           <Thead>
@@ -132,18 +163,20 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
               <Th
                 key="table-header-check-all"
                 select={{
-                  onSelect: props.onHeaderCheck,
-                  isSelected: props.isHeaderChecked,
+                  onSelect: onHeaderCheck,
+                  isSelected: isHeaderChecked,
                 }}
               />
               <Th key="table-header-expand" />
-              {props.tableColumns.map((key, _) => (
-                <Th key={`table-header-${key}`}>{key}</Th>
+              {tableColumns.columns.map(({ title, sortable }, index) => (
+                <Th key={`table-header-${title}`} sort={sortable ? tableColumns.onSort(index) : undefined}>
+                  {title}
+                </Th>
               ))}
               <Th key="table-header-actions" />
             </Tr>
           </Thead>
-          {props.children}
+          {children}
         </TableComposable>
       </>
     );
@@ -152,9 +185,9 @@ export const RecordingsTable: React.FunctionComponent<RecordingsTableProps> = (p
   return (
     <>
       <OuterScrollContainer className="recording-table-container">
-        {isError ? null : props.toolbar}
+        {isError ? null : toolbar}
         <InnerScrollContainer>{view}</InnerScrollContainer>
-        {props.tableFooter}
+        {tableFooter}
       </OuterScrollContainer>
     </>
   );
