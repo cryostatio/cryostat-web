@@ -194,15 +194,16 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
 
   React.useEffect(() => {
     // Polling test pool
+    // 16ms gap or 60fps is smooth but not too fast.
     addSubscription(
-      interval(10)
+      interval(16)
         .pipe(
           map(() => testPool.size > 0),
           distinctUntilChanged()
         )
         .subscribe(setIsDisabled)
     );
-  }, [testPool, setIsDisabled]);
+  }, [testPool, setIsDisabled, addSubscription]);
 
   return (
     <CredentialAuthForm
