@@ -53,16 +53,15 @@ import { useTranslation } from 'react-i18next';
 import { distinctUntilChanged } from 'rxjs';
 import GenericQuickStart from './quickstarts/generic-quickstart';
 
-export interface GlobalQuickStartDrawerProps {
-  children: React.ReactNode;
-}
-
 const LINK_LABEL = '[\\d\\w\\s-()$!&]+'; // has extra '&' in matcher
 const HIGHLIGHT_ACTIONS = ['highlight']; // use native quickstarts highlight markdown extension
 const SELECTOR_ID = `[\\w-&]+`; // has extra '&'
 
 // [linkLabel]{{action id}}
 const HIGHLIGHT_REGEXP = new RegExp(`\\[(${LINK_LABEL})]{{(${HIGHLIGHT_ACTIONS.join('|')}) (${SELECTOR_ID})}}`, 'g');
+export interface GlobalQuickStartDrawerProps {
+  children: React.ReactNode;
+}
 
 export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ children }) => {
   const { i18n } = useTranslation();

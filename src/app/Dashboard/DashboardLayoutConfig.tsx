@@ -214,6 +214,7 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         aria-label={t('DashboardLayoutConfig.NEW.LABEL')}
         onClick={handleCreateModalOpen}
         icon={<PlusCircleIcon />}
+        data-quickstart-id="dashboard-new-btn"
       >
         {t('NEW', { ns: 'common' })}
       </Button>
@@ -340,7 +341,12 @@ export const DashboardLayoutConfig: React.FunctionComponent<DashboardLayoutConfi
         isOpen={isSelectorOpen}
         onOpenChange={onOpenChange}
         toggle={(toggleRef) => (
-          <MenuToggle ref={toggleRef} id="dashboard-layout-dropdown-toggle" onClick={onToggle}>
+          <MenuToggle
+            ref={toggleRef}
+            id="dashboard-layout-dropdown-toggle"
+            onClick={onToggle}
+            data-quickstart-id="dashboard-layout-selector"
+          >
             {currLayout.name}
           </MenuToggle>
         )}

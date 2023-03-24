@@ -45,6 +45,8 @@ export interface QuickStartsCatalogPageProps {}
 const QuickStartsCatalogPage: React.FunctionComponent<QuickStartsCatalogPageProps> = (_) => {
   const { t } = useTranslation();
 
+  // TODO: Quick start categories (patternfly/quickstarts supports this through individual components)
+  // e.g. Dashboard Quick Starts, Topology Quick Starts, Recording Quick Starts, etc.
   return (
     <QuickStartCatalogPage
       title={t('QuickStarts.CATALOG_PAGE.TITLE')}

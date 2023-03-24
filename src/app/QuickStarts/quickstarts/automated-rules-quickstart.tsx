@@ -40,7 +40,7 @@ import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
 import { QuickStart } from '@patternfly/quickstarts';
 
 // TODO: Add quickstarts based on the following example:
-export const AutomatedRulesQuickStart: QuickStart = {
+const AutomatedRulesQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'automated-rule-quickstart',

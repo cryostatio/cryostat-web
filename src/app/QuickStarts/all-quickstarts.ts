@@ -40,6 +40,12 @@ import { QuickStart } from '@patternfly/quickstarts';
 import AutomatedRulesQuickStart from './quickstarts/automated-rules-quickstart';
 import SettingsQuickStart from './quickstarts/settings-quickstart';
 import RecordingQuickStart from './quickstarts/start-a-recording';
+import DashboardQuickStart from './quickstarts/dashboard-quickstart';
 
-// Add your quick start here e.g. [GenericQuickStart, SampleQuickStart]
-export const allQuickStarts: QuickStart[] = [AutomatedRulesQuickStart, RecordingQuickStart, SettingsQuickStart];
+// Add your quick start here e.g. [GenericQuickStart, ...]
+export const allQuickStarts: QuickStart[] = [
+  AutomatedRulesQuickStart,
+  DashboardQuickStart,
+  RecordingQuickStart,
+  SettingsQuickStart,
+];
