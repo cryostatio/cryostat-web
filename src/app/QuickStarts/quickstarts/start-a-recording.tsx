@@ -92,12 +92,18 @@ Select a target JVM from the list of available targets that [APP] has discovered
 
 
 [If JMX Auth username and password is required, you will be prompted to enter them.]{{admonition note}}`,
+        review: {
+          instructions: '#### Verify that you can see the Recordings table.',
+          failedTaskHelp: 'If you do not see the table, try the steps again.',
+        },
       },
       {
         title: 'Start a recording',
         description: `
-There are two tabs within the Recordings page: \n
-[Active Recordings]{{highlight active-recordings-tab}} and [Archived Recordings]{{highlight archived-recordings-tab}}.\n
+There are two tabs within the Recordings page:
+
+[Active Recordings]{{highlight active-recordings-tab}} and [Archived Recordings]{{highlight archived-recordings-tab}}.
+
 Active recordings are recordings that are currently running, and Archived recordings are recordings that have been stopped.
 
 We will start a recording while on the Active tab.
@@ -124,7 +130,7 @@ Stopping a recording will cut off the recording at the time that the recording i
 1. Click the [Stop]{{highlight recordings-stop-btn}} button to stop the recording.`,
         review: {
           instructions: '#### Verify that the STATE field of the recording has changed to STOPPED.',
-          failedTaskHelp: 'If you do not see the recording, try the Start a recording task again.',
+          failedTaskHelp: 'If you do not see the recording, try the **Start a recording** task again.',
         },
       },
       {
@@ -143,11 +149,17 @@ Downloading a recording will save the recording to your local machine as a JFR f
       {
         title: 'View an analysis report',
         description: `
-[APP] is able to generate an analysis report of a recording. This report is the same report that you would get if you were to view an automated analysis report in **JDK Mission Control**. The **JMC** rules engine analyzes your recording and looks for common problems and assigns a severity score from 0 (no problem) to 100 (potentially severe problem).
+[APP] is able to generate an **automated analysis report** of a recording. This report is the same report that you would get if you were to view an automated analysis report in **JDK Mission Control**. The **JMC** rules engine analyzes your recording and looks for common problems and assigns a severity score from 0 (no problem) to 100 (potentially severe problem).
 1. Click the [kebab menu]{{highlight recording-kebab}} next to the recording that you want to view an analysis report for.
 2. Click \`View Report ...\` to view an analysis report of the recording in a new tab.
-3. Right click on the page and select \`Save Page As...\` to download the report HTML file to your local machine.
+
+3. *Optional:* Right click on the page and select \`Save Page As...\` to download the report HTML file to your local machine.
 `,
+        review: {
+          instructions: '#### Verify that you can see an analysis report of the recording.',
+          failedTaskHelp:
+            'The kebab icon `⁝` should be on the right end of the recording row in the active recordings table. Clicking the kebab icon should show a menu with the `View Report ...` option.',
+        },
       },
       {
         title: 'Archive a recording',

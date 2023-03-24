@@ -35,11 +35,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
 import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
 import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
 
+// TODO: Change this when adding dark mode setting to the settings page (General tab)
 const SettingsQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
@@ -78,43 +80,69 @@ const SettingsQuickStart: QuickStart = {
 1. Press the [Settings]{{highlight settings-link}} cog icon.`,
       },
       {
-        title: 'Navigate to the Connectivity settings tab',
+        title: 'Go to the Connectivity settings tab',
         description: `
+The Connectivity tab allows you to configure the WebSocket connection the browser forms with the Cryostat backend.
+
 1. Go to the [Connectivity]{{highlight settings-connectivity-tab}} tab.
-2. Here you can configure the WebSocket connection to the Cryostat backend.
-3. You can also configure Auto-Refresh period for content-views.`,
+2. Configure the WebSocket Connection Debounce time.
+3. Configure the Auto-Refresh period for content-views.
+[To use the Auto-Refresh feature, you must have the [Auto-Refresh]{{highlight settings-connectivity-tab-auto-refresh}} checkbox enabled.]{{admonition tip}}
+`,
       },
       {
-        title: 'Navigate to the Languages & Region settings tab',
+        title: 'Go to to the Languages & Region settings tab',
         description: `
 1. Go to the [Languages & Region]{{highlight settings-language&region-tab}} tab
-2. Here you can configure the language and region settings for the Cryostat UI.
-3. You can also configure the date and time format.`,
+2. Configure the date locale and current timezone.
+[Cryostat currently only supports English. We are planning on adding support for other languages in the future.]{{admonition note}}`,
       },
       {
         title: 'Go to the Notifications & Messages tab',
         description: `
+The Notifications & Messages tab allows you to configure the notifications and deletion warnings that are displayed in the Cryostat UI.
+
 1. Go to the [Notifications & Messages]{{highlight settings-notifications&messages-tab}} tab.
-1. Here you can configure the notification settings for the Cryostat UI.
-2. You can also configure the message settings.`,
+2. Enable or disable notifications from various categories if you choose to.
+3. Enable or disable deletion dialog warnings for various destructive actions.
+[You can also control the maximum number of notifications that can be displayed at once.]{{admonition tip}}
+`,
       },
       {
         title: 'Go to the Dashboard tab',
         description: `
+The Dashboard tab allows you to configure settings for the various Dashboard Cards that you can add to the Dashboard.
+
+New to [APP] 2.3 is the Automated Analysis Recording Configuration card. This card starts a recording and then automatically starts an analysis on the recording. You can configure the recording that is started by this card.
+
 1. Go to the [Dashboard]{{highlight settings-dashboard-tab}} tab.
-1. Here you can configure the dashboard settings for the Cryostat UI.`,
+2. Configure the Automated Analysis Recording Configuration settings.
+3. Configure the Dashboard Metrics Configuration settings.
+
+[When using the Automated Analysis Card, make sure the event template is able to be used with the target JVM.]{{admonition warning}}
+[Setting both an infinite maximum size and age may result in an out of memory error during report generation.]{{admonition caution}}
+`,
       },
       {
         title: 'Go to the Advanced tab',
         description: `
+Cryostat has a few advanced settings that can be configured. These settings are not recommended for most users.
 1. Go to the [Advanced]{{highlight settings-advanced-tab}} tab.
-1. Here you can configure the advanced settings for the Cryostat UI.`,
+
+Credentials are used to authenticate with the target JVMs that Cryostat communicates with. If you don't want these credentials to be stored in the Cryostat backend, you can choose to store them in a local session storage instead.
+
+2. Configure the Credentials Storage settings.
+`,
       },
     ],
-    conclusion: `You completed the **Using Settings** quick start!
-    
-Learn more about the **Settings** page from our guides at <https://cryostat.io/guides/>.
-`,
+    conclusion: `
+<div>
+  <p>You completed the <strong>Using Settings</strong> quick start!</p>
+    <div style="max-width: 350px">
+      <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
+    </div>
+  <p>For more information about the <strong>Automated Rules</strong> feature, read our guide on the upstream <a href="https://cryostat.io/guides/#create-an-automated-rule" target="_blank">Cryostat documentation</a>.</p>
+</div>`,
     type: {
       text: 'Featured',
       color: 'blue',

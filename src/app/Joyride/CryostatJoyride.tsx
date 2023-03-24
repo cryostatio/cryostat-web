@@ -93,8 +93,8 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           content: (
             <div>
               <p>
-                The Dashboard provides a high-level overview of Cryostat and the target JVM with the use of{' '}
-                <strong>Dashboard Cards</strong>.
+                The <strong>Dashboard</strong> provides a high-level overview of Cryostat and the target JVM with the
+                use of <strong>Dashboard Cards</strong>.
               </p>
               <br />
               <p>There are various dashboard cards that can be configured to display different metrics and charts.</p>
@@ -108,8 +108,8 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           content: (
             <div>
               <p>
-                The Topology view provides a visual representation of Cryostat and the deployment model. Start, stop,
-                and delete recordings on multiple targets at a time from this view.
+                The <strong>Topology</strong> view provides a visual representation of Cryostat and the deployment
+                model. Start, stop, and delete recordings on multiple targets at a time from this view.
               </p>
             </div>
           ),
@@ -117,11 +117,22 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           placement: 'right',
         },
         {
+          title: 'Automated Rules',
+          content: (
+            <p>
+              Create, delete, enable, and view Cryostat <strong>Automated Rules</strong> in this view. Automated Rules
+              allow you start recordings on a target JVM based on a set of conditions.
+            </p>
+          ),
+          target: '*[data-tour-id="automatedrules"]',
+          placement: 'right',
+        },
+        {
           title: 'JFR Recordings',
           content: (
             <p>
-              The Recordings view provides a list of all active recordings that are currently being recorded on the
-              target JVM. Start, stop, download, delete recordings from this view.
+              The <strong>Recordings</strong> view provides a list of all active recordings that are currently being
+              recorded on the target JVM. Start, stop, download, delete recordings from this view.
             </p>
           ),
           target: '*[data-tour-id="recordings"]',
@@ -131,19 +142,30 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           title: 'Archives View',
           content: (
             <p>
-              The Archives view provides a list of all saved recordings that have been saved to Cryostat. Download,
-              delete, and generate reports from this view.
+              The <strong>Archives</strong> view provides a list of all saved recordings that have been saved to
+              Cryostat. Download, delete, and generate <strong>reports</strong> from this view.
             </p>
           ),
           target: '*[data-tour-id="archives"]',
           placement: 'right',
         },
         {
+          title: 'Events',
+          content: (
+            <p>
+              The Events page lists the <strong>Event Templates</strong> that Cryostat can currently apply to a JFR
+              recording. It also lists <strong>Event Types</strong> that are available on the target JVM.
+            </p>
+          ),
+          target: '*[data-tour-id="events"]',
+          placement: 'right',
+        },
+        {
           title: 'Security',
           content: (
             <p>
-              The Security tab allows you to add Credentials and SSL Certificates for Cryostat to use when connecting to
-              remote targets.
+              The <strong>Security</strong> tab allows you to add <strong>Credentials</strong> and{' '}
+              <strong>SSL Certificates</strong> for Cryostat to use when connecting to remote targets.
             </p>
           ),
           target: '*[data-tour-id="security"]',
@@ -151,7 +173,12 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
         },
         {
           title: 'Settings',
-          content: <p>Set your Cryostat preferences, such as the theme, locale, notification settings, and more.</p>,
+          content: (
+            <p>
+              Set your <strong>Cryostat preferences</strong>, such as the theme, locale, notification settings, and
+              more.
+            </p>
+          ),
           target: '*[data-tour-id="settings-link"]',
           disableBeacon: true,
         },
@@ -159,8 +186,8 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           title: 'Help',
           content: (
             <p>
-              Restart this tour or access our new quick starts where you can learn more about using Cryostat in your
-              environment.
+              Restart this tour or access our new <strong>quick starts</strong> where you can learn more about using
+              Cryostat in your environment.
             </p>
           ),
           target: '*[data-tour-id="application-launcher"]',

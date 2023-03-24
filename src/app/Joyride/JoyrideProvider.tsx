@@ -51,14 +51,14 @@ const defaultState = {
   steps: [] as Step[],
 };
 
-// eslint-disable @typescript-eslint/no-empty-function
+/* eslint-disable @typescript-eslint/no-empty-function */
 export const JoyrideContext = React.createContext({
   state: defaultState,
   setState: (_patch: Partial<JoyrideState> | ((previousState: JoyrideState) => Partial<JoyrideState>)) => {},
   setIsNavBarOpen: (_isOpen: boolean) => {},
   isNavBarOpen: true,
 });
-// eslint-enable @typescript-eslint/no-empty-function
+/* eslint-enable @typescript-eslint/no-empty-function */
 
 export const JoyrideProvider: React.FC<{ children }> = (props) => {
   const [state, setState] = useSetState(defaultState);

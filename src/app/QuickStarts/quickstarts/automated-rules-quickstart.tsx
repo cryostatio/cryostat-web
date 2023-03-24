@@ -35,7 +35,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
+import cryostatLogoIcon from '@app/assets/cryostat_icon_rgb_default.svg';
+import cryostatLogo from '@app/assets/cryostat_logo_vert_rgb_default.svg';
 import { QuickStart } from '@patternfly/quickstarts';
 
 // TODO: Add quickstarts based on the following example:
@@ -48,7 +49,7 @@ export const AutomatedRulesQuickStart: QuickStart = {
     version: 2.3,
     displayName: 'Automated Rules',
     durationMinutes: 10,
-    icon: cryostatLogo,
+    icon: cryostatLogoIcon,
     description: `Learn about automated rules in [APP] and how to create one.`,
     prerequisites: [''],
     introduction: `
@@ -72,7 +73,7 @@ In this quick start, you will use [APP] to create an automated rule that will st
     tasks: [
       {
         title: 'Go to the Automated Rules page',
-        description: `1. Click the [Automated Rules]{{highlight nav-automatedrules-tab}} tab in the [APP] console navigation bar.`,
+        description: `1. Click the [Automated Rules]{{highlight1 nav-automatedrules-tab}} tab in the [APP] console navigation bar.`,
         review: {
           instructions: '#### Verify that you see the Automated Rules page.',
           failedTaskHelp:
@@ -95,9 +96,9 @@ In this quick start, you will use [APP] to create an automated rule that will st
         description: `
 The Automated Rule creation form has several fields that you can fill out to create a new rule. Each field has helper text that explains what the field is for.
 
-**The most important field is the [Match Expression]{{highlight rule-matchexpr}} field.** This field is used to match one or more target JVMs. The match expression is a [Java regular expression]{{highlight rule-matchexpr}} that is matched against the target JVM’s. For example, if you wanted to match all discovered target JVMs, try using the match expression: \`true\`{{copy}}.
+**The most important field is the [Match Expression]{{highlight rule-matchexpr}} field.** This field is used to match one or more target JVMs. The match expression is a Java-like code snippet that is matched against each target JVM. For example, if you wanted to match all discovered target JVMs, try using the match expression: \`true\`{{copy}}.
 
-Use the match expression tester to test your match expression against the target JVMs that are currently discovered by [APP].
+[Use the [Match Expression Visualizer]{{highlight match-expr-card}} to test your match expression against the target JVMs that are currently discovered by [APP]. Matched targets will be unfaded in the Graph view, and listed in the List View.]{{admonition tip}}
 
 1. Select a target JVM from the [Target]{{highlight rule-target}} dropdown menu.
 2. Enter a [Match Expression]{{highlight rule-matchexpr}} for the rule. Try using the match hint to help you create a match expression.
@@ -106,13 +107,13 @@ Use the match expression tester to test your match expression against the target
 **To create a new rule, you must fill out the following required fields:**
 1. Enter a name for the rule in the [Name]{{highlight rule-name}} field.
 2. Enter a [Match Expression]{{highlight rule-matchexpr}} for the rule.
-3. Select the [Event Template]{{highlight rule-event-template}} you want to use for the rule.
+3. Select the [Event Template]{{highlight rule-evt-template}} you want to use for the rule.
 
 **The rest of the fields are optional and not required for this quick start: \`[Description, Maximum Size, Maximum Age, Maximum Age, Archival Period, Initial Delay, and Preserved Archives]\`.**
 
 [Learn more about these other Automated Rule attributes in the upstream [Cryostat documentation](https://cryostat.io/guides/#create-an-automated-rule).]{{admonition tip}}
 
-When you are finished, click the [Create]{{highlight create-rule-btn}} button.
+When you are finished, click the [Create]{{highlight rule-create-btn}} button.
 
 `,
         review: {

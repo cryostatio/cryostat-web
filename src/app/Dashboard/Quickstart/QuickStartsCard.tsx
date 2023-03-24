@@ -45,9 +45,9 @@ import {
 import { CardActions, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { allQuickStarts } from '../../QuickStarts/quickstarts/dashboard-quickstarts';
 import { DashboardCardDescriptor, DashboardCardProps, DashboardCardSizes } from '../Dashboard';
 import { DashboardCard } from '../DashboardCard';
-import { allQuickStarts } from '../../QuickStarts/quickstarts/dashboard-quickstarts';
 
 export interface QuickStartsCardProps extends DashboardCardProps {}
 

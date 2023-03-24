@@ -602,6 +602,7 @@ enabled in the future.`}
           isDisabled={
             loading || nameValid !== ValidatedOptions.success || !templateName || !templateType || !matchExpression
           }
+          data-quickstart-id="rule-create-btn"
           {...createButtonLoadingProps}
         >
           {loading ? 'Creating' : 'Create'}
@@ -647,7 +648,7 @@ const Comp: React.FC = () => {
           </GridItem>
           <GridItem xl={7} order={{ xl: '1', default: '0' }}>
             <Card isFullHeight>
-              <CardBody className="overflow-auto">
+              <CardBody className="overflow-auto" data-quickstart-id="match-expr-card">
                 <MatchExpressionVisualizer />
               </CardBody>
             </Card>

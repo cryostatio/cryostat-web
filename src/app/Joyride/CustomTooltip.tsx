@@ -44,6 +44,10 @@ import {
   CardBody,
   CardFooter,
   CardTitle,
+  Split,
+  SplitItem,
+  Text,
+  TextContent,
 } from '@patternfly/react-core';
 import React from 'react';
 import { TooltipRenderProps } from 'react-joyride';
@@ -56,6 +60,7 @@ const CustomTooltip: React.FC<TooltipRenderProps> = ({
   index,
   isLastStep,
   step,
+  size,
 }) => {
   const { title, content } = step;
 
@@ -63,28 +68,47 @@ const CustomTooltip: React.FC<TooltipRenderProps> = ({
     return index == 0;
   }, [index]);
 
-  const actionList = React.useMemo(() => {
+  const footer = React.useMemo(() => {
     return (
-      <ActionList style={{ justifyContent: 'flex-end' }}>
-        <ActionListGroup>
-          <ActionListItem>
-            {isFirstStep ? (
-              <Button {...skipProps} variant="secondary">
-                Skip tour
-              </Button>
-            ) : (
-              <Button {...backProps} variant="secondary">
-                Back
-              </Button>
-            )}
-          </ActionListItem>
-          <ActionListItem>
-            {<Button {...primaryProps}>{isLastStep ? 'Okay, got it!' : isFirstStep ? 'Get Started' : 'Next'}</Button>}
-          </ActionListItem>
-        </ActionListGroup>
-      </ActionList>
+      <Split hasGutter style={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+        {!isFirstStep && !isLastStep && (
+          <SplitItem isFilled>
+            <TextContent>
+              <Text component="small">
+                {
+                  `Step ${index - 1}/${size - 3}` // Index starts at 0, tour starts at 2, there are 3 steps that don't need a footer
+                }
+              </Text>
+            </TextContent>
+          </SplitItem>
+        )}
+        <SplitItem>
+          <ActionList>
+            <ActionListGroup>
+              <ActionListItem>
+                {isFirstStep ? (
+                  <Button {...skipProps} variant="secondary">
+                    Skip tour
+                  </Button>
+                ) : (
+                  <Button {...backProps} variant="secondary">
+                    Back
+                  </Button>
+                )}
+              </ActionListItem>
+              <ActionListItem>
+                {
+                  <Button {...primaryProps}>
+                    {isLastStep ? 'Okay, got it!' : isFirstStep ? 'Get Started' : 'Next'}
+                  </Button>
+                }
+              </ActionListItem>
+            </ActionListGroup>
+          </ActionList>
+        </SplitItem>
+      </Split>
     );
-  }, [isFirstStep, isLastStep, backProps, primaryProps, skipProps]);
+  }, [isFirstStep, isLastStep, backProps, primaryProps, skipProps, index, size]);
 
   return (
     <div
@@ -95,7 +119,7 @@ const CustomTooltip: React.FC<TooltipRenderProps> = ({
       <Card>
         <CardTitle style={{ textAlign: 'center' }}>{title}</CardTitle>
         <CardBody style={{ fontSize: '15px' }}>{content}</CardBody>
-        {index !== 1 && <CardFooter>{actionList}</CardFooter>}
+        {index !== 1 && <CardFooter>{footer}</CardFooter>}
       </Card>
     </div>
   );

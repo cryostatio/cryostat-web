@@ -99,9 +99,9 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, matchPath, NavLink, useHistory, useLocation } from 'react-router-dom';
 import { map } from 'rxjs/operators';
-import { AuthModal } from './AuthModal';
 import CryostatJoyride from '../Joyride/CryostatJoyride';
 import { GlobalQuickStartDrawer } from '../QuickStarts/QuickStartDrawer';
+import { AuthModal } from './AuthModal';
 import { SslErrorModal } from './SslErrorModal';
 interface AppLayoutProps {
   children: React.ReactNode;

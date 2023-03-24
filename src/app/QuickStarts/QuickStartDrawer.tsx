@@ -77,7 +77,7 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
     markdown: {
       extensions: [
         {
-          // taken from patternfly/quickstarts but with extra '&' in regex matcher
+          // this only takes into effect if the regex matches the HIGHLIGHT_REGEXP i.e. contains the extra matching tokens the patternfly/quickstarts highlight extension regex does not
           type: 'lang',
           regex: HIGHLIGHT_REGEXP,
           replace: (text: string, linkLabel: string, linkType: string, linkId: string): string => {
@@ -100,7 +100,7 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
   React.useEffect(() => {
     addSubscription(
       context.login.getSessionState().subscribe((s) => {
-        if (s !== SessionState.USER_SESSION) {
+        if (s == SessionState.NO_USER_SESSION) {
           setActiveQuickStartID('');
         }
       })
