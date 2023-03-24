@@ -230,10 +230,14 @@ export const getTargetOwnedResources = (
   }
 };
 
-export const getResourceAddedEvents = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
+export const getResourceAddedOrModifiedEvents = (resourceType: TargetOwnedResourceType | TargetRelatedResourceType) => {
   switch (resourceType) {
     case 'activeRecordings':
-      return [NotificationCategory.ActiveRecordingCreated, NotificationCategory.SnapshotCreated];
+      return [
+        NotificationCategory.ActiveRecordingCreated,
+        NotificationCategory.SnapshotCreated,
+        NotificationCategory.ActiveRecordingStopped, // State Update
+      ];
     case 'archivedRecordings':
       return [NotificationCategory.ArchivedRecordingCreated, NotificationCategory.ActiveRecordingSaved];
     case 'archivedUploadRecordings':
@@ -276,8 +280,11 @@ export const getResourceRemovedEvents = (resourceType: TargetOwnedResourceType |
   }
 };
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export type PatchFn = (arr: ResourceTypes[], eventData: any, removed?: boolean) => Observable<ResourceTypes[]>;
+export type PatchFn = (
+  arr: ResourceTypes[],
+  eventData: NotificationMessage,
+  removed?: boolean
+) => Observable<ResourceTypes[]>;
 
 export const getResourceListPatchFn = (
   resourceType: TargetOwnedResourceType | TargetRelatedResourceType,
@@ -288,16 +295,20 @@ export const getResourceListPatchFn = (
     case 'activeRecordings':
     case 'archivedRecordings':
     case 'archivedUploadRecordings':
-      return (arr: Recording[], eventData: any, removed?: boolean) => {
+      return (arr: Recording[], eventData: NotificationMessage, removed?: boolean) => {
         const recording: Recording = eventData.message.recording;
         let newArr = arr.filter((r) => r.name !== recording.name);
         if (!removed) {
+          // Stop event emits a recording with RUNNING state
+          if (eventData.meta.category === NotificationCategory.ActiveRecordingStopped) {
+            (recording as ActiveRecording).state = RecordingState.STOPPED;
+          }
           newArr = newArr.concat([recording]);
         }
         return of(newArr);
       };
     case 'eventTemplates':
-      return (arr: EventTemplate[], eventData: any, removed?: boolean) => {
+      return (arr: EventTemplate[], eventData: NotificationMessage, removed?: boolean) => {
         const template: EventTemplate = eventData.message.template;
         let newArr = arr.filter((r) => r.name !== template.name);
         if (!removed) {
@@ -306,7 +317,7 @@ export const getResourceListPatchFn = (
         return of(newArr);
       };
     case 'agentProbes':
-      return (arr: EventProbe[], eventData: any, removed?: boolean) => {
+      return (arr: EventProbe[], eventData: NotificationMessage, removed?: boolean) => {
         // Only support remove all
         if (removed) {
           return of([]);
@@ -316,7 +327,7 @@ export const getResourceListPatchFn = (
         return of([...arr.filter((probe) => !probeIds.includes(probe.id)), ...probes]);
       };
     case 'automatedRules':
-      return (arr: Rule[], eventData: any, removed?: boolean) => {
+      return (arr: Rule[], eventData: NotificationMessage, removed?: boolean) => {
         const rule: Rule = eventData.message;
 
         return apiService.isTargetMatched(rule.matchExpression, target).pipe(
@@ -333,7 +344,7 @@ export const getResourceListPatchFn = (
         );
       };
     case 'credentials':
-      return (arr: StoredCredential[], eventData: any, removed?: boolean) => {
+      return (arr: StoredCredential[], eventData: NotificationMessage, removed?: boolean) => {
         const credential: StoredCredential = eventData.message;
 
         return apiService.isTargetMatched(credential.matchExpression, target).pipe(
@@ -480,7 +491,7 @@ export const useResources = <R = ResourceTypes,>(
   React.useEffect(() => {
     const patchEventConfig = [
       {
-        categories: getResourceAddedEvents(resourceType),
+        categories: getResourceAddedOrModifiedEvents(resourceType),
       },
       {
         categories: getResourceRemovedEvents(resourceType),
