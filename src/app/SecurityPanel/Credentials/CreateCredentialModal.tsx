@@ -245,9 +245,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
             ? `Warning: Match expression matches no targets.`
             : `
         Enter a match expression. This is a Java-like code snippet that is evaluated against each target
-        application to determine whether the rule should be applied. Select a target from the dropdown
-        on the right to view the context object available within the match expression context and test
-        if the expression matches.`
+        application to determine whether the rule should be applied.`
         }
         helperTextInvalid="Invalid Match Expression."
         validated={matchExpressionValid}
