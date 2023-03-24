@@ -90,7 +90,7 @@ Each card displays a different set of information about the currently selected t
       {
         title: 'Create a new Dashboard Layout',
         description: `
-Dashboard Layouts are used to organize the Dashboard Cards that are displayed in the Dashboard. We will start by creating a new Dashboard Layout.
+**Dashboard Layouts** are used to organize the Dashboard Cards that are displayed in the Dashboard. We will start by creating a new Dashboard Layout.
 
 1. Click [New]{{highlight dashboard-new-btn}} on the **Layout Selector** toolbar.
 
@@ -112,11 +112,11 @@ To create a card, we will go through a **creation wizard** that will guide us th
 
 1. Click the [Add]{{highlight dashboard-add-btn}} button on the Dashboard.
 2. From the [Card Type selector]{{highlight card-type-selector}}, select the **Target JVM Details** card.
-3. Click [Finish]{{highlight card-finish-btn}}.
+3. Click Finish.
 4. Repeat steps 1-2 to add the **MBeans Metrics Chart** card to the Dashboard Layout.
-5. This time, click [Next]{{highlight card-next-btn}} to go to the next configuration step of the creation wizard.
-[The default metric selected for the card is the \`Process CPU Load\` metric. You can change this by clicking the [Performance Metric]{{highlight card-metric-selector}} dropdown menu within the MBeans Chart Card configuration step and selecting a different metric. Try other metrics and settings!]{{admonition tip}}
-6. Click [Finish]{{highlight card-finish-btn}} again to finish creating the second card.
+5. This time, click Next to go to the next configuration step of the creation wizard.
+[The default metric selected for the card is the \`Process CPU Load\` metric. You can change this by clicking the **Performance Metric** dropdown menu within the **MBeans Chart Card** configuration step and selecting a different metric. Try other metrics and settings!]{{admonition tip}}
+6. Click Finish again to finish creating the second card.
 `,
         review: {
           instructions: '#### Verify that you see the two new cards in the Dashboard.',
@@ -126,32 +126,34 @@ To create a card, we will go through a **creation wizard** that will guide us th
       {
         title: 'Rearrange and resize Dashboard Cards',
         description: `
-1. Click and drag the **Target JVM Details** card's header on top of the **MBeans Metrics Chart** card.
+1. Click and drag the **Target JVM Details** [card's header]{{highlight card-draggable-grip}} on top or to the right of the **MBeans Metrics Chart** card to swap their positions.
 2. Click and resize the **MBeans Metrics Chart** card to make it larger by dragging the right edge of the card.
 [You can also drag and drop between cards to rearrange them.]{{admonition tip}}
 `,
         review: {
           instructions: '#### Verify that you are able to rearrange and resize the cards in the Dashboard Layout.',
           failedTaskHelp:
-            'Make sure you are clicking and dragging the card header and not the card body to move the card. To resize cards, hover over the right edge of the card until the cursor changes to a double-sided arrow, then click and drag to resize.',
+            'Make sure you are clicking and dragging the card header and not the card body to move the card. To resize cards, hover over the right edge of the card until the cursor changes to a double-sided arrow `↔`, then click and drag to resize.',
         },
       },
       {
         title: 'Modify Dashboard Layouts',
         description: `
-Dashboard Layouts can be modified by adding, removing, or rearranging cards. You can also rename, upload, download, and delete Dashboard Layouts.
-1. Rename the current Dashboard Layout by clicking the [Pencil icon]{{highlight dashboard-edit-btn}} on the **Layout Selector** toolbar.
+You can rename, upload, download, and delete **Dashboard Layouts**. You may also quickly switch between them for different sets of information about the target JVMs. Customize these layouts to suit your needs!
+1. Rename the current Dashboard Layout by clicking the [Pencil icon]{{highlight dashboard-rename-btn}} on the **Layout Selector** toolbar.
 2. Download the current Dashboard Layout by clicking [Download]{{highlight dashboard-download-btn}} on the **Layout Selector** toolbar.
 3. Delete the current Dashboard Layout by clicking [Delete]{{highlight dashboard-delete-btn}} on the **Layout Selector** toolbar.
 4. Upload the Dashboard Layout that you downloaded in the previous step by clicking [Upload]{{highlight dashboard-upload-btn}} on the **Layout Selector** toolbar.
-5. To switch between Dashboard Layouts, click the [Layout Selector]{{highlight dashboard-layout-selector}} on the **Layout Selector** toolbar and select the \`Default\` layout.
-[You can also favorite Dashboard Layouts by clicking the [Star icon]{{highlight dashboard-favorite-btn}} on the **Layout Selector** toolbar.]{{admonition tip}}
-[Renaming and deletion can also be done by clicking the **Layout Selector** dropdown and selecting the appropriate action next to the layout name.]{{admonition tip}}
+   
+   This will open a modal dialog, where you can select the file you downloaded in the previous step. Press Submit and Close when you are finished with the modal.
+5. To switch between Dashboard Layouts, click the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown on the **Layout Selector** toolbar and select the \`Default\` layout.
+[You can also favorite Dashboard Layouts by clicking on the [Layout Selector]{{highlight dashboard-layout-selector}} dropdown and clicking the Star Icon \`★\` next to the layout you want to favorite. Renaming and deletion can also be done in a similar fashion.]{{admonition tip}}
 `,
         review: {
-          instructions: '#### Verify that you are able to rename, upload, download, and delete Dashboard Layouts.',
+          instructions:
+            '#### Verify that you are able to rename, upload, download, delete, and switch between Dashboard Layouts.',
           failedTaskHelp:
-            'Make sure you are clicking the correct buttons to rename, upload, download, and delete Dashboard Layouts.',
+            'Make sure you are clicking the correct actions and buttons. If you are having trouble uploading a Dashboard Layout, make sure that the file you are uploading is a valid Dashboard Layout file.',
         },
       },
     ],
@@ -161,7 +163,7 @@ Dashboard Layouts can be modified by adding, removing, or rearranging cards. You
     <div style="max-width: 350px">
         <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
     </div>
-    <p>For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards<strong/> in [APP] 2.3, read our guide on the upstream <a href="https://cryostat.io/guides/#create-an-automated-rule" target="_blank">Cryostat documentation</a>.</p>
+    <p>For more information about the new <strong>Dashboard</strong> and <strong>Dashboard Cards</strong> in [APP] 2.3, read our guide on the upstream <a href="https://cryostat.io/guides/#create-an-automated-rule" target="_blank">Cryostat documentation</a>.</p>
 </div>`,
     type: {
       text: 'Featured',

@@ -39,6 +39,7 @@ import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import build from '@app/build.json';
 import { QuickStart } from '@patternfly/quickstarts';
 
+// TODO: Add quickstart categories
 export const AddCardQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {

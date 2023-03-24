@@ -43,7 +43,7 @@ import { QuickStart } from '@patternfly/quickstarts';
 const RecordingQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
-    name: 'sample-quickstart',
+    name: 'start-a-recording-quickstart',
   },
   spec: {
     version: 2.3,

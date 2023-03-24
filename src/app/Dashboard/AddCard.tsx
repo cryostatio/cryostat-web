@@ -202,7 +202,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
               }}
             >
               <Form>
-                <FormGroup label="Select a card type" isRequired isStack>
+                <FormGroup label="Select a card type" isRequired isStack data-quickstart-id="card-type-selector">
                   <Select onToggle={setSelectOpen} isOpen={selectOpen} onSelect={handleSelect} selections={selection}>
                     {options}
                   </Select>
@@ -252,7 +252,7 @@ export const AddCard: React.FC<AddCardProps> = (_) => {
                 Cards added to this Dashboard layout present information at a glance about the selected target. The
                 layout is preserved for all targets viewed on this client.
               </EmptyStateBody>
-              <Button variant="primary" onClick={handleStart}>
+              <Button variant="primary" onClick={handleStart} data-quickstart-id="dashboard-add-btn">
                 Add
               </Button>
             </EmptyState>
@@ -357,7 +357,7 @@ const PropsConfigForm = ({ onChange, ...props }: PropsConfigFormProps) => {
           break;
       }
       return (
-        <FormGroup key={`${ctrl.key}}`} label={t(ctrl.name)} helperText={t(ctrl.description)} isInline isStack>
+        <FormGroup key={`${ctrl.key}`} label={t(ctrl.name)} helperText={t(ctrl.description)} isInline isStack>
           {input}
         </FormGroup>
       );

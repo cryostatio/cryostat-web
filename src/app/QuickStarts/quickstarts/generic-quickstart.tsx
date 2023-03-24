@@ -133,6 +133,7 @@ world
   - Bracketed alert text contents
   - The admonition keyword, followed by the alert variant you want
   - Variants are: note, tip, important, caution, and warning
+
 **Examples**
   [This is the note contents with **some bold** text]{{admonition note}}
   [This is the tip contents]{{admonition tip}}
@@ -142,9 +143,7 @@ world
         `,
         // optional - the task's Check your work module
         review: {
-          instructions: `
-              - Did you complete the task successfully?
-            `,
+          instructions: `Did you complete the task successfully?`,
           failedTaskHelp: `This task isn't verified yet. Try the task again.`,
           // optional - the task's success and failure messages
         },
@@ -156,14 +155,14 @@ world
     ],
     conclusion: `
 <div>
-  <p>You completed the <strong>Start a Recording</strong> quick start!</p>
+  <p>You completed the <strong>Getting started with quick starts</strong> quick start!</p>
 
   <div style="max-width: 350px">
     <img style="margin-top: 2em; margin-bottom: 2em" src="${cryostatLogo}" alt="Cryostat Logo" width="100%" height="100%" />
   </div>
   <p>To learn more about [APP]'s extensive features and capabilities, read our upstream guides at <a href="https://cryostat.io/guides/" target="_blank">cryostat.io</a>.</p>
 </div>`,
-    nextQuickStart: ['generic-quickstart-2'],
+    nextQuickStart: ['start-a-recording-quickstart'],
   },
 };
 
