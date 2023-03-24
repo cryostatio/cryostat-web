@@ -67,7 +67,6 @@ import { DashboardCard } from './DashboardCard';
 import { DashboardCardActionMenu } from './DashboardCardActionMenu';
 import { DashboardLayoutConfig } from './DashboardLayoutConfig';
 import { JvmDetailsCardDescriptor } from './JvmDetails/JvmDetailsCard';
-import { QuickStartsCardDescriptor } from './Quickstart/QuickStartsCard';
 
 export interface Sized<T> {
   minimum: T;
@@ -253,7 +252,6 @@ export const getDashboardCards: (featureLevel?: FeatureLevel) => DashboardCardDe
     MBeanMetricsChartCardDescriptor,
     NonePlaceholderCardDescriptor,
     AllPlaceholderCardDescriptor,
-    QuickStartsCardDescriptor,
   ];
   return cards.filter((card) => card.featureLevel >= featureLevel);
 };

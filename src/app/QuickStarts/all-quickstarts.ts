@@ -36,7 +36,7 @@
  * SOFTWARE.
  */
 import { QuickStart } from '@patternfly/quickstarts';
-// import { GenericQuickStart } from './quickstarts/generic-quickstart';
+// import GenericQuickStart from './quickstarts/generic-quickstart';
 import AutomatedRulesQuickStart from './quickstarts/automated-rules-quickstart';
 import SettingsQuickStart from './quickstarts/settings-quickstart';
 import RecordingQuickStart from './quickstarts/start-a-recording';

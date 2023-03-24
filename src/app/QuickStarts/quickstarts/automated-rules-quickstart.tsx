@@ -73,7 +73,7 @@ In this quick start, you will use [APP] to create an automated rule that will st
     tasks: [
       {
         title: 'Go to the Automated Rules page',
-        description: `1. Click the [Automated Rules]{{highlight1 nav-automatedrules-tab}} tab in the [APP] console navigation bar.`,
+        description: `1. Click the [Automated Rules]{{highlight nav-automatedrules-tab}} tab in the [APP] console navigation bar.`,
         review: {
           instructions: '#### Verify that you see the Automated Rules page.',
           failedTaskHelp:

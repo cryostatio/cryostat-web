@@ -37,7 +37,6 @@
  */
 
 import { MBeanMetricsChartCardDescriptor } from '@app/Dashboard/Charts/mbean/MBeanMetricsChartCard';
-import { QuickStartsCardDescriptor } from '@app/Dashboard/Quickstart/QuickStartsCard';
 import { move, swap } from '@app/utils/utils';
 import { gridSpans } from '@patternfly/react-core';
 import { createAction, createReducer } from '@reduxjs/toolkit';
@@ -246,12 +245,6 @@ export const dashboardConfigReducer = createReducer(INITIAL_STATE, (builder) => 
     })
     .addCase(dashboardConfigFirstRunIntent, (state) => {
       state.layouts[state.current].cards = [
-        {
-          id: `${QuickStartsCardDescriptor.component.name}-1`,
-          name: QuickStartsCardDescriptor.component.name,
-          span: QuickStartsCardDescriptor.cardSizes.span.default,
-          props: {},
-        },
         {
           id: `${MBeanMetricsChartCardDescriptor.component.name}-1`,
           name: MBeanMetricsChartCardDescriptor.component.name,

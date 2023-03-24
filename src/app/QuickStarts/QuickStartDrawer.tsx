@@ -40,6 +40,7 @@ import { LoadingView } from '@app/LoadingView/LoadingView';
 import { allQuickStarts } from '@app/QuickStarts/all-quickstarts';
 import { SessionState } from '@app/Shared/Services/Login.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
+import { FeatureLevel } from '@app/Shared/Services/Settings.service';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
 import {
   QuickStartContext,
@@ -49,6 +50,8 @@ import {
 } from '@patternfly/quickstarts';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { distinctUntilChanged } from 'rxjs';
+import GenericQuickStart from './quickstarts/generic-quickstart';
 
 export interface GlobalQuickStartDrawerProps {
   children: React.ReactNode;
@@ -67,6 +70,26 @@ export const GlobalQuickStartDrawer: React.FC<GlobalQuickStartDrawerProps> = ({ 
   const addSubscription = useSubscriptions();
   const [activeQuickStartID, setActiveQuickStartID] = useLocalStorage('quickstartId', '');
   const [allQuickStartStates, setAllQuickStartStates] = useLocalStorage('quickstarts', {});
+
+  React.useEffect(() => {
+    addSubscription(
+      context.settings
+        .featureLevel()
+        .pipe(distinctUntilChanged())
+        .subscribe((level) => {
+          if (level === FeatureLevel.DEVELOPMENT) {
+            if (!allQuickStarts.includes(GenericQuickStart)) {
+              allQuickStarts.push(GenericQuickStart);
+            }
+          } else {
+            if (allQuickStarts.includes(GenericQuickStart)) {
+              allQuickStarts.splice(allQuickStarts.indexOf(GenericQuickStart), 1);
+            }
+          }
+        })
+    );
+  }, [addSubscription, context.settings]);
+
   const valuesForQuickStartContext = useValuesForQuickStartContext({
     allQuickStarts,
     activeQuickStartID,

@@ -38,25 +38,119 @@
 import cryostatLogo from '@app/assets/cryostat_icon_rgb_default.svg';
 import { QuickStart } from '@patternfly/quickstarts';
 
-// TODO: Add quickstarts based on the following example:
+// This is mostly adapted from the example quickstart from patternfly/quickstart docs
+// Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 const GenericQuickStart: QuickStart = {
   apiVersion: 'v2.3.0',
   metadata: {
     name: 'generic-quickstart',
+    // you can add additional metadata here
   },
   spec: {
-    version: 2.3,
-    displayName: 'Getting Started with',
-    durationMinutes: 1,
+    version: 2.3, // versioning for each release of the quick start
+    displayName: 'Getting started with quick starts',
+    durationMinutes: 10,
+    type: {
+      text: 'Type',
+      // 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
+      color: 'grey',
+    },
+    /*- The icon defined as a base64 value. Example flow:
+    # 1. Find an .svg you want to use, like from here: https://www.patternfly.org/v4/guidelines/icons/#all-icons
+    # 2. Upload the file here and encode it (output format - plain text): https://base64.guru/converter/encode/image
+    # 3. compose - `icon: data:image/svg+xml;base64,<base64 string from step 2>`
+    # - If empty string (icon: ''), will use a default rocket icon
+    # - If set to null (icon: ~) will not show an icon
+    */
     icon: cryostatLogo,
-    description: `Get started with [APP]`,
-    prerequisites: [''],
-    introduction: '### This is a generic quickstart.',
+    prerequisites: [
+      'You can optionally list prerequisites',
+      'Another prerequisite',
+      'These prerequisites are also displayed on the introduction step',
+    ],
+    description: `Get started with [APP]! This description appears on the card in the quick starts catalog.`,
+    // NOTE: markdown par will acknowledge indents and new lines
+    introduction: `
+**This introduction is shown at the beginning of the quick start**
+- It introduces the quick start and lists the tasks within it.
+- You can view the [source for this quick start](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml) for additional help and information.`,
     tasks: [
       {
         title: 'Get started',
-        description: `### We will press the notifications bell icon on the top right.
-1. Press the bell icon.`,
+        description: `
+## Text
+  1. The main body of the task. You can use markdown syntax here to create list items and more.
+
+  This is a paragraph.  
+  This is another paragraph. Add an empty line between paragraphs for line breaks or two spaces at the end.
+  1. For more information on markdown syntax you can visit [this resource](https://www.markdownguide.org/basic-syntax/).
+  1. A <small>limited set</small> of <strong>HTML tags</strong> [are also supported](https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html#supported-tags-for-quick-starts_creating-quick-start-tutorials)
+  
+## Images
+  HTML img tag: <img alt="Cryostat logo" src="${cryostatLogo}" width="30" height="30" />
+
+  > Markdown would work as well but cannot add height/width style
+
+  Ellipsis icon (visible if font-awesome is installed): <i class="fas fa-ellipsis-v"></i>
+
+  PF icon: <i class="pf-icon pf-icon-add-circle-o"></i>
+
+## Highlighting
+  To enable highlighting, the markdown syntax should contain:
+  - Bracketed link text
+  - The highlight keyword, followed by the ID of the element that you want to animate
+  - The element to be highlighted, needs a \`data-quickstart-id\` attribute
+
+**Example**
+  <pre>[Recordings nav item]{{highlight nav-recordings-tab}}</pre>
+
+  will highlight an element with the \`data-quickstart-id="quickstarts"\` attribute
+  
+### Code snippets
+The syntax for an inline code snippet contains:
+- Text between back quotes, followed by \`{{copy}}\`
+#### Example 1
+The following text demonstates an inline-copy element \`https://github.com/sclorg/ruby-ex.git\`{{copy}}
+#### Example 2
+And another one \`https://patternfly.org\`{{copy}} here!
+The syntax for multi-line code snippets:
+- Text between triple back quotes, followed by \`{{copy}}\`
+#### Example 1
+  \`\`\`
+oc new-app ruby~https://github.com/sclorg/ruby-ex.git
+echo "Expose route using oc expose svc/ruby-ex"
+oc expose svc/ruby-ex
+  \`\`\`{{copy}}
+#### Example 2
+\`\`\`
+Hello
+world
+\`\`\`{{copy}}  
+  - Clicking the _Next_ button will display the **Check your work** module.
+### Admonition blocks
+  The syntax for rendering "Admonition Blocks" to Patternfly React Alerts:
+  - Bracketed alert text contents
+  - The admonition keyword, followed by the alert variant you want
+  - Variants are: note, tip, important, caution, and warning
+**Examples**
+  [This is the note contents with **some bold** text]{{admonition note}}
+  [This is the tip contents]{{admonition tip}}
+  [This is the important contents]{{admonition important}}
+  [This is the caution contents]{{admonition caution}}
+  [This is the warning contents]{{admonition warning}}
+        `,
+        // optional - the task's Check your work module
+        review: {
+          instructions: `
+              - Did you complete the task successfully?
+            `,
+          failedTaskHelp: `This task isn't verified yet. Try the task again.`,
+          // optional - the task's success and failure messages
+        },
+        summary: {
+          success: 'Shows a success message in the task header',
+          failed: 'Shows a failed message in the task header',
+        },
       },
     ],
     conclusion: `
@@ -68,10 +162,7 @@ const GenericQuickStart: QuickStart = {
   </div>
   <p>To learn more about [APP]'s extensive features and capabilities, read our upstream guides at <a href="https://cryostat.io/guides/" target="_blank">cryostat.io</a>.</p>
 </div>`,
-    type: {
-      text: 'Featured',
-      color: 'blue',
-    },
+    nextQuickStart: ['generic-quickstart-2'],
   },
 };
 
