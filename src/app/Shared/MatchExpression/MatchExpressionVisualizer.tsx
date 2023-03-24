@@ -98,7 +98,7 @@ export const MatchExpressionVisualizer: React.FC<MatchExpressionVisualizerProps>
       <StackItem>
         <LayoutRadioGroup onChange={setIsGraph} />
       </StackItem>
-      <StackItem isFilled>
+      <StackItem isFilled style={{ overflow: 'auto' }}>
         {isGraph ? <GraphView alertOptions={alertOptions} /> : <ListView alertOptions={alertOptions} />}
       </StackItem>
     </Stack>
