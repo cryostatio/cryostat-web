@@ -58,7 +58,7 @@ jest.mock('@app/utils/LocalStorage', () => {
   };
 });
 
-const storageKey = 'JMX_CREDENTIAL_LOCATION';
+const storageKey = 'CREDENTIAL_LOCATION';
 
 describe('<CredentialsStorage/>', () => {
   afterEach(cleanup);

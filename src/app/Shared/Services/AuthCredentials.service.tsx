@@ -45,14 +45,14 @@ export interface Credential {
   password: string;
 }
 
-export class JmxCredentials {
+export class AuthCredentials {
   // TODO replace with Redux?
   private readonly store = new Map<string, Credential>();
 
   constructor(private readonly api: () => ApiService) {}
 
   setCredential(targetId: string, username: string, password: string): Observable<boolean> {
-    const location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
+    const location = getFromLocalStorage('CREDENTIAL_LOCATION', Locations.BACKEND.key);
     switch (location) {
       case Locations.BACKEND.key:
         return this.api().postCredentials(`target.connectUrl == "${targetId}"`, username, password);
@@ -66,7 +66,7 @@ export class JmxCredentials {
   }
 
   getCredential(targetId: string): Observable<Credential | undefined> {
-    const location = getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key);
+    const location = getFromLocalStorage('CREDENTIAL_LOCATION', Locations.BACKEND.key);
     switch (location) {
       case Locations.BACKEND.key:
         // if this is stored on the backend then Cryostat should be using those and not prompting us to request from the user

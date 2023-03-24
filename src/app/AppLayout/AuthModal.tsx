@@ -66,7 +66,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
             filter((target) => target !== NO_TARGET),
             first(),
             map((target) => target.connectUrl),
-            mergeMap((connectUrl) => context.jmxCredentials.setCredential(connectUrl, username, password))
+            mergeMap((connectUrl) => context.authCredentials.setCredential(connectUrl, username, password))
           )
           .subscribe((ok) => {
             setLoading(false);
@@ -76,7 +76,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onDismiss, onSave: onProps
           })
       );
     },
-    [addSubscription, context.jmxCredentials, context.target, setLoading, onPropsSave]
+    [addSubscription, context.authCredentials, context.target, setLoading, onPropsSave]
   );
 
   return (

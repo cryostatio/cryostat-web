@@ -83,13 +83,13 @@ const Component = () => {
       const location = getLocation(selection.value);
       setSelection(location.key);
       setExpanded(false);
-      saveToLocalStorage('JMX_CREDENTIAL_LOCATION', selection.value);
+      saveToLocalStorage('CREDENTIAL_LOCATION', selection.value);
     },
     [setSelection, setExpanded]
   );
 
   React.useEffect(() => {
-    handleSelect(undefined, { value: getFromLocalStorage('JMX_CREDENTIAL_LOCATION', Locations.BACKEND.key) });
+    handleSelect(undefined, { value: getFromLocalStorage('CREDENTIAL_LOCATION', Locations.BACKEND.key) });
   }, [handleSelect]);
 
   return (

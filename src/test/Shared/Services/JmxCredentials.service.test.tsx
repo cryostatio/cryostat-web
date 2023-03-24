@@ -37,7 +37,7 @@
  */
 /* eslint @typescript-eslint/no-explicit-any: 0 */
 import { ApiService } from '@app/Shared/Services/Api.service';
-import { JmxCredentials } from '@app/Shared/Services/JmxCredentials.service';
+import { AuthCredentials } from '@app/Shared/Services/AuthCredentials.service';
 import { getFromLocalStorage, saveToLocalStorage } from '@app/utils/LocalStorage';
 import { firstValueFrom, Observable, of } from 'rxjs';
 
@@ -62,12 +62,12 @@ const mockApi = {
 } as ApiService;
 const postCredentialsSpy = jest.spyOn(mockApi, 'postCredentials');
 
-describe('JmxCredentials.service', () => {
-  let svc: JmxCredentials;
+describe('AuthCredentials.service', () => {
+  let svc: AuthCredentials;
   beforeEach(() => {
-    saveToLocalStorage('JMX_CREDENTIAL_LOCATION', undefined);
+    saveToLocalStorage('CREDENTIAL_LOCATION', undefined);
     postCredentialsSpy.mockReset();
-    svc = new JmxCredentials(() => mockApi);
+    svc = new AuthCredentials(() => mockApi);
   });
 
   it('should not check storage on instantiation', () => {
@@ -76,7 +76,7 @@ describe('JmxCredentials.service', () => {
 
   describe('with invalid location selected in storage', () => {
     beforeEach(() => {
-      saveToLocalStorage('JMX_CREDENTIAL_LOCATION', 'BAD_LOCATION');
+      saveToLocalStorage('CREDENTIAL_LOCATION', 'BAD_LOCATION');
     });
 
     it('retrieves undefined credentials from memory map', async () => {
@@ -98,7 +98,7 @@ describe('JmxCredentials.service', () => {
 
   describe('with session selected in storage', () => {
     beforeEach(() => {
-      saveToLocalStorage('JMX_CREDENTIAL_LOCATION', 'Session (Browser Memory)');
+      saveToLocalStorage('CREDENTIAL_LOCATION', 'Session (Browser Memory)');
     });
 
     it('retrieves undefined credentials from memory map', async () => {
@@ -122,7 +122,7 @@ describe('JmxCredentials.service', () => {
 
   describe('with backend selected in storage', () => {
     beforeEach(() => {
-      saveToLocalStorage('JMX_CREDENTIAL_LOCATION', 'Backend');
+      saveToLocalStorage('CREDENTIAL_LOCATION', 'Backend');
     });
 
     it('does not retrieve credentials', async () => {

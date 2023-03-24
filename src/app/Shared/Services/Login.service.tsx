@@ -40,7 +40,7 @@ import { combineLatest, Observable, ObservableInput, of, ReplaySubject } from 'r
 import { fromFetch } from 'rxjs/fetch';
 import { catchError, concatMap, debounceTime, distinctUntilChanged, first, map, tap } from 'rxjs/operators';
 import { ApiV2Response, HttpError } from './Api.service';
-import { Credential, JmxCredentials } from './JmxCredentials.service';
+import { Credential, AuthCredentials } from './AuthCredentials.service';
 import { isQuotaExceededError } from './Report.service';
 import { SettingsService } from './Settings.service';
 import { TargetService } from './Target.service';
@@ -71,7 +71,7 @@ export class LoginService {
 
   constructor(
     private readonly target: TargetService,
-    private readonly jmxCredentials: JmxCredentials,
+    private readonly authCredentials: AuthCredentials,
     private readonly settings: SettingsService
   ) {
     let apiAuthority = process.env.CRYOSTAT_AUTHORITY;
@@ -164,7 +164,7 @@ export class LoginService {
       this.getAuthMethod(),
       this.target.target().pipe(
         map((target) => target.connectUrl),
-        concatMap((connect) => this.jmxCredentials.getCredential(connect))
+        concatMap((connect) => this.authCredentials.getCredential(connect))
       ),
     ]).pipe(
       map((parts: [string, AuthMethod, Credential | undefined]) => this.getAuthHeaders(parts[0], parts[1], parts[2])),
