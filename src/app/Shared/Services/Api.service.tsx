@@ -89,6 +89,23 @@ export const isHttpOk = (statusCode: number) => {
   return statusCode >= 200 && statusCode < 300;
 };
 
+export const isAuthEnabledForTarget = (args?: string[]) => {
+  if (!args || !args.length) {
+    // Auth is enabled by default
+    return true;
+  }
+  return args.every((arg) => arg !== '-Dcom.sun.management.jmxremote.authenticate=false');
+};
+
+export const getGraphqlRootCause = (message: string) => {
+  const lastColonIdx = message.lastIndexOf(':');
+  if (lastColonIdx >= 0) {
+    const _mes = message.substring(message.lastIndexOf(':') + 1).trim();
+    return _mes.charAt(_mes.length - 1) !== '.' ? `${_mes}.` : _mes;
+  }
+  return message;
+};
+
 export class ApiService {
   private readonly archiveEnabled = new ReplaySubject<boolean>(1);
   private readonly cryostatVersionSubject = new ReplaySubject<string>(1);
@@ -698,17 +715,9 @@ export class ApiService {
     apiVersion: ApiVersion = 'v1',
     params?: URLSearchParams,
     suppressNotifications?: boolean,
-    skipStatusCheck?: boolean,
-    headers?: HeadersInit
+    skipStatusCheck?: boolean
   ): Observable<T> {
-    return this.sendRequest(
-      apiVersion,
-      path,
-      { method: 'GET', headers },
-      params,
-      suppressNotifications,
-      skipStatusCheck
-    ).pipe(
+    return this.sendRequest(apiVersion, path, { method: 'GET' }, params, suppressNotifications, skipStatusCheck).pipe(
       map((resp) => resp.json()),
       concatMap(from),
       first()
@@ -768,10 +777,12 @@ export class ApiService {
     query: string,
     variables?: unknown,
     suppressNotifications?: boolean,
-    skipStatusCheck?: boolean
+    skipStatusCheck?: boolean,
+    headers?: Headers
   ): Observable<T> {
-    const headers = new Headers();
-    headers.set('Content-Type', 'application/json');
+    const _headers = new Headers();
+    _headers.set('Content-Type', 'application/json');
+    headers && headers.forEach((v, k) => _headers.set(k, v));
     return this.sendRequest(
       'v2.2',
       'graphql',
@@ -781,7 +792,7 @@ export class ApiService {
           query: query.replace(/[\s]+/g, ' '),
           variables,
         }),
-        headers,
+        headers: _headers,
       },
       undefined,
       suppressNotifications,
@@ -1163,28 +1174,60 @@ export class ApiService {
     );
   }
 
-  checkCredentialsForTarget(
+  checkCredentialForTarget(
     target: Target,
     credentials: { username: string; password: string }
-  ): Observable<Error | undefined> {
-    const headers = new window.Headers();
-    const basic = `${credentials.username}:${credentials.password}`;
-    headers.set('X-JMX-Authorization', `Basic ${Base64.encode(basic)}`);
-    return this.doGet<ActiveRecording[]>(
-      `targets/${encodeURIComponent(target.connectUrl)}/recordings`,
-      'v1',
-      undefined,
+  ): Observable<
+    | {
+        error: Error;
+        errorType: string;
+      }
+    | undefined
+  > {
+    const headers = new Headers();
+    headers.set('X-JMX-Authorization', `Basic ${Base64.encode(`${credentials.username}:${credentials.password}`)}`);
+    return this.graphql<any>(
+      `
+      query CheckCredentialForTarget($filter: TargetNodesFilterInput) {
+        targetNodes(filter: $filter) {
+          name
+          mbeanMetrics {
+            runtime {
+              inputArguments
+            }
+          }
+        }
+      }
+      `,
+      {
+        filter: { name: target.connectUrl },
+      },
       true,
       true,
       headers
     ).pipe(
       first(),
-      map((_) => undefined),
+      map(({ data, errors }) => {
+        if (errors && errors.length) {
+          return { error: new Error(getGraphqlRootCause(errors[0].message)), errorType: 'danger' };
+        }
+        const metrics: MBeanMetrics | null | undefined = (data?.targetNodes || [])[0]?.mbeanMetrics;
+        if (!metrics) {
+          return { error: new Error('Test failed with unknown error.'), errorType: 'danger' };
+        }
+        if (!isAuthEnabledForTarget(metrics.runtime?.inputArguments)) {
+          return {
+            error: new Error('This target does not have authentication enabled.'),
+            errorType: 'warning',
+          };
+        }
+        return undefined;
+      }),
       catchError((err) => {
         if (isHttpError(err)) {
-          return err.httpResponse.text().then((detail) => new Error(detail));
+          return err.httpResponse.text().then((detail) => ({ error: new Error(detail), errorType: 'danger' }));
         }
-        return of(err);
+        return of({ error: err, errorType: 'danger' });
       })
     );
   }

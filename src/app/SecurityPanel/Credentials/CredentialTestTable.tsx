@@ -62,7 +62,7 @@ import {
   ToolbarItem,
   Tooltip,
 } from '@patternfly/react-core';
-import { ExclamationCircleIcon, SearchIcon } from '@patternfly/react-icons';
+import { ExclamationCircleIcon, SearchIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import {
   InnerScrollContainer,
   OuterScrollContainer,
@@ -170,6 +170,7 @@ enum TestState {
   NO_STATUS = 'No Status',
   INVALID = 'Invalid',
   VALID = 'Valid',
+  NOT_APPLICABLE = 'Not Applicable',
 }
 
 const getColor = (state: TestState): LabelProps['color'] => {
@@ -178,6 +179,8 @@ const getColor = (state: TestState): LabelProps['color'] => {
       return 'green';
     case TestState.INVALID:
       return 'red';
+    case TestState.NOT_APPLICABLE:
+      return 'orange';
     case TestState.NO_STATUS:
     default:
       return 'grey';
@@ -232,12 +235,12 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
     };
     testPool.add(test);
     addSubscription(
-      context.api.checkCredentialsForTarget(target, credential).subscribe((err) => {
+      context.api.checkCredentialForTarget(target, credential).subscribe((err) => {
         setLoading(false);
         testPool.delete(test);
         setStatus({
-          error: err,
-          state: err ? TestState.INVALID : TestState.VALID,
+          error: err?.error,
+          state: !err ? TestState.VALID : err.errorType === 'warning' ? TestState.NOT_APPLICABLE : TestState.INVALID,
         });
       })
     );
@@ -251,12 +254,12 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
           <Bullseye>
             <LinearDotSpinner />
           </Bullseye>
-        ) : status.state === TestState.INVALID ? (
+        ) : status.state === TestState.INVALID || status.state === TestState.NOT_APPLICABLE ? (
           <Popover
-            aria-label={`Test Error Details (${target.connectUrl})`}
-            alertSeverityVariant="danger"
-            headerIcon={<ExclamationCircleIcon />}
-            headerContent={<div>Invalid credentials</div>}
+            aria-label={`Test Result Details (${target.connectUrl})`}
+            alertSeverityVariant={status.state === TestState.INVALID ? 'danger' : 'warning'}
+            headerIcon={status.state === TestState.INVALID ? <ExclamationCircleIcon /> : <WarningTriangleIcon />}
+            headerContent={<div>{status.state === TestState.INVALID ? 'Test failed' : 'Caution'}</div>}
             bodyContent={<div>{status.error?.message || 'Unknown error'}</div>}
           >
             <Label style={{ cursor: 'pointer' }} color={getColor(status.state)}>
@@ -264,9 +267,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
             </Label>
           </Popover>
         ) : (
-          <Tooltip content="Caution: This target might not require authentication.">
-            <Label color={getColor(status.state)}>{status.state}</Label>
-          </Tooltip>
+          <Label color={getColor(status.state)}>{status.state}</Label>
         )}
       </Td>
       <Td textCenter>
