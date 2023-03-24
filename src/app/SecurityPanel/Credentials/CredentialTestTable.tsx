@@ -74,7 +74,7 @@ import {
   Tr,
 } from '@patternfly/react-table';
 import * as React from 'react';
-import { useAuthCredential } from './utils';
+import { TestPoolContext, useAuthCredential } from './utils';
 
 export interface CredentialTestTableProps {}
 
@@ -208,6 +208,7 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
   const context = React.useContext(ServiceContext);
   const [loading, setLoading] = React.useState(false);
   const [credential] = useAuthCredential();
+  const testPool = React.useContext(TestPoolContext);
   const addSubscription = useSubscriptions();
 
   const isEmptyCredential = React.useMemo(() => credential.password === '' || credential.username === '', [credential]);
@@ -225,16 +226,22 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
       return; // Do not repeat request or send when input fields are empty
     }
     setLoading(true);
+    const test = {
+      id: `test-request-for-${target.connectUrl}`,
+      targetUrl: target.connectUrl,
+    };
+    testPool.add(test);
     addSubscription(
       context.api.checkCredentialsForTarget(target, credential).subscribe((err) => {
         setLoading(false);
+        testPool.delete(test);
         setStatus({
           error: err,
           state: err ? TestState.INVALID : TestState.VALID,
         });
       })
     );
-  }, [setStatus, addSubscription, context.api, target, credential, isEmptyCredential, loading]);
+  }, [setStatus, addSubscription, context.api, target, credential, isEmptyCredential, loading, testPool]);
 
   return isShowed ? (
     <Tr {...props} id={`${target.connectUrl}-test-row`}>
@@ -257,7 +264,9 @@ export const CredentialTestRow: React.FC<CredentialTestRowProps> = ({
             </Label>
           </Popover>
         ) : (
-          <Label color={getColor(status.state)}>{status.state}</Label>
+          <Tooltip content="Caution: This target might not require authentication.">
+            <Label color={getColor(status.state)}>{status.state}</Label>
+          </Tooltip>
         )}
       </Td>
       <Td textCenter>

@@ -62,8 +62,9 @@ import {
 } from '@patternfly/react-core';
 import { FlaskIcon, HelpIcon, TopologyIcon } from '@patternfly/react-icons';
 import * as React from 'react';
+import { distinctUntilChanged, interval, map } from 'rxjs';
 import { CredentialTestTable } from './CredentialTestTable';
-import { CredentialContext, useAuthCredential } from './utils';
+import { CredentialContext, TestPoolContext, TestRequest, useAuthCredential } from './utils';
 
 export interface CreateCredentialModalProps {
   visible: boolean;
@@ -80,6 +81,7 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
   const matchExpreRef = React.useRef(new SearchExprService());
   const loadingRef = React.useRef(new StreamOf(false));
   const credentialRef = React.useRef(new StreamOf<AuthCredential>({ username: '', password: '' }));
+  const testPoolRef = React.useRef(new Set<TestRequest>());
   const addSubscription = useSubscriptions();
 
   const [inProgress, setInProgress] = React.useState(false);
@@ -102,22 +104,29 @@ export const CreateCredentialModal: React.FunctionComponent<CreateCredentialModa
     >
       <SearchExprServiceContext.Provider value={matchExpreRef.current}>
         <CredentialContext.Provider value={credentialRef.current}>
-          <Grid hasGutter style={{ height: '100%' }}>
-            <GridItem xl={4}>
-              <Card isFullHeight isFlat>
-                <CardBody className="overflow-auto">
-                  <AuthForm {...props} onDismiss={onDismiss} onPropsSave={onPropsSave} progressChange={setInProgress} />
-                </CardBody>
-              </Card>
-            </GridItem>
-            <GridItem xl={8}>
-              <Card isFullHeight isFlat>
-                <CardBody className="overflow-auto">
-                  <FormHelper />
-                </CardBody>
-              </Card>
-            </GridItem>
-          </Grid>
+          <TestPoolContext.Provider value={testPoolRef.current}>
+            <Grid hasGutter style={{ height: '100%' }}>
+              <GridItem xl={4}>
+                <Card isFullHeight isFlat>
+                  <CardBody className="overflow-auto">
+                    <AuthForm
+                      {...props}
+                      onDismiss={onDismiss}
+                      onPropsSave={onPropsSave}
+                      progressChange={setInProgress}
+                    />
+                  </CardBody>
+                </Card>
+              </GridItem>
+              <GridItem xl={8}>
+                <Card isFullHeight isFlat>
+                  <CardBody className="overflow-auto">
+                    <FormHelper />
+                  </CardBody>
+                </Card>
+              </GridItem>
+            </Grid>
+          </TestPoolContext.Provider>
         </CredentialContext.Provider>
       </SearchExprServiceContext.Provider>
     </Modal>
@@ -135,7 +144,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
   const [matchExpression, setMatchExpression] = React.useState('');
   const [matchExpressionValid, setMatchExpressionValid] = React.useState(ValidatedOptions.default);
   const [_, setCredential] = useAuthCredential(true);
+  const testPool = React.useContext(TestPoolContext);
   const [saving, setSaving] = React.useState(false);
+  const [isDisabled, setIsDisabled] = React.useState(false);
 
   const [targets, setTargets] = React.useState<Target[]>([]);
 
@@ -181,6 +192,18 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
     progressChange && progressChange(saving);
   }, [saving, progressChange]);
 
+  React.useEffect(() => {
+    // Polling test pool
+    addSubscription(
+      interval(10)
+        .pipe(
+          map(() => testPool.size > 0),
+          distinctUntilChanged()
+        )
+        .subscribe(setIsDisabled)
+    );
+  }, [testPool, setIsDisabled]);
+
   return (
     <CredentialAuthForm
       {...props}
@@ -188,7 +211,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
       onDismiss={onDismiss}
       focus={false}
       loading={saving}
-      isDisabled={false}
+      isDisabled={isDisabled}
       onCredentialChange={setCredential}
     >
       <FormGroup
@@ -230,7 +253,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onDismiss, onPropsSave, prog
       >
         <TextArea
           value={matchExpression}
-          isDisabled={false}
+          isDisabled={isDisabled}
           isRequired
           type="text"
           id="rule-matchexpr"

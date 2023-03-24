@@ -42,6 +42,16 @@ import { debounceTime, Subscription } from 'rxjs';
 
 export const CredentialContext = React.createContext(new StreamOf<AuthCredential>({ username: '', password: '' }));
 
+export interface TestRequest {
+  id: string;
+  targetUrl: string;
+  data?: unknown;
+}
+
+// Each test request registers itself to test pool when initiated. When completed, remove itself from pool.
+// Auth form will poll this pool for a set time to determine if form should is disabled.
+export const TestPoolContext = React.createContext(new Set<TestRequest>());
+
 export const useAuthCredential = (
   ignoreEmit?: boolean,
   debounceMs = 50
