@@ -299,10 +299,6 @@ export const getResourceListPatchFn = (
         const recording: Recording = eventData.message.recording;
         let newArr = arr.filter((r) => r.name !== recording.name);
         if (!removed) {
-          // Stop event emits a recording with RUNNING state
-          if (eventData.meta.category === NotificationCategory.ActiveRecordingStopped) {
-            (recording as ActiveRecording).state = RecordingState.STOPPED;
-          }
           newArr = newArr.concat([recording]);
         }
         return of(newArr);
