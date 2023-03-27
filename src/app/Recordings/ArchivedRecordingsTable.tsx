@@ -115,7 +115,7 @@ const mapper = (index?: number) => {
   return undefined;
 };
 
-const getTransform = (index?: number) => undefined;
+const getTransform = (_index?: number) => undefined;
 
 export interface ArchivedRecordingsTableProps {
   target: Observable<Target>;
