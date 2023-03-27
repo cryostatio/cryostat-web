@@ -153,9 +153,9 @@ const CryostatJoyride: React.FC<CryostatJoyrideProps> = (props) => {
           title: 'Events',
           content: (
             <p>
-              The <strong>Events</strong> page lists the <strong>Event Templates</strong> that can be used for creating Flight
-              Recordings. It also details the JFR <strong>Event Types</strong> that can be recorded within each target
-              JVM.
+              The <strong>Events</strong> page lists the <strong>Event Templates</strong> that can be used for creating
+              Flight Recordings. It also details the JFR <strong>Event Types</strong> that can be recorded within each
+              target JVM.
             </p>
           ),
           target: '*[data-tour-id="events"]',
