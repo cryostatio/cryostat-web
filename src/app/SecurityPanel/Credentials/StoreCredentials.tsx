@@ -41,7 +41,6 @@ import { DeleteOrDisableWarningType } from '@app/Modal/DeleteWarningUtils';
 import { StoredCredential } from '@app/Shared/Services/Api.service';
 import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.service';
 import { ServiceContext } from '@app/Shared/Services/Services';
-import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
 import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
@@ -50,6 +49,10 @@ import {
   Badge,
   Button,
   Checkbox,
+  Dropdown,
+  DropdownItem,
+  DropdownToggle,
+  DropdownToggleCheckbox,
   EmptyState,
   EmptyStateIcon,
   Text,
@@ -75,6 +78,8 @@ const enum Actions {
   HANDLE_CREDENTIALS_DELETED_NOTIFICATION,
   HANDLE_ROW_CHECK,
   HANDLE_HEADER_CHECK,
+  HANDLE_NO_MATCH_ROW_CHECK,
+  HANDLE_ATLEAST_ONE_MATCH_ROW_CHECK,
   HANDLE_TOGGLE_EXPANDED,
 }
 
@@ -104,7 +109,9 @@ const reducer = (state: State, action) => {
             if (typeof res === 'boolean') {
               matched = res;
             }
-          } catch (_error) {}
+          } catch (_error) {
+            matched = false;
+          }
           if (matched) {
             const delta = action.payload.kind === 'FOUND' ? 1 : -1;
             return {
@@ -140,9 +147,11 @@ const reducer = (state: State, action) => {
     }
     case Actions.HANDLE_ROW_CHECK: {
       if (action.payload.checked) {
+        const checkedCredentials = state.checkedCredentials.concat(action.payload.credential);
         return {
           ...state,
-          checkedCredentials: state.checkedCredentials.concat(action.payload.credential),
+          checkedCredentials,
+          isHeaderChecked: checkedCredentials.length === state.credentials.length,
         };
       } else {
         return {
@@ -157,6 +166,18 @@ const reducer = (state: State, action) => {
         ...state,
         checkedCredentials: action.payload.checked ? [...state.credentials] : [],
         isHeaderChecked: action.payload.checked,
+      };
+    }
+    case Actions.HANDLE_ATLEAST_ONE_MATCH_ROW_CHECK:
+    case Actions.HANDLE_NO_MATCH_ROW_CHECK: {
+      const noMatch = action.payload.noMatch;
+      const checkedCredentials = state.credentials.filter(({ numMatchingTargets }) =>
+        noMatch ? numMatchingTargets === 0 : numMatchingTargets > 0
+      );
+      return {
+        ...state,
+        checkedCredentials,
+        isHeaderChecked: checkedCredentials.length === state.credentials.length,
       };
     }
     case Actions.HANDLE_TOGGLE_EXPANDED: {
@@ -278,7 +299,7 @@ export const StoreCredentials = () => {
     );
   }, [addSubscription, context, context.notificationChannel]);
 
-  const handleHeaderCheck = React.useCallback((event, checked) => {
+  const handleHeaderCheck = React.useCallback((checked: boolean) => {
     dispatch({ type: Actions.HANDLE_HEADER_CHECK, payload: { checked: checked } });
   }, []);
 
@@ -399,7 +420,7 @@ export const StoreCredentials = () => {
         </Tr>
       );
     });
-  }, [state.credentials, state.expandedCredentials, state.checkedCredentials, tableColumns, sortBy]);
+  }, [state.credentials, state.expandedCredentials, state.checkedCredentials, sortBy]);
 
   const targetRows = React.useMemo(() => {
     return state.credentials.map((credential, idx) => {
@@ -417,7 +438,7 @@ export const StoreCredentials = () => {
         </Tr>
       );
     });
-  }, [state.credentials, state.expandedCredentials, tableColumns.length]);
+  }, [state.credentials, state.expandedCredentials]);
 
   const rowPairs = React.useMemo(() => {
     const rowPairs: JSX.Element[] = [];
@@ -427,6 +448,14 @@ export const StoreCredentials = () => {
     }
     return rowPairs;
   }, [matchExpressionRows, targetRows]);
+
+  const handleNoMatchSelect = React.useCallback(() => {
+    dispatch({ type: Actions.HANDLE_NO_MATCH_ROW_CHECK, payload: { noMatch: true } });
+  }, [dispatch]);
+
+  const handleAtLeatOneSelect = React.useCallback(() => {
+    dispatch({ type: Actions.HANDLE_ATLEAST_ONE_MATCH_ROW_CHECK, payload: { noMatch: false } });
+  }, []);
 
   let content: JSX.Element;
   if (isLoading) {
@@ -453,13 +482,14 @@ export const StoreCredentials = () => {
           <Thead>
             <Tr>
               <Th key="table-header-expand" />
-              <Th
-                key="table-header-check-all"
-                select={{
-                  onSelect: handleHeaderCheck,
-                  isSelected: state.isHeaderChecked,
-                }}
-              />
+              <Th key="table-header-check-all">
+                <CheckBoxActions
+                  isSelectAll={state.isHeaderChecked}
+                  onSelectAll={handleHeaderCheck}
+                  onAtLeastOneMatchSelect={handleAtLeatOneSelect}
+                  onNoMatchSelect={handleNoMatchSelect}
+                />
+              </Th>
               {tableColumns.map(({ title }, index) => (
                 <Th
                   key={`table-header-${title}`}
@@ -487,6 +517,61 @@ export const StoreCredentials = () => {
         onPropsSave={handleAuthModalClose}
       />
     </>
+  );
+};
+
+interface CheckBoxActionsProps {
+  onNoMatchSelect?: () => void;
+  onAtLeastOneMatchSelect?: () => void;
+  onSelectAll?: (selected: boolean) => void;
+  isSelectAll?: boolean;
+}
+
+export const CheckBoxActions: React.FC<CheckBoxActionsProps> = ({
+  onNoMatchSelect,
+  onAtLeastOneMatchSelect,
+  onSelectAll,
+  isSelectAll,
+  ...props
+}) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleToggle = React.useCallback(() => setIsOpen((old) => !old), [setIsOpen]);
+
+  const dropdownItems = React.useMemo(() => {
+    return [
+      <DropdownItem key="action" onClick={onNoMatchSelect}>
+        No Match Only
+      </DropdownItem>,
+      <DropdownItem key="action" onClick={onAtLeastOneMatchSelect}>{`>= 1 Match Only`}</DropdownItem>,
+    ];
+  }, [onNoMatchSelect, onAtLeastOneMatchSelect]);
+
+  return (
+    <Dropdown
+      {...props}
+      onSelect={() => {
+        setIsOpen(false);
+      }}
+      toggle={
+        <DropdownToggle
+          splitButtonItems={[
+            <DropdownToggleCheckbox
+              id="select-all-credentials"
+              key="select-all-credentials"
+              aria-label="Select all"
+              isChecked={isSelectAll}
+              onChange={onSelectAll}
+            />,
+          ]}
+          onToggle={handleToggle}
+          id="select-all-toggle"
+        />
+      }
+      isOpen={isOpen}
+      dropdownItems={dropdownItems}
+      menuAppendTo={document.body}
+    />
   );
 };
 
