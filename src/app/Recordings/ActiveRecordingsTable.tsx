@@ -113,7 +113,7 @@ const tableColumns = [
   {
     title: 'Duration',
     keyPaths: ['duration'],
-    transform: (duration: number) => {
+    transform: (duration: number, _rec: ActiveRecording) => {
       if (duration === 0) {
         return Number.MAX_VALUE;
       }

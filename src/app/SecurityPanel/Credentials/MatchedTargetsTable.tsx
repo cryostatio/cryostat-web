@@ -40,7 +40,9 @@ import { NotificationCategory } from '@app/Shared/Services/NotificationChannel.s
 import { ServiceContext } from '@app/Shared/Services/Services';
 import { Target } from '@app/Shared/Services/Target.service';
 import { TargetDiscoveryEvent } from '@app/Shared/Services/Targets.service';
+import { useSort } from '@app/utils/useSort';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
+import { sortResouces } from '@app/utils/utils';
 import { EmptyState, EmptyStateIcon, Title } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import { InnerScrollContainer, TableComposable, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
@@ -52,14 +54,40 @@ export interface MatchedTargetsTableProps {
   matchExpression: string;
 }
 
+const tableColumns = [
+  {
+    title: 'Target',
+    keyPaths: ['alias'],
+    transform: (_alias: string, target: Target) => {
+      return target.alias === target.connectUrl || !target.alias
+        ? `${target.connectUrl}`
+        : `${target.alias} (${target.connectUrl})`;
+    },
+    sortable: true,
+  },
+];
+
+const mapper = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].keyPaths;
+  }
+  return undefined;
+};
+
+const getTransform = (index?: number) => {
+  if (index !== undefined) {
+    return tableColumns[index].transform;
+  }
+  return undefined;
+};
+
 export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTableProps> = ({ id, matchExpression }) => {
   const context = React.useContext(ServiceContext);
 
   const [targets, setTargets] = React.useState([] as Target[]);
+  const [sortBy, getSortParams] = useSort();
   const [isLoading, setIsLoading] = React.useState(false);
   const addSubscription = useSubscriptions();
-
-  const tableColumns: string[] = ['Target'];
 
   const refreshTargetsList = React.useCallback(() => {
     setIsLoading(true);
@@ -93,7 +121,7 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
   }, [addSubscription, context, context.notificationChannel, setTargets, matchExpression]);
 
   const targetRows = React.useMemo(() => {
-    return targets.map((target, idx) => {
+    return sortResouces(sortBy, targets, mapper, getTransform).map((target, idx) => {
       return (
         <Tr key={`target-${idx}`}>
           <Td key={`target-table-row-${idx}_0`}>
@@ -104,7 +132,7 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
         </Tr>
       );
     });
-  }, [targets]);
+  }, [targets, sortBy]);
 
   let view: JSX.Element;
   if (isLoading) {
@@ -127,8 +155,10 @@ export const MatchedTargetsTable: React.FunctionComponent<MatchedTargetsTablePro
           <TableComposable aria-label="matched-targets-table" isStickyHeader={true} variant={'compact'}>
             <Thead>
               <Tr>
-                {tableColumns.map((key) => (
-                  <Th key={`table-header-${key}`}>{key}</Th>
+                {tableColumns.map(({ title }, index) => (
+                  <Th key={`table-header-${title}`} sort={getSortParams(index)}>
+                    {title}
+                  </Th>
                 ))}
               </Tr>
             </Thead>

@@ -196,7 +196,7 @@ export const sortResouces = (
   { index, direction }: ISortBy,
   resources: any[],
   mapper: (index?: number) => string[] | undefined,
-  getTransform: (index?: number) => ((value: any) => any) | undefined
+  getTransform: (index?: number) => ((value: any, resource: any) => any) | undefined
 ) => {
   const keyPaths = mapper(index);
   if (!keyPaths || !keyPaths.length) {
@@ -207,8 +207,8 @@ export const sortResouces = (
     let bVal = getValue(b, keyPaths);
     const transform = getTransform(index);
     if (transform) {
-      aVal = transform(aVal);
-      bVal = transform(bVal);
+      aVal = transform(aVal, a);
+      bVal = transform(bVal, b);
     }
     return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
   });
