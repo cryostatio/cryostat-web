@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { topologyConfigSetViewModeIntent, topologyDeleteAllFiltersIntent } from '@app/Shared/Redux/ReduxStore';
+import { portalRoot } from '@app/utils/utils';
 import { Button, Popover, Toolbar, ToolbarContent, ToolbarItem, Tooltip } from '@patternfly/react-core';
 import { TopologyIcon, ListIcon, MouseIcon, QuestionCircleIcon } from '@patternfly/react-icons';
 import { Visualization } from '@patternfly/react-topology';
@@ -86,7 +87,13 @@ export const TopologyToolbar: React.FC<TopologyToolbarProps> = ({ variant, visua
 
   const actionIcon = React.useMemo(
     () => (
-      <Tooltip entryDelay={0} content={isGraphView ? 'Graph View' : 'List View'} aria="none" aria-live="polite">
+      <Tooltip
+        entryDelay={0}
+        content={isGraphView ? 'Graph View' : 'List View'}
+        aria="none"
+        aria-live="polite"
+        appendTo={portalRoot}
+      >
         <Button className="topology__view-switcher" aria-label="Clipboard" variant="plain" onClick={toggleView}>
           {isGraphView ? <TopologyIcon /> : <ListIcon />}
         </Button>

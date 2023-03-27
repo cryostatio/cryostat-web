@@ -36,6 +36,7 @@
  * SOFTWARE.
  */
 import { ActiveRecording, RecordingState } from '@app/Shared/Services/Api.service';
+import { portalRoot } from '@app/utils/utils';
 import { Tooltip } from '@patternfly/react-core';
 import { InProgressIcon, RunningIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
@@ -92,7 +93,7 @@ export const ActiveRecordingDecorator: React.FC<DecoratorProps> = ({ element, qu
   }, [error, loading, runningRecs]);
 
   return iconConfig ? (
-    <Tooltip {...props} content={iconConfig.tooltip}>
+    <Tooltip {...props} content={iconConfig.tooltip} appendTo={portalRoot}>
       <Decorator x={x} y={y} radius={DEFAULT_DECORATOR_RADIUS} showBackground icon={iconConfig.icon} />
     </Tooltip>
   ) : null;
@@ -103,7 +104,7 @@ export const StatusDecorator: React.FC<DecoratorProps> = ({ element, quadrant, .
   const [nodeStatus, extra] = getStatusTargetNode(data);
   const { x, y } = getDefaultShapeDecoratorCenter(quadrant, element);
   return nodeStatus ? (
-    <Tooltip {...props} content={extra?.title}>
+    <Tooltip {...props} content={extra?.title} appendTo={portalRoot}>
       <Decorator
         x={x}
         y={y}

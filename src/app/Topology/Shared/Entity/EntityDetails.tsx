@@ -43,7 +43,7 @@ import { ServiceContext } from '@app/Shared/Services/Services';
 import { ActionDropdown, NodeAction } from '@app/Topology/Actions/NodeActions';
 import useDayjs from '@app/utils/useDayjs';
 import { useSubscriptions } from '@app/utils/useSubscriptions';
-import { hashCode, splitWordsOnUppercase } from '@app/utils/utils';
+import { hashCode, portalRoot, splitWordsOnUppercase } from '@app/utils/utils';
 import {
   Alert,
   AlertActionCloseButton,
@@ -498,7 +498,7 @@ export const TargetResourceItem: React.FC<{
               <LinearDotSpinner />
             </Bullseye>
           ) : error ? (
-            <Tooltip content={error.message}>
+            <Tooltip content={error.message} appendTo={portalRoot}>
               <WarningTriangleIcon color="var(--pf-global--warning-color--100)" />
             </Tooltip>
           ) : (
@@ -528,7 +528,7 @@ export const GroupResources: React.FC<{ envNode: EnvironmentNode }> = ({ envNode
           <CardBody>
             <Flex>
               <FlexItem flex={{ default: 'flex_1' }}>
-                <Tooltip content={isTarget ? child.target.connectUrl : child.name}>
+                <Tooltip content={isTarget ? child.target.connectUrl : child.name} appendTo={portalRoot}>
                   <div>
                     <Badge>{nodeTypeToAbbr(child.nodeType)}</Badge>
                     <span style={{ marginLeft: '0.5em' }}>{isTarget ? child.target.alias : child.name}</span>
@@ -537,7 +537,7 @@ export const GroupResources: React.FC<{ envNode: EnvironmentNode }> = ({ envNode
               </FlexItem>
               {status === NodeStatus.warning ? (
                 <FlexItem>
-                  <Tooltip content={extra?.title}>
+                  <Tooltip content={extra?.title} appendTo={portalRoot}>
                     <WarningTriangleIcon color="var(--pf-global--warning-color--100)" />
                   </Tooltip>
                 </FlexItem>

@@ -35,13 +35,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { portalRoot } from '@app/utils/utils';
 import { Button, Tooltip } from '@patternfly/react-core';
 import * as React from 'react';
 import QuickSearchIcon from '../Shared/QuickSearchIcon';
 
 export const QuickSearchButton: React.FC<{ onClick: () => void }> = ({ onClick, ...props }) => {
   return (
-    <Tooltip {...props} position="right" content={'Add to view'}>
+    <Tooltip {...props} position="right" content={'Add to view'} appendTo={portalRoot}>
       <Button variant="plain" onClick={onClick} className={'topology__quick-search-button'}>
         <QuickSearchIcon className="top" />
       </Button>
